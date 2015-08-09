@@ -1,1 +1,5 @@
- 
+gitk
+qgit
+
+SHOW NUMBER OF CODE LINES:
+git ls-files | xargs wc -l
