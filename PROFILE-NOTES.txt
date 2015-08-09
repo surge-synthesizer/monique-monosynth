@@ -1,0 +1,10 @@
+ kcachegrind
+ 
+ -pg
+ 
+ maybe 
+ 
+-pg
+-fno-inline-small-functions
+-fno-inline
+-fno-inline-functions
