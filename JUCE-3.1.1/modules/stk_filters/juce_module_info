@@ -1,0 +1,17 @@
+{
+  "id":             "stk_filters",
+  "name":           "STK Filters",
+  "version":        "4.5.0",
+  "description":    "STK Library: two-pole filter, two-zero filter, non-interpolating tapped delay line, one-pole, one-zero filter, one-zero filter, one-pole filter, general infinite impulse response filter, sweepable formant filter, general finite impulse response filter, linear interpolating delay line, allpass interpolating delay line, non-interpolating delay line, biquad (two-pole, two-zero) filter",
+  "website":        "https://ccrma.stanford.edu/software/stk",
+  "license":        "Open Source https://ccrma.stanford.edu/software/stk/faq.html",
+
+  "dependencies":   [ { "id": "juce_core",   "version": "matching" }, { "id": "stk_core",   "version": "matching" } ],
+
+  "include":        "stk_filters.h",
+
+  "compile":        [ { "file": "stk_filters.cpp", "target": "! xcode" },
+                      { "file": "stk_filters.mm",  "target": "xcode" } ],
+
+  "browse":         [ "filters/*" ]
+}

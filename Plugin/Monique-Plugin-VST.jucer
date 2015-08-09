@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="MhT8v8" name="Monique" projectType="audioplug" version="0.5"
+              bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="0"
+              buildVST="1" buildAU="0" pluginName="Monique" pluginDesc="Monophonic Lead and Bass Synthesizer"
+              pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
+              pluginCode="mPlg" pluginChannelConfigs="{0,2},{0,2}" pluginIsSynth="1"
+              pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
+              pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
+              aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
+              jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="0" buildVST3="0"
+              buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
+              companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
+              defines="MONIQUE_PLUGIN">
+  <MAINGROUP id="tx7Kez" name="Monique">
+    <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
+    <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
+      <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
+      <FILE id="CsLT9o" name="AppInstanceStore.cpp" compile="1" resource="0"
+            file="../Source/AppInstanceStore.cpp"/>
+      <FILE id="rNnSID" name="AppInstanceStore.h" compile="0" resource="0"
+            file="../Source/AppInstanceStore.h"/>
+      <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
+            file="../Source/dRowAudio_AudioUtility.h"/>
+      <FILE id="xJCyIj" name="dRowAudio_Buffer.h" compile="0" resource="0"
+            file="../Source/dRowAudio_Buffer.h"/>
+      <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
+            file="../Source/dRowAudio_Constants.h"/>
+      <FILE id="IZec6U" name="dRowAudio_EnvelopeFollower.cpp" compile="1"
+            resource="0" file="../Source/dRowAudio_EnvelopeFollower.cpp"/>
+      <FILE id="Cy9yJs" name="dRowAudio_EnvelopeFollower.h" compile="0" resource="0"
+            file="../Source/dRowAudio_EnvelopeFollower.h"/>
+      <FILE id="opqnhD" name="dRowAudio_GraphicalComponent.cpp" compile="1"
+            resource="0" file="../Source/dRowAudio_GraphicalComponent.cpp"/>
+      <FILE id="I2zoEx" name="dRowAudio_GraphicalComponent.h" compile="0"
+            resource="0" file="../Source/dRowAudio_GraphicalComponent.h"/>
+      <FILE id="OTthBH" name="dRowAudio_MathsUtilities.h" compile="0" resource="0"
+            file="../Source/dRowAudio_MathsUtilities.h"/>
+      <FILE id="u6mOBX" name="dRowAudio_OnePoleFilter.cpp" compile="1" resource="0"
+            file="../Source/dRowAudio_OnePoleFilter.cpp"/>
+      <FILE id="dAIals" name="dRowAudio_OnePoleFilter.h" compile="0" resource="0"
+            file="../Source/dRowAudio_OnePoleFilter.h"/>
+      <FILE id="tr4cTv" name="dRowAudio_SegmentedMeter.cpp" compile="1" resource="0"
+            file="../Source/dRowAudio_SegmentedMeter.cpp"/>
+      <FILE id="UUoF9D" name="dRowAudio_SegmentedMeter.h" compile="0" resource="0"
+            file="../Source/dRowAudio_SegmentedMeter.h"/>
+      <FILE id="iaUOBQ" name="dRowAudio_StateVariable.h" compile="0" resource="0"
+            file="../Source/dRowAudio_StateVariable.h"/>
+      <FILE id="xRz9s6" name="mono_AmpPainter.cpp" compile="1" resource="0"
+            file="../Source/mono_AmpPainter.cpp"/>
+      <FILE id="xmwNmk" name="mono_AmpPainter.h" compile="0" resource="0"
+            file="../Source/mono_AmpPainter.h"/>
+      <FILE id="TLV810" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
+            file="../Source/mono_AudioDeviceManager.cpp"/>
+      <FILE id="zuO4aC" name="mono_AudioDeviceManager.h" compile="0" resource="0"
+            file="../Source/mono_AudioDeviceManager.h"/>
+      <FILE id="S2zCKU" name="mono_ChorusBuffer.cpp" compile="1" resource="0"
+            file="../Source/mono_ChorusBuffer.cpp"/>
+      <FILE id="QlfNGv" name="mono_ChorusBuffer.h" compile="0" resource="0"
+            file="../Source/mono_ChorusBuffer.h"/>
+      <FILE id="E8wrkW" name="mono_ModulationSlider.cpp" compile="1" resource="0"
+            file="../Source/mono_ModulationSlider.cpp"/>
+      <FILE id="hoGqtJ" name="mono_ModulationSlider.h" compile="0" resource="0"
+            file="../Source/mono_ModulationSlider.h"/>
+      <FILE id="kA4JLP" name="mono_MoogFilter.cpp" compile="1" resource="0"
+            file="../Source/mono_MoogFilter.cpp"/>
+      <FILE id="OfB0MQ" name="mono_MoogFilter.h" compile="0" resource="0"
+            file="../Source/mono_MoogFilter.h"/>
+      <FILE id="cletLI" name="mono_Parameters.cpp" compile="1" resource="0"
+            file="../Source/mono_Parameters.cpp"/>
+      <FILE id="faB2bl" name="mono_Parameters.h" compile="0" resource="0"
+            file="../Source/mono_Parameters.h"/>
+      <FILE id="kmroHW" name="mono_UiRefresher.cpp" compile="1" resource="0"
+            file="../Source/mono_UiRefresher.cpp"/>
+      <FILE id="JBq4Yh" name="mono_UiRefresher.h" compile="0" resource="0"
+            file="../Source/mono_UiRefresher.h"/>
+      <FILE id="kxih0T" name="mono_UiUtilities.cpp" compile="1" resource="0"
+            file="../Source/mono_UiUtilities.cpp"/>
+      <FILE id="l6olRD" name="mono_UiUtilities.h" compile="0" resource="0"
+            file="../Source/mono_UiUtilities.h"/>
+      <FILE id="fNOmoO" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="../Source/PluginProcessor.cpp"/>
+      <FILE id="DRNZAz" name="PluginProcessor.h" compile="0" resource="0"
+            file="../Source/PluginProcessor.h"/>
+      <FILE id="GxnvYq" name="Synth.cpp" compile="1" resource="0" file="../Source/Synth.cpp"/>
+      <FILE id="aJbsC0" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
+      <FILE id="OKoiqV" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
+      <FILE id="h55lZl" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
+      <FILE id="emuN1D" name="UI_MoveEvent2ChildsComponent.h" compile="0"
+            resource="0" file="../Source/UI_MoveEvent2ChildsComponent.h"/>
+      <FILE id="rlKMCE" name="UiDragPad.cpp" compile="1" resource="0" file="../Source/UiDragPad.cpp"/>
+      <FILE id="l71Y0y" name="UiDragPad.h" compile="0" resource="0" file="../Source/UiDragPad.h"/>
+      <FILE id="L3ocBA" name="UiDynamicSizeEnd.h" compile="0" resource="0"
+            file="../Source/UiDynamicSizeEnd.h"/>
+      <FILE id="f2L0aU" name="UiDynamicSizeStart.h" compile="0" resource="0"
+            file="../Source/UiDynamicSizeStart.h"/>
+      <FILE id="LxcuoQ" name="UiEditorColours.cpp" compile="1" resource="0"
+            file="../Source/UiEditorColours.cpp"/>
+      <FILE id="fCtjsa" name="UiEditorColours.h" compile="0" resource="0"
+            file="../Source/UiEditorColours.h"/>
+      <FILE id="uajFTh" name="UiEditorMIDIIO.cpp" compile="1" resource="0"
+            file="../Source/UiEditorMIDIIO.cpp"/>
+      <FILE id="uEH6EK" name="UiEditorMIDIIO.h" compile="0" resource="0"
+            file="../Source/UiEditorMIDIIO.h"/>
+      <FILE id="qw8i65" name="UiEditorMorph.cpp" compile="1" resource="0"
+            file="../Source/UiEditorMorph.cpp"/>
+      <FILE id="csSLiL" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>
+      <FILE id="tbfGE0" name="UiEditorSettings.cpp" compile="1" resource="0"
+            file="../Source/UiEditorSettings.cpp"/>
+      <FILE id="rD0ahm" name="UiEditorSettings.h" compile="0" resource="0"
+            file="../Source/UiEditorSettings.h"/>
+      <FILE id="Sc12uW" name="UiEditorSynthLite.cpp" compile="1" resource="0"
+            file="../Source/UiEditorSynthLite.cpp"/>
+      <FILE id="ngYxWI" name="UiEditorSynthLite.h" compile="0" resource="0"
+            file="../Source/UiEditorSynthLite.h"/>
+      <FILE id="J4F8Iu" name="UiEditorSynthLiteConfig.h" compile="0" resource="0"
+            file="../Source/UiEditorSynthLiteConfig.h"/>
+      <FILE id="AV6UqG" name="UiEditorSynthLitePopup.cpp" compile="1" resource="0"
+            file="../Source/UiEditorSynthLitePopup.cpp"/>
+      <FILE id="ZMZ8yB" name="UiEditorSynthLitePopup.h" compile="0" resource="0"
+            file="../Source/UiEditorSynthLitePopup.h"/>
+      <FILE id="VZ5LPp" name="UiLookAndFeel.cpp" compile="1" resource="0"
+            file="../Source/UiLookAndFeel.cpp"/>
+      <FILE id="SAmtBl" name="UiLookAndFeel.h" compile="0" resource="0" file="../Source/UiLookAndFeel.h"/>
+    </GROUP>
+    <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"
+            file="../Fonts/FjallaOne-Regular.otf"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4/" extraCompilerFlags="-std=c++11&#10;-Wall"
+                extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;DEBUG"
+                extraLinkerFlags="" userNotes="" vst3Folder="~/SDKs/VST3 SDK">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="1"
+                       targetName="Monique_d" headerPath="" userNotes="" defines=""
+                       linuxArchitecture="-m64" binaryPath="Builds/LINUX_D"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+    <LINUX_MAKE targetFolder="Builds/LINUX" vstFolder="../vstsdk2.4/" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-ftree-vectorize&#10;-flto"
+                extraLinkerFlags="" extraDefs="" vst3Folder="~/SDKs/VST3 SDK"
+                userNotes="&#10;">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
+                       targetName="Monique_64x" linuxArchitecture="-m64" binaryPath="Builds/LINUX"/>
+        <CONFIGURATION name="32" libraryPath="/usr/X11R6/lib/" targetName="Monique_32x"
+                       optimisation="6" linuxArchitecture="-m32" binaryPath="Builds/LINUX"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+    <XCODE_MAC targetFolder="Builds/MAC" vstFolder="../vstsdk2.4" postbuildCommand="&#10;# This script takes the build product and copies it to the AU, VST, and RTAS folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AU=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VST=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTAS=/Library/Application\ Support/Digidesign/Plug-Ins/$PRODUCT_NAME.dpm&#10;  if [ -d &quot;$RTAS&quot; ]; then&#10;    rm -r &quot;$RTAS&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Applications/ProTools_3PDev/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;"
+               extraDefs="" extraCompilerFlags="" vst3Folder="../VST3 SDK">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
+                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
+                       targetName="Monique" defines="" customXcodeFlags="" fastMath="1"
+                       linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2013 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" toolset="v120_xp"
+            extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1" extraCompilerFlags="">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="3" targetName="Monique_32" fastMath="1"
+                       binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
+                       useRuntimeLibDLL="0"/>
+        <CONFIGURATION name="64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+                       isDebug="0" optimisation="3" targetName="Monique_64" fastMath="1"
+                       binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
+                       useRuntimeLibDLL="0" alwaysGenerateDebugSymbols="0"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </VS2013>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+    <MODULES id="stk_core" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="stk_filters" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="stk_generators" showAllCode="0" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="disabled" JUCE_FORCE_DEBUG="disabled"
+               JUCE_LOG_ASSERTIONS="disabled" JUCE_CHECK_MEMORY_LEAKS="disabled"
+               JUCE_USE_FLAC="disabled" JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"
+               JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
+               JUCE_ASIO="disabled" JUCE_WASAPI="disabled" JUCE_DIRECTSOUND="disabled"
+               JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_USE_ANDROID_OPENSLES="disabled"
+               JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_PLUGINHOST_VST="disabled"
+               JUCE_PLUGINHOST_AU="disabled" JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled"
+               JUCE_PLUGINHOST_VST3="disabled" DROWAUDIO_USE_CURL="disabled"/>
+</JUCERPROJECT>

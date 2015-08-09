@@ -1,0 +1,137 @@
+synthtopia
+mic
+b-step builds
+
+update programms / refresh
+
+
+
+
+
+
+LIVE
+
+jackqi
+schlüssel womo
+moogulator
+
+RUFUMLEITUNG
+EMAIL DELAY
+
+set online: audiobus
+summer special
+
+// B- STEP
+
+OTHER TODO:
+- conTroller in manual
+
+-------------------------------------------------------------------
+todo: morph-pad für morph-presets/sources
+todo: store sliderpad
+todo: load morph source undo
+todo: midi controller push note e.g. 64 and controll with 1 to 8 a dial, define feedback colour/value for each button/note
+todo: octave offset button
+todo: store last programm as last session
+todo: modulation parameters for autormation params
+todo: update settings if editor is open
+
+todo midi bank select
+todo midi mod wheel; pitch wheel
+
+todo panic
+
+todo eq adr modulation vom aktuellen punkt und nicht von 0!
+todo morph int
+store ui size
+store oszi settings
+
+optimize envelopfollower and other files
+
+bug: crash on to short morph motor time
+bug: crash on to short attack time
+
+a rotary for the filters
+
+load save sustain replacements
+
+todo remove statics (multi instance)
+
+select audio device
+
+morph pad right of morph groups
+peak meter horizontal for aliasing and remove that!
+morph slider changes in slider config
+toggle morph
+sync problem if osc freq is same!!!
+
+todo crackls on eq if you switch from > 0 to < 0 or in the other direction
+
+sync lfo on load
+sync lfo with note on?
+
+todo return value not set on load
+
+clicken beim umschalten auf fix input
+knacken beim bewegen des compression slider bei filter 3
+kein background value für linear slider
+
+-----------------------------
+
+removed lfo sync (always in snyc)
+removed sustain time main adsr
+removed use lfo 1
+fix lfo sync bug
+add audio option to lfo
+improved amp painter
+fix bugs from mxtraxx
+fixed bug in filter input - flt2 and 3 was always using the output of the filter before (was ignoring left or right side of input slider)
+fixed lowpass was going out of phase center
+master env is not set to zero
+fix engine crashs
+smooth program switches
+fix morph was not updating adr curves
+removed chorus shine
+add env amnp to chorus (very cool option! :-) )
+bundle reverb room and dry
+fixed crash on shutdown
+
+-----------------------------
+
+metronom zahlen
+metronom typ facebook
+
+-------------------------------
+
+bücher
+
+- leben als haustiere von frauen
+- leben als haustier von ausserirdischen, wird jedem sein lebensraum gestallted (artgerecht)
+
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+bundle volume, effects, eq by default to one morph group
+
+try again BASS (key C#1) all up!!!
+
+
+mic news
+
+
+
+
+
+
+
+

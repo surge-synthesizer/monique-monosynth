@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="MhT8v8" name="B-Step" projectType="audioplug" version="2.1"
+              bundleIdentifier="com.monoplugs.bstep" includeBinaryInAppConfig="0"
+              buildVST="0" buildAU="1" pluginName="B-Step Sequencer" pluginDesc="Step Sequencer"
+              pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
+              pluginCode="bPlg" pluginChannelConfigs="{1,1}, {1,1}" pluginIsSynth="1"
+              pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
+              pluginEditorRequiresKeys="1" pluginAUExportPrefix="bstepAU" pluginRTASCategory=""
+              aaxIdentifier="com.monoplugs.bstep" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
+              jucerVersion="3.1.1" companyName="Monoplugs" buildAAX="0" buildVST3="0"
+              buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
+              companyWebsite="http://b-step.monoplugs.com" companyEmail="info@monoplugs.com"
+              pluginAUMainType="'aumi'">
+  <MAINGROUP id="tx7Kez" name="B-Step">
+    <FILE id="zmuz4D" name="UIHtmlView.cpp" compile="1" resource="0" file="Source/UIHtmlView.cpp"/>
+    <FILE id="Ixa1w4" name="UIHtmlView.h" compile="0" resource="0" file="Source/UIHtmlView.h"/>
+    <FILE id="bvoyuL" name="UiQuestionIsYourFriend.cpp" compile="1" resource="0"
+          file="Source/UiQuestionIsYourFriend.cpp"/>
+    <FILE id="HXDD21" name="UiQuestionIsYourFriend.h" compile="0" resource="0"
+          file="Source/UiQuestionIsYourFriend.h"/>
+    <FILE id="XBXOln" name="UiEditorInputPopup.cpp" compile="1" resource="0"
+          file="Source/UiEditorInputPopup.cpp"/>
+    <FILE id="ovBD3P" name="UiEditorInputPopup.h" compile="0" resource="0"
+          file="Source/UiEditorInputPopup.h"/>
+    <FILE id="Pe6EMI" name="UiEditorWhatsNew.cpp" compile="1" resource="0"
+          file="Source/UiEditorWhatsNew.cpp"/>
+    <FILE id="rSQl9a" name="UiEditorWhatsNew.h" compile="0" resource="0"
+          file="Source/UiEditorWhatsNew.h"/>
+    <FILE id="JXW7Dh" name="UiEditorKeyboard.cpp" compile="1" resource="0"
+          file="Source/UiEditorKeyboard.cpp"/>
+    <FILE id="lMOJ1p" name="UiEditorKeyboard.h" compile="0" resource="0"
+          file="Source/UiEditorKeyboard.h"/>
+    <FILE id="ujD2h9" name="UiTextImExport.cpp" compile="1" resource="0"
+          file="Source/UiTextImExport.cpp"/>
+    <FILE id="zivgGZ" name="UiTextImExport.h" compile="0" resource="0"
+          file="Source/UiTextImExport.h"/>
+    <FILE id="MlQIA8" name="_H_CoreSettings.h" compile="0" resource="0"
+          file="Source/_H_CoreSettings.h"/>
+    <FILE id="QPyxDE" name="_H_UiElements.h" compile="0" resource="0" file="Source/_H_UiElements.h"/>
+    <FILE id="YsuRl9" name="_H_UiLayoutWrapper.h" compile="0" resource="0"
+          file="Source/_H_UiLayoutWrapper.h"/>
+    <FILE id="D2Acj9" name="App.h" compile="0" resource="0" file="Source/App.h"/>
+    <FILE id="V6zRk3" name="AppInstanceStore.cpp" compile="1" resource="0"
+          file="Source/AppInstanceStore.cpp"/>
+    <FILE id="fpyMBL" name="AppInstanceStore.h" compile="0" resource="0"
+          file="Source/AppInstanceStore.h"/>
+    <FILE id="diTG8v" name="AppParameterList.cpp" compile="1" resource="0"
+          file="Source/AppParameterList.cpp"/>
+    <FILE id="iWoX0C" name="AppParameterList.h" compile="0" resource="0"
+          file="Source/AppParameterList.h"/>
+    <FILE id="XrznRO" name="AppStyleEditor.cpp" compile="1" resource="0"
+          file="Source/AppStyleEditor.cpp"/>
+    <FILE id="kD2bDm" name="AppStyleEditor.h" compile="0" resource="0"
+          file="Source/AppStyleEditor.h"/>
+    <FILE id="Md6xBt" name="AppStyles.cpp" compile="1" resource="0" file="Source/AppStyles.cpp"/>
+    <FILE id="hc3HBJ" name="AppStyles.h" compile="0" resource="0" file="Source/AppStyles.h"/>
+    <FILE id="JGBcMM" name="AppStylesConfig.h" compile="0" resource="0"
+          file="Source/AppStylesConfig.h"/>
+    <FILE id="q53m6x" name="BinaryData.cpp" compile="1" resource="0" file="../b-step-standalone/JuceLibraryCode/BinaryData.cpp"/>
+    <FILE id="lwLUGe" name="BinaryData2.cpp" compile="1" resource="0" file="../b-step-standalone/JuceLibraryCode/BinaryData2.cpp"/>
+    <FILE id="O86tYF" name="BinaryData3.cpp" compile="1" resource="0" file="../b-step-standalone/JuceLibraryCode/BinaryData3.cpp"/>
+    <FILE id="ttR6b4" name="BinaryData4.cpp" compile="1" resource="0" file="../b-step-standalone/JuceLibraryCode/BinaryData4.cpp"/>
+    <FILE id="rs0U4g" name="BinaryData5.cpp" compile="1" resource="0" file="../b-step-standalone/JuceLibraryCode/BinaryData5.cpp"/>
+    <FILE id="Ts815T" name="CHORDS.h" compile="0" resource="0" file="Source/CHORDS.h"/>
+    <FILE id="aAslSo" name="Controller.cpp" compile="1" resource="0" file="Source/Controller.cpp"/>
+    <FILE id="dyudGw" name="Controller.h" compile="0" resource="0" file="Source/Controller.h"/>
+    <FILE id="NbVP4U" name="ControllerConfig.h" compile="0" resource="0"
+          file="Source/ControllerConfig.h"/>
+    <FILE id="auGQ7a" name="ControllerMidiLearn.cpp" compile="1" resource="0"
+          file="Source/ControllerMidiLearn.cpp"/>
+    <FILE id="Gw0qnU" name="ControllerMidiLearn.h" compile="0" resource="0"
+          file="Source/ControllerMidiLearn.h"/>
+    <FILE id="vzmEFy" name="CoreBarControllers.h" compile="0" resource="0"
+          file="Source/CoreBarControllers.h"/>
+    <FILE id="arOGod" name="CoreBarStepControllers.h" compile="0" resource="0"
+          file="Source/CoreBarStepControllers.h"/>
+    <FILE id="RAn3iA" name="CoreCopy.h" compile="0" resource="0" file="Source/CoreCopy.h"/>
+    <FILE id="hIaI2E" name="CoreDatastructure.cpp" compile="1" resource="0"
+          file="Source/CoreDatastructure.cpp"/>
+    <FILE id="zXEK2Q" name="CoreDatastructure.h" compile="0" resource="0"
+          file="Source/CoreDatastructure.h"/>
+    <FILE id="PI0CH8" name="CoreLaunchpad.cpp" compile="1" resource="0"
+          file="Source/CoreLaunchpad.cpp"/>
+    <FILE id="vG4TA1" name="CoreLaunchpad.h" compile="0" resource="0" file="Source/CoreLaunchpad.h"/>
+    <FILE id="PAsFMZ" name="CoreObservers.h" compile="0" resource="0" file="Source/CoreObservers.h"/>
+    <FILE id="brQfy3" name="CorePatternControllers.h" compile="0" resource="0"
+          file="Source/CorePatternControllers.h"/>
+    <FILE id="m2Qmyd" name="CoreSequencer.cpp" compile="1" resource="0"
+          file="Source/CoreSequencer.cpp"/>
+    <FILE id="FPkKcJ" name="CoreSequencer.h" compile="0" resource="0" file="Source/CoreSequencer.h"/>
+    <FILE id="cMGwUF" name="CoreStepControllers.h" compile="0" resource="0"
+          file="Source/CoreStepControllers.h"/>
+    <FILE id="dGGozJ" name="DoYouKnow.cpp" compile="1" resource="0" file="Source/DoYouKnow.cpp"/>
+    <FILE id="z1kqND" name="DoYouKnow.h" compile="0" resource="0" file="Source/DoYouKnow.h"/>
+    <FILE id="YkQ4XC" name="FileIO.cpp" compile="1" resource="0" file="Source/FileIO.cpp"/>
+    <FILE id="RYb46s" name="FileIO.h" compile="0" resource="0" file="Source/FileIO.h"/>
+    <FILE id="olb5Xc" name="MenuBarLeft.cpp" compile="1" resource="0" file="Source/MenuBarLeft.cpp"/>
+    <FILE id="xqAv6a" name="MenuBarLeft.h" compile="0" resource="0" file="Source/MenuBarLeft.h"/>
+    <FILE id="aefU0d" name="MenuBarRight.cpp" compile="1" resource="0"
+          file="Source/MenuBarRight.cpp"/>
+    <FILE id="w03Ddv" name="MenuBarRight.h" compile="0" resource="0" file="Source/MenuBarRight.h"/>
+    <FILE id="OW3y2F" name="MIDICC.h" compile="0" resource="0" file="Source/MIDICC.h"/>
+    <FILE id="dZFQAr" name="MIDIIO.cpp" compile="1" resource="0" file="Source/MIDIIO.cpp"/>
+    <FILE id="i7z8Ve" name="MIDIIO.h" compile="0" resource="0" file="Source/MIDIIO.h"/>
+    <FILE id="r9irv1" name="MIDILearn.cpp" compile="1" resource="0" file="Source/MIDILearn.cpp"/>
+    <FILE id="ORMQkS" name="MIDILearn.h" compile="0" resource="0" file="Source/MIDILearn.h"/>
+    <FILE id="cH87YL" name="Parameter.cpp" compile="1" resource="0" file="Source/Parameter.cpp"/>
+    <FILE id="FPX7AH" name="Parameter.h" compile="0" resource="0" file="Source/Parameter.h"/>
+    <FILE id="MVpalt" name="PluginProcessor.cpp" compile="1" resource="0"
+          file="Source/PluginProcessor.cpp"/>
+    <FILE id="RpwExR" name="PluginProcessor.h" compile="0" resource="0"
+          file="Source/PluginProcessor.h"/>
+    <FILE id="ku1ttb" name="SCALES.h" compile="0" resource="0" file="Source/SCALES.h"/>
+    <FILE id="kDOVSd" name="SliderValuePopup.cpp" compile="1" resource="0"
+          file="Source/SliderValuePopup.cpp"/>
+    <FILE id="G0azZR" name="SliderValuePopup.h" compile="0" resource="0"
+          file="Source/SliderValuePopup.h"/>
+    <FILE id="PDC86P" name="SplashScreen.cpp" compile="1" resource="0"
+          file="Source/SplashScreen.cpp"/>
+    <FILE id="yTbkkL" name="SplashScreen.h" compile="0" resource="0" file="Source/SplashScreen.h"/>
+    <FILE id="jmQRrV" name="ticker.cpp" compile="1" resource="0" file="Source/ticker.cpp"/>
+    <FILE id="WH5IrT" name="ticker.h" compile="0" resource="0" file="Source/ticker.h"/>
+    <FILE id="YLyKrs" name="UI_Base.h" compile="0" resource="0" file="Source/UI_Base.h"/>
+    <FILE id="l7hDUg" name="UI_Button.cpp" compile="1" resource="0" file="Source/UI_Button.cpp"/>
+    <FILE id="foFg72" name="UI_Button.h" compile="0" resource="0" file="Source/UI_Button.h"/>
+    <FILE id="tqkrHZ" name="UI_Label.cpp" compile="1" resource="0" file="Source/UI_Label.cpp"/>
+    <FILE id="Tjlpvh" name="UI_Label.h" compile="0" resource="0" file="Source/UI_Label.h"/>
+    <FILE id="hrNssS" name="UI_MoveEvent2ChildsComponent.h" compile="0"
+          resource="0" file="Source/UI_MoveEvent2ChildsComponent.h"/>
+    <FILE id="EA8uA7" name="UI_Slider.cpp" compile="1" resource="0" file="Source/UI_Slider.cpp"/>
+    <FILE id="k3KJ6P" name="UI_Slider.h" compile="0" resource="0" file="Source/UI_Slider.h"/>
+    <FILE id="DYzl3i" name="UI_Tools.cpp" compile="1" resource="0" file="Source/UI_Tools.cpp"/>
+    <FILE id="aMFwEh" name="UI_Tools.h" compile="0" resource="0" file="Source/UI_Tools.h"/>
+    <FILE id="tthddg" name="UiChordEditorChordOffset.cpp" compile="1" resource="0"
+          file="Source/UiChordEditorChordOffset.cpp"/>
+    <FILE id="TnUm36" name="UiChordEditorChordOffset.h" compile="0" resource="0"
+          file="Source/UiChordEditorChordOffset.h"/>
+    <FILE id="pkvNh5" name="UiChordEditorStringOffset.cpp" compile="1"
+          resource="0" file="Source/UiChordEditorStringOffset.cpp"/>
+    <FILE id="ovwjSD" name="UiChordEditorStringOffset.h" compile="0" resource="0"
+          file="Source/UiChordEditorStringOffset.h"/>
+    <FILE id="en6tUF" name="UiColumn16.cpp" compile="1" resource="0" file="Source/UiColumn16.cpp"/>
+    <FILE id="h8jImF" name="UiColumn16.h" compile="0" resource="0" file="Source/UiColumn16.h"/>
+    <FILE id="KO56mG" name="UiColumnWrapper.cpp" compile="1" resource="0"
+          file="Source/UiColumnWrapper.cpp"/>
+    <FILE id="giNc5s" name="UiColumnWrapper.h" compile="0" resource="0"
+          file="Source/UiColumnWrapper.h"/>
+    <FILE id="usTp8K" name="UiDualAudioPlayer.cpp" compile="1" resource="0"
+          file="Source/UiDualAudioPlayer.cpp"/>
+    <FILE id="SiklyS" name="UiDualAudioPlayer.h" compile="0" resource="0"
+          file="Source/UiDualAudioPlayer.h"/>
+    <FILE id="IEAkMk" name="UiDualDownload.cpp" compile="1" resource="0"
+          file="Source/UiDualDownload.cpp"/>
+    <FILE id="HZhXe2" name="UiDualDownload.h" compile="0" resource="0"
+          file="Source/UiDualDownload.h"/>
+    <FILE id="bT7mCm" name="UiEditorAbout.cpp" compile="1" resource="0"
+          file="Source/UiEditorAbout.cpp"/>
+    <FILE id="BrUXEw" name="UiEditorAbout.h" compile="0" resource="0" file="Source/UiEditorAbout.h"/>
+    <FILE id="pALT0W" name="UiEditorChords.cpp" compile="1" resource="0"
+          file="Source/UiEditorChords.cpp"/>
+    <FILE id="eVMQJt" name="UiEditorChords.h" compile="0" resource="0"
+          file="Source/UiEditorChords.h"/>
+    <FILE id="XJPzD1" name="UiEditorClipboard.cpp" compile="1" resource="0"
+          file="Source/UiEditorClipboard.cpp"/>
+    <FILE id="fvnN32" name="UiEditorClipboard.h" compile="0" resource="0"
+          file="Source/UiEditorClipboard.h"/>
+    <FILE id="C9yGda" name="UiEditorDemo.cpp" compile="1" resource="0"
+          file="Source/UiEditorDemo.cpp"/>
+    <FILE id="ECoKZ3" name="UiEditorDemo.h" compile="0" resource="0" file="Source/UiEditorDemo.h"/>
+    <FILE id="v70oaS" name="UiEditorFileManager.cpp" compile="1" resource="0"
+          file="Source/UiEditorFileManager.cpp"/>
+    <FILE id="ClG9yr" name="UiEditorFileManager.h" compile="0" resource="0"
+          file="Source/UiEditorFileManager.h"/>
+    <FILE id="xwyLKz" name="UiEditorMidiLearn.cpp" compile="1" resource="0"
+          file="Source/UiEditorMidiLearn.cpp"/>
+    <FILE id="D7862T" name="UiEditorMidiLearn.h" compile="0" resource="0"
+          file="Source/UiEditorMidiLearn.h"/>
+    <FILE id="e4I5nj" name="UiEditorRightMainwindows.cpp" compile="1" resource="0"
+          file="Source/UiEditorRightMainwindows.cpp"/>
+    <FILE id="Yd4usb" name="UiEditorRightMainwindows.h" compile="0" resource="0"
+          file="Source/UiEditorRightMainwindows.h"/>
+    <FILE id="mILtHF" name="UiEditorSettings.cpp" compile="1" resource="0"
+          file="Source/UiEditorSettings.cpp"/>
+    <FILE id="uIBY4s" name="UiEditorSettings.h" compile="0" resource="0"
+          file="Source/UiEditorSettings.h"/>
+    <FILE id="q036YJ" name="UiEditorSetup.cpp" compile="1" resource="0"
+          file="Source/UiEditorSetup.cpp"/>
+    <FILE id="ffcgwZ" name="UiEditorSetup.h" compile="0" resource="0" file="Source/UiEditorSetup.h"/>
+    <FILE id="ZoSkFJ" name="UIEditorToolbar.cpp" compile="1" resource="0"
+          file="Source/UIEditorToolbar.cpp"/>
+    <FILE id="r9pyRO" name="UIEditorToolbar.h" compile="0" resource="0"
+          file="Source/UIEditorToolbar.h"/>
+    <FILE id="a8QvjM" name="UiFileView.cpp" compile="1" resource="0" file="Source/UiFileView.cpp"/>
+    <FILE id="sPzZkh" name="UiFileView.h" compile="0" resource="0" file="Source/UiFileView.h"/>
+    <FILE id="aiO2X1" name="UiLeftsideCC.cpp" compile="1" resource="0"
+          file="Source/UiLeftsideCC.cpp"/>
+    <FILE id="ZsMBKP" name="UiLeftsideCC.h" compile="0" resource="0" file="Source/UiLeftsideCC.h"/>
+    <FILE id="LtqnGM" name="UiLeftsideLabel.cpp" compile="1" resource="0"
+          file="Source/UiLeftsideLabel.cpp"/>
+    <FILE id="oI8hfq" name="UiLeftsideLabel.h" compile="0" resource="0"
+          file="Source/UiLeftsideLabel.h"/>
+    <FILE id="UZRnKk" name="UiLeftsideLabelModel.cpp" compile="1" resource="0"
+          file="Source/UiLeftsideLabelModel.cpp"/>
+    <FILE id="bFXTov" name="UiLeftsideLabelModel.h" compile="0" resource="0"
+          file="Source/UiLeftsideLabelModel.h"/>
+    <FILE id="ZiWeg8" name="UiLeftsideModelLabel.cpp" compile="1" resource="0"
+          file="Source/UiLeftsideModelLabel.cpp"/>
+    <FILE id="vwZ2tI" name="UiLeftsideModelLabel.h" compile="0" resource="0"
+          file="Source/UiLeftsideModelLabel.h"/>
+    <FILE id="NTukYu" name="UiLeftsideStartStopPause.cpp" compile="1" resource="0"
+          file="Source/UiLeftsideStartStopPause.cpp"/>
+    <FILE id="B1COCs" name="UiLeftsideStartStopPause.h" compile="0" resource="0"
+          file="Source/UiLeftsideStartStopPause.h"/>
+    <FILE id="nMI092" name="UiLookAndFeel.cpp" compile="1" resource="0"
+          file="Source/UiLookAndFeel.cpp"/>
+    <FILE id="q5wb98" name="UiLookAndFeel.h" compile="0" resource="0" file="Source/UiLookAndFeel.h"/>
+    <FILE id="ELAtNs" name="UiMainWindow.cpp" compile="1" resource="0"
+          file="Source/UiMainWindow.cpp"/>
+    <FILE id="m6saQ4" name="UiMainWindow.h" compile="0" resource="0" file="Source/UiMainWindow.h"/>
+    <FILE id="eBldlC" name="UiMainWindowLayout.h" compile="0" resource="0"
+          file="Source/UiMainWindowLayout.h"/>
+    <FILE id="CaZQrT" name="UiNotificationAnimation.cpp" compile="1" resource="0"
+          file="Source/UiNotificationAnimation.cpp"/>
+    <FILE id="YGNDPn" name="UiNotificationAnimation.h" compile="0" resource="0"
+          file="Source/UiNotificationAnimation.h"/>
+    <FILE id="FW1gLz" name="UiSettings.cpp" compile="1" resource="0" file="Source/UiSettings.cpp"/>
+    <FILE id="QMBNfM" name="UiSettings.h" compile="0" resource="0" file="Source/UiSettings.h"/>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MACOSX-RELEASE-DEMO-AU" vstFolder="../vstsdk2.4"
+               postbuildCommand="&#10;# This script takes the build product and copies it to the AU, VST, and RTAS folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AU=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VST=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTAS=/Library/Application\ Support/Digidesign/Plug-Ins/$PRODUCT_NAME.dpm&#10;  if [ -d &quot;$RTAS&quot; ]; then&#10;    rm -r &quot;$RTAS&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Applications/ProTools_3PDev/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;"
+               extraCompilerFlags="-ffunction-sections&#10;-fdata-sections"
+               extraDefs="DEMO" vst3Folder="../VST3 SDK">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="DEMO" osxSDK="10.9 SDK" osxCompatibility="10.9 SDK" osxArchitecture="64BitIntel"
+                       isDebug="0" optimisation="2" targetName="B-Step Trial" defines=""
+                       customXcodeFlags="" fastMath="1" linkTimeOptimisation="1" binaryPath="/Users/MONO/Desktop/BUILDS/Mac-AU"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <XCODE_MAC targetFolder="Builds/MACOSX-RELEASE-FULL-AU" vstFolder="../vstsdk2.4"
+               postbuildCommand="&#10;# This script takes the build product and copies it to the AU, VST, and RTAS folders, depending on &#10;# which plugin types you've built&#10;&#10;original=$CONFIGURATION_BUILD_DIR/$FULL_PRODUCT_NAME&#10;&#10;# this looks inside the binary to detect which platforms are needed.. &#10;copyAU=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'AudioUnit' | wc -l&#96;&#10;copyVST=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'VSTPlugin' | wc -l&#96;&#10;copyRTAS=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'CProcess' | wc -l&#96;&#10;copyAAX=&#96;nm -g &quot;$CONFIGURATION_BUILD_DIR/$EXECUTABLE_PATH&quot; | grep -i 'ACFStartup' | wc -l&#96;&#10;&#10;if [ $copyAU -gt 0 ]; then&#10;  echo &quot;Copying to AudioUnit folder...&quot;&#10;  AU=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.component&#10;  if [ -d &quot;$AU&quot; ]; then &#10;    rm -r &quot;$AU&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$AU&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$AU/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$AU/Contents/$INFOPLIST_FILE&quot;&#10;&#10;  # Fix info.plist for AUs built with Xcode 3&#10;  if [ -f &quot;$DEVELOPER_DIR/Library/Developer/CoreAudio/AudioUnits/AUPublic/AUBase/AUPlugInDispatch.cpp&quot; ]; then&#10;    echo&#10;  else&#10;    echo &quot;Removing AudioComponents entry from Info.plist because this is not a new-format AU&quot;&#10;    /usr/libexec/PlistBuddy -c &quot;Delete AudioComponents&quot; &quot;$AU/Contents/Info.plist&quot;&#10;  fi&#10;fi&#10;&#10;if [ $copyVST -gt 0 ]; then&#10;  echo &quot;Copying to VST folder...&quot;&#10;  VST=/Users/MONO/Desktop/BUILDS/$PRODUCT_NAME.vst&#10;  if [ -d &quot;$VST&quot; ]; then &#10;    rm -r &quot;$VST&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$VST&quot;&#10;  sed -i &quot;&quot; -e 's/TDMwPTul/BNDLPTul/g' &quot;$VST/Contents/PkgInfo&quot;&#10;  sed -i &quot;&quot; -e 's/TDMw/BNDL/g' &quot;$VST/Contents/$INFOPLIST_FILE&quot;&#10;fi&#10;&#10;if [ $copyRTAS -gt 0 ]; then&#10;  echo &quot;Copying to RTAS folder...&quot;&#10;  RTAS=/Library/Application\ Support/Digidesign/Plug-Ins/$PRODUCT_NAME.dpm&#10;  if [ -d &quot;$RTAS&quot; ]; then&#10;    rm -r &quot;$RTAS&quot;&#10;  fi&#10;&#10;  cp -r &quot;$original&quot; &quot;$RTAS&quot;&#10;fi&#10;&#10;if [ $copyAAX -gt 0 ]; then&#10;  echo &quot;Copying to AAX folder...&quot;&#10;&#10;  if [ -d &quot;/Applications/ProTools_3PDev/Plug-Ins&quot; ]; then&#10;    AAX1=&quot;/Applications/ProTools_3PDev/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX1&quot; ]; then&#10;      rm -r &quot;$AAX1&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX1&quot;&#10;  fi&#10;&#10;  if [ -d &quot;/Library/Application Support/Avid/Audio/Plug-Ins&quot; ]; then&#10;    AAX2=&quot;/Library/Application Support/Avid/Audio/Plug-Ins/$PRODUCT_NAME.aaxplugin&quot;&#10;&#10;    if [ -d &quot;$AAX2&quot; ]; then&#10;      rm -r &quot;$AAX2&quot;&#10;    fi&#10;&#10;    cp -r &quot;$original&quot; &quot;$AAX2&quot;&#10;  fi&#10;fi&#10;"
+               extraDefs="" extraCompilerFlags="-ffunction-sections&#10;-fdata-sections"
+               vst3Folder="../VST3 SDK">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="FULL" osxSDK="10.9 SDK" osxCompatibility="10.9 SDK" osxArchitecture="64BitIntel"
+                       isDebug="0" optimisation="2" targetName="B-Step" defines="" customXcodeFlags=""
+                       fastMath="1" linkTimeOptimisation="1" binaryPath="/Users/MONO/Desktop/BUILDS/Mac-AU"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_devices" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_formats" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_plugin_client" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_processors" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_audio_utils" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_core" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_cryptography" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_data_structures" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_events" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
+    <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled" JUCE_WEB_BROWSER="disabled" JUCE_FORCE_DEBUG="disabled"
+               JUCE_LOG_ASSERTIONS="disabled" JUCE_CHECK_MEMORY_LEAKS="disabled"
+               JUCE_USE_FLAC="enabled" JUCE_USE_OGGVORBIS="enabled" JUCE_USE_MP3AUDIOFORMAT="enabled"
+               JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="enabled"
+               JUCE_ASIO="disabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="enabled"
+               JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_USE_ANDROID_OPENSLES="disabled"
+               JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_COREIMAGE_LOADER="enabled"
+               JUCE_USE_DIRECTWRITE="enabled" JUCE_PLUGINHOST_VST="disabled"
+               JUCE_PLUGINHOST_AU="disabled" JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled"
+               JUCE_PLUGINHOST_VST3="disabled"/>
+</JUCERPROJECT>
