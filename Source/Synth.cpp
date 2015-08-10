@@ -1721,6 +1721,8 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
+    input_and_worker_ = protection_clipping_DIABLED(input_and_worker_);
+  
     // process input
     input_and_worker_ -= r*y4;
 

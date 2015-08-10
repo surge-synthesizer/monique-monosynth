@@ -141,10 +141,10 @@
                 extraLinkerFlags="-m64" extraDefs="NDEBUG" userNotes="-std=c++11&#10;-funsafe-loop-optimizations&#10;-Wunsafe-loop-optimizations&#10;-fomit-frame-pointer&#10;-m64&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-ftree-vectorize&#10;-fPIC&#10;-flto"
                 externalLibraries="">
       <CONFIGURATIONS>
-        <CONFIGURATION name="32" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
+        <CONFIGURATION name="x32" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_32" binaryPath="Builds/LINUX" linuxArchitecture="-m32"
                        headerPath=""/>
-        <CONFIGURATION name="64" libraryPath="/usr/X11R6/lib/" linuxArchitecture="-m64"
+        <CONFIGURATION name="x64" libraryPath="/usr/X11R6/lib/" linuxArchitecture="-m64"
                        optimisation="6" targetName="Monique_64" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -188,11 +188,11 @@
             toolset="v120_xp" extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1" extraCompilerFlags=""
             userNotes="">
       <CONFIGURATIONS>
-        <CONFIGURATION name="32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+        <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique" useRuntimeLibDLL="0"
                        headerPath="" fastMath="1" binaryPath="Builds/WINDOWS" alwaysGenerateDebugSymbols="0"
                        wholeProgramOptimisation="" defines=""/>
-        <CONFIGURATION name="64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+        <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique" useRuntimeLibDLL="0"
                        headerPath="" fastMath="1" binaryPath="Builds/WINDOWS" wholeProgramOptimisation=""
                        alwaysGenerateDebugSymbols="0" defines="" libraryPath=""/>

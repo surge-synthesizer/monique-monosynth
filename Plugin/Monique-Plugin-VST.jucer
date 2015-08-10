@@ -145,9 +145,9 @@
                 extraLinkerFlags="" extraDefs="" vst3Folder="~/SDKs/VST3 SDK"
                 userNotes="&#10;">
       <CONFIGURATIONS>
-        <CONFIGURATION name="64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
+        <CONFIGURATION name="x64" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_64x" linuxArchitecture="-m64" binaryPath="Builds/LINUX"/>
-        <CONFIGURATION name="32" libraryPath="/usr/X11R6/lib/" targetName="Monique_32x"
+        <CONFIGURATION name="x32" libraryPath="/usr/X11R6/lib/" targetName="Monique_32x"
                        optimisation="6" linuxArchitecture="-m32" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -193,11 +193,11 @@
     <VS2013 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" toolset="v120_xp"
             extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1" extraCompilerFlags="">
       <CONFIGURATIONS>
-        <CONFIGURATION name="32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
+        <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" fastMath="1"
                        binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
                        useRuntimeLibDLL="0"/>
-        <CONFIGURATION name="64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
+        <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique_64" fastMath="1"
                        binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
                        useRuntimeLibDLL="0" alwaysGenerateDebugSymbols="0"/>

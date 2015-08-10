@@ -1,5 +1,18 @@
-Standalone/Builds/
+Standalone/Builds/LINUX/build/
+Standalone/Builds/LINUX/Monique_64
+Standalone/Builds/LINUX/Monique_32
 Standalone/JuceLibraryCode/
+Standalone/Builds/LINUX_D/build/
+Standalone/Builds/LINUX_D/Monique_d
 
-Plugin/Builds/
+Plugin/Builds/LINUX/build/
+Plugin/Builds/LINUX/Monique_64.so
+Plugin/Builds/LINUX/Monique_32.so
 Plugin/JuceLibraryCode/
+Plugin/Builds/LINUX_D/build/
+Plugin/Builds/LINUX_D/Monique_d.so
+
+Standalone/Builds/MAC/
+Standalone/Builds/WINDOWS/
+Plugin/Builds/MAC/
+Plugin/Builds/WINDOWS/
