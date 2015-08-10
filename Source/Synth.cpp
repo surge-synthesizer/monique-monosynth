@@ -1293,11 +1293,9 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
             // OUT
             if( fm_amount )
-                output_buffer[sid] = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
-            // output_buffer[sid] = sample*(1.0f-fm_amount) + wave_mixer_v2( modulator_sample, sample )*fm_amount;
-            //output_buffer[sid] = wave_mixer_v2(sample*(1.0f-fm_amount), wave_mixer_v2( modulator_sample, sample )*fm_amount);
-            else
-                output_buffer[sid] = sample;
+                sample = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
+
+            output_buffer[sid] = sample;
         }
     }
 
