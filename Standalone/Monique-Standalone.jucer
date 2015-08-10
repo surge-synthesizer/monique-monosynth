@@ -20,10 +20,6 @@
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="y9IvYI" name="dRowAudio_Constants.h" compile="0" resource="0"
             file="../Source/dRowAudio_Constants.h"/>
-      <FILE id="sy5UNm" name="dRowAudio_EnvelopeFollower.cpp" compile="1"
-            resource="0" file="../Source/dRowAudio_EnvelopeFollower.cpp"/>
-      <FILE id="a6FuUC" name="dRowAudio_EnvelopeFollower.h" compile="0" resource="0"
-            file="../Source/dRowAudio_EnvelopeFollower.h"/>
       <FILE id="WpRCpZ" name="dRowAudio_GraphicalComponent.cpp" compile="1"
             resource="0" file="../Source/dRowAudio_GraphicalComponent.cpp"/>
       <FILE id="XBZAcK" name="dRowAudio_GraphicalComponent.h" compile="0"

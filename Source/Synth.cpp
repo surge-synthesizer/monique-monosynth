@@ -687,7 +687,6 @@ public:
     inline void setVibratoGain( float gain ) noexcept;
     inline float lastOut( void ) const noexcept;
 
-    // HACK FOR SYNC
     inline bool isNewCylce() const noexcept;
     inline void clearNewCycleState() noexcept;
 
@@ -762,9 +761,14 @@ inline void mono_Modulate::clearNewCycleState() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class LFO {
     mono_SineWave sine_generator;
-    
+
     float last_frequency;
 
     const int id;
@@ -772,7 +776,7 @@ class LFO {
     int step_to_wait_for_sync;
 
 public:
-    inline void process( DataBuffer& buffer_, int step_number_, int num_samples_ ) noexcept;
+    inline void process( int step_number_, int num_samples_ ) noexcept;
 
 private:
     inline void sync( int step_number_ ) noexcept;
@@ -786,24 +790,27 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
 };
 
-//==============================================================================
+// -----------------------------------------------------------------
 NOINLINE LFO::LFO( int id_ )
     :
     sine_generator(),
-    last_frequency(1),
+
+    last_frequency(0),
+
     id(id_),
     last_factor(0),
-    step_to_wait_for_sync(0)
+    step_to_wait_for_sync(false)
 {
 }
 NOINLINE LFO::~LFO() {}
 
-inline void LFO::process( DataBuffer& buffer_, int step_number_, int num_samples_ ) noexcept {
+// -----------------------------------------------------------------
+inline void LFO::process( int step_number_, int num_samples_ ) noexcept {
     sync( step_number_ );
 
-    float*const output_buffer = buffer_.lfo_amplitudes.getWritePointer(id);
-    for( int sid = 0 ; sid < num_samples_ ; ++sid )
-        output_buffer[sid] = (1.0f + sine_generator.tick()) / 2;
+    float*const buffer_to_fill =  DATA(data_buffer).lfo_amplitudes.getWritePointer(id);
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        buffer_to_fill[sid] = (1.0f + sine_generator.tick()) * 0.5f;
 }
 inline void LFO::sync( int step_number_ ) noexcept {
     LFOData& data( DATA( lfo_datas[id] ) );
@@ -826,7 +833,7 @@ inline void LFO::sync( int step_number_ ) noexcept {
             else if( data.speed <= 5 )
                 factor = 2;
 
-            const float whole_notes_per_sec( DATA( runtime_info ).bpm/4 / 60 ); // = 1 at our slider
+            const float whole_notes_per_sec( DATA( runtime_info ).bpm / 4 / 60 ); // = 1 at our slider
             float frequency = whole_notes_per_sec / factor;
 
             step_to_wait_for_sync--;
@@ -849,7 +856,6 @@ inline void LFO::sync( int step_number_ ) noexcept {
     {
         if( step_number_ == 0 )
         {
-
             float factor = 0;
             if( data.speed <= 7 )
                 factor = 3.0f/4;
@@ -1621,11 +1627,69 @@ float ENV::get_amp() const noexcept {
 // TODO filter update nur wenn die wertänderung z.b grösser 1 %
 // do the calculation
 
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class EnvelopeFollower
+{
+    float envelope;
+    float attack;
+    float release;
+
+public:
+    inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
+    inline void setCoefficients (float attack_, float release_) noexcept;
+
+public:
+    NOINLINE EnvelopeFollower();
+    NOINLINE ~EnvelopeFollower();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeFollower)
+};
+
+// -----------------------------------------------------------------
+NOINLINE EnvelopeFollower::EnvelopeFollower()
+    : envelope (0),
+      attack (1),
+      release (1)
+{}
+NOINLINE EnvelopeFollower::~EnvelopeFollower() {}
+
+// -----------------------------------------------------------------
+inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, float* output_buffer_, int num_samples_ ) noexcept
+{
+    for (int i = 0; i != num_samples_; ++i)
+    {
+        using namespace std;
+        float envIn = fabsf (input_buffer_[i]);
+
+        if (envelope < envIn)
+            envelope += attack * (envIn - envelope);
+        else if (envelope > envIn)
+            envelope -= release * (envelope - envIn);
+
+        output_buffer_[i] = envelope;
+    }
+}
+inline void EnvelopeFollower::setCoefficients (float attack_, float release_) noexcept
+{
+    attack = attack_;
+    release = release_;
+}
+
+
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 #include "mono_MoogFilter.h"
-#include "dRowAudio_EnvelopeFollower.h"
 class FilterProcessor {
     const int id;
 
@@ -2529,6 +2593,7 @@ NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
 
     current_step(0)
 {
+    mono_ParameterOwnerStore::getInstance()->data_buffer = data_buffer;
     mono_ParameterOwnerStore::getInstance()->runtime_info = &info;
 
 
@@ -2760,7 +2825,7 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
 
     // LFOS - THREAD 1 ?
     for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
-        lfos[lfo_id]->process( *data_buffer, step_number_, num_samples );
+        lfos[lfo_id]->process( step_number_, num_samples );
     }
 
     // OSCs - THREAD 1 ?

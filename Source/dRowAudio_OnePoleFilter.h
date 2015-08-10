@@ -87,7 +87,7 @@ private:
 	float y1, b0, a1;
 	
     //==============================================================================
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OnePoleFilter);
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OnePoleFilter)
 };
 
 #endif // __DROWAUDIO_ONEPOLEFILTER_H__

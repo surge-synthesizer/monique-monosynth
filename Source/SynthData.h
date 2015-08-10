@@ -997,10 +997,13 @@ private:
 // ==============================================================================
 class ENV;
 class MONOVoice;
+class DataBuffer;
 class mono_ParameterOwnerStore : public DeletedAtShutdown {
 
 public:
     RuntimeInfo* runtime_info;
+    
+    DataBuffer* data_buffer;
 
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
