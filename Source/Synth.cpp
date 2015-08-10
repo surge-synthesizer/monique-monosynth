@@ -162,8 +162,7 @@ NOINLINE DataBuffer::DataBuffer( int init_buffer_size_ )
     filtered_samples( init_buffer_size_ ),
     env_amp( init_buffer_size_ ),
     chorus_modulation_env_amp( init_buffer_size_ ),
-    direct_filter_output_samples( init_buffer_size_ ),
-    tmp_samples( init_buffer_size_ )
+    direct_filter_output_samples( init_buffer_size_ )
 {}
 
 void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
@@ -188,7 +187,6 @@ void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
         env_amp.setSize(current_buffer_size);
         chorus_modulation_env_amp.setSize(current_buffer_size);
         direct_filter_output_samples.setSize(current_buffer_size);
-        tmp_samples.setSize(current_buffer_size);
     }
 }
 
@@ -2665,17 +2663,17 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 {
     DataBuffer& data_buffer( DATA( data_buffer ) );
 
-    float* io_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
+    float*const io_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
     const float resonance( DATA( synth_data ).resonance ) ;
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
         // WORKING BUFFERS
         float*const tmp_band_in_buffer = data_buffer.tmp_buffer_9.getWritePointer(0);
-        float* tmp_all_band_out_buffer = data_buffer.tmp_buffer_9.getWritePointer(1);
-        float* tmp_all_band_sum_gain_buffer = data_buffer.tmp_buffer_9.getWritePointer(2);
-        float* tmp_env_buffer = data_buffer.tmp_buffer_9.getWritePointer(3);
-	
-	// PROCESS 100% BAND
+        float*const tmp_all_band_out_buffer = data_buffer.tmp_buffer_9.getWritePointer(1);
+        float*const tmp_all_band_sum_gain_buffer = data_buffer.tmp_buffer_9.getWritePointer(2);
+        float*const tmp_env_buffer = data_buffer.tmp_buffer_9.getWritePointer(3);
+
+        // PROCESS 100% BAND
         {
             low_pass_filters[band_id].processSamples( tmp_band_in_buffer, io_buffer, num_samples_ );
             high_pass_filters[band_id].processSamples( tmp_band_in_buffer, num_samples_ );
@@ -2694,11 +2692,11 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             velocity.update( samplesToMsFast(DATA( synth_data ).glide_motor_time, sample_rate) );
 
             {
-	        // ENV OR SUSTAIN
+                // ENV OR SUSTAIN
                 hold_sustain ? envs[band_id]->reset() : envs[band_id]->process( tmp_env_buffer, num_samples_ );
 
-		AnalogFilter& filter = filters[band_id];
-		const float filter_frequency = frequency_low_pass[band_id];
+                AnalogFilter& filter = filters[band_id];
+                const float filter_frequency = frequency_low_pass[band_id];
                 for( int sid = 0 ; sid != num_samples_ ; ++sid )
                 {
                     const float input_sample = tmp_band_in_buffer[sid];
@@ -2726,6 +2724,311 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
         }
     }
 }
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+template< int smooth_samples >
+class AmpSmoother {
+    float current_value;
+    float target_value;
+    float delta;
+    int counter;
+
+private:
+    inline void glide_tick() noexcept;
+
+public:
+    inline float add_get( float in_ ) noexcept;
+    bool is_up_to_date() const noexcept {
+        return target_value == current_value;
+    }
+    inline float add_get_and_keep_current_time( float in_ ) noexcept;
+    inline float reset( float value_ = 0 ) noexcept {
+        current_value = value_;
+        delta = 0;
+        counter = 0;
+    }
+
+    NOINLINE AmpSmoother( float start_value_ = 0 ) noexcept;
+    NOINLINE ~AmpSmoother() noexcept;
+
+private:
+    MONO_NOT_CTOR_COPYABLE( AmpSmoother )
+    MONO_NOT_MOVE_COPY_OPERATOR( AmpSmoother )
+};
+
+//==============================================================================
+template< int smooth_samples >
+NOINLINE AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
+:
+counter(0),
+        current_value(start_value_),
+        target_value(start_value_),
+        delta(0)
+{}
+template< int smooth_samples >
+NOINLINE AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
+
+//==============================================================================
+template< int smooth_samples >
+inline float AmpSmoother<smooth_samples>::add_get( float in_ ) noexcept {
+    if( current_value != in_ || target_value != in_ )
+    {
+        // ONLY UPDATE IF WE HAVE A NEW VALUE
+        if( target_value != in_ )
+        {
+            counter = smooth_samples;
+            delta = (in_-current_value) / smooth_samples;
+            target_value = in_;
+        }
+
+        glide_tick();
+    }
+
+    return current_value;
+}
+template< int smooth_samples >
+inline float AmpSmoother<smooth_samples>::add_get_and_keep_current_time( float in_ ) noexcept {
+    if( current_value != in_ || target_value != in_ )
+    {
+        // ONLY UPDATE IF WE HAVE A NEW VALUE
+        if( target_value != in_ )
+        {
+            delta = (in_-current_value) / counter;
+            target_value = in_;
+        }
+
+        glide_tick();
+    }
+
+    return current_value;
+}
+template< int smooth_samples >
+inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
+{
+    if( --counter <= 0 )
+        current_value = target_value;
+    else
+    {
+        current_value+=delta;
+        if( current_value > 1 || current_value < 0 )
+        {
+            current_value = target_value;
+            counter = 0;
+        }
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#include "mono_ChorusBuffer.h"
+class FXProcessor
+{
+    // REVERB
+    Reverb reverb;
+
+    // DELAY
+    Chorus chorus;
+    int delayPosition;
+    AudioSampleBuffer delayBuffer;
+    AmpSmoother<100> chorus_smoother;
+    friend class mono_ParameterOwnerStore;
+    ScopedPointer< ENV > chorus_modulation_env;
+
+    // FINAL ENV
+    friend class MONOVoice;
+    ScopedPointer<ENV > final_env;
+    mono_GlideValue<0,1> velocity_glide;
+
+public:
+    inline void process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
+
+    void start_attack() noexcept {
+        chorus_modulation_env->start_attack();
+        final_env->start_attack();
+    }
+    void start_release() noexcept {
+        chorus_modulation_env->set_to_release();
+        final_env->set_to_release();
+    }
+
+    // TODO RESET
+    // delayBuffer.clear();
+    // reset chorus
+
+public:
+    NOINLINE FXProcessor();
+    NOINLINE ~FXProcessor();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
+};
+
+// -----------------------------------------------------------------
+NOINLINE FXProcessor::FXProcessor()
+    :
+    delayBuffer (2, 12000),
+    delayPosition( 0 ),
+
+    chorus_modulation_env( new ENV( *(DATA( chorus_data ).modulation_env_data.get() )) ),
+    final_env( new ENV( DATA( env_datas[MAIN_ENV] ) ) ),
+    velocity_glide(0)
+{}
+
+NOINLINE FXProcessor::~FXProcessor() {}
+
+// -----------------------------------------------------------------
+inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept
+{
+    DataBuffer& data_buffer( DATA(data_buffer) );
+    const int glide_motor_time = msToSamplesFast(DATA( synth_data ).glide_motor_time,44100);
+
+    // COLLECT BUFFERS
+    const float* input_buffer = data_buffer.direct_filter_output_samples.getReadPointer();
+
+    // PREPARE REVERB
+    Reverb::Parameters r_params;
+    ReverbData& reverb_data = DATA( reverb_data );
+    {
+        reverb_data.room.update(glide_motor_time);
+        reverb_data.dry_wet_mix.update(glide_motor_time);
+        reverb_data.width.update(glide_motor_time);
+        r_params.freezeMode = 0;
+        r_params.damping = 0;
+    }
+
+    // PRPARE CHORUS
+    float* chorus_amp_buffer = data_buffer.chorus_modulation_env_amp.getWritePointer();
+    chorus_modulation_env->process( chorus_amp_buffer, num_samples_ );
+    ChorusData& chorus_data = DATA( chorus_data );
+    const bool is_chorus_amp_fix = chorus_data.hold_modulation;
+    chorus_data.modulation.update( glide_motor_time );
+
+    // PREPARE DELAY
+    SynthData& synth_data = DATA( synth_data );
+    synth_data.delay.update(glide_motor_time);
+    float* delay_data_l = delayBuffer.getWritePointer (LEFT);
+    float* delay_data_r = delayBuffer.getWritePointer (RIGHT);
+
+    // PREPARE FX BYPASS
+    synth_data.effect_bypass.update( glide_motor_time );
+
+    // PREPARE FINAL ENV
+    float* env_amp = data_buffer.env_amp.getWritePointer();
+    final_env->process( env_amp, num_samples_ );
+    synth_data.volume.update( glide_motor_time );
+    synth_data.final_compression.update( glide_motor_time );
+    velocity_glide.update( msToSamplesFast(synth_data.velocity_glide_time, 44100) );
+
+    // NOTE depend on the num output channels
+    float* final_l_output = output_buffer_.getWritePointer(LEFT);
+    float* final_r_output = output_buffer_.getWritePointer(RIGHT);
+
+    // PROCESS IN ONE RUN
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        float tmp_l;
+        float tmp_r;
+
+        // FINAL AMP
+        const float in_l_r = input_buffer[sid] * env_amp[sid]*velocity_glide.glide_tick()*synth_data.volume.tick()*2;
+
+        // CHORUS
+        {
+            const float chorus_modulation = chorus_data.modulation.tick();
+            const float modulation_amp = chorus_smoother.add_get( is_chorus_amp_fix ? chorus_modulation : chorus_amp_buffer[sid] );
+
+            tmp_l = chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
+            tmp_r = chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
+
+            const float feedback = modulation_amp*0.85f;
+
+            chorus.fill( LEFT, in_l_r + tmp_r * feedback );
+            chorus.fill( RIGHT, in_l_r + tmp_l * feedback );
+        }
+
+        // REVERB
+        {
+            const Reverb::Parameters& current_params = reverb.getParameters();
+            const float r_room = reverb_data.room.tick();
+            const float r_wet_dry_mix = reverb_data.dry_wet_mix.tick();
+            const float r_width = reverb_data.width.tick();
+            if(
+                current_params.roomSize != r_room
+                || current_params.dryLevel != r_wet_dry_mix
+                // current_params.wetLevel != r_params.wetLevel
+                || current_params.width != r_width
+            )
+            {
+                r_params.roomSize = r_room;
+                r_params.dryLevel = r_wet_dry_mix;
+                r_params.wetLevel = 1.0f-r_wet_dry_mix;
+                r_params.width = r_width;
+
+                reverb.setParameters(r_params);
+            }
+
+            reverb.processSingleSampleRawStereo_noDamp
+            (
+                tmp_l,
+                tmp_r
+            );
+        }
+
+        // DELAY
+        {
+            const float delay = synth_data.delay.tick();
+
+            const float in_l = tmp_l;
+            const float in_r = tmp_r;
+
+            const float delay_data_l_in = delay_data_l[delayPosition];
+            const float delay_data_r_in = delay_data_r[delayPosition];
+
+            tmp_l += delay_data_l_in;
+            tmp_r += delay_data_r_in;
+
+            delay_data_l[delayPosition] = (delay_data_l_in + in_l) * delay;
+            delay_data_r[delayPosition] = (delay_data_r_in + in_r) * delay;
+
+            if (++delayPosition >= delayBuffer.getNumSamples())
+                delayPosition = 0;
+        }
+
+        // BYPASS -> MIX
+        {
+            const float bypass = synth_data.effect_bypass.tick();
+            tmp_l = tmp_l*bypass + in_l_r*(1.0f-bypass);
+            tmp_r = tmp_r*bypass + in_l_r*(1.0f-bypass);
+
+            const float compression = synth_data.final_compression.tick();
+            final_l_output[start_sample_final_out_+sid] = ( soft_clipping( tmp_l )*compression + tmp_l*(1.0f-compression) );
+            final_r_output[start_sample_final_out_+sid] = ( soft_clipping( tmp_r )*compression + tmp_r*(1.0f-compression) );
+        }
+    }
+
+    if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
+    {
+        amp_painter->add_out_env( env_amp, num_samples_ );
+    }
+}
+
+
 
 //==============================================================================
 bool MonoSynthSound::appliesToNote(int) {
@@ -2893,13 +3196,13 @@ NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
     arp_sequencer( new ArpSequencer( info, *synth_data.arp_sequencer_data ) ),
 
     eq_processor( new EQProcessor() ),
+    fx_processor( new FXProcessor() ),
 
     is_stopped( true ),
     was_arp_started(false),
 
     current_note(-1),
     current_velocity(0),
-    velocity_glide(0),
 
     current_step(0)
 {
@@ -2917,11 +3220,7 @@ NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
         filter_processors.add( new FilterProcessor( i ));
         filter_envs.add( new ENV( DATA( env_datas[i] ) ) );
     }
-
-    env = new ENV( DATA( env_datas[MAIN_ENV] ) );
-    chorus_modulation_env = new ENV( *(DATA(chorus_data).modulation_env_data) );
-    chorus_shine_env = new ENV( *(DATA(chorus_data).shine_env_data) );
-
+    
     mono_ParameterOwnerStore::getInstance()->voice = this;
 }
 
@@ -2982,15 +3281,12 @@ void MONOVoice::start_internal( int midi_note_number_, float velocity_ ) noexcep
     // LFOS
     if( !is_arp || !current_note )
     {
-        env->start_attack();
-
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id ) {
             filter_envs[voice_id]->start_attack();
             filter_processors[voice_id]->start_attack();
         }
         eq_processor->start_attack();
-        chorus_modulation_env->start_attack();
-        chorus_shine_env->start_attack();
+        fx_processor->start_attack();
     }
 
 }
@@ -3016,8 +3312,7 @@ void MONOVoice::stopNote ( float, bool allowTailOff ) {
                 filter_processors[voice_id]->start_release();
             }
             eq_processor->start_release();
-
-            env->set_to_release();
+            fx_processor->start_release();
         }
         else
         {
@@ -3031,20 +3326,19 @@ int MONOVoice::getCurrentlyPlayingNote() const noexcept {
 }
 // TODO must be done earlyer if the env is ended
 void MONOVoice::release_if_inactive() noexcept {
-    if( env->current_stage == END_ENV ) {
+    // TODO, reset filters here!
+    if( fx_processor->final_env->current_stage == END_ENV ) {
         clearCurrentNote();
         is_stopped = true;
     }
 }
 
-void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_sample_, int num_samples_ )
+void MONOVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
 {
     if( synth_data.arp_sequencer_data->is_on && current_note != -1 )
         ;
     else if( is_stopped )
     {
-        for( int i = 0 ; i != 4 ; ++i )
-            FloatVectorOperations::clear( buffer_.getWritePointer(i), num_samples_ );
         return;
     }
 
@@ -3060,7 +3354,7 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
         int samples_to_next_step_in_buffer = arp_sequencer->process_samples_to_next_step( count_start_sample, num_samples );
         num_samples -= samples_to_next_step_in_buffer;
 
-        render_block( buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_step_in_buffer );
+        render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_step_in_buffer );
         count_start_sample += samples_to_next_step_in_buffer;
 
         const bool connect = synth_data.arp_sequencer_data->connect;
@@ -3071,8 +3365,6 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
                 ;
             else
             {
-                env->set_to_release();
-
                 was_arp_started = false;
 
                 // STOP FILTER ENV
@@ -3081,8 +3373,7 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
                     filter_processors[i]->start_release();
                 }
                 eq_processor->start_release();
-                chorus_modulation_env->set_to_release();
-                chorus_shine_env->start_attack();
+                fx_processor->start_release();
             }
         }
         if( restart ) {
@@ -3090,7 +3381,6 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
                 ;
             else
             {
-                env->start_attack();
 
                 was_arp_started = true;
 
@@ -3102,8 +3392,7 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
                     filter_processors[i]->start_attack();
                 }
                 eq_processor->start_attack();
-                chorus_modulation_env->start_attack();
-                chorus_shine_env->start_attack();
+                fx_processor->start_attack();
             }
 
             // OSC TUNE
@@ -3119,7 +3408,7 @@ void MONOVoice::renderNextBlock (mono_AudioSampleBuffer<4>& buffer_, int start_s
 float MONOVoice::get_current_frequency() const noexcept {
     return MidiMessage::getMidiNoteInHertz(current_note+arp_sequencer->get_current_tune());
 }
-void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_number_, int start_sample_, int num_samples_) {
+void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) {
     mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter();
 
     const int num_samples = num_samples_;
@@ -3160,24 +3449,15 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
         filter_processors[flt_id]->process( num_samples );
 
-    // COLLECT RESULTS TO CHANNEL 0
-    float* output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(0);
-    FloatVectorOperations::add( output_buffer, data_buffer->direct_filter_output_samples.getReadPointer(1), num_samples );
-    FloatVectorOperations::add( output_buffer, data_buffer->direct_filter_output_samples.getReadPointer(2), num_samples );
-
     // EQ
     eq_processor->process( num_samples );
 
-    velocity_glide = current_velocity;
+    // send curren velocity as arg to the fx_processor?
+    fx_processor->velocity_glide = current_velocity;
     if( synth_data.arp_sequencer_data->is_on )
-        velocity_glide = current_velocity * synth_data.arp_sequencer_data->velocity[current_step];
-    velocity_glide.update( synth_data.velocity_glide_time );
+        fx_processor->velocity_glide = current_velocity * synth_data.arp_sequencer_data->velocity[current_step];
 
-    // FINAL ENV
-    const float* samples = data_buffer->direct_filter_output_samples.getReadPointer(0);
-    float* final_output_buffer =  buffer_.getWritePointer(0);
-    for( int sid = 0 ; sid != num_samples ; ++sid )
-        final_output_buffer[start_sample_+sid] = samples[sid];
+    fx_processor->process( output_buffer_, start_sample_, num_samples_ );
 
     // UI INFORMATIONS
     for( int i = 0 ; i != SUM_OSCS ; ++i )
@@ -3185,13 +3465,6 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
 
     // CLEAR
     release_if_inactive();
-}
-
-void MONOVoice::process_final_env( int num_samples ) noexcept {
-    env->process( data_buffer->env_amp.getWritePointer(0), num_samples ); // USED IN THE PROCESS BLOCK
-}
-void MONOVoice::process_effect_env( int num_samples ) noexcept {
-    chorus_modulation_env->process( data_buffer->chorus_modulation_env_amp.getWritePointer(0), num_samples ); // USED IN THE PROCESS BLOCK
 }
 
 float MONOVoice::get_filter_env_amp( int filter_id_ ) const noexcept {
@@ -3203,7 +3476,7 @@ float MONOVoice::get_lfo_amp( int lfo_id_ ) const noexcept {
 }
 float MONOVoice::get_arp_sequence_amp( int step_ ) const noexcept {
     if( arp_sequencer->get_current_step() == step_ )
-        return env->get_amp();
+        return fx_processor->final_env->get_amp();
 
     return 0;
 }
@@ -3231,10 +3504,7 @@ float mono_ParameterOwnerStore::get_band_env_amp( int band_id_ ) {
     return mono_ParameterOwnerStore::getInstance()->voice->eq_processor->envs[band_id_]->get_amp();
 }
 float mono_ParameterOwnerStore::get_chorus_modulation_env_amp() {
-    return mono_ParameterOwnerStore::getInstance()->voice->chorus_modulation_env->get_amp();
-}
-float mono_ParameterOwnerStore::get_chorus_shine_env_amp() {
-    return mono_ParameterOwnerStore::getInstance()->voice->chorus_shine_env->get_amp();
+    return mono_ParameterOwnerStore::getInstance()->voice->fx_processor->chorus_modulation_env->get_amp();
 }
 void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ )
 {
@@ -3278,103 +3548,3 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

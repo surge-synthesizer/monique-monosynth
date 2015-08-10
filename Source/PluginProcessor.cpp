@@ -170,15 +170,8 @@ GstepAudioProcessor::GstepAudioProcessor()
 #endif
     data_in_processor(nullptr),
 
-    delayBuffer (2, 12000),
-
     peak_meter(nullptr),
-    repaint_peak_meter(false),
-
-    chorus( new Chorus() ),
-
-    main_env_smoother(new AmpSmoothBuffer()),
-    chorus_smoother(new AmpSmoothBuffer())
+    repaint_peak_meter(false)
 {
     AppInstanceStore::getInstance()->audio_processor = this;
 
@@ -190,8 +183,6 @@ GstepAudioProcessor::GstepAudioProcessor()
     synth.addSound (new MonoSynthSound());
     data_in_processor = new DATAINProcessor();
 #endif
-
-    delayPosition = 0;
 
     MidiKeyboardState::addListener(this);
 
@@ -292,9 +283,6 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
         prepareToPlay(getSampleRate(),getBlockSize());
 
     const int num_samples = buffer_.getNumSamples();
-    DataBuffer& data_buffers = voice->get_data_buffer();
-    data_buffers.resize_buffer_if_required(num_samples);
-    mono_AudioSampleBuffer<4>& working_buffer = data_buffers.working_buffer;
     buffer_.clear();
 
 #ifdef IS_STANDALONE
@@ -432,150 +420,9 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                 mono_AmpPainter*const amp_painter = MONOVoice::get_lock_amp_painter();
 
                 // SYNTH
-                synth.renderNextBlock ( working_buffer, midi_messages_, 0, num_samples );
+                synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                 midi_messages_.clear(); // WILL BE FILLED AT THE END
 
-                float* output_l_buffer = working_buffer.getWritePointer(2);
-                float* output_r_buffer = working_buffer.getWritePointer(3);
-                float* synth_l_buffer = working_buffer.getWritePointer(0);
-                //const float* synth_r_buffer = working_buffer.getReadPointer(1);
-
-                const int glide_motor_time = DATA( synth_data ).glide_motor_time;
-
-                // CHORUS
-                voice->process_effect_env(num_samples);
-                const float* chorus_mod_env_amps = data_buffers.chorus_modulation_env_amp.getReadPointer(0);
-                {
-                    const bool is_mod_amp_fix = synth_data->chorus_data->hold_modulation;
-                    synth_data->chorus_data->modulation.update( glide_motor_time );
-                    for (int sid = 0; sid < num_samples; ++sid) {
-                        float in = synth_l_buffer[sid];
-                        const float chorus_modulation = synth_data->chorus_data->modulation.tick();
-                        const float modulation_amp = chorus_smoother->add_and_get_average( is_mod_amp_fix ? chorus_modulation : chorus_mod_env_amps[sid] );
-
-                        const float out_l = chorus->tick( 0, (modulation_amp * 220) + 0.0015f);
-                        const float out_r = chorus->tick( 1, (modulation_amp * 200) + 0.002f);
-                        const float feedback = modulation_amp*0.85f;
-                        chorus->fill( 0, in + out_r * feedback );
-                        chorus->fill( 1, in + out_l * feedback );
-                        output_l_buffer[sid] = out_l; // DONE FOR REVERB
-                        output_r_buffer[sid] = out_r;
-                    }
-                }
-
-                // REVERB // CLIPPING DONE BY CHORUS
-                // TODO, dont update reverb if data isn't changed
-                {
-                    Reverb::Parameters r_params;
-                    synth_data->reverb_data->room.update(glide_motor_time);
-                    synth_data->reverb_data->dry_wet_mix.update(glide_motor_time);
-                    synth_data->reverb_data->width.update(glide_motor_time);
-                    r_params.freezeMode = 0;
-                    r_params.damping = 0;
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        r_params.roomSize = synth_data->reverb_data->room.tick();
-                        const float wet_dry_mix = synth_data->reverb_data->dry_wet_mix.tick();
-                        r_params.dryLevel = wet_dry_mix;
-                        r_params.wetLevel = 1.0f-wet_dry_mix;
-                        r_params.width = synth_data->reverb_data->width.tick();
-
-                        const Reverb::Parameters& current_params = reverb.getParameters();
-                        if( current_params.roomSize != r_params.roomSize
-                                || current_params.dryLevel != r_params.dryLevel
-                                || current_params.wetLevel != r_params.wetLevel
-                                || current_params.width != r_params.width
-                          )
-                        {
-                            reverb.setParameters(r_params);
-                        }
-
-                        reverb.processSingleSampleRawStereo_noDamp( output_l_buffer[sid], output_r_buffer[sid] );
-                    }
-                }
-
-                // DELAY
-                {
-                    int dp = 0;
-                    synth_data->delay.update(glide_motor_time*20);
-                    float* delay_value_buffer = data_buffers.tmp_samples.getWritePointer(0);
-                    for ( int l_r = LEFT; l_r <= RIGHT ; ++l_r)
-                    {
-                        float* io;
-                        if( l_r == LEFT )
-                            io = output_l_buffer;
-                        else
-                            io = output_r_buffer;
-
-                        float* delay_data = delayBuffer.getWritePointer (l_r);
-                        dp = delayPosition;
-                        float delay = 0;
-                        for (int sid = 0; sid < num_samples; ++sid)
-                        {
-                            if( l_r == LEFT )
-                            {
-                                delay = synth_data->delay.tick();
-                                delay_value_buffer[sid] = delay;
-                            }
-                            else
-                                delay = delay_value_buffer[sid];
-
-                            const float in = io[sid];
-                            io[sid] += delay_data[dp];
-                            delay_data[dp] = (delay_data[dp] + in) * delay;
-                            if (++dp >= delayBuffer.getNumSamples())
-                                dp = 0;
-                        }
-                    }
-
-                    delayPosition = dp;
-                }
-
-                // BYPASS
-                {
-                    synth_data->effect_bypass.update( glide_motor_time );
-                    for (int sid = 0; sid < num_samples; sid++)
-                    {
-                        const float bypass = synth_data->effect_bypass.tick();
-                        output_l_buffer[sid] = output_l_buffer[sid]*bypass + synth_l_buffer[sid] * (1.0f-bypass);
-                        output_r_buffer[sid] = output_r_buffer[sid]*bypass + synth_l_buffer[sid] * (1.0f-bypass);
-                    }
-                }
-
-                voice->process_final_env(num_samples);
-                const float* env_amps = data_buffers.env_amp.getReadPointer(0);
-                synth_data->volume.update( DATA( synth_data ).glide_motor_time );
-                {
-                    float* final_l_output = buffer_.getWritePointer(0);
-                    float* final_r_output = nullptr;
-                    if( buffer_.getNumChannels() > 1 )
-                    {
-                        final_r_output = buffer_.getWritePointer(1);
-                    }
-                    synth_data->final_compression.update( glide_motor_time );
-
-
-                    if( final_r_output )
-                    {
-                        for (int sid = 0; sid < num_samples; sid++)
-                        {
-                            float multi = main_env_smoother->add_and_get_average( env_amps[sid]*voice->velocity_glide.glide_tick()*synth_data->volume.tick()*2.0f );
-                            const float compression = synth_data->final_compression.tick();
-                            final_r_output[sid] = ( soft_clipping( output_r_buffer[sid] )*compression + output_r_buffer[sid]*(1.0f-compression) )*multi;
-                            final_l_output[sid] = ( soft_clipping( output_l_buffer[sid] )*compression + output_l_buffer[sid]*(1.0f-compression) )*multi;
-                        }
-                    }
-                    else
-                    {
-                        for (int sid = 0; sid < num_samples; sid++)
-                        {
-                            float multi = main_env_smoother->add_and_get_average( env_amps[sid]*voice->velocity_glide.glide_tick()*synth_data->volume.tick()*2.0f );
-                            const float compression = synth_data->final_compression.tick();
-                            const float sum = (output_r_buffer[sid] + output_l_buffer[sid]) / 2;
-                            final_l_output[sid] = ( soft_clipping( sum )*compression + sum*(1.0f-compression) )*multi;
-                        }
-                    }
-                }
                 // VISUALIZE
                 if( peak_meter )
                 {
@@ -591,17 +438,10 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                     peak_meter->copySamples( buffer_.getReadPointer(0), num_samples );
                     peak_meter->process();
                 }
-                if( amp_painter )
-                {
-                    const float* output_l = buffer_.getReadPointer(0);
-                    for (int sid = 0; sid < num_samples; sid++) {
-                        amp_painter->add_out( output_l[sid] );
-                        amp_painter->add_out_env( env_amps[sid] );
-                    }
-
-                }
+                
                 MONOVoice::unlock_amp_painter();
 
+		/*
                 {
                     // MIDI FEEDBACK
                     for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
@@ -618,6 +458,7 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                                        voice->get_data_buffer().env_amp.getReadPointer( 0 ),
                                        num_samples );
                 }
+                */
 #ifdef IS_PLUGIN
                 get_messages_to_send_to_daw(midi_messages_);
 #endif
@@ -632,9 +473,9 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
 void GstepAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
+    DATA(data_buffer).resize_buffer_if_required(block_size_);
     data_in_processor->messageCollector.reset(sampleRate);
     synth.setCurrentPlaybackSampleRate (sampleRate);
-    delayBuffer.clear();
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
 }
@@ -642,7 +483,6 @@ void GstepAudioProcessor::releaseResources() {
     // TODO reset all
 }
 void GstepAudioProcessor::reset() {
-    delayBuffer.clear();
 }
 
 // ********************************************************************************************

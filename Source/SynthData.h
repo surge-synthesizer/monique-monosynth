@@ -1032,7 +1032,6 @@ public:
     static float get_flt_input_env_amp( int flt_id_, int input_id_ );
     static float get_band_env_amp( int band_id_ );
     static float get_chorus_modulation_env_amp();
-    static float get_chorus_shine_env_amp();
 
     NOINLINE mono_ParameterOwnerStore();
     NOINLINE ~mono_ParameterOwnerStore();
@@ -1066,8 +1065,6 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
     mono_AudioSampleBuffer<1> chorus_modulation_env_amp;
 
     mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
-
-    mono_AudioSampleBuffer<1> tmp_samples;
 
     void resize_buffer_if_required( int min_size_required_ ) noexcept;
 

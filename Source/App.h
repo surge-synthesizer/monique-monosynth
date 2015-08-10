@@ -51,7 +51,7 @@
 #else
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
 #endif
-
+  
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -127,15 +127,15 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-static inline int round0( float value ) {
+static inline int round0( float value ) noexcept {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value);
 }
-static inline float round01( float value ) {
+static inline float round01( float value ) noexcept {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*10)/10;
 }
-static inline float round001( float value ) {
+static inline float round001( float value ) noexcept {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*100)/100;
 }
@@ -145,11 +145,12 @@ static inline float round001( float value ) {
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
+/*
 #ifndef DEBUG
 #define debug_sample_print(x,y)
 #else
 #include <iomanip>
-static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" ) 
+static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )
 {
     static int count_samples = 0;
     if( count_samples < samples_to_print )
@@ -159,12 +160,13 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
     }
 }
 #endif
+*/
 
 // TWEAKED ALGORYTHIMS
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static float inline mono_exp(float x) noexcept
+inline static float mono_exp(float x) noexcept
 {
     x = 1.0f + x * (1.0f/256);
     x *= x;
@@ -178,7 +180,7 @@ static float inline mono_exp(float x) noexcept
     return x;
 }
 
-inline float mono_log2 (float val)
+inline static float mono_log2 (float val) noexcept
 {
     int * const    exp_ptr = reinterpret_cast <int *> (&val);
     int            x = *exp_ptr;
@@ -192,12 +194,12 @@ inline float mono_log2 (float val)
     return (val + log_2);
 }
 
-static float inline mono_log(float x) noexcept
+inline static float mono_log(float x) noexcept
 {
     return (mono_log2 (x) * 0.69314718f);
 }
 
-static int inline mono_floor(float x) noexcept
+inline static int mono_floor(float x) noexcept
 {
     const int i = int(x);
     return i - ( i > x );

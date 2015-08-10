@@ -8,16 +8,11 @@
 // ********************************************************************************************
 // ********************************************************************************************
 class SynthData;
-class MidiOutputObject;
-class SensingTimer;
 class SegmentedMeter;
 class MONOVoice;
 class DATAINProcessor;
-class cwaveguide;
 template<typename,int>
 class CircularBuffer;
-class Chorus;
-class AmpSmoothBuffer;
 #define type_CLOCK_SMOTH_BUFFER CircularBuffer< double, 12 >
 class GstepAudioProcessor :
     public AudioProcessor,
@@ -119,22 +114,10 @@ public:
     // TODO privates!!!:
     AudioPlayHead::CurrentPositionInfo pos;
 
-    // DELAY
-    int delayPosition;
-    AudioSampleBuffer delayBuffer;
-
     // SYNTH
     MONOVoice* voice;
     ScopedPointer<SynthData> synth_data;
     Synthesiser synth;
-    ScopedPointer<AmpSmoothBuffer> main_env_smoother;
-    ScopedPointer<AmpSmoothBuffer> chorus_smoother;
-
-    // VERB
-    Reverb reverb;
-
-    // CHORUS
-    ScopedPointer<Chorus> chorus;
 
     SegmentedMeter* peak_meter;
     bool repaint_peak_meter;

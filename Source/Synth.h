@@ -176,6 +176,7 @@ class OSC;
 class ENV;
 class FilterProcessor;
 class EQProcessor;
+class FXProcessor;
 class DataBuffer;
 class ArpSequencer;
 class mono_AmpPainter;
@@ -199,28 +200,21 @@ private:
 
     OwnedArray< OSC > oscs;
     OwnedArray< LFO > lfos;
-    ScopedPointer<ENV> env;
     ScopedPointer<ArpSequencer> arp_sequencer;
     friend class mono_ParameterOwnerStore;
     OwnedArray< FilterProcessor > filter_processors;
     ScopedPointer< EQProcessor > eq_processor;
+    ScopedPointer< FXProcessor > fx_processor;
     OwnedArray< ENV > filter_envs;
-    ScopedPointer< ENV > chorus_modulation_env;
-    ScopedPointer< ENV > chorus_shine_env;
 
     bool is_stopped;
     bool was_arp_started;
     int current_note;
     float current_velocity;
-public:
-    mono_GlideValue<0,1> velocity_glide;
-    void process_final_env( int num_samples ) noexcept;
-    void process_effect_env( int num_samples ) noexcept;
-private:
     int current_step;
 
-    void renderNextBlock (mono_AudioSampleBuffer<4>& , int startSample, int numSamples) override;
-    void render_block (mono_AudioSampleBuffer<4>& , int step_number_, int startSample, int numSamples);
+    void renderNextBlock ( AudioSampleBuffer&, int startSample, int numSamples) override;
+    void render_block ( AudioSampleBuffer&, int step_number_, int startSample, int numSamples);
     void release_if_inactive() noexcept;
     bool is_active() const noexcept;
 
@@ -242,13 +236,6 @@ public:
     float get_lfo_amp( int lfo_id_ ) const noexcept;
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
-
-    const DataBuffer& get_data_buffer() const {
-        return *data_buffer;
-    }
-    DataBuffer& get_data_buffer() {
-        return *data_buffer;
-    }
 
     NOINLINE MONOVoice( GstepAudioProcessor*const audio_processor_ );
     NOINLINE ~MONOVoice();

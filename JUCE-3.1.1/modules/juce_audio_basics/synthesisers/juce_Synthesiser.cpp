@@ -176,42 +176,7 @@ void Synthesiser::renderNextBlock (AudioSampleBuffer& outputBuffer, const MidiBu
         numSamples -= numThisTime;
     }
 }
-void Synthesiser::renderNextBlock (mono_AudioSampleBuffer<4>& outputBuffer, const MidiBuffer& midiData,
-                                   int startSample, int numSamples)
-{
-    // must set the sample rate before using this!
-    jassert (sampleRate != 0);
-
-    const ScopedLock sl (lock);
-
-    MidiBuffer::Iterator midiIterator (midiData);
-    midiIterator.setNextSamplePosition (startSample);
-    MidiMessage m (0xf4, 0.0);
-
-    while (numSamples > 0)
-    {
-        int midiEventPos;
-        const bool useEvent = midiIterator.getNextEvent (m, midiEventPos)
-                              && midiEventPos < startSample + numSamples;
-
-        const int numThisTime = useEvent ? midiEventPos - startSample
-                                : numSamples;
-        if (numThisTime > 0)
-            renderVoices (outputBuffer, startSample, numThisTime);
-
-        if (useEvent)
-            handleMidiEvent (m);
-
-        startSample += numThisTime;
-        numSamples -= numThisTime;
-    }
-}
 void Synthesiser::renderVoices (AudioSampleBuffer& buffer, int startSample, int numSamples)
-{
-    for (int i = voices.size(); --i >= 0;)
-        voices.getUnchecked (i)->renderNextBlock (buffer, startSample, numSamples);
-}
-void Synthesiser::renderVoices (mono_AudioSampleBuffer<4>& buffer, int startSample, int numSamples)
 {
     for (int i = voices.size(); --i >= 0;)
         voices.getUnchecked (i)->renderNextBlock (buffer, startSample, numSamples);

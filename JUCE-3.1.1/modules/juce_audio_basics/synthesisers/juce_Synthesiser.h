@@ -184,9 +184,6 @@ public:
     virtual void renderNextBlock (AudioSampleBuffer& outputBuffer,
                                   int startSample,
                                   int numSamples) {};
-    virtual void renderNextBlock (mono_AudioSampleBuffer<4>& outputBuffer,
-                                  int startSample,
-                                  int numSamples) {};
     /** Changes the voice's reference sample rate.
 
         The rate is set so that subclasses know the output rate and can set their pitch
@@ -495,10 +492,6 @@ public:
                           const MidiBuffer& inputMidi,
                           int startSample,
                           int numSamples);
-    void renderNextBlock (mono_AudioSampleBuffer<4>& outputAudio,
-                          const MidiBuffer& inputMidi,
-                          int startSample,
-                          int numSamples);
     /** Returns the current target sample rate at which rendering is being done.
         Subclasses may need to know this so that they can pitch things correctly.
     */
@@ -522,8 +515,6 @@ protected:
         to override it to handle custom cases.
     */
     virtual void renderVoices (AudioSampleBuffer& outputAudio,
-                               int startSample, int numSamples);
-    virtual void renderVoices (mono_AudioSampleBuffer<4>& outputAudio,
                                int startSample, int numSamples);
     /** Searches through the voices to find one that's not currently playing, and
         which can play the given sound.

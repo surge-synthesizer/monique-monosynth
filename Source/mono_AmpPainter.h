@@ -136,6 +136,14 @@ public:
     Array<bool> show_filter_env;
     void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
     
+    EndlessBuffer<float> values_env;
+    bool show_out_env;
+    void add_out_env( const float* values_, int num_samples_ ) noexcept;
+    
+    
+    
+    
+    
     
     
     
@@ -160,11 +168,6 @@ public:
         values.add( value_ );
     }
 
-    EndlessBuffer<float> values_env;
-    bool show_out_env;
-    void add_out_env( float value_ ) {
-        values_env.add( value_ );
-    }
 
     void timerCallback() override;
 
