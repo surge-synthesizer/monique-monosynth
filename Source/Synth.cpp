@@ -622,7 +622,7 @@ inline float mono_Noise::lastOut() const noexcept
 }
 inline float mono_Noise::tick() noexcept
 {
-    return last_tick_value = ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+    return last_tick_value = ( 2.0f * rand() / (RAND_MAX + 1) - 1 );
 }
 inline void mono_Noise::setSeed( unsigned int seed ) noexcept
 {
@@ -1772,7 +1772,7 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
-    input_and_worker_ = protection_clipping_DIABLED(input_and_worker_);
+    //input_and_worker_ = protection_clipping_DIABLED(input_and_worker_);
 
     // process input
     input_and_worker_ -= r*y4;
@@ -2702,6 +2702,7 @@ void EQProcessor::sample_rate_changed(double) noexcept
 inline void EQProcessor::process( int num_samples_ ) noexcept
 {
     DataBuffer& data_buffer( DATA( data_buffer ) );
+    const int glide_motor_time = DATA( synth_data ).glide_motor_time;
 
     float*const io_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
     const float resonance( DATA( synth_data ).resonance ) ;
@@ -2729,7 +2730,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             const bool hold_sustain = DATA( eq_data ).hold[band_id];
 
             EQData::sustain_replacement_t& velocity( DATA( eq_data ).velocity[band_id] );
-            velocity.update( samplesToMsFast(DATA( synth_data ).glide_motor_time, sample_rate) );
+            velocity.update( glide_motor_time );
 
             {
                 // ENV OR SUSTAIN
@@ -2809,10 +2810,10 @@ private:
 template< int smooth_samples >
 NOINLINE AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
 :
-counter(0),
-        current_value(start_value_),
-        target_value(start_value_),
-        delta(0)
+current_value(0),
+              target_value(start_value_),
+              delta(0),
+              counter(0)
 {}
 template< int smooth_samples >
 NOINLINE AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
@@ -2887,7 +2888,7 @@ class FXProcessor
     Chorus chorus;
     int delayPosition;
     AudioSampleBuffer delayBuffer;
-    AmpSmoother<100> chorus_smoother;
+    AmpSmoothBuffer chorus_smoother;
     friend class mono_ParameterOwnerStore;
     ScopedPointer< ENV > chorus_modulation_env;
 
@@ -2940,7 +2941,8 @@ NOINLINE FXProcessor::~FXProcessor() {}
 inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept
 {
     DataBuffer& data_buffer( DATA(data_buffer) );
-    const int glide_motor_time = msToSamplesFast(DATA( synth_data ).glide_motor_time,44100);
+    //const int glide_motor_time = msToSamplesFast(DATA( synth_data ).glide_motor_time,44100);
+    const int glide_motor_time = DATA( synth_data ).glide_motor_time;
 
     // COLLECT BUFFERS
     const float* input_buffer = data_buffer.direct_filter_output_samples.getReadPointer();
@@ -2995,7 +2997,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         // CHORUS
         {
             const float chorus_modulation = chorus_data.modulation.tick();
-            const float modulation_amp = chorus_smoother.add_get( is_chorus_amp_fix ? chorus_modulation : chorus_amp_buffer[sid] );
+            const float modulation_amp = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : chorus_amp_buffer[sid] );
 
             tmp_l = chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
             tmp_r = chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
