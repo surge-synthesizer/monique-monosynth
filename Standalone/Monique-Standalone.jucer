@@ -26,10 +26,6 @@
             resource="0" file="../Source/dRowAudio_GraphicalComponent.h"/>
       <FILE id="hjE0t8" name="dRowAudio_MathsUtilities.h" compile="0" resource="0"
             file="../Source/dRowAudio_MathsUtilities.h"/>
-      <FILE id="atGhwI" name="dRowAudio_OnePoleFilter.cpp" compile="1" resource="0"
-            file="../Source/dRowAudio_OnePoleFilter.cpp"/>
-      <FILE id="MFJgeC" name="dRowAudio_OnePoleFilter.h" compile="0" resource="0"
-            file="../Source/dRowAudio_OnePoleFilter.h"/>
       <FILE id="OIx5UG" name="dRowAudio_SegmentedMeter.cpp" compile="1" resource="0"
             file="../Source/dRowAudio_SegmentedMeter.cpp"/>
       <FILE id="YjseHh" name="dRowAudio_SegmentedMeter.h" compile="0" resource="0"
