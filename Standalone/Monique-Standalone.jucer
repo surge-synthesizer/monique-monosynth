@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.5"
-              bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="0"
+              bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="MONIQUE_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
   <MAINGROUP id="vwAslV" name="Monique">
@@ -125,8 +125,9 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-std=c++11&#10;-Wall&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions"
-                extraDefs="NDEBUG" userNotes="-pg&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++"
+                extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
+                userNotes="-pg&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>
         <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
@@ -138,17 +139,14 @@
         <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-2.1.7/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-ftree-vectorize&#10;-flto"
@@ -162,7 +160,6 @@
                        optimisation="6" targetName="Monique_64" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
@@ -170,12 +167,10 @@
         <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags=""
@@ -188,7 +183,6 @@
                        headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
@@ -196,12 +190,10 @@
         <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2013 targetFolder="Builds/WINDOWS" smallIcon="S5O3Z0" bigIcon="MCWLE6"
@@ -218,7 +210,6 @@
                        alwaysGenerateDebugSymbols="0" defines="" libraryPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
@@ -226,12 +217,10 @@
         <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_filters" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="stk_generators" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </VS2013>
   </EXPORTFORMATS>
@@ -247,15 +236,12 @@
     <MODULES id="juce_graphics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_basics" showAllCode="0" useLocalCopy="0"/>
     <MODULES id="juce_gui_extra" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="stk_core" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="stk_filters" showAllCode="0" useLocalCopy="0"/>
-    <MODULES id="stk_generators" showAllCode="0" useLocalCopy="0"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"
                JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
                JUCE_ASIO="disabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="disabled"
-               JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_PLUGINHOST_VST="disabled"
+               JUCE_ALSA="disabled" JUCE_JACK="enabled" JUCE_PLUGINHOST_VST="disabled"
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"
                JUCE_FORCE_DEBUG="disabled" JUCE_LOG_ASSERTIONS="disabled" JUCE_USE_XSHM="enabled"

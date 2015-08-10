@@ -214,13 +214,20 @@ void GstepAudioProcessor::init_audio() {
     // TODO set sample rate
     setPlayConfigDetails ( 0, 2, 44100, 512);
     const OwnedArray< AudioIODeviceType >& devs = getAvailableDeviceTypes();
-#if JUCE_LINUX && JUCE_JACK
+/*
+    #if JUCE_LINUX && JUCE_JACK
     DBG( devs[1]->getTypeName() );
     setCurrentAudioDeviceType(devs[1]->getTypeName(),true);
 #else
     DBG( devs[0]->getTypeName() );
     setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
 #endif
+    */
+    // JACK ONLY
+    DBG( devs[0]->getTypeName() );
+    setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
+    
+    
     if( initialise(0,2, nullptr, true ) == "" )
         addAudioCallback (&player);
     else
@@ -627,7 +634,6 @@ void GstepAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
     // TODO replace audio sample buffer??
     data_in_processor->messageCollector.reset(sampleRate);
     synth.setCurrentPlaybackSampleRate (sampleRate);
-    stk::Stk::setSampleRate(sampleRate);
     delayBuffer.clear();
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );

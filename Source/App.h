@@ -48,10 +48,8 @@
 // JUCE
 #ifdef MONIQUE_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
-#include "../Plugin/JuceLibraryCode/BinaryData.h"
 #else
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
-#include "../Standalone/JuceLibraryCode/BinaryData.h"
 #endif
 
 // --------------------------------------------------------------------------------------------
