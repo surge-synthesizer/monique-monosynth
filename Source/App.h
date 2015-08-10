@@ -140,6 +140,26 @@ static inline float round001( float value ) {
     return roundf(value*100)/100;
 }
 
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+
+#ifndef DEBUG
+#define debug_sample_print(x,y)
+#else
+#include <iomanip>
+static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" ) 
+{
+    static int count_samples = 0;
+    if( count_samples < samples_to_print )
+    {
+        std::cout << count_samples << " notes:"<<  info_ <<  " >>"<<  std::fixed << std::setprecision(10) << std::abs( in_ ) << std::endl;
+        count_samples ++;
+    }
+}
+#endif
+
 // TWEAKED ALGORYTHIMS
 //==============================================================================
 //==============================================================================

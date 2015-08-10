@@ -1067,9 +1067,6 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
 
     mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
 
-    mono_AudioSampleBuffer<SUM_EQ_BANDS> eq_ar_sustain;
-    mono_AudioSampleBuffer<SUM_EQ_BANDS> eq_ar_amps;
-
     mono_AudioSampleBuffer<1> tmp_samples;
 
     void resize_buffer_if_required( int min_size_required_ ) noexcept;
