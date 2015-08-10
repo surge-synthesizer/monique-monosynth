@@ -688,9 +688,9 @@ inline float mono_OnePole::tick( float input ) noexcept
 inline void mono_OnePole::setPole( float thePole ) noexcept
 {
     if ( thePole > 0 )
-        b = (float) (1.0 - thePole);
+        b = 1.0f - thePole;
     else
-        b = (float) (1.0 + thePole);
+        b = 1.0f + thePole;
 
     a1 = -thePole;
 }
