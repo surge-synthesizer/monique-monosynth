@@ -113,45 +113,7 @@ static inline float sample_mixer_v2( float* target_buffer,
 
 #define RUNTIME_CLASS_ID -1
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#define AMP_SMOOTH_SIZE 100 // TODO as option and based to sample rate
-class AmpSmoothBuffer : RuntimeListener {
-    int pos;
-    float buffer[AMP_SMOOTH_SIZE];
-    float sum;
 
-public:
-    inline void add( float val_ ) noexcept;
-    inline float add_and_get_average( float val_ ) noexcept;
-    inline float get_average() const noexcept;
-
-private:
-    virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override {
-      // TODO resize buffer
-    };
-
-public:
-    NOINLINE AmpSmoothBuffer();
-    NOINLINE ~AmpSmoothBuffer();
-};
-inline void AmpSmoothBuffer::add( float val_ ) noexcept {
-    sum-=buffer[pos];
-    buffer[pos] = val_;
-    sum+=val_;
-
-    ++pos;
-    if( pos == AMP_SMOOTH_SIZE )
-        pos = 0;
-}
-inline float AmpSmoothBuffer::add_and_get_average( float val_ ) noexcept {
-    add(val_);
-    return get_average();
-}
-inline float AmpSmoothBuffer::get_average() const noexcept {
-    return sum / AMP_SMOOTH_SIZE;
-}
 
 //==============================================================================
 

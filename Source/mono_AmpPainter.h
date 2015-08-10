@@ -140,7 +140,9 @@ public:
     bool show_out_env;
     void add_out_env( const float* values_, int num_samples_ ) noexcept;
     
-    
+    EndlessBuffer<float> values;
+    bool show_out;
+    void add_out( const float* values_, int num_samples_ ) noexcept;
     
     
     
@@ -162,11 +164,7 @@ public:
         lfo_values.getUnchecked(id_)->add( value_ );
     }
 
-    EndlessBuffer<float> values;
-    bool show_out;
-    void add_out( float value_ ) {
-        values.add( value_ );
-    }
+
 
 
     void timerCallback() override;

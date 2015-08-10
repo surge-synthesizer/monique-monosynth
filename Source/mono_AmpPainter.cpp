@@ -687,6 +687,10 @@ void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noex
     for( int i = 0; i != num_samples_ ; ++i )
         values_env.add( values_[i] );
 }
+void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept {
+    for( int i = 0; i != num_samples_ ; ++i )
+        values.add( values_[i] );
+}
 //[/MiscUserCode]
 
 

@@ -7,11 +7,51 @@ juce_ImplementSingleton (mono_ParameterOwnerStore)
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#define AMP_SMOOTH_SIZE 10 // TODO as option and based to sample rate
+class AmpSmoothBuffer : RuntimeListener {
+    int pos;
+    float buffer[AMP_SMOOTH_SIZE];
+    float sum;
+
+public:
+    inline void add( float val_ ) noexcept;
+    inline float add_and_get_average( float val_ ) noexcept;
+    inline float get_average() const noexcept;
+
+private:
+    virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override {
+        // TODO resize buffer
+    };
+
+public:
+    NOINLINE AmpSmoothBuffer();
+    NOINLINE ~AmpSmoothBuffer();
+};
+
+//==============================================================================
 NOINLINE AmpSmoothBuffer::AmpSmoothBuffer() : pos(0), sum(0) {
     for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i )
         buffer[i] = 0;
 }
 NOINLINE AmpSmoothBuffer::~AmpSmoothBuffer() {}
+
+//==============================================================================
+inline void AmpSmoothBuffer::add( float val_ ) noexcept {
+    sum-=buffer[pos];
+    buffer[pos] = val_;
+    sum+=val_;
+
+    ++pos;
+    if( pos == AMP_SMOOTH_SIZE )
+        pos = 0;
+}
+inline float AmpSmoothBuffer::add_and_get_average( float val_ ) noexcept {
+    add(val_);
+    return get_average();
+}
+inline float AmpSmoothBuffer::get_average() const noexcept {
+    return sum / AMP_SMOOTH_SIZE;
+}
 
 //==============================================================================
 //==============================================================================
@@ -2853,7 +2893,7 @@ class FXProcessor
 
     // FINAL ENV
     friend class MONOVoice;
-    ScopedPointer<ENV > final_env;
+    ScopedPointer<ENV> final_env;
     mono_GlideValue<0,1> velocity_glide;
 
 public:
@@ -2882,8 +2922,12 @@ public:
 // -----------------------------------------------------------------
 NOINLINE FXProcessor::FXProcessor()
     :
-    delayBuffer (2, 12000),
+    reverb(),
+    chorus(),
+
     delayPosition( 0 ),
+    delayBuffer (2, 12000),
+    chorus_smoother(),
 
     chorus_modulation_env( new ENV( *(DATA( chorus_data ).modulation_env_data.get() )) ),
     final_env( new ENV( DATA( env_datas[MAIN_ENV] ) ) ),
@@ -3022,8 +3066,10 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         }
     }
 
+    // VISUALIZE
     if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
     {
+        amp_painter->add_out( &final_l_output[start_sample_final_out_], num_samples_ );
         amp_painter->add_out_env( env_amp, num_samples_ );
     }
 }
@@ -3191,7 +3237,7 @@ NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
     audio_processor( audio_processor_ ),
     synth_data( *audio_processor_->synth_data ),
 
-    data_buffer( new DataBuffer(1024) ),
+    data_buffer( new DataBuffer(512) ),
 
     arp_sequencer( new ArpSequencer( info, *synth_data.arp_sequencer_data ) ),
 
@@ -3220,7 +3266,7 @@ NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
         filter_processors.add( new FilterProcessor( i ));
         filter_envs.add( new ENV( DATA( env_datas[i] ) ) );
     }
-    
+
     mono_ParameterOwnerStore::getInstance()->voice = this;
 }
 
