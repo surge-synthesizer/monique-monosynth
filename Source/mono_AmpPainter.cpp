@@ -283,9 +283,9 @@ void mono_AmpPainter::paint (Graphics& g)
                     float y = source_buffer_.get(buffer_pos_,sid);
                     bool paint_line = true;
                     if( last_x == x )
-		    {
+                    {
                         paint_line = false;
-		    }
+                    }
                     {
                         if( y >= 0 )
                         {
@@ -672,9 +672,17 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-
-
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
+{
+    for( int i = 0; i != num_samples_ ; ++i )
+        filter_env_values.getUnchecked(id_)->add( values_[i] );
+}
+void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
+{
+    for( int i = 0; i != num_samples_ ; ++i )
+        filter_values.getUnchecked(id_)->add( values_[i] );
+}
 //[/MiscUserCode]
 
 

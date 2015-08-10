@@ -537,13 +537,13 @@ class mono_AudioSampleBuffer
     float* preallocatedChannelSpace [num_channels];
 
 public:
-    inline const float* getReadPointer (int channelNumber) const noexcept
+    inline const float* getReadPointer (int channelNumber = 0) const noexcept
     {
         jassert (isPositiveAndBelow (channelNumber, num_channels));
         return channels [channelNumber];
     }
 
-    inline float* getWritePointer (int channelNumber) noexcept
+    inline float* getWritePointer (int channelNumber = 0) noexcept
     {
         jassert (isPositiveAndBelow (channelNumber, num_channels));
         return channels [channelNumber];

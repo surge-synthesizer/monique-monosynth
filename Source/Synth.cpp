@@ -146,6 +146,9 @@ static float inline lookup_sine(float x) noexcept
 NOINLINE DataBuffer::DataBuffer( int init_buffer_size_ )
     :
     current_buffer_size( init_buffer_size_ ) ,
+
+    tmp_buffer_9(init_buffer_size_),
+
     osc_samples( init_buffer_size_ ),
     osc_switchs( init_buffer_size_ ),
     osc_sync_switchs( init_buffer_size_ ),
@@ -170,6 +173,8 @@ void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
     if( min_size_required_ > current_buffer_size )
     {
         current_buffer_size = min_size_required_;
+
+        tmp_buffer_9.setSize(current_buffer_size);
 
         osc_samples.setSize(current_buffer_size);
         osc_switchs.setSize(current_buffer_size);
@@ -1498,7 +1503,6 @@ public:
 
 private:
     ENVData& data;
-    int buffer_size;
 
 public:
     inline void process( float* dest_, const int num_samples_ ) noexcept;
@@ -1627,6 +1631,504 @@ float ENV::get_amp() const noexcept {
 // TODO filter update nur wenn die wertänderung z.b grösser 1 %
 // do the calculation
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class AnalogFilter : public RuntimeListener
+{
+    friend class DoubleAnalogFilter;
+    float p, k, r, gain;
+    float y1,y2,y3,y4;
+    float oldx;
+    float oldy1,oldy2,oldy3;
+
+    float cutoff, res, res4;
+
+public:
+    // OLD OR DEFAULT ONE
+    inline void set(float r,float c, float gain_) noexcept;
+    // RETURNS TRUE ON COFF CHENGED
+    inline bool update(float resonance_,
+                       float cutoff_,
+                       float gain_ ) noexcept;
+    inline void copy_coefficient_from( const AnalogFilter& other_ ) noexcept;
+    inline void copy_state_from( const AnalogFilter& other_ ) noexcept;
+
+    inline float processLow(float input_and_worker_) noexcept;
+
+    inline float processLowResonance(float input_and_worker_) noexcept;
+    inline float processHighResonance(float input_and_worker_) noexcept;
+
+    inline void reset() noexcept;
+
+private:
+    inline void calc_coefficient() noexcept;
+    inline void calc() noexcept;
+
+    NOINLINE void sample_rate_changed( double ) noexcept override;
+
+public:
+    NOINLINE AnalogFilter();
+    NOINLINE ~AnalogFilter();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogFilter)
+};
+// -----------------------------------------------------------------
+NOINLINE AnalogFilter::AnalogFilter()
+    :
+    p(0),k(0),r(0),gain(0),
+    y1(0),y2(0),y3(0),y4(0),
+    oldx(0),oldy1(0),oldy2(0),oldy3(0),
+
+    cutoff(1000), res(0), res4(0)
+{
+    sample_rate_changed(0);
+}
+NOINLINE AnalogFilter::~AnalogFilter() {}
+
+// -----------------------------------------------------------------
+inline void AnalogFilter::reset() noexcept {
+    y4 = oldx = oldy1 = oldy2 = oldy3 = 0;
+}
+
+// -----------------------------------------------------------------
+inline void AnalogFilter::set(float r, float c, float gain_) noexcept
+{
+    if( r != res or c != cutoff or gain != gain_ )
+    {
+        gain = gain_;
+        res = r;
+        res4 = res*4;
+        cutoff = c;
+        calc();
+    }
+}
+inline void AnalogFilter::calc() noexcept
+{
+    {
+        float f = (cutoff+cutoff) * sample_rate_1ths;
+        float agressive = 0.48f*gain;
+        p=f*((1.5f+agressive)-((0.5f+agressive)*f));
+        k=p*2-1;
+    }
+    {
+        float t=(1.0f-p)*1.386249f;
+        float t2=12.0f+t*t;
+        r = res*(t2+6.0f*t)/(t2-6.0f*t);
+    }
+}
+inline float AnalogFilter::processLow(float input_and_worker_) noexcept
+{
+    // process input
+    input_and_worker_ -= r*y4;
+
+    //Four cascaded onepole filters (bilinear transform)
+    y1= input_and_worker_*p + oldx*p - k*y1;
+    y2=y1*p + oldy1*p - k*y2;
+    y3=y2*p + oldy2*p - k*y3;
+    y4=y3*p + oldy3*p - k*y4;
+
+    //Clipper band limited sigmoid
+    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+
+    oldx = input_and_worker_;
+    oldy1 = y1;
+    oldy2 = y2;
+    oldy3 = y3;
+
+    return (y4 + distortion(y3*res+y4*(1.0f-res),gain)*gain)/(1.0f+gain);
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define FILTER_CHANGE_GLIDE_TIME_MS (msToSamplesFast(200,lpf_1.sample_rate)+50)
+class DoubleAnalogFilter
+{
+    AnalogFilter lpf_1;
+    AnalogFilter lpf_2;
+
+    DoubleAnalogFilter* smooth_filter;
+
+    FILTER_TYPS last_filter_type;
+    FILTER_TYPS smooth_filter_type;
+    int glide_time_4_filters;
+
+public:
+    // ----------------------------------------------------------
+    // MONSTER RESONANCE LP
+    inline void updateLowResonance(float resonance_,
+                                   float cutoff_,
+                                   float gain_) noexcept;
+    inline float processLowResonance(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // 2PASS LP
+    inline void updateLow2Pass(float resonance_,
+                               float cutoff_,
+                               float gain_) noexcept;
+    inline float processLow2Pass(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // MONSTER RESONANCE HP
+    inline void updateHighResonance(float resonance_,
+                                    float cutoff_,
+                                    float gain_) noexcept;
+    inline float processHighResonance(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // 2PASS HP
+    inline void updateHigh2Pass(float resonance_,
+                                float cutoff_,
+                                float gain_) noexcept;
+    inline float processHigh2Pass(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // BAND
+    inline void updateBand(float resonance_,
+                           float cutoff_,
+                           float gain_) noexcept;
+    inline float processBand(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // SIMPLE PASS
+    inline float processPass(float in_) noexcept;
+
+    // ----------------------------------------------------------
+    // FILTER CHANGE
+    inline void update_filter_to( FILTER_TYPS ) noexcept;
+    inline float process_filter_change( float original_in_, float result_in_ ) noexcept;
+    inline float processByType( float in_, FILTER_TYPS ) noexcept;
+
+    //
+    inline void reset() noexcept;
+
+    NOINLINE DoubleAnalogFilter(bool create_smooth_filter = true);
+    NOINLINE ~DoubleAnalogFilter();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DoubleAnalogFilter)
+};
+
+// -----------------------------------------------------------------
+NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter)
+    :
+    lpf_1(),
+    lpf_2(),
+
+    smooth_filter( nullptr ),
+
+    last_filter_type(UNKNOWN),
+    smooth_filter_type(UNKNOWN),
+
+    glide_time_4_filters(0)
+{
+    if( create_smooth_filter )
+        smooth_filter = new DoubleAnalogFilter(false);
+}
+NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() {
+    if( smooth_filter )
+        delete smooth_filter;
+}
+
+inline void DoubleAnalogFilter::reset() noexcept {
+    lpf_1.reset();
+    lpf_2.reset();
+}
+
+// -----------------------------------------------------------------
+forcedinline static float resonance_clipping( float sample_ ) noexcept
+{
+    return (atan(sample_)/float_Pi)*2;
+}
+
+// -----------------------------------------------------------------
+inline void AnalogFilter::calc_coefficient() noexcept
+{
+    float f = (cutoff+cutoff) * sample_rate_1ths;
+    float agressive = 0.48f*gain;
+    p=f*((1.5f+agressive)-((0.5f+agressive)*f));
+    k=p*2-1;
+}
+inline void AnalogFilter::copy_coefficient_from( const AnalogFilter& other_ ) noexcept
+{
+    cutoff = other_.cutoff;
+    res = other_.res;
+    res4 = other_.res4;
+
+    p = other_.p;
+    k = other_.k;
+    r = other_.r;
+    gain = other_.gain;
+}
+inline void AnalogFilter::copy_state_from( const AnalogFilter& other_ ) noexcept
+{
+    oldx = other_.oldx;
+    oldy1 = other_.oldy1;
+    oldy2 = other_.oldy2;
+    oldy3 = other_.oldy3;
+    y1 = other_.y1;
+    y2 = other_.y2;
+    y3 = other_.y3;
+    y4 = other_.y4;
+}
+NOINLINE void AnalogFilter::sample_rate_changed(double) noexcept
+{
+    calc_coefficient();
+    calc();
+}
+// -----------------------------------------------------------------
+inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) noexcept
+{
+    bool success = false;
+    if( res != resonance_ )
+    {
+        res = resonance_;
+        res4 = res*4;
+    }
+
+    if( cutoff != cutoff_ || gain != gain_ )
+    {
+        gain = gain_;
+        cutoff = cutoff_;
+        calc_coefficient();
+        success = true;
+    }
+    return success;
+}
+
+// 2 PASS LP
+// -----------------------------------------------------------------
+inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
+{
+    // process input
+    input_and_worker_ -= r*y4;
+
+    //Four cascaded onepole filters (bilinear transform)
+    y1= input_and_worker_*p + oldx*p - k*y1;
+    y2=y1*p + oldy1*p - k*y2;
+    y3=y2*p + oldy2*p - k*y3;
+    y4=y3*p + oldy3*p - k*y4;
+
+    //Clipper band limited sigmoid
+    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+
+    oldx = input_and_worker_;
+    oldy1 = y1;
+    oldy2 = y2;
+    oldy3 = y3;
+
+    // Add resonance
+    return y4 + atan( y3 * res4 );
+}
+inline void DoubleAnalogFilter::updateLowResonance(float resonance_, float cutoff_, float gain_) noexcept
+{
+    lpf_1.update( resonance_, cutoff_+35, gain_ );
+}
+inline float DoubleAnalogFilter::processLowResonance( float in_ ) noexcept
+{
+    return process_filter_change
+    (
+        in_,
+        lpf_1.processLowResonance( in_ )
+    );
+}
+
+// LP
+// -----------------------------------------------------------------
+inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, float gain_) noexcept
+{
+    if( lpf_2.update( resonance_, cutoff_, gain_ ) )
+        lpf_1.copy_coefficient_from( lpf_2 );
+}
+inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
+{
+    float out = lpf_2.processLowResonance( in_ );
+    const float gain = lpf_1.gain;
+    const float low = lpf_1.processLowResonance( protection_clipping(out*gain) );
+
+    return process_filter_change
+    (
+        in_,
+        (out+low)*(1.0f-gain) + resonance_clipping(out+low)*gain
+    );
+}
+
+// 2 PASS HP
+// -----------------------------------------------------------------
+inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
+{
+    // process input
+    input_and_worker_ -= r*y4;
+
+    //Four cascaded onepole filters (bilinear transform)
+    y1= input_and_worker_*p + oldx*p - k*y1;
+    y2=y1*p + oldy1*p - k*y2;
+    y3=y2*p + oldy2*p - k*y3;
+    y4=y3*p + oldy3*p - k*y4;
+
+    //Clipper band limited sigmoid
+    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+
+    oldx = input_and_worker_;
+    oldy1 = y1;
+    oldy2 = y2;
+    oldy3 = y3;
+
+    // RESONANCE
+    return (input_and_worker_-y4) + (atan( y2 * res4 ));
+}
+inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
+{
+    if( lpf_2.update( resonance_, cutoff_, gain_ ) )
+        lpf_1.copy_coefficient_from( lpf_2 );
+}
+inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
+{
+    float out = lpf_2.processHighResonance( in_ );
+    const float gain = lpf_1.gain;
+    const float low = lpf_1.processHighResonance( protection_clipping(out*gain) );
+    return process_filter_change
+    (
+        in_,
+        (out+low)*(1.0f-gain) + resonance_clipping(out+low)*gain
+    );
+}
+
+// HP
+// -----------------------------------------------------------------
+inline void DoubleAnalogFilter::updateHighResonance(float resonance_, float cutoff_, float gain_) noexcept
+{
+    lpf_1.update( resonance_, cutoff_, gain_ );
+}
+inline float DoubleAnalogFilter::processHighResonance(float in_) noexcept
+{
+    return process_filter_change
+    (
+        in_,
+        lpf_1.processHighResonance( in_ )
+    );
+}
+
+// BAND
+// -----------------------------------------------------------------
+inline void DoubleAnalogFilter::updateBand(float resonance_, float cutoff_, float gain_ ) noexcept
+{
+    if( lpf_1.update( resonance_, cutoff_+10, gain_ ) )
+        lpf_2.update( resonance_, cutoff_, gain_ );
+}
+inline float DoubleAnalogFilter::processBand(float in_) noexcept
+{
+    return process_filter_change
+    (
+        in_,
+        lpf_1.processLowResonance( protection_clipping( lpf_2.processHighResonance( in_ ) ) )*0.5f
+    );
+}
+
+// PASS
+// -----------------------------------------------------------------
+inline float DoubleAnalogFilter::processPass(float in_) noexcept
+{
+    return process_filter_change
+    (
+        in_,
+        in_
+    );
+}
+
+// BY TYPE
+// -----------------------------------------------------------------
+inline void DoubleAnalogFilter::update_filter_to( FILTER_TYPS type_ ) noexcept {
+    if( last_filter_type != type_ )
+    {
+        if( smooth_filter )
+        {
+            // SET THE SECOND FILTER TO THE OLD COMPLETE STATE
+            smooth_filter->lpf_1.copy_coefficient_from(lpf_1);
+            smooth_filter->lpf_1.copy_state_from(lpf_1);
+            smooth_filter->lpf_2.copy_coefficient_from(lpf_2);
+            smooth_filter->lpf_2.copy_state_from(lpf_2);
+
+            switch( last_filter_type )
+            {
+            case LPF :
+                lpf_2.copy_state_from(lpf_1);
+                break;
+            case LPF_2_PASS :
+                break;
+            case HPF :
+                lpf_2.copy_state_from(lpf_1);
+                break;
+            case HIGH_2_PASS :
+                break;
+            case BPF :
+                break;
+            case PASS :
+                //lpf_1.reset();
+                //lpf_2.reset();
+                break;
+            default /*UNKNOWN*/ :
+                lpf_1.reset();
+                lpf_2.reset();
+            }
+
+            glide_time_4_filters = FILTER_CHANGE_GLIDE_TIME_MS;
+
+            smooth_filter->last_filter_type = last_filter_type;
+            smooth_filter_type = last_filter_type;
+        }
+
+        last_filter_type = type_;
+    }
+}
+inline float DoubleAnalogFilter::process_filter_change( float original_in_, float result_in_ ) noexcept
+{
+    if( glide_time_4_filters != 0 )
+    {
+        // if( smooth_filter ) IS TRUE IF glide_time_4_filters != 0
+        {
+            const float smooth_out = smooth_filter->processByType( original_in_, smooth_filter_type );
+
+            float mix = 1.0f/float(FILTER_CHANGE_GLIDE_TIME_MS)*glide_time_4_filters;
+            result_in_ = result_in_*(1.0f-mix) + smooth_out*mix;
+        }
+        --glide_time_4_filters;
+    }
+
+    return result_in_;
+}
+inline float DoubleAnalogFilter::processByType(float io_, FILTER_TYPS type_ ) noexcept {
+
+    switch( type_ )
+    {
+    case LPF :
+        io_ = processLowResonance(io_);
+        break;
+    case LPF_2_PASS :
+        io_ = processLow2Pass(io_);
+        break;
+    case HPF :
+        io_ = processHighResonance(io_);
+        break;
+    case HIGH_2_PASS :
+        io_ = processHigh2Pass(io_);
+        break;
+    case BPF :
+        io_ = processBand(io_);
+        break;
+    default /* PASS */ :
+        break;
+    }
+
+    return io_;
+}
 
 //==============================================================================
 //==============================================================================
@@ -1685,61 +2187,33 @@ inline void EnvelopeFollower::setCoefficients (float attack_, float release_) no
     release = release_;
 }
 
-
-// -----------------------------------------------------------------
-// -----------------------------------------------------------------
-// -----------------------------------------------------------------
-#include "mono_MoogFilter.h"
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class FilterProcessor {
-    const int id;
-
-    ENV filter_env;
-    AmpSmoothBuffer env_smoother;
-    AmpSmoothBuffer input_env_smoother[SUM_INPUTS_PER_FILTER];
-    OwnedArray< DoubleAnalogFilter > double_filter;
-    float last_output[SUM_INPUTS_PER_FILTER];
-
+    DoubleAnalogFilter double_filter[SUM_INPUTS_PER_FILTER];
     friend class mono_ParameterOwnerStore;
     OwnedArray< ENV > input_envs;
+    EnvelopeFollower env_follower;
+
+    const int id;
 
 public:
     inline void start_attack() noexcept;
     inline void start_release() noexcept;
-    inline void process( DataBuffer& data_buffer_, const int num_samples ) noexcept;
+    inline void process( const int num_samples ) noexcept;
 
 private:
-    //  TODO MAKE AN ARRAY WITH ALL FLOATS AND DEFINCE A FIXED INDEX - LESS BY VALUE!!!
-    inline void processPass( float** output_, const float input_[SUM_INPUTS_PER_FILTER], const float filter_distortion, const int sid_ ) noexcept;
-    inline void process2PassLP( float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-                                const float resonance_, const float cutoff_, const float gain_,
-                                const float filter_distortion,
-                                const int sid_ ) noexcept;
-    inline void processLP( float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-                           const float resonance_, const float cutoff_, const float gain_,
-                           const float filter_distortion,
-                           const int sid_ ) noexcept;
-    inline void process2PassHP( float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-                                const float resonance_, const float cutoff_, const float gain_,
-                                const float filter_distortion,
-                                const int sid_ ) noexcept;
-    inline void processHP( float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-                           const float resonance_, const float cutoff_, const float gain_,
-                           const float filter_distortion,
-                           const int sid_ ) noexcept;
-    inline void processBand( float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-                             const float resonance_, const float cutoff_, const float gain_,
-                             const float filter_distortion,
-                             const int sid_ ) noexcept;
-
-    EnvelopeFollower env_follower;
-    inline void compress
-    (
-        float* io_buffer,
-        float* working_buffer_,
-        const float*  compressor_signal,
-        int num_samples,
-        float power
-    ) noexcept;
+    inline void compress ( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal,
+                           float power,
+                           int num_samples ) noexcept;
 
 public:
     NOINLINE FilterProcessor( int id_ );
@@ -1748,21 +2222,20 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterProcessor)
 };
 
+// -----------------------------------------------------------------
 NOINLINE FilterProcessor::FilterProcessor( int id_ )
     :
-    id(id_),
+    input_envs(),
+    env_follower(),
 
-    filter_env( DATA( env_datas[id] ) )
+    id(id_)
 {
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i ) {
-        double_filter.add( new DoubleAnalogFilter() );
+    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         input_envs.add( new ENV( DATA( filter_input_env_datas[i + SUM_INPUTS_PER_FILTER * id_] ) ) );
-        last_output[i] = 0;
-    }
 }
-
 NOINLINE FilterProcessor::~FilterProcessor() {}
 
+// -----------------------------------------------------------------
 inline void FilterProcessor::start_attack() noexcept
 {
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
@@ -1774,501 +2247,309 @@ inline void FilterProcessor::start_release() noexcept
         input_envs.getUnchecked(input_id)->set_to_release();
 }
 
-#define FILTER_SAMLE_CLIPPING(x)  distortion(x,filter_distortion)
-#define PREDISTORTION(x)  distortion(x,filter_distortion)
-inline void FilterProcessor::processPass(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float filter_distortion,
-    const int sid_ ) noexcept
+// -----------------------------------------------------------------
+inline void FilterProcessor::process( const int num_samples ) noexcept
 {
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-        output_[io_id][sid_] = FILTER_SAMLE_CLIPPING( PREDISTORTION( input_[io_id] ) );
-}
+    DataBuffer& data_buffer( DATA(data_buffer) );
 
-static inline float soft_clipping2( float sample_ )
-{
-    sample_ = (std::atan(sample_)/float_Pi)*2;
-    return sample_;
-}
-inline void AnalogFilter::update(float resonance_, float cutoff_, float gain_) noexcept
-{
-    if( cutoff != cutoff_ || gain != gain_ )
-    {
-        gain = gain_;
-        cutoff = cutoff_;
-        calc_coefficient();
-    }
-    res = resonance_;
-}
-
-#define MAX_CUTOFF 8000.0f
-#define RESONANCE_MULT 80.0f
-#define GAIN_MULT 40.0f
-#define MIN_GAIN 1.0f
-#define MIN_RESONANCE 1.0f
-#define MIN_CUTOFF 40.0f
-
-// SHAPER
-#define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-
-// 2 PASS LP
-inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
-{
-    // process input
-    input_and_worker_ -= r*y4;
-
-    //Four cascaded onepole filters (bilinear transform)
-    y1= input_and_worker_*p + oldx*p - k*y1;
-    y2=y1*p + oldy1*p - k*y2;
-    y3=y2*p + oldy2*p - k*y3;
-    y4=y3*p + oldy3*p - k*y4;
-
-    //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4)/6;
-
-    oldx = input_and_worker_;
-    oldy1 = y1;
-    oldy2 = y2;
-    oldy3 = y3;
-
-    // Add resonance
-    return y4 + std::atan( res * 4.0f * y3 );
-}
-inline void DoubleAnalogFilter::updateLowResonance(float resonance_, float cutoff_, float gain_) noexcept
-{
-    //brauchen wir das (+45) oder kann die modulation dies lösen?
-    lpf_1.update( resonance_, cutoff_+35, gain_ );
-}
-inline float DoubleAnalogFilter::processLowResonance(float input_and_worker_) noexcept
-{
-    was_two_way = false;
-    return lpf_1.processLowResonance( input_and_worker_ );
-}
-inline void FilterProcessor::process2PassLP(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float resonance_, const float cutoff_, const float gain_,
-    const float filter_distortion,
-    const int sid_ ) noexcept
-{
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-    {
-        DoubleAnalogFilter* filter = double_filter[io_id];
-        const float input = protection_clipping(input_[io_id]);
-        if( input != 0 or last_output[io_id] != 0  )
-        {
-            filter->updateLow2Pass
-            (
-                resonance_,
-                cutoff_+35,
-                gain_
-            );
-
-            float output = FILTER_SAMLE_CLIPPING( filter->processLow2Pass( PREDISTORTION( input ) ) );
-            output_[io_id][sid_] = output;
-            last_output[io_id] = output;
-        }
-        else
-        {
-            filter->reset();
-            output_[io_id][sid_] = 0;
-        }
-    }
-}
-
-// LP
-inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, float gain_) noexcept
-{
-    lpf_1.update( resonance_, cutoff_, gain_ );
-    lpf_2.copy_coefficient_from( lpf_1 );
-}
-inline float DoubleAnalogFilter::processLow2Pass(float input_and_worker_) noexcept
-{
-    if( not was_two_way )
-    {
-        lpf_2.copy_state_from( lpf_1 );
-        was_two_way = true;
-    }
-    input_and_worker_ = lpf_2.processLowResonance( input_and_worker_ );
-    const float gain = lpf_1.gain;
-    float low = lpf_1.processLowResonance( input_and_worker_*gain );
-
-    return (input_and_worker_+low)*(1.0f-gain) + soft_clipping2(input_and_worker_+low)*gain;
-}
-inline void FilterProcessor::processLP(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float resonance_, const float cutoff_, const float gain_,
-    const float filter_distortion,
-    const int sid_ ) noexcept
-{
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-    {
-        DoubleAnalogFilter* filter = double_filter[io_id];
-        const float input = protection_clipping(input_[io_id]);
-        if( input != 0 or last_output[io_id] != 0 )
-        {
-            filter->updateLowResonance
-            (
-                resonance_,
-                cutoff_,
-                gain_
-            );
-
-            float output = FILTER_SAMLE_CLIPPING( filter->processLowResonance( PREDISTORTION( input ) ) );
-            output_[io_id][sid_] = output;
-            last_output[io_id] = output;
-        }
-        else
-        {
-            filter->reset();
-            output_[io_id][sid_] = 0;
-        }
-    }
-}
-
-// 2 PASS HP
-inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
-{
-    // process input
-    input_and_worker_ -= r*y4;
-
-    //Four cascaded onepole filters (bilinear transform)
-    y1= input_and_worker_*p + oldx*p - k*y1;
-    y2=y1*p + oldy1*p - k*y2;
-    y3=y2*p + oldy2*p - k*y3;
-    y4=y3*p + oldy3*p - k*y4;
-
-    //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4)/6;
-
-    oldx = input_and_worker_;
-    oldy1 = y1;
-    oldy2 = y2;
-    oldy3 = y3;
-
-    // RESONANCE
-    return (input_and_worker_-y4) + (std::atan( res * 4.0f * y2 ));
-}
-inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
-{
-    lpf_1.update( resonance_, cutoff_, gain_ );
-    lpf_2.copy_coefficient_from( lpf_1 );
-}
-inline float DoubleAnalogFilter::processHigh2Pass(float input_and_worker_) noexcept
-{
-    if( not was_two_way )
-    {
-        lpf_2.copy_state_from( lpf_1 );
-        was_two_way = true;
-    }
-    input_and_worker_ = lpf_2.processHighResonance( input_and_worker_ );
-    const float gain = lpf_1.gain;
-    float low = lpf_1.processHighResonance( input_and_worker_*gain );
-    return (input_and_worker_+low)*(1.0f-gain) + soft_clipping2(input_and_worker_+low)*gain ;
-}
-inline void FilterProcessor::process2PassHP(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float resonance_, const float cutoff_, const float gain_,
-    const float filter_distortion,
-    const int sid_ ) noexcept
-{
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-    {
-        DoubleAnalogFilter* filter = double_filter[io_id];
-        const float input = protection_clipping(input_[io_id]);
-        if( input != 0 or last_output[io_id] != 0 )
-        {
-            filter->updateHigh2Pass
-            (
-                resonance_,
-                cutoff_,
-                gain_
-            );
-
-            float output = FILTER_SAMLE_CLIPPING( filter->processHigh2Pass( PREDISTORTION( input ) ) );
-            output_[io_id][sid_] = output;
-            last_output[io_id] = output;
-        }
-        else
-        {
-            filter->reset();
-            output_[io_id][sid_] = 0;
-        }
-    }
-}
-
-// HP
-inline void DoubleAnalogFilter::updateHighResonance(float resonance_, float cutoff_, float gain_) noexcept
-{
-    lpf_1.update( resonance_, cutoff_, gain_ );
-}
-inline float DoubleAnalogFilter::processHighResonance(float input_and_worker_) noexcept
-{
-    was_two_way = false;
-    return lpf_1.processHighResonance( input_and_worker_ );
-}
-inline void FilterProcessor::processHP(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float resonance_, const float cutoff_, const float gain_,
-    const float filter_distortion,
-    const int sid_ ) noexcept
-{
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-    {
-        DoubleAnalogFilter* filter = double_filter[io_id];
-        const float input = protection_clipping(input_[io_id]);
-        if( input != 0 or last_output[io_id] != 0 )
-        {
-            filter->updateHighResonance
-            (
-                resonance_,
-                cutoff_,
-                gain_
-            );
-
-            float output = FILTER_SAMLE_CLIPPING( filter->processHighResonance( PREDISTORTION( input ) ) );
-            output_[io_id][sid_] = output;
-            last_output[io_id] = output;
-        }
-        else
-        {
-            filter->reset();
-            output_[io_id][sid_] = 0;
-        }
-    }
-}
-
-// BAND
-inline void DoubleAnalogFilter::updateBand(float resonance_, float cutoff_, float gain_ ) noexcept
-{
-    lpf_1.update( resonance_, cutoff_+10, gain_ );
-    lpf_2.update( resonance_, cutoff_, gain_ );
-}
-inline float DoubleAnalogFilter::processBand(float input_and_worker_) noexcept
-{
-    if( not was_two_way )
-    {
-        lpf_2.copy_state_from( lpf_1 );
-        was_two_way = true;
-    }
-    return lpf_1.processLowResonance( lpf_2.processHighResonance( input_and_worker_ ) );
-}
-inline void FilterProcessor::processBand(
-    float** output_, const float input_[SUM_INPUTS_PER_FILTER],
-    const float resonance_, const float cutoff_, const float gain_,
-    const float filter_distortion,
-    const int sid_ ) noexcept
-{
-    for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-    {
-        DoubleAnalogFilter* filter = double_filter[io_id];
-        filter->updateBand
-        (
-            resonance_,
-            cutoff_,
-            gain_
-        );
-        const float input = protection_clipping(input_[io_id]);
-        if( input != 0 or last_output[io_id] != 0 )
-        {
-            float output = FILTER_SAMLE_CLIPPING( filter->processBand( PREDISTORTION( input ) ) );
-            output_[io_id][sid_] = output;
-            last_output[io_id] = output;
-        }
-        else
-        {
-            filter->reset();
-            output_[io_id][sid_] = 0;
-        }
-    }
-}
-inline void FilterProcessor::process( DataBuffer& data_buffer_, const int num_samples ) noexcept
-{
     // GET DATA COPY AND REFERENCE
     FilterData::ProcessCopy filter_data;
+    // TODO update is not correct! will be done on each cycle and  not for the setted motor time
     DATA( filter_datas[id] ).get_updated_working_copy( filter_data );
 
-    // COLLECT LFO AMP
-    const float* lfo_amplitudes = data_buffer_.lfo_amplitudes.getReadPointer(id);
-
-    // COLLECT INPUT BUFFERS
-    const float* left_input_buffers[SUM_INPUTS_PER_FILTER];
-    const float* right_input_buffers[SUM_INPUTS_PER_FILTER];
-    // COLLECT OUTPUT(in) BUFFERS
-    // INPUT ENVELOP
-    // ENV / SUSTAIN
-    float* out_buffers[SUM_INPUTS_PER_FILTER];
+    // COLLECT / PREPARE
     float* input_ar_amps[SUM_INPUTS_PER_FILTER];
-    float* sustain_buffers[SUM_INPUTS_PER_FILTER];
-    for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+    const float* input_buffers[SUM_INPUTS_PER_FILTER];
+    float* out_buffers[SUM_INPUTS_PER_FILTER];
     {
-        // COLLECT BUFFERS
+        for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
         {
-            left_input_buffers[input_id] = data_buffer_.osc_samples.getReadPointer(input_id);
-            if( id > 0 )
-                right_input_buffers[input_id] = data_buffer_.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
-            else
-                right_input_buffers[input_id] = left_input_buffers[input_id];
+            // COLLECT BUFFERS
+            const int buffer_channel_id = input_id + SUM_INPUTS_PER_FILTER * id;
 
-            out_buffers[input_id] = data_buffer_.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
-            input_ar_amps[input_id] = data_buffer_.filter_input_env_amps.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
-            sustain_buffers[input_id] = data_buffer_.filter_input_sustain.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
-        }
+            float* tmp_input_buffer = data_buffer.tmp_buffer_9.getWritePointer( buffer_channel_id );
+            input_buffers[input_id] = tmp_input_buffer;
 
-        // ENV SUSTAIN
-        {
-            ENV*const env = input_envs.getUnchecked(input_id);
-            env->process( input_ar_amps[ input_id ], num_samples );
+            float* tmp_input_ar_amp = data_buffer.filter_input_env_amps.getWritePointer( buffer_channel_id );
+            input_ar_amps[input_id] = tmp_input_ar_amp;
 
-            // OVERRIDE AMP BY FIXED SUSTAIN VALUE)
-            const bool is_input_sustain_fixed = filter_data.input_holds[input_id];
-            for( int sid = 0 ; sid != num_samples ; ++sid )
+            out_buffers[input_id] = data_buffer.filter_output_samples.getWritePointer( buffer_channel_id );
+
+            // CALCULATE INPUTS AND ENVELOPS
             {
-                float sustain = filter_data.input_sustains->get(input_id).tick();
-                sustain_buffers[input_id][sid] = sustain;
-                if( is_input_sustain_fixed )
-                    input_ar_amps[input_id][sid] = positive(sustain);
+                FilterData::sustain_replacement_t& input_sustain = filter_data.input_sustains->get(input_id);
+
+                const float*const osc_input_buffer = data_buffer.osc_samples.getReadPointer(input_id);
+                if( filter_data.input_holds[input_id] ) // USING SUSTAIN
+                {
+                    // TODO
+                    // input_envs.getUnchecked(input_id)->reset();
+
+                    if( id == FILTER_1 )
+                    {
+                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        {
+                            tmp_input_ar_amp[sid] = input_sustain.tick();
+                            tmp_input_buffer[sid] = osc_input_buffer[sid];
+                        }
+                    }
+                    else
+                    {
+                        const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
+                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        {
+                            const float sustain = input_sustain.tick();
+                            if( sustain < 0 )
+                            {
+                                tmp_input_ar_amp[sid] = sustain*-1;
+                                tmp_input_buffer[sid] = osc_input_buffer[sid];
+                            }
+                            else
+                            {
+                                tmp_input_ar_amp[sid] = sustain;
+                                tmp_input_buffer[sid] = filter_before_buffer[sid];
+                            }
+                        }
+
+                    }
+                }
+                else // USING ADR
+                {
+                    input_envs.getUnchecked(input_id)->process( tmp_input_ar_amp, num_samples );
+
+                    if( id == FILTER_1 )
+                    {
+                        input_sustain.reset();
+                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        {
+                            tmp_input_buffer[sid] = osc_input_buffer[sid];
+                        }
+                    }
+                    else
+                    {
+                        const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
+                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        {
+                            const float sustain = input_sustain.tick();
+                            if( sustain < 0 )
+                                tmp_input_buffer[sid] = osc_input_buffer[sid];
+                            else
+                                tmp_input_buffer[sid] = filter_before_buffer[sid];
+                        }
+                    }
+                }
             }
         }
     }
 
-    // ENVELOP
-    const float* env_amps( data_buffer_.filtered_env_amps.getReadPointer(id) );
-
-    // OUTPUT BUFFER
-    float* direct_output_buffer( data_buffer_.direct_filter_output_samples.getWritePointer(id) );
-
-    mono_AmpPainter*const amp_painter = MONOVoice::get_amp_painter();
-    for( int sid = 0 ; sid != num_samples ; ++sid )
+    // ADSTR - LFO MIX
+    float* amp_mix = data_buffer.lfo_amplitudes.getWritePointer(id);
     {
-        float amp_mix = (1.0f+filter_data.adsr_lfo_mix->tick()) / 2;
-        amp_mix = env_smoother.add_and_get_average( env_amps[sid]*(1.0f-amp_mix) + lfo_amplitudes[sid]*amp_mix );
+        const float* env_amps = data_buffer.filtered_env_amps.getReadPointer(id);
+        const float* lfo_amplitudes = data_buffer.lfo_amplitudes.getReadPointer(id);
+        for( int sid = 0 ; sid != num_samples ; ++sid )
+        {
+            // LFO ADSR MIX - HERE TO SAVE ONE LOOP
+            const float mix = (1.0f+filter_data.adsr_lfo_mix->tick()) * 0.5f;
+            amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
+        }
+    }
 
-        float inputs[SUM_INPUTS_PER_FILTER];
-        inputs[0] = sustain_buffers[0][sid] < 0 ? left_input_buffers[0][sid] : right_input_buffers[0][sid];
-        inputs[1] = sustain_buffers[1][sid] < 0 ? left_input_buffers[1][sid] : right_input_buffers[1][sid];
-        inputs[2] = sustain_buffers[2][sid] < 0 ? left_input_buffers[2][sid] : right_input_buffers[2][sid];
+    // PROCESS FILTER
+    {
+#define DISTORTION(x)  distortion(x,filter_distortion)
 
-        // PROCESS FILTER
+#define MAX_CUTOFF 8000.0f
+#define MIN_CUTOFF 40.0f
+
+        const bool modulate_cutoff = filter_data.modulate_cutoff;
+        const bool modulate_resonance = filter_data.modulate_resonance;
+        const bool modulate_gain = filter_data.modulate_gain;
+        const bool modulate_distortion = filter_data.modulate_distortion;
         switch( filter_data.filter_type )
         {
         case LPF_2_PASS :
         case MOOG_AND_LPF:
-            process2PassLP
-            (
-                out_buffers,
-                inputs,
-                filter_data.resonance->tick_modulated( amp_mix, filter_data.modulate_resonance ),
-                (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp_mix, filter_data.modulate_cutoff ) + MIN_CUTOFF) / 8,
-                filter_data.gain->tick_modulated( amp_mix, filter_data.modulate_gain ),
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
+            double_filter[0].update_filter_to(LPF_2_PASS);
+            double_filter[1].update_filter_to(LPF_2_PASS);
+            double_filter[2].update_filter_to(LPF_2_PASS);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                const float amp = amp_mix[i];
+                const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) / 8;
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
+
+                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
+                {
+                    DoubleAnalogFilter& filter = double_filter[io_id];
+                    filter.updateLow2Pass( resonance, cutoff+35, gain );
+                    out_buffers[io_id][i] = DISTORTION( filter.processLow2Pass( DISTORTION( input_buffers[io_id][i] ) ) );
+                }
+            }
             break;
         case LPF:
-            processLP
-            (
-                out_buffers,
-                inputs,
-                filter_data.resonance->tick_modulated( amp_mix, filter_data.modulate_resonance ),
-                (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp_mix, filter_data.modulate_cutoff ) + MIN_CUTOFF) / 8,
-                filter_data.gain->tick_modulated( amp_mix, filter_data.modulate_gain ),
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
+            double_filter[0].update_filter_to(LPF);
+            double_filter[1].update_filter_to(LPF);
+            double_filter[2].update_filter_to(LPF);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                float amp = amp_mix[i];
+                const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) / 8;
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
+
+                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
+                {
+                    DoubleAnalogFilter& filter = double_filter[io_id];
+                    filter.updateLowResonance( resonance, cutoff, gain );
+                    out_buffers[io_id][i] = DISTORTION( filter.processLowResonance( DISTORTION( input_buffers[io_id][i] ) ) );
+                }
+            }
             break;
         case HIGH_2_PASS :
-            process2PassHP
-            (
-                out_buffers,
-                inputs,
-                filter_data.resonance->tick_modulated( amp_mix, filter_data.modulate_resonance ),
-                MAX_CUTOFF*2.0f * filter_data.cutoff->tick_modulated( amp_mix, filter_data.modulate_cutoff ) + MIN_CUTOFF,
-                filter_data.gain->tick_modulated( amp_mix, filter_data.modulate_gain ),
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
+            double_filter[0].update_filter_to(HIGH_2_PASS);
+            double_filter[1].update_filter_to(HIGH_2_PASS);
+            double_filter[2].update_filter_to(HIGH_2_PASS);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                float amp = amp_mix[i];
+                const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                const float cutoff = (MAX_CUTOFF*2.0f) * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF;
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
+
+                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
+                {
+                    DoubleAnalogFilter& filter = double_filter[io_id];
+                    filter.updateHigh2Pass( resonance, cutoff, gain );
+                    out_buffers[io_id][i] = DISTORTION( filter.processHigh2Pass( DISTORTION( input_buffers[io_id][i] ) ) );
+                }
+            }
             break;
         case HPF :
-            processHP
-            (
-                out_buffers,
-                inputs,
-                filter_data.resonance->tick_modulated( amp_mix, filter_data.modulate_resonance ),
-                MAX_CUTOFF*2.0f * filter_data.cutoff->tick_modulated( amp_mix, filter_data.modulate_cutoff ) + MIN_CUTOFF,
-                filter_data.gain->tick_modulated( amp_mix, filter_data.modulate_gain ),
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
+            double_filter[0].update_filter_to(HPF);
+            double_filter[1].update_filter_to(HPF);
+            double_filter[2].update_filter_to(HPF);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                float amp = amp_mix[i];
+                const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                const float cutoff = (MAX_CUTOFF*2.0f) * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF;
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
+
+                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
+                {
+                    DoubleAnalogFilter& filter = double_filter[io_id];
+                    filter.updateHighResonance( resonance, cutoff, gain );
+                    out_buffers[io_id][i] = DISTORTION( filter.processHighResonance( input_buffers[io_id][i] ) );
+                }
+            }
             break;
         case BPF:
-            processBand
-            (
-                out_buffers,
-                inputs,
-                filter_data.resonance->tick_modulated( amp_mix, filter_data.modulate_resonance ),
-                MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp_mix, filter_data.modulate_cutoff ) + MIN_CUTOFF,
-                filter_data.gain->tick_modulated( amp_mix, filter_data.modulate_gain ),
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
+            double_filter[0].update_filter_to(BPF);
+            double_filter[1].update_filter_to(BPF);
+            double_filter[2].update_filter_to(BPF);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                float amp = amp_mix[i];
+                const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                const float cutoff = MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF;
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
+
+                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
+                {
+                    DoubleAnalogFilter& filter = double_filter[io_id];
+                    filter.updateBand( resonance, cutoff, gain );
+                    out_buffers[io_id][i] = DISTORTION( filter.processBand( DISTORTION( input_buffers[io_id][i] ) ) );
+                }
+            }
             break;
         default:  /* PASS */
-            processPass
-            (
-                out_buffers,
-                inputs,
-                filter_data.distortion->tick_modulated( filter_data.modulate_distortion ? amp_mix : 0 ),
-                sid
-            );
-        }
+            double_filter[0].update_filter_to(PASS);
+            double_filter[1].update_filter_to(PASS);
+            double_filter[2].update_filter_to(PASS);
+            for( int i = 0 ; i != num_samples ; ++i )
+            {
+                float amp = amp_mix[i];
+                filter_data.resonance->tick_modulated( amp, modulate_resonance );
+                filter_data.cutoff->tick_modulated( amp, modulate_cutoff );
+                const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
+                const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
 
-        {
-            if( amp_painter )
-                amp_painter->add_filter_env( id, amp_mix );
+                out_buffers[0][i] = double_filter[0].processPass( DISTORTION( DISTORTION( input_buffers[0][i] ) ) * 2 *gain );
+                out_buffers[1][i] = double_filter[1].processPass( DISTORTION( DISTORTION( input_buffers[1][i] ) ) * 2 *gain );
+                out_buffers[2][i] = double_filter[2].processPass( DISTORTION( DISTORTION( input_buffers[2][i] ) ) * 2 *gain ) ;
+            }
+            break;
         }
+    }
 
+    // COLLECT RESULTS
+    float*const this_direct_output_buffer = data_buffer.direct_filter_output_samples.getWritePointer(id);
+    for( int sid = 0 ; sid != num_samples ; ++sid )
+    {
         // OUTPUT MIX AND DISTORTION
         {
-            direct_output_buffer[sid] = 0;
-            for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                direct_output_buffer[sid] += out_buffers[io_id][sid]*input_env_smoother[io_id].add_and_get_average(input_ar_amps[io_id][sid]);
-        }
+            float amp = filter_data.output->tick_modulated( filter_data.modulate_output ? amp_mix[sid] : 0 ) ;
 
-        {
-            direct_output_buffer[sid] *= filter_data.output->tick_modulated( filter_data.modulate_output ? amp_mix : 0 );
+            this_direct_output_buffer[sid] = out_buffers[0][sid] * input_ar_amps[0][sid];
+            this_direct_output_buffer[sid] += out_buffers[1][sid] * input_ar_amps[1][sid];
+            this_direct_output_buffer[sid] += out_buffers[2][sid] * input_ar_amps[2][sid];
+            this_direct_output_buffer[sid] *= amp;
+
             const float clipping = filter_data.output_clipping->tick();
-            direct_output_buffer[sid] = direct_output_buffer[sid]*(1.0f-clipping) + soft_clipping(direct_output_buffer[sid])*clipping;
+            this_direct_output_buffer[sid] = ( this_direct_output_buffer[sid]*(1.0f-clipping) + soft_clipping(this_direct_output_buffer[sid])*clipping );
         }
-
+    }
+    // OUT FOR USE AS INPUT IN FLT 2 & 3
+    if( id != FILTER_3 ) // NO NEED TO STORE THE THIRD BUFFER
+    {
+        for( int sid = 0 ; sid != num_samples ; ++sid )
         {
-            for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                out_buffers[io_id][sid] = soft_clipping(out_buffers[io_id][sid]);
+            out_buffers[0][sid] = soft_clipping(out_buffers[0][sid]);
+            out_buffers[1][sid] = soft_clipping(out_buffers[1][sid]);
+            out_buffers[2][sid] = soft_clipping(out_buffers[2][sid]);
         }
-
     }
 
     // COMPRESS
-    if( id == 0 )
-        compress( direct_output_buffer,
-                  data_buffer_.tmp_samples.getWritePointer(0),
-                  direct_output_buffer,
-                  num_samples,
-                  filter_data.compressor );
-    else
-        compress( direct_output_buffer,
-                  data_buffer_.tmp_samples.getWritePointer(0),
-                  data_buffer_.direct_filter_output_samples.getReadPointer(id-1),
-                  num_samples,
-                  filter_data.compressor );
+    {
+        if( id == FILTER_1 )
+            compress( this_direct_output_buffer, data_buffer.tmp_buffer_9.getWritePointer(), this_direct_output_buffer,
+            filter_data.compressor,
+            num_samples );
+        else
+            compress( this_direct_output_buffer, data_buffer.tmp_buffer_9.getWritePointer(), data_buffer.direct_filter_output_samples.getReadPointer(id-1),
+            filter_data.compressor,
+            num_samples );
+    }
+
+    // VISUALIZE
+    if( mono_AmpPainter*const amp_painter = MONOVoice::get_amp_painter() )
+    {
+        amp_painter->add_filter_env( id, amp_mix, num_samples );
+        amp_painter->add_filter( id, this_direct_output_buffer, num_samples );
+    }
+
+    // COLLECT THE FINAL OUTPUT
+    if( id == FILTER_3 )
+    {
+        float*const final_filters_output_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
+        const float* direct_output_buffer_flt_2 = data_buffer.direct_filter_output_samples.getReadPointer(1);
+        for( int sid = 0 ; sid != num_samples ; ++sid )
+            final_filters_output_buffer[sid] += (direct_output_buffer_flt_2[sid] + this_direct_output_buffer[sid]);
+    }
 }
-inline void FilterProcessor::compress
-(
-    float* io_buffer,
-    float* working_buffer_,
-    const float*  compressor_signal,
-    int num_samples,
-    float power
-) noexcept
+
+// -----------------------------------------------------------------
+inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal_,
+                                       float power,
+                                       int num_samples ) noexcept
 {
     float use_power = power;
     bool is_negative = false;
@@ -2278,11 +2559,11 @@ inline void FilterProcessor::compress
     }
 
     env_follower.setCoefficients( 0.008f * use_power + 0.0001f, 0.005f * use_power + 0.0001f );
-    env_follower.processEnvelope( compressor_signal, working_buffer_, num_samples );
+    env_follower.processEnvelope( compressor_signal_, tmp_buffer_, num_samples );
 
     for( int sid = 0 ; sid != num_samples ; ++sid )
     {
-        float compression = (exp(working_buffer_[sid])-1);
+        float compression = mono_exp(tmp_buffer_[sid])-1;
         if( is_negative )
             compression = 1.0f-compression;
 
@@ -2292,12 +2573,16 @@ inline void FilterProcessor::compress
             compression = 1;
 // io_buffer[sid] = input*(1.0f-use_power) + ( (1.0f+FIXED_K)*input/(1.0f+FIXED_K*std::abs(input)) * (1.f - 0.3f*use_power))*use_power;
         if( is_negative )
-            io_buffer[sid] = (io_buffer[sid] * (1.0f-use_power)) + ((io_buffer[sid] * compression)*use_power);
+            io_buffer_[sid] = (io_buffer_[sid] * (1.0f-use_power)) + ((io_buffer_[sid] * compression)*use_power);
         else
-            io_buffer[sid] = io_buffer[sid] + ((io_buffer[sid] * compression)*use_power);
+            io_buffer_[sid] = io_buffer_[sid] + ((io_buffer_[sid] * compression)*use_power);
     }
 }
 
+
+
+// SHAPER
+#define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
 //==============================================================================
 class EQProcessor : public RuntimeListener {
     float frequency_low_pass[SUM_EQ_BANDS];
@@ -2848,12 +3133,7 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
 
     // FILTER PROCESSING
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
-        filter_processors[flt_id]->process( *data_buffer, num_samples );
-
-    if( amp_painter )
-        for( int filter_id = 0 ; filter_id != SUM_FILTERS ; ++filter_id )
-            for( int i = 0 ; i != num_samples ; ++i )
-                amp_painter->add_filter( filter_id, data_buffer->direct_filter_output_samples.getReadPointer(filter_id)[i] );
+        filter_processors[flt_id]->process( num_samples );
 
     // COLLECT RESULTS TO CHANNEL 0
     float* output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(0);

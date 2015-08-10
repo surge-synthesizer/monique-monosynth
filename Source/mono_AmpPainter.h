@@ -127,6 +127,19 @@ public:
     const float original_h;
 
     int resizer;
+    
+    OwnedArray<EndlessBuffer<float>> filter_values;
+    Array<bool> show_filter;
+    void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
+
+    OwnedArray<EndlessBuffer<float>> filter_env_values;
+    Array<bool> show_filter_env;
+    void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
+    
+    
+    
+    
+    
 
     OwnedArray<EndlessBuffer<float>> osc_values;
     Array<bool> show_osc;
@@ -139,18 +152,6 @@ public:
     bool show_lfo_mix;
     inline void add_lfo( int id_, float value_ ) {
         lfo_values.getUnchecked(id_)->add( value_ );
-    }
-
-    OwnedArray<EndlessBuffer<float>> filter_values;
-    Array<bool> show_filter;
-    void add_filter( int id_, float value_ ) {
-        filter_values.getUnchecked(id_)->add( value_ );
-    }
-
-    OwnedArray<EndlessBuffer<float>> filter_env_values;
-    Array<bool> show_filter_env;
-    void add_filter_env( int id_, float value_ ) {
-        filter_env_values.getUnchecked(id_)->add( value_ );
     }
 
     EndlessBuffer<float> values;

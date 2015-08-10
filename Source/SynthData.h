@@ -43,8 +43,10 @@ enum FILTER_TYPS {
     HIGH_2_PASS,
     PASS,
     LPF,
-    MOOG_AND_LPF
+    MOOG_AND_LPF,
+    UNKNOWN
 };
+
 
 enum SYNTHEISIS {
     FM_GAINED = true,
@@ -71,6 +73,10 @@ enum  {
 
     LEFT = 0,
     RIGHT = 1,
+    
+    FILTER_1 = 0,
+    FILTER_2 = 1,
+    FILTER_3 = 2,
 
     MAIN_ENV = SUM_FILTERS,
 
@@ -1038,6 +1044,9 @@ public:
 
 struct DataBuffer { // DEFINITION IN SYNTH.CPP
     int current_buffer_size;
+    
+    mono_AudioSampleBuffer<9> tmp_buffer_9;
+    
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
