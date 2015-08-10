@@ -23,9 +23,53 @@ NOINLINE RuntimeInfo::RuntimeInfo()
 NOINLINE RuntimeInfo::~RuntimeInfo() {}
 
 //==============================================================================
+//==============================================================================
+//==============================================================================
 juce_ImplementSingleton (RuntimeNotifyer)
 
-NOINLINE RuntimeListener::RuntimeListener() : sample_rate(44100), block_size(512) {
+NOINLINE RuntimeNotifyer::RuntimeNotifyer() :
+    sample_rate(44100),
+    sample_rate_1ths( 1.0/44100),
+    block_size(512)
+{
+}
+NOINLINE RuntimeNotifyer::~RuntimeNotifyer() {
+    clearSingletonInstance();
+}
+
+//==============================================================================
+NOINLINE void RuntimeNotifyer::set_sample_rate( double sr_ ) {
+    double old_sr = sample_rate;
+    sample_rate = sr_;
+    sample_rate_1ths = 1.0/sample_rate;
+    for( int i = 0 ; i != listeners.size() ; ++i )
+    {
+        listeners[i]->set_sample_rate(sr_);
+        listeners[i]->sample_rate_changed(old_sr);
+    }
+};
+NOINLINE void RuntimeNotifyer::set_block_size( int bs_ ) {
+    block_size = bs_;
+    for( int i = 0 ; i != listeners.size() ; ++i ) {
+        listeners[i]->set_block_size(bs_);
+        listeners[i]->block_size_changed();
+    }
+};
+
+double RuntimeNotifyer::get_sample_rate() const noexcept {
+    return sample_rate;
+}
+int RuntimeNotifyer::get_block_size() const noexcept {
+    return block_size;
+}
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE RuntimeListener::RuntimeListener() :
+    sample_rate(RuntimeNotifyer::getInstance()->sample_rate),
+    sample_rate_1ths(RuntimeNotifyer::getInstance()->sample_rate_1ths),
+    block_size(RuntimeNotifyer::getInstance()->block_size)
+{
     RuntimeNotifyer::getInstance()->listeners.add( this );
 }
 NOINLINE RuntimeListener::~RuntimeListener() {

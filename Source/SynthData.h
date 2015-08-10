@@ -95,15 +95,22 @@ static inline float positive( float x ) noexcept {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class RuntimeNotifyer;
 class RuntimeListener {
 protected:
     double sample_rate;
+    double sample_rate_1ths;
     int block_size;
 
 private:
     friend class RuntimeNotifyer;
-    NOINLINE virtual void set_sample_rate( double sr_ ) noexcept { sample_rate = sr_; };
+    NOINLINE virtual void set_sample_rate( double sr_ ) noexcept {
+        sample_rate = sr_;
+        sample_rate_1ths = 1.0/sample_rate;
+    };
     NOINLINE virtual void set_block_size( int bs_ ) noexcept { block_size = bs_; };
     NOINLINE virtual void sample_rate_changed( double old_sr_ ) noexcept {};
     NOINLINE virtual void block_size_changed() noexcept {};
@@ -120,39 +127,21 @@ class RuntimeNotifyer : public DeletedAtShutdown
     Array<RuntimeListener*> listeners;
 
     double sample_rate;
+    double sample_rate_1ths;
     int block_size;
 
 public:
-    void set_sample_rate( double sr_ ) {
-      double old_sr = sample_rate;
-        sample_rate = sr_;
-        for( int i = 0 ; i != listeners.size() ; ++i )
-	{
-	    listeners[i]->set_sample_rate(sr_);
-            listeners[i]->sample_rate_changed(old_sr);
-	}
-    };
-    void set_block_size( int bs_ ) {
-        block_size = bs_;
-        for( int i = 0 ; i != listeners.size() ; ++i ) {
-	    listeners[i]->set_block_size(bs_);
-            listeners[i]->block_size_changed();
-	}
-    };
+    void set_sample_rate( double sr_ );
+    void set_block_size( int bs_ );
 
-    double get_sample_rate() const noexcept {
-        return sample_rate;
-    }
-    int get_block_size() const noexcept {
-        return block_size;
-    }
+    double get_sample_rate() const noexcept;
+    int get_block_size() const noexcept;
 
 public:
     juce_DeclareSingleton (RuntimeNotifyer,false)
-    
-    ~RuntimeNotifyer() {
-        clearSingletonInstance();
-    }
+
+    NOINLINE RuntimeNotifyer();
+    NOINLINE ~RuntimeNotifyer();
 };
 
 //==============================================================================

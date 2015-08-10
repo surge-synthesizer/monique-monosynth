@@ -16,16 +16,6 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float distortion( float input_and_worker_, float distortion_power_ )
-{
-    if( distortion_power_ != 0 )
-    {
-        float distortion_add_on = 0.9f*distortion_power_;
-        input_and_worker_ = (1.0f+distortion_add_on)*input_and_worker_ - (0.0f+distortion_add_on)*input_and_worker_*input_and_worker_*input_and_worker_;
-    }
-
-    return input_and_worker_;
-}
 static inline float soft_clipping( float input_and_worker_ )
 {
     //sample_ -= (sample_*sample_*sample_)/3.0f;

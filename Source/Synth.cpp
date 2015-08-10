@@ -71,18 +71,140 @@ juce_ImplementSingleton (mono_ParameterOwnerStore)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float lfo2amp( float sample_ ) noexcept {
-    return sample_ + 1.0f/2;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 NOINLINE AmpSmoothBuffer::AmpSmoothBuffer() : pos(0), sum(0) {
     for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i )
         buffer[i] = 0;
 }
 NOINLINE AmpSmoothBuffer::~AmpSmoothBuffer() {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+forcedinline static float lfo2amp( float sample_ ) noexcept {
+    return (sample_ + 1.0f)*0.5f;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+inline static float distortion( float input_and_worker_, float distortion_power_ ) noexcept
+{
+    if( distortion_power_ != 0 )
+    {
+        float distortion_add_on = distortion_power_*0.9;
+        input_and_worker_ = (1.0f+distortion_add_on)*input_and_worker_ - (/*0.0f+*/distortion_add_on)*input_and_worker_*input_and_worker_*input_and_worker_;
+    }
+
+    return input_and_worker_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define HARD_CLIPPER_STAGE_1 1.1f
+#define HARD_CLIPPER_STAGE_2 1.25f
+#define protection_clipping(x) x
+forcedinline static float protection_clipping_DIABLED( float input_and_worker_ ) noexcept
+{
+    if( input_and_worker_ > HARD_CLIPPER_STAGE_1 )
+    {
+        input_and_worker_ = HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
+        if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
+        {
+            input_and_worker_ = HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
+            if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
+            {
+                input_and_worker_ = HARD_CLIPPER_STAGE_2;
+            }
+        }
+    }
+    else if( input_and_worker_ < -HARD_CLIPPER_STAGE_1 )
+    {
+        input_and_worker_ = -HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
+        if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
+        {
+            input_and_worker_ = -HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
+            if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
+            {
+                input_and_worker_ = -HARD_CLIPPER_STAGE_2;
+            }
+        }
+    }
+
+    return input_and_worker_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+forcedinline static float clipp_to_0_and_1( float input_and_worker_ ) noexcept
+{
+    if( input_and_worker_ > 1 )
+        input_and_worker_ = 1;
+    else if( input_and_worker_ < 0 )
+        input_and_worker_ = 0;
+
+    return input_and_worker_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static float inline taylor_sin(float x) noexcept
+{
+    float x2 = x*x;
+    float x4 = x2*x2;
+
+    // Calculate the terms
+    // As long as abs(x) < sqrt(6), which is 2.45, all terms will be positive.
+    // Values outside this range should be reduced to [-pi/2, pi/2] anyway for accuracy.
+    // Some care has to be given to the factorials.
+    // They can be pre-calculated by the compiler,
+    // but the value for the higher ones will exceed the storage capacity of int.
+    // so force the compiler to use unsigned long longs (if available) or doubles.
+    float t1 = x * (1.0f - x2 / (2*3));
+    float x5 = x * x4;
+    float t2 = x5 * (1.0f - x2 / (6*7)) / (1.0f* 2*3*4*5);
+    float x9 = x5 * x4;
+    float t3 = x9 * (1.0f - x2 / (10*11)) / (1.0f* 2*3*4*5*6*7*8*9);
+    float x13 = x9 * x4;
+    float t4 = x13 * (1.0f - x2 / (14*15)) / (1.0f* 2*3*4*5*6*7*8*9*10*11*12*13);
+    // add some more if your accuracy requires them.
+    // But remember that x is smaller than 2, and the factorial grows very fast
+    // so I doubt that 2^17 / 17! will add anything.
+    // Even t4 might already be too small to matter when compared with t1.
+
+    return t4 + t3 + t2 + t1;
+}
+#define TABLESIZE_MULTI 10
+#define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
+float* SINE_LOOKUP_TABLE;
+struct SIN_LOOKUP
+{
+    juce_DeclareSingleton (SIN_LOOKUP,false)
+    NOINLINE SIN_LOOKUP();
+    NOINLINE ~SIN_LOOKUP();
+};
+juce_ImplementSingleton (SIN_LOOKUP)
+SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
+
+NOINLINE SIN_LOOKUP::SIN_LOOKUP()
+{
+    SINE_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
+    for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
+        SINE_LOOKUP_TABLE[i] = std::sin( double(i) / TABLESIZE_MULTI );
+}
+NOINLINE SIN_LOOKUP::~SIN_LOOKUP()
+{
+    delete[] SINE_LOOKUP_TABLE;
+
+    clearSingletonInstance();
+}
+
+static float inline lookup_sine(float x) noexcept
+{
+    return SINE_LOOKUP_TABLE[ int(int64(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE) ];
+}
 
 //==============================================================================
 NOINLINE DataBuffer::DataBuffer( int init_buffer_size_ )
@@ -133,8 +255,11 @@ void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
     }
 }
 
-using namespace stk;
-
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -143,15 +268,14 @@ using namespace stk;
 class mono_BlitSaw : public RuntimeListener
 {
     float last_tick_value;
-    bool _isNewCylce;
-
-    unsigned int m_;
     float rate_;
     float phase_;
     float p_;
     float C2_;
     float a_;
     float state_;
+    unsigned int m_;
+    bool _isNewCylce;
 
 public:
     inline float lastOut( void ) const noexcept;
@@ -171,14 +295,16 @@ public:
     NOINLINE mono_BlitSaw( float frequency = 220.0f );
     NOINLINE ~mono_BlitSaw();
 };
-//==============================================================================
-mono_BlitSaw::mono_BlitSaw( float frequency ) : last_tick_value(0),_isNewCylce(true)
+
+// -----------------------------------------------------------------
+NOINLINE mono_BlitSaw::mono_BlitSaw( float frequency ) : last_tick_value(0),_isNewCylce(true)
 {
     reset();
     setFrequency( frequency );
 }
-mono_BlitSaw::~mono_BlitSaw() {}
+NOINLINE mono_BlitSaw::~mono_BlitSaw() {}
 
+// -----------------------------------------------------------------
 inline float mono_BlitSaw::lastOut( void ) const noexcept {
     return last_tick_value;
 };
@@ -194,7 +320,7 @@ inline float mono_BlitSaw::tick() noexcept
     }
     else
     {
-        tmp = std::sin( m_ * phase_ ) / (p_ * denominator);
+        tmp = std::sin( float(m_ * phase_) ) / (p_ * denominator);
     }
 
     tmp +=( state_ - C2_ );
@@ -210,6 +336,8 @@ inline float mono_BlitSaw::tick() noexcept
 
     return last_tick_value = tmp;
 }
+
+// -----------------------------------------------------------------
 inline void mono_BlitSaw::setPhase( float phase ) noexcept {
     phase_ = float_Pi * phase;
 }
@@ -234,7 +362,7 @@ inline void mono_BlitSaw::setFrequency( float frequency ) noexcept
 }
 inline void mono_BlitSaw::updateHarmonics( void ) noexcept
 {
-    m_ = 2 * std::floor( 0.5f * p_ ) + 1;
+    m_ = 2 * mono_floor( 0.5f * p_ ) + 1;
     a_ = m_ / p_;
 }
 
@@ -243,18 +371,23 @@ inline void mono_BlitSaw::updateHarmonics( void ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class mono_BlitSquare : public RuntimeListener
 {
     float last_tick_value;
-    bool _isNewCylce;
-
-    unsigned int m_;
     float rate_;
     float phase_;
     float p_;
     float a_;
     float lastBlitOutput_;
     float dcbState_;
+
+    unsigned int m_;
+    bool _isNewCylce;
 
 public:
     inline float lastOut( void ) const noexcept;
@@ -270,12 +403,13 @@ public:
 
 private:
     inline void updateHarmonics( void ) noexcept;
-    
+
 public:
     NOINLINE mono_BlitSquare( float frequency = 220.0f );
     NOINLINE ~mono_BlitSquare();
 };
-//==============================================================================
+
+// -----------------------------------------------------------------
 NOINLINE mono_BlitSquare::mono_BlitSquare( float frequency ) : last_tick_value(0), _isNewCylce(true)
 {
     setFrequency( frequency );
@@ -285,6 +419,7 @@ NOINLINE mono_BlitSquare::~mono_BlitSquare()
 {
 }
 
+// -----------------------------------------------------------------
 inline float mono_BlitSquare::lastOut( void ) const noexcept {
     return last_tick_value;
 }
@@ -302,9 +437,9 @@ inline float mono_BlitSquare::tick( void ) noexcept
         else
             lastBlitOutput_ = -a_;
     }
-    else {
-        //lastBlitOutput_ = std::sin( m_ * phase_ );
-        lastBlitOutput_ = std::sin( m_ * phase_ ) / (p_ * denominator);
+    else
+    {
+        lastBlitOutput_ = std::sin( float(m_ * phase_) ) / (p_ * denominator);
     }
 
     lastBlitOutput_ += temp;
@@ -323,6 +458,8 @@ inline float mono_BlitSquare::tick( void ) noexcept
 
     return last_tick_value;
 }
+
+// -----------------------------------------------------------------
 inline void mono_BlitSquare::reset() noexcept
 {
     phase_ = 0;
@@ -351,7 +488,7 @@ inline void mono_BlitSquare::setFrequency( float frequency ) noexcept
 }
 inline void mono_BlitSquare::updateHarmonics( void ) noexcept
 {
-    m_ = 2 * (std::floor( 0.5f * p_ ) + 1);
+    m_ = (mono_floor( 0.5f * p_ ) + 1) * 2;
 
     a_ = m_ / p_;
 }
@@ -361,102 +498,79 @@ inline void mono_BlitSquare::updateHarmonics( void ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class mono_SineWave : public RuntimeListener
 {
     float last_tick_value;
+    float delta;
+    float current_angle;
+    float frequency;
 
-    // TODO can be static or global
-    float* table_;
-    float time_;
-    float rate_;
     bool _isNewCylce;
 
 public:
-    inline float lastOut( void ) const noexcept;
+    inline float lastOut() const noexcept;
+    inline float tick() noexcept;
 
-    inline void reset( void ) noexcept;
-    inline void setRate( float rate ) noexcept;
+public:
     inline void setFrequency( float frequency ) noexcept;
-    inline void addPhase( float phase ) noexcept;
+    inline void reset() noexcept;
 
-    // HACK FOR SYNC
     inline bool isNewCylce() const noexcept;
     inline void clearNewCycleState() noexcept;
 
-    inline float tick( void ) noexcept;
-
 private:
     NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
-    
+
 public:
-    NOINLINE mono_SineWave( void );
-    NOINLINE ~mono_SineWave( void );
+    NOINLINE mono_SineWave();
+    NOINLINE ~mono_SineWave();
 };
-//==============================================================================
 
-#define SINE_TABLE_SIZE 2048
-NOINLINE mono_SineWave::mono_SineWave( void )
-    : time_(0),
-      rate_(1),
-      _isNewCylce(true)
+// -----------------------------------------------------------------
+NOINLINE mono_SineWave::mono_SineWave()
+    :  _isNewCylce(true), last_tick_value(0), current_angle(0), delta(0)
 {
-    table_ = new float[ SINE_TABLE_SIZE + 1 ];
-    float temp = 1.0 / SINE_TABLE_SIZE;
-    for ( unsigned long i=0; i<=SINE_TABLE_SIZE; i++ )
-        table_[i] = std::sin( (float_Pi*2) * i * temp );
-}
-NOINLINE void mono_SineWave::sample_rate_changed( double old_sr_ ) noexcept {
-  this->setRate( old_sr_ * rate_ / sample_rate );
-};
-NOINLINE mono_SineWave::~mono_SineWave() {
-    delete[] table_;
+    setFrequency(440);
 }
 
-inline float mono_SineWave::tick( void ) noexcept
+NOINLINE mono_SineWave::~mono_SineWave() {}
+
+// -----------------------------------------------------------------
+inline float mono_SineWave::lastOut() const noexcept {
+    return last_tick_value;
+}
+inline float mono_SineWave::tick() noexcept
 {
-    // Check limits of time address ... if necessary, recalculate modulo
-    // SINE_TABLE_SIZE.
-    while ( time_ < 0 )
-        time_ += SINE_TABLE_SIZE;
-    while ( time_ >= SINE_TABLE_SIZE )
-        time_ -= SINE_TABLE_SIZE;
-
-    int iIndex = (unsigned int) time_;
-    float alpha = time_ - iIndex;
-    float tmp = table_[ iIndex ];
-    tmp += ( alpha * ( table_[ iIndex + 1 ] - tmp ) );
-
-    // Increment time, which can be negative.
-    time_ += rate_;
-
-    if( last_tick_value < 0 && tmp >= 0 )
+    // TODO do the lookup unsave!
+    float value = lookup_sine( current_angle );
+    current_angle += delta;
+    if( current_angle > (float_Pi * 2) )
+    {
         _isNewCylce = true;
+        current_angle -= (float_Pi * 2);
+    }
     else
         _isNewCylce = false;
 
-    return last_tick_value = tmp;
+    return last_tick_value = value;
 }
 
-inline float mono_SineWave::lastOut( void ) const noexcept {
-    return last_tick_value;;
-}
+// -----------------------------------------------------------------
 inline void mono_SineWave::reset( void ) noexcept
 {
-    time_ = 0;
+    current_angle = 0;
     last_tick_value = 0;
 }
-inline void mono_SineWave::setRate( float rate ) noexcept {
-    rate_ = rate;
-}
-inline void mono_SineWave::setFrequency( float frequency ) noexcept
+inline void mono_SineWave::setFrequency( float frequency_ ) noexcept
 {
-    // This is a looping frequency.
-    this->setRate( SINE_TABLE_SIZE * frequency / sample_rate );
-}
-inline void mono_SineWave::addPhase( float phase ) noexcept
-{
-    // Add a time in cycles (one cycle = SINE_TABLE_SIZE).
-    time_ += SINE_TABLE_SIZE * phase;
+    frequency = frequency_;
+    float cyclesPerSample = frequency_ * sample_rate_1ths;
+    delta = cyclesPerSample * (float_Pi*2);
 }
 inline bool mono_SineWave::isNewCylce() const noexcept {
     return _isNewCylce;
@@ -465,6 +579,128 @@ inline void mono_SineWave::clearNewCycleState() noexcept {
     _isNewCylce = false;
 }
 
+NOINLINE void mono_SineWave::sample_rate_changed( double old_sr_ ) noexcept {
+    setFrequency(frequency);
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_Noise
+{
+    float last_tick_value;
+
+public:
+    inline void setSeed( unsigned int seed = 0 ) noexcept;
+    inline float lastOut() const noexcept;
+    inline float tick() noexcept;
+
+public:
+    NOINLINE mono_Noise( unsigned int seed = 0 );
+    NOINLINE ~mono_Noise();
+};
+
+// -----------------------------------------------------------------
+NOINLINE mono_Noise::mono_Noise( unsigned int seed ) : last_tick_value(0)
+{
+    this->setSeed( seed );
+}
+NOINLINE mono_Noise::~mono_Noise() {}
+
+// -----------------------------------------------------------------
+inline float mono_Noise::lastOut() const noexcept
+{
+    return last_tick_value;
+};
+
+inline float mono_Noise::tick() noexcept
+{
+    return last_tick_value = ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
+}
+
+inline void mono_Noise::setSeed( unsigned int seed ) noexcept
+{
+    if ( seed == 0 )
+        srand( (unsigned int) time( NULL ) );
+    else
+        srand( seed );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_OnePole
+{
+    float last_tick_value;
+    float gain;
+    float a1, b;
+
+public:
+    void setPole( float thePole ) noexcept;
+    void setGain( float gain_ ) noexcept;
+
+    float lastOut( void ) const noexcept;
+    float tick( float input ) noexcept;
+
+public:
+    NOINLINE mono_OnePole( float thePole = 0.9 );
+    NOINLINE ~mono_OnePole();
+
+};
+
+// -----------------------------------------------------------------
+mono_OnePole::mono_OnePole( float thePole ) : last_tick_value(0), gain(0)
+{
+    this->setPole( thePole );
+}
+
+mono_OnePole::~mono_OnePole() {}
+
+// -----------------------------------------------------------------
+inline float mono_OnePole::lastOut() const noexcept
+{
+    return last_tick_value;
+}
+
+inline float mono_OnePole::tick( float input ) noexcept
+{
+    return last_tick_value = b*gain*input - a1*last_tick_value;
+}
+
+// -----------------------------------------------------------------
+inline void mono_OnePole::setPole( float thePole ) noexcept
+{
+    if ( thePole > 0 )
+        b = (float) (1.0 - thePole);
+    else
+        b = (float) (1.0 + thePole);
+
+    a1 = -thePole;
+}
+inline void mono_OnePole::setGain( float gain_ ) noexcept
+{
+    gain = gain_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -472,69 +708,65 @@ inline void mono_SineWave::clearNewCycleState() noexcept {
 //==============================================================================
 class mono_Modulate : public RuntimeListener
 {
-    float last_tick_value;
-
     mono_SineWave vibrato_;
-    Noise noise_;
-    OnePole  filter_;
+    mono_OnePole filter_;
+    mono_Noise noise_;
+
+    float last_tick_value;
     float vibratoGain_;
-    float randomGain_;
     unsigned int noiseRate_;
     unsigned int noiseCounter_;
 
 public:
     inline void reset() noexcept;
-
-    //! Set the periodic (vibrato) rate or frequency in Hz.
     inline void setVibratoRate( float rate ) noexcept;
-
-    //! Set the periodic (vibrato) gain.
     inline void setVibratoGain( float gain ) noexcept;
-
-    //! Return the last computed output value.
     inline float lastOut( void ) const noexcept;
 
     // HACK FOR SYNC
     inline bool isNewCylce() const noexcept;
     inline void clearNewCycleState() noexcept;
 
-    //! Compute and return one output sample.
     inline float tick( void ) noexcept;
 
 public:
     NOINLINE mono_Modulate( void );
     NOINLINE ~mono_Modulate( void );
 };
-//==============================================================================
 
-NOINLINE mono_Modulate::mono_Modulate( void ) : last_tick_value(0)
+// -----------------------------------------------------------------
+NOINLINE mono_Modulate::mono_Modulate( void ) : last_tick_value(0), vibratoGain_(0.04)
 {
     vibrato_.setFrequency( 6.0 );
-    vibratoGain_ = 0.04;
 
     noiseRate_ = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
     noiseCounter_ = noiseRate_;
 
-    randomGain_ = 0.05;
     filter_.setPole( 0.999 );
-    filter_.setGain( randomGain_ );
+    filter_.setGain( 0.05 );
 }
 NOINLINE mono_Modulate::~mono_Modulate() {}
 
+// -----------------------------------------------------------------
+inline float mono_Modulate::lastOut( void ) const noexcept {
+    return last_tick_value;
+};
 inline float mono_Modulate::tick() noexcept
 {
     // Compute periodic and random modulations.
     last_tick_value = vibratoGain_ * vibrato_.tick();
-    if ( noiseCounter_++ >= noiseRate_ ) {
+    if ( noiseCounter_++ > noiseRate_ ) {
         noise_.tick();
         noiseCounter_ = 0;
     }
     last_tick_value += filter_.tick( noise_.lastOut() );
+
     return last_tick_value;
 }
+
+// -----------------------------------------------------------------
 inline void mono_Modulate::reset() noexcept {
     last_tick_value = 0;
-    // ADDED
     vibrato_.reset();
 }
 inline void mono_Modulate::setVibratoRate( float rate ) noexcept {
@@ -543,9 +775,6 @@ inline void mono_Modulate::setVibratoRate( float rate ) noexcept {
 inline void mono_Modulate::setVibratoGain( float gain ) noexcept {
     vibratoGain_ = gain;
 }
-inline float mono_Modulate::lastOut( void ) const noexcept {
-    return last_tick_value;
-};
 inline bool mono_Modulate::isNewCylce() const noexcept
 {
     return vibrato_.isNewCylce();
