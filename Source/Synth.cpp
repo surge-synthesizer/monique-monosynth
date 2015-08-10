@@ -1628,9 +1628,6 @@ float ENV::get_amp() const noexcept {
     return envelop.get_current_amp();
 }
 
-// TODO filter update nur wenn die wertänderung z.b grösser 1 %
-// do the calculation
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -1713,14 +1710,14 @@ inline void AnalogFilter::set(float r, float c, float gain_) noexcept
 inline void AnalogFilter::calc() noexcept
 {
     {
-        float f = (cutoff+cutoff) * sample_rate_1ths;
-        float agressive = 0.48f*gain;
+        const float f = (cutoff+cutoff) * sample_rate_1ths;
+        const float agressive = 0.48f*gain;
         p=f*((1.5f+agressive)-((0.5f+agressive)*f));
         k=p*2-1;
     }
     {
-        float t=(1.0f-p)*1.386249f;
-        float t2=12.0f+t*t;
+        const float t=(1.0f-p)*1.386249f;
+        const float t2=12.0f+t*t;
         r = res*(t2+6.0f*t)/(t2-6.0f*t);
     }
 }
@@ -1736,7 +1733,7 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+    y4 -= (y4*y4*y4) * (1.0f/6);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -1749,11 +1746,11 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define FILTER_CHANGE_GLIDE_TIME_MS (msToSamplesFast(200,lpf_1.sample_rate)+50)
+#define FILTER_CHANGE_GLIDE_TIME_MS (msToSamplesFast(200,flt_1.sample_rate)+50)
 class DoubleAnalogFilter
 {
-    AnalogFilter lpf_1;
-    AnalogFilter lpf_2;
+    AnalogFilter flt_1;
+    AnalogFilter flt_2;
 
     DoubleAnalogFilter* smooth_filter;
 
@@ -1819,8 +1816,8 @@ public:
 // -----------------------------------------------------------------
 NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter)
     :
-    lpf_1(),
-    lpf_2(),
+    flt_1(),
+    flt_2(),
 
     smooth_filter( nullptr ),
 
@@ -1838,8 +1835,8 @@ NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() {
 }
 
 inline void DoubleAnalogFilter::reset() noexcept {
-    lpf_1.reset();
-    lpf_2.reset();
+    flt_1.reset();
+    flt_2.reset();
 }
 
 // -----------------------------------------------------------------
@@ -1917,7 +1914,7 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+    y4 -= (y4*y4*y4) * (1.0f/6);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -1929,14 +1926,14 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 }
 inline void DoubleAnalogFilter::updateLowResonance(float resonance_, float cutoff_, float gain_) noexcept
 {
-    lpf_1.update( resonance_, cutoff_+35, gain_ );
+    flt_1.update( resonance_, cutoff_+35, gain_ );
 }
 inline float DoubleAnalogFilter::processLowResonance( float in_ ) noexcept
 {
     return process_filter_change
     (
         in_,
-        lpf_1.processLowResonance( in_ )
+        flt_1.processLowResonance( in_ )
     );
 }
 
@@ -1944,14 +1941,14 @@ inline float DoubleAnalogFilter::processLowResonance( float in_ ) noexcept
 // -----------------------------------------------------------------
 inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, float gain_) noexcept
 {
-    if( lpf_2.update( resonance_, cutoff_, gain_ ) )
-        lpf_1.copy_coefficient_from( lpf_2 );
+    if( flt_2.update( resonance_, cutoff_, gain_ ) )
+        flt_1.copy_coefficient_from( flt_2 );
 }
 inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
 {
-    float out = lpf_2.processLowResonance( in_ );
-    const float gain = lpf_1.gain;
-    const float low = lpf_1.processLowResonance( protection_clipping(out*gain) );
+    const float out = flt_2.processLowResonance( in_ );
+    const float gain = flt_1.gain;
+    const float low = flt_1.processLowResonance( protection_clipping(out*gain) );
 
     return process_filter_change
     (
@@ -1974,7 +1971,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6.0f);
+    y4 -= (y4*y4*y4) * (1.0f/6);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -1986,14 +1983,14 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
 }
 inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
 {
-    if( lpf_2.update( resonance_, cutoff_, gain_ ) )
-        lpf_1.copy_coefficient_from( lpf_2 );
+    if( flt_2.update( resonance_, cutoff_, gain_ ) )
+        flt_1.copy_coefficient_from( flt_2 );
 }
 inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
 {
-    float out = lpf_2.processHighResonance( in_ );
-    const float gain = lpf_1.gain;
-    const float low = lpf_1.processHighResonance( protection_clipping(out*gain) );
+    const float out = flt_2.processHighResonance( in_ );
+    const float gain = flt_1.gain;
+    const float low = flt_1.processHighResonance( protection_clipping(out*gain) );
     return process_filter_change
     (
         in_,
@@ -2005,14 +2002,14 @@ inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
 // -----------------------------------------------------------------
 inline void DoubleAnalogFilter::updateHighResonance(float resonance_, float cutoff_, float gain_) noexcept
 {
-    lpf_1.update( resonance_, cutoff_, gain_ );
+    flt_1.update( resonance_, cutoff_, gain_ );
 }
 inline float DoubleAnalogFilter::processHighResonance(float in_) noexcept
 {
     return process_filter_change
     (
         in_,
-        lpf_1.processHighResonance( in_ )
+        flt_1.processHighResonance( in_ )
     );
 }
 
@@ -2020,15 +2017,15 @@ inline float DoubleAnalogFilter::processHighResonance(float in_) noexcept
 // -----------------------------------------------------------------
 inline void DoubleAnalogFilter::updateBand(float resonance_, float cutoff_, float gain_ ) noexcept
 {
-    if( lpf_1.update( resonance_, cutoff_+10, gain_ ) )
-        lpf_2.update( resonance_, cutoff_, gain_ );
+    if( flt_1.update( resonance_, cutoff_+10, gain_ ) )
+        flt_2.update( resonance_, cutoff_, gain_ );
 }
 inline float DoubleAnalogFilter::processBand(float in_) noexcept
 {
     return process_filter_change
     (
         in_,
-        lpf_1.processLowResonance( protection_clipping( lpf_2.processHighResonance( in_ ) ) )*0.5f
+        flt_1.processLowResonance( protection_clipping( flt_2.processHighResonance( in_ ) ) )*0.5f
     );
 }
 
@@ -2051,32 +2048,32 @@ inline void DoubleAnalogFilter::update_filter_to( FILTER_TYPS type_ ) noexcept {
         if( smooth_filter )
         {
             // SET THE SECOND FILTER TO THE OLD COMPLETE STATE
-            smooth_filter->lpf_1.copy_coefficient_from(lpf_1);
-            smooth_filter->lpf_1.copy_state_from(lpf_1);
-            smooth_filter->lpf_2.copy_coefficient_from(lpf_2);
-            smooth_filter->lpf_2.copy_state_from(lpf_2);
+            smooth_filter->flt_1.copy_coefficient_from(flt_1);
+            smooth_filter->flt_1.copy_state_from(flt_1);
+            smooth_filter->flt_2.copy_coefficient_from(flt_2);
+            smooth_filter->flt_2.copy_state_from(flt_2);
 
             switch( last_filter_type )
             {
             case LPF :
-                lpf_2.copy_state_from(lpf_1);
+                flt_2.copy_state_from(flt_1);
                 break;
             case LPF_2_PASS :
                 break;
             case HPF :
-                lpf_2.copy_state_from(lpf_1);
+                flt_2.copy_state_from(flt_1);
                 break;
             case HIGH_2_PASS :
                 break;
             case BPF :
                 break;
             case PASS :
-                //lpf_1.reset();
-                //lpf_2.reset();
+                //flt_1.reset();
+                //flt_2.reset();
                 break;
             default /*UNKNOWN*/ :
-                lpf_1.reset();
-                lpf_2.reset();
+                flt_1.reset();
+                flt_2.reset();
             }
 
             glide_time_4_filters = FILTER_CHANGE_GLIDE_TIME_MS;
@@ -2123,7 +2120,7 @@ inline float DoubleAnalogFilter::processByType(float io_, FILTER_TYPS type_ ) no
     case BPF :
         io_ = processBand(io_);
         break;
-    default /* PASS */ :
+    default /* PASS & UNKNOWN */ :
         break;
     }
 

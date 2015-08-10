@@ -54,10 +54,6 @@
             file="../Source/mono_ModulationSlider.cpp"/>
       <FILE id="hoGqtJ" name="mono_ModulationSlider.h" compile="0" resource="0"
             file="../Source/mono_ModulationSlider.h"/>
-      <FILE id="kA4JLP" name="mono_MoogFilter.cpp" compile="1" resource="0"
-            file="../Source/mono_MoogFilter.cpp"/>
-      <FILE id="OfB0MQ" name="mono_MoogFilter.h" compile="0" resource="0"
-            file="../Source/mono_MoogFilter.h"/>
       <FILE id="cletLI" name="mono_Parameters.cpp" compile="1" resource="0"
             file="../Source/mono_Parameters.cpp"/>
       <FILE id="faB2bl" name="mono_Parameters.h" compile="0" resource="0"
