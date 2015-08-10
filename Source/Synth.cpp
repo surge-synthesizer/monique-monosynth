@@ -1341,12 +1341,14 @@ class ValueEnvelope : public RuntimeListener {
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
-    inline void reset( float end_value_,
-                       float time_sample_rate_factor_,
-                       float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
+    inline void update( float end_value_,
+                        float time_sample_rate_factor_,
+                        float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
     inline void force_zero_glide() noexcept;
+
+    inline void reset() noexcept;
 
     // FOR UI PURPOSES
     float get_current_amp() const noexcept;
@@ -1463,11 +1465,19 @@ inline void ValueEnvelope::force_zero_glide() noexcept {
     force_zero_offset = current_value/FORCE_ZERO_SAMPLES;
     current_value = 0;
 }
+inline void ValueEnvelope::reset() noexcept {
+    samples_to_target_left = 0;
+    current_value = 0;
+    end_value = 0;
+    delta = 0;
+    current_force_zero_counter = 0;
+    force_zero_offset = 0;
+}
 
-inline void ValueEnvelope::reset( float end_value_,
-                                  float time_sample_rate_factor_,
-                                  float start_value_
-                                ) noexcept
+inline void ValueEnvelope::update( float end_value_,
+                                   float time_sample_rate_factor_,
+                                   float start_value_
+                                 ) noexcept
 {
     // UPDATE INTERNALS
     if( start_value_ != WORK_FROM_CURRENT_VALUE )
@@ -1511,6 +1521,7 @@ public:
     // TODO, add to filter processor
     inline void start_attack( float set_to_zero = true ) noexcept;
     inline void set_to_release() noexcept;
+    inline void reset() noexcept;
 
 public:
     float get_amp() const noexcept;
@@ -1530,6 +1541,7 @@ NOINLINE ENV::ENV( ENVData& data_ )
 NOINLINE ENV::~ENV() {}
 
 inline void ENV::process( float* dest_, const int num_samples_ ) noexcept {
+    // TODO, if you came from end env, reset sustain!
     data.sustain.update( DATA( synth_data ).glide_motor_time );
     const float shape = DATA( synth_data ).curve_shape;
     float shape_factor = 1;
@@ -1564,10 +1576,10 @@ inline void ENV::update_stage() noexcept {
     case TRIGGER_START :
     {
         if( data.decay )
-            envelop.reset( 1, data.attack*data.max_attack_time );
+            envelop.update( 1, data.attack*data.max_attack_time );
         else
         {
-            envelop.reset( data.sustain.tick(), data.attack*data.max_attack_time );
+            envelop.update( data.sustain.tick(), data.attack*data.max_attack_time );
         }
 
         current_stage = ATTACK;
@@ -1577,7 +1589,7 @@ inline void ENV::update_stage() noexcept {
     {
         if( data.decay )
         {
-            envelop.reset( data.sustain.tick(), data.decay*data.max_decay_time );
+            envelop.update( data.sustain.tick(), data.decay*data.max_decay_time );
             current_stage = DECAY;
             break;
         }
@@ -1590,13 +1602,13 @@ inline void ENV::update_stage() noexcept {
         else
             sustain_time = sustain_time*8;
 
-        envelop.reset( data.sustain.tick(), sustain_time );
+        envelop.update( data.sustain.tick(), sustain_time );
         current_stage = SUSTAIN;
     }
     break;
     case SUSTAIN :
     {
-        envelop.reset( 0, data.release*data.max_release_time );
+        envelop.update( 0, data.release*data.max_release_time );
         current_stage = RELEASE;
     }
     break;
@@ -1620,6 +1632,11 @@ inline void ENV::start_attack( float set_to_zero ) noexcept {
 inline void ENV::set_to_release() noexcept {
     current_stage = SUSTAIN;
     update_stage();
+}
+
+inline void ENV::reset() noexcept {
+    current_stage = END_ENV;
+    envelop.reset();
 }
 
 float ENV::get_amp() const noexcept {
@@ -1722,7 +1739,7 @@ inline void AnalogFilter::calc() noexcept
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
     input_and_worker_ = protection_clipping_DIABLED(input_and_worker_);
-  
+
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2279,8 +2296,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float*const osc_input_buffer = data_buffer.osc_samples.getReadPointer(input_id);
                 if( filter_data.input_holds[input_id] ) // USING SUSTAIN
                 {
-                    // TODO
-                    // input_envs.getUnchecked(input_id)->reset();
+                    input_envs.getUnchecked(input_id)->reset();
 
                     if( id == FILTER_1 )
                     {
@@ -2313,7 +2329,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 else // USING ADR
                 {
                     input_envs.getUnchecked(input_id)->process( tmp_input_ar_amp, num_samples );
-
+		    
                     if( id == FILTER_1 )
                     {
                         input_sustain.reset();
@@ -2577,9 +2593,7 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
 }
 
 
-
 // SHAPER
-#define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
 //==============================================================================
 class EQProcessor : public RuntimeListener {
     float frequency_low_pass[SUM_EQ_BANDS];
@@ -2597,7 +2611,7 @@ public:
 public:
     inline void start_attack() noexcept;
     inline void start_release() noexcept;
-    inline void process( DataBuffer& data_buffer_, const int num_samples_ ) noexcept;
+    inline void process( int num_samples_ ) noexcept;
 
     NOINLINE EQProcessor();
     NOINLINE ~EQProcessor();
@@ -2640,41 +2654,65 @@ inline void EQProcessor::start_release() noexcept
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         envs.getUnchecked(band_id)->set_to_release();
 }
-inline void EQProcessor::process( DataBuffer& data_buffer_, const int num_samples_ ) noexcept
+inline void EQProcessor::process( int num_samples_ ) noexcept
 {
-    float* io_buffer = data_buffer_.direct_filter_output_samples.getWritePointer(0);
-    // AMP BUFFER
-    float* ar_buffers[SUM_EQ_BANDS];
+    DataBuffer& data_buffer( DATA( data_buffer ) );
+
+    float* io_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
+    float* band_env_buffers[SUM_EQ_BANDS];
     float* sustain_buffers[SUM_EQ_BANDS];
+    float* band_filterd_buffers[SUM_EQ_BANDS];
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        ar_buffers[band_id] = data_buffer_.eq_ar_amps.getWritePointer(band_id);
-        sustain_buffers[band_id] = data_buffer_.eq_ar_sustain.getWritePointer(band_id);
-
-        DATA( eq_data ).velocity[band_id].update( DATA( synth_data ).glide_motor_time );
-        const bool is_input_sustain_fixed = DATA( eq_data ).hold[band_id];
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        // PROCESS 100% BAND
         {
-            float sustain = DATA( eq_data ).velocity[band_id].tick();
-            sustain_buffers[band_id][sid] = sustain;
-            if( is_input_sustain_fixed )
-                ar_buffers[band_id][sid] = positive(sustain);
+            float*const band_buffer = data_buffer.tmp_buffer_9.getWritePointer(band_id);
+            band_filterd_buffers[band_id] = band_buffer;
+            low_pass_filters[band_id].processSamples( band_buffer, io_buffer, num_samples_ );
+            high_pass_filters[band_id].processSamples( band_buffer, num_samples_ );
+        }
+
+        // ENV / SUSTAIN
+        {
+            float* tmp_ar_buffer = data_buffer.eq_ar_amps.getWritePointer(band_id);
+            band_env_buffers[band_id] = tmp_ar_buffer;
+
+            float* tmp_sustain_buffer = data_buffer.eq_ar_sustain.getWritePointer(band_id);
+            sustain_buffers[band_id] = tmp_sustain_buffer;
+            EQData::sustain_replacement_t& velocity( DATA( eq_data ).velocity[band_id] );
+            velocity.update( samplesToMsFast(DATA( synth_data ).glide_motor_time, sample_rate) );
+            if( DATA( eq_data ).hold[band_id] )
+            {
+                envs[band_id]->reset();
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    const float sustain = velocity.tick();
+                    tmp_sustain_buffer[sid] = sustain;
+                    tmp_ar_buffer[sid] = positive(sustain);
+                }
+            }
+            else
+            {
+                envs[band_id]->process( tmp_ar_buffer, num_samples_ );
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    tmp_sustain_buffer[sid] = velocity.tick();
+                }
+            }
         }
     }
 
     float resonance( DATA( synth_data ).resonance ) ;
 
-    //das klacken muss vor dem band sein
-
     // PROCESS
     for( int sid = 0 ; sid != num_samples_ ; ++sid )
     {
-        float input_sample = io_buffer[sid];
         float sum_output = 0;
         float sum_gains = 1;
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id ) // BACKWARTS FOR BASS! <- no more need coz s1+s2
         {
-            const float amp = amp_smoother[band_id].add_and_get_average( ar_buffers[band_id][sid] );
+            const float input_sample = band_filterd_buffers[band_id][sid];
+            const float amp = amp_smoother[band_id].add_and_get_average( band_env_buffers[band_id][sid] );
 
             filter[band_id].set( 0.2f*resonance, frequency_low_pass[band_id], amp );
             // PROCESS
@@ -2682,14 +2720,10 @@ inline void EQProcessor::process( DataBuffer& data_buffer_, const int num_sample
                 float sustain = sustain_buffers[band_id][sid];
                 float gain = sustain < 0 ? 1.0f-amp : 1.0f+5.0f*amp;
                 sum_gains += (gain > 1 ? (amp) : 0);
-                float output =                     (
-                                                       filter[band_id].processLow(
-                                                               high_pass_filters[band_id].processSingleSampleRaw(
-                                                                       low_pass_filters[band_id].processSingleSampleRaw( input_sample ) ) )
-                                                   ) ;
+                float output = filter[band_id].processLow( input_sample );
 
                 // SHAPER
-
+#define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
                 output = output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance;
                 sum_output += output*gain;
             }
@@ -2698,6 +2732,166 @@ inline void EQProcessor::process( DataBuffer& data_buffer_, const int num_sample
         io_buffer[sid] = sum_output / (sum_gains);
     }
 }
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+/*
+class EQProcessor : public RuntimeListener
+{
+    float frequency_low_pass[SUM_EQ_BANDS];
+    float frequency_high_pass[SUM_EQ_BANDS];
+
+    AnalogFilter filters[SUM_EQ_BANDS];
+    IIRFilter low_pass_filters[SUM_EQ_BANDS];
+    IIRFilter high_pass_filters[SUM_EQ_BANDS];
+
+    friend class mono_ParameterOwnerStore;
+public:
+    OwnedArray< ENV > envs;
+public:
+    inline void start_attack() noexcept;
+    inline void start_release() noexcept;
+    inline void process( DataBuffer& data_buffer_, const int num_samples_ ) noexcept;
+
+    NOINLINE EQProcessor();
+    NOINLINE ~EQProcessor();
+
+    NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessor)
+};
+
+// -----------------------------------------------------------------
+NOINLINE EQProcessor::EQProcessor()
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
+        envs.add( new ENV( *DATA( eq_data ).env_datas.getUnchecked( band_id ) ) );
+
+        const float frequency_low_pass_tmp = (62.5f*0.5f) * pow(2,band_id+1);
+        frequency_low_pass[band_id] = frequency_low_pass_tmp;
+        frequency_high_pass[band_id] = frequency_low_pass_tmp * 0.5f;
+    }
+
+    sample_rate_changed(0);
+}
+NOINLINE EQProcessor::~EQProcessor() {}
+
+// -----------------------------------------------------------------
+void EQProcessor::sample_rate_changed(double) noexcept
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
+        low_pass_filters[band_id].setCoefficients( IIRCoefficients::makeLowPass( sample_rate, frequency_low_pass[band_id] ) );
+        high_pass_filters[band_id].setCoefficients( IIRCoefficients::makeHighPass( sample_rate, frequency_high_pass[band_id] ) );
+    }
+}
+
+// -----------------------------------------------------------------
+inline void EQProcessor::start_attack() noexcept
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        envs.getUnchecked(band_id)->start_attack();
+}
+inline void EQProcessor::start_release() noexcept
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        envs.getUnchecked(band_id)->set_to_release();
+}
+
+// -----------------------------------------------------------------
+inline void EQProcessor::process( DataBuffer& data_buffer_, const int num_samples_ ) noexcept
+{
+    float* io_buffer = data_buffer_.direct_filter_output_samples.getWritePointer();
+    // AMP BUFFER
+    float* ar_buffers[SUM_EQ_BANDS];
+    float* sustain_buffers[SUM_EQ_BANDS];
+    float* tmp_buffers[SUM_EQ_BANDS];
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
+        float*const tmp_sustain_buffer = data_buffer_.eq_ar_sustain.getWritePointer(band_id);
+        sustain_buffers[band_id] = tmp_sustain_buffer;
+
+        float*const tmp_ar_buffers =  data_buffer_.eq_ar_amps.getWritePointer(band_id);
+        ar_buffers[band_id] = tmp_ar_buffers;
+        envs.getUnchecked(band_id)->process( tmp_ar_buffers, num_samples_ );
+
+        EQData::sustain_replacement_t& velocity = DATA( eq_data ).velocity[band_id];
+        velocity.update( msToSamplesFast(DATA( synth_data ).glide_motor_time,44100) );
+
+        // COLLECT AMP AND SUSTAIN
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            tmp_sustain_buffer[sid] = velocity.tick();
+        }
+
+        // PROCESS 100% BAND
+        float*const tmp_buffer = data_buffer_.tmp_buffer_9.getWritePointer(band_id);
+        tmp_buffers[band_id] = tmp_buffer;
+        low_pass_filters[band_id].processSamples( tmp_buffer, io_buffer, num_samples_ );
+        high_pass_filters[band_id].processSamples( tmp_buffer, num_samples_ );
+    }
+
+    // PROCESS RESONACE FILTER
+    const float resonance = DATA( synth_data ).resonance;
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        float sum_output = 0;
+        float sum_gains = 1;
+        float sum_pass = 0;
+
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            AnalogFilter& filter = filters[band_id];
+
+            const float amp = ar_buffers[band_id][sid];
+            float sustain = sustain_buffers[band_id][sid];
+            float gain = (1.0f+sustain)*0.5f;
+            sustain = (1.0f + sustain) * 2.5;
+
+            if( not DATA( eq_data ).hold[band_id] )
+            {
+                gain *= amp;
+                sustain *= amp;
+            }
+
+            //die filter ins niht durch 3 teilen
+            // - ansonsten macht der kicker 7 nicht mehr solch einen druck - würde wohl dann hier das problem liegen
+
+            // auch scheint beim gliden etwas kaput zu sein, dazu einfac mal den sustain ohne  *2.5 in den amp painter stecken
+            // auch wird im moment der lfo amp painter ersetz
+
+
+            if( band_id > 3 && band_id < 7 )
+                if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
+                {
+                    amp_painter->add_lfo( band_id - 4, sustain / 5 );
+                }
+
+            filter.set( 0.2f*resonance, frequency_low_pass[band_id], gain );
+            const float output = filter.processLow( tmp_buffers[band_id][sid]*sustain );
+
+            // SHAPER
+#define FIXED_K (2.0f*0.7f/(1.0f-0.7f))
+            sum_output += ( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance ) * gain;
+            //sum_output += output;
+#undef FIXED_K
+        }
+        io_buffer[sid] = sum_output;
+    }
+}
+
+*/
+
 
 //==============================================================================
 bool MonoSynthSound::appliesToNote(int) {
@@ -3138,12 +3332,7 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
     FloatVectorOperations::add( output_buffer, data_buffer->direct_filter_output_samples.getReadPointer(2), num_samples );
 
     // EQ
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        ENV*const env = eq_processor->envs.getUnchecked( band_id );
-        env->process( data_buffer->eq_ar_amps.getWritePointer(band_id), num_samples_ );
-    }
-    eq_processor->process( *data_buffer, num_samples );
+    eq_processor->process( num_samples );
 
     velocity_glide = current_velocity;
     if( synth_data.arp_sequencer_data->is_on )

@@ -82,32 +82,4 @@ float IIRFilter::processSingleSampleRaw (const float in) noexcept
 }
 */
 
-void IIRFilter::processSamples (float* const samples, const int numSamples) noexcept
-{
-    //const SpinLock::ScopedLockType sl (processLock);
-
-    if (active)
-    {
-        const float c0 = coefficients.coefficients[0];
-        const float c1 = coefficients.coefficients[1];
-        const float c2 = coefficients.coefficients[2];
-        const float c3 = coefficients.coefficients[3];
-        const float c4 = coefficients.coefficients[4];
-        float lv1 = v1, lv2 = v2;
-
-        for (int i = 0; i < numSamples; ++i)
-        {
-            const float in = samples[i];
-            const float out = c0 * in + lv1;
-            samples[i] = out;
-
-            lv1 = c1 * in - c3 * out + lv2;
-            lv2 = c2 * in - c4 * out;
-        }
-
-        JUCE_SNAP_TO_ZERO (lv1);  v1 = lv1;
-        JUCE_SNAP_TO_ZERO (lv2);  v2 = lv2;
-    }
-}
-
 #undef JUCE_SNAP_TO_ZERO
