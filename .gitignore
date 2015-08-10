@@ -1,13 +1,5 @@
 Standalone/Builds/
 Standalone/JuceLibraryCode/
-Standalone/Monique-Standalone.kdev4
 
 Plugin/Builds/
 Plugin/JuceLibraryCode/
-Plugin/Monique-Plugin.kdev4
-
-.kdev4/
-JUCE-3.1.1/.kdev4/
-JUCE-3.1.1/JUCE-3.1.1.kdev4
-
-PROJECT-Monique.kdev4
