@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_A80E4E78D5F2A35A__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 #include "mono_UiUtilities.h"
 
 typedef Array< float > snap_map_t;

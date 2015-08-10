@@ -11,7 +11,7 @@
 #ifndef MONO_AUDIODEVICEMANAGER_H_INCLUDED
 #define MONO_AUDIODEVICEMANAGER_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 #include "SynthData.h"
 
 #define DISABLED_PORT "CLOSED"

@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_C931A4A92150166E__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 
 class AppInstanceStore;
 class UiEditorSynthLitePopup;

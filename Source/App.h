@@ -62,13 +62,13 @@
 #define NOINLINE __attribute__ ((noinline))
 #elif JUCE_WINDOWS
 #define NOINLINE __declspec(noinline)
-#else 
+#else
 #define NOINLINE todo_UNKNOWN_PLATTFORM__________
 #endif
-  
+
 // MSVC REPLACEMENTS
 #define CONSTEXPR_SUPPORT
-  
+
 #if JUCE_WINDOWS
 #define constexpr const
 #undef CONSTEXPR_SUPPORT
@@ -76,14 +76,14 @@
 #define and &&
 #define not !
 #endif
-  
-  // MOVE SUPPORT
+
+// MOVE SUPPORT
 #if JUCE_MAC
-  #define MOVE(x) x
+#define MOVE(x) x
 #elif JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-  #define MOVE(x) std::move(x)
+#define MOVE(x) std::move(x)
 #else
-  #define MOVE(x) x
+#define MOVE(x) x
 #endif
 
 // --------------------------------------------------------------------------------------------
@@ -121,12 +121,12 @@
 #	define ROOT_FOLDER userDocumentsDirectory
 #	define MONOLISA_ROOT_FOLDER "/MONOLisa"
 #endif
-  
+
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-  
+
 static inline int round0( float value ) {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value);
@@ -183,5 +183,5 @@ static int inline mono_floor(float x) noexcept
     return i - ( i > x );
 }
 
-  
+
 #endif  // APP_H_INCLUDED

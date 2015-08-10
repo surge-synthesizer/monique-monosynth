@@ -32,7 +32,7 @@
 #ifndef __DROWAUDIO_STATEVARIABLE_H__
 #define __DROWAUDIO_STATEVARIABLE_H__
 
-#include "App.h"
+#include "App_h_includer.h"
 
 //==============================================================================
 /** Variable that holds its previous value.

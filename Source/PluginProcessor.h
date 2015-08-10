@@ -1,7 +1,7 @@
 #ifndef PLUGINPROCESSOR_H_INCLUDED
 #define PLUGINPROCESSOR_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 #include "mono_AudioDeviceManager.h"
 
 // ********************************************************************************************
@@ -108,10 +108,10 @@ public:
 
 private:
     Array< MidiMessage > user_keyboard_messages;
-    virtual void handleNoteOn (MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) {
+    virtual void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) {
         synth.noteOn( midiChannel,midiNoteNumber,velocity );
     }
-    virtual void handleNoteOff (MidiKeyboardState* source, int midiChannel, int midiNoteNumber) {
+    virtual void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) {
         synth.noteOff( midiChannel,midiNoteNumber,0, true );
     }
 

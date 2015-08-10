@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_1EE5576E0584BFD0__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 class ComponentColours;
 //[/Headers]
 

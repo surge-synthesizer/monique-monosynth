@@ -32,7 +32,7 @@
 #ifndef __DROWAUDIO_ONEPOLEFILTER_H__
 #define __DROWAUDIO_ONEPOLEFILTER_H__
 
-#include "App.h"
+#include "App_h_includer.h"
 
 //==============================================================================
 /**

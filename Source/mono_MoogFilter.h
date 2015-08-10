@@ -10,7 +10,7 @@
 #ifndef MOOG_FILTER_H_INCLUDED
 #define MOOG_FILTER_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 #include "SynthData.h"
 
 //==============================================================================

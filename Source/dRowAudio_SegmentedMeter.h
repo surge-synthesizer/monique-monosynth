@@ -32,7 +32,7 @@
 #ifndef __DROWAUDIO_SEGMENTEDMETER_H__
 #define __DROWAUDIO_SEGMENTEDMETER_H__
 
-#include "App.h"
+#include "App_h_includer.h"
 
 #include "dRowAudio_GraphicalComponent.h"
 #include "dRowAudio_StateVariable.h"

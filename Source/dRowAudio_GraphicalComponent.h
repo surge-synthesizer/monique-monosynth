@@ -32,7 +32,7 @@
 #ifndef __DROWAUDIO_GRAPHICALCOMPONENT_H__
 #define __DROWAUDIO_GRAPHICALCOMPONENT_H__
 
-#include "App.h"
+#include "App_h_includer.h"
 
 //==============================================================================
 /**	This class is an abstract base blass for some kind of graphical component

@@ -10,7 +10,7 @@
 #ifndef MONOSYNTH___H_INCLUDED
 #define MONOSYNTH___H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 #include "SynthData.h"
 
 //==============================================================================
@@ -128,7 +128,7 @@ public:
     inline float get_average() const noexcept;
 
 private:
-    virtual void sample_rate_changed( double old_sr_ ) noexcept override {
+    virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override {
       // TODO resize buffer
     };
 

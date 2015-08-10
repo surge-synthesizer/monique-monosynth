@@ -2,70 +2,6 @@
 #include "Synth.h"
 #include "mono_AmpPainter.h"
 
-
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-/*
- NOTE Working Brief
-
- FILTER CLEAN
- ENV LOOKS GOOD
-
- - remove float array
- - osc
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-
-// -fno-math-errno or -ffast-math
-
-// CTRL to switch all sliders to mod
-
-// update and reset osc and lfo, dont forget to set samplel rates to the stk
-
-//clear arpegiate
-//load handling
-//resize arp buttons for shuffle
-
-// TODO lfo snap to next musical note duration
-
-input gain, filter
-MODULATOR OFFSET!!! (we bei fm sync und fm sync stop ------ left right drift
-reset modulator! -> can be 2x,4x,6x, time of the root osci
-lfo power mit anzeigen im preview
-min glide!
-filter in peak info -> just a blinking button
-*/
-// TODO decay zeit kürzer, sensibler
-// TODO filter cutoff start invertieren (ENV)
-// TODO smoth env: da sonst cutoff zu schnell wechselt -> knackst?
-
-/*
-	OR ONLY DO IT IF OSC IS SYNCED
-	automatr the snapshot dj
-	add a move recoder for automations
-	give the snapshot dj an other colour
-
-
-filter in peak info -> just a blinking button
-	    filter copy
-pattern?
-octave in shift
-harmonics <-- done
-osci sync on wave switch!
-
-
-            TODO bpm as internal speed also on in the VST version
-            TODO velocity glide
-
-     TODO
-    cutoff frequence modulated by osc frequencey
-
-*/
-
 juce_ImplementSingleton (mono_ParameterOwnerStore)
 
 //==============================================================================
@@ -297,7 +233,17 @@ public:
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_BlitSaw::mono_BlitSaw( float frequency ) : last_tick_value(0),_isNewCylce(true)
+NOINLINE mono_BlitSaw::mono_BlitSaw( float frequency )
+    :
+    last_tick_value(0),
+    rate_(0),
+    phase_(0),
+    p_(0),
+    C2_(0),
+    a_(0),
+    state_(0),
+    m_(0),
+    _isNewCylce(true)
 {
     reset();
     setFrequency( frequency );
@@ -307,7 +253,7 @@ NOINLINE mono_BlitSaw::~mono_BlitSaw() {}
 // -----------------------------------------------------------------
 inline float mono_BlitSaw::lastOut( void ) const noexcept {
     return last_tick_value;
-};
+}
 inline float mono_BlitSaw::tick() noexcept
 {
     // Avoid a divide by zero, or use of a denormalized divisor
@@ -410,7 +356,17 @@ public:
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_BlitSquare::mono_BlitSquare( float frequency ) : last_tick_value(0), _isNewCylce(true)
+NOINLINE mono_BlitSquare::mono_BlitSquare( float frequency )
+    :
+    last_tick_value(0),
+    rate_(0),
+    phase_(0),
+    p_(0),
+    a_(0),
+    lastBlitOutput_(0),
+    dcbState_(0),
+    m_(0),
+    _isNewCylce(true)
 {
     setFrequency( frequency );
     reset();
@@ -469,14 +425,14 @@ inline void mono_BlitSquare::reset() noexcept
 }
 inline void mono_BlitSquare::setPhase( float phase ) noexcept {
     phase_ = float_Pi * phase;
-};
+}
 
 inline float mono_BlitSquare::getPhase() const noexcept {
     return phase_ / float_Pi;
-};
+}
 inline bool mono_BlitSquare::isNewCylce() const noexcept {
     return _isNewCylce;
-};
+}
 inline void mono_BlitSquare::clearNewCycleState() noexcept {
     _isNewCylce = false;
 }
@@ -533,7 +489,13 @@ public:
 
 // -----------------------------------------------------------------
 NOINLINE mono_SineWave::mono_SineWave()
-    :  _isNewCylce(true), last_tick_value(0), current_angle(0), delta(0)
+    :
+    last_tick_value(0),
+    delta(0),
+    current_angle(0),
+    frequency(0),
+
+    _isNewCylce(0)
 {
     setFrequency(440);
 }
@@ -579,9 +541,9 @@ inline void mono_SineWave::clearNewCycleState() noexcept {
     _isNewCylce = false;
 }
 
-NOINLINE void mono_SineWave::sample_rate_changed( double old_sr_ ) noexcept {
+NOINLINE void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept {
     setFrequency(frequency);
-};
+}
 
 //==============================================================================
 //==============================================================================
@@ -618,13 +580,11 @@ NOINLINE mono_Noise::~mono_Noise() {}
 inline float mono_Noise::lastOut() const noexcept
 {
     return last_tick_value;
-};
-
+}
 inline float mono_Noise::tick() noexcept
 {
     return last_tick_value = ( 2.0 * rand() / (RAND_MAX + 1.0) - 1.0 );
 }
-
 inline void mono_Noise::setSeed( unsigned int seed ) noexcept
 {
     if ( seed == 0 )
@@ -663,7 +623,11 @@ public:
 };
 
 // -----------------------------------------------------------------
-mono_OnePole::mono_OnePole( float thePole ) : last_tick_value(0), gain(0)
+mono_OnePole::mono_OnePole( float thePole ) :
+    last_tick_value(0),
+    gain(0),
+    a1(0),
+    b(0)
 {
     this->setPole( thePole );
 }
@@ -708,14 +672,14 @@ inline void mono_OnePole::setGain( float gain_ ) noexcept
 //==============================================================================
 class mono_Modulate : public RuntimeListener
 {
-    mono_SineWave vibrato_;
-    mono_OnePole filter_;
-    mono_Noise noise_;
+    mono_SineWave vibrato;
+    mono_OnePole filter;
+    mono_Noise noise;
 
     float last_tick_value;
-    float vibratoGain_;
-    unsigned int noiseRate_;
-    unsigned int noiseCounter_;
+    float vibratoGain;
+    unsigned int noiseRate;
+    unsigned int noiseCounter;
 
 public:
     inline void reset() noexcept;
@@ -735,31 +699,40 @@ public:
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_Modulate::mono_Modulate( void ) : last_tick_value(0), vibratoGain_(0.04)
+NOINLINE mono_Modulate::mono_Modulate( void )
+    :
+    vibrato(),
+    filter(),
+    noise(),
+
+    last_tick_value(0),
+    vibratoGain(0.04),
+    noiseRate(0),
+    noiseCounter(0)
 {
-    vibrato_.setFrequency( 6.0 );
+    vibrato.setFrequency( 6.0 );
 
-    noiseRate_ = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
-    noiseCounter_ = noiseRate_;
+    noiseRate = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
+    noiseCounter = noiseRate;
 
-    filter_.setPole( 0.999 );
-    filter_.setGain( 0.05 );
+    filter.setPole( 0.999 );
+    filter.setGain( 0.05 );
 }
 NOINLINE mono_Modulate::~mono_Modulate() {}
 
 // -----------------------------------------------------------------
 inline float mono_Modulate::lastOut( void ) const noexcept {
     return last_tick_value;
-};
+}
 inline float mono_Modulate::tick() noexcept
 {
     // Compute periodic and random modulations.
-    last_tick_value = vibratoGain_ * vibrato_.tick();
-    if ( noiseCounter_++ > noiseRate_ ) {
-        noise_.tick();
-        noiseCounter_ = 0;
+    last_tick_value = vibratoGain * vibrato.tick();
+    if ( noiseCounter++ > noiseRate ) {
+        noise.tick();
+        noiseCounter = 0;
     }
-    last_tick_value += filter_.tick( noise_.lastOut() );
+    last_tick_value += filter.tick( noise.lastOut() );
 
     return last_tick_value;
 }
@@ -767,21 +740,21 @@ inline float mono_Modulate::tick() noexcept
 // -----------------------------------------------------------------
 inline void mono_Modulate::reset() noexcept {
     last_tick_value = 0;
-    vibrato_.reset();
+    vibrato.reset();
 }
 inline void mono_Modulate::setVibratoRate( float rate ) noexcept {
-    vibrato_.setFrequency( rate );
+    vibrato.setFrequency( rate );
 }
 inline void mono_Modulate::setVibratoGain( float gain ) noexcept {
-    vibratoGain_ = gain;
+    vibratoGain = gain;
 }
 inline bool mono_Modulate::isNewCylce() const noexcept
 {
-    return vibrato_.isNewCylce();
+    return vibrato.isNewCylce();
 }
 inline void mono_Modulate::clearNewCycleState() noexcept
 {
-    vibrato_.clearNewCycleState();
+    vibrato.clearNewCycleState();
 }
 
 //==============================================================================
@@ -790,13 +763,13 @@ inline void mono_Modulate::clearNewCycleState() noexcept
 //==============================================================================
 //==============================================================================
 class LFO {
-    const int id;
+    mono_SineWave sine_generator;
+    
     float last_frequency;
 
+    const int id;
     int last_factor;
     int step_to_wait_for_sync;
-
-    mono_SineWave sine_generator;
 
 public:
     inline void process( DataBuffer& buffer_, int step_number_, int num_samples_ ) noexcept;
@@ -816,8 +789,9 @@ public:
 //==============================================================================
 NOINLINE LFO::LFO( int id_ )
     :
-    id( id_ ),
-    last_frequency(0),
+    sine_generator(),
+    last_frequency(1),
+    id(id_),
     last_factor(0),
     step_to_wait_for_sync(0)
 {
@@ -2850,10 +2824,10 @@ void MONOVoice::render_block (mono_AudioSampleBuffer<4>& buffer_, int step_numbe
 
 void MONOVoice::process_final_env( int num_samples ) noexcept {
     env->process( data_buffer->env_amp.getWritePointer(0), num_samples ); // USED IN THE PROCESS BLOCK
-};
+}
 void MONOVoice::process_effect_env( int num_samples ) noexcept {
     chorus_modulation_env->process( data_buffer->chorus_modulation_env_amp.getWritePointer(0), num_samples ); // USED IN THE PROCESS BLOCK
-};
+}
 
 float MONOVoice::get_filter_env_amp( int filter_id_ ) const noexcept {
     return filter_envs[filter_id_]->get_amp();

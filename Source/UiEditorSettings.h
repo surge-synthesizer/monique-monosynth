@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_D0A211EF20981AF4__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 #include "SynthData.h"
 //[/Headers]
 

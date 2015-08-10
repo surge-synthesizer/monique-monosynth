@@ -25,7 +25,6 @@
 #ifndef JUCE_SYNTHESISER_H_INCLUDED
 #define JUCE_SYNTHESISER_H_INCLUDED
 
-
 //==============================================================================
 /**
     Describes one of the sounds that a Synthesiser can play.

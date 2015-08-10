@@ -11,7 +11,7 @@
 #ifndef CHORUS_H_INCLUDED
 #define CHORUS_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 #include "SynthData.h"
 #define DELAY_GLIDE 0.01f
 

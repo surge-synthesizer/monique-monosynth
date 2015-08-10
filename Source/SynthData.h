@@ -10,7 +10,10 @@
 #ifndef MONOSYNTH_DATA_H_INCLUDED
 #define MONOSYNTH_DATA_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include "mono_Parameters.h"
 
 //==============================================================================
@@ -112,7 +115,7 @@ private:
         sample_rate_1ths = 1.0/sample_rate;
     };
     NOINLINE virtual void set_block_size( int bs_ ) noexcept { block_size = bs_; };
-    NOINLINE virtual void sample_rate_changed( double old_sr_ ) noexcept {};
+    NOINLINE virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept {};
     NOINLINE virtual void block_size_changed() noexcept {};
 
 protected:
@@ -1026,6 +1029,8 @@ public:
     NOINLINE ~mono_ParameterOwnerStore();
 
     juce_DeclareSingleton (mono_ParameterOwnerStore,false)
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterOwnerStore)
 };
 
 struct DataBuffer { // DEFINITION IN SYNTH.CPP
@@ -1135,6 +1140,9 @@ inline void OSCData::get_working_copy( ProcessCopy& copy ) noexcept {
     copy.fm_swing = fm_swing;
     copy.osc_switch = osc_switch;
 }
+
+#pragma GCC diagnostic pop
+
 #endif
 
 

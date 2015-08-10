@@ -29,7 +29,6 @@
 #ifndef JUCE_ATOMIC_H_INCLUDED
 #define JUCE_ATOMIC_H_INCLUDED
 
-
 //==============================================================================
 /**
     Simple class to hold a primitive value and perform atomic operations on it.

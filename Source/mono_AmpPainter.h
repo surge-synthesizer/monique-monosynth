@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_C21DF0D02B821D7E__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 
 #define MAX_BUFFER_SIZE (44100*20)
 template<class type, int max_size = MAX_BUFFER_SIZE>

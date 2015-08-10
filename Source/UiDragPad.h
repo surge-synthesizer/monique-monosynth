@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_21DFA7978352EE15__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 
 class DragPad;
 //[/Headers]

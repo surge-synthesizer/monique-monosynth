@@ -10,7 +10,9 @@
 #ifndef MONO_PARAMETER_H_INCLUDED
 #define MONO_PARAMETER_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 
 #define DEFAULT_MODULATION 0.2
 
@@ -872,7 +874,7 @@ public:
 
         return *this;
     }
-    inline const float operator=( float amount_ ) noexcept {
+    inline float operator=( float amount_ ) noexcept {
         value = amount_;
 
         return amount_;
@@ -1170,6 +1172,8 @@ private:
     //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterReferenceArray)
 
 };
+
+#pragma GCC diagnostic pop
 
 #endif
 

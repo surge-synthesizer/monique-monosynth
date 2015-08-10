@@ -21,7 +21,7 @@
 #define __JUCE_HEADER_25ABB3D6E01A1620__
 
 //[Headers]     -- You can add your own extra header files here --
-#include "App.h"
+#include "App_h_includer.h"
 
 class mono_AudioDeviceManager;
 //[/Headers]

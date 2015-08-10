@@ -11,7 +11,7 @@
 #ifndef MONO_UIUTILITIES_H_INCLUDED
 #define MONO_UIUTILITIES_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 
 // ==============================================================================
 // NOTE: this class is not designed for usage in time critical code.

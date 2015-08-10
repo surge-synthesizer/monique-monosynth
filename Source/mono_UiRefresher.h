@@ -10,7 +10,7 @@
 #ifndef MONO_UI_REFRESHER_H_INCLUDED
 #define MONO_UI_REFRESHER_H_INCLUDED
 
-#include "App.h"
+#include "App_h_includer.h"
 
 //==============================================================================
 class mono_UiRefreshable {
