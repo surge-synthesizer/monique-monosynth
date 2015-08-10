@@ -369,7 +369,7 @@ template<typename T>
 NOINLINE void mono_ParameterBase<T>::register_always_listener( mono_ParameterListener< T >*const listener_ ) {
     if( ! always_listeners.contains( listener_ ) ) {
         always_listeners.add( listener_ );
-	listeners.add( listener_ );
+        listeners.add( listener_ );
     }
 }
 template<typename T>
@@ -696,6 +696,10 @@ public:
             counter = 0;
     }
 
+    inline float get_current_value() const noexcept {
+        return current_value;
+    }
+
     inline void reset() noexcept {
         current_value = source_value;
         delta = 0;
@@ -757,7 +761,7 @@ public:
     }
     inline void reset() noexcept {
         parameter_glide.reset();
-        last_tick_value = parameter_glide.glide_tick();
+        last_tick_value = parameter_glide.get_current_value();
         is_changed_since_last_tick = false;
 
     }
