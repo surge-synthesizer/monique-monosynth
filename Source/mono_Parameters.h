@@ -14,7 +14,7 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 
-#define DEFAULT_MODULATION 0.2
+#define DEFAULT_MODULATION 0.2f
 
 // ==============================================================================
 // ==============================================================================
