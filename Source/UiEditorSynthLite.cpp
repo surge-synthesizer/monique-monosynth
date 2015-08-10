@@ -204,6 +204,7 @@ void UiEditorSynthLite::switch_finalizer_tab() {
     reverb_room->setVisible( state_switch );
     colour->setVisible( state_switch );
     reverb_dry->setVisible( state_switch );
+    reverb_width->setVisible( state_switch );
     delay2->setVisible( state_switch );
     chorus_modulation->setVisible( state_switch );
     bypass->setVisible( state_switch );
