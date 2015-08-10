@@ -185,24 +185,20 @@ static float inline lookup_sine(float x) noexcept
 //==============================================================================
 NOINLINE DataBuffer::DataBuffer( int init_buffer_size_ )
     :
-    current_buffer_size( init_buffer_size_ ) ,
+    current_buffer_size( init_buffer_size_ ),
 
-    tmp_buffer_9(init_buffer_size_),
+    tmp_buffer_6( init_buffer_size_ ),
+
+    lfo_amplitudes( init_buffer_size_ ),
+    direct_filter_output_samples( init_buffer_size_ ),
 
     osc_samples( init_buffer_size_ ),
     osc_switchs( init_buffer_size_ ),
     osc_sync_switchs( init_buffer_size_ ),
     modulator_samples( init_buffer_size_ ),
-    working_buffer( init_buffer_size_ ),
-    lfo_amplitudes( init_buffer_size_ ),
-    filter_input_sustain( init_buffer_size_ ),
-    filter_input_env_amps( init_buffer_size_ ),
+
     filter_output_samples( init_buffer_size_ ),
-    filtered_env_amps( init_buffer_size_ ),
-    filtered_samples( init_buffer_size_ ),
-    env_amp( init_buffer_size_ ),
-    chorus_modulation_env_amp( init_buffer_size_ ),
-    direct_filter_output_samples( init_buffer_size_ )
+    filter_env_amps( init_buffer_size_ )
 {}
 
 void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
@@ -211,22 +207,18 @@ void DataBuffer::resize_buffer_if_required( int min_size_required_ ) noexcept
     {
         current_buffer_size = min_size_required_;
 
-        tmp_buffer_9.setSize(current_buffer_size);
+        tmp_buffer_6.setSize(min_size_required_);
 
-        osc_samples.setSize(current_buffer_size);
-        osc_switchs.setSize(current_buffer_size);
-        osc_sync_switchs.setSize(current_buffer_size);
-        modulator_samples.setSize(current_buffer_size);
-        working_buffer.setSize(current_buffer_size);
-        lfo_amplitudes.setSize(current_buffer_size);
-        filter_input_sustain.setSize(current_buffer_size);
-        filter_input_env_amps.setSize(current_buffer_size);
-        filter_output_samples.setSize(current_buffer_size);
-        filtered_env_amps.setSize(current_buffer_size);
-        filtered_samples.setSize(current_buffer_size);
-        env_amp.setSize(current_buffer_size);
-        chorus_modulation_env_amp.setSize(current_buffer_size);
-        direct_filter_output_samples.setSize(current_buffer_size);
+        lfo_amplitudes.setSize(min_size_required_);
+        direct_filter_output_samples.setSize(min_size_required_);
+
+        osc_samples.setSize(min_size_required_);
+        osc_switchs.setSize(min_size_required_);
+        osc_sync_switchs.setSize(min_size_required_);
+        modulator_samples.setSize(min_size_required_);
+
+        filter_output_samples.setSize(min_size_required_);
+        filter_env_amps.setSize(min_size_required_);
     }
 }
 
@@ -2313,15 +2305,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
         {
             // COLLECT BUFFERS
-            const int buffer_channel_id = input_id + SUM_INPUTS_PER_FILTER * id;
-
-            float* tmp_input_buffer = data_buffer.tmp_buffer_9.getWritePointer( buffer_channel_id );
+            float* tmp_input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
             input_buffers[input_id] = tmp_input_buffer;
 
-            float* tmp_input_ar_amp = data_buffer.filter_input_env_amps.getWritePointer( buffer_channel_id );
+            float* tmp_input_ar_amp = data_buffer.tmp_buffer_6.getWritePointer( SUM_INPUTS_PER_FILTER + input_id );
             input_ar_amps[input_id] = tmp_input_ar_amp;
 
-            out_buffers[input_id] = data_buffer.filter_output_samples.getWritePointer( buffer_channel_id );
+            out_buffers[input_id] = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
 
             // CALCULATE INPUTS AND ENVELOPS
             {
@@ -2392,7 +2382,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     // ADSTR - LFO MIX
     float* amp_mix = data_buffer.lfo_amplitudes.getWritePointer(id);
     {
-        const float* env_amps = data_buffer.filtered_env_amps.getReadPointer(id);
+        const float* env_amps = data_buffer.filter_env_amps.getReadPointer(id);
         const float* lfo_amplitudes = data_buffer.lfo_amplitudes.getReadPointer(id);
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
@@ -2567,11 +2557,11 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     // COMPRESS
     {
         if( id == FILTER_1 )
-            compress( this_direct_output_buffer, data_buffer.tmp_buffer_9.getWritePointer(), this_direct_output_buffer,
+            compress( this_direct_output_buffer, data_buffer.tmp_buffer_6.getWritePointer(), this_direct_output_buffer,
             filter_data.compressor,
             num_samples );
         else
-            compress( this_direct_output_buffer, data_buffer.tmp_buffer_9.getWritePointer(), data_buffer.direct_filter_output_samples.getReadPointer(id-1),
+            compress( this_direct_output_buffer, data_buffer.tmp_buffer_6.getWritePointer(), data_buffer.direct_filter_output_samples.getReadPointer(id-1),
             filter_data.compressor,
             num_samples );
     }
@@ -2709,10 +2699,10 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
         // WORKING BUFFERS
-        float*const tmp_band_in_buffer = data_buffer.tmp_buffer_9.getWritePointer(0);
-        float*const tmp_all_band_out_buffer = data_buffer.tmp_buffer_9.getWritePointer(1);
-        float*const tmp_all_band_sum_gain_buffer = data_buffer.tmp_buffer_9.getWritePointer(2);
-        float*const tmp_env_buffer = data_buffer.tmp_buffer_9.getWritePointer(3);
+        float*const tmp_band_in_buffer = data_buffer.tmp_buffer_6.getWritePointer(0);
+        float*const tmp_all_band_out_buffer = data_buffer.tmp_buffer_6.getWritePointer(1);
+        float*const tmp_all_band_sum_gain_buffer = data_buffer.tmp_buffer_6.getWritePointer(2);
+        float*const tmp_env_buffer = data_buffer.tmp_buffer_6.getWritePointer(3);
 
         // PROCESS 100% BAND
         {
@@ -2959,8 +2949,9 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     }
 
     // PRPARE CHORUS
-    float* chorus_amp_buffer = data_buffer.chorus_modulation_env_amp.getWritePointer();
-    chorus_modulation_env->process( chorus_amp_buffer, num_samples_ );
+    float* tmp_chorus_amp_buffer = data_buffer.tmp_buffer_6.getWritePointer(0);
+    // TODO only process amp if chorus amp is active
+    chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
     ChorusData& chorus_data = DATA( chorus_data );
     const bool is_chorus_amp_fix = chorus_data.hold_modulation;
     chorus_data.modulation.update( glide_motor_time );
@@ -2975,8 +2966,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     synth_data.effect_bypass.update( glide_motor_time );
 
     // PREPARE FINAL ENV
-    float* env_amp = data_buffer.env_amp.getWritePointer();
-    final_env->process( env_amp, num_samples_ );
+    float* tmp_env_amp = data_buffer.tmp_buffer_6.getWritePointer(1);
+    final_env->process( tmp_env_amp, num_samples_ );
     synth_data.volume.update( glide_motor_time );
     synth_data.final_compression.update( glide_motor_time );
     velocity_glide.update( msToSamplesFast(synth_data.velocity_glide_time, 44100) );
@@ -2992,12 +2983,12 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         float tmp_r;
 
         // FINAL AMP
-        const float in_l_r = input_buffer[sid] * env_amp[sid]*velocity_glide.glide_tick()*synth_data.volume.tick()*2;
+        const float in_l_r = input_buffer[sid] * tmp_env_amp[sid]*velocity_glide.glide_tick()*synth_data.volume.tick()*2;
 
         // CHORUS
         {
             const float chorus_modulation = chorus_data.modulation.tick();
-            const float modulation_amp = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : chorus_amp_buffer[sid] );
+            const float modulation_amp = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
 
             tmp_l = chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
             tmp_r = chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
@@ -3072,7 +3063,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
     {
         amp_painter->add_out( &final_l_output[start_sample_final_out_], num_samples_ );
-        amp_painter->add_out_env( env_amp, num_samples_ );
+        amp_painter->add_out_env( tmp_env_amp, num_samples_ );
     }
 }
 
@@ -3468,7 +3459,7 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
 
     // FILTER ENV - MUST BE FINISHED BEFORE LFOS
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
-        filter_envs[flt_id]->process( data_buffer->filtered_env_amps.getWritePointer(flt_id), num_samples );
+        filter_envs[flt_id]->process( data_buffer->filter_env_amps.getWritePointer(flt_id), num_samples );
 
     // LFOS - THREAD 1 ?
     for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {

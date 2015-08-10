@@ -1044,28 +1044,22 @@ public:
 struct DataBuffer { // DEFINITION IN SYNTH.CPP
     int current_buffer_size;
     
-    mono_AudioSampleBuffer<9> tmp_buffer_9;
+    // WORKERS
+    mono_AudioSampleBuffer<6> tmp_buffer_6;
     
+    // OVER MULTIBLE PROCESSORS
+    mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
+    mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
+    // TODO do we need only one?
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
     mono_AudioSampleBuffer<1> osc_sync_switchs;
     mono_AudioSampleBuffer<1> modulator_samples;
-
-    mono_AudioSampleBuffer<4> working_buffer;
-
-    mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
-
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_sustain;
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_env_amps;
+    
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
-    mono_AudioSampleBuffer<SUM_FILTERS> filtered_env_amps;
-    mono_AudioSampleBuffer<SUM_FILTERS> filtered_samples;
-    mono_AudioSampleBuffer<1> env_amp;
-    mono_AudioSampleBuffer<1> chorus_modulation_env_amp;
-
-    mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
-
+    mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
+    
     void resize_buffer_if_required( int min_size_required_ ) noexcept;
 
     NOINLINE DataBuffer( int init_buffer_size_ );

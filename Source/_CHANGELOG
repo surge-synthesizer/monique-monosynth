@@ -2,7 +2,11 @@ BUGS:
 can crash on shutdown
 
 
-
+TODO:
+compare changes
+CHORUS BUFFER to synth.cpp
+REVERB to synth.cpp
+lite up reverb
 
 
 
