@@ -56,7 +56,7 @@ inline float AmpSmoothBuffer::reset( float value_ ) noexcept {
     sum = 0;
     for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i ) {
         buffer[i] = value_;
-	sum += value_;
+        sum += value_;
     }
 }
 
@@ -2890,12 +2890,12 @@ public:
     inline float tick( int channel_, float delay_ ) noexcept;
 
 private:
-    void sample_rate_changed( double ) noexcept override;
+    NOINLINE void sample_rate_changed( double ) noexcept override;
 
 public:
     NOINLINE Chorus();
     NOINLINE ~Chorus();
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
 };
 
@@ -2954,7 +2954,7 @@ inline float Chorus::tick( int channel_, float delay_ ) noexcept
     return buffer[channel_][ib]*delta + buffer[channel_][ia]*(1.0f-delta);
 }
 //==============================================================================
-void Chorus::sample_rate_changed( double ) noexcept {
+NOINLINE void Chorus::sample_rate_changed( double ) noexcept {
     buffer_size = sample_rate/10;
     if( buffer[0] )
         delete[] buffer[0];
@@ -2978,15 +2978,364 @@ void Chorus::sample_rate_changed( double ) noexcept {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class CombFilter
+{
+    HeapBlock<float> buffer;
+    float last;
+    int bufferSize, bufferIndex;
+
+public:
+    inline float process (const float input, const float feedbackLevel) noexcept;
+
+    NOINLINE void setSize (const int size);
+    NOINLINE void clear() noexcept;
+
+    NOINLINE CombFilter();
+    NOINLINE ~CombFilter();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CombFilter)
+};
+
+//==============================================================================
+NOINLINE CombFilter::CombFilter()
+    :
+    last(0),
+    bufferSize (0),
+    bufferIndex(0)
+{}
+NOINLINE CombFilter::~CombFilter() {}
+
+//==============================================================================
+inline float CombFilter::process (const float input, const float feedbackLevel) noexcept
+{
+#define REVERB_DAMP 0.0f
+    const float output = buffer[bufferIndex];
+    last = (output * (1.0f - REVERB_DAMP)) + (last * REVERB_DAMP);
+    JUCE_UNDENORMALISE (last);
+
+    float temp = input + (last * feedbackLevel);
+    JUCE_UNDENORMALISE (temp);
+    buffer[bufferIndex] = temp;
+    bufferIndex = (bufferIndex + 1) % bufferSize;
+
+    return output;
+}
+
+//==============================================================================
+NOINLINE void CombFilter::setSize (const int size)
+{
+    if (size != bufferSize)
+    {
+        bufferIndex = 0;
+        buffer.malloc ((size_t) size);
+        bufferSize = size;
+    }
+
+    clear();
+}
+NOINLINE void CombFilter::clear() noexcept
+{
+    last = 0;
+    buffer.clear ((size_t) bufferSize);
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class AllPassFilter
+{
+    HeapBlock<float> buffer;
+    int bufferSize, bufferIndex;
+public:
+    inline float process (const float input) noexcept;
+
+    NOINLINE void setSize (const int size);
+    NOINLINE void clear() noexcept;
+
+    NOINLINE AllPassFilter();
+    NOINLINE ~AllPassFilter();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
+};
+
+//==============================================================================
+NOINLINE AllPassFilter::AllPassFilter()
+    :
+    bufferSize(0),
+    bufferIndex(0)
+{}
+NOINLINE AllPassFilter::~AllPassFilter() {}
+
+//==============================================================================
+inline float AllPassFilter::process (const float input) noexcept
+{
+    const float bufferedValue = buffer [bufferIndex];
+    float temp = input + (bufferedValue * 0.5f);
+    JUCE_UNDENORMALISE (temp);
+    buffer[bufferIndex] = temp;
+    bufferIndex = (bufferIndex + 1) % bufferSize;
+
+    return bufferedValue - input;
+}
+
+//==============================================================================
+NOINLINE void AllPassFilter::setSize (const int size)
+{
+    if (size != bufferSize)
+    {
+        bufferIndex = 0;
+        buffer.malloc ((size_t) size);
+        bufferSize = size;
+    }
+
+    clear();
+}
+NOINLINE void AllPassFilter::clear() noexcept
+{
+    buffer.clear ((size_t) bufferSize);
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class LinearSmoothedValue
+{
+    float currentValue, target, step;
+    int countdown, stepsToTarget;
+
+public:
+    inline float getNextValue() noexcept;
+    inline void setValue (float newValue) noexcept;
+
+    NOINLINE void reset (float sampleRate, float fadeLengthSeconds) noexcept;
+
+    NOINLINE LinearSmoothedValue();
+    NOINLINE ~LinearSmoothedValue();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoothedValue)
+};
+
+//==============================================================================
+NOINLINE LinearSmoothedValue::LinearSmoothedValue()
+    :
+    currentValue(0),
+    target(0),
+    step(0),
+    countdown(0),
+    stepsToTarget(0)
+{
+}
+NOINLINE LinearSmoothedValue::~LinearSmoothedValue() {}
+
+//==============================================================================
+inline float LinearSmoothedValue::getNextValue() noexcept
+{
+    float value;
+    if (countdown <= 0)
+    {
+        value = target;
+    }
+    else
+    {
+        --countdown;
+        currentValue += step;
+
+        value = currentValue;
+    }
+
+    return value;
+}
+
+inline void LinearSmoothedValue::setValue (float newValue) noexcept
+{
+    if (target != newValue)
+    {
+        target = newValue;
+        countdown = stepsToTarget;
+
+        if (countdown <= 0)
+            currentValue = target;
+        else
+            step = (target - currentValue) / countdown;
+    }
+}
+
+//==============================================================================
+NOINLINE void LinearSmoothedValue::reset (float sampleRate, float fadeLengthSeconds) noexcept
+{
+    stepsToTarget = mono_floor (fadeLengthSeconds * sampleRate);
+    currentValue = target;
+    countdown = 0;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_Reverb;
+struct ReverbParameters
+{
+    float roomSize;     /**< Room size, 0 to 1.0, where 1.0 is big, 0 is small. */
+    float wetLevel;     /**< Wet level, 0 to 1.0 */
+    float dryLevel;     /**< Dry level, 0 to 1.0 */
+    float width;        /**< mono_Reverb width, 0 to 1.0, where 1.0 is very wide. */
+
+private:
+    friend class mono_Reverb;
+    NOINLINE ReverbParameters();
+    NOINLINE ~ReverbParameters();
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbParameters)
+};
+
+//==============================================================================
+NOINLINE ReverbParameters::ReverbParameters()
+:
+roomSize   (0.5f),
+           wetLevel   (0.33f),
+           dryLevel   (0.4f),
+           width      (1.0f)
+{}
+NOINLINE ReverbParameters::~ReverbParameters() {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_Reverb : RuntimeListener
+{
+    enum { numCombs = 8, numAllPasses = 4, numChannels = 2 };
+
+    CombFilter comb [numChannels][numCombs];
+    AllPassFilter allPass [numChannels][numAllPasses];
+
+    ReverbParameters parameters;
+#define REVERB_GAIN 0.013f
+
+    LinearSmoothedValue feedback, dryGain, wetGain1, wetGain2;
+
+public:
+    inline void processSingleSampleRawStereo_noDamp ( float& input_l, float& input_r ) noexcept;
+
+    inline ReverbParameters& get_parameters() noexcept;
+    inline void update_parameters() noexcept;
+
+    NOINLINE void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    NOINLINE void reset();
+
+    NOINLINE mono_Reverb();
+    NOINLINE ~mono_Reverb();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Reverb)
+};
+
+//==============================================================================
+NOINLINE mono_Reverb::mono_Reverb()
+{
+    update_parameters();
+    sample_rate_changed(0);
+}
+NOINLINE mono_Reverb::~mono_Reverb() {}
+
+//==============================================================================
+inline void mono_Reverb::processSingleSampleRawStereo_noDamp ( float& input_l, float& input_r ) noexcept
+{
+    float outL = 0, outR = 0;
+    {
+        const float input = (input_l + input_r) * REVERB_GAIN;
+        const float feedbck = feedback.getNextValue();
+        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
+        {
+            outL += comb[LEFT][j].process (input, feedbck);
+            outR += comb[RIGHT][j].process (input, feedbck);
+        }
+    }
+    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
+    {
+        outL = allPass[LEFT][j].process (outL);
+        outR = allPass[RIGHT][j].process (outR);
+    }
+
+    const float dry  = dryGain.getNextValue();
+    const float wet1 = wetGain1.getNextValue();
+    const float wet2 = wetGain2.getNextValue();
+    input_l  = outL * wet1 + outR * wet2 + input_l  * dry;
+    input_r = outR * wet1 + outL * wet2 + input_r * dry;
+}
+
+//==============================================================================
+inline ReverbParameters& mono_Reverb::get_parameters() noexcept {
+    return parameters;
+}
+inline void mono_Reverb::update_parameters() noexcept
+{
+#define WET_SCALE_FACTOR 3.0f
+#define DRY_SCALE_FACTOR 2.0f
+#define ROOM_SCALE_FACTOR 0.28f
+#define ROOM_OFFSET 0.7f
+    const float wet = parameters.wetLevel * WET_SCALE_FACTOR;
+    dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
+    wetGain1.setValue (0.5f * wet * (1.0f + parameters.width));
+    wetGain2.setValue (0.5f * wet * (1.0f - parameters.width));
+    feedback.setValue (parameters.roomSize * ROOM_SCALE_FACTOR + ROOM_OFFSET);
+}
+
+//==============================================================================
+NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
+{
+    static const short combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
+    static const short allPassTunings[] = { 556, 441, 341, 225 };
+    const int stereoSpread = 23;
+    const int intSampleRate = (int) sample_rate;
+
+    for (int i = 0; i < numCombs; ++i)
+    {
+        comb[LEFT][i].setSize ((intSampleRate * combTunings[i]) / 44100);
+        comb[RIGHT][i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
+    }
+
+    for (int i = 0; i < numAllPasses; ++i)
+    {
+        allPass[LEFT][i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
+        allPass[RIGHT][i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
+    }
+
+    const float smoothTime = 0.01f;
+    //damping .reset (sampleRate, smoothTime);
+    feedback.reset (sample_rate, smoothTime);
+    dryGain .reset (sample_rate, smoothTime);
+    wetGain1.reset (sample_rate, smoothTime);
+    wetGain2.reset (sample_rate, smoothTime);
+}
+NOINLINE void mono_Reverb::reset()
+{
+    for (int j = 0; j < numChannels; ++j)
+    {
+        for (int i = 0; i < numCombs; ++i)
+            comb[j][i].clear();
+
+        for (int i = 0; i < numAllPasses; ++i)
+            allPass[j][i].clear();
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #include "mono_ChorusBuffer.h"
 class FXProcessor
 {
     // REVERB
-    Reverb reverb;
+    mono_Reverb reverb;
 
     // CHORUS
     Chorus chorus;
-    
+
     // DELAY
     int delayPosition;
     AudioSampleBuffer delayBuffer;
@@ -3050,15 +3399,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     const float* input_buffer = data_buffer.direct_filter_output_samples.getReadPointer();
 
     // PREPARE REVERB
-    Reverb::Parameters r_params;
     ReverbData& reverb_data = DATA( reverb_data );
-    {
-        reverb_data.room.update(glide_motor_time);
-        reverb_data.dry_wet_mix.update(glide_motor_time);
-        reverb_data.width.update(glide_motor_time);
-        r_params.freezeMode = 0;
-        r_params.damping = 0;
-    }
 
     // PRPARE CHORUS
     float* tmp_chorus_amp_buffer = data_buffer.tmp_buffer_6.getWritePointer(0);
@@ -3113,23 +3454,20 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
         // REVERB
         {
-            const Reverb::Parameters& current_params = reverb.getParameters();
-            const float r_room = reverb_data.room.tick();
-            const float r_wet_dry_mix = reverb_data.dry_wet_mix.tick();
-            const float r_width = reverb_data.width.tick();
+            ReverbParameters& current_params = reverb.get_parameters();
             if(
-                current_params.roomSize != r_room
-                || current_params.dryLevel != r_wet_dry_mix
+                current_params.roomSize != reverb_data.room
+                || current_params.dryLevel != reverb_data.dry_wet_mix
                 // current_params.wetLevel != r_params.wetLevel
-                || current_params.width != r_width
+                || current_params.width != reverb_data.width
             )
             {
-                r_params.roomSize = r_room;
-                r_params.dryLevel = r_wet_dry_mix;
-                r_params.wetLevel = 1.0f-r_wet_dry_mix;
-                r_params.width = r_width;
+                current_params.roomSize = reverb_data.room;
+                current_params.dryLevel = reverb_data.dry_wet_mix;
+                current_params.wetLevel = 1.0f-reverb_data.dry_wet_mix;
+                current_params.width = reverb_data.width;
 
-                reverb.setParameters(r_params);
+                reverb.update_parameters();
             }
 
             reverb.processSingleSampleRawStereo_noDamp

@@ -111,7 +111,7 @@ class RuntimeNotifyer;
 class RuntimeListener {
 protected:
     double sample_rate;
-    double sample_rate_1ths;
+    float sample_rate_1ths;
     int block_size;
 
 private:
@@ -681,9 +681,9 @@ inline const EQData& EQData::operator=( const EQData& other_ ) noexcept {
 struct ReverbData {
     const int id;
 
-    mono_ParameterGlide< float, 333, 0,1000, 1000, 1000 > room;
-    mono_ParameterGlide< float, 750, 0,1000, 1000, 1000 > dry_wet_mix;
-    mono_ParameterGlide< float, 300, 0,1000, 1000, 1000 > width;
+    mono_Parameter< float, 333, 0,1000, 1000, 1000 > room;
+    mono_Parameter< float, 750, 0,1000, 1000, 1000 > dry_wet_mix;
+    mono_Parameter< float, 300, 0,1000, 1000, 1000 > width;
 
     inline const ReverbData& operator=( const ReverbData& other_ ) noexcept;
 
