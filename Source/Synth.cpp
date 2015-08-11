@@ -159,7 +159,7 @@ static float inline taylor_sin(float x) noexcept
 
     return t4 + t3 + t2 + t1;
 }
-#define TABLESIZE_MULTI 10
+#define TABLESIZE_MULTI 1000
 #define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 float* SINE_LOOKUP_TABLE;
 struct SIN_LOOKUP
