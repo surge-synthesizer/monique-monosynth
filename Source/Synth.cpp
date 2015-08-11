@@ -1984,7 +1984,7 @@ inline void DoubleAnalogFilter::reset() noexcept {
 // -----------------------------------------------------------------
 forcedinline static float resonance_clipping( float sample_ ) noexcept
 {
-    return (atan(sample_) * (1.0f/float_Pi))*2;
+    return (std::atan(sample_) * (1.0f/float_Pi))*2;
 }
 
 // -----------------------------------------------------------------
@@ -2064,7 +2064,7 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     oldy3 = y3;
 
     // Add resonance
-    return y4 + atan( y3 * res4 );
+    return y4 + std::atan( y3 * res4 );
 }
 inline void DoubleAnalogFilter::updateLowResonance(float resonance_, float cutoff_, float gain_) noexcept
 {
@@ -2121,7 +2121,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     oldy3 = y3;
 
     // RESONANCE
-    return (input_and_worker_-y4) + (atan( y2 * res4 ));
+    return (input_and_worker_-y4) + (std::atan( y2 * res4 ));
 }
 inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
 {
@@ -3589,6 +3589,14 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
     step_at_sample_current_buffer = -1;
     for( int i = 0 ; i < num_samples_; ++i )
     {
+    static int profile_samples = 44100*10;
+    profile_samples--;
+    std::cout << profile_samples << std::endl;
+    if( profile_samples == 0 )
+      exit(0);
+      
+      
+      
 #ifdef IS_STANDALONE
         if( info.is_extern_synced )
         {
