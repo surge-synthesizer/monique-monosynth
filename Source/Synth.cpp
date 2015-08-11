@@ -17,7 +17,7 @@ public:
     inline void add( float val_ ) noexcept;
     inline float add_and_get_average( float val_ ) noexcept;
     inline float get_average() const noexcept;
-    inline float reset( float value_ = 0 ) noexcept;
+    inline void reset( float value_ = 0 ) noexcept;
 
 private:
     virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override {
@@ -52,7 +52,7 @@ inline float AmpSmoothBuffer::add_and_get_average( float val_ ) noexcept {
 inline float AmpSmoothBuffer::get_average() const noexcept {
     return sum * ( 1.0f / AMP_SMOOTH_SIZE );
 }
-inline float AmpSmoothBuffer::reset( float value_ ) noexcept {
+inline void AmpSmoothBuffer::reset( float value_ ) noexcept {
     sum = 0;
     for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i ) {
         buffer[i] = value_;
@@ -595,23 +595,20 @@ NOINLINE void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept 
 //==============================================================================
 class mono_Noise
 {
+    Random random;
     float last_tick_value;
 
 public:
-    inline void setSeed( unsigned int seed = 0 ) noexcept;
     inline float lastOut() const noexcept;
     inline float tick() noexcept;
 
 public:
-    NOINLINE mono_Noise( unsigned int seed = 0 );
+    NOINLINE mono_Noise();
     NOINLINE ~mono_Noise();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_Noise::mono_Noise( unsigned int seed ) : last_tick_value(0)
-{
-    this->setSeed( seed );
-}
+NOINLINE mono_Noise::mono_Noise() : last_tick_value(0) {}
 NOINLINE mono_Noise::~mono_Noise() {}
 
 // -----------------------------------------------------------------
@@ -621,14 +618,7 @@ inline float mono_Noise::lastOut() const noexcept
 }
 inline float mono_Noise::tick() noexcept
 {
-    return last_tick_value = ( 2.0f * rand() / (RAND_MAX + 1) - 1 );
-}
-inline void mono_Noise::setSeed( unsigned int seed ) noexcept
-{
-    if ( seed == 0 )
-        srand( (unsigned int) time( NULL ) );
-    else
-        srand( seed );
+    return last_tick_value = random.nextFloat() * 2 - 1;
 }
 
 //==============================================================================
@@ -723,20 +713,20 @@ public:
     inline void reset() noexcept;
     inline void setVibratoRate( float rate ) noexcept;
     inline void setVibratoGain( float gain ) noexcept;
-    inline float lastOut( void ) const noexcept;
+    inline float lastOut() const noexcept;
 
     inline bool isNewCylce() const noexcept;
     inline void clearNewCycleState() noexcept;
 
-    inline float tick( void ) noexcept;
+    inline float tick() noexcept;
 
 public:
-    NOINLINE mono_Modulate( void );
-    NOINLINE ~mono_Modulate( void );
+    NOINLINE mono_Modulate();
+    NOINLINE ~mono_Modulate();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_Modulate::mono_Modulate( void )
+NOINLINE mono_Modulate::mono_Modulate()
     :
     vibrato(),
     filter(),
@@ -758,7 +748,7 @@ NOINLINE mono_Modulate::mono_Modulate( void )
 NOINLINE mono_Modulate::~mono_Modulate() {}
 
 // -----------------------------------------------------------------
-inline float mono_Modulate::lastOut( void ) const noexcept {
+inline float mono_Modulate::lastOut() const noexcept {
     return last_tick_value;
 }
 inline float mono_Modulate::tick() noexcept
@@ -817,7 +807,7 @@ public:
     inline void process( int step_number_, int num_samples_ ) noexcept;
 
 private:
-    inline void sync( int step_number_ ) noexcept;
+    NOINLINE void sync( int step_number_ ) noexcept;
 
 public:
     float get_current_amp() const noexcept;
@@ -828,7 +818,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
 };
 
-// -----------------------------------------------------------------
+//==============================================================================
 NOINLINE LFO::LFO( int id_ )
     :
     sine_generator(),
@@ -842,7 +832,7 @@ NOINLINE LFO::LFO( int id_ )
 }
 NOINLINE LFO::~LFO() {}
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void LFO::process( int step_number_, int num_samples_ ) noexcept {
     sync( step_number_ );
 
@@ -850,7 +840,7 @@ inline void LFO::process( int step_number_, int num_samples_ ) noexcept {
     for( int sid = 0 ; sid != num_samples_ ; ++sid )
         buffer_to_fill[sid] = (1.0f + sine_generator.tick()) * 0.5f;
 }
-inline void LFO::sync( int step_number_ ) noexcept {
+NOINLINE void LFO::sync( int step_number_ ) noexcept {
     LFOData& data( DATA( lfo_datas[id] ) );
 
     if( data.speed <= 6 )
@@ -1702,7 +1692,7 @@ public:
         return target_value == current_value;
     }
     inline float add_get_and_keep_current_time( float in_ ) noexcept;
-    inline float reset( float value_ = 0 ) noexcept {
+    inline void reset( float value_ = 0 ) noexcept {
         current_value = value_;
         delta = 0;
         counter = 0;
@@ -3327,7 +3317,6 @@ NOINLINE void mono_Reverb::reset()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#include "mono_ChorusBuffer.h"
 class FXProcessor
 {
     // REVERB
@@ -3907,10 +3896,11 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
     if( step_number_ != -1 )
         current_step = step_number_;
 
-    // FILTER ENV - MUST BE FINISHED BEFORE LFOS
+    // FILTER ENV
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
         filter_envs[flt_id]->process( data_buffer->filter_env_amps.getWritePointer(flt_id), num_samples );
 
+    
     // LFOS - THREAD 1 ?
     for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
         lfos[lfo_id]->process( step_number_, num_samples );

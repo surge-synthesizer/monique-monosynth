@@ -5,7 +5,6 @@
 #include "Synth.h"
 #include "UiLookAndFeel.h"
 
-#include "mono_ChorusBuffer.h"
 #include "dRowAudio_SegmentedMeter.h"
 #include "mono_AmpPainter.h"
 
