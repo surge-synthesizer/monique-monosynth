@@ -2878,14 +2878,116 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class Chorus : public RuntimeListener
+{
+    int buffer_size;
+    int index[2];
+    float last_delay[2];
+    float* buffer[2];
+
+public:
+    inline void fill(int channel_, float sample_) noexcept;
+    inline float tick( int channel_, float delay_ ) noexcept;
+
+private:
+    void sample_rate_changed( double ) noexcept override;
+
+public:
+    NOINLINE Chorus();
+    NOINLINE ~Chorus();
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
+};
+
+//==============================================================================
+NOINLINE Chorus::Chorus() : buffer_size(0)
+{
+    index[0] = 0;
+    index[1] = 0;
+    last_delay[0] = 220;
+    last_delay[1] = 200;
+
+    buffer[0] = nullptr;
+    buffer[1] = nullptr;
+
+    sample_rate_changed(0);
+}
+NOINLINE Chorus::~Chorus()
+{
+    delete [] buffer[0];
+    delete [] buffer[1];
+}
+
+//==============================================================================
+inline void Chorus::fill(int channel_, float sample_) noexcept
+{
+    index[channel_] = index[channel_] % buffer_size;
+    buffer[channel_][index[channel_]] = sample_;
+    index[channel_]++;
+}
+#define DELAY_GLIDE 0.01f
+inline float Chorus::tick( int channel_, float delay_ ) noexcept
+{
+    if( delay_ < last_delay[channel_] - DELAY_GLIDE)
+        delay_ = last_delay[channel_] - DELAY_GLIDE;
+    else if( delay_ > last_delay[channel_] + DELAY_GLIDE )
+        delay_ = last_delay[channel_] + DELAY_GLIDE;
+
+    last_delay[channel_] = delay_;
+
+    float i = float(index[channel_]) - delay_;
+    if(i >= buffer_size)
+        i -= buffer_size;
+    else if(i < 0)
+        i += buffer_size;
+
+    int ia = mono_floor(i);
+    if (ia >= buffer_size)
+        ia = 0;
+    int ib = ia + 1;
+    if (ib >= buffer_size)
+        ib = 0;
+
+    float delta = i-ia;
+    if( delta > 1 )
+        delta = 0;
+    return buffer[channel_][ib]*delta + buffer[channel_][ia]*(1.0f-delta);
+}
+//==============================================================================
+void Chorus::sample_rate_changed( double ) noexcept {
+    buffer_size = sample_rate/10;
+    if( buffer[0] )
+        delete[] buffer[0];
+    if( buffer[1] )
+        delete[] buffer[1];
+    buffer[0] = new float[buffer_size];
+    buffer[1] = new float[buffer_size];
+    for( int i = 0 ; i != buffer_size ; ++i ) {
+        buffer[0][i] = 0;
+        buffer[1][i] = 0;
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #include "mono_ChorusBuffer.h"
 class FXProcessor
 {
     // REVERB
     Reverb reverb;
 
-    // DELAY
+    // CHORUS
     Chorus chorus;
+    
+    // DELAY
     int delayPosition;
     AudioSampleBuffer delayBuffer;
     AmpSmoothBuffer chorus_smoother;
@@ -3597,3 +3699,4 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
