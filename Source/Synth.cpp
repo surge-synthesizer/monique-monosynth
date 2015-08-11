@@ -942,10 +942,6 @@ float LFO::get_current_amp() const noexcept {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float getrand_noise() noexcept {
-    return (Random::getSystemRandom().nextFloat() - 0.5f) * 2;
-}
-
 //==============================================================================
 class OSC : public RuntimeListener {
     const int id;
@@ -979,6 +975,7 @@ class OSC : public RuntimeListener {
     mono_SineWave sine_generator;
 
     mono_Modulate modulator;
+    mono_Noise noise;
 
 public:
     inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
@@ -1149,7 +1146,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
             {
                 const float multi = wave - 2;
                 const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
-                const float noice_powerd = getrand_noise()* multi; // noice_generator.lastOut() * multi;
+                const float noice_powerd = noise.tick()* multi; // noice_generator.lastOut() * multi;
                 sample = saw_wave_powerd+noice_powerd;
             }
         }
