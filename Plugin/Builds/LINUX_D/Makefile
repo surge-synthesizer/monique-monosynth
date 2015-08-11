@@ -34,7 +34,6 @@ OBJECTS := \
   $(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o \
   $(OBJDIR)/mono_AmpPainter_dfaca393.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
-  $(OBJDIR)/mono_ChorusBuffer_c290d8b2.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
   $(OBJDIR)/mono_Parameters_6e808cd6.o \
   $(OBJDIR)/mono_UiRefresher_aeb9cef2.o \
@@ -107,11 +106,6 @@ $(OBJDIR)/mono_AmpPainter_dfaca393.o: ../../../Source/mono_AmpPainter.cpp
 $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceManager.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling mono_AudioDeviceManager.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/mono_ChorusBuffer_c290d8b2.o: ../../../Source/mono_ChorusBuffer.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_ChorusBuffer.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o: ../../../Source/mono_ModulationSlider.cpp

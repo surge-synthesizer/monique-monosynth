@@ -46,10 +46,6 @@
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="zuO4aC" name="mono_AudioDeviceManager.h" compile="0" resource="0"
             file="../Source/mono_AudioDeviceManager.h"/>
-      <FILE id="S2zCKU" name="mono_ChorusBuffer.cpp" compile="1" resource="0"
-            file="../Source/mono_ChorusBuffer.cpp"/>
-      <FILE id="QlfNGv" name="mono_ChorusBuffer.h" compile="0" resource="0"
-            file="../Source/mono_ChorusBuffer.h"/>
       <FILE id="E8wrkW" name="mono_ModulationSlider.cpp" compile="1" resource="0"
             file="../Source/mono_ModulationSlider.cpp"/>
       <FILE id="hoGqtJ" name="mono_ModulationSlider.h" compile="0" resource="0"
