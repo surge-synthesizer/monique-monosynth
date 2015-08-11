@@ -118,7 +118,7 @@ private:
     friend class RuntimeNotifyer;
     NOINLINE virtual void set_sample_rate( double sr_ ) noexcept {
         sample_rate = sr_;
-        sample_rate_1ths = 1.0/sample_rate;
+        sample_rate_1ths = 1.0f/sample_rate;
     };
     NOINLINE virtual void set_block_size( int bs_ ) noexcept { block_size = bs_; };
     NOINLINE virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept {};
@@ -217,7 +217,7 @@ struct OSCData {
     typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_multi_t;
     fm_multi_t fm_multi;
 
-    typedef mono_ParameterGlide<float, 0, 0,1000, 1000, 100> fm_amount_t;
+    typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_amount_t;
     fm_amount_t fm_amount;
 
     typedef mono_Parameter<bool, FM_WAVE_SINE, false,FM_WAVE_SINE> fm_wave_t;
@@ -228,39 +228,15 @@ struct OSCData {
     typedef mono_Parameter<bool, true> mod_off_t;
     mod_off_t mod_off;
 
-    typedef mono_ParameterGlide<int, 0, -12,12, 1, 1000 > puls_width_t;
+    typedef mono_Parameter<int, 0, -12,12, 1, 1000 > puls_width_t;
     puls_width_t puls_width;
 
-    typedef mono_ParameterGlide<float, 0, 0,1000, 1000, 100> fm_swing_t;
+    typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_swing_t;
     fm_swing_t fm_swing;
-    typedef mono_ParameterGlide<int, 0, 0,16, 1, 1000> osc_switch_t;
+    typedef mono_Parameter<int, 0, 0,16, 1, 1000> osc_switch_t;
     osc_switch_t osc_switch;
 
     inline const OSCData& operator=( const OSCData& other_ ) noexcept;
-
-    struct ProcessCopy {
-        wave_t::type wave;
-
-        octave_t* octave;
-        is_lfo_modulated_t::type is_lfo_modulated;
-
-        fm_multi_t::type fm_multi;
-        fm_amount_t* fm_amount;
-        fm_wave_t::type fm_wave;
-
-        sync_t::type sync;
-        mod_off_t::type mod_off;
-
-        puls_width_t::type puls_width;
-        fm_swing_t::type fm_swing;
-        osc_switch_t::type osc_switch;
-
-        JUCE_LEAK_DETECTOR (ProcessCopy)
-    };
-
-    // see end of this file
-    inline void get_updated_working_copy( ProcessCopy& copy ) noexcept;
-    inline void get_working_copy( ProcessCopy& copy ) noexcept;
 
     // FOR UI FEEDBACK
     float last_modulation_value;
@@ -303,7 +279,7 @@ struct ENVData
     mono_Parameter< float, 2000, 100,20000, 1000, 100 > max_attack_time;
     mono_Parameter< float, 20, 0,1000, 1000, 100 > decay;
     mono_Parameter< float, 250, 100,20000, 1000, 100 > max_decay_time;
-    mono_ParameterGlide< float, 900, 1,1000, 1000, 100 > sustain;
+    mono_Parameter< float, 900, 1,1000, 1000, 100 > sustain;
     mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time;
     mono_Parameter< float, 200, 1,1000, 1000, 100 > release;
     mono_Parameter< float, 4000, 100,20000, 1000, 100 > max_release_time;
@@ -439,7 +415,7 @@ struct FilterData : mono_ParameterListener< float > {
     typedef mono_Parameter< int, LPF_2_PASS, LPF_2_PASS,MOOG_AND_LPF > filter_type_t;
     filter_type_t filter_type;
 
-    typedef mono_ParameterGlide< float, -900, -1000,1000, 1000, 100 > adsr_lfo_mix_t;
+    typedef mono_Parameter< float, -900, -1000,1000, 1000, 100 > adsr_lfo_mix_t;
     adsr_lfo_mix_t adsr_lfo_mix;
 
     typedef mono_ParameterGlideModulated< float, 0, 0,1000, 1000, 1000 > distortion_t;
@@ -468,7 +444,7 @@ struct FilterData : mono_ParameterListener< float > {
     modulate_gain_t modulate_gain;
 
     Array<ENVData*> input_env_datas;
-    typedef mono_ParameterGlide< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
+    typedef mono_Parameter< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
     typedef mono_ParameterArray< sustain_replacement_t, SUM_INPUTS_PER_FILTER > input_sustain_array_t;
     input_sustain_array_t input_sustains;
     void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
@@ -483,39 +459,11 @@ struct FilterData : mono_ParameterListener< float > {
     compressor_t compressor;
     typedef mono_ParameterGlideModulated< float, 750, 0,1000, 1000, 100 > output_t;
     output_t output;
-    typedef mono_ParameterGlide< float, 1000, 0,1000, 1000, 100 > output_clipping_t;
+    typedef mono_Parameter< float, 1000, 0,1000, 1000, 100 > output_clipping_t;
     output_clipping_t output_clipping;
     typedef mono_Parameter< bool, false > modulate_output_t;
     modulate_output_t modulate_output;
 
-    struct ProcessCopy {
-        filter_type_t::type filter_type;
-
-        adsr_lfo_mix_t* adsr_lfo_mix;
-
-        distortion_t* distortion;
-        modulate_distortion_t::type modulate_distortion;
-
-        cutoff_t* cutoff;
-        modulate_cutoff_t::type modulate_cutoff;
-        resonance_t* resonance;
-        modulate_resonance_t::type modulate_resonance;
-
-        gain_t* gain;
-        modulate_gain_t::type modulate_gain;
-
-        input_sustain_array_t* input_sustains;
-        input_hold_array_t::array_type input_holds;
-
-        compressor_t::type compressor;
-        output_t* output;
-        output_clipping_t* output_clipping;
-        modulate_output_t::type modulate_output;
-
-        JUCE_LEAK_DETECTOR (ProcessCopy)
-    };
-
-    inline void get_updated_working_copy( ProcessCopy& copy ) noexcept;
     inline const FilterData& operator=( const FilterData& other_ ) noexcept;
 
     // ONLY ON INIT USED CTORS
@@ -640,7 +588,7 @@ struct EQData : mono_ParameterListener< float >
 {
     const int id;
 
-    typedef mono_ParameterGlide< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
+    typedef mono_Parameter< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
     mono_ParameterArray< sustain_replacement_t, SUM_EQ_BANDS > velocity;
 
     void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
@@ -709,9 +657,9 @@ inline const ReverbData& ReverbData::operator=( const ReverbData& other_ ) noexc
 struct ChorusData : mono_ParameterListener< float > {
     const int id;
 
-    typedef mono_ParameterGlide< float, 333, 0,1000, 1000, 1000 > sustain_replacement_t;
+    typedef mono_Parameter< float, 333, 0,1000, 1000, 1000 > sustain_replacement_t;
     sustain_replacement_t modulation;
-    mono_ParameterGlide< bool, true > hold_modulation;
+    mono_Parameter< bool, true > hold_modulation;
 
     inline const ChorusData& operator=( const ChorusData& other_ ) noexcept;
 
@@ -749,11 +697,11 @@ struct SynthData : mono_ParameterListener<float>
 {
     const int id;
 
-    mono_ParameterGlide< float, 900, 0,1000, 1000, 1000 > volume;
+    mono_Parameter< float, 900, 0,1000, 1000, 1000 > volume;
     mono_Parameter< float, 50, 0,1000, 1000, 1000 > glide;
-    mono_ParameterGlide< float, 0, 0,1000, 1000, 1000 > delay;
-    mono_ParameterGlide< float, 1000, 0,1000, 1000, 1000 > effect_bypass;
-    mono_ParameterGlide< float, 700, 0,1000, 1000, 100 > final_compression;
+    mono_Parameter< float, 0, 0,1000, 1000, 1000 > delay;
+    mono_Parameter< float, 1000, 0,1000, 1000, 1000 > effect_bypass;
+    mono_Parameter< float, 700, 0,1000, 1000, 100 > final_compression;
     // TODO GLIDE?
     mono_Parameter< float, 900, 0,1000, 1000, 100 > colour;
     mono_Parameter< float, 50, 0,1000, 1000, 100 > resonance;
@@ -1070,76 +1018,6 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
 #define SYNTH_PARAM(_X_) &(mono_ParameterOwnerStore::getInstance()->_X_)
 #define DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-inline void FilterData::get_updated_working_copy( ProcessCopy& copy ) noexcept {
-    copy.filter_type = filter_type;
-    copy.adsr_lfo_mix = &adsr_lfo_mix;
-    copy.distortion = &distortion;
-    copy.modulate_distortion = modulate_distortion;
-    copy.cutoff = &cutoff;
-    copy.modulate_cutoff = modulate_cutoff;
-    copy.resonance = &resonance;
-    copy.modulate_resonance = modulate_resonance;
-    copy.gain = &gain;
-    copy.modulate_gain = modulate_gain;
-    copy.input_sustains = &input_sustains;
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++ i ) {
-        copy.input_sustains->get(i).update( DATA( synth_data ).glide_motor_time );
-        copy.input_holds[i] = input_holds[i];
-    }
-    copy.compressor = compressor;
-    copy.output = &output;
-    copy.output_clipping = &output_clipping;
-    copy.modulate_output = modulate_output;
-
-    adsr_lfo_mix.update( DATA( synth_data ).glide_motor_time );
-    distortion.update( DATA( synth_data ).glide_motor_time );
-    cutoff.update( DATA( synth_data ).glide_motor_time );
-    resonance.update( DATA( synth_data ).glide_motor_time );
-    width.update( DATA( synth_data ).glide_motor_time );
-    gain.update( DATA( synth_data ).glide_motor_time );
-    output.update( DATA( synth_data ).glide_motor_time );
-    output_clipping.update( DATA( synth_data ).glide_motor_time );
-}
-inline void OSCData::get_updated_working_copy( ProcessCopy& copy ) noexcept {
-    copy.wave = wave;
-
-    copy.octave = &octave;
-    copy.is_lfo_modulated = is_lfo_modulated;
-
-    copy.fm_multi = fm_multi;
-    copy.fm_amount = &fm_amount;
-    copy.fm_wave = fm_wave;
-
-    copy.sync = sync;
-    copy.mod_off = mod_off;
-
-    copy.puls_width = puls_width;
-    copy.fm_swing = fm_swing;
-    copy.osc_switch = osc_switch;
-
-    octave.update( DATA( synth_data ).glide_motor_time );
-    fm_amount.update( DATA( synth_data ).glide_motor_time );
-}
-inline void OSCData::get_working_copy( ProcessCopy& copy ) noexcept {
-    copy.wave = wave;
-
-    copy.octave = &octave;
-    copy.is_lfo_modulated = is_lfo_modulated;
-
-    copy.fm_multi = fm_multi;
-    copy.fm_amount = &fm_amount;
-    copy.fm_wave = fm_wave;
-
-    copy.sync = sync;
-    copy.mod_off = mod_off;
-
-    copy.puls_width = puls_width;
-    copy.fm_swing = fm_swing;
-    copy.osc_switch = osc_switch;
-}
 
 #pragma GCC diagnostic pop
 

@@ -425,15 +425,15 @@ void MIDIControlHandler::clear() {
 
 // ==============================================================================
 NOINLINE mono_ParameterCompatibilityBase::mono_ParameterCompatibilityBase() noexcept :
-midi_control( new MIDIControl( this ) ) {}
+midi_control( new MIDIControl( this ) ), last_modulation_amount(0) {}
 NOINLINE mono_ParameterCompatibilityBase::~mono_ParameterCompatibilityBase() noexcept {}
 
 NOINLINE float mono_ParameterCompatibilityBase::get_modulation_amount() const noexcept {
     return HAS_NO_MODULATION;
 };
 
-NOINLINE float mono_ParameterCompatibilityBase::get_last_modulation_amount() const noexcept {
-    return 0;
+float mono_ParameterCompatibilityBase::get_last_modulation_amount() const noexcept {
+    return last_modulation_amount;
 }
 
 // ==============================================================================

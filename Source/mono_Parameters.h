@@ -16,6 +16,8 @@
 
 #define DEFAULT_MODULATION 0.2f
 
+// TODO remove the fucking templates!
+
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
@@ -205,6 +207,7 @@ struct simple_type_info<float> {
 template<typename T>
 class mono_ParameterListener;
 
+// TODO add the values to the base class and dont overwrite the expensive virtual functions
 struct mono_ParameterCompatibilityBase {
     virtual float get_scaled_value() = 0;
     virtual void set_scaled_value( float ) = 0;
@@ -221,7 +224,9 @@ struct mono_ParameterCompatibilityBase {
     NOINLINE virtual float get_modulation_amount() const noexcept;
     virtual void set_modulation_amount(float) noexcept {};
     virtual void set_modulation_amount_without_notification(float) noexcept {}
-    NOINLINE virtual float get_last_modulation_amount() const noexcept;
+
+    float last_modulation_amount;
+    float get_last_modulation_amount() const noexcept;
     virtual bool has_modulation() const noexcept {
         return false;
     }
@@ -440,6 +445,7 @@ public:
     using parameter_base_t::get_reference;
 
     inline T operator=( T value_ ) noexcept {
+        // TODO, only check for to big values in DEBUG MODE?
         if( value_ > MAX_SCALED ) {
             DBG( "ERROR: set to big value: " << get_short_name() << "->" << value_ << " max:"<<  MAX_SCALED );
             value_ = MAX_SCALED;
@@ -656,170 +662,11 @@ NOINLINE static inline String generate_short_human_name( const String& owner_cla
 NOINLINE static inline String generate_short_human_name( const String& owner_class, int owner_id_, const String& param_name_, int param_id_ ) noexcept {
     return owner_class + String("_") + String(owner_id_+1) + String("_") + param_name_ + String("_") + String(param_id_+1);
 }
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
-template<typename mono_Parameter_t>
-class mono_GlideParameter {
-    int counter;
-    float current_value;
-    const float& source_value;
-    float delta;
-
-public:
-    inline float glide_tick() noexcept {
-        if( counter )
-        {
-            --counter;
-
-            if( counter == 0 )
-                current_value = source_value;
-            else
-            {
-                current_value+=delta;
-                if( current_value > mono_Parameter_t::MAX_SCALED || current_value < mono_Parameter_t::MIN_SCALED )
-                {
-                    current_value = source_value;
-                    counter = 0;
-                }
-            }
-        }
-
-        return current_value;
-    }
-
-    inline void update( int n_ ) noexcept {
-        if( source_value != current_value )
-        {
-            counter = n_;
-            delta = (source_value-current_value) / counter;
-        }
-        else
-            counter = 0;
-    }
-
-    inline float get_current_value() const noexcept {
-        return current_value;
-    }
-
-    inline void reset() noexcept {
-        current_value = source_value;
-        delta = 0;
-        counter = 0;
-    }
-
-    MONO_EMPTY_COPY_OPERATOR( mono_GlideParameter )
-
-    NOINLINE mono_GlideParameter( const mono_Parameter_t& source_ ) noexcept;
-    NOINLINE ~mono_GlideParameter() noexcept;
-
-private:
-    MONO_NOT_CTOR_COPYABLE( mono_GlideParameter )
-    NOINLINE mono_GlideParameter();
-};
-
-template<typename mono_Parameter_t>
-NOINLINE mono_GlideParameter<mono_Parameter_t>
-::mono_GlideParameter( const mono_Parameter_t& source_ ) noexcept :
-counter(0),
-        current_value(source_),
-        source_value(source_.get_reference()),
-        delta(0)
-{}
-template<typename mono_Parameter_t>
-NOINLINE mono_GlideParameter<mono_Parameter_t>::~mono_GlideParameter() noexcept {}
 
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
-class mono_ParameterGlideBase {
-    inline virtual void update( int n_ ) noexcept = 0;
-    inline virtual float tick() noexcept = 0;
-    inline virtual float get_last_tick() const noexcept = 0;
-};
-
-template<MONO_PARAMETER_TEMPLATE_DECLARATION_INIT>
-class mono_ParameterGlide :
-    public mono_ParameterGlideBase,
-    public mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>
-{
-protected:
-    typedef mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION> parameter_t;
-    typedef typename parameter_t::parameter_base_t parameter_base_t;
-    typedef mono_GlideParameter< parameter_t > glide_parameter_t;
-
-    glide_parameter_t parameter_glide;
-    float last_tick_value;
-    bool is_changed_since_last_tick;
-
-public:
-    inline virtual void update( int n_ ) noexcept override {
-        //  hier müssen wir ein snap value einführen, sonst wird ewig geklitten wenn wir aller 512 samples ein update machen,
-        //  dazu den letzten wert fürs update merken und schauen ob wir das update für diese änderung bereits durchgeführt haben
-        parameter_glide.update(n_);
-    }
-    inline virtual float tick() noexcept override {
-        return update_last_value( parameter_glide.glide_tick() );
-    }
-    inline void reset() noexcept {
-        parameter_glide.reset();
-        last_tick_value = parameter_glide.get_current_value();
-        is_changed_since_last_tick = false;
-
-    }
-    inline virtual float get_last_tick() const noexcept override {
-        return last_tick_value;
-    }
-protected:
-    inline float update_last_value( float new_value_ ) noexcept {
-        if( new_value_ != last_tick_value )
-            is_changed_since_last_tick = true;
-        else
-            is_changed_since_last_tick = false;
-
-        return last_tick_value = new_value_;
-    }
-
-public:
-    inline bool is_output_changed_since_last_tick( ) const {
-        return is_changed_since_last_tick;
-    }
-
-    inline const mono_ParameterGlide& operator=( const mono_ParameterGlide& other_ ) noexcept {
-        parameter_t::operator=( other_.parameter_base_t::value );
-
-        return *this;
-    }
-    inline const mono_ParameterGlide& operator=( const T v_ ) noexcept {
-        parameter_t::operator=( v_ );
-
-        return *this;
-    }
-    using parameter_t::operator T;
-    using parameter_t::operator ^=;
-    using parameter_t::get_reference;
-    using parameter_t::get_base;
-
-public:
-    NOINLINE mono_ParameterGlide( const String& name_, const String& short_name_  ) noexcept;
-
-private:
-    MONO_NOT_CTOR_COPYABLE( mono_ParameterGlide )
-    MONO_NOT_MOVE_COPY_OPERATOR( mono_ParameterGlide )
-    mono_ParameterGlide();
-};
-template<MONO_PARAMETER_TEMPLATE_DECLARATION>
-NOINLINE mono_ParameterGlide<MONO_PARAMETER_TEMPLATE_DEFINITION>::mono_ParameterGlide( const String& name_, const String& short_name_  ) noexcept
-:
-parameter_t( name_, short_name_ ),
-             parameter_glide( *static_cast< parameter_t* >(this) ),
-             last_tick_value(0),
-             is_changed_since_last_tick( true )
-{}
-
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
+// TODO remove
 template<int min_, int max_>
 class mono_GlideValue {
     int counter;
@@ -905,21 +752,13 @@ template<int min_, int max_>
 NOINLINE mono_GlideValue<min_,max_>::~mono_GlideValue() noexcept {}
 
 // ==============================================================================
-class mono_ParameterGlideModulatedBase {
-    inline virtual float tick_modulated( float modulator_signal_, bool add_modulation_ = true ) noexcept = 0;
-};
 template<MONO_PARAMETER_TEMPLATE_DECLARATION_INIT>
-class mono_ParameterGlideModulated :
-    public mono_ParameterGlide< MONO_PARAMETER_TEMPLATE_DEFINITION >,
-    public mono_ParameterGlideModulatedBase
+class mono_ParameterGlideModulated : public mono_Parameter< MONO_PARAMETER_TEMPLATE_DEFINITION >
 {
-    typedef mono_ParameterGlide< MONO_PARAMETER_TEMPLATE_DEFINITION > parameter_glide_t;
-    typedef typename parameter_glide_t::parameter_t parameter_t;
-    typedef typename parameter_glide_t::parameter_base_t parameter_base_t;
-    typedef mono_GlideValue<-1,1> modulation_t;
+    typedef mono_Parameter< MONO_PARAMETER_TEMPLATE_DEFINITION > parameter_t;
+    typedef typename parameter_t::parameter_base_t parameter_base_t;
 
-    modulation_t modulation;
-    float last_modulator;
+    float modulation;
 
 public:
     virtual inline float get_modulation_amount() const noexcept override {
@@ -930,54 +769,13 @@ private:
     virtual void set_modulation_amount( float modulation_amount_ ) noexcept override;
     virtual void set_modulation_amount_without_notification( float modulation_amount_ ) noexcept override;
 
-    NOINLINE virtual float get_last_modulation_amount() const noexcept override;
     bool has_modulation() const noexcept override {
         return true;
     }
 
 public:
-    inline void update( int n_ ) noexcept override {
-        parameter_glide_t::update(n_);
-        modulation.update(n_);
-    }
-    inline float tick_modulated( float modulator_signal_, bool add_modulation_ = true ) noexcept override {
-        float modulator_amount = modulation.glide_tick();
-        if( add_modulation_ ) {
-            if( modulator_amount >= 0 )
-                return tick_to_up( modulator_signal_, modulator_amount );
-            else
-                return tick_to_down( modulator_signal_, modulator_amount*-1 );
-        }
-        else
-            return parameter_glide_t::tick();
-    }
-
-private:
-    // IT'S private? YOU SHOULD USE THE GLIDE PARAMETER NOT THE MODULATED ONE
-    virtual float tick() noexcept override {
-        return parameter_glide_t::tick();
-    }
-
-    // TODO is this correct???
-    // PLEASE TEST
-    inline float tick_to_up( float modulator_signal_, float modulator_amount_ ) noexcept {
-        last_modulator = modulator_signal_ * modulator_amount_;
-        float glide_value = parameter_glide_t::parameter_glide.glide_tick();
-        float modulation_range = (parameter_t::MAX_SCALED-glide_value) * modulator_amount_;
-        return parameter_glide_t::update_last_value( glide_value + modulation_range*modulator_signal_ );
-    }
-    inline float tick_to_down( float modulator_signal_, float modulator_amount_ ) noexcept {
-        last_modulator = modulator_signal_*modulator_amount_;
-        float glide_value = parameter_glide_t::parameter_glide.glide_tick();
-        float modulation_range = (glide_value-parameter_t::MIN_SCALED) * modulator_amount_;
-        return parameter_glide_t::update_last_value( glide_value - modulation_range*modulator_signal_ );
-    }
-
-public:
-    using parameter_glide_t::is_output_changed_since_last_tick;
-
     inline const mono_ParameterGlideModulated& operator=( const mono_ParameterGlideModulated& other_ ) noexcept {
-        parameter_base_t::set_scaled( other_.parameter_base_t::value );
+        parameter_t::set_scaled( other_.parameter_t::value );
         modulation = other_.modulation;
 
         return *this;
@@ -987,16 +785,17 @@ public:
 
         return *this;
     }
-    using parameter_glide_t::operator T;
-    using parameter_glide_t::operator ^=;
-    using parameter_glide_t::get_reference;
-    using parameter_glide_t::get_base;
+    using parameter_t::operator T;
+    using parameter_t::operator ^=;
+    using parameter_t::get_reference;
+    using parameter_t::get_base;
 
 public:
-    NOINLINE mono_ParameterGlideModulated( const String& name_, const String& short_name_ ) noexcept;
-    NOINLINE ~mono_ParameterGlideModulated() noexcept;
+    NOINLINE mono_ParameterGlideModulated( const String& name_, const String& short_name_ );
+    NOINLINE ~mono_ParameterGlideModulated();
 
 private:
+  // TODO make this ti a function which takes the param as arg?
     NOINLINE void write_to( XmlElement& xml_ ) const noexcept override;
     NOINLINE void read_from( const XmlElement& xml_ ) noexcept override;
     NOINLINE void write_midi_to( XmlElement& xml_ ) const noexcept override;
@@ -1007,14 +806,13 @@ private:
     mono_ParameterGlideModulated();
 };
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
-NOINLINE mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::mono_ParameterGlideModulated( const String& name_, const String& short_name_ ) noexcept
-:
-parameter_glide_t( name_, short_name_ ),
-                   modulation( DEFAULT_MODULATION ),
-                   last_modulator(0)
+NOINLINE mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::mono_ParameterGlideModulated( const String& name_, const String& short_name_ )
+    :
+    parameter_t( name_, short_name_ ),
+    modulation( DEFAULT_MODULATION )
 {}
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
-NOINLINE mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::~mono_ParameterGlideModulated() noexcept {}
+NOINLINE mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::~mono_ParameterGlideModulated() {}
 
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE void mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::set_modulation_amount( float modulation_amount_ ) noexcept {
@@ -1025,12 +823,6 @@ template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE void mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::set_modulation_amount_without_notification( float modulation_amount_ ) noexcept {
     modulation = modulation_amount_;
 }
-
-template<MONO_PARAMETER_TEMPLATE_DECLARATION>
-NOINLINE float mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::get_last_modulation_amount() const noexcept {
-    return last_modulator;
-}
-
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE void mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::write_to( XmlElement& xml_ ) const noexcept {
     if( parameter_base_t::value != parameter_t::INIT_SCALED )
@@ -1057,8 +849,6 @@ NOINLINE void mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::
         new_modulation = -1;
     }
     modulation = new_modulation;
-
-    update(500);
 
     parameter_base_t::notify_on_load_value_listeners();
 }
