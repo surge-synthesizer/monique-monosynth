@@ -17,6 +17,7 @@ public:
     inline void add( float val_ ) noexcept;
     inline float add_and_get_average( float val_ ) noexcept;
     inline float get_average() const noexcept;
+    inline float reset( float value_ = 0 ) noexcept;
 
 private:
     virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override {
@@ -30,8 +31,7 @@ public:
 
 //==============================================================================
 NOINLINE AmpSmoothBuffer::AmpSmoothBuffer() : pos(0), sum(0) {
-    for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i )
-        buffer[i] = 0;
+    reset();
 }
 NOINLINE AmpSmoothBuffer::~AmpSmoothBuffer() {}
 
@@ -50,7 +50,14 @@ inline float AmpSmoothBuffer::add_and_get_average( float val_ ) noexcept {
     return get_average();
 }
 inline float AmpSmoothBuffer::get_average() const noexcept {
-    return sum / AMP_SMOOTH_SIZE;
+    return sum * ( 1.0f / AMP_SMOOTH_SIZE );
+}
+inline float AmpSmoothBuffer::reset( float value_ ) noexcept {
+    sum = 0;
+    for( int i = 0 ; i != AMP_SMOOTH_SIZE ; ++i ) {
+        buffer[i] = value_;
+	sum += value_;
+    }
 }
 
 //==============================================================================
@@ -459,7 +466,7 @@ inline void mono_BlitSquare::setPhase( float phase ) noexcept {
 }
 
 inline float mono_BlitSquare::getPhase() const noexcept {
-    return phase_ / float_Pi;
+    return phase_ * ( 1.0f/float_Pi );
 }
 inline bool mono_BlitSquare::isNewCylce() const noexcept {
     return _isNewCylce;
@@ -1111,7 +1118,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
                 const float modulator_frequency = last_frequency* (1.1f + 14.9f*last_modulator_multi);
                 modulator.setVibratoRate( modulator_frequency );
 
-                modulator_sync_cycles = std::floor(modulator_frequency / last_frequency);
+                modulator_sync_cycles = mono_floor(modulator_frequency / last_frequency);
             }
         }
 
@@ -1679,6 +1686,111 @@ float ENV::get_amp() const noexcept {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+template< int smooth_samples >
+class AmpSmoother {
+    float current_value;
+    float target_value;
+    float delta;
+    int counter;
+
+private:
+    inline void glide_tick() noexcept;
+
+public:
+    inline float add_get( float in_ ) noexcept;
+    bool is_up_to_date() const noexcept {
+        return target_value == current_value;
+    }
+    inline float add_get_and_keep_current_time( float in_ ) noexcept;
+    inline float reset( float value_ = 0 ) noexcept {
+        current_value = value_;
+        delta = 0;
+        counter = 0;
+    }
+    inline float get_current_value() const noexcept {
+        return current_value;
+    }
+
+    NOINLINE AmpSmoother( float start_value_ = 0 ) noexcept;
+    NOINLINE ~AmpSmoother() noexcept;
+
+private:
+    MONO_NOT_CTOR_COPYABLE( AmpSmoother )
+    MONO_NOT_MOVE_COPY_OPERATOR( AmpSmoother )
+};
+
+//==============================================================================
+template< int smooth_samples >
+NOINLINE AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
+:
+current_value(0),
+              target_value(start_value_),
+              delta(0),
+              counter(0)
+{}
+template< int smooth_samples >
+NOINLINE AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
+
+//==============================================================================
+template< int smooth_samples >
+inline float AmpSmoother<smooth_samples>::add_get( float in_ ) noexcept {
+    if( current_value != in_ || target_value != in_ )
+    {
+        // ONLY UPDATE IF WE HAVE A NEW VALUE
+        if( target_value != in_ )
+        {
+            counter = smooth_samples;
+            delta = (in_-current_value) / smooth_samples;
+            target_value = in_;
+        }
+
+        glide_tick();
+    }
+
+    return current_value;
+}
+template< int smooth_samples >
+inline float AmpSmoother<smooth_samples>::add_get_and_keep_current_time( float in_ ) noexcept {
+    if( current_value != in_ || target_value != in_ )
+    {
+        // ONLY UPDATE IF WE HAVE A NEW VALUE
+        if( target_value != in_ )
+        {
+            delta = (in_-current_value) / counter;
+            target_value = in_;
+        }
+
+        glide_tick();
+    }
+
+    return current_value;
+}
+template< int smooth_samples >
+inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
+{
+    if( --counter <= 0 )
+        current_value = target_value;
+    else
+    {
+        current_value+=delta;
+        if( current_value > 1 || current_value < 0 )
+        {
+            current_value = target_value;
+            counter = 0;
+        }
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class AnalogFilter : public RuntimeListener
 {
     friend class DoubleAnalogFilter;
@@ -1885,7 +1997,7 @@ inline void DoubleAnalogFilter::reset() noexcept {
 // -----------------------------------------------------------------
 forcedinline static float resonance_clipping( float sample_ ) noexcept
 {
-    return (atan(sample_)/float_Pi)*2;
+    return (atan(sample_) * (1.0f/float_Pi))*2;
 }
 
 // -----------------------------------------------------------------
@@ -2414,7 +2526,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 const float amp = amp_mix[i];
                 const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
-                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) / 8;
+                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) * (1.0f/8);
                 const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
                 const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
 
@@ -2434,7 +2546,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 float amp = amp_mix[i];
                 const float resonance = filter_data.resonance->tick_modulated( amp, modulate_resonance );
-                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) / 8;
+                const float cutoff = (MAX_CUTOFF * filter_data.cutoff->tick_modulated( amp, modulate_cutoff ) + MIN_CUTOFF) * (1.0f/8);
                 const float gain = filter_data.gain->tick_modulated( amp, modulate_gain );
                 const float filter_distortion = filter_data.distortion->tick_modulated( modulate_distortion ? amp : 0 );
 
@@ -2752,108 +2864,6 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                         io_buffer[sid] = tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]);
                 }
             }
-        }
-    }
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-template< int smooth_samples >
-class AmpSmoother {
-    float current_value;
-    float target_value;
-    float delta;
-    int counter;
-
-private:
-    inline void glide_tick() noexcept;
-
-public:
-    inline float add_get( float in_ ) noexcept;
-    bool is_up_to_date() const noexcept {
-        return target_value == current_value;
-    }
-    inline float add_get_and_keep_current_time( float in_ ) noexcept;
-    inline float reset( float value_ = 0 ) noexcept {
-        current_value = value_;
-        delta = 0;
-        counter = 0;
-    }
-
-    NOINLINE AmpSmoother( float start_value_ = 0 ) noexcept;
-    NOINLINE ~AmpSmoother() noexcept;
-
-private:
-    MONO_NOT_CTOR_COPYABLE( AmpSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( AmpSmoother )
-};
-
-//==============================================================================
-template< int smooth_samples >
-NOINLINE AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
-:
-current_value(0),
-              target_value(start_value_),
-              delta(0),
-              counter(0)
-{}
-template< int smooth_samples >
-NOINLINE AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
-
-//==============================================================================
-template< int smooth_samples >
-inline float AmpSmoother<smooth_samples>::add_get( float in_ ) noexcept {
-    if( current_value != in_ || target_value != in_ )
-    {
-        // ONLY UPDATE IF WE HAVE A NEW VALUE
-        if( target_value != in_ )
-        {
-            counter = smooth_samples;
-            delta = (in_-current_value) / smooth_samples;
-            target_value = in_;
-        }
-
-        glide_tick();
-    }
-
-    return current_value;
-}
-template< int smooth_samples >
-inline float AmpSmoother<smooth_samples>::add_get_and_keep_current_time( float in_ ) noexcept {
-    if( current_value != in_ || target_value != in_ )
-    {
-        // ONLY UPDATE IF WE HAVE A NEW VALUE
-        if( target_value != in_ )
-        {
-            delta = (in_-current_value) / counter;
-            target_value = in_;
-        }
-
-        glide_tick();
-    }
-
-    return current_value;
-}
-template< int smooth_samples >
-inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
-{
-    if( --counter <= 0 )
-        current_value = target_value;
-    else
-    {
-        current_value+=delta;
-        if( current_value > 1 || current_value < 0 )
-        {
-            current_value = target_value;
-            counter = 0;
         }
     }
 }

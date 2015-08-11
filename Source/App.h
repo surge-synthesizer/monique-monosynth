@@ -145,7 +145,7 @@ static inline float round001( float value ) noexcept {
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-/*
+
 #ifndef DEBUG
 #define debug_sample_print(x,y)
 #else
@@ -160,7 +160,7 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
     }
 }
 #endif
-*/
+
 
 // TWEAKED ALGORYTHIMS
 //==============================================================================
