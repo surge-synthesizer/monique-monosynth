@@ -2731,107 +2731,133 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     const int glide_motor_time = DATA( synth_data ).glide_motor_time;
 
     FilterData& filter_data = DATA( filter_datas[id] );
-    const bool input_holds[SUM_INPUTS_PER_FILTER] = { filter_data.input_holds[0],filter_data.input_holds[1],filter_data.input_holds[2] };
-
-    struct PrepareExecuterBase : public mono_Thread {};
-    PrepareExecuterBase* prep_1;
-    PrepareExecuterBase* prep_2;
-    PrepareExecuterBase* prep_3;
 
     // COLLECT / PREPARE
     float* input_ar_amps[SUM_INPUTS_PER_FILTER];
     const float* input_buffers[SUM_INPUTS_PER_FILTER];
     float* out_buffers[SUM_INPUTS_PER_FILTER];
+    float* amp_mix = data_buffer.lfo_amplitudes.getWritePointer(id);
     {
-        for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
-        {
-            // COLLECT BUFFERS
-            float* tmp_input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-            input_buffers[input_id] = tmp_input_buffer;
-
-            float* tmp_input_ar_amp = data_buffer.tmp_buffer_6.getWritePointer( SUM_INPUTS_PER_FILTER + input_id );
-            input_ar_amps[input_id] = tmp_input_ar_amp;
-
-            out_buffers[input_id] = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
-
-            // CALCULATE INPUTS AND ENVELOPS
+#define DIMENSION_INPUT_BUFFER input_id
+#define DIMENSION_INPUT_AR_BUFFER SUM_INPUTS_PER_FILTER + input_id
+        struct PrepareExecuter : public mono_Thread {
+            FilterProcessor*const processor;
+            const int num_samples_;
+            const int input_id;
+            inline void exec() noexcept override
             {
-                ValueSmoother& input_sustain_smoother = input_sustains[input_id];
-                input_sustain_smoother.update( glide_motor_time );
-                const float*const osc_input_buffer = data_buffer.osc_samples.getReadPointer(input_id);
-                if( input_holds[input_id] ) // USING SUSTAIN
-                {
-                    input_envs.getUnchecked(input_id)->reset();
+                DataBuffer& data_buffer( DATA(data_buffer) );
+                float* tmp_input_buffer = data_buffer.tmp_buffer_6.getWritePointer( DIMENSION_INPUT_BUFFER );
+                float* tmp_input_ar_amp = data_buffer.tmp_buffer_6.getWritePointer( DIMENSION_INPUT_AR_BUFFER );
 
-                    if( id == FILTER_1 )
+                const int glide_motor_time = DATA( synth_data ).glide_motor_time;
+
+                // CALCULATE INPUTS AND ENVELOPS
+                {
+                    ValueSmoother& input_sustain_smoother = processor->input_sustains[input_id];
+                    input_sustain_smoother.update( glide_motor_time );
+                    const float*const osc_input_buffer = data_buffer.osc_samples.getReadPointer(input_id);
+                    if( DATA( filter_datas[processor->id] ).input_holds[input_id] )
                     {
-                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        processor->input_envs.getUnchecked(input_id)->reset();
+
+                        if( processor->id == FILTER_1 )
                         {
-                            tmp_input_ar_amp[sid] = input_sustain_smoother.tick();
-                            tmp_input_buffer[sid] = osc_input_buffer[sid];
-                        }
-                    }
-                    else
-                    {
-                        const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
-                        for( int sid = 0 ; sid != num_samples ; ++sid )
-                        {
-                            const float sustain = input_sustain_smoother.tick();
-                            if( sustain < 0 )
+                            for( int sid = 0 ; sid != num_samples_ ; ++sid )
                             {
-                                tmp_input_ar_amp[sid] = sustain*-1;
+                                tmp_input_ar_amp[sid] = input_sustain_smoother.tick();
                                 tmp_input_buffer[sid] = osc_input_buffer[sid];
                             }
-                            else
+                        }
+                        else
+                        {
+                            const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(processor->id-1) );
+                            for( int sid = 0 ; sid != num_samples_ ; ++sid )
                             {
-                                tmp_input_ar_amp[sid] = sustain;
-                                tmp_input_buffer[sid] = filter_before_buffer[sid];
+                                const float sustain = input_sustain_smoother.tick();
+                                if( sustain < 0 )
+                                {
+                                    tmp_input_ar_amp[sid] = sustain*-1;
+                                    tmp_input_buffer[sid] = osc_input_buffer[sid];
+                                }
+                                else
+                                {
+                                    tmp_input_ar_amp[sid] = sustain;
+                                    tmp_input_buffer[sid] = filter_before_buffer[sid];
+                                }
+                            }
+
+                        }
+                    }
+                    else // USING ADR
+                    {
+                        processor->input_envs.getUnchecked(input_id)->process( tmp_input_ar_amp, num_samples_ );
+
+                        if( processor->id == FILTER_1 )
+                        {
+                            input_sustain_smoother.reset();
+                            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                            {
+                                tmp_input_buffer[sid] = osc_input_buffer[sid];
                             }
                         }
-
-                    }
-                }
-                else // USING ADR
-                {
-                    input_envs.getUnchecked(input_id)->process( tmp_input_ar_amp, num_samples );
-
-                    if( id == FILTER_1 )
-                    {
-                        input_sustain_smoother.reset();
-                        for( int sid = 0 ; sid != num_samples ; ++sid )
+                        else
                         {
-                            tmp_input_buffer[sid] = osc_input_buffer[sid];
-                        }
-                    }
-                    else
-                    {
-                        const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
-                        for( int sid = 0 ; sid != num_samples ; ++sid )
-                        {
-                            const float sustain = input_sustain_smoother.tick();
-                            if( sustain < 0 )
-                                tmp_input_buffer[sid] = osc_input_buffer[sid];
-                            else
-                                tmp_input_buffer[sid] = filter_before_buffer[sid];
+                            const float* filter_before_buffer = data_buffer.filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(processor->id-1) );
+                            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                            {
+                                const float sustain = input_sustain_smoother.tick();
+                                if( sustain < 0 )
+                                    tmp_input_buffer[sid] = osc_input_buffer[sid];
+                                else
+                                    tmp_input_buffer[sid] = filter_before_buffer[sid];
+                            }
                         }
                     }
                 }
             }
-        }
-    }
+            PrepareExecuter(FilterProcessor*const processor_,
+            int num_samples__,
+            int input_id_)
+                : processor(processor_),
+                num_samples_(num_samples__),
+                input_id(input_id_)
+            {}
+        };
+        PrepareExecuter prep_1( this, num_samples, 0 );
+        prep_1.exec();
+        PrepareExecuter prep_2( this, num_samples, 1 );
+        prep_2.exec();
+        PrepareExecuter prep_3( this, num_samples, 2 );
+        prep_3.exec();
 
-    // ADSTR - LFO MIX
-    mix_smoother.update(glide_motor_time);
-    float* amp_mix = data_buffer.lfo_amplitudes.getWritePointer(id);
-    {
-        const float* env_amps = data_buffer.filter_env_amps.getReadPointer(id);
-        const float* lfo_amplitudes = data_buffer.lfo_amplitudes.getReadPointer(id);
-        for( int sid = 0 ; sid != num_samples ; ++sid )
+        // SINGLE THREAD, WAIT FOR SECOND
         {
-            // LFO ADSR MIX - HERE TO SAVE ONE LOOP
-            const float mix = (1.0f+mix_smoother.tick()) * 0.5f;
-            amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
+            // COLLECT BUFFERS
+            for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+            {
+                // COLLECT BUFFERS
+                input_buffers[input_id] = data_buffer.tmp_buffer_6.getWritePointer( DIMENSION_INPUT_BUFFER );
+                input_ar_amps[input_id] = data_buffer.tmp_buffer_6.getWritePointer( DIMENSION_INPUT_AR_BUFFER );
+                out_buffers[input_id] = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * id );
+            }
+
+            // ADSTR - LFO MIX
+            mix_smoother.update(glide_motor_time);
+            {
+                const float* env_amps = data_buffer.filter_env_amps.getReadPointer(id);
+                const float* lfo_amplitudes = data_buffer.lfo_amplitudes.getReadPointer(id);
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    // LFO ADSR MIX - HERE TO SAVE ONE LOOP
+                    const float mix = (1.0f+mix_smoother.tick()) * 0.5f;
+                    amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
+                }
+            }
         }
+
+        // END OF MULTI THREADED
+        while( prep_1.isWorking() ) {}
     }
 
     // PROCESS FILTER
@@ -4760,6 +4786,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 
 
