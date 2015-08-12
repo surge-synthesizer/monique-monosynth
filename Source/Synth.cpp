@@ -6,7 +6,9 @@ juce_ImplementSingleton (mono_ParameterOwnerStore)
 
 // TODO replace the DATA() at the beginning of the loops with constant values
 
-
+float hidden_function_for_test_in_main(float x) {
+    return Random(x).nextFloat();
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -2772,12 +2774,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float gain = gain_smoother.tick( amp, modulate_gain );
                 const float filter_distortion = distortion_smoother.tick( modulate_distortion ? amp : 0 );
 
-                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                {
-                    DoubleAnalogFilter& filter = double_filter[io_id];
-                    filter.updateLow2Pass( resonance, cutoff+35, gain );
-                    out_buffers[io_id][i] = DISTORTION( filter.processLow2Pass( DISTORTION( input_buffers[io_id][i] ) ) );
-                }
+#define UNROLL_3(x3) \
+                    double_filter[x3].updateLow2Pass( resonance, cutoff+35, gain ); \
+                    out_buffers[x3][i] = DISTORTION( double_filter[x3].processLow2Pass( DISTORTION( input_buffers[x3][i] ) ) );
+#include "loop_execute.h"
             }
             break;
         case LPF:
@@ -2792,12 +2792,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float gain = gain_smoother.tick( amp, modulate_gain );
                 const float filter_distortion = distortion_smoother.tick( modulate_distortion ? amp : 0 );
 
-                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                {
-                    DoubleAnalogFilter& filter = double_filter[io_id];
-                    filter.updateLowResonance( resonance, cutoff, gain );
-                    out_buffers[io_id][i] = DISTORTION( filter.processLowResonance( DISTORTION( input_buffers[io_id][i] ) ) );
-                }
+#define UNROLL_3(x3) \
+                    double_filter[x3].updateLowResonance( resonance, cutoff, gain ); \
+                    out_buffers[x3][i] = DISTORTION( double_filter[x3].processLowResonance( DISTORTION( input_buffers[x3][i] ) ) );
+#include "loop_execute.h"
             }
             break;
         case HIGH_2_PASS :
@@ -2812,12 +2810,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float gain = gain_smoother.tick( amp, modulate_gain );
                 const float filter_distortion = distortion_smoother.tick( modulate_distortion ? amp : 0 );
 
-                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                {
-                    DoubleAnalogFilter& filter = double_filter[io_id];
-                    filter.updateHigh2Pass( resonance, cutoff, gain );
-                    out_buffers[io_id][i] = DISTORTION( filter.processHigh2Pass( DISTORTION( input_buffers[io_id][i] ) ) );
-                }
+#define UNROLL_3(x3) \
+                    double_filter[x3].updateHigh2Pass( resonance, cutoff, gain ); \
+                    out_buffers[x3][i] = DISTORTION( double_filter[x3].processHigh2Pass( DISTORTION( input_buffers[x3][i] ) ) );
+#include "loop_execute.h"
             }
             break;
         case HPF :
@@ -2832,12 +2828,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float gain = gain_smoother.tick( amp, modulate_gain );
                 const float filter_distortion = distortion_smoother.tick( modulate_distortion ? amp : 0 );
 
-                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                {
-                    DoubleAnalogFilter& filter = double_filter[io_id];
-                    filter.updateHighResonance( resonance, cutoff, gain );
-                    out_buffers[io_id][i] = DISTORTION( filter.processHighResonance( input_buffers[io_id][i] ) );
-                }
+#define UNROLL_3(x3) \
+                    double_filter[x3].updateHighResonance( resonance, cutoff, gain ); \
+                    out_buffers[x3][i] = DISTORTION( double_filter[x3].processHighResonance( DISTORTION( input_buffers[x3][i] ) ) );
+#include "loop_execute.h"
             }
             break;
         case BPF:
@@ -2852,12 +2846,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const float gain = gain_smoother.tick( amp, modulate_gain );
                 const float filter_distortion = distortion_smoother.tick( modulate_distortion ? amp : 0 );
 
-                for( int io_id = 0 ; io_id != SUM_INPUTS_PER_FILTER ; ++io_id )
-                {
-                    DoubleAnalogFilter& filter = double_filter[io_id];
-                    filter.updateBand( resonance, cutoff, gain );
-                    out_buffers[io_id][i] = DISTORTION( filter.processBand( DISTORTION( input_buffers[io_id][i] ) ) );
-                }
+#define UNROLL_3(x3) \
+                    double_filter[x3].updateBand( resonance, cutoff, gain ); \
+                    out_buffers[x3][i] = DISTORTION( double_filter[x3].processBand( DISTORTION( input_buffers[x3][i] ) ) );
+#include "loop_execute.h"
             }
             break;
         default:  /* PASS */
@@ -4204,20 +4196,77 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
     if( step_number_ != -1 )
         current_step = step_number_;
 
-    // FILTER ENV
-    for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
-        filter_envs[flt_id]->process( data_buffer->filter_env_amps.getWritePointer(flt_id), num_samples );
+    // MULTI THREADED
+    {
+        // MAIN THREAD
+        filter_envs[0]->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
+        lfos[0]->process( step_number_, num_samples );
+        oscs[0]->process( data_buffer, num_samples ); // NEED LFO 0
 
+        // SECOND THREAD
+        // NEED OSC 0
+        struct MiddleExecuter : public Thread {
+            MONOVoice*const voice;
+            const int num_samples;
+            const int step_number;
+            void run() override {
+                voice->filter_envs[1]->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
+                voice->lfos[1]->process( step_number, num_samples );
+                voice->oscs[1]->process( voice->data_buffer, num_samples ); // NEED LFO 1, NEED OSC 0
+            }
+            MiddleExecuter(MONOVoice*const voice_,
+                           int num_samples_,
+                           int step_number_)
+                : Thread(""),
+                  voice(voice_),
+                  num_samples(num_samples_),step_number(step_number_) {
+                startThread(10);
+            }
+        };
+        MiddleExecuter middle_executer( this, num_samples, step_number_ );
 
-    // LFOS - THREAD 1 ?
-    for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
-        lfos[lfo_id]->process( step_number_, num_samples );
+        // MAIN THREAD
+        // NEED OSC 0
+        filter_envs[2]->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
+        lfos[2]->process( step_number_, num_samples );
+        oscs[2]->process( data_buffer, num_samples ); // NEED LFO 2
+
+        // WAIT FOR SECOND THREAD
+        while(middle_executer.isThreadRunning()){};
     }
+    /*
+    filter_envs[0]->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
+    lfos[0]->process( step_number_, num_samples );
+    oscs[0]->process( data_buffer, num_samples ); // NEED LFO 0
+
+    // THREAD 2
+    filter_envs[1]->process( data_buffer->filter_env_amps.getWritePointer(1), num_samples );
+    lfos[1]->process( step_number_, num_samples );
+    oscs[1]->process( data_buffer, num_samples ); // NEED LFO 1
+
+    // THREAD 3
+    filter_envs[2]->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
+    lfos[2]->process( step_number_, num_samples );
+    oscs[2]->process( data_buffer, num_samples ); // NEED LFO 2
+    */
+
+    filter_processors[0]->process( num_samples );
+    filter_processors[1]->process( num_samples );
+    filter_processors[2]->process( num_samples );
+
+    eq_processor->process( num_samples );
+
+    // send curren velocity as arg to the fx_processor?
+    /*
+     * TODO add back velocity glide
+    fx_processor->velocity_glide = current_velocity;
+    if( synth_data.arp_sequencer_data->is_on )
+        fx_processor->velocity_glide = current_velocity * synth_data.arp_sequencer_data->velocity[current_step];
+     */
+
+    fx_processor->process( output_buffer_, start_sample_, num_samples_ );
 
     // OSCs - THREAD 1 ?
-    for( int osc_id = 0 ; osc_id < SUM_OSCS ; ++osc_id )
-        oscs[osc_id]->process( data_buffer, num_samples );
-
 
     // VISUALIZE
     if( amp_painter )
@@ -4231,23 +4280,6 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
         for( int lfo_id = 0 ; lfo_id != SUM_LFOS ; ++lfo_id )
             for( int i = 0 ; i != num_samples ; ++i )
                 amp_painter->add_lfo( lfo_id, data_buffer->lfo_amplitudes.getReadPointer(lfo_id)[i]  );
-
-    // FILTER PROCESSING
-    for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
-        filter_processors[flt_id]->process( num_samples );
-
-    // EQ
-    eq_processor->process( num_samples );
-
-    // send curren velocity as arg to the fx_processor?
-    /*
-     * TODO add back velocity glide
-    fx_processor->velocity_glide = current_velocity;
-    if( synth_data.arp_sequencer_data->is_on )
-        fx_processor->velocity_glide = current_velocity * synth_data.arp_sequencer_data->velocity[current_step];
-     */
-    
-    fx_processor->process( output_buffer_, start_sample_, num_samples_ );
 
     // UI INFORMATIONS
     for( int i = 0 ; i != SUM_OSCS ; ++i )
@@ -4337,5 +4369,8 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
+
+
 
 
