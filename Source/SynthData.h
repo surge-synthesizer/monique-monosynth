@@ -994,6 +994,7 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
     
     // WORKERS
     mono_AudioSampleBuffer<6> tmp_buffer_6;
+    mono_AudioSampleBuffer<9*4> tmp_multithread_band_buffer_9_4;
     
     // OVER MULTIBLE PROCESSORS
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;

@@ -303,7 +303,7 @@ public:
 
     /** Performs the filter operation on the given set of samples. */
     void processSamples (float* samples, int numSamples) noexcept;
-    void processSamples (float* const dest_, float* const src_, const int numSamples) noexcept;
+    void processSamples (float* const dest_, const float* const src_, const int numSamples) noexcept;
 
 protected:
     //==============================================================================
@@ -369,7 +369,7 @@ inline void IIRFilter::processSamples (float* const samples, const int numSample
         JUCE_SNAP_TO_ZERO (lv2);  v2 = lv2;
     }
 }
-inline void IIRFilter::processSamples (float* const dest_, float* const src_, const int numSamples) noexcept
+inline void IIRFilter::processSamples (float* const dest_, const float* const src_, const int numSamples) noexcept
 {
     // HACK DISABLED
     //if (active)

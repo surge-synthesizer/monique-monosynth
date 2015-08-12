@@ -19,7 +19,7 @@ ifeq ($(CONFIG),DEVEL)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "MONIQUE_STANDALONE" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -ffunction-sections  -fdata-sections -ffast-math -fomit-frame-pointer -ftree-vectorize
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -ffunction-sections  -fdata-sections -ffast-math -fomit-frame-pointer -ftree-vectorize -flto -mtune=native -march=native
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
