@@ -386,35 +386,39 @@ inline static float distortion( float input_and_worker_, float distortion_power_
 //==============================================================================
 #define HARD_CLIPPER_STAGE_1 1.1f
 #define HARD_CLIPPER_STAGE_2 1.25f
-#define protection_clipping(x) x
-forcedinline static float protection_clipping_DIABLED( float input_and_worker_ ) noexcept
+forcedinline static float protection_clipping( float in_ ) noexcept
 {
-    if( input_and_worker_ > HARD_CLIPPER_STAGE_1 )
+  float resonance = DATA( synth_data ).resonance;
+  
+  return in_;
+  float out = 0;
+  
+    if( in_ > HARD_CLIPPER_STAGE_1 )
     {
-        input_and_worker_ = HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
-        if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
+        out = HARD_CLIPPER_STAGE_1 + in_*0.1f;
+        if( out > HARD_CLIPPER_STAGE_2 )
         {
-            input_and_worker_ = HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
-            if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
+            out = HARD_CLIPPER_STAGE_2 + in_*0.05f;
+            if( out > HARD_CLIPPER_STAGE_2 )
             {
-                input_and_worker_ = HARD_CLIPPER_STAGE_2;
+                out = HARD_CLIPPER_STAGE_2;
             }
         }
     }
-    else if( input_and_worker_ < -HARD_CLIPPER_STAGE_1 )
+    else if( in_ < -HARD_CLIPPER_STAGE_1 )
     {
-        input_and_worker_ = -HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
-        if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
+        out = -HARD_CLIPPER_STAGE_1 + in_*0.1f;
+        if( out < -HARD_CLIPPER_STAGE_2 )
         {
-            input_and_worker_ = -HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
-            if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
+            out = -HARD_CLIPPER_STAGE_2 + in_*0.05f;
+            if( out < -HARD_CLIPPER_STAGE_2 )
             {
-                input_and_worker_ = -HARD_CLIPPER_STAGE_2;
+                out = -HARD_CLIPPER_STAGE_2;
             }
         }
     }
 
-    return input_and_worker_;
+    return out*resonance + in_*(1.0f-resonance);
 }
 
 //==============================================================================
@@ -2182,7 +2186,7 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
-    //input_and_worker_ = protection_clipping_DIABLED(input_and_worker_);
+    input_and_worker_ = protection_clipping(input_and_worker_);
 
     // process input
     input_and_worker_ -= r*y4;
@@ -2365,6 +2369,8 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
 // -----------------------------------------------------------------
 inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 {
+    input_and_worker_ = protection_clipping(input_and_worker_);
+  
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2409,7 +2415,7 @@ inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
 {
     const float out = flt_2.processLowResonance( in_ );
     const float gain = flt_1.gain;
-    const float low = flt_1.processLowResonance( protection_clipping(out*gain) );
+    const float low = flt_1.processLowResonance( out*gain );
 
     return process_filter_change
     (
@@ -2422,6 +2428,8 @@ inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
 // -----------------------------------------------------------------
 inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
 {
+    input_and_worker_ = protection_clipping(input_and_worker_);
+  
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2451,7 +2459,7 @@ inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
 {
     const float out = flt_2.processHighResonance( in_ );
     const float gain = flt_1.gain;
-    const float low = flt_1.processHighResonance( protection_clipping(out*gain) );
+    const float low = flt_1.processHighResonance( out*gain );
     return process_filter_change
     (
         in_,
@@ -2486,7 +2494,7 @@ inline float DoubleAnalogFilter::processBand(float in_) noexcept
     return process_filter_change
     (
         in_,
-        flt_1.processLowResonance( protection_clipping( flt_2.processHighResonance( in_ ) ) )*0.5f
+        flt_1.processLowResonance(  flt_2.processHighResonance( in_ ) )*0.5f
     );
 }
 
@@ -2824,6 +2832,15 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 input_id(input_id_)
             {}
         };
+	/*
+	 TRY TO ADD IT TO THE THREAD after 
+	*/
+	/*
+	TRY TO COMPARE WIRTH THE OLD VERSION
+	REMOVE ANY ACCESSES TO OUTSIDE FROM THE EXECUTERS!!!  ->>>>>> processor->id etc...
+	HOW EXPENSIVE IS A THREAD BUILD? ----> keep the threads builded!
+	TRY THE PERFORMANCE IT THE ID IS A FIXED TEMPLATE PARAM!
+	*/
         PrepareExecuter prep_1( this, num_samples, 0 );
         prep_1.exec();
         PrepareExecuter prep_2( this, num_samples, 1 );
@@ -3484,7 +3501,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                                 // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                                tmp_band_out_buffer[sid] = ( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance )*gain;
+                                tmp_band_out_buffer[sid] = output ; //( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance )*gain;
                             }
                         }
                     }
@@ -4786,14 +4803,3 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
-
-
-
-
-
-
-
-
-
-
-

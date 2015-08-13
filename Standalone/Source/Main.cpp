@@ -11,6 +11,9 @@
 #include "../JuceLibraryCode/AppConfig.h"
 #include "juce_StandaloneFilterWindow.h"
 #include "../../Source/Synth.h"
+
+#define HARD_CLIPPER_STAGE_1 1.1f
+#define HARD_CLIPPER_STAGE_2 1.25f
 static inline float protection_clipping_v2( float input_and_worker_ )
 {
     if( input_and_worker_ > HARD_CLIPPER_STAGE_1 )

@@ -31,38 +31,6 @@ static inline float soft_clipping( float input_and_worker_ )
 
     return input_and_worker_;
 }
-#define HARD_CLIPPER_STAGE_1 1.1f
-#define HARD_CLIPPER_STAGE_2 1.25f
-
-static inline float protection_clipping( float input_and_worker_ ) noexcept
-{
-    if( input_and_worker_ > HARD_CLIPPER_STAGE_1 )
-    {
-        input_and_worker_ = HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
-        if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
-        {
-            input_and_worker_ = HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
-            if( input_and_worker_ > HARD_CLIPPER_STAGE_2 )
-            {
-                input_and_worker_ = HARD_CLIPPER_STAGE_2;
-            }
-        }
-    }
-    else if( input_and_worker_ < -HARD_CLIPPER_STAGE_1 )
-    {
-        input_and_worker_ = -HARD_CLIPPER_STAGE_1 + input_and_worker_*0.1f;
-        if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
-        {
-            input_and_worker_ = -HARD_CLIPPER_STAGE_2 + input_and_worker_*0.05f;
-            if( input_and_worker_ < -HARD_CLIPPER_STAGE_2 )
-            {
-                input_and_worker_ = -HARD_CLIPPER_STAGE_2;
-            }
-        }
-    }
-
-    return input_and_worker_;
-}
 
 static inline float wave_mixer_v2( float s_, float s2_ ) noexcept
 {
