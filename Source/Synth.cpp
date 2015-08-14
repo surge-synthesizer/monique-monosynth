@@ -3,7 +3,7 @@
 #include "mono_AmpPainter.h"
 
 
-#define THREAD_LIMIT 3
+#define THREAD_LIMIT 2
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -60,17 +60,21 @@ class mono_ThreadManager
     friend class mono_Thread;
     inline void execute_me( mono_MultiThreaded*const executer_ ) noexcept
     {
-        ScopedLock lock(cs);
-        for( int i = 0 ; i != THREAD_LIMIT ; ++i )
+        if( cs.tryEnter() )
         {
-            mono_ExecuterThread*thread( threads.getUnchecked(i) );
-            if( ! thread->isThreadRunning() )
+            for( int i = 0 ; i != THREAD_LIMIT ; ++i )
             {
-                thread->executeable = executer_;
-                executer_->thread = thread;
-                thread->startThread();
-                return;
+                mono_ExecuterThread*thread( threads.getUnchecked(i) );
+                if( ! thread->isThreadRunning() )
+                {
+                    thread->executeable = executer_;
+                    executer_->thread = thread;
+                    thread->startThread();
+                    cs.exit();
+                    return;
+                }
             }
+            cs.exit();
         }
 
         executer_->thread = nullptr;
@@ -647,7 +651,7 @@ inline float mono_BlitSaw::tick() noexcept
         phase_ -= float_Pi;
         _isNewCylce = true;
     }
-    else
+    elsecs.exit();
         _isNewCylce = false;
 
     return last_tick_value = tmp;
@@ -3781,13 +3785,13 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 class Chorus : public RuntimeListener
 {
     int buffer_size;
-    int index[2];
-    float last_delay[2];
-    float* buffer[2];
+    int index;
+    float last_delay;
+    float* buffer;
 
 public:
-    inline void fill(int channel_, float sample_) noexcept;
-    inline float tick( int channel_, float delay_ ) noexcept;
+    inline void fill(float sample_) noexcept;
+    inline float tick(float delay_) noexcept;
 
 private:
     NOINLINE void sample_rate_changed( double ) noexcept override;
@@ -3802,40 +3806,36 @@ public:
 //==============================================================================
 NOINLINE Chorus::Chorus() : buffer_size(0)
 {
-    index[0] = 0;
-    index[1] = 0;
-    last_delay[0] = 220;
-    last_delay[1] = 200;
+    index = 0;
+    last_delay = 210;
 
-    buffer[0] = nullptr;
-    buffer[1] = nullptr;
+    buffer = nullptr;
 
     sample_rate_changed(0);
 }
 NOINLINE Chorus::~Chorus()
 {
-    delete [] buffer[0];
-    delete [] buffer[1];
+    delete [] buffer;
 }
 
 //==============================================================================
-inline void Chorus::fill(int channel_, float sample_) noexcept
+inline void Chorus::fill(float sample_) noexcept
 {
-    index[channel_] = index[channel_] % buffer_size;
-    buffer[channel_][index[channel_]] = sample_;
-    index[channel_]++;
+    index = index % buffer_size;
+    buffer[index] = sample_;
+    index++;
 }
 #define DELAY_GLIDE 0.01f
-inline float Chorus::tick( int channel_, float delay_ ) noexcept
+inline float Chorus::tick(float delay_ ) noexcept
 {
-    if( delay_ < last_delay[channel_] - DELAY_GLIDE)
-        delay_ = last_delay[channel_] - DELAY_GLIDE;
-    else if( delay_ > last_delay[channel_] + DELAY_GLIDE )
-        delay_ = last_delay[channel_] + DELAY_GLIDE;
+    if( delay_ < last_delay - DELAY_GLIDE)
+        delay_ = last_delay - DELAY_GLIDE;
+    else if( delay_ > last_delay + DELAY_GLIDE )
+        delay_ = last_delay + DELAY_GLIDE;
 
-    last_delay[channel_] = delay_;
+    last_delay = delay_;
 
-    float i = float(index[channel_]) - delay_;
+    float i = float(index) - delay_;
     if(i >= buffer_size)
         i -= buffer_size;
     else if(i < 0)
@@ -3851,20 +3851,16 @@ inline float Chorus::tick( int channel_, float delay_ ) noexcept
     float delta = i-ia;
     if( delta > 1 )
         delta = 0;
-    return buffer[channel_][ib]*delta + buffer[channel_][ia]*(1.0f-delta);
+    return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
 }
 //==============================================================================
 NOINLINE void Chorus::sample_rate_changed( double ) noexcept {
     buffer_size = sample_rate/10;
-    if( buffer[0] )
-        delete[] buffer[0];
-    if( buffer[1] )
-        delete[] buffer[1];
-    buffer[0] = new float[buffer_size];
-    buffer[1] = new float[buffer_size];
+    if( buffer )
+        delete[] buffer;
+    buffer = new float[buffer_size];
     for( int i = 0 ; i != buffer_size ; ++i ) {
-        buffer[0][i] = 0;
-        buffer[1][i] = 0;
+        buffer[i] = 0;
     }
 }
 
@@ -4107,10 +4103,10 @@ NOINLINE ReverbParameters::~ReverbParameters() {}
 //==============================================================================
 class mono_Reverb : RuntimeListener
 {
-    enum { numCombs = 8, numAllPasses = 4, numChannels = 2 };
+    enum { numCombs = 8, numAllPasses = 4 };
 
-    CombFilter comb [numChannels][numCombs];
-    AllPassFilter allPass [numChannels][numAllPasses];
+    CombFilter comb[numCombs];
+    AllPassFilter allPass[numAllPasses];
 
     ReverbParameters parameters;
 #define REVERB_GAIN 0.013f
@@ -4118,9 +4114,7 @@ class mono_Reverb : RuntimeListener
     LinearSmoothedValue feedback, dryGain, wetGain1, wetGain2;
 
 public:
-    inline void processSingleSampleRawStereo_noDamp ( float& input_l, float& input_r ) noexcept;
-    inline void processSingleSampleRawLeft_noDamp ( float& input_l ) noexcept;
-    inline void processSingleSampleRawRight_noDamp ( float& input_r ) noexcept;
+    inline float processSingleSampleRaw ( float in_ ) noexcept;
 
     inline ReverbParameters& get_parameters() noexcept;
     inline void update_parameters() noexcept;
@@ -4143,67 +4137,23 @@ NOINLINE mono_Reverb::mono_Reverb()
 NOINLINE mono_Reverb::~mono_Reverb() {}
 
 //==============================================================================
-inline void mono_Reverb::processSingleSampleRawStereo_noDamp ( float& input_l, float& input_r ) noexcept
-{
-    float outL = 0, outR = 0;
-    {
-        const float input = (input_l + input_r) * REVERB_GAIN;
-        const float feedbck = feedback.getNextValue();
-        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
-        {
-            outL += comb[LEFT][j].process (input, feedbck);
-            outR += comb[RIGHT][j].process (input, feedbck);
-        }
-    }
-    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
-    {
-        outL = allPass[LEFT][j].process (outL);
-        outR = allPass[RIGHT][j].process (outR);
-    }
-
-    const float dry  = dryGain.getNextValue();
-    const float wet1 = wetGain1.getNextValue();
-    const float wet2 = wetGain2.getNextValue();
-    input_l  = outL * wet1 + outR * wet2 + input_l  * dry;
-    input_r = outR * wet1 + outL * wet2 + input_r * dry;
-}
-//==============================================================================
-inline void mono_Reverb::processSingleSampleRawLeft_noDamp ( float& input_l ) noexcept
+inline float mono_Reverb::processSingleSampleRaw ( float in ) noexcept
 {
     float out = 0;
     {
-        const float input = (input_l) * REVERB_GAIN;
+        const float input = in * REVERB_GAIN;
         const float feedbck = feedback.getNextValue();
         for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
         {
-            out += comb[LEFT][j].process (input, feedbck);
+            out += comb[j].process (input, feedbck);
         }
     }
     for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
     {
-        out = allPass[LEFT][j].process (out);
+        out = allPass[j].process (out);
     }
 
-    input_l = out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + input_l * dryGain.getNextValue();
-}
-//==============================================================================
-inline void mono_Reverb::processSingleSampleRawRight_noDamp ( float& input_r ) noexcept
-{
-    float out = 0;
-    {
-        const float input = (input_r) * REVERB_GAIN;
-        const float feedbck = feedback.getNextValue();
-        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
-        {
-            out += comb[RIGHT][j].process (input, feedbck);
-        }
-    }
-    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
-    {
-        out = allPass[RIGHT][j].process (out);
-    }
-
-    input_r = out * wetGain1.getLastValue() + out * wetGain2.getLastValue() + input_r * dryGain.getLastValue();
+    return out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + in * dryGain.getNextValue();
 }
 
 //==============================================================================
@@ -4233,33 +4183,29 @@ NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
 
     for (int i = 0; i < numCombs; ++i)
     {
-        comb[LEFT][i].setSize ((intSampleRate * combTunings[i]) / 44100);
-        comb[RIGHT][i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
+        comb[i].setSize ((intSampleRate * combTunings[i]) / 44100);
+        comb[i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
     }
 
     for (int i = 0; i < numAllPasses; ++i)
     {
-        allPass[LEFT][i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
-        allPass[RIGHT][i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
+        allPass[i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
+        allPass[i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
     }
 
     const float smoothTime = 0.01f;
-    //damping .reset (sampleRate, smoothTime);
     feedback.reset (sample_rate, smoothTime);
-    dryGain .reset (sample_rate, smoothTime);
+    dryGain.reset (sample_rate, smoothTime);
     wetGain1.reset (sample_rate, smoothTime);
     wetGain2.reset (sample_rate, smoothTime);
 }
 NOINLINE void mono_Reverb::reset()
 {
-    for (int j = 0; j < numChannels; ++j)
-    {
-        for (int i = 0; i < numCombs; ++i)
-            comb[j][i].clear();
+    for (int i = 0; i < numCombs; ++i)
+        comb[i].clear();
 
-        for (int i = 0; i < numAllPasses; ++i)
-            allPass[j][i].clear();
-    }
+    for (int i = 0; i < numAllPasses; ++i)
+        allPass[i].clear();
 }
 
 //==============================================================================
@@ -4275,10 +4221,12 @@ NOINLINE void mono_Reverb::reset()
 class FXProcessor
 {
     // REVERB
-    mono_Reverb reverb;
+    mono_Reverb reverb_l;
+    mono_Reverb reverb_r;
 
     // CHORUS
-    Chorus chorus;
+    Chorus chorus_l;
+    Chorus chorus_r;
     AmpSmoothBuffer chorus_smoother;
     ValueSmoother chorus_mod_smoother;
     friend class mono_ParameterOwnerStore;
@@ -4325,9 +4273,12 @@ public:
 // -----------------------------------------------------------------
 NOINLINE FXProcessor::FXProcessor()
     :
-    reverb(),
+    reverb_l(),
+    reverb_r(),
 
-    chorus(),
+    chorus_l(),
+    chorus_r(),
+
     chorus_smoother(),
     chorus_mod_smoother( &DATA( chorus_data ).modulation ),
     chorus_modulation_env( new ENV( *(DATA( chorus_data ).modulation_env_data.get() )) ),
@@ -4361,34 +4312,31 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     const float reverb_room = reverb_data.room;
     const float reverb_dry_wet_mix = reverb_data.dry_wet_mix;
     const float reverb_width = reverb_data.width;
-    ReverbParameters& current_params = reverb.get_parameters();
+    ReverbParameters& rever_params_l = reverb_l.get_parameters();
     if(
-        current_params.roomSize != reverb_room
-        || current_params.dryLevel != reverb_dry_wet_mix
+        rever_params_l.roomSize != reverb_room
+        || rever_params_l.dryLevel != reverb_dry_wet_mix
         // current_params.wetLevel != r_params.wetLevel
-        || current_params.width != reverb_width
+        || rever_params_l.width != reverb_width
     )
     {
-        current_params.roomSize = reverb_room;
-        current_params.dryLevel = reverb_dry_wet_mix;
-        current_params.wetLevel = 1.0f-reverb_dry_wet_mix;
-        current_params.width = reverb_width;
+        rever_params_l.roomSize = reverb_room;
+        rever_params_l.dryLevel = reverb_dry_wet_mix;
+        rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+        rever_params_l.width = reverb_width;
 
-        reverb.update_parameters();
+        ReverbParameters& rever_params_r = reverb_r.get_parameters();
+        rever_params_r.roomSize = rever_params_l.roomSize;
+        rever_params_r.dryLevel = rever_params_l.dryLevel;
+        rever_params_r.wetLevel = rever_params_l.wetLevel;
+        rever_params_r.width = rever_params_l.width;
+
+        reverb_l.update_parameters();
+        reverb_r.update_parameters();
     }
 
     // PRPARE CHORUS
-    float* tmp_chorus_amp_buffer = data_buffer.tmp_buffer_6.getWritePointer(0);
     // TODO only process amp if chorus amp is active
-    chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
-    chorus_mod_smoother.update( glide_motor_time );
-
-    // PREPARE DELAY
-    SynthData& synth_data = DATA( synth_data );
-    delay_smoother.update( glide_motor_time );
-    float* delay_data_l = delayBuffer.getWritePointer (LEFT);
-    float* delay_data_r = delayBuffer.getWritePointer (RIGHT);
-
 
 
     static double time_sum = 0;
@@ -4403,6 +4351,9 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 #define DIMENSION_DELAY 2
 #define DIMENSION_BYPASS 3
 #define DIMENSION_CLIPPING 4
+#define DIMENSION_TMP_CHORUS 5
+#define DIMENSION_TMP_R 6
+#define DIMENSION_TMP_L 7
 
         float* tmp_env_amp = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_ENV);
         final_env->process( tmp_env_amp, num_samples_ );
@@ -4412,9 +4363,14 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         float*const tmp_bypass = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS);
         float*const tmp_clipping = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING);
 
+        float* tmp_chorus_amp_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_CHORUS);
+        chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
+
         bypass_smoother.update( glide_motor_time );
         volume_smoother.update( glide_motor_time );
         clipping_smoother.update( glide_motor_time );
+        delay_smoother.update( glide_motor_time );
+        chorus_mod_smoother.update( glide_motor_time );
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             {
@@ -4448,7 +4404,6 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         {
             FXProcessor*const processor;
 
-            const bool channel_l_or_r;
             const int start_sample;
             const int num_samples;
 
@@ -4463,106 +4418,110 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             const float*const tmp_bypass;
             const float*const tmp_clipping;
 
-            void exec() noexcept override
+            // LEFT SIDE
+            inline void exec() noexcept override
             {
-                if( channel_l_or_r == LEFT )
-                    exec_left();
-                else
-                    exec_right();
-            }
+                float* tmp_samples = DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L);
 
-            void exec_left() {
+                // CHORUS
+                const int delay_buffer_size = processor->delayBuffer.getNumSamples();
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    float tmp_sample;
-                    const float in_l_r = input_buffer[sid];
+                    const float in_l = input_buffer[sid];
+                    const float modulation_amp = tmp_chorus_mod_amp[sid];
+                    const float feedback = modulation_amp*0.85f;
 
-                    // CHORUS
-                    {
-                        const float modulation_amp = tmp_chorus_mod_amp[sid];
-                        const float feedback = modulation_amp*0.85f;
-                        tmp_sample = processor->chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
-                        processor->chorus.fill( LEFT, in_l_r + tmp_sample * feedback );
-                    }
+                    float tmp_sample  = processor->chorus_l.tick((modulation_amp * 220) + 0.0015f);
+                    processor->chorus_l.fill( in_l + tmp_sample * feedback );
 
-                    // REVERB
-                    {
-                        processor->reverb.processSingleSampleRawLeft_noDamp( tmp_sample );
-                    }
+                    tmp_samples[sid] = tmp_sample;
+                }
 
-                    // DELAY
-                    {
-                        const float in = tmp_sample;
-                        const float delay_data_in = delay_data[delay_pos];
+                // REVERB
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    tmp_samples[sid] = processor->reverb_l.processSingleSampleRaw( tmp_samples[sid] );
+                }
 
-                        tmp_sample += delay_data_in;
+                // DELAY
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    const float in = tmp_samples[sid];
+                    const float delay_data_in = delay_data[delay_pos];
 
-                        delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+                    tmp_samples[sid] += delay_data_in;
 
-                        if (++delay_pos >= processor->delayBuffer.getNumSamples())
-                            delay_pos = 0;
-                    }
+                    delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
 
-                    // BYPASS -> MIX
-                    {
-                        const float bypass = tmp_bypass[sid];
-                        tmp_sample = tmp_sample*bypass + in_l_r*(1.0f-bypass);
+                    if ( ++delay_pos >= delay_buffer_size )
+                        delay_pos = 0;
+                }
 
-                        const float clipping = tmp_clipping[sid];
-                        final_output[start_sample+sid] = ( soft_clipping( tmp_sample )*clipping + tmp_sample*(1.0f-clipping) );
-                    }
+                // BYPASS -> MIX
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    const float bypass = tmp_bypass[sid];
+                    float tmp = tmp_samples[sid];
+                    tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
+
+                    const float clipping = tmp_clipping[sid];
+                    final_output[start_sample+sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
                 }
             }
 
-            void exec_right() {
+            inline void exec_right()
+            {
+                float* tmp_samples = DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_R);
+
+                // CHORUS
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    float tmp_sample;
-                    const float in_l_r = input_buffer[sid];
+                    const float in_r = input_buffer[sid];
+                    const float modulation_amp = tmp_chorus_mod_amp[sid];
+                    const float feedback = modulation_amp*0.85f;
 
-                    // CHORUS
-                    {
-                        const float modulation_amp = tmp_chorus_mod_amp[sid];
-                        const float feedback = modulation_amp*0.85f;
-
-                        tmp_sample = processor->chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
-                        processor->chorus.fill( RIGHT, in_l_r + tmp_sample * feedback );
-                    }
-
-                    // REVERB
-                    {
-                        processor->reverb.processSingleSampleRawRight_noDamp( tmp_sample );
-                    }
-
-                    // DELAY
-                    {
-                        const float in = tmp_sample;
-                        const float delay_data_in = delay_data[delay_pos];
-
-                        tmp_sample += delay_data_in;
-
-                        delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
-
-                        if (++delay_pos >= processor->delayBuffer.getNumSamples())
-                            delay_pos = 0;
-                    }
-
-                    // BYPASS -> MIX
-                    {
-                        const float bypass = tmp_bypass[sid];
-                        tmp_sample = tmp_sample*bypass + in_l_r*(1.0f-bypass);
-
-                        const float clipping = tmp_clipping[sid];
-                        final_output[start_sample+sid] = ( soft_clipping( tmp_sample )*clipping + tmp_sample*(1.0f-clipping) );
-                    }
+                    float tmp_sample = processor->chorus_r.tick((modulation_amp * 200) + 0.002f);
+                    processor->chorus_r.fill( in_r + tmp_sample * feedback );
+                    tmp_samples[sid] = tmp_sample;
                 }
 
+                // REVERB
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    tmp_samples[sid] = processor->reverb_r.processSingleSampleRaw( tmp_samples[sid] );
+                }
+
+                // DELAY
+                const int delay_buffer_size = processor->delayBuffer.getNumSamples();
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    const float in = tmp_samples[sid];
+                    const float delay_data_in = delay_data[delay_pos];
+
+                    tmp_samples[sid] += delay_data_in;
+
+                    delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+
+                    if (++delay_pos >= delay_buffer_size)
+                        delay_pos = 0;
+                }
                 processor->delayPosition = delay_pos;
+
+                // BYPASS -> MIX
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    {
+                        const float bypass = tmp_bypass[sid];
+                        float tmp = tmp_samples[sid];
+                        tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
+
+                        const float clipping = tmp_clipping[sid];
+                        final_output[start_sample+sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
+                    }
+                }
             }
 
             LeftRightExecuter( FXProcessor*const fx_processor_,
-
-                               bool channel_l_or_r_,
 
                                const int start_sample_,
                                const int num_samples_,
@@ -4570,11 +4529,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                                const float* input_buffer_,
                                float* delay_data_,
                                float* final_output_
-
                              )
                 : processor( fx_processor_ ),
-
-                  channel_l_or_r( channel_l_or_r_ ),
 
                   start_sample( start_sample_ ),
                   num_samples( num_samples_ ),
@@ -4593,13 +4549,11 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
         LeftRightExecuter left_executer( this,
 
-                                         LEFT,
-
                                          start_sample_final_out_,
                                          num_samples_,
 
                                          input_buffer,
-                                         delay_data_l,
+                                         delayBuffer.getWritePointer (LEFT),
 
                                          output_buffer_.getWritePointer(LEFT)
                                        ) ;
@@ -4609,17 +4563,22 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             LeftRightExecuter right_executer(
                 this,
 
-                RIGHT,
-
                 start_sample_final_out_,
                 num_samples_,
 
                 input_buffer,
-                delay_data_r,
+                delayBuffer.getWritePointer (RIGHT),
 
                 output_buffer_.getWritePointer(RIGHT)
             ) ;
-            right_executer.exec();
+            right_executer.exec_right();
+        }
+
+// VISUALIZE
+        if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
+        {
+            amp_painter->add_out( output_buffer_.getReadPointer(RIGHT), num_samples_ ); // NOTE LEFT STILL IN WORK
+            amp_painter->add_out_env( data_buffer.tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_ENV), num_samples_ );
         }
 
         while( left_executer.isWorking() ) {}
@@ -4627,13 +4586,6 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
     time_sum+= (Time::getMillisecondCounterHiRes()-time);
     std::cout << time_sum/time_counter << std::endl;
-
-    // VISUALIZE
-    if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
-    {
-        amp_painter->add_out( output_buffer_.getReadPointer(LEFT), num_samples_ );
-        //amp_painter->add_out_env( tmp_env_amp, num_samples_ );
-    }
 }
 
 
