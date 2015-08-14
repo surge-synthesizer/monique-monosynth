@@ -386,39 +386,35 @@ inline static float distortion( float input_and_worker_, float distortion_power_
 //==============================================================================
 #define HARD_CLIPPER_STAGE_1 1.1f
 #define HARD_CLIPPER_STAGE_2 1.25f
-forcedinline static float protection_clipping( float in_ ) noexcept
+
+forcedinline static float protection_clipping( float io_ ) noexcept
 {
-  float resonance = DATA( synth_data ).resonance;
-  
-  return in_;
-  float out = 0;
-  
-    if( in_ > HARD_CLIPPER_STAGE_1 )
+    if( io_ > HARD_CLIPPER_STAGE_1 )
     {
-        out = HARD_CLIPPER_STAGE_1 + in_*0.1f;
-        if( out > HARD_CLIPPER_STAGE_2 )
+        io_ = HARD_CLIPPER_STAGE_1 + io_*0.1f;
+        if( io_ > HARD_CLIPPER_STAGE_2 )
         {
-            out = HARD_CLIPPER_STAGE_2 + in_*0.05f;
-            if( out > HARD_CLIPPER_STAGE_2 )
+            io_ = HARD_CLIPPER_STAGE_2 + io_*0.05f;
+            if( io_ > HARD_CLIPPER_STAGE_2 )
             {
-                out = HARD_CLIPPER_STAGE_2;
+                io_ = HARD_CLIPPER_STAGE_2;
             }
         }
     }
-    else if( in_ < -HARD_CLIPPER_STAGE_1 )
+    else if( io_ < -HARD_CLIPPER_STAGE_1 )
     {
-        out = -HARD_CLIPPER_STAGE_1 + in_*0.1f;
-        if( out < -HARD_CLIPPER_STAGE_2 )
+        io_ = -HARD_CLIPPER_STAGE_1 + io_*0.1f;
+        if( io_ < -HARD_CLIPPER_STAGE_2 )
         {
-            out = -HARD_CLIPPER_STAGE_2 + in_*0.05f;
-            if( out < -HARD_CLIPPER_STAGE_2 )
+            io_ = -HARD_CLIPPER_STAGE_2 + io_*0.05f;
+            if( io_ < -HARD_CLIPPER_STAGE_2 )
             {
-                out = -HARD_CLIPPER_STAGE_2;
+                io_ = -HARD_CLIPPER_STAGE_2;
             }
         }
     }
 
-    return out*resonance + in_*(1.0f-resonance);
+    return io_;
 }
 
 //==============================================================================
@@ -2928,12 +2924,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct LP2PassExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(LPF_2_PASS);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -2943,7 +2939,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -2954,9 +2950,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 LP2PassExecuter(FilterProcessor*const processor_,
                                 int num_samples__,
                                 int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new LP2PassExecuter( this, num_samples, 0 );
@@ -2984,12 +2981,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct LPExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(LPF);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -2999,7 +2996,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3010,9 +3007,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 LPExecuter(FilterProcessor*const processor_,
                            int num_samples__,
                            int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new LPExecuter( this, num_samples, 0 );
@@ -3041,12 +3039,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct HP2PassExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                 DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(HIGH_2_PASS);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -3056,7 +3054,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3067,9 +3065,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 HP2PassExecuter(FilterProcessor*const processor_,
                                 int num_samples__,
                                 int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new HP2PassExecuter( this, num_samples, 0 );
@@ -3098,12 +3097,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct HPExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(HPF);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -3113,7 +3112,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3124,9 +3123,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 HPExecuter(FilterProcessor*const processor_,
                            int num_samples__,
                            int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new HPExecuter( this, num_samples, 0 );
@@ -3155,12 +3155,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct BandExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(BPF);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -3170,7 +3170,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3181,9 +3181,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 BandExecuter(FilterProcessor*const processor_,
                              int num_samples__,
                              int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new BandExecuter( this, num_samples, 0 );
@@ -3210,12 +3211,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
             // PROCESSOR
             struct PassExecuter : public FilterExecuterBase {
-                FilterProcessor*const processor;
-                const int num_samples_;
+                DoubleAnalogFilter& filter;
+                const int processor_id;
                 const int input_id;
+                const int num_samples_;
                 inline void exec() noexcept override
                 {
-                    DoubleAnalogFilter& filter = processor->double_filter[input_id];
                     filter.update_filter_to(PASS);
 
                     DataBuffer& data_buffer( DATA(data_buffer) );
@@ -3223,7 +3224,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     const float*const tmp_distortion_buffer = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                     const float* input_buffer = data_buffer.tmp_buffer_6.getWritePointer( input_id );
-                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor->id );
+                    float* out_buffer = data_buffer.filter_output_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * processor_id );
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3233,9 +3234,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 PassExecuter(FilterProcessor*const processor_,
                              int num_samples__,
                              int input_id_)
-                    : processor(processor_),
-                      num_samples_(num_samples__),
-                      input_id(input_id_)
+                    : filter(processor_->double_filter[input_id]),
+                      processor_id( input_id ),
+                      input_id(input_id_),
+                      num_samples_(num_samples__)
                 {}
             };
             executer_1 = new PassExecuter( this, num_samples, 0 );
@@ -3459,7 +3461,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                 const float*const io_buffer = data_buffer.direct_filter_output_samples.getReadPointer();
                 const int glide_motor_time = DATA( synth_data ).glide_motor_time;
 
-                const float resonance( DATA( synth_data ).resonance ) ;
+                const float resonance = 0 ;
 
                 const bool hold_sustain = DATA( eq_data ).hold[band_id];
 
@@ -3501,7 +3503,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                                 // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                                tmp_band_out_buffer[sid] = output ; //( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance )*gain;
+                                tmp_band_out_buffer[sid] = ( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance )*gain;
                             }
                         }
                     }
