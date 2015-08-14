@@ -3011,7 +3011,8 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             }
 
             // PROCESSOR
-            struct LPExecuter : public mono_Thread {
+            struct LPExecuter : public mono_Thread
+            {
                 FilterProcessor*const processor;
                 DoubleAnalogFilter& filter;
                 const int input_id;
@@ -3039,9 +3040,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     }
                 }
 
-                LPExecuter(FilterProcessor*const processor_,
-                           int num_samples__,
-                           int input_id_)
+                LPExecuter( FilterProcessor*const processor_, int num_samples__, int input_id_)
                     : processor( processor_ ),
                       filter( processor_->double_filter[input_id_] ),
                       input_id(input_id_),
@@ -3533,18 +3532,6 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
 //==============================================================================
 //==============================================================================
 //==============================================================================
-double simplp (double *x, double *y,
-               int M, double xm1)
-{
-    int n;
-    y[0] = x[0] + xm1;
-    for (n=1; n < M ; n++) {
-        y[n] =  x[n]  + x[n-1];
-    }
-    return x[M-1];
-}
-
-
 class EQProcessor : public RuntimeListener {
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
@@ -3710,13 +3697,12 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             {}
         };
 
-        MESURE_PERFORMANCE_AND_PRINT(
-            Array<BandExecuter*> running_threads;
-            for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        // TRY TO FREE SOME MEMORY
-        Array<BandExecuter*> copy_of_running_thereads = running_threads;
-        for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
+        Array<BandExecuter*> running_threads;
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            // TRY TO FREE SOME MEMORY
+            Array<BandExecuter*> copy_of_running_thereads = running_threads;
+            for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
             {
                 BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
                 if( not executer->isWorking() )
@@ -3738,9 +3724,9 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
         bool all_done = running_threads.size() == 0;
         while( not all_done )
-    {
-        Array<BandExecuter*> copy_of_running_thereads = running_threads;
-        for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
+        {
+            Array<BandExecuter*> copy_of_running_thereads = running_threads;
+            for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
             {
                 BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
                 if( not executer->isWorking() )
@@ -3752,7 +3738,6 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
             all_done = running_threads.size() == 0;
         }
-        )
     }
     // EO MULTITHREADED
 
@@ -4015,11 +4000,12 @@ NOINLINE void AllPassFilter::clear() noexcept
 //==============================================================================
 class LinearSmoothedValue
 {
-    float currentValue, target, step;
+    float currentValue, target, step, lastValue;
     int countdown, stepsToTarget;
 
 public:
     inline float getNextValue() noexcept;
+    inline float getLastValue() noexcept;
     inline void setValue (float newValue) noexcept;
 
     NOINLINE void reset (float sampleRate, float fadeLengthSeconds) noexcept;
@@ -4045,20 +4031,24 @@ NOINLINE LinearSmoothedValue::~LinearSmoothedValue() {}
 //==============================================================================
 inline float LinearSmoothedValue::getNextValue() noexcept
 {
-    float value;
     if (countdown <= 0)
     {
-        value = target;
+        lastValue = target;
     }
     else
     {
         --countdown;
         currentValue += step;
 
-        value = currentValue;
+        lastValue = currentValue;
     }
 
-    return value;
+    return lastValue;
+}
+//==============================================================================
+inline float LinearSmoothedValue::getLastValue() noexcept
+{
+    return lastValue;
 }
 
 inline void LinearSmoothedValue::setValue (float newValue) noexcept
@@ -4129,6 +4119,8 @@ class mono_Reverb : RuntimeListener
 
 public:
     inline void processSingleSampleRawStereo_noDamp ( float& input_l, float& input_r ) noexcept;
+    inline void processSingleSampleRawLeft_noDamp ( float& input_l ) noexcept;
+    inline void processSingleSampleRawRight_noDamp ( float& input_r ) noexcept;
 
     inline ReverbParameters& get_parameters() noexcept;
     inline void update_parameters() noexcept;
@@ -4174,6 +4166,44 @@ inline void mono_Reverb::processSingleSampleRawStereo_noDamp ( float& input_l, f
     const float wet2 = wetGain2.getNextValue();
     input_l  = outL * wet1 + outR * wet2 + input_l  * dry;
     input_r = outR * wet1 + outL * wet2 + input_r * dry;
+}
+//==============================================================================
+inline void mono_Reverb::processSingleSampleRawLeft_noDamp ( float& input_l ) noexcept
+{
+    float out = 0;
+    {
+        const float input = (input_l) * REVERB_GAIN;
+        const float feedbck = feedback.getNextValue();
+        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
+        {
+            out += comb[LEFT][j].process (input, feedbck);
+        }
+    }
+    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
+    {
+        out = allPass[LEFT][j].process (out);
+    }
+
+    input_l = out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + input_l * dryGain.getNextValue();
+}
+//==============================================================================
+inline void mono_Reverb::processSingleSampleRawRight_noDamp ( float& input_r ) noexcept
+{
+    float out = 0;
+    {
+        const float input = (input_r) * REVERB_GAIN;
+        const float feedbck = feedback.getNextValue();
+        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
+        {
+            out += comb[RIGHT][j].process (input, feedbck);
+        }
+    }
+    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
+    {
+        out = allPass[RIGHT][j].process (out);
+    }
+
+    input_r = out * wetGain1.getLastValue() + out * wetGain2.getLastValue() + input_r * dryGain.getLastValue();
 }
 
 //==============================================================================
@@ -4324,7 +4354,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     const int glide_motor_time = DATA( synth_data ).glide_motor_time;
 
     // COLLECT BUFFERS
-    const float* input_buffer = data_buffer.direct_filter_output_samples.getReadPointer();
+    float* input_buffer = data_buffer.direct_filter_output_samples.getWritePointer();
 
     // PREPARE REVERB
     ReverbData& reverb_data = DATA( reverb_data );
@@ -4351,8 +4381,6 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     float* tmp_chorus_amp_buffer = data_buffer.tmp_buffer_6.getWritePointer(0);
     // TODO only process amp if chorus amp is active
     chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
-    ChorusData& chorus_data = DATA( chorus_data );
-    const bool is_chorus_amp_fix = chorus_data.hold_modulation;
     chorus_mod_smoother.update( glide_motor_time );
 
     // PREPARE DELAY
@@ -4361,89 +4389,250 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     float* delay_data_l = delayBuffer.getWritePointer (LEFT);
     float* delay_data_r = delayBuffer.getWritePointer (RIGHT);
 
-    // PREPARE FX BYPASS
-    bypass_smoother.update( glide_motor_time );
 
-    // PREPARE FINAL ENV
-    float* tmp_env_amp = data_buffer.tmp_buffer_6.getWritePointer(1);
-    final_env->process( tmp_env_amp, num_samples_ );
-    volume_smoother.update( glide_motor_time );
-    clipping_smoother.update( glide_motor_time );
 
-    // NOTE depend on the num output channels
-    float* final_l_output = output_buffer_.getWritePointer(LEFT);
-    float* final_r_output = output_buffer_.getWritePointer(RIGHT);
+    static double time_sum = 0;
+    static int time_counter = 0;
+    time_counter++;
+    double time = Time::getMillisecondCounterHiRes();
 
-    // PROCESS IN ONE RUN
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    // PREPARE
     {
-        float tmp_l;
-        float tmp_r;
+#define DIMENSION_ENV 0
+#define DIMENSION_CHORUS_MOD_AMP 1
+#define DIMENSION_DELAY 2
+#define DIMENSION_BYPASS 3
+#define DIMENSION_CLIPPING 4
 
-        // FINAL AMP
-        const float in_l_r = input_buffer[sid] * tmp_env_amp[sid]*volume_smoother.tick()*2; // TODO add back velocity glide
+        float* tmp_env_amp = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_ENV);
+        final_env->process( tmp_env_amp, num_samples_ );
 
-        // CHORUS
+        float*const tmp_chorus_mod_amp = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP);
+        float*const tmp_delay = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DELAY);
+        float*const tmp_bypass = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS);
+        float*const tmp_clipping = data_buffer.tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING);
+
+        bypass_smoother.update( glide_motor_time );
+        volume_smoother.update( glide_motor_time );
+        clipping_smoother.update( glide_motor_time );
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            const float chorus_modulation = chorus_mod_smoother.tick();
-            // TODO do we need the chorus smoother?
-            const float modulation_amp = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
+            {
+                input_buffer[sid] *= tmp_env_amp[sid]*volume_smoother.tick()*2;
+            }
 
-            tmp_l = chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
-            tmp_r = chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
+            {
+                const float chorus_modulation = chorus_mod_smoother.tick();
+                const bool is_chorus_amp_fix = DATA( chorus_data ).hold_modulation;
+                // TODO do we need the chorus smoother?
+                tmp_chorus_mod_amp[sid] = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
+            }
 
-            const float feedback = modulation_amp*0.85f;
+            {
+                tmp_delay[sid] = delay_smoother.tick();
+            }
 
-            chorus.fill( LEFT, in_l_r + tmp_r * feedback );
-            chorus.fill( RIGHT, in_l_r + tmp_l * feedback );
-        }
+            {
+                tmp_bypass[sid] = bypass_smoother.tick();
+            }
 
-        // REVERB
-        {
-            reverb.processSingleSampleRawStereo_noDamp
-            (
-                tmp_l,
-                tmp_r
-            );
-        }
-
-        // DELAY
-        {
-            const float delay = delay_smoother.tick();
-
-            const float in_l = tmp_l;
-            const float in_r = tmp_r;
-
-            const float delay_data_l_in = delay_data_l[delayPosition];
-            const float delay_data_r_in = delay_data_r[delayPosition];
-
-            tmp_l += delay_data_l_in;
-            tmp_r += delay_data_r_in;
-
-            delay_data_l[delayPosition] = (delay_data_l_in + in_l) * delay;
-            delay_data_r[delayPosition] = (delay_data_r_in + in_r) * delay;
-
-            if (++delayPosition >= delayBuffer.getNumSamples())
-                delayPosition = 0;
-        }
-
-        // BYPASS -> MIX
-        {
-            const float bypass = bypass_smoother.tick();
-            tmp_l = tmp_l*bypass + in_l_r*(1.0f-bypass);
-            tmp_r = tmp_r*bypass + in_l_r*(1.0f-bypass);
-
-            const float clipping = clipping_smoother.tick();
-            final_l_output[start_sample_final_out_+sid] = ( soft_clipping( tmp_l )*clipping + tmp_l*(1.0f-clipping) );
-            final_r_output[start_sample_final_out_+sid] = ( soft_clipping( tmp_r )*clipping + tmp_r*(1.0f-clipping) );
+            {
+                tmp_clipping[sid] = clipping_smoother.tick();
+            }
         }
     }
+
+    // PROCESS
+    {
+        struct LeftRightExecuter : public mono_Thread
+        {
+            FXProcessor*const processor;
+
+            const bool channel_l_or_r;
+            const int start_sample;
+            const int num_samples;
+
+            int delay_pos;
+
+            const float* input_buffer;
+            float* delay_data;
+            float* final_output;
+
+            const float*const tmp_chorus_mod_amp;
+            const float*const tmp_delay;
+            const float*const tmp_bypass;
+            const float*const tmp_clipping;
+
+            void exec() noexcept override
+            {
+                if( channel_l_or_r == LEFT )
+                    exec_left();
+                else
+                    exec_right();
+            }
+
+            void exec_left() {
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    float tmp_sample;
+                    const float in_l_r = input_buffer[sid];
+
+                    // CHORUS
+                    {
+                        const float modulation_amp = tmp_chorus_mod_amp[sid];
+                        const float feedback = modulation_amp*0.85f;
+                        tmp_sample = processor->chorus.tick( LEFT, (modulation_amp * 220) + 0.0015f);
+                        processor->chorus.fill( LEFT, in_l_r + tmp_sample * feedback );
+                    }
+
+                    // REVERB
+                    {
+                        processor->reverb.processSingleSampleRawLeft_noDamp( tmp_sample );
+                    }
+
+                    // DELAY
+                    {
+                        const float in = tmp_sample;
+                        const float delay_data_in = delay_data[delay_pos];
+
+                        tmp_sample += delay_data_in;
+
+                        delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+
+                        if (++delay_pos >= processor->delayBuffer.getNumSamples())
+                            delay_pos = 0;
+                    }
+
+                    // BYPASS -> MIX
+                    {
+                        const float bypass = tmp_bypass[sid];
+                        tmp_sample = tmp_sample*bypass + in_l_r*(1.0f-bypass);
+
+                        const float clipping = tmp_clipping[sid];
+                        final_output[start_sample+sid] = ( soft_clipping( tmp_sample )*clipping + tmp_sample*(1.0f-clipping) );
+                    }
+                }
+            }
+
+            void exec_right() {
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    float tmp_sample;
+                    const float in_l_r = input_buffer[sid];
+
+                    // CHORUS
+                    {
+                        const float modulation_amp = tmp_chorus_mod_amp[sid];
+                        const float feedback = modulation_amp*0.85f;
+
+                        tmp_sample = processor->chorus.tick( RIGHT, (modulation_amp * 200) + 0.002f);
+                        processor->chorus.fill( RIGHT, in_l_r + tmp_sample * feedback );
+                    }
+
+                    // REVERB
+                    {
+                        processor->reverb.processSingleSampleRawRight_noDamp( tmp_sample );
+                    }
+
+                    // DELAY
+                    {
+                        const float in = tmp_sample;
+                        const float delay_data_in = delay_data[delay_pos];
+
+                        tmp_sample += delay_data_in;
+
+                        delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+
+                        if (++delay_pos >= processor->delayBuffer.getNumSamples())
+                            delay_pos = 0;
+                    }
+
+                    // BYPASS -> MIX
+                    {
+                        const float bypass = tmp_bypass[sid];
+                        tmp_sample = tmp_sample*bypass + in_l_r*(1.0f-bypass);
+
+                        const float clipping = tmp_clipping[sid];
+                        final_output[start_sample+sid] = ( soft_clipping( tmp_sample )*clipping + tmp_sample*(1.0f-clipping) );
+                    }
+                }
+
+                processor->delayPosition = delay_pos;
+            }
+
+            LeftRightExecuter( FXProcessor*const fx_processor_,
+
+                               bool channel_l_or_r_,
+
+                               const int start_sample_,
+                               const int num_samples_,
+
+                               const float* input_buffer_,
+                               float* delay_data_,
+                               float* final_output_
+
+                             )
+                : processor( fx_processor_ ),
+
+                  channel_l_or_r( channel_l_or_r_ ),
+
+                  start_sample( start_sample_ ),
+                  num_samples( num_samples_ ),
+                  delay_pos( fx_processor_->delayPosition ),
+
+                  input_buffer(input_buffer_),
+                  delay_data(delay_data_),
+                  final_output(final_output_),
+
+                  tmp_chorus_mod_amp( DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP) ),
+                  tmp_delay( DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DELAY) ),
+                  tmp_bypass( DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS) ),
+                  tmp_clipping( DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING) )
+            {}
+        };
+
+        LeftRightExecuter left_executer( this,
+
+                                         LEFT,
+
+                                         start_sample_final_out_,
+                                         num_samples_,
+
+                                         input_buffer,
+                                         delay_data_l,
+
+                                         output_buffer_.getWritePointer(LEFT)
+                                       ) ;
+        left_executer.try_run_paralel();
+
+        {
+            LeftRightExecuter right_executer(
+                this,
+
+                RIGHT,
+
+                start_sample_final_out_,
+                num_samples_,
+
+                input_buffer,
+                delay_data_r,
+
+                output_buffer_.getWritePointer(RIGHT)
+            ) ;
+            right_executer.exec();
+        }
+
+        while( left_executer.isWorking() ) {}
+    }
+
+    time_sum+= (Time::getMillisecondCounterHiRes()-time);
+    std::cout << time_sum/time_counter << std::endl;
 
     // VISUALIZE
     if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
     {
-        amp_painter->add_out( &final_l_output[start_sample_final_out_], num_samples_ );
-        amp_painter->add_out_env( tmp_env_amp, num_samples_ );
+        amp_painter->add_out( output_buffer_.getReadPointer(LEFT), num_samples_ );
+        //amp_painter->add_out_env( tmp_env_amp, num_samples_ );
     }
 }
 
@@ -4914,7 +5103,6 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
      */
 
     fx_processor->process( output_buffer_, start_sample_, num_samples_ );
-
     // OSCs - THREAD 1 ?
 
     // VISUALIZE
@@ -5018,6 +5206,10 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
+
+
+
 
 
 

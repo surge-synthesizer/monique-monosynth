@@ -419,6 +419,7 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                 mono_AmpPainter*const amp_painter = MONOVoice::get_lock_amp_painter();
 
                 // SYNTH
+		
                 synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                 midi_messages_.clear(); // WILL BE FILLED AT THE END
 

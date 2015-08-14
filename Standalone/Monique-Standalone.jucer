@@ -109,11 +109,11 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-mtune=native&#10;-march=native"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;"
                 extraDefs="" userNotes="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto&#10;&#10;&#10;"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>
-        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="6"
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_d" headerPath="" defines="" linuxArchitecture="-m64"
                        binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
