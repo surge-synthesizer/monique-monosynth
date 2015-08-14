@@ -24,10 +24,12 @@ static inline float soft_clipping( float input_and_worker_ )
     input_and_worker_ = (std::atan(input_and_worker_)/float_Pi)*2;
 
     // TODO can be done by float vector
+    /*
     if( input_and_worker_ > 1 )
         input_and_worker_ = 1;
     else if( input_and_worker_ < -1 )
         input_and_worker_ = -1;
+    */
 
     return input_and_worker_;
 }

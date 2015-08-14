@@ -161,6 +161,16 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
 }
 #endif
 
+#define MESURE_PERFORMANCE_AND_PRINT( instruction ) \
+  static double time_sum = 0; \
+  static int time_counter = 0; \
+  time_counter++; \
+  double time = Time::getMillisecondCounterHiRes(); \
+  \
+  instruction \
+  \
+  time_sum+= (Time::getMillisecondCounterHiRes()-time); \
+  std::cout << time_sum/time_counter << std::endl;
 
 // TWEAKED ALGORYTHIMS
 //==============================================================================

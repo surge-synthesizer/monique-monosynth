@@ -286,4 +286,9 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Thread)
 };
 
+inline bool Thread::isThreadRunning() const
+{
+    return threadHandle != nullptr;
+}
+
 #endif   // JUCE_THREAD_H_INCLUDED

@@ -143,10 +143,12 @@ void Thread::startThread (const int priority)
     }
 }
 
+/*
 bool Thread::isThreadRunning() const
 {
     return threadHandle != nullptr;
 }
+*/
 
 Thread* JUCE_CALLTYPE Thread::getCurrentThread()
 {
