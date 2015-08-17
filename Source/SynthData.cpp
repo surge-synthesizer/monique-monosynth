@@ -30,7 +30,7 @@ juce_ImplementSingleton (RuntimeNotifyer)
 NOINLINE RuntimeNotifyer::RuntimeNotifyer() :
     sample_rate(44100),
     sample_rate_1ths( 1.0/44100),
-    block_size(512)
+    block_size(256)
 {
 }
 NOINLINE RuntimeNotifyer::~RuntimeNotifyer() {

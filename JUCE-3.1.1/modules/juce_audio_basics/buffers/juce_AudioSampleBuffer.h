@@ -113,12 +113,16 @@ public:
     /** Returns the number of channels of audio data that this buffer contains.
         @see getSampleData
     */
-    int getNumChannels() const noexcept     { return numChannels; }
+    int getNumChannels() const noexcept     {
+        return numChannels;
+    }
 
     /** Returns the number of samples allocated in each of the buffer's channels.
         @see getSampleData
     */
-    int getNumSamples() const noexcept      { return size; }
+    int getNumSamples() const noexcept      {
+        return size;
+    }
 
     /** Returns a pointer to an array of read-only samples in one of the buffer's channels.
         For speed, this doesn't check whether the channel number is out of range,
@@ -130,8 +134,8 @@ public:
     const float* getReadPointer (int channelNumber) const noexcept
     {
         jassert (isPositiveAndBelow (channelNumber, numChannels));
-	if( !isPositiveAndBelow (channelNumber, numChannels) )
-	  std::cout << channelNumber << std::endl;
+        if( !isPositiveAndBelow (channelNumber, numChannels) )
+            std::cout << channelNumber << std::endl;
         return channels [channelNumber];
     }
 
@@ -157,7 +161,7 @@ public:
     float* getWritePointer (int channelNumber) noexcept
     {
         jassert (isPositiveAndBelow (channelNumber, numChannels));
-	isClear = false;
+        isClear = false;
         return channels [channelNumber];
     }
 
@@ -180,7 +184,9 @@ public:
         Don't modify any of the pointers that are returned, and bear in mind that
         these will become invalid if the buffer is resized.
     */
-    const float** getArrayOfReadPointers() const noexcept           { return const_cast<const float**> (channels); }
+    const float** getArrayOfReadPointers() const noexcept           {
+        return const_cast<const float**> (channels);
+    }
 
     /** Returns an array of pointers to the channels in the buffer.
 
@@ -265,7 +271,9 @@ public:
         functions like getWritePointer() are invoked. That means the method does not take
         any time, but it may return false negatives when in fact the buffer is still empty.
     */
-    bool hasBeenCleared() const noexcept                            { return isClear; }
+    bool hasBeenCleared() const noexcept                            {
+        return isClear;
+    }
 
     //==============================================================================
     /** Returns a sample from the buffer.
@@ -496,7 +504,7 @@ public:
     void reverse (int startSample, int numSamples) const noexcept;
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     // Note that these methods have now been replaced by getReadPointer() and getWritePointer()
     JUCE_DEPRECATED_WITH_BODY (const float* getSampleData (int channel) const,            { return getReadPointer (channel); })
     JUCE_DEPRECATED_WITH_BODY (const float* getSampleData (int channel, int index) const, { return getReadPointer (channel, index); })
@@ -506,7 +514,7 @@ public:
     // These have been replaced by getArrayOfReadPointers() and getArrayOfWritePointers()
     JUCE_DEPRECATED_WITH_BODY (const float** getArrayOfChannels() const,                  { return getArrayOfReadPointers(); })
     JUCE_DEPRECATED_WITH_BODY (float** getArrayOfChannels(),                              { return getArrayOfWritePointers(); })
-   #endif
+#endif
 
 private:
     //==============================================================================
@@ -514,7 +522,7 @@ private:
     size_t allocatedBytes;
     float** channels;
     HeapBlock<char, true> allocatedData;
-    float* preallocatedChannelSpace [5]; // HACK FROM 32
+    float* preallocatedChannelSpace [2]; // HACK FROM 32
     bool isClear;
 
     void allocateData();
@@ -530,9 +538,9 @@ private:
 template<int num_channels>
 class mono_AudioSampleBuffer
 {
-    float** channels;
     int size;
-    size_t allocatedBytes;
+    size_t allocatedBytes; 
+    float** channels;
     HeapBlock<char, true> allocatedData;
     float* preallocatedChannelSpace [num_channels];
 
@@ -572,7 +580,7 @@ void mono_AudioSampleBuffer<num_channels>::setSize(int newNumSamples, bool keepE
         const size_t allocatedSamplesPerChannel = ((size_t) newNumSamples + 3) & ~3u;
         const size_t channelListSize = ((sizeof (float*) * (size_t) (num_channels + 1)) + 15) & ~15u;
         const size_t newTotalBytes = ((size_t) num_channels * (size_t) allocatedSamplesPerChannel * sizeof (float))
-                                     + channelListSize + 32;
+        + channelListSize + 32;
 
         if (avoidReallocating && allocatedBytes >= newTotalBytes)
         {
@@ -599,8 +607,9 @@ void mono_AudioSampleBuffer<num_channels>::setSize(int newNumSamples, bool keepE
 }
 template<int num_channels>
 mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
-    :
-    size (numSamples)
+  : size (numSamples), 
+    allocatedBytes (0),
+    channels (static_cast<float**> (preallocatedChannelSpace))
 {
     jassert (numSamples >= 0);
 
@@ -621,6 +630,11 @@ void mono_AudioSampleBuffer<num_channels>::allocateData() noexcept {
     {
         channels[i] = chan;
         chan += size;
+
+        for (int j = 0; j < size ; ++j)
+        {
+            channels[i][j] = 0;
+        }
     }
 
     channels [num_channels] = nullptr;

@@ -993,8 +993,7 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
     int current_buffer_size;
     
     // WORKERS
-    mono_AudioSampleBuffer<6> tmp_buffer_6;
-    mono_AudioSampleBuffer<9*4> tmp_multithread_band_buffer_9_4;
+    mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
     
     // OVER MULTIBLE PROCESSORS
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
@@ -1008,6 +1007,7 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
     
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
+   
     
     void resize_buffer_if_required( int min_size_required_ ) noexcept;
 

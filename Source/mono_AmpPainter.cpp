@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -38,9 +38,7 @@ void mono_AmpPainter::refresh_buttons() {
     osc_2->setColour( TextButton::buttonColourId, show_osc[1] ? Colours::blueviolet : button_off );
     osc_3->setColour( TextButton::buttonColourId, show_osc[2] ? Colours::violet : button_off );
 
-    lfo_1->setColour( TextButton::buttonColourId, show_lfo[0] ? Colours::green : button_off );
-    lfo_2->setColour( TextButton::buttonColourId, show_lfo[1] ? Colours::greenyellow : button_off );
-    lfo_3->setColour( TextButton::buttonColourId, show_lfo[2] ? Colours::yellow : button_off );
+    lfo_1->setColour( TextButton::buttonColourId, show_eq ? Colours::green : button_off );
 
     f_1->setColour( TextButton::buttonColourId, show_filter[0] ? Colours::red : button_off );
     f_2->setColour( TextButton::buttonColourId, show_filter[1] ? Colours::orangered : button_off );
@@ -85,16 +83,8 @@ mono_AmpPainter::mono_AmpPainter ()
     osc_3->addListener (this);
 
     addAndMakeVisible (lfo_1 = new TextButton ("new button"));
-    lfo_1->setButtonText (TRANS("LFO 1"));
+    lfo_1->setButtonText (TRANS("EQ"));
     lfo_1->addListener (this);
-
-    addAndMakeVisible (lfo_2 = new TextButton ("new button"));
-    lfo_2->setButtonText (TRANS("LFO 2"));
-    lfo_2->addListener (this);
-
-    addAndMakeVisible (lfo_3 = new TextButton ("new button"));
-    lfo_3->setButtonText (TRANS("LFO 3"));
-    lfo_3->addListener (this);
 
     addAndMakeVisible (out = new TextButton ("new button"));
     out->setButtonText (TRANS("OUT"));
@@ -129,7 +119,6 @@ mono_AmpPainter::mono_AmpPainter ()
     out_env->addListener (this);
 
     addAndMakeVisible (drawing_area = new Component());
-    drawing_area->setName ("");
 
 
     //[UserPreSize]
@@ -138,9 +127,6 @@ mono_AmpPainter::mono_AmpPainter ()
     osc_values.add( new EndlessBuffer<float>() );
     osc_values.add( new EndlessBuffer<float>() );
     osc_values.add( new EndlessBuffer<float>() );
-    lfo_values.add( new EndlessBuffer<float>() );
-    lfo_values.add( new EndlessBuffer<float>() );
-    lfo_values.add( new EndlessBuffer<float>() );
     filter_values.add( new EndlessBuffer<float>() );
     filter_values.add( new EndlessBuffer<float>() );
     filter_values.add( new EndlessBuffer<float>() );
@@ -151,9 +137,6 @@ mono_AmpPainter::mono_AmpPainter ()
     buffers.add( osc_values[0] );
     buffers.add( osc_values[1] );
     buffers.add( osc_values[2] );
-    buffers.add( lfo_values[0] );
-    buffers.add( lfo_values[1] );
-    buffers.add( lfo_values[2] );
     buffers.add( filter_values[0] );
     buffers.add( filter_values[1] );
     buffers.add( filter_values[2] );
@@ -163,9 +146,6 @@ mono_AmpPainter::mono_AmpPainter ()
     buffers.add( &values );
     buffers.add( &values_env );
 
-    show_lfo.add( false );
-    show_lfo.add( false );
-    show_lfo.add( false );
     show_osc.add( false );
     show_osc.add( false );
     show_osc.add( false );
@@ -178,7 +158,7 @@ mono_AmpPainter::mono_AmpPainter ()
 
     show_out = true;
     show_out_env = false;
-    show_lfo_mix = false;
+    show_eq = false;
 
     refresh_buttons();
 
@@ -205,8 +185,6 @@ mono_AmpPainter::~mono_AmpPainter()
     osc_2 = nullptr;
     osc_3 = nullptr;
     lfo_1 = nullptr;
-    lfo_2 = nullptr;
-    lfo_3 = nullptr;
     out = nullptr;
     f_1 = nullptr;
     f_2 = nullptr;
@@ -364,38 +342,28 @@ void mono_AmpPainter::paint (Graphics& g)
             }
         }
 
-        for( int lfo_id = 0 ; lfo_id != lfo_values.size() ; ++lfo_id )
+        if( show_eq )
         {
-            EndlessBuffer<float>& values = *lfo_values[lfo_id];
-            if( show_lfo[lfo_id] )
-            {
-                Colour col;
-                if( lfo_id == 0 )
-                    col = Colours::green;
-                else if( lfo_id == 1 )
-                    col = Colours::greenyellow;
-                else
-                    col = Colours::yellow;
+            Colour col = Colours::green;
 
-                mono_AmpPainter::exec
-                (
-                    g,
+            mono_AmpPainter::exec
+            (
+                g,
 
-                    current_position,
-                    scale,
+                current_position,
+                scale,
 
-                    paint_start_offset_x,
-                    line_center,
-                    height,
+                paint_start_offset_x,
+                line_center,
+                height,
 
-                    col,
-                    values,
-                    size
-                );
-            }
+                col,
+                eq_values,
+                size
+            );
         }
 
-        for( int filter_id = 0 ; filter_id != lfo_values.size() ; ++filter_id )
+        for( int filter_id = 0 ; filter_id != filter_values.size() ; ++filter_id )
         {
             Colour col;
             if( filter_id == 0 )
@@ -541,17 +509,15 @@ void mono_AmpPainter::resized()
     osc_1->setBounds (10, 15, 40, 50);
     osc_2->setBounds (10, 75, 40, 50);
     osc_3->setBounds (10, 135, 40, 50);
-    lfo_1->setBounds (10, 215, 40, 50);
-    lfo_2->setBounds (10, 275, 40, 50);
-    lfo_3->setBounds (10, 335, 40, 50);
-    out->setBounds (115, 15, 40, 50);
-    f_1->setBounds (60, 15, 40, 50);
-    f_2->setBounds (60, 75, 40, 50);
-    f_3->setBounds (60, 135, 40, 50);
+    lfo_1->setBounds (60, 15, 40, 50);
+    out->setBounds (60, 75, 40, 50);
+    f_1->setBounds (10, 215, 40, 50);
+    f_2->setBounds (10, 275, 40, 50);
+    f_3->setBounds (10, 335, 40, 50);
     f_env_1->setBounds (60, 215, 40, 50);
     f_env_2->setBounds (60, 275, 40, 50);
     f_env_3->setBounds (60, 335, 40, 50);
-    out_env->setBounds (115, 75, 40, 50);
+    out_env->setBounds (60, 135, 40, 50);
     drawing_area->setBounds (170, 15, 815, 330);
     //[UserResized] Add your own custom resize handling here..
 
@@ -603,20 +569,8 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == lfo_1)
     {
         //[UserButtonCode_lfo_1] -- add your button handler code here..
-        show_lfo.getReference(0) ^= true;
+        show_eq ^= true;
         //[/UserButtonCode_lfo_1]
-    }
-    else if (buttonThatWasClicked == lfo_2)
-    {
-        //[UserButtonCode_lfo_2] -- add your button handler code here..
-        show_lfo.getReference(1) ^= true;
-        //[/UserButtonCode_lfo_2]
-    }
-    else if (buttonThatWasClicked == lfo_3)
-    {
-        //[UserButtonCode_lfo_3] -- add your button handler code here..
-        show_lfo.getReference(2) ^= true;
-        //[/UserButtonCode_lfo_3]
     }
     else if (buttonThatWasClicked == out)
     {
@@ -672,6 +626,8 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
+
+
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
 {
@@ -683,11 +639,18 @@ void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_
     for( int i = 0; i != num_samples_ ; ++i )
         filter_values.getUnchecked(id_)->add( values_[i] );
 }
-void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept {
+void mono_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
+{
+    for( int i = 0; i != num_samples_ ; ++i )
+        eq_values.add( values_[i] );
+}
+void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
+{
     for( int i = 0; i != num_samples_ ; ++i )
         values_env.add( values_[i] );
 }
-void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept {
+void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
+{
     for( int i = 0; i != num_samples_ ; ++i )
         values.add( values_[i] );
 }
@@ -735,25 +698,19 @@ BEGIN_JUCER_METADATA
               explicitFocusOrder="0" pos="10 135 40 50" buttonText="OSC 3"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="lfo_1" virtualName=""
-              explicitFocusOrder="0" pos="10 215 40 50" buttonText="LFO 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="70c88d44ebc2f40" memberName="lfo_2" virtualName=""
-              explicitFocusOrder="0" pos="10 275 40 50" buttonText="LFO 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="c6c837d559f009a2" memberName="lfo_3" virtualName=""
-              explicitFocusOrder="0" pos="10 335 40 50" buttonText="LFO 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="60 15 40 50" buttonText="EQ" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="115 15 40 50" buttonText="OUT" connectedEdges="0"
+              explicitFocusOrder="0" pos="60 75 40 50" buttonText="OUT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
-              explicitFocusOrder="0" pos="60 15 40 50" buttonText="F 1" connectedEdges="0"
+              explicitFocusOrder="0" pos="10 215 40 50" buttonText="F 1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="773e5360237ed15c" memberName="f_2" virtualName=""
-              explicitFocusOrder="0" pos="60 75 40 50" buttonText="F 2" connectedEdges="0"
+              explicitFocusOrder="0" pos="10 275 40 50" buttonText="F 2" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="60cf3f432ebdbf40" memberName="f_3" virtualName=""
-              explicitFocusOrder="0" pos="60 135 40 50" buttonText="F 3" connectedEdges="0"
+              explicitFocusOrder="0" pos="10 335 40 50" buttonText="F 3" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
               virtualName="" explicitFocusOrder="0" pos="60 215 40 50" buttonText="F-ADSR 1"
@@ -765,10 +722,10 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="60 335 40 50" buttonText="F-ADSR 3"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="115 75 40 50" buttonText="O-ADSR"
+              explicitFocusOrder="0" pos="60 135 40 50" buttonText="O-ADSR"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area"
-                    virtualName="" explicitFocusOrder="0" pos="170 15 815 330" class="Component"
+  <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
+                    explicitFocusOrder="0" pos="170 15 815 330" class="Component"
                     params=""/>
 </JUCER_COMPONENT>
 

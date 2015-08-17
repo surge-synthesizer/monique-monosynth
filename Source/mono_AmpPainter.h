@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -127,7 +127,7 @@ public:
     const float original_h;
 
     int resizer;
-    
+
     OwnedArray<EndlessBuffer<float>> filter_values;
     Array<bool> show_filter;
     void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
@@ -135,21 +135,24 @@ public:
     OwnedArray<EndlessBuffer<float>> filter_env_values;
     Array<bool> show_filter_env;
     void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
-    
+
+    EndlessBuffer<float> eq_values;
+    bool show_eq;
+    void add_eq( const float* values_, int num_samples_ ) noexcept;
+
     EndlessBuffer<float> values_env;
     bool show_out_env;
     void add_out_env( const float* values_, int num_samples_ ) noexcept;
-    
+
     EndlessBuffer<float> values;
     bool show_out;
     void add_out( const float* values_, int num_samples_ ) noexcept;
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
 
     OwnedArray<EndlessBuffer<float>> osc_values;
     Array<bool> show_osc;
@@ -157,12 +160,7 @@ public:
         osc_values.getUnchecked(id_)->add( value_, is_switch_ );
     };
 
-    OwnedArray<EndlessBuffer<float>> lfo_values;
-    Array<bool> show_lfo;
-    bool show_lfo_mix;
-    inline void add_lfo( int id_, float value_ ) {
-        lfo_values.getUnchecked(id_)->add( value_ );
-    }
+
 
 
 
@@ -191,8 +189,6 @@ private:
     ScopedPointer<TextButton> osc_2;
     ScopedPointer<TextButton> osc_3;
     ScopedPointer<TextButton> lfo_1;
-    ScopedPointer<TextButton> lfo_2;
-    ScopedPointer<TextButton> lfo_3;
     ScopedPointer<TextButton> out;
     ScopedPointer<TextButton> f_1;
     ScopedPointer<TextButton> f_2;

@@ -331,6 +331,15 @@ public:
     //==============================================================================
     void initialise (const String&)
     {
+      
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
+        const float frequency_low_pass_tmp = (62.5f/2) * pow(2,band_id+1);
+	std::cout << frequency_low_pass_tmp << std::endl;
+    }
+      
+      
+      
         /*
           __arrays = new float*[FIRST_DIMENSION_SIZE];
           __target = new float*[FIRST_DIMENSION_SIZE];

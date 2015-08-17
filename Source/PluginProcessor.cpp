@@ -416,7 +416,7 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                 data_in_processor->processBlock( midi_messages_ );
                 data_in_processor->handle_cc_input( midi_messages_ );
 
-                mono_AmpPainter*const amp_painter = MONOVoice::get_lock_amp_painter();
+                MONOVoice::get_lock_amp_painter();
 
                 // SYNTH
 		
@@ -460,7 +460,7 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                 }
                 */
 #ifdef IS_PLUGIN
-                get_messages_to_send_to_daw(midi_messages_);
+                //get_messages_to_send_to_daw(midi_messages_);
 #endif
             }
         }

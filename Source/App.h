@@ -146,9 +146,6 @@ static inline float round001( float value ) noexcept {
 // --------------------------------------------------------------------------------------------
 
 
-#ifndef DEBUG
-#define debug_sample_print(x,y)
-#else
 #include <iomanip>
 static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )
 {
@@ -159,7 +156,6 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
         count_samples ++;
     }
 }
-#endif
 
 #define PRINT_TIME( instruction ) \
   static double time_sum = 0; \

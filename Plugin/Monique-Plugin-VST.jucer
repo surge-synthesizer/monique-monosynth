@@ -137,7 +137,7 @@
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <LINUX_MAKE targetFolder="Builds/LINUX" vstFolder="../vstsdk2.4/" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-ftree-vectorize&#10;-flto"
+    <LINUX_MAKE targetFolder="Builds/LINUX" vstFolder="../vstsdk2.4/" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-ftree-vectorize"
                 extraLinkerFlags="" extraDefs="" vst3Folder="~/SDKs/VST3 SDK"
                 userNotes="&#10;">
       <CONFIGURATIONS>
