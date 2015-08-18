@@ -1,52 +1,23 @@
 BUGS:
 can crash on shutdown
 lfo amp on osc looks ugly????
-
-TODO:
-compare changes
-CHORUS BUFFER to synth.cpp
-REVERB to synth.cpp
-lite up reverb
-
-
-
-
-
-synthtopia
-mic
-b-step builds
-
-update programms / refresh
-
-change google price
-
-
-
-
-LIVE
-
-jackqi
-schlüssel womo
-moogulator
-
-RUFUMLEITUNG
-EMAIL DELAY
-
-set online: audiobus
-summer special
-
-// B- STEP
-
-OTHER TODO:
-- conTroller in manual
+midi sync disabled for speed multies
 
 -------------------------------------------------------------------
-todo: morph-pad für morph-presets/sources
-todo: store sliderpad
-todo: load morph source undo
+
+add more speed multies
+add multi core support
+add crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
+improve performance (reduce cpu usage, reduce memory usage)
+fix engine crashs (mostly on switch programs)
+fix peak meter crashs
+add octave offset
+
+-------------------------------------------------------------------
+todo add modwheel to ui
+
 todo: midi controller push note e.g. 64 and controll with 1 to 8 a dial, define feedback colour/value for each button/note
-todo: octave offset button
-todo: store last programm as last session
+todo: store last programm as last session as file info not as programm and load it on start
 todo: modulation parameters for autormation params
 todo: update settings if editor is open
 
@@ -55,17 +26,14 @@ todo midi mod wheel; pitch wheel
 
 todo panic
 
-todo eq adr modulation vom aktuellen punkt und nicht von 0!
 todo morph int
 store ui size
 store oszi settings
 
-optimize envelopfollower and other files
 
 bug: crash on to short morph motor time
 bug: crash on to short attack time
 
-a rotary for the filters
 
 load save sustain replacements
 
@@ -92,35 +60,37 @@ kein background value für linear slider
 
 -----------------------------
 
-add more speed multies
-add multi core support
-add crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
-improve performance
+
+
+
+synthtopia
+mic
+b-step builds
+
+
+change google price
 
 
 
 
+LIVE
+
+jackqi
+schlüssel womo
+moogulator
+
+RUFUMLEITUNG
+EMAIL DELAY
+
+set online: audiobus
+summer special
+
+// B- STEP
+
+OTHER TODO:
+- conTroller in manual
 
 
-removed lfo sync (always in snyc)
-removed sustain time main adsr
-removed use lfo 1
-fix lfo sync bug
-add audio option to lfo
-improved amp painter
-fix bugs from mxtraxx
-fixed bug in filter input - flt2 and 3 was always using the output of the filter before (was ignoring left or right side of input slider)
-fixed lowpass was going out of phase center
-master env is not set to zero
-fix engine crashs
-smooth program switches
-fix morph was not updating adr curves
-removed chorus shine
-add env amnp to chorus (very cool option! :-) )
-bundle reverb room and dry
-fixed crash on shutdown
-
------------------------------
 
 metronom zahlen
 metronom typ facebook

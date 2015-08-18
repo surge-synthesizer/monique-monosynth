@@ -1423,7 +1423,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     float floated_note = ( float(_root_note)
                                            + octave_mod
                                            + glide_note_delta*glide_time_in_samples );
-                    const int note_low = std::floor(floated_note);
+                    const int note_low = std::floor( floated_note );
                     new_frequence = MidiMessage::getMidiNoteInHertz(note_low);
                     if( note_low < floated_note )
                     {
@@ -1435,6 +1435,9 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     if( current_puls_frequence_offset != 0 ) {
                         new_frequence*=current_puls_frequence_offset;
                     }
+
+                    if( new_frequence < 1 )
+                        new_frequence = 1;
                 }
                 if( last_frequency != new_frequence ) {
                     saw_generator.setFrequency(new_frequence);
@@ -1674,7 +1677,9 @@ inline void OSC::process(DataBuffer* data_buffer_,
     _last_root_note = _root_note;
 }
 
-inline void OSC::reset( int root_note_ ) noexcept {
+inline void OSC::reset( int root_note_ ) noexcept
+{
+    root_note_ += DATA( synth_data ).octave_offset *12;
     const float glide = DATA( synth_data ).glide;
     if( glide != 0 && (_root_note != root_note_ || glide_time_in_samples > 0 ) ) {
         const float rest_glide = glide_time_in_samples*glide_note_delta;
@@ -2132,6 +2137,17 @@ inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+template<int min_max>
+forcedinline static float hard_clipper( float x ) noexcept {
+    if( x < (min_max*-1) )
+        x = (min_max*-1);
+    else if( x > min_max )
+        x = min_max;
+
+    return x;
+}
+
+//==============================================================================
 class AnalogFilter : public RuntimeListener
 {
     friend class DoubleAnalogFilter;
@@ -2217,6 +2233,8 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
+     input_and_worker_ = hard_clipper<3>( input_and_worker_ );
+  
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2227,7 +2245,8 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6);
+    //y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = std::atan(y4);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -2398,6 +2417,8 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
 // -----------------------------------------------------------------
 inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 {
+     input_and_worker_ = hard_clipper<2>( input_and_worker_ );
+  
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2408,7 +2429,8 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = std::atan(y4);
+    //y4 -= (y4*y4*y4) * (1.0f/6);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -2455,6 +2477,8 @@ inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
 // -----------------------------------------------------------------
 inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
 {
+    input_and_worker_ = hard_clipper<1>( input_and_worker_ );
+
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2465,15 +2489,20 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 -= (y4*y4*y4) * (1.0f/6);
+    //y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = std::atan(y4);
 
     oldx = input_and_worker_;
     oldy1 = y1;
     oldy2 = y2;
     oldy3 = y3;
 
+    float return_val = (input_and_worker_-y4) + (std::atan( y2 * res4 ));
+    //if( return_val < -1 || return_val > 1 )
+    //debug_sample_print( return_val, 500000 );
+
     // RESONANCE
-    return (input_and_worker_-y4) + (std::atan( y2 * res4 ));
+    return return_val;
 }
 inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
 {
@@ -4514,7 +4543,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 {
                     const float in = tmp_samples[sid];
                     const float delay_data_in = delay_data[delay_pos];
-		    
+
                     tmp_samples[sid] += delay_data_in;
 
                     delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
@@ -4541,7 +4570,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             LeftRightExecuter( FXProcessor*const fx_processor_,
 
                                const int num_samples_,
-			       const int delay_pos_,
+                               const int delay_pos_,
 
                                const float* input_buffer_,
                                float* tmp_samples_,
@@ -4567,11 +4596,11 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             {}
         };
 
-	const int delay_pos = delayPosition;
+        const int delay_pos = delayPosition;
         LeftRightExecuter left_executer( this,
 
                                          num_samples_,
-					 delay_pos,
+                                         delay_pos,
 
                                          input_buffer,
                                          DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
@@ -4587,7 +4616,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 this,
 
                 num_samples_,
-		delay_pos,
+                delay_pos,
 
                 input_buffer,
                 DATA(data_buffer).tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_R),
@@ -4916,9 +4945,9 @@ void MONOVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_s
     {
         return;
     }
-    
+
     if( start_sample_ < 0 )
-      return;
+        return;
 
     // GET POSITION INFOS
     info.bpm = synth_data.sync ? audio_processor->pos.bpm : synth_data.speed;

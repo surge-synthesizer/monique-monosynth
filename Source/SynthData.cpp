@@ -638,6 +638,7 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     colour(generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),generate_short_human_name("MAIN","colour")),
     resonance(generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),generate_short_human_name("MAIN","shape")),
     curve_shape(generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),generate_short_human_name("MAIN","env_shape")),
+    octave_offset(generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),generate_short_human_name("MAIN","octave")),
 
     sync(generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),generate_short_human_name("MAIN","sync")),
     speed(generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),generate_short_human_name("MAIN","speed")),
@@ -757,6 +758,7 @@ inline const SynthData& SynthData::operator= ( const SynthData& other_ ) noexcep
     COPY_FROM_OTHER( colour )
     COPY_FROM_OTHER( resonance )
     COPY_FROM_OTHER( curve_shape )
+    COPY_FROM_OTHER( octave_offset )
 
     for( int i = 0 ; i != other_.lfo_datas.size() ; ++i )
         *lfo_datas[i] = *other_.lfo_datas[i];
@@ -795,6 +797,7 @@ NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibility
     params_.add( &colour );
     params_.add( &resonance );
     params_.add( &curve_shape );
+    params_.add( &octave_offset );
     params_.add( &morph_motor_time );
     params_.add( &morph_motor_time );
     params_.add( &speed );

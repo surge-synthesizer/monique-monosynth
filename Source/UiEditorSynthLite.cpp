@@ -827,6 +827,8 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     addAndMakeVisible (reverb_width = new mono_ModulationSlider (new RWidthSlConfig()));
 
+    addAndMakeVisible (octave_offset = new mono_ModulationSlider (new OctaveOffsetSlConfig()));
+
 
     //[UserPreSize]
     SET_SLIDER_STYLE(sl_morhp_mix,VALUE_SLIDER);
@@ -1107,6 +1109,7 @@ UiEditorSynthLite::~UiEditorSynthLite()
     label_ui_headline6 = nullptr;
     button_values_toggle = nullptr;
     reverb_width = nullptr;
+    octave_offset = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1699,6 +1702,7 @@ void UiEditorSynthLite::resized()
     label_ui_headline6->setBounds (1260, 506, 60, 35);
     button_values_toggle->setBounds (170 - 50, 900 - 30, 50, 30);
     reverb_width->setBounds (710 - 60, 640 - 130, 60, 130);
+    octave_offset->setBounds (1410 - 60, 800 - 130, 60, 130);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3239,6 +3243,9 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
                     explicitFocusOrder="0" pos="710r 640r 60 130" class="mono_ModulationSlider"
                     params="new RWidthSlConfig()"/>
+  <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
+                    explicitFocusOrder="0" pos="1410r 800r 60 130" class="mono_ModulationSlider"
+                    params="new OctaveOffsetSlConfig()"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

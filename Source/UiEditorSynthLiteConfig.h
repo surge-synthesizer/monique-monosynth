@@ -777,6 +777,37 @@ struct SpeedMultiSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+struct OctaveOffsetSlConfig : public ModulationSliderConfigBase {
+    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
+        return SYNTH_PARAM(synth_data->octave_offset);
+    }
+    StringRef get_bottom_button_text() const override {
+        return "OCTAVE";
+    }
+    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override 
+    {
+        return SHOW_OWN_VALUE;
+    }
+    String get_top_value() const override 
+    {
+        switch( DATA(synth_data).octave_offset )
+	{
+	  case 0 : return "+/-";
+	  case 1 : return "+12";
+	  case 2 : return "+24";
+	  case -1 : return "-12";
+	  default : return "-24";
+	}
+    }
+
+    OctaveOffsetSlConfig() {}
+
+    JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 struct FCompressorSlConfig : public ModulationSliderConfigBase {
     const int id;
 

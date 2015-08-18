@@ -267,6 +267,7 @@ private:
     ScopedPointer<Label> label_ui_headline6;
     ScopedPointer<TextButton> button_values_toggle;
     ScopedPointer<mono_ModulationSlider> reverb_width;
+    ScopedPointer<mono_ModulationSlider> octave_offset;
 
 
     //==============================================================================

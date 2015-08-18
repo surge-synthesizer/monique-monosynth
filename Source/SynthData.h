@@ -784,6 +784,7 @@ struct SynthData : mono_ParameterListener<float>
     mono_Parameter< float, 900, 0,1000, 1000, 100 > colour;
     mono_Parameter< float, 50, 0,1000, 1000, 100 > resonance;
     mono_Parameter< float, 500, 0,1000, 1000, 100 > curve_shape;
+    mono_Parameter< int, 0, -2,2 > octave_offset;
 
     mono_Parameter< bool, true > sync;
     typedef mono_Parameter< float, 128,20,1000, 1, 100 > speed_t;
