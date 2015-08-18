@@ -751,6 +751,29 @@ struct BPMSlConfig : public ModulationSliderConfigBase {
 
     JUCE_LEAK_DETECTOR (BPMSlConfig)
 };
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct SpeedMultiSlConfig : public ModulationSliderConfigBase {
+    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
+        return SYNTH_PARAM(arp_data->speed_multi);
+    }
+    bool get_is_bottom_button_text_dynamic() const override {
+        return true;
+    }
+    StringRef get_bottom_button_text() const override {
+        return speed_multi_to_text( DATA( arp_data ).speed_multi );
+    }
+    StringRef get_top_button_text() const override {
+        return "x1";
+    }
+
+    SpeedMultiSlConfig() {}
+
+    JUCE_LEAK_DETECTOR (SpeedMultiSlConfig)
+};
+
 //==============================================================================
 //==============================================================================
 //==============================================================================

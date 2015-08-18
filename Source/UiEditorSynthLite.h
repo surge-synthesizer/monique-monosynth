@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -108,6 +108,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<mono_ModulationSlider> speed_multi;
     ScopedPointer<mono_ModulationSlider> morpher_4;
     ScopedPointer<mono_ModulationSlider> morpher_3;
     ScopedPointer<mono_ModulationSlider> morpher_2;
@@ -185,8 +186,6 @@ private:
     ScopedPointer<TextButton> button_sequence_6;
     ScopedPointer<TextButton> button_sequence_7;
     ScopedPointer<TextButton> button_sequence_8;
-    ScopedPointer<TextButton> button_arp_speed_X2;
-    ScopedPointer<TextButton> button_arp_speed_X05;
     ScopedPointer<TextButton> button_sequence_9;
     ScopedPointer<TextButton> button_sequence_10;
     ScopedPointer<TextButton> button_sequence_11;
@@ -195,9 +194,6 @@ private:
     ScopedPointer<TextButton> button_sequence_14;
     ScopedPointer<TextButton> button_sequence_15;
     ScopedPointer<TextButton> button_sequence_16;
-    ScopedPointer<TextButton> button_arp_speed_X3;
-    ScopedPointer<TextButton> button_arp_speed_X4;
-    ScopedPointer<TextButton> button_arp_speed_X025;
     ScopedPointer<ComboBox> combo_programm;
     ScopedPointer<TextButton> button_programm_left;
     ScopedPointer<TextButton> button_programm_right;
@@ -262,7 +258,7 @@ private:
     ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<TextButton> button_ctrl_toggle;
     ScopedPointer<mono_ModulationSlider> colour;
-    ScopedPointer<mono_ModulationSlider> volume2;
+    ScopedPointer<mono_ModulationSlider> speed;
     ScopedPointer<TextButton> button_open_morph;
     ScopedPointer<TextButton> effect_finalizer_switch;
     ScopedPointer<Label> label_ui_headline2;

@@ -92,6 +92,16 @@ kein background value für linear slider
 
 -----------------------------
 
+add more speed multies
+add multi core support
+add crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
+improve performance
+
+
+
+
+
+
 removed lfo sync (always in snyc)
 removed sustain time main adsr
 removed use lfo 1

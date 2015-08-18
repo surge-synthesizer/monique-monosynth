@@ -351,8 +351,9 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
 
                         //todo clean up
                         //todo not needed in plugin
-                        int factor;
+                        int factor = 96/16;
                         static int samples_to_count = 96;
+			/*
                         switch( synth_data->arp_sequencer_data->speed_multi ) {
                         case _XNORM :
                             factor = 96/16;
@@ -369,10 +370,11 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                         case _X025 :
                             factor = 96/4;
                             break;
-                        default /* _X3 */  : //TODO
+                        default  : //TODO
                             factor = 96/48;
                             break;
                         }
+                        */
                         if( runtime_info.clock_counter%factor == 0 )
                         {
                             if( runtime_info.is_running )
@@ -386,6 +388,8 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                         {
                             runtime_info.clock_counter = 0;
 
+			    samples_to_count = 96;
+			    /*
                             switch( synth_data->arp_sequencer_data->speed_multi )
                             {
                             case _XNORM :
@@ -403,10 +407,11 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
                             case _X025 :
                                 samples_to_count = 96*4;
                                 break;
-                            default /* _X3 */  : //TODO
+                            default   : //TODO
                                 samples_to_count = 96/3;
                                 break;
                             }
+                            */
                         }
                     }
                 }

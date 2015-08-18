@@ -73,7 +73,7 @@ enum  {
 
     LEFT = 0,
     RIGHT = 1,
-    
+
     FILTER_1 = 0,
     FILTER_2 = 1,
     FILTER_3 = 2,
@@ -512,14 +512,92 @@ inline const FilterData& FilterData::operator=( const FilterData& other_ ) noexc
 }
 
 //==============================================================================
-enum SEQUENCER_SPEED {
-    _XNORM,
-    _X2,
-    _X4,
-    _X3,
-    _X05,
-    _X025
-};
+static inline StringRef speed_multi_to_text( int speed_multi_ ) noexcept {
+    switch( speed_multi_ )
+    {
+    case 0 :
+        return "x1";
+    case 1 :
+        return "x2";
+    case -1 :
+        return "/2";
+    case 2 :
+        return "x3";
+    case -2 :
+        return "/3";
+    case 3 :
+        return "x4";
+    case -3 :
+        return "/4";
+    case 4 :
+        return "x5";
+    case -4 :
+        return "/5";
+    case 5 :
+        return "x7";
+    case -5 :
+        return "/7";
+    case 6 :
+        return "x8";
+    case -6 :
+        return "/8";
+    case 7 :
+        return "x9";
+    case -7 :
+        return "/9";
+    case 8 :
+        return "x12";
+    case -8 :
+        return "/12";
+    case 9 :
+        return "x16";
+    default /*-9*/ :
+        return "/16";
+    }
+}
+static inline double speed_multi_to_value( int speed_multi_ ) noexcept {
+    switch( speed_multi_ )
+    {
+    case 0 :
+        return 1;
+    case 1 :
+        return 2;
+    case -1 :
+        return 0.5;
+    case 2 :
+        return 3;
+    case -2 :
+        return (1.0/3);
+    case 3 :
+        return 4;
+    case -3 :
+        return (1.0/4);
+    case 4 :
+        return 5;
+    case -4 :
+        return (1.0/5);
+    case 5 :
+        return 7;
+    case -5 :
+        return (1.0/7);
+    case 6 :
+        return 8;
+    case -6 :
+        return (1.0/8);
+    case 7 :
+        return 9;
+    case -7 :
+        return (1.0/9);
+    case 8 :
+        return 12;
+    case -8 :
+        return (1.0/12);
+    case 9 :
+        return 16;
+    default /*-9*/ :
+        return (1.0/16);
+    }
+}
 struct ArpSequencerData {
     const int id;
 
@@ -538,7 +616,7 @@ struct ArpSequencerData {
     mono_Parameter< float, 333, 0,1000, 1000, 1000 > shuffle;
     mono_Parameter< bool, false > connect;
 
-    typedef mono_Parameter< int, _XNORM, _XNORM,_X025 > speed_multi_t;
+    typedef mono_Parameter< int, 0, -9,9 > speed_multi_t;
     speed_multi_t speed_multi;
 
     inline const ArpSequencerData& operator=( const ArpSequencerData& other_ ) noexcept;
@@ -583,7 +661,7 @@ enum EQ {
     SUM_EQ_BANDS,
 
 };
-// TODO G-FORCE
+
 struct EQData : mono_ParameterListener< float >
 {
     const int id;
@@ -956,7 +1034,7 @@ class mono_ParameterOwnerStore : public DeletedAtShutdown {
 
 public:
     RuntimeInfo* runtime_info;
-    
+
     DataBuffer* data_buffer;
 
     Array< LFOData* > lfo_datas;
@@ -985,16 +1063,16 @@ public:
     NOINLINE ~mono_ParameterOwnerStore();
 
     juce_DeclareSingleton (mono_ParameterOwnerStore,false)
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterOwnerStore)
 };
 
 struct DataBuffer { // DEFINITION IN SYNTH.CPP
     int current_buffer_size;
-    
+
     // WORKERS
     mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
-    
+
     // OVER MULTIBLE PROCESSORS
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
@@ -1004,11 +1082,11 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
     mono_AudioSampleBuffer<1> osc_sync_switchs;
     mono_AudioSampleBuffer<1> modulator_samples;
-    
+
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
-   
-    
+
+
     void resize_buffer_if_required( int min_size_required_ ) noexcept;
 
     NOINLINE DataBuffer( int init_buffer_size_ );

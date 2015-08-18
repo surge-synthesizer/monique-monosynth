@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -144,12 +144,7 @@ void UiEditorSynthLite::show_current_voice_data() {
     button_sequence_15->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->step[14] ? button_on.darker( 1.0f-voice->get_arp_sequence_amp(14) ) : button_off );
     button_sequence_16->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->step[15] ? button_on.darker( 1.0f-voice->get_arp_sequence_amp(15) ) : button_off );
 
-    button_arp_speed_XNORM->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _XNORM ? button_on : button_off );
-    button_arp_speed_X2->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _X2 ? button_on : button_off );
-    button_arp_speed_X3->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _X3 ? button_on : button_off );
-    button_arp_speed_X4->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _X4 ? button_on : button_off );
-    button_arp_speed_X05->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _X05 ? button_on : button_off );
-    button_arp_speed_X025->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == _X025 ? button_on : button_off );
+    button_arp_speed_XNORM->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->speed_multi == 0 ? button_on : button_off );
 
     // MORPHERS
     {
@@ -236,6 +231,8 @@ UiEditorSynthLite::UiEditorSynthLite ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
+
+    addAndMakeVisible (speed_multi = new mono_ModulationSlider (new SpeedMultiSlConfig()));
 
     addAndMakeVisible (morpher_4 = new mono_ModulationSlider (new MorphSLConfig(3)));
 
@@ -493,20 +490,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_8->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_arp_speed_X2 = new TextButton (String::empty));
-    button_arp_speed_X2->setButtonText (TRANS("x2"));
-    button_arp_speed_X2->addListener (this);
-    button_arp_speed_X2->setColour (TextButton::buttonColourId, Colours::black);
-    button_arp_speed_X2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_arp_speed_X2->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_arp_speed_X05 = new TextButton (String::empty));
-    button_arp_speed_X05->setButtonText (TRANS("/2"));
-    button_arp_speed_X05->addListener (this);
-    button_arp_speed_X05->setColour (TextButton::buttonColourId, Colours::black);
-    button_arp_speed_X05->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_arp_speed_X05->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
     button_sequence_9->addListener (this);
     button_sequence_9->setColour (TextButton::buttonColourId, Colours::black);
@@ -554,27 +537,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_sequence_16->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_16->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_arp_speed_X3 = new TextButton (String::empty));
-    button_arp_speed_X3->setButtonText (TRANS("x3"));
-    button_arp_speed_X3->addListener (this);
-    button_arp_speed_X3->setColour (TextButton::buttonColourId, Colours::black);
-    button_arp_speed_X3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_arp_speed_X3->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_arp_speed_X4 = new TextButton (String::empty));
-    button_arp_speed_X4->setButtonText (TRANS("x4"));
-    button_arp_speed_X4->addListener (this);
-    button_arp_speed_X4->setColour (TextButton::buttonColourId, Colours::black);
-    button_arp_speed_X4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_arp_speed_X4->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_arp_speed_X025 = new TextButton (String::empty));
-    button_arp_speed_X025->setButtonText (TRANS("/4"));
-    button_arp_speed_X025->addListener (this);
-    button_arp_speed_X025->setColour (TextButton::buttonColourId, Colours::black);
-    button_arp_speed_X025->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_arp_speed_X025->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (combo_programm = new ComboBox (String::empty));
     combo_programm->setEditableText (true);
@@ -804,7 +766,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     addAndMakeVisible (colour = new mono_ModulationSlider (new FColourSlConfig()));
 
-    addAndMakeVisible (volume2 = new mono_ModulationSlider (new BPMSlConfig()));
+    addAndMakeVisible (speed = new mono_ModulationSlider (new BPMSlConfig()));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
     button_open_morph->setButtonText (TRANS("CFG"));
@@ -868,7 +830,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     //[UserPreSize]
     SET_SLIDER_STYLE(sl_morhp_mix,VALUE_SLIDER);
-    
+
     last_bank = -1;
     last_programm = -1;
     is_in_help_mode = false;
@@ -986,6 +948,7 @@ UiEditorSynthLite::~UiEditorSynthLite()
     _app_instance_store->audio_processor->peak_meter = nullptr;
     //[/Destructor_pre]
 
+    speed_multi = nullptr;
     morpher_4 = nullptr;
     morpher_3 = nullptr;
     morpher_2 = nullptr;
@@ -1063,8 +1026,6 @@ UiEditorSynthLite::~UiEditorSynthLite()
     button_sequence_6 = nullptr;
     button_sequence_7 = nullptr;
     button_sequence_8 = nullptr;
-    button_arp_speed_X2 = nullptr;
-    button_arp_speed_X05 = nullptr;
     button_sequence_9 = nullptr;
     button_sequence_10 = nullptr;
     button_sequence_11 = nullptr;
@@ -1073,9 +1034,6 @@ UiEditorSynthLite::~UiEditorSynthLite()
     button_sequence_14 = nullptr;
     button_sequence_15 = nullptr;
     button_sequence_16 = nullptr;
-    button_arp_speed_X3 = nullptr;
-    button_arp_speed_X4 = nullptr;
-    button_arp_speed_X025 = nullptr;
     combo_programm = nullptr;
     button_programm_left = nullptr;
     button_programm_right = nullptr;
@@ -1140,7 +1098,7 @@ UiEditorSynthLite::~UiEditorSynthLite()
     button_midi_learn = nullptr;
     button_ctrl_toggle = nullptr;
     colour = nullptr;
-    volume2 = nullptr;
+    speed = nullptr;
     button_open_morph = nullptr;
     effect_finalizer_switch = nullptr;
     label_ui_headline2 = nullptr;
@@ -1582,6 +1540,7 @@ void UiEditorSynthLite::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    speed_multi->setBounds (1330 - 60, 800 - 130, 60, 130);
     morpher_4->setBounds (1320 - 60, 510, 60, 130);
     morpher_3->setBounds (1260 - 60, 510, 60, 130);
     morpher_2->setBounds (1200 - 60, 510, 60, 130);
@@ -1659,8 +1618,6 @@ void UiEditorSynthLite::resized()
     button_sequence_6->setBounds (560 - 60, 690 - 20, 60, 20);
     button_sequence_7->setBounds (620 - 60, 690 - 20, 60, 20);
     button_sequence_8->setBounds (680 - 60, 690 - 20, 60, 20);
-    button_arp_speed_X2->setBounds (1260 - 60, 760 - 20, 60, 20);
-    button_arp_speed_X05->setBounds (1260 - 60, 740 - 20, 60, 20);
     button_sequence_9->setBounds (750 - 60, 690 - 20, 60, 20);
     button_sequence_10->setBounds (810 - 60, 690 - 20, 60, 20);
     button_sequence_11->setBounds (870 - 60, 690 - 20, 60, 20);
@@ -1669,9 +1626,6 @@ void UiEditorSynthLite::resized()
     button_sequence_14->setBounds (1060 - 60, 690 - 20, 60, 20);
     button_sequence_15->setBounds (1120 - 60, 690 - 20, 60, 20);
     button_sequence_16->setBounds (1180 - 60, 690 - 20, 60, 20);
-    button_arp_speed_X3->setBounds (1260 - 60, 780 - 20, 60, 20);
-    button_arp_speed_X4->setBounds (1260 - 60, 800 - 20, 60, 20);
-    button_arp_speed_X025->setBounds (1260 - 60, 720 - 20, 60, 20);
     combo_programm->setBounds (620 - 310, 870 - 30, 310, 30);
     button_programm_left->setBounds (250 - 60, 870 - 30, 60, 30);
     button_programm_right->setBounds (680 - 60, 870 - 30, 60, 30);
@@ -1721,7 +1675,7 @@ void UiEditorSynthLite::resized()
     volume->setBounds (1410 - 60, 640 - 130, 60, 130);
     flt_distortion_2->setBounds (1260 - 60, 320 - 130, 60, 130);
     flt_distortion_3->setBounds (1260 - 60, 480 - 130, 60, 130);
-    button_arp_speed_XNORM->setBounds (1200, 670, 60, 27);
+    button_arp_speed_XNORM->setBounds (1270, 670, 60, 27);
     flt_attack_5->setBounds (80 - 60, 640 - 130, 60, 130);
     flt_attack_6->setBounds (150 - 60, 640 - 130, 60, 130);
     osc_wave_1->setBounds (80 - 60, 160 - 130, 60, 130);
@@ -1736,7 +1690,7 @@ void UiEditorSynthLite::resized()
     button_midi_learn->setBounds (120 - 50, 870 - 30, 50, 30);
     button_ctrl_toggle->setBounds (170 - 50, 870 - 30, 50, 30);
     colour->setBounds (560 - 60, 640 - 130, 60, 130);
-    volume2->setBounds (1330 - 60, 800 - 130, 60, 130);
+    speed->setBounds (1260 - 60, 800 - 130, 60, 130);
     button_open_morph->setBounds (1140 - 60, 605, 60, 33);
     effect_finalizer_switch->setBounds (495 - 25, 510, 25, 130);
     label_ui_headline2->setBounds (1080, 506, 60, 35);
@@ -2122,36 +2076,6 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->step[step_id].midi_control );
         //[/UserButtonCode_button_sequence_8]
     }
-    else if (buttonThatWasClicked == button_arp_speed_X2)
-    {
-        //[UserButtonCode_button_arp_speed_X2] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->arp_sequencer_data->speed_multi,
-            buttonThatWasClicked
-        )
-        else
-        {
-            synth_data->arp_sequencer_data->speed_multi = _X2;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
-        //[/UserButtonCode_button_arp_speed_X2]
-    }
-    else if (buttonThatWasClicked == button_arp_speed_X05)
-    {
-        //[UserButtonCode_button_arp_speed_X05] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->arp_sequencer_data->speed_multi,
-            buttonThatWasClicked
-        )
-        else
-        {
-            synth_data->arp_sequencer_data->speed_multi = _X05;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
-        //[/UserButtonCode_button_arp_speed_X05]
-    }
     else if (buttonThatWasClicked == button_sequence_9)
     {
         //[UserButtonCode_button_sequence_9] -- add your button handler code here..
@@ -2280,51 +2204,6 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->step[step_id].midi_control );
         //[/UserButtonCode_button_sequence_16]
     }
-    else if (buttonThatWasClicked == button_arp_speed_X3)
-    {
-        //[UserButtonCode_button_arp_speed_X3] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->arp_sequencer_data->speed_multi,
-            buttonThatWasClicked
-        )
-        else
-        {
-            synth_data->arp_sequencer_data->speed_multi = _X3;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
-        //[/UserButtonCode_button_arp_speed_X3]
-    }
-    else if (buttonThatWasClicked == button_arp_speed_X4)
-    {
-        //[UserButtonCode_button_arp_speed_X4] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->arp_sequencer_data->speed_multi,
-            buttonThatWasClicked
-        )
-        else
-        {
-            synth_data->arp_sequencer_data->speed_multi = _X4;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
-        //[/UserButtonCode_button_arp_speed_X4]
-    }
-    else if (buttonThatWasClicked == button_arp_speed_X025)
-    {
-        //[UserButtonCode_button_arp_speed_X025] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->arp_sequencer_data->speed_multi,
-            buttonThatWasClicked
-        )
-        else
-        {
-            synth_data->arp_sequencer_data->speed_multi = _X025;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
-        //[/UserButtonCode_button_arp_speed_X025]
-    }
     else if (buttonThatWasClicked == button_programm_left)
     {
         //[UserButtonCode_button_programm_left] -- add your button handler code here..
@@ -2415,7 +2294,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            synth_data->arp_sequencer_data->speed_multi = _XNORM;
+            synth_data->arp_sequencer_data->speed_multi = 0;
         }
         show_info_popup( buttonThatWasClicked, synth_data->arp_sequencer_data->speed_multi.midi_control );
         //[/UserButtonCode_button_arp_speed_XNORM]
@@ -2821,6 +2700,9 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="915 390 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="915 365 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
+                    explicitFocusOrder="0" pos="1330r 800r 60 130" class="mono_ModulationSlider"
+                    params="new SpeedMultiSlConfig()"/>
   <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
                     explicitFocusOrder="0" pos="1320r 510 60 130" class="mono_ModulationSlider"
                     params="new MorphSLConfig(3)"/>
@@ -3075,14 +2957,6 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="680r 690r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="5fde6bcb8773e59" memberName="button_arp_speed_X2"
-              virtualName="" explicitFocusOrder="0" pos="1260r 760r 60 20"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="3096a388b056f485" memberName="button_arp_speed_X05"
-              virtualName="" explicitFocusOrder="0" pos="1260r 740r 60 20"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="/2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
               virtualName="" explicitFocusOrder="0" pos="750r 690r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
@@ -3114,18 +2988,6 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
               virtualName="" explicitFocusOrder="0" pos="1180r 690r 60 20"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="6e59657b42706964" memberName="button_arp_speed_X3"
-              virtualName="" explicitFocusOrder="0" pos="1260r 780r 60 20"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="f05956bd55d1edf5" memberName="button_arp_speed_X4"
-              virtualName="" explicitFocusOrder="0" pos="1260r 800r 60 20"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x4"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="27deffdf1265f119" memberName="button_arp_speed_X025"
-              virtualName="" explicitFocusOrder="0" pos="1260r 720r 60 20"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="/4"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
             explicitFocusOrder="0" pos="620r 870r 310 30" editable="1" layout="33"
@@ -3283,7 +3145,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1260r 480r 60 130" class="mono_ModulationSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1200 670 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1270 670 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="x1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
@@ -3339,8 +3201,8 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
                     explicitFocusOrder="0" pos="560r 640r 60 130" class="mono_ModulationSlider"
                     params="new FColourSlConfig()"/>
-  <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="volume2" virtualName=""
-                    explicitFocusOrder="0" pos="1330r 800r 60 130" class="mono_ModulationSlider"
+  <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
+                    explicitFocusOrder="0" pos="1260r 800r 60 130" class="mono_ModulationSlider"
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
               virtualName="" explicitFocusOrder="0" pos="1140r 605 60 33" bgColOff="ff000000"

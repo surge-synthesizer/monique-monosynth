@@ -4670,27 +4670,7 @@ NOINLINE ArpSequencer::~ArpSequencer() {}
 // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
 inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept {
     double samples_per_min = sample_rate*60.0;
-    double speed_multi;
-    switch( data.speed_multi ) {
-    case _XNORM :
-        speed_multi = 1;
-        break;
-    case _X2 :
-        speed_multi = 2;
-        break;
-    case _X05 :
-        speed_multi = 0.5;
-        break;
-    case _X4 :
-        speed_multi = 4;
-        break;
-    case _X025 :
-        speed_multi = 0.25;
-        break;
-    default /* _X3 */ :
-        speed_multi = 3;
-        break;
-    }
+    double speed_multi = speed_multi_to_value(data.speed_multi);
     double steps_per_min = info.bpm*4.0/1.0 * speed_multi;
     double steps_per_sample = steps_per_min/samples_per_min;
     double samples_per_step = samples_per_min/steps_per_min;
