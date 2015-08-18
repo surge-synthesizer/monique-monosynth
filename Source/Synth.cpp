@@ -2233,8 +2233,8 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
-     input_and_worker_ = hard_clipper<3>( input_and_worker_ );
-  
+    input_and_worker_ = hard_clipper<3>( input_and_worker_ );
+
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2417,8 +2417,8 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
 // -----------------------------------------------------------------
 inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 {
-     input_and_worker_ = hard_clipper<2>( input_and_worker_ );
-  
+    input_and_worker_ = hard_clipper<2>( input_and_worker_ );
+
     // process input
     input_and_worker_ -= r*y4;
 
@@ -2497,12 +2497,8 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     oldy2 = y2;
     oldy3 = y3;
 
-    float return_val = (input_and_worker_-y4) + (std::atan( y2 * res4 ));
-    //if( return_val < -1 || return_val > 1 )
-    //debug_sample_print( return_val, 500000 );
-
     // RESONANCE
-    return return_val;
+    return (input_and_worker_-y4) + (std::atan( y2 * res4 ));
 }
 inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
 {
