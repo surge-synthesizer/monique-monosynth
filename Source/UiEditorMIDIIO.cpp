@@ -61,7 +61,7 @@ void UiEditorMIDIIO::refresh()
 
 //==============================================================================
 UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manager_)
-    : _audio_device_manager(audio_device_manager_), original_w(1040), original_h(500)
+    : _audio_device_manager(audio_device_manager_), original_w(610), original_h(360)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -487,7 +487,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorMIDIIO" componentName=""
                  parentClasses="public Component" constructorParams="mono_AudioDeviceManager*const audio_device_manager_"
-                 variableInitialisers="_audio_device_manager(audio_device_manager_), original_w(1040), original_h(500)"
+                 variableInitialisers="_audio_device_manager(audio_device_manager_), original_w(610), original_h(360)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="610" initialHeight="360">
   <METHODS>
