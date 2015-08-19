@@ -231,15 +231,6 @@ enum PORT_IDENT {
     SEND_MIDI_THRU,
     SEND_MIDI_CLOCK,
 
-    SEND_MIDI_LFO_1,
-    SEND_MIDI_LFO_2,
-    SEND_MIDI_LFO_3,
-
-    SEND_MIDI_F_ADSR_1,
-    SEND_MIDI_F_ADSR_2,
-    SEND_MIDI_F_ADSR_3,
-    SEND_MIDI_ADSR,
-
     RECIEVE_MIDI_MAIN,
     RECIEVE_CC
 };
@@ -261,9 +252,6 @@ private:
 
     ScopedPointer<MidiOutputWrapper> thru_output;
     ScopedPointer<MidiOutputWrapper> clock_output;
-
-    OwnedArray<MidiOutputWrapper> lfo_outputs;
-    OwnedArray<MidiOutputWrapper> adsr_outputs;
 
     StringArray output_ident_names;
     StringArray input_ident_names;
@@ -353,8 +341,6 @@ public:
 
 public:
     // SEND
-    void send_lfo_message( int lfo_id_, const float* lfo_amps_, int num_samples_ );
-    void send_adsr_message( int adsr_id_, const float* adsr_amps_, int num_samples_ );
     inline void send_feedback_message( const MidiMessage& message ) noexcept {
         if( cc_output )
             cc_output->send_message_now( message, 0 );
@@ -367,15 +353,6 @@ protected:
     void stop_midi_devices() {
         if( main_input ) main_input->stop();
         if( cc_input ) cc_input->stop();
-
-        for( int i = 0 ; i != lfo_outputs.size() ; ++i ) {
-            if( lfo_outputs[i] )
-                lfo_outputs[i]->stop();
-        }
-        for( int i = 0 ; i != adsr_outputs.size() ; ++i ) {
-            if( adsr_outputs[i] )
-                adsr_outputs[i]->stop();
-        }
     }
 
 public:
@@ -384,14 +361,3 @@ public:
 };
 
 #endif  // MONO_AUDIODEVICEMANAGER_H_INCLUDED
-
-
-
-
-
-
-
-
-
-
-
