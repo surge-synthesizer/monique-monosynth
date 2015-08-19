@@ -1065,6 +1065,12 @@ void UiEditorSettings::paint (Graphics& g)
     g.setColour (Colour (0xffff3b00));
     g.fillRoundedRectangle (260.0f, 360.0f, 1.0f, 50.0f, 1.000f);
 
+    g.setColour (Colour (0x66000000));
+    g.fillRoundedRectangle (10.0f, 25.0f, 258.0f, 115.0f, 6.000f);
+
+    g.setColour (Colour (0xff2aa5a2));
+    g.drawRoundedRectangle (10.0f, 25.0f, 258.0f, 115.0f, 6.000f, 2.000f);
+
     //[UserPaint] Add your own custom painting code here..
     if( repaint_curve )
     {
@@ -1133,35 +1139,35 @@ void UiEditorSettings::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label_21->setBounds (200 - 60, 336 - 26, 60, 26);
-    label_22->setBounds (200 - 60, 236 - 26, 60, 26);
+    label_21->setBounds (200 - 60, 356 - 26, 60, 26);
+    label_22->setBounds (200 - 60, 256 - 26, 60, 26);
     plotter->setBounds (320, 310, 310, 100);
-    label_1->setBounds (80 - 60, 136 - 26, 60, 26);
+    label_1->setBounds (20, 110, 60, 26);
     slider_attack_1->setBounds (20, 110 - 50, 60, 50);
     label_ui_headline4->setBounds (20, 10, 490, 30);
     label2->setBounds (270, 70, 20, 26);
-    label_2->setBounds (140 - 60, 136 - 26, 60, 26);
-    slider_decay_1->setBounds (140 - 60, 110 - 50, 60, 50);
-    label_3->setBounds (260 - 60, 136 - 26, 60, 26);
-    slider_release_1->setBounds (260 - 60, 110 - 50, 60, 50);
-    label_4->setBounds (80 - 60, 236 - 26, 60, 26);
-    slider_attack_2->setBounds (80 - 60, 210 - 50, 60, 50);
-    label_5->setBounds (140 - 60, 236 - 26, 60, 26);
-    slider_decay_2->setBounds (140 - 60, 210 - 50, 60, 50);
-    label_6->setBounds (260 - 60, 236 - 26, 60, 26);
-    slider_release_2->setBounds (260 - 60, 210 - 50, 60, 50);
-    label_7->setBounds (80 - 60, 336 - 26, 60, 26);
-    slider_attack_3->setBounds (80 - 60, 310 - 50, 60, 50);
-    label_8->setBounds (140 - 60, 336 - 26, 60, 26);
-    slider_decay_3->setBounds (140 - 60, 310 - 50, 60, 50);
-    label_9->setBounds (260 - 60, 336 - 26, 60, 26);
-    slider_release_3->setBounds (260 - 60, 310 - 50, 60, 50);
-    label_10->setBounds (80 - 60, 436 - 26, 60, 26);
-    slider_attack_4->setBounds (80 - 60, 410 - 50, 60, 50);
-    label_11->setBounds (140 - 60, 436 - 26, 60, 26);
-    slider_decay_4->setBounds (140 - 60, 410 - 50, 60, 50);
-    label_12->setBounds (260 - 60, 436 - 26, 60, 26);
-    slider_release_4->setBounds (260 - 60, 410 - 50, 60, 50);
+    label_2->setBounds (80, 110, 60, 26);
+    slider_decay_1->setBounds (80, 60, 60, 50);
+    label_3->setBounds (200, 110, 60, 26);
+    slider_release_1->setBounds (200, 60, 60, 50);
+    label_4->setBounds (80 - 60, 256 - 26, 60, 26);
+    slider_attack_2->setBounds (80 - 60, 230 - 50, 60, 50);
+    label_5->setBounds (140 - 60, 256 - 26, 60, 26);
+    slider_decay_2->setBounds (140 - 60, 230 - 50, 60, 50);
+    label_6->setBounds (260 - 60, 256 - 26, 60, 26);
+    slider_release_2->setBounds (260 - 60, 230 - 50, 60, 50);
+    label_7->setBounds (80 - 60, 356 - 26, 60, 26);
+    slider_attack_3->setBounds (80 - 60, 330 - 50, 60, 50);
+    label_8->setBounds (140 - 60, 356 - 26, 60, 26);
+    slider_decay_3->setBounds (140 - 60, 330 - 50, 60, 50);
+    label_9->setBounds (260 - 60, 356 - 26, 60, 26);
+    slider_release_3->setBounds (260 - 60, 330 - 50, 60, 50);
+    label_10->setBounds (80 - 60, 456 - 26, 60, 26);
+    slider_attack_4->setBounds (80 - 60, 430 - 50, 60, 50);
+    label_11->setBounds (140 - 60, 456 - 26, 60, 26);
+    slider_decay_4->setBounds (140 - 60, 430 - 50, 60, 50);
+    label_12->setBounds (260 - 60, 456 - 26, 60, 26);
+    slider_release_4->setBounds (260 - 60, 430 - 50, 60, 50);
     label6->setBounds (330, 250, 60, 26);
     slider_test->setBounds (390 - 60, 250 - 70, 60, 70);
     label_13->setBounds (450 - 60, 276 - 26, 60, 26);
@@ -1173,19 +1179,19 @@ void UiEditorSettings::resized()
     slider_max_adr_attack->setBounds (450 - 60, 140 - 70, 60, 70);
     slider_max_adr_decay->setBounds (510 - 60, 140 - 70, 60, 70);
     slider_max_adr_release->setBounds (630 - 60, 140 - 70, 60, 70);
-    label5->setBounds (260, 160, 20, 26);
-    label3->setBounds (260, 290, 20, 26);
-    label4->setBounds (270, 370, 20, 26);
-    label_ui_headline2->setBounds (20, 450, 490, 30);
-    slider_morph_motor_time->setBounds (80 - 60, 550 - 70, 60, 70);
+    label5->setBounds (260, 180, 20, 26);
+    label3->setBounds (260, 310, 20, 26);
+    label4->setBounds (270, 390, 20, 26);
+    label_ui_headline2->setBounds (20, 470, 490, 30);
+    slider_morph_motor_time->setBounds (80 - 60, 570 - 70, 60, 70);
     label10->setBounds (390, 140, 60, 26);
-    slider_glide_time->setBounds (150 - 60, 550 - 70, 60, 70);
+    slider_glide_time->setBounds (150 - 60, 570 - 70, 60, 70);
     label11->setBounds (450, 140, 60, 26);
     label12->setBounds (570, 140, 60, 26);
-    label13->setBounds (20, 550, 60, 26);
+    label13->setBounds (20, 570, 60, 26);
     close->setBounds (getWidth() - 5 - 45, 5, 45, 20);
     textEditor->setBounds (320, 410, 310, 70);
-    label7->setBounds (90, 550, 60, 26);
+    label7->setBounds (90, 570, 60, 26);
     label_17->setBounds (570 - 250, 66 - 26, 250, 26);
     label_16->setBounds (480 - 160, 510 - 30, 160, 30);
     toggle_animate_input_env->setBounds (280, 480, 30, 30);
@@ -1193,32 +1199,32 @@ void UiEditorSettings::resized()
     toggle_animate_eq_env->setBounds (280, 510, 30, 30);
     label_19->setBounds (480 - 160, 570 - 30, 160, 30);
     toggle_output_cc_mute4->setBounds (280, 540, 30, 30);
-    slider_sustain_time_1->setBounds (200 - 60, 110 - 50, 60, 50);
-    slider_sustain_time_2->setBounds (200 - 60, 210 - 50, 60, 50);
-    slider_sustain_time_3->setBounds (200 - 60, 310 - 50, 60, 50);
-    slider_sustain_time_4->setBounds (200 - 60, 410 - 50, 60, 50);
-    label_20->setBounds (200 - 60, 436 - 26, 60, 26);
-    label_23->setBounds (200 - 60, 136 - 26, 60, 26);
+    slider_sustain_time_1->setBounds (140, 60, 60, 50);
+    slider_sustain_time_2->setBounds (200 - 60, 230 - 50, 60, 50);
+    slider_sustain_time_3->setBounds (200 - 60, 330 - 50, 60, 50);
+    slider_sustain_time_4->setBounds (200 - 60, 430 - 50, 60, 50);
+    label_20->setBounds (200 - 60, 456 - 26, 60, 26);
+    label_23->setBounds (140, 110, 60, 26);
     slider_test_suatain_time->setBounds (570 - 60, 250 - 70, 60, 70);
     label_24->setBounds (570 - 60, 276 - 26, 60, 26);
-    label_attack_1->setBounds (80 - 60, 56 - 26, 60, 26);
-    label_decay_1->setBounds (140 - 60, 56 - 26, 60, 26);
-    label_sustain_time_1->setBounds (200 - 60, 56 - 26, 60, 26);
-    label_release_1->setBounds (260 - 60, 56 - 26, 60, 26);
-    label_attack_2->setBounds (80 - 60, 156 - 26, 60, 26);
-    label_decay_2->setBounds (140 - 60, 156 - 26, 60, 26);
-    label_sustain_time_2->setBounds (200 - 60, 156 - 26, 60, 26);
-    label_release_2->setBounds (260 - 60, 156 - 26, 60, 26);
-    label_attack_3->setBounds (80 - 60, 256 - 26, 60, 26);
-    label_decay_3->setBounds (140 - 60, 256 - 26, 60, 26);
-    label_sustain_time_3->setBounds (200 - 60, 256 - 26, 60, 26);
-    label_release_3->setBounds (260 - 60, 256 - 26, 60, 26);
-    label_attack_4->setBounds (80 - 60, 356 - 26, 60, 26);
-    label_decay_4->setBounds (140 - 60, 356 - 26, 60, 26);
-    label_sustain_time_4->setBounds (200 - 60, 356 - 26, 60, 26);
-    label_release_4->setBounds (260 - 60, 356 - 26, 60, 26);
-    slider_env_shape->setBounds (230 - 60, 550 - 70, 60, 70);
-    label8->setBounds (170, 550, 60, 26);
+    label_attack_1->setBounds (20, 30, 60, 26);
+    label_decay_1->setBounds (80, 30, 60, 26);
+    label_sustain_time_1->setBounds (140, 30, 60, 26);
+    label_release_1->setBounds (200, 30, 60, 26);
+    label_attack_2->setBounds (80 - 60, 176 - 26, 60, 26);
+    label_decay_2->setBounds (140 - 60, 176 - 26, 60, 26);
+    label_sustain_time_2->setBounds (200 - 60, 176 - 26, 60, 26);
+    label_release_2->setBounds (260 - 60, 176 - 26, 60, 26);
+    label_attack_3->setBounds (80 - 60, 276 - 26, 60, 26);
+    label_decay_3->setBounds (140 - 60, 276 - 26, 60, 26);
+    label_sustain_time_3->setBounds (200 - 60, 276 - 26, 60, 26);
+    label_release_3->setBounds (260 - 60, 276 - 26, 60, 26);
+    label_attack_4->setBounds (80 - 60, 376 - 26, 60, 26);
+    label_decay_4->setBounds (140 - 60, 376 - 26, 60, 26);
+    label_sustain_time_4->setBounds (200 - 60, 376 - 26, 60, 26);
+    label_release_4->setBounds (260 - 60, 376 - 26, 60, 26);
+    slider_env_shape->setBounds (230 - 60, 570 - 70, 60, 70);
+    label8->setBounds (170, 570, 60, 26);
     internalPath1.clear();
     internalPath1.startNewSubPath (270.0f, 85.0f);
     internalPath1.lineTo (300.0f, 200.0f);
@@ -1527,14 +1533,16 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="260 160 1 50" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="260 260 1 50" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="260 360 1 50" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
+    <ROUNDRECT pos="10 25 258 115" cornerSize="6" fill="solid: 66000000" hasStroke="1"
+               stroke="2, mitered, butt" strokeColour="solid: ff2aa5a2"/>
   </BACKGROUND>
   <LABEL name="" id="63733ef294c01fe3" memberName="label_21" virtualName=""
-         explicitFocusOrder="0" pos="200r 336r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="200r 356r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="b86afc1f9a82c57b" memberName="label_22" virtualName=""
-         explicitFocusOrder="0" pos="200r 236r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="200r 256r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1542,7 +1550,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="320 310 310 100" class="Component"
                     params=""/>
   <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_1" virtualName=""
-         explicitFocusOrder="0" pos="80r 136r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="20 110 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1563,122 +1571,122 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="5269c763f2d5a37b" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="140r 136r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80 110 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="b62502f225e4fe3a" memberName="slider_decay_1" virtualName="Slider"
-          explicitFocusOrder="0" pos="140r 110r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="80 60 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="d001c80859e5b7cb" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="260r 136r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="200 110 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="e8c91a0aabc505e" memberName="slider_release_1" virtualName="Slider"
-          explicitFocusOrder="0" pos="260r 110r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="200 60 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="652f8c698bf6e2c7" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="80r 236r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 256r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="d64a1c27fe0baec4" memberName="slider_attack_2" virtualName="Slider"
-          explicitFocusOrder="0" pos="80r 210r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="80r 230r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="29cbca18263366d5" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="140r 236r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 256r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="917d80ecff72d938" memberName="slider_decay_2" virtualName="Slider"
-          explicitFocusOrder="0" pos="140r 210r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="140r 230r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="7ef526dd8315ebcb" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="260r 236r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="260r 256r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="f4a67e7ca9df04d3" memberName="slider_release_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="260r 210r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="260r 230r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="69b28ea11658a763" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="80r 336r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 356r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="e0e4215f40e7cc1b" memberName="slider_attack_3" virtualName="Slider"
-          explicitFocusOrder="0" pos="80r 310r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="80r 330r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="c285c1141eaa0118" memberName="label_8" virtualName=""
-         explicitFocusOrder="0" pos="140r 336r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 356r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="c9794aadac72be2b" memberName="slider_decay_3" virtualName="Slider"
-          explicitFocusOrder="0" pos="140r 310r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="140r 330r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="f5e6e332ab87bc22" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="260r 336r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="260r 356r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="1cc6a6994a1ac6d6" memberName="slider_release_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="260r 310r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="260r 330r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ac7391e000b56ff6" memberName="label_10" virtualName=""
-         explicitFocusOrder="0" pos="80r 436r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 456r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="8e9f61467e1ec899" memberName="slider_attack_4" virtualName="Slider"
-          explicitFocusOrder="0" pos="80r 410r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="80r 430r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="117c28f4bd17a85e" memberName="label_11" virtualName=""
-         explicitFocusOrder="0" pos="140r 436r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 456r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="2c342433ae30cbcc" memberName="slider_decay_4" virtualName="Slider"
-          explicitFocusOrder="0" pos="140r 410r 60 50" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="140r 430r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="228028476280a34e" memberName="label_12" virtualName=""
-         explicitFocusOrder="0" pos="260r 436r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="260r 456r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="da498e3b67b4f708" memberName="slider_release_4"
-          virtualName="Slider" explicitFocusOrder="0" pos="260r 410r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="260r 430r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
@@ -1746,27 +1754,27 @@ BEGIN_JUCER_METADATA
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="5b872ff6cb0af317" memberName="label5" virtualName=""
-         explicitFocusOrder="0" pos="260 160 20 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="260 180 20 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="1" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="49f0b442d69b7a21" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="260 290 20 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="260 310 20 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="5c9b5905a436c83d" memberName="label4" virtualName=""
-         explicitFocusOrder="0" pos="270 370 20 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="270 390 20 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="3" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="db0b469687f2859" memberName="label_ui_headline2"
-         virtualName="" explicitFocusOrder="0" pos="20 450 490 30" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="20 470 490 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="GLOBAL" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <SLIDER name="0" id="30eb597ef479a74e" memberName="slider_morph_motor_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="80r 550r 60 70"
+          virtualName="Slider" explicitFocusOrder="0" pos="80r 570r 60 70"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
@@ -1777,7 +1785,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="c244467fb56dffee" memberName="slider_glide_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="150r 550r 60 70"
+          virtualName="Slider" explicitFocusOrder="0" pos="150r 570r 60 70"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
@@ -1793,7 +1801,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="796db125cec623bd" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="20 550 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="20 570 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="MORPH MOTOR TIME"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1807,7 +1815,7 @@ BEGIN_JUCER_METADATA
               multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
               caret="0" popupmenu="0"/>
   <LABEL name="new label" id="2c68301961d63e82" memberName="label7" virtualName=""
-         explicitFocusOrder="0" pos="90 550 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="90 570 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="GLIDE TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1841,36 +1849,36 @@ BEGIN_JUCER_METADATA
                 virtualName="" explicitFocusOrder="0" pos="280 540 30 30" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time_1"
-          virtualName="Slider" explicitFocusOrder="0" pos="200r 110r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="140 60 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="17f02dd31261d734" memberName="slider_sustain_time_2"
-          virtualName="Slider" explicitFocusOrder="0" pos="200r 210r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="200r 230r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="8d1895289bf4e022" memberName="slider_sustain_time_3"
-          virtualName="Slider" explicitFocusOrder="0" pos="200r 310r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="200r 330r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="7ded7da4555fca64" memberName="slider_sustain_time_4"
-          virtualName="Slider" explicitFocusOrder="0" pos="200r 410r 60 50"
+          virtualName="Slider" explicitFocusOrder="0" pos="200r 430r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ebbaa43d5c1e571e" memberName="label_20" virtualName=""
-         explicitFocusOrder="0" pos="200r 436r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="200r 456r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="ffcf23120599c6e5" memberName="label_23" virtualName=""
-         explicitFocusOrder="0" pos="200r 136r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140 110 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1886,93 +1894,93 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="a09cec04c5ae6b58" memberName="label_attack_1" virtualName=""
-         explicitFocusOrder="0" pos="80r 56r 60 26" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
+         explicitFocusOrder="0" pos="20 30 60 26" textCol="ffffff00" edTextCol="ff000000"
+         edBkgCol="0" labelText="x&#10;" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
+         bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="1b295ca55294b0a2" memberName="label_decay_1" virtualName=""
-         explicitFocusOrder="0" pos="140r 56r 60 26" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
+         explicitFocusOrder="0" pos="80 30 60 26" textCol="ffffff00" edTextCol="ff000000"
+         edBkgCol="0" labelText="x&#10;" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
+         bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="e1944df446a5aea6" memberName="label_sustain_time_1"
-         virtualName="" explicitFocusOrder="0" pos="200r 56r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="140 30 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="72cc727ebebbec15" memberName="label_release_1"
-         virtualName="" explicitFocusOrder="0" pos="260r 56r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="200 30 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="24934f1f91aef173" memberName="label_attack_2" virtualName=""
-         explicitFocusOrder="0" pos="80r 156r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 176r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="53fe0e195c25619a" memberName="label_decay_2" virtualName=""
-         explicitFocusOrder="0" pos="140r 156r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 176r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="e688900429f36aad" memberName="label_sustain_time_2"
-         virtualName="" explicitFocusOrder="0" pos="200r 156r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="200r 176r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="e22cc8a807ae92d7" memberName="label_release_2"
-         virtualName="" explicitFocusOrder="0" pos="260r 156r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="260r 176r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="440ee7d337aeafa1" memberName="label_attack_3" virtualName=""
-         explicitFocusOrder="0" pos="80r 256r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 276r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="1be8567e87efb1a9" memberName="label_decay_3" virtualName=""
-         explicitFocusOrder="0" pos="140r 256r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 276r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="b99c3b638343c553" memberName="label_sustain_time_3"
-         virtualName="" explicitFocusOrder="0" pos="200r 256r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="200r 276r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="f793a360d861539a" memberName="label_release_3"
-         virtualName="" explicitFocusOrder="0" pos="260r 256r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="260r 276r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="4fb02c88d8b7c30c" memberName="label_attack_4" virtualName=""
-         explicitFocusOrder="0" pos="80r 356r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="80r 376r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="70378c7b2ac364b3" memberName="label_decay_4" virtualName=""
-         explicitFocusOrder="0" pos="140r 356r 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="140r 376r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="a090d14d65d3041b" memberName="label_sustain_time_4"
-         virtualName="" explicitFocusOrder="0" pos="200r 356r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="200r 376r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="2b1562db42f4565a" memberName="label_release_4"
-         virtualName="" explicitFocusOrder="0" pos="260r 356r 60 26" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="260r 376r 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="e7a1c7c979888f2f" memberName="slider_env_shape"
-          virtualName="Slider" explicitFocusOrder="0" pos="230r 550r 60 70"
+          virtualName="Slider" explicitFocusOrder="0" pos="230r 570r 60 70"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label8" virtualName=""
-         explicitFocusOrder="0" pos="170 550 60 26" textCol="ffffff00"
+         explicitFocusOrder="0" pos="170 570 60 26" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ENV SHAPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
