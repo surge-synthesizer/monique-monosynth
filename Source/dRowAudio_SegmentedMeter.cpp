@@ -36,8 +36,8 @@ SegmentedMeter::SegmentedMeter()
       my_yellow(4287387171),
       my_green(4278251775),
       numRedSeg     (2),
-      numYellowSeg  (4),
-      numGreenSeg   (9),
+      numYellowSeg  (3),
+      numGreenSeg   (4),
       totalNumSegs  (numRedSeg + numYellowSeg + numGreenSeg),
       decibelsPerSeg(3.0f),
       numSegs       (0),
@@ -90,6 +90,42 @@ void SegmentedMeter::resized()
     Graphics gOff (offImage);
 
     const int numSegments = (numRedSeg + numYellowSeg + numGreenSeg);
+    const float segmentWidth = (w-1) / numSegments;
+
+    for (int i = 1; i <= numSegments; ++i)
+    {
+        Colour colour_on;
+        Colour colour_off;
+
+        if (i <= numGreenSeg)
+        {
+            colour_on = Colour(my_green).brighter(0.25);
+            colour_off = Colour(my_green).darker(1).darker(0.5);
+        }
+        else if (i <= (numYellowSeg + numGreenSeg))
+        {
+            colour_on = Colour(my_yellow).brighter(0.25);
+            colour_off = Colour(my_yellow).darker(1).darker(0.5);
+        }
+        else
+        {
+            colour_on = Colour(my_red).brighter(0.25);
+            colour_off = Colour(my_red).darker(1).darker(0.5);
+        }
+
+        float x = w - (i*segmentWidth);
+        float x2 = w - ((i+1.0f)*segmentWidth);
+        //gOn.fillAll(Colour(0xff161616));
+        gOn.setGradientFill (ColourGradient (colour_on, x, 0, Colour (0xff333333), x2, 0, false));
+        gOn.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
+       // gOn.setColour (colour_off);
+       // gOn.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0.3, 1);
+        gOff.setGradientFill (ColourGradient (colour_off.darker(0.3), x, 0, Colour (0xff161616), x2, 0, false));
+        gOff.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
+        gOff.setColour (colour_off.darker (0.6f));
+        gOff.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0, 1);
+    }
+    /*
     const float segmentHeight = (h-1) / numSegments;
 
     for (int i = 1; i <= numSegments; ++i)
@@ -115,7 +151,7 @@ void SegmentedMeter::resized()
 
         float y = h - (i*segmentHeight);
         float y2 = h - ((i+1.0f)*segmentHeight);
-	//gOn.fillAll(Colour(0xff161616));
+    //gOn.fillAll(Colour(0xff161616));
         gOn.setGradientFill (ColourGradient (colour_on.darker(0.1), 0.0f, y, Colour (0xff161616), 0.0f, y2, false));
         gOn.fillRoundedRectangle (1.0f,y, w-2, segmentHeight-2, 0.3);
         gOn.setColour (colour_off);
@@ -125,13 +161,14 @@ void SegmentedMeter::resized()
         gOff.setColour (colour_off.darker (0.6f));
         gOff.drawRoundedRectangle (1.0f,y, w-2, segmentHeight-2, 0.3, 0.5);
     }
-/*
-    gOn.setColour (Colour(0xff161616).darker (0.4f));
-    gOff.drawRoundedRectangle (0, 0, w, h, 3, 1.5);
+    */
+    /*
+        gOn.setColour (Colour(0xff161616).darker (0.4f));
+        gOff.drawRoundedRectangle (0, 0, w, h, 3, 1.5);
 
-    gOff.setColour (Colour(0xff161616).darker (0.4f));
-    gOff.drawRoundedRectangle (0, 0, w, h, 3, 1.5);
-*/
+        gOff.setColour (Colour(0xff161616).darker (0.4f));
+        gOff.drawRoundedRectangle (0, 0, w, h, 3, 1.5);
+    */
     needsRepaint = true;
 }
 
@@ -141,11 +178,11 @@ void SegmentedMeter::paint (Graphics &g)
     const int h = getHeight();
 
     g.fillAll(Colour(0xff161616));
-    
+
     if (onImage.isValid())
     {
-        const int onHeight = roundToInt ((numSegs.getCurrent() / (float) totalNumSegs) * onImage.getHeight());
-        const int offHeight = h - onHeight;
+        const int onWidth = roundToInt ((numSegs.getCurrent() / (float) totalNumSegs) * onImage.getWidth());
+        const int offWidth = w - onWidth;
 
 //        g.drawImage (onImage,
 //                     0, offHeight, w, onHeight,
@@ -161,9 +198,31 @@ void SegmentedMeter::paint (Graphics &g)
                      0, 0, w, h,
                      false);
         g.drawImage (offImage,
-                     0, 0, w, offHeight,
-                     0, 0, w, offHeight,
+                     0, 0, offWidth, h,
+                     0, 0, offWidth, h,
                      false);
+        /*
+          const int onHeight = roundToInt ((numSegs.getCurrent() / (float) totalNumSegs) * onImage.getHeight());
+          const int offHeight = h - onHeight;
+
+        //        g.drawImage (onImage,
+        //                     0, offHeight, w, onHeight,
+        //                     0, offHeight, w, onHeight,
+        //                     false);
+        //
+        //        g.drawImage (offImage,
+        //                     0, 0, w, offHeight,
+        //                     0, 0, w, offHeight,
+        //                     false);
+          g.drawImage (onImage,
+                       0, 0, w, h,
+                       0, 0, w, h,
+                       false);
+          g.drawImage (offImage,
+                       0, 0, w, offHeight,
+                       0, 0, w, offHeight,
+                       false);
+                       */
     }
 
     needsRepaint = false;

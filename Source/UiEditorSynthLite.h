@@ -165,7 +165,6 @@ private:
     ScopedPointer<mono_ModulationSlider> flt_sustain_1;
     ScopedPointer<mono_ModulationSlider> flt_decay_1;
     ScopedPointer<mono_ModulationSlider> flt_attack_1;
-    ScopedPointer<SegmentedMeter> volume_master_meter;
     ScopedPointer<Label> label_monolisa;
     ScopedPointer<TextButton> filter_type_1_1;
     ScopedPointer<TextButton> filter_type_2_1;
@@ -254,7 +253,6 @@ private:
     ScopedPointer<TextButton> filter_type_6_1;
     ScopedPointer<TextButton> filter_type_6_2;
     ScopedPointer<TextButton> filter_type_6_3;
-    ScopedPointer<Label> label_monolisa2;
     ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<TextButton> button_ctrl_toggle;
     ScopedPointer<mono_ModulationSlider> colour;
@@ -268,6 +266,27 @@ private:
     ScopedPointer<TextButton> button_values_toggle;
     ScopedPointer<mono_ModulationSlider> reverb_width;
     ScopedPointer<mono_ModulationSlider> octave_offset;
+    ScopedPointer<Label> label_ui_headline4;
+    ScopedPointer<Label> label_ui_headline7;
+    ScopedPointer<Label> label_ui_headline8;
+    ScopedPointer<Label> label_ui_headline9;
+    ScopedPointer<Label> label_ui_headline10;
+    ScopedPointer<Label> label_ui_headline11;
+    ScopedPointer<Label> label_ui_headline12;
+    ScopedPointer<Label> label_ui_headline13;
+    ScopedPointer<Label> label_ui_headline14;
+    ScopedPointer<Label> label_ui_headline15;
+    ScopedPointer<Label> label_ui_headline16;
+    ScopedPointer<Label> label_ui_headline17;
+    ScopedPointer<Label> label_ui_headline18;
+    ScopedPointer<Label> label_ui_headline19;
+    ScopedPointer<Label> label_ui_headline20;
+    ScopedPointer<Label> label_ui_headline21;
+    ScopedPointer<Label> label_ui_headline22;
+    ScopedPointer<Label> label_ui_headline23;
+    ScopedPointer<Label> label_ui_headline24;
+    ScopedPointer<Label> label_ui_headline25;
+    ScopedPointer<SegmentedMeter> volume_master_meter;
 
 
     //==============================================================================

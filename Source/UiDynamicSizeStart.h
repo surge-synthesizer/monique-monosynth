@@ -11,10 +11,16 @@
 #define COLOUR_REPLACEMENT_START \
     ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \
-    orange_replacement.getARGB(); 
+    Colour blue_replacement = colours.bg_lines.darker(0.9); \
+    Colour border_replacement = colours.button_on_colour.darker(0); \
     
 COLOUR_REPLACEMENT_START
-#define Colour(x) ((x == 0xffff3b00) ? orange_replacement : Colour(x))
+#define Colour(x) ( \
+                       (x == 0xffff3b00) ? orange_replacement : \
+                       (x == 0xff11ffff) ? blue_replacement   : \
+                       (x == 0xff1111ff) ? border_replacement : \
+                                           Colour(x) \
+                  )
 
 // repaint
 //*****************************************************************************
@@ -34,7 +40,7 @@ WIDTH_AND_HIGHT_FACTORS
                                                               w > 2 ? float(w)*width_factor : w, \
                                                               h > 2 ? float(h)*height_factor : h, \
                                                               r == 1 ? 0 : r, \
-							      t == 1 ? 0 : t )                               
+							      t == 1 ? 1 : t )                               
                                                               
                                                               
 #define fillRect(x,y,w,h)                           fillRect (x > 2 ? float(x)*width_factor : x, \
@@ -60,3 +66,4 @@ WIDTH_AND_HIGHT_FACTORS
                                               y > 2 ? float(y)*(1.0f/original_h*getHeight()) : y )
 #define lineTo(x,y)                   lineTo (x > 2 ? float(x)*(1.0f/original_w*getWidth()) : x, \
                                               y > 2 ? float(y)*(1.0f/original_h*getHeight()) : y )
+#define quadraticTo(x,y,x2,y2)   quadraticTo (x*(1.0f/original_w*getWidth()), y*(1.0f/original_h*getHeight()),x2*(1.0f/original_w*getWidth()), y2*(1.0f/original_h*getHeight()))

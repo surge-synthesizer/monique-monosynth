@@ -205,7 +205,7 @@ void mono_AmpPainter::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     {
-        g.fillAll (Colour(0xff101010));
+        g.fillAll (Colour(0xff050505));
 
         // TODO MAKE INTS!
         const int size = sl_osc_octave_3->getValue();

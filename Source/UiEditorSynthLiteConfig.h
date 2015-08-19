@@ -1145,13 +1145,13 @@ struct VolumeConfig : public ModulationSliderConfigBase {
 //==============================================================================
 struct GlideConfig : public ModulationSliderConfigBase {
     StringRef get_bottom_button_text() const override {
-        return "N GLIDE";
+        return "NOTE-G";
     }
     mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
         return SYNTH_PARAM(synth_data->glide);
     }
     StringRef get_botton_button_switch_text() const override {
-        return "V GLIDE";
+        return "VELO-G";
     }
 
     StringRef get_top_button_text() const override {

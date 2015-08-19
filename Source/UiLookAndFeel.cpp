@@ -137,7 +137,7 @@ UiLookAndFeel::UiLookAndFeel()
 
         AlertWindow::backgroundColourId,            0xff161616,
         AlertWindow::textColourId,                  0xfff0f8ff,
-        AlertWindow::outlineColourId,               0xff00ffff,
+        AlertWindow::outlineColourId,               0xff11ffff,
 
         ProgressBar::backgroundColourId,            0xffeeeeee,
         ProgressBar::foregroundColourId,            0xffaaaaee,
@@ -179,13 +179,13 @@ UiLookAndFeel::UiLookAndFeel()
 
         0x1005000, /*MidiKeyboardComponent::whiteNoteColourId*/               0xffffffff,
         0x1005001, /*MidiKeyboardComponent::blackNoteColourId*/               0xff000000,
-        0x1005002, /*MidiKeyboardComponent::keySeparatorLineColourId*/        0xff161616,
-        0x1005003, /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/     0xffff3b00,
+        0x1005002, /*MidiKeyboardComponent::keySeparatorLineColourId*/        colours.bg.getARGB(),
+        0x1005003, /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/     colours.button_on_colour.getARGB(),
         0x1005004, /*MidiKeyboardComponent::keyDownOverlayColourId*/          Colours::yellow.getARGB(),
         0x1005005, /*MidiKeyboardComponent::textLabelColourId*/               0xff000000,
-        0x1005006, /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/  0xff161616,
-        0x1005007, /*MidiKeyboardComponent::upDownButtonArrowColourId*/       0xffff3b00,
-        0x1005008, /*MidiKeyboardComponent::shadowColourId*/                  0xff161616,
+        0x1005006, /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/  colours.bg.getARGB(),
+        0x1005007, /*MidiKeyboardComponent::upDownButtonArrowColourId*/       colours.button_on_colour.getARGB(),
+        0x1005008, /*MidiKeyboardComponent::shadowColourId*/                  colours.bg.getARGB(),
 
         0x1004500, /*CodeEditorComponent::backgroundColourId*/                0xffffffff,
         0x1004502, /*CodeEditorComponent::highlightColourId*/                 textHighlightColour,

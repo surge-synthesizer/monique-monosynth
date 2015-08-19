@@ -493,19 +493,19 @@ void MidiKeyboardComponent::drawBlackNote (int /*midiNoteNumber*/,
     if (isDown)  c = c.overlaidWith (findColour (keyDownOverlayColourId));
     if (isOver)  c = c.overlaidWith (findColour (mouseOverKeyOverlayColourId));
 
-    g.setGradientFill (ColourGradient (Colour(0xff161616), 0.0f, 0.0f, c, 0.0f, h/4, false));
+    g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c, 0.0f, h/4, false));
     g.fillRect (x, y, w, h);
 
     if (isDown)
     {
-        g.setColour (Colour(0xff161616));
+        g.setColour (Colour(0xff050505));
         g.drawRect (x, y, w, h);
     }
     else
     {
         //g.setColour ();
         //g.setColour ();
-	g.setGradientFill (ColourGradient (Colour(0xff161616), 0.0f, 0.0f, c.brighter(), 0.0f, h/2, false));
+	g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c.brighter(), 0.0f, h/2, false));
         const int xIndent = jmax (1, jmin (w, h) / 8);
 
         switch (orientation)

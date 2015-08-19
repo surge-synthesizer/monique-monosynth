@@ -220,7 +220,7 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="0">
     <ROUNDRECT pos="13.75% 8.462% 72.5% 83.077%" cornerSize="10" fill="solid: a5312a"
                hasStroke="1" stroke="2, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ELLIPSE pos="56.667% 74.545% 25% 15.385%" fill="solid: ff00ffff" hasStroke="1"
+    <ELLIPSE pos="56.667% 74.545% 25% 15.385%" fill="solid: ff11ffff" hasStroke="1"
              stroke="2, mitered, butt" strokeColour="solid: ffff3b00"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="c0cbef1abd65e74c" memberName="track_area" virtualName="DragPad"

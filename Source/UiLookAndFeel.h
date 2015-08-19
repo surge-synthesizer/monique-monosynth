@@ -65,7 +65,7 @@ struct ComponentColours {
         label_text_colour( 4294942532 ),
         midi_learn( Colours::red ),
 
-        bg( 0xff101010 ),
+        bg( 0xff050505 ),
         bg_lines( 4287387171 )
     {}
 

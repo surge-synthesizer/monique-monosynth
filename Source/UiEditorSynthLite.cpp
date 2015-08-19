@@ -227,7 +227,7 @@ void UiEditorSynthLite::sliderClicked (Slider*s_)
 
 //==============================================================================
 UiEditorSynthLite::UiEditorSynthLite ()
-    : AudioProcessorEditor(AppInstanceStore::getInstance()->audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1430), original_h(1080)
+    : AudioProcessorEditor(AppInstanceStore::getInstance()->audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -352,8 +352,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
     addAndMakeVisible (flt_decay_1 = new mono_ModulationSlider (new FDecaySlConfig(0)));
 
     addAndMakeVisible (flt_attack_1 = new mono_ModulationSlider (new FAttackSlConfig(0)));
-
-    addAndMakeVisible (volume_master_meter = new SegmentedMeter());
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
                                                    TRANS("M O N I Q U E")));
@@ -741,15 +739,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
     filter_type_6_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_6_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label_monolisa2 = new Label (String::empty,
-                                                    TRANS("M   O   N   O   P   L   U   G   S")));
-    label_monolisa2->setFont (Font (30.00f, Font::plain));
-    label_monolisa2->setJustificationType (Justification::centredRight);
-    label_monolisa2->setEditable (false, false, false);
-    label_monolisa2->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_monolisa2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_monolisa2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
     button_midi_learn->setButtonText (TRANS("LEARN"));
     button_midi_learn->addListener (this);
@@ -829,6 +818,188 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     addAndMakeVisible (octave_offset = new mono_ModulationSlider (new OctaveOffsetSlConfig()));
 
+    addAndMakeVisible (label_ui_headline4 = new Label (String::empty,
+                                                       TRANS("FILTER INPUTS")));
+    label_ui_headline4->setFont (Font (30.00f, Font::plain));
+    label_ui_headline4->setJustificationType (Justification::centred);
+    label_ui_headline4->setEditable (false, false, false);
+    label_ui_headline4->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline7 = new Label (String::empty,
+                                                       TRANS("OSCILLATORS")));
+    label_ui_headline7->setFont (Font (30.00f, Font::plain));
+    label_ui_headline7->setJustificationType (Justification::centred);
+    label_ui_headline7->setEditable (false, false, false);
+    label_ui_headline7->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline8 = new Label (String::empty,
+                                                       TRANS("FILTER ENVELOPE")));
+    label_ui_headline8->setFont (Font (30.00f, Font::plain));
+    label_ui_headline8->setJustificationType (Justification::centred);
+    label_ui_headline8->setEditable (false, false, false);
+    label_ui_headline8->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline9 = new Label (String::empty,
+                                                       TRANS("LFO")));
+    label_ui_headline9->setFont (Font (30.00f, Font::plain));
+    label_ui_headline9->setJustificationType (Justification::centred);
+    label_ui_headline9->setEditable (false, false, false);
+    label_ui_headline9->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline10 = new Label (String::empty,
+                                                        TRANS("FILTER CONFIGURATION")));
+    label_ui_headline10->setFont (Font (30.00f, Font::plain));
+    label_ui_headline10->setJustificationType (Justification::centred);
+    label_ui_headline10->setEditable (false, false, false);
+    label_ui_headline10->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline11 = new Label (String::empty,
+                                                        TRANS("FILTER FX")));
+    label_ui_headline11->setFont (Font (30.00f, Font::plain));
+    label_ui_headline11->setJustificationType (Justification::centred);
+    label_ui_headline11->setEditable (false, false, false);
+    label_ui_headline11->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline11->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline12 = new Label (String::empty,
+                                                        TRANS("OUTPUT")));
+    label_ui_headline12->setFont (Font (30.00f, Font::plain));
+    label_ui_headline12->setJustificationType (Justification::centred);
+    label_ui_headline12->setEditable (false, false, false);
+    label_ui_headline12->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline12->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline13 = new Label (String::empty,
+                                                        TRANS("MAIN ENVELOPE")));
+    label_ui_headline13->setFont (Font (30.00f, Font::plain));
+    label_ui_headline13->setJustificationType (Justification::centred);
+    label_ui_headline13->setEditable (false, false, false);
+    label_ui_headline13->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline13->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline14 = new Label (String::empty,
+                                                        TRANS("SHAPE")));
+    label_ui_headline14->setFont (Font (30.00f, Font::plain));
+    label_ui_headline14->setJustificationType (Justification::centred);
+    label_ui_headline14->setEditable (false, false, false);
+    label_ui_headline14->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline14->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline14->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline15 = new Label (String::empty,
+                                                        TRANS("REVERB")));
+    label_ui_headline15->setFont (Font (30.00f, Font::plain));
+    label_ui_headline15->setJustificationType (Justification::centred);
+    label_ui_headline15->setEditable (false, false, false);
+    label_ui_headline15->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline15->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline15->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline16 = new Label (String::empty,
+                                                        TRANS("DELAY")));
+    label_ui_headline16->setFont (Font (30.00f, Font::plain));
+    label_ui_headline16->setJustificationType (Justification::centred);
+    label_ui_headline16->setEditable (false, false, false);
+    label_ui_headline16->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline16->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline17 = new Label (String::empty,
+                                                        TRANS("CHORUS")));
+    label_ui_headline17->setFont (Font (30.00f, Font::plain));
+    label_ui_headline17->setJustificationType (Justification::centred);
+    label_ui_headline17->setEditable (false, false, false);
+    label_ui_headline17->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline17->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline17->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline18 = new Label (String::empty,
+                                                        TRANS("FX MIX")));
+    label_ui_headline18->setFont (Font (30.00f, Font::plain));
+    label_ui_headline18->setJustificationType (Justification::centred);
+    label_ui_headline18->setEditable (false, false, false);
+    label_ui_headline18->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline18->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline19 = new Label (String::empty,
+                                                        TRANS("MORPH SECTION")));
+    label_ui_headline19->setFont (Font (30.00f, Font::plain));
+    label_ui_headline19->setJustificationType (Justification::centred);
+    label_ui_headline19->setEditable (false, false, false);
+    label_ui_headline19->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline19->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline20 = new Label (String::empty,
+                                                        TRANS("ARPEGGIATOR")));
+    label_ui_headline20->setFont (Font (30.00f, Font::plain));
+    label_ui_headline20->setJustificationType (Justification::centred);
+    label_ui_headline20->setEditable (false, false, false);
+    label_ui_headline20->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline20->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline21 = new Label (String::empty,
+                                                        TRANS("GLIDE")));
+    label_ui_headline21->setFont (Font (30.00f, Font::plain));
+    label_ui_headline21->setJustificationType (Justification::centred);
+    label_ui_headline21->setEditable (false, false, false);
+    label_ui_headline21->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline21->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline22 = new Label (String::empty,
+                                                        TRANS("SPEED")));
+    label_ui_headline22->setFont (Font (30.00f, Font::plain));
+    label_ui_headline22->setJustificationType (Justification::centred);
+    label_ui_headline22->setEditable (false, false, false);
+    label_ui_headline22->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline22->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline23 = new Label (String::empty,
+                                                        TRANS("MASTER")));
+    label_ui_headline23->setFont (Font (30.00f, Font::plain));
+    label_ui_headline23->setJustificationType (Justification::centred);
+    label_ui_headline23->setEditable (false, false, false);
+    label_ui_headline23->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline23->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline24 = new Label (String::empty,
+                                                        TRANS("OCTAVE")));
+    label_ui_headline24->setFont (Font (30.00f, Font::plain));
+    label_ui_headline24->setJustificationType (Justification::centred);
+    label_ui_headline24->setEditable (false, false, false);
+    label_ui_headline24->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline24->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline25 = new Label (String::empty,
+                                                        TRANS("FM")));
+    label_ui_headline25->setFont (Font (30.00f, Font::plain));
+    label_ui_headline25->setJustificationType (Justification::centred);
+    label_ui_headline25->setEditable (false, false, false);
+    label_ui_headline25->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline25->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (volume_master_meter = new SegmentedMeter());
+
 
     //[UserPreSize]
     SET_SLIDER_STYLE(sl_morhp_mix,VALUE_SLIDER);
@@ -870,7 +1041,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
         getChildComponent(i)->setRepaintsOnMouseActivity(false);
     }
     label_monolisa->setOpaque(false);
-    label_monolisa2->setOpaque(false);
 
     switch_finalizer_tab();
 
@@ -897,7 +1067,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     {
     //[/UserPreSize]
 
-    setSize (1430, 1080);
+    setSize (1465, 1235);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -1007,7 +1177,6 @@ UiEditorSynthLite::~UiEditorSynthLite()
     flt_sustain_1 = nullptr;
     flt_decay_1 = nullptr;
     flt_attack_1 = nullptr;
-    volume_master_meter = nullptr;
     label_monolisa = nullptr;
     filter_type_1_1 = nullptr;
     filter_type_2_1 = nullptr;
@@ -1096,7 +1265,6 @@ UiEditorSynthLite::~UiEditorSynthLite()
     filter_type_6_1 = nullptr;
     filter_type_6_2 = nullptr;
     filter_type_6_3 = nullptr;
-    label_monolisa2 = nullptr;
     button_midi_learn = nullptr;
     button_ctrl_toggle = nullptr;
     colour = nullptr;
@@ -1110,6 +1278,27 @@ UiEditorSynthLite::~UiEditorSynthLite()
     button_values_toggle = nullptr;
     reverb_width = nullptr;
     octave_offset = nullptr;
+    label_ui_headline4 = nullptr;
+    label_ui_headline7 = nullptr;
+    label_ui_headline8 = nullptr;
+    label_ui_headline9 = nullptr;
+    label_ui_headline10 = nullptr;
+    label_ui_headline11 = nullptr;
+    label_ui_headline12 = nullptr;
+    label_ui_headline13 = nullptr;
+    label_ui_headline14 = nullptr;
+    label_ui_headline15 = nullptr;
+    label_ui_headline16 = nullptr;
+    label_ui_headline17 = nullptr;
+    label_ui_headline18 = nullptr;
+    label_ui_headline19 = nullptr;
+    label_ui_headline20 = nullptr;
+    label_ui_headline21 = nullptr;
+    label_ui_headline22 = nullptr;
+    label_ui_headline23 = nullptr;
+    label_ui_headline24 = nullptr;
+    label_ui_headline25 = nullptr;
+    volume_master_meter = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1124,415 +1313,478 @@ void UiEditorSynthLite::paint (Graphics& g)
 #include "UiDynamicSizeStart.h"
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff101010));
+    g.fillAll (Colour (0xff050505));
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (170.0f, 20.0f, 155.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (480.0f, 595.0f, 604.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (263.0f, 15.0f, 5.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (480.0f, 595.0f, 604.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (165.0f, 15.0f, 100.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (10.0f, 795.0f, 1445.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (203.0f, 10.0f, 5.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (10.0f, 795.0f, 1445.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xff161616));
-    g.fillRoundedRectangle (155.0f, 178.0f, 10.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (195.0f, 20.0f, 1260.0f, 195.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1230.0f, 335.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (195.0f, 20.0f, 1260.0f, 195.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1380.0f, 335.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (10.0f, 20.0f, 170.0f, 754.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1140.0f, 335.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (10.0f, 20.0f, 170.0f, 754.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1080.0f, 335.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (175, 44, 25, 3);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1020.0f, 335.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (175, 49, 25, 3);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 340.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (170.0f, 50.0f, 181.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 340.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (175, 39, 25, 3);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 335.0f, 620.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (195.0f, 395.0f, 1260.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 340.0f, 81.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (195.0f, 395.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (850.0f, 340.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (195.0f, 215.0f, 1260.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 335.0f, 1.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (195.0f, 215.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (750.0f, 340.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (195.0f, 595.0f, 284.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (830.0f, 345.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (195.0f, 595.0f, 284.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (410.0f, 345.0f, 280.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 60.0f, 1.0f, 541.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 340.0f, 210.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 50.0f, 201.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (180.0f, 170.0f, 1230.0f, 2.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 600.0f, 76.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (293.0f, 160.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (165.0f, 830.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 650.0f, 1320.0f, 2.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (90.0f, 830.0f, 10.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 30.0f, 1.0f, 470.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (435.0f, 55.0f, 280.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 20.0f, 210.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (40.0f, 605.0f, 110.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 810.0f, 1060.0f, 2.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 600.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (500.0f, 810.0f, 910.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (855.0f, 55.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 814.0f, 1020.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (775.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 817.0f, 940.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (615.0f, 760.0f, 421.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 820.0f, 800.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (970.0f, 755.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (20.0f, 823.0f, 150.0f, 1.0f, 10.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (615.0f, 755.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 500.0f, 71.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1035.0f, 755.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (150.0f, 680.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1015.0f, 755.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (80.0f, 680.0f, 10.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 45.0f, 1.0f, 15.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (410.0f, 25.0f, 280.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (875.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (30.0f, 25.0f, 110.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 50.0f, 81.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 10.0f, 120.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 45.0f, 621.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (325.0f, 20.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (205.0f, 10.0f, 1.0f, 16.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 635.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 10.0f, 1.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 630.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 30.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1260.0f, 720.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (30.0f, 505.0f, 110.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1265.0f, 715.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 500.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (830.0f, 25.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1045.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (750.0f, 20.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1105.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (595.0f, 645.0f, 415.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1165.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (950.0f, 640.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1405.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (595.0f, 640.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1255.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1010.0f, 640.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (300.0f, 200.0f, 25.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (990.0f, 640.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (240.0f, 200.0f, 25.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 15.0f, 1.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (360.0f, 200.0f, 25.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (850.0f, 20.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1385.0f, 195.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 20.0f, 81.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1405.0f, 195.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 15.0f, 620.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1315.0f, 200.0f, 91.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 20.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (40.0f, 415.0f, 110.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 520.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 410.0f, 76.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 515.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 410.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1260.0f, 680.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 240.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1265.0f, 675.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 60.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 20.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 185.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1020.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 365.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1080.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 420.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1140.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (20.0f, 545.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1380.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 125.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (180.0f, 330.0f, 1230.0f, 2.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 75.0f, 1.0f, 51.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (180.0f, 490.0f, 1230.0f, 2.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 100.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1230.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 75.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (295.0f, 160.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (40.0f, 55.0f, 110.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (260.0f, 160.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 40.0f, 1.0f, 16.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (353.0f, 160.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (165.0f, 45.0f, 1.0f, 185.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (355.0f, 160.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (170.0f, 50.0f, 1.0f, 360.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (233.0f, 160.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (40.0f, 235.0f, 110.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (235.0f, 160.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 230.0f, 71.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (200.0f, 160.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 230.0f, 1.0f, 6.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (320.0f, 160.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (289, 45, 3, 10);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (293.0f, 320.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (290.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (295.0f, 320.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (165.0f, 45.0f, 126.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (260.0f, 320.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (350.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (353.0f, 320.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (229, 40, 3, 16);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (355.0f, 320.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (230.0f, 40.0f, 1.0f, 15.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (233.0f, 320.0f, 5.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (95.0f, 40.0f, 136.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (235.0f, 320.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (259, 205, 3, 20);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (200.0f, 320.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (319, 205, 3, 20);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (320.0f, 320.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (379, 205, 3, 20);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1360.0f, 160.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (229, 195, 3, 30);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1380.0f, 160.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (289, 195, 3, 30);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (1288.0f, 320.0f, 5.0f, 30.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (349, 195, 3, 30);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1290.0f, 325.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (350.0f, 195.0f, 1.0f, 40.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1290.0f, 325.0f, 90.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (290.0f, 195.0f, 1.0f, 40.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1360.0f, 320.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (230.0f, 195.0f, 1.0f, 40.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1380.0f, 320.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (380.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (265.0f, 15.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (320.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 180.0f, 210.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (260.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (410.0f, 185.0f, 280.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (1085.0f, 595.0f, 269.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (830.0f, 185.0f, 40.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (1085.0f, 595.0f, 269.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (750.0f, 180.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (1355.0f, 595.0f, 99.0f, 180.0f, 6.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 175.0f, 1.0f, 15.0f, 1.000f);
+    g.setColour (Colour (0xff1111ff));
+    g.drawRoundedRectangle (1355.0f, 595.0f, 99.0f, 180.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (850.0f, 180.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 230.0f, 201.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 180.0f, 81.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (435.0f, 235.0f, 280.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (760.0f, 175.0f, 620.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (855.0f, 235.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (770.0f, 180.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (775.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (540.0f, 180.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 225.0f, 1.0f, 15.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1020.0f, 175.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (875.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1080.0f, 175.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 230.0f, 81.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1140.0f, 175.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 225.0f, 621.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1380.0f, 175.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1230.0f, 175.0f, 1.0f, 10.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xff101010));
-    g.fillRoundedRectangle (1288.0f, 160.0f, 5.0f, 30.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1045.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1290.0f, 165.0f, 1.0f, 25.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1105.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (1290.0f, 165.0f, 90.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1165.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (30.0f, 185.0f, 110.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1405.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 180.0f, 80.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1255.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 180.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1385.0f, 375.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (165.0f, 15.0f, 1.0f, 166.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1405.0f, 375.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (30.0f, 345.0f, 110.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1315.0f, 380.0f, 91.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 340.0f, 85.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 305.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (85.0f, 340.0f, 1.0f, 5.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 255.0f, 1.0f, 51.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (170.0f, 20.0f, 1.0f, 321.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 280.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 190.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 255.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 30.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff050505));
+    g.fillRect (1314, 205, 3, 30);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 160.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1315.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 320.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 410.0f, 201.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 350.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (435.0f, 415.0f, 280.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (15.0f, 480.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (855.0f, 415.0f, 40.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 255.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (775.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 205.0f, 1.0f, 51.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 405.0f, 1.0f, 15.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 230.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (875.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 205.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 410.0f, 81.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 95.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (785.0f, 405.0f, 621.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 45.0f, 1.0f, 51.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (795.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 70.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (575.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 45.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1045.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 415.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1105.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 365.0f, 1.0f, 51.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1165.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 390.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1405.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.fillRoundedRectangle (915.0f, 365.0f, 5.0f, 1.0f, 1.000f);
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1255.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 485.0f, 5.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 435.0f, 1.0f, 51.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 460.0f, 5.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (940.0f, 435.0f, 5.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (1314, 385, 3, 30);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1315.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (300.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (240.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (360.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (259, 385, 3, 20);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (319, 385, 3, 20);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (379, 385, 3, 20);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (229, 375, 3, 30);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (289, 375, 3, 30);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRect (349, 375, 3, 30);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (350.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (290.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (230.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (380.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (320.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (260.0f, 380.0f, 1.0f, 35.0f, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -1543,166 +1795,185 @@ void UiEditorSynthLite::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    speed_multi->setBounds (1330 - 60, 800 - 130, 60, 130);
-    morpher_4->setBounds (1320 - 60, 510, 60, 130);
-    morpher_3->setBounds (1260 - 60, 510, 60, 130);
-    morpher_2->setBounds (1200 - 60, 510, 60, 130);
-    morpher_1->setBounds (1140 - 60, 510, 60, 130);
-    label_effect_hider->setBounds (1040 - 540, 648 - 15, 540, 15);
-    eq_9->setBounds (1040 - 60, 640 - 130, 60, 130);
-    eq_8->setBounds (980 - 60, 640 - 130, 60, 130);
-    eq_7->setBounds (920 - 60, 640 - 130, 60, 130);
-    eq_6->setBounds (860 - 60, 640 - 130, 60, 130);
-    eq_5->setBounds (800 - 60, 640 - 130, 60, 130);
-    eq_4->setBounds (740 - 60, 640 - 130, 60, 130);
-    eq_3->setBounds (680 - 60, 640 - 130, 60, 130);
-    eq_2->setBounds (620 - 60, 640 - 130, 60, 130);
-    eq_1->setBounds (560 - 60, 640 - 130, 60, 130);
-    bypass->setBounds (1040 - 60, 640 - 130, 60, 130);
-    chorus_modulation->setBounds (950 - 60, 640 - 130, 60, 130);
-    reverb_dry->setBounds (770 - 60, 640 - 130, 60, 130);
-    reverb_room->setBounds (650 - 60, 640 - 130, 60, 130);
-    osc_wave_3->setBounds (80 - 60, 480 - 130, 60, 130);
-    keyboard->setBounds (1428 - 1426, 1078 - 180, 1426, 180);
-    glide2->setBounds (150 - 60, 800 - 130, 60, 130);
-    arp_step_16->setBounds (1180 - 60, 800 - 130, 60, 130);
-    arp_step_15->setBounds (1120 - 60, 800 - 130, 60, 130);
-    arp_step_14->setBounds (1060 - 60, 800 - 130, 60, 130);
-    arp_step_13->setBounds (1000 - 60, 800 - 130, 60, 130);
-    arp_step_12->setBounds (930 - 60, 800 - 130, 60, 130);
-    arp_step_11->setBounds (870 - 60, 800 - 130, 60, 130);
-    arp_step_10->setBounds (810 - 60, 800 - 130, 60, 130);
-    arp_step_9->setBounds (750 - 60, 800 - 130, 60, 130);
-    arp_step_8->setBounds (680 - 60, 800 - 130, 60, 130);
-    arp_step_7->setBounds (620 - 60, 800 - 130, 60, 130);
-    arp_step_6->setBounds (560 - 60, 800 - 130, 60, 130);
-    arp_step_5->setBounds (500 - 60, 800 - 130, 60, 130);
-    arp_step_4->setBounds (430 - 60, 800 - 130, 60, 130);
-    arp_step_3->setBounds (370 - 60, 800 - 130, 60, 130);
-    arp_step_2->setBounds (310 - 60, 800 - 130, 60, 130);
-    arp_step_1->setBounds (250 - 60, 800 - 130, 60, 130);
-    shuffle->setBounds (80 - 60, 800 - 130, 60, 130);
-    flt_sustain_4->setBounds (370 - 60, 640 - 130, 60, 130);
-    flt_decay_4->setBounds (310 - 60, 640 - 130, 60, 130);
-    flt_attack_4->setBounds (250 - 60, 640 - 130, 60, 130);
-    flt_release_3->setBounds (700 - 60, 480 - 130, 60, 130);
-    flt_sustain_time_3->setBounds (640 - 60, 480 - 130, 60, 130);
-    flt_sustain_3->setBounds (580 - 60, 480 - 130, 60, 130);
-    flt_decay_3->setBounds (520 - 60, 480 - 130, 60, 130);
-    flt_attack_3->setBounds (460 - 60, 480 - 130, 60, 130);
-    flt_release_2->setBounds (700 - 60, 320 - 130, 60, 130);
-    flt_sustain_time_2->setBounds (640 - 60, 320 - 130, 60, 130);
-    flt_sustain_2->setBounds (580 - 60, 320 - 130, 60, 130);
-    flt_decay_2->setBounds (520 - 60, 320 - 130, 60, 130);
-    flt_attack_2->setBounds (460 - 60, 320 - 130, 60, 130);
-    flt_release_1->setBounds (700 - 60, 160 - 130, 60, 130);
-    flt_sustain_time_1->setBounds (640 - 60, 160 - 130, 60, 130);
-    flt_sustain_1->setBounds (580 - 60, 160 - 130, 60, 130);
-    flt_decay_1->setBounds (520 - 60, 160 - 130, 60, 130);
-    flt_attack_1->setBounds (460 - 60, 160 - 130, 60, 130);
-    volume_master_meter->setBounds (1340, 510, 10, 128);
-    label_monolisa->setBounds (1395 - 435, 910 - 110, 435, 110);
-    filter_type_1_1->setBounds (980 - 60, 82, 60, 24);
-    filter_type_2_1->setBounds (980 - 60, 57, 60, 25);
-    filter_type_3_1->setBounds (980 - 60, 106, 60, 25);
-    filter_type_1_2->setBounds (980 - 60, 242, 60, 24);
-    filter_type_2_2->setBounds (980 - 60, 217, 60, 25);
-    filter_type_3_2->setBounds (980 - 60, 291 - 25, 60, 25);
-    filter_type_1_3->setBounds (980 - 60, 426 - 24, 60, 24);
-    filter_type_2_3->setBounds (980 - 60, 377, 60, 25);
-    filter_type_3_3->setBounds (980 - 60, 426, 60, 25);
-    filter_type_5_1->setBounds (980 - 60, 131, 60, 27);
-    filter_type_5_2->setBounds (980 - 60, 291, 60, 27);
-    filter_type_5_3->setBounds (980 - 60, 451, 60, 27);
-    button_sequence_2->setBounds (310 - 60, 690 - 20, 60, 20);
-    button_sequence_3->setBounds (370 - 60, 690 - 20, 60, 20);
-    button_sequence_4->setBounds (430 - 60, 690 - 20, 60, 20);
-    button_sequence_5->setBounds (500 - 60, 690 - 20, 60, 20);
-    button_sequence_6->setBounds (560 - 60, 690 - 20, 60, 20);
-    button_sequence_7->setBounds (620 - 60, 690 - 20, 60, 20);
-    button_sequence_8->setBounds (680 - 60, 690 - 20, 60, 20);
-    button_sequence_9->setBounds (750 - 60, 690 - 20, 60, 20);
-    button_sequence_10->setBounds (810 - 60, 690 - 20, 60, 20);
-    button_sequence_11->setBounds (870 - 60, 690 - 20, 60, 20);
-    button_sequence_12->setBounds (930 - 60, 690 - 20, 60, 20);
-    button_sequence_13->setBounds (1000 - 60, 690 - 20, 60, 20);
-    button_sequence_14->setBounds (1060 - 60, 690 - 20, 60, 20);
-    button_sequence_15->setBounds (1120 - 60, 690 - 20, 60, 20);
-    button_sequence_16->setBounds (1180 - 60, 690 - 20, 60, 20);
-    combo_programm->setBounds (620 - 310, 870 - 30, 310, 30);
-    button_programm_left->setBounds (250 - 60, 870 - 30, 60, 30);
-    button_programm_right->setBounds (680 - 60, 870 - 30, 60, 30);
-    button_programm_replace->setBounds (870 - 60, 870 - 30, 60, 30);
-    button_programm_new->setBounds (810 - 60, 870 - 30, 60, 30);
-    button_open_oszi->setBounds (1030 - 60, 870 - 30, 60, 30);
-    button_open_midi_io_settings->setBounds (70 - 50, 870 - 30, 50, 30);
-    combo_bank->setBounds (310 - 60, 870 - 30, 60, 30);
-    button_programm_load->setBounds (750 - 60, 870 - 30, 60, 30);
-    osc_1->setBounds (150 - 60, 160 - 130, 60, 130);
-    osc_2->setBounds (150 - 60, 320 - 130, 60, 130);
-    osc_3->setBounds (150 - 60, 480 - 130, 60, 130);
-    lfo_1->setBounds (880 - 60, 160 - 130, 60, 130);
-    flt_cutoff_1->setBounds (1050 - 60, 160 - 130, 60, 130);
-    lfo_2->setBounds (880 - 60, 320 - 130, 60, 130);
-    lfo_3->setBounds (880 - 60, 480 - 130, 60, 130);
-    flt_cutoff_2->setBounds (1050 - 60, 320 - 130, 60, 130);
-    flt_cutoff_3->setBounds (1050 - 60, 480 - 130, 60, 130);
-    flt_input_1->setBounds (250 - 60, 160 - 130, 60, 130);
-    flt_input_2->setBounds (310 - 60, 160 - 130, 60, 130);
-    flt_input_3->setBounds (370 - 60, 160 - 130, 60, 130);
-    flt_compressor_1->setBounds (1320 - 60, 160 - 130, 60, 130);
-    flt_distortion_1->setBounds (1260 - 60, 160 - 130, 60, 130);
-    flt_input_6->setBounds (250 - 60, 320 - 130, 60, 130);
-    flt_input_7->setBounds (310 - 60, 320 - 130, 60, 130);
-    flt_input_8->setBounds (370 - 60, 320 - 130, 60, 130);
-    flt_compressor_2->setBounds (1320 - 60, 320 - 130, 60, 130);
-    flt_input_11->setBounds (250 - 60, 480 - 130, 60, 130);
-    flt_input_12->setBounds (310 - 60, 480 - 130, 60, 130);
-    flt_input_13->setBounds (370 - 60, 480 - 130, 60, 130);
-    flt_compressor_3->setBounds (1320 - 60, 480 - 130, 60, 130);
-    flt_resonance_1->setBounds (1110 - 60, 160 - 130, 60, 130);
-    flt_gain_1->setBounds (1170 - 60, 160 - 130, 60, 130);
-    flt_resonance_2->setBounds (1110 - 60, 320 - 130, 60, 130);
-    flt_gain_2->setBounds (1170 - 60, 320 - 130, 60, 130);
-    flt_resonance_3->setBounds (1110 - 60, 480 - 130, 60, 130);
-    flt_gain_3->setBounds (1170 - 60, 480 - 130, 60, 130);
-    flt_volume_1->setBounds (1410 - 60, 160 - 130, 60, 130);
-    flt_volume_2->setBounds (1410 - 60, 320 - 130, 60, 130);
-    flt_volume_3->setBounds (1410 - 60, 480 - 130, 60, 130);
-    adsr_lfo_mix->setBounds (790 - 60, 160 - 130, 60, 130);
-    lfo_opt_2->setBounds (790 - 60, 320 - 130, 60, 130);
-    lfo_opt_3->setBounds (790 - 60, 480 - 130, 60, 130);
-    button_sequence_1->setBounds (250 - 60, 690 - 20, 60, 20);
-    flt_release_4->setBounds (430 - 60, 640 - 130, 60, 130);
-    delay2->setBounds (860 - 60, 640 - 130, 60, 130);
-    volume->setBounds (1410 - 60, 640 - 130, 60, 130);
-    flt_distortion_2->setBounds (1260 - 60, 320 - 130, 60, 130);
-    flt_distortion_3->setBounds (1260 - 60, 480 - 130, 60, 130);
-    button_arp_speed_XNORM->setBounds (1270, 670, 60, 27);
-    flt_attack_5->setBounds (80 - 60, 640 - 130, 60, 130);
-    flt_attack_6->setBounds (150 - 60, 640 - 130, 60, 130);
-    osc_wave_1->setBounds (80 - 60, 160 - 130, 60, 130);
-    osc_wave_2->setBounds (80 - 60, 320 - 130, 60, 130);
-    sl_morhp_mix->setBounds (1140, 605, 180, 33);
-    button_programm_delete->setBounds (930 - 60, 870 - 30, 60, 30);
-    button_open_config->setBounds (1090 - 60, 870 - 30, 60, 30);
-    filter_type_6_1->setBounds (980 - 60, 30, 60, 27);
-    filter_type_6_2->setBounds (980 - 60, 190, 60, 27);
-    filter_type_6_3->setBounds (980 - 60, 350, 60, 27);
-    label_monolisa2->setBounds (1395 - 435, 840 - 30, 435, 30);
-    button_midi_learn->setBounds (120 - 50, 870 - 30, 50, 30);
-    button_ctrl_toggle->setBounds (170 - 50, 870 - 30, 50, 30);
-    colour->setBounds (560 - 60, 640 - 130, 60, 130);
-    speed->setBounds (1260 - 60, 800 - 130, 60, 130);
-    button_open_morph->setBounds (1140 - 60, 605, 60, 33);
-    effect_finalizer_switch->setBounds (495 - 25, 510, 25, 130);
-    label_ui_headline2->setBounds (1080, 506, 60, 35);
-    label_ui_headline3->setBounds (1140, 506, 60, 35);
-    label_ui_headline5->setBounds (1200, 506, 60, 35);
-    label_ui_headline6->setBounds (1260, 506, 60, 35);
-    button_values_toggle->setBounds (170 - 50, 900 - 30, 50, 30);
-    reverb_width->setBounds (710 - 60, 640 - 130, 60, 130);
-    octave_offset->setBounds (1410 - 60, 800 - 130, 60, 130);
+    speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
+    morpher_4->setBounds (1345 - 60, 620, 60, 130);
+    morpher_3->setBounds (1285 - 60, 620, 60, 130);
+    morpher_2->setBounds (1225 - 60, 620, 60, 130);
+    morpher_1->setBounds (1165 - 60, 620, 60, 130);
+    label_effect_hider->setBounds (1065 - 540, 758 - 15, 540, 15);
+    eq_9->setBounds (1065 - 60, 750 - 130, 60, 130);
+    eq_8->setBounds (1005 - 60, 750 - 130, 60, 130);
+    eq_7->setBounds (945 - 60, 750 - 130, 60, 130);
+    eq_6->setBounds (885 - 60, 750 - 130, 60, 130);
+    eq_5->setBounds (825 - 60, 750 - 130, 60, 130);
+    eq_4->setBounds (765 - 60, 750 - 130, 60, 130);
+    eq_3->setBounds (705 - 60, 750 - 130, 60, 130);
+    eq_2->setBounds (645 - 60, 750 - 130, 60, 130);
+    eq_1->setBounds (585 - 60, 750 - 130, 60, 130);
+    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
+    chorus_modulation->setBounds (975 - 60, 750 - 130, 60, 130);
+    reverb_dry->setBounds (795 - 60, 750 - 130, 60, 130);
+    reverb_room->setBounds (675 - 60, 750 - 130, 60, 130);
+    osc_wave_3->setBounds (90 - 60, 550 - 130, 60, 130);
+    keyboard->setBounds (0, 1055, 1465, 180);
+    glide2->setBounds (100, 820, 60, 130);
+    arp_step_16->setBounds (1205 - 60, 950 - 130, 60, 130);
+    arp_step_15->setBounds (1145 - 60, 950 - 130, 60, 130);
+    arp_step_14->setBounds (1085 - 60, 950 - 130, 60, 130);
+    arp_step_13->setBounds (965, 820, 60, 130);
+    arp_step_12->setBounds (955 - 60, 950 - 130, 60, 130);
+    arp_step_11->setBounds (895 - 60, 950 - 130, 60, 130);
+    arp_step_10->setBounds (835 - 60, 950 - 130, 60, 130);
+    arp_step_9->setBounds (775 - 60, 950 - 130, 60, 130);
+    arp_step_8->setBounds (705 - 60, 950 - 130, 60, 130);
+    arp_step_7->setBounds (645 - 60, 950 - 130, 60, 130);
+    arp_step_6->setBounds (585 - 60, 950 - 130, 60, 130);
+    arp_step_5->setBounds (525 - 60, 950 - 130, 60, 130);
+    arp_step_4->setBounds (455 - 60, 950 - 130, 60, 130);
+    arp_step_3->setBounds (395 - 60, 950 - 130, 60, 130);
+    arp_step_2->setBounds (335 - 60, 950 - 130, 60, 130);
+    arp_step_1->setBounds (275 - 60, 950 - 130, 60, 130);
+    shuffle->setBounds (30, 820, 60, 130);
+    flt_sustain_4->setBounds (395 - 60, 750 - 130, 60, 130);
+    flt_decay_4->setBounds (335 - 60, 750 - 130, 60, 130);
+    flt_attack_4->setBounds (275 - 60, 750 - 130, 60, 130);
+    flt_release_3->setBounds (725 - 60, 550 - 130, 60, 130);
+    flt_sustain_time_3->setBounds (665 - 60, 550 - 130, 60, 130);
+    flt_sustain_3->setBounds (605 - 60, 550 - 130, 60, 130);
+    flt_decay_3->setBounds (545 - 60, 550 - 130, 60, 130);
+    flt_attack_3->setBounds (485 - 60, 550 - 130, 60, 130);
+    flt_release_2->setBounds (725 - 60, 370 - 130, 60, 130);
+    flt_sustain_time_2->setBounds (665 - 60, 370 - 130, 60, 130);
+    flt_sustain_2->setBounds (605 - 60, 370 - 130, 60, 130);
+    flt_decay_2->setBounds (545 - 60, 370 - 130, 60, 130);
+    flt_attack_2->setBounds (485 - 60, 370 - 130, 60, 130);
+    flt_release_1->setBounds (725 - 60, 190 - 130, 60, 130);
+    flt_sustain_time_1->setBounds (665 - 60, 190 - 130, 60, 130);
+    flt_sustain_1->setBounds (605 - 60, 190 - 130, 60, 130);
+    flt_decay_1->setBounds (545 - 60, 190 - 130, 60, 130);
+    flt_attack_1->setBounds (425, 190 - 130, 60, 130);
+    label_monolisa->setBounds (1440 - 205, 1055 - 85, 205, 85);
+    filter_type_1_1->setBounds (1005 - 60, 112, 60, 24);
+    filter_type_2_1->setBounds (1005 - 60, 87, 60, 25);
+    filter_type_3_1->setBounds (1005 - 60, 136, 60, 25);
+    filter_type_1_2->setBounds (1005 - 60, 292, 60, 24);
+    filter_type_2_2->setBounds (1005 - 60, 267, 60, 25);
+    filter_type_3_2->setBounds (1005 - 60, 341 - 25, 60, 25);
+    filter_type_1_3->setBounds (1005 - 60, 496 - 24, 60, 24);
+    filter_type_2_3->setBounds (1005 - 60, 447, 60, 25);
+    filter_type_3_3->setBounds (1005 - 60, 496, 60, 25);
+    filter_type_5_1->setBounds (1005 - 60, 161, 60, 27);
+    filter_type_5_2->setBounds (1005 - 60, 341, 60, 27);
+    filter_type_5_3->setBounds (1005 - 60, 496, 60, 27);
+    button_sequence_2->setBounds (335 - 60, 840 - 20, 60, 20);
+    button_sequence_3->setBounds (395 - 60, 840 - 20, 60, 20);
+    button_sequence_4->setBounds (455 - 60, 840 - 20, 60, 20);
+    button_sequence_5->setBounds (525 - 60, 840 - 20, 60, 20);
+    button_sequence_6->setBounds (585 - 60, 840 - 20, 60, 20);
+    button_sequence_7->setBounds (645 - 60, 840 - 20, 60, 20);
+    button_sequence_8->setBounds (705 - 60, 840 - 20, 60, 20);
+    button_sequence_9->setBounds (775 - 60, 840 - 20, 60, 20);
+    button_sequence_10->setBounds (835 - 60, 840 - 20, 60, 20);
+    button_sequence_11->setBounds (895 - 60, 840 - 20, 60, 20);
+    button_sequence_12->setBounds (955 - 60, 840 - 20, 60, 20);
+    button_sequence_13->setBounds (1025 - 60, 840 - 20, 60, 20);
+    button_sequence_14->setBounds (1085 - 60, 840 - 20, 60, 20);
+    button_sequence_15->setBounds (1145 - 60, 840 - 20, 60, 20);
+    button_sequence_16->setBounds (1205 - 60, 840 - 20, 60, 20);
+    combo_programm->setBounds (645 - 310, 1030 - 30, 310, 30);
+    button_programm_left->setBounds (275 - 60, 1030 - 30, 60, 30);
+    button_programm_right->setBounds (705 - 60, 1030 - 30, 60, 30);
+    button_programm_replace->setBounds (835 - 60, 1030 - 30, 60, 30);
+    button_programm_new->setBounds (775 - 60, 1030 - 30, 60, 30);
+    button_open_oszi->setBounds (965, 1000, 60, 30);
+    button_open_midi_io_settings->setBounds (1145 - 60, 1030 - 30, 60, 30);
+    combo_bank->setBounds (335 - 60, 1030 - 30, 60, 30);
+    button_programm_load->setBounds (955 - 60, 1030 - 30, 60, 30);
+    osc_1->setBounds (160 - 60, 190 - 130, 60, 130);
+    osc_2->setBounds (160 - 60, 370 - 130, 60, 130);
+    osc_3->setBounds (160 - 60, 550 - 130, 60, 130);
+    lfo_1->setBounds (905 - 60, 190 - 130, 60, 130);
+    flt_cutoff_1->setBounds (1075 - 60, 190 - 130, 60, 130);
+    lfo_2->setBounds (905 - 60, 370 - 130, 60, 130);
+    lfo_3->setBounds (905 - 60, 550 - 130, 60, 130);
+    flt_cutoff_2->setBounds (1075 - 60, 370 - 130, 60, 130);
+    flt_cutoff_3->setBounds (1075 - 60, 550 - 130, 60, 130);
+    flt_input_1->setBounds (215, 60, 60, 130);
+    flt_input_2->setBounds (335 - 60, 190 - 130, 60, 130);
+    flt_input_3->setBounds (395 - 60, 190 - 130, 60, 130);
+    flt_compressor_1->setBounds (1345 - 60, 190 - 130, 60, 130);
+    flt_distortion_1->setBounds (1285 - 60, 190 - 130, 60, 130);
+    flt_input_6->setBounds (275 - 60, 370 - 130, 60, 130);
+    flt_input_7->setBounds (335 - 60, 370 - 130, 60, 130);
+    flt_input_8->setBounds (395 - 60, 370 - 130, 60, 130);
+    flt_compressor_2->setBounds (1345 - 60, 370 - 130, 60, 130);
+    flt_input_11->setBounds (275 - 60, 550 - 130, 60, 130);
+    flt_input_12->setBounds (335 - 60, 550 - 130, 60, 130);
+    flt_input_13->setBounds (395 - 60, 550 - 130, 60, 130);
+    flt_compressor_3->setBounds (1345 - 60, 550 - 130, 60, 130);
+    flt_resonance_1->setBounds (1135 - 60, 190 - 130, 60, 130);
+    flt_gain_1->setBounds (1195 - 60, 190 - 130, 60, 130);
+    flt_resonance_2->setBounds (1135 - 60, 370 - 130, 60, 130);
+    flt_gain_2->setBounds (1195 - 60, 370 - 130, 60, 130);
+    flt_resonance_3->setBounds (1135 - 60, 550 - 130, 60, 130);
+    flt_gain_3->setBounds (1195 - 60, 550 - 130, 60, 130);
+    flt_volume_1->setBounds (1435 - 60, 190 - 130, 60, 130);
+    flt_volume_2->setBounds (1435 - 60, 370 - 130, 60, 130);
+    flt_volume_3->setBounds (1435 - 60, 550 - 130, 60, 130);
+    adsr_lfo_mix->setBounds (815 - 60, 190 - 130, 60, 130);
+    lfo_opt_2->setBounds (815 - 60, 370 - 130, 60, 130);
+    lfo_opt_3->setBounds (815 - 60, 550 - 130, 60, 130);
+    button_sequence_1->setBounds (275 - 60, 840 - 20, 60, 20);
+    flt_release_4->setBounds (455 - 60, 750 - 130, 60, 130);
+    delay2->setBounds (885 - 60, 750 - 130, 60, 130);
+    volume->setBounds (1435 - 60, 750 - 130, 60, 130);
+    flt_distortion_2->setBounds (1285 - 60, 370 - 130, 60, 130);
+    flt_distortion_3->setBounds (1285 - 60, 550 - 130, 60, 130);
+    button_arp_speed_XNORM->setBounds (1295, 820, 60, 27);
+    flt_attack_5->setBounds (90 - 60, 755 - 130, 60, 130);
+    flt_attack_6->setBounds (160 - 60, 755 - 130, 60, 130);
+    osc_wave_1->setBounds (30, 60, 60, 130);
+    osc_wave_2->setBounds (90 - 60, 370 - 130, 60, 130);
+    sl_morhp_mix->setBounds (1165, 715, 180, 33);
+    button_programm_delete->setBounds (895 - 60, 1030 - 30, 60, 30);
+    button_open_config->setBounds (1085 - 60, 1030 - 30, 60, 30);
+    filter_type_6_1->setBounds (1005 - 60, 60, 60, 27);
+    filter_type_6_2->setBounds (1005 - 60, 240, 60, 27);
+    filter_type_6_3->setBounds (1005 - 60, 420, 60, 27);
+    button_midi_learn->setBounds (1205 - 60, 1030 - 30, 60, 30);
+    button_ctrl_toggle->setBounds (100, 1000, 60, 30);
+    colour->setBounds (585 - 60, 750 - 130, 60, 130);
+    speed->setBounds (1285 - 60, 950 - 130, 60, 130);
+    button_open_morph->setBounds (1165 - 60, 715, 60, 33);
+    effect_finalizer_switch->setBounds (520 - 25, 620, 25, 130);
+    label_ui_headline2->setBounds (1105, 616, 60, 35);
+    label_ui_headline3->setBounds (1165, 616, 60, 35);
+    label_ui_headline5->setBounds (1225, 616, 60, 35);
+    label_ui_headline6->setBounds (1285, 616, 60, 35);
+    button_values_toggle->setBounds (30, 1000, 60, 30);
+    reverb_width->setBounds (735 - 60, 750 - 130, 60, 130);
+    octave_offset->setBounds (1435 - 60, 950 - 130, 60, 130);
+    label_ui_headline4->setBounds (245, 5, 120, 35);
+    label_ui_headline7->setBounds (40, 5, 110, 35);
+    label_ui_headline8->setBounds (510, 5, 130, 35);
+    label_ui_headline9->setBounds (850, 5, 50, 35);
+    label_ui_headline10->setBounds (975, 5, 190, 35);
+    label_ui_headline11->setBounds (1230, 5, 110, 35);
+    label_ui_headline12->setBounds (1375, 5, 60, 35);
+    label_ui_headline13->setBounds (270, 580, 130, 35);
+    label_ui_headline14->setBounds (525, 580, 60, 35);
+    label_ui_headline15->setBounds (665, 580, 80, 35);
+    label_ui_headline16->setBounds (825, 580, 60, 35);
+    label_ui_headline17->setBounds (910, 580, 70, 35);
+    label_ui_headline18->setBounds (1005, 580, 60, 35);
+    label_ui_headline19->setBounds (1135, 580, 180, 35);
+    label_ui_headline20->setBounds (615, 780, 190, 35);
+    label_ui_headline21->setBounds (100, 780, 60, 35);
+    label_ui_headline22->setBounds (1260, 780, 60, 35);
+    label_ui_headline23->setBounds (1375, 580, 60, 35);
+    label_ui_headline24->setBounds (1375, 780, 60, 35);
+    label_ui_headline25->setBounds (35, 563, 120, 35);
+    volume_master_meter->setBounds (1375, 620, 60, 27);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -2559,693 +2830,809 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorSynthLite" componentName=""
                  parentClasses="public AudioProcessorEditor, public mono_UiRefreshable"
-                 constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1430), original_h(1080)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1430" initialHeight="1080">
+                 constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
+                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
   </METHODS>
-  <BACKGROUND backgroundColour="ff101010">
-    <ROUNDRECT pos="170 20 155 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="263 15 5 15" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="165 15 100 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="203 10 5 15" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="155 178 10 5" cornerSize="1" fill="solid: ff161616" hasStroke="0"/>
-    <ROUNDRECT pos="1230 335 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1380 335 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1140 335 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1080 335 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1020 335 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 340 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 340 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 335 620 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 340 81 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="850 340 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 335 1 15" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="750 340 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="830 345 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="410 345 280 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 340 210 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="180 170 1230 2" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="293 160 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="20 650 1320 2" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 30 1 470" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 20 210 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="20 810 1060 2" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="500 810 910 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="20 814 1020 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="20 817 940 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="20 820 800 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="20 823 150 1" cornerSize="10" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 500 71 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="150 680 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="80 680 10 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="410 25 280 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="30 25 110 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 10 120 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="325 20 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="205 10 1 16" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 10 1 15" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 30 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="30 505 110 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 500 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="830 25 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="750 20 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="595 645 415 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="950 640 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="595 640 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1010 640 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="990 640 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 15 1 15" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="850 20 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 20 81 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 15 620 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 20 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 520 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 515 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1260 680 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1265 675 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 20 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1020 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1080 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1140 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1380 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="180 330 1230 2" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="180 490 1230 2" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1230 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="295 160 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="260 160 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="353 160 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="355 160 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="233 160 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="235 160 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="200 160 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="320 160 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="293 320 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="295 320 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="260 320 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="353 320 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="355 320 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="233 320 5 25" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="235 320 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="200 320 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="320 320 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1360 160 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1380 160 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1288 320 5 30" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="1290 325 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1290 325 90 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1360 320 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1380 320 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="265 15 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 180 210 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="410 185 280 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="830 185 40 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="750 180 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 175 1 15" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="850 180 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 180 81 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="760 175 620 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="770 180 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="540 180 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1020 175 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1080 175 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1140 175 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1380 175 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1230 175 1 10" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1288 160 5 30" cornerSize="1" fill="solid: ff101010" hasStroke="0"/>
-    <ROUNDRECT pos="1290 165 1 25" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="1290 165 90 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="30 185 110 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 180 80 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 180 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="165 15 1 166" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="30 345 110 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 340 85 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="85 340 1 5" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="170 20 1 321" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 190 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 30 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 160 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 320 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 350 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="15 480 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 255 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 205 1 51" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 230 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 205 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 95 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 45 1 51" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 70 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 45 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 415 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 365 1 51" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 390 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <ROUNDRECT pos="915 365 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
+  <BACKGROUND backgroundColour="ff050505">
+    <ROUNDRECT pos="480 595 604 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="10 795 1445 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="195 20 1260 195" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="10 20 170 754" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <RECT pos="175 44 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="175 49 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="170 50 181 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="175 39 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="195 395 1260 180" cornerSize="6" fill="solid: ff050505"
+               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="195 215 1260 180" cornerSize="6" fill="solid: ff050505"
+               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="195 595 284 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="20 60 1 541" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 50 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 600 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 830 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="90 830 10 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 55 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 605 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 600 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="855 55 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="775 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="615 760 421 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="970 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="615 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1035 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1015 755 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 45 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="875 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 50 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 45 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 635 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 630 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1260 720 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1265 715 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1045 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1105 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1165 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1255 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="300 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="240 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="360 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1385 195 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 195 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1315 200 91 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 415 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 410 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 410 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 240 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 60 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 185 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 365 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 420 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 545 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 125 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 75 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 100 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 75 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 55 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 40 1 16" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 45 1 185" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="170 50 1 360" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 235 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 230 71 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 230 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="289 45 3 10" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="290 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 45 126 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="350 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="229 40 3 16" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="230 40 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 40 136 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="259 205 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="319 205 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="379 205 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="229 195 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="289 195 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="349 195 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="350 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="290 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="230 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="380 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="320 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="260 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1085 595 269 180" cornerSize="6" fill="solid: ff050505"
+               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="1355 595 99 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="575 230 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 235 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="855 235 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="775 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 225 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="875 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 230 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 225 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1045 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1105 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1165 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1255 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1385 375 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 375 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1315 380 91 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 305 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 255 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 280 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 255 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="1314 205 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="1315 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 410 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 415 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="855 415 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="775 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 405 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="875 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 410 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="785 405 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="795 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1045 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1105 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1165 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1255 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 485 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 435 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 460 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="940 435 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="1314 385 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="1315 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="300 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="240 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="360 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="259 385 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="319 385 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="379 385 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="229 375 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="289 375 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="349 375 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="350 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="290 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="230 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="380 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="320 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
-                    explicitFocusOrder="0" pos="1330r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1355r 950r 60 130" class="mono_ModulationSlider"
                     params="new SpeedMultiSlConfig()"/>
   <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
-                    explicitFocusOrder="0" pos="1320r 510 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 620 60 130" class="mono_ModulationSlider"
                     params="new MorphSLConfig(3)"/>
   <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
-                    explicitFocusOrder="0" pos="1260r 510 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 620 60 130" class="mono_ModulationSlider"
                     params="new MorphSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
-                    explicitFocusOrder="0" pos="1200r 510 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1225r 620 60 130" class="mono_ModulationSlider"
                     params="new MorphSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
-                    explicitFocusOrder="0" pos="1140r 510 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1165r 620 60 130" class="mono_ModulationSlider"
                     params="new MorphSLConfig(0)"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
-         virtualName="" explicitFocusOrder="0" pos="1040r 648r 540 15"
+         virtualName="" explicitFocusOrder="0" pos="1065r 758r 540 15"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="" id="6250362aea841eea" memberName="eq_9" virtualName=""
-                    explicitFocusOrder="0" pos="1040r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(8)"/>
   <GENERICCOMPONENT name="" id="26ebe414133b55e7" memberName="eq_8" virtualName=""
-                    explicitFocusOrder="0" pos="980r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1005r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="920r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="945r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="860r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="885r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="800r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="825r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="740r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="765r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="680r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="705r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="620r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="645r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="560r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="mono_ModulationSlider"
                     params="new EQSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
-                    explicitFocusOrder="0" pos="1040r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="mono_ModulationSlider"
                     params="new BypassConfig()"/>
   <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="950r 640r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="975r 750r 60 130"
                     class="mono_ModulationSlider" params="new CModSlConfig()"/>
   <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="770r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="795r 750r 60 130" class="mono_ModulationSlider"
                     params="new RDrySlConfig()"/>
   <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="650r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="675r 750r 60 130" class="mono_ModulationSlider"
                     params="new RRoomSlConfig()"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
-                    explicitFocusOrder="0" pos="80r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 550r 60 130" class="mono_ModulationSlider"
                     params="new WAVESlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a8343a0b5df2dc06" memberName="keyboard" virtualName="MidiKeyboardComponent"
-                    explicitFocusOrder="0" pos="1428r 1078r 1426 180" class="Component"
+                    explicitFocusOrder="0" pos="0 1055 1465 180" class="Component"
                     params="*_app_instance_store-&gt;audio_processor, MidiKeyboardComponent::horizontalKeyboard"/>
   <GENERICCOMPONENT name="" id="35003b6b21577713" memberName="glide2" virtualName=""
-                    explicitFocusOrder="0" pos="150r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="100 820 60 130" class="mono_ModulationSlider"
                     params="new GlideConfig()"/>
   <GENERICCOMPONENT name="" id="d8ef93ac038fadca" memberName="arp_step_16" virtualName=""
-                    explicitFocusOrder="0" pos="1180r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1205r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(15)"/>
   <GENERICCOMPONENT name="" id="7761deb0276debbd" memberName="arp_step_15" virtualName=""
-                    explicitFocusOrder="0" pos="1120r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1145r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(14)"/>
   <GENERICCOMPONENT name="" id="20a9ed6504a039e2" memberName="arp_step_14" virtualName=""
-                    explicitFocusOrder="0" pos="1060r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1085r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(13)"/>
   <GENERICCOMPONENT name="" id="791739ade4aee5df" memberName="arp_step_13" virtualName=""
-                    explicitFocusOrder="0" pos="1000r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="965 820 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(12)"/>
   <GENERICCOMPONENT name="" id="1e3ef8bba1be4b28" memberName="arp_step_12" virtualName=""
-                    explicitFocusOrder="0" pos="930r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="955r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(11)"/>
   <GENERICCOMPONENT name="" id="fe823ea88a7a2471" memberName="arp_step_11" virtualName=""
-                    explicitFocusOrder="0" pos="870r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="895r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(10)"/>
   <GENERICCOMPONENT name="" id="ee7d6057133dde55" memberName="arp_step_10" virtualName=""
-                    explicitFocusOrder="0" pos="810r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="835r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(9)"/>
   <GENERICCOMPONENT name="" id="b4852f8bf0385747" memberName="arp_step_9" virtualName=""
-                    explicitFocusOrder="0" pos="750r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="775r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(8)"/>
   <GENERICCOMPONENT name="" id="fd84ed45f47ab8b9" memberName="arp_step_8" virtualName=""
-                    explicitFocusOrder="0" pos="680r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="705r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="cf5a0e63bd7f558a" memberName="arp_step_7" virtualName=""
-                    explicitFocusOrder="0" pos="620r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="645r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="31712e752afeb9b5" memberName="arp_step_6" virtualName=""
-                    explicitFocusOrder="0" pos="560r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="a729cce2b51e5737" memberName="arp_step_5" virtualName=""
-                    explicitFocusOrder="0" pos="500r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="525r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="4ea4b03b58657c40" memberName="arp_step_4" virtualName=""
-                    explicitFocusOrder="0" pos="430r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="455r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="b45b0bde6cb27e9d" memberName="arp_step_3" virtualName=""
-                    explicitFocusOrder="0" pos="370r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="be72c3cee3e34864" memberName="arp_step_2" virtualName=""
-                    explicitFocusOrder="0" pos="310r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="6665063ca7bdff41" memberName="arp_step_1" virtualName=""
-                    explicitFocusOrder="0" pos="250r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 950r 60 130" class="mono_ModulationSlider"
                     params="new ArpStepSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="bb9c66366ce375c" memberName="shuffle" virtualName=""
-                    explicitFocusOrder="0" pos="80r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="30 820 60 130" class="mono_ModulationSlider"
                     params="new ShuffleConfig()"/>
   <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
-                    explicitFocusOrder="0" pos="370r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 750r 60 130" class="mono_ModulationSlider"
                     params="new SustainSlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
-                    explicitFocusOrder="0" pos="310r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 750r 60 130" class="mono_ModulationSlider"
                     params="new DecaySlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
-                    explicitFocusOrder="0" pos="250r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 750r 60 130" class="mono_ModulationSlider"
                     params="new FAttackSlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="ca4537ccb809ca96" memberName="flt_release_3" virtualName=""
-                    explicitFocusOrder="0" pos="700r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 550r 60 130" class="mono_ModulationSlider"
                     params="new FReleaseSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a60fcd747c533a26" memberName="flt_sustain_time_3"
-                    virtualName="" explicitFocusOrder="0" pos="640r 480r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 550r 60 130"
                     class="mono_ModulationSlider" params="new FSustainTimeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="78d4de9e0ffe3029" memberName="flt_sustain_3" virtualName=""
-                    explicitFocusOrder="0" pos="580r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 550r 60 130" class="mono_ModulationSlider"
                     params="new FSustainSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="e8b49d00205726e6" memberName="flt_decay_3" virtualName=""
-                    explicitFocusOrder="0" pos="520r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 550r 60 130" class="mono_ModulationSlider"
                     params="new FDecaySlConfig(2)"/>
   <GENERICCOMPONENT name="" id="638e13e96c94deb1" memberName="flt_attack_3" virtualName=""
-                    explicitFocusOrder="0" pos="460r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="485r 550r 60 130" class="mono_ModulationSlider"
                     params="new FAttackSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="4e206df1142d5f1d" memberName="flt_release_2" virtualName=""
-                    explicitFocusOrder="0" pos="700r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 370r 60 130" class="mono_ModulationSlider"
                     params="new FReleaseSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b2e468ddbdcb0be8" memberName="flt_sustain_time_2"
-                    virtualName="" explicitFocusOrder="0" pos="640r 320r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 370r 60 130"
                     class="mono_ModulationSlider" params="new FSustainTimeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa6aa381eebdd61" memberName="flt_sustain_2" virtualName=""
-                    explicitFocusOrder="0" pos="580r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 370r 60 130" class="mono_ModulationSlider"
                     params="new FSustainSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="140fc1e77383e0f9" memberName="flt_decay_2" virtualName=""
-                    explicitFocusOrder="0" pos="520r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 370r 60 130" class="mono_ModulationSlider"
                     params="new FDecaySlConfig(1)"/>
   <GENERICCOMPONENT name="" id="8a6f21a1f4a86dd" memberName="flt_attack_2" virtualName=""
-                    explicitFocusOrder="0" pos="460r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="485r 370r 60 130" class="mono_ModulationSlider"
                     params="new FAttackSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b17b21322ed6df73" memberName="flt_release_1" virtualName=""
-                    explicitFocusOrder="0" pos="700r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 190r 60 130" class="mono_ModulationSlider"
                     params="new FReleaseSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1460533da718423d" memberName="flt_sustain_time_1"
-                    virtualName="" explicitFocusOrder="0" pos="640r 160r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 190r 60 130"
                     class="mono_ModulationSlider" params="new FSustainTimeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16f83a5a025850d0" memberName="flt_sustain_1" virtualName=""
-                    explicitFocusOrder="0" pos="580r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 190r 60 130" class="mono_ModulationSlider"
                     params="new FSustainSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="dc67a284425c81d9" memberName="flt_decay_1" virtualName=""
-                    explicitFocusOrder="0" pos="520r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 190r 60 130" class="mono_ModulationSlider"
                     params="new FDecaySlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1a64935d9407f5bb" memberName="flt_attack_1" virtualName=""
-                    explicitFocusOrder="0" pos="460r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="425 190r 60 130" class="mono_ModulationSlider"
                     params="new FAttackSlConfig(0)"/>
-  <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
-                    virtualName="SegmentedMeter" explicitFocusOrder="0" pos="1340 510 10 128"
-                    class="Component" params=""/>
   <LABEL name="" id="39e8fb50cf1d668d" memberName="label_monolisa" virtualName=""
-         explicitFocusOrder="0" pos="1395r 910r 435 110" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1440r 1055r 205 85" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M O N I Q U E" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="VOICE 1" id="77e66f63bda9d507" memberName="filter_type_1_1"
-              virtualName="" explicitFocusOrder="0" pos="980r 82 60 24" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 112 60 24" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="980r 57 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 87 60 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="980r 106 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 136 60 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1383d06f6f9a2a4" memberName="filter_type_1_2"
-              virtualName="" explicitFocusOrder="0" pos="980r 242 60 24" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 292 60 24" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="980r 217 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 267 60 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="980r 291r 60 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 341r 60 25"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="8ff86dc73f1f9885" memberName="filter_type_1_3"
-              virtualName="" explicitFocusOrder="0" pos="980r 426r 60 24" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
+              virtualName="" explicitFocusOrder="0" pos="1005r 496r 60 24"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="980r 377 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 447 60 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="980r 426 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 496 60 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="980r 131 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 161 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="980r 291 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 341 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="980r 451 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 496 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
-              virtualName="" explicitFocusOrder="0" pos="310r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="17704b0ee658c01b" memberName="button_sequence_3"
-              virtualName="" explicitFocusOrder="0" pos="370r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="70bcd1e56b41c2c6" memberName="button_sequence_4"
-              virtualName="" explicitFocusOrder="0" pos="430r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e835074126c3a82d" memberName="button_sequence_5"
-              virtualName="" explicitFocusOrder="0" pos="500r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7ebcf311504b804b" memberName="button_sequence_6"
-              virtualName="" explicitFocusOrder="0" pos="560r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7964742ab1d9d236" memberName="button_sequence_7"
-              virtualName="" explicitFocusOrder="0" pos="620r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="290ac159e50889a3" memberName="button_sequence_8"
-              virtualName="" explicitFocusOrder="0" pos="680r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
-              virtualName="" explicitFocusOrder="0" pos="750r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8ad414b935f59d8" memberName="button_sequence_10"
-              virtualName="" explicitFocusOrder="0" pos="810r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="af5f2477751cef2c" memberName="button_sequence_11"
-              virtualName="" explicitFocusOrder="0" pos="870r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d3687d6b28982234" memberName="button_sequence_12"
-              virtualName="" explicitFocusOrder="0" pos="930r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="804115318ad213c1" memberName="button_sequence_13"
-              virtualName="" explicitFocusOrder="0" pos="1000r 690r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1025r 840r 60 20"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="13d758647984d5d5" memberName="button_sequence_14"
-              virtualName="" explicitFocusOrder="0" pos="1060r 690r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1085r 840r 60 20"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8cbd35271097248c" memberName="button_sequence_15"
-              virtualName="" explicitFocusOrder="0" pos="1120r 690r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1145r 840r 60 20"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
-              virtualName="" explicitFocusOrder="0" pos="1180r 690r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1205r 840r 60 20"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
-            explicitFocusOrder="0" pos="620r 870r 310 30" editable="1" layout="33"
+            explicitFocusOrder="0" pos="645r 1030r 310 30" editable="1" layout="33"
             items="" textWhenNonSelected="SELECT PROGRAM" textWhenNoItems="EMPTY BANK"/>
   <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
-              virtualName="" explicitFocusOrder="0" pos="250r 870r 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="275r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
-              virtualName="" explicitFocusOrder="0" pos="680r 870r 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="705r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b91a29c51d2d93f1" memberName="button_programm_replace"
-              virtualName="" explicitFocusOrder="0" pos="870r 870r 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
+              virtualName="" explicitFocusOrder="0" pos="835r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="9481aeac211cafc0" memberName="button_programm_new"
-              virtualName="" explicitFocusOrder="0" pos="810r 870r 60 30" bgColOff="ff000000"
-              textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="775r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
-              explicitFocusOrder="0" pos="1030r 870r 60 30" bgColOff="ff000000"
+              explicitFocusOrder="0" pos="965 1000 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="57c6c986fc98dac" memberName="button_open_midi_io_settings"
-              virtualName="" explicitFocusOrder="0" pos="70r 870r 50 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI IO"
+              virtualName="" explicitFocusOrder="0" pos="1145r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI IO"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_bank" virtualName=""
-            explicitFocusOrder="0" pos="310r 870r 60 30" editable="0" layout="33"
+            explicitFocusOrder="0" pos="335r 1030r 60 30" editable="0" layout="33"
             items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="aa7c44443637097c" memberName="button_programm_load"
-              virtualName="" explicitFocusOrder="0" pos="750r 870r 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="955r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
-                    explicitFocusOrder="0" pos="150r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 190r 60 130" class="mono_ModulationSlider"
                     params="new OSCSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="308060a72bcb3066" memberName="osc_2" virtualName=""
-                    explicitFocusOrder="0" pos="150r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 370r 60 130" class="mono_ModulationSlider"
                     params="new OSCSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
-                    explicitFocusOrder="0" pos="150r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 550r 60 130" class="mono_ModulationSlider"
                     params="new OSCSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="880r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 190r 60 130" class="mono_ModulationSlider"
                     params="new LFOSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
-                    explicitFocusOrder="0" pos="1050r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 190r 60 130" class="mono_ModulationSlider"
                     params="new FCutoffSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="880r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 370r 60 130" class="mono_ModulationSlider"
                     params="new LFOSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="880r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 550r 60 130" class="mono_ModulationSlider"
                     params="new LFOSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
-                    explicitFocusOrder="0" pos="1050r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 370r 60 130" class="mono_ModulationSlider"
                     params="new FCutoffSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
-                    explicitFocusOrder="0" pos="1050r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 550r 60 130" class="mono_ModulationSlider"
                     params="new FCutoffSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
-                    explicitFocusOrder="0" pos="250r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="215 60 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(0,0)"/>
   <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
-                    explicitFocusOrder="0" pos="310r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 190r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(0,1)"/>
   <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
-                    explicitFocusOrder="0" pos="370r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 190r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(0,2)"/>
   <GENERICCOMPONENT name="" id="2bcfc71597ef5fbd" memberName="flt_compressor_1" virtualName=""
-                    explicitFocusOrder="0" pos="1320r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 190r 60 130" class="mono_ModulationSlider"
                     params="new FCompressorSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
-                    explicitFocusOrder="0" pos="1260r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 190r 60 130" class="mono_ModulationSlider"
                     params="new GForceSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
-                    explicitFocusOrder="0" pos="250r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 370r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(1,0)"/>
   <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
-                    explicitFocusOrder="0" pos="310r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 370r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(1,1)"/>
   <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
-                    explicitFocusOrder="0" pos="370r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 370r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(1,2)"/>
   <GENERICCOMPONENT name="" id="f8269875dd70ecfa" memberName="flt_compressor_2" virtualName=""
-                    explicitFocusOrder="0" pos="1320r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 370r 60 130" class="mono_ModulationSlider"
                     params="new FCompressorSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
-                    explicitFocusOrder="0" pos="250r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 550r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(2,0)"/>
   <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
-                    explicitFocusOrder="0" pos="310r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 550r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(2,1)"/>
   <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
-                    explicitFocusOrder="0" pos="370r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 550r 60 130" class="mono_ModulationSlider"
                     params="new InputSlConfig(2,2)"/>
   <GENERICCOMPONENT name="" id="3dab756c3e18a7de" memberName="flt_compressor_3" virtualName=""
-                    explicitFocusOrder="0" pos="1320r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 550r 60 130" class="mono_ModulationSlider"
                     params="new FCompressorSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
-                    explicitFocusOrder="0" pos="1110r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 190r 60 130" class="mono_ModulationSlider"
                     params="new FResonanceSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="8e9c871f56bec21b" memberName="flt_gain_1" virtualName=""
-                    explicitFocusOrder="0" pos="1170r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 190r 60 130" class="mono_ModulationSlider"
                     params="new FGainSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
-                    explicitFocusOrder="0" pos="1110r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 370r 60 130" class="mono_ModulationSlider"
                     params="new FResonanceSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="577a04755f6e3eca" memberName="flt_gain_2" virtualName=""
-                    explicitFocusOrder="0" pos="1170r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 370r 60 130" class="mono_ModulationSlider"
                     params="new FGainSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
-                    explicitFocusOrder="0" pos="1110r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 550r 60 130" class="mono_ModulationSlider"
                     params="new FResonanceSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="5d7a48dcb59f2814" memberName="flt_gain_3" virtualName=""
-                    explicitFocusOrder="0" pos="1170r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 550r 60 130" class="mono_ModulationSlider"
                     params="new FGainSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
-                    explicitFocusOrder="0" pos="1410r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 190r 60 130" class="mono_ModulationSlider"
                     params="new FVolumeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
-                    explicitFocusOrder="0" pos="1410r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 370r 60 130" class="mono_ModulationSlider"
                     params="new FVolumeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
-                    explicitFocusOrder="0" pos="1410r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 550r 60 130" class="mono_ModulationSlider"
                     params="new FVolumeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
-                    explicitFocusOrder="0" pos="790r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 190r 60 130" class="mono_ModulationSlider"
                     params="new EnvLfoSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
-                    explicitFocusOrder="0" pos="790r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 370r 60 130" class="mono_ModulationSlider"
                     params="new EnvLfoSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
-                    explicitFocusOrder="0" pos="790r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 550r 60 130" class="mono_ModulationSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
-              virtualName="" explicitFocusOrder="0" pos="250r 690r 60 20" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
-                    explicitFocusOrder="0" pos="430r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="455r 750r 60 130" class="mono_ModulationSlider"
                     params="new ReleaseSlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="860r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="885r 750r 60 130" class="mono_ModulationSlider"
                     params="new DelaySlConfig()"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
-                    explicitFocusOrder="0" pos="1410r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 750r 60 130" class="mono_ModulationSlider"
                     params="new VolumeConfig()"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
-                    explicitFocusOrder="0" pos="1260r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 370r 60 130" class="mono_ModulationSlider"
                     params="new GForceSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
-                    explicitFocusOrder="0" pos="1260r 480r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 550r 60 130" class="mono_ModulationSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1270 670 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="x1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
-                    explicitFocusOrder="0" pos="80r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 755r 60 130" class="mono_ModulationSlider"
                     params="new FMFreqSlConfig()"/>
   <GENERICCOMPONENT name="" id="53fd0bab31e1ce" memberName="flt_attack_6" virtualName=""
-                    explicitFocusOrder="0" pos="150r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 755r 60 130" class="mono_ModulationSlider"
                     params="new FMAmountSlConfig()"/>
   <GENERICCOMPONENT name="" id="7abd69d58b16456c" memberName="osc_wave_1" virtualName=""
-                    explicitFocusOrder="0" pos="80r 160r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="30 60 60 130" class="mono_ModulationSlider"
                     params="new WAVESlConfig(0)"/>
   <GENERICCOMPONENT name="" id="289652ee3553683c" memberName="osc_wave_2" virtualName=""
-                    explicitFocusOrder="0" pos="80r 320r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 370r 60 130" class="mono_ModulationSlider"
                     params="new WAVESlConfig(1)"/>
   <SLIDER name="new slider" id="20de89a2be986cc1" memberName="sl_morhp_mix"
-          virtualName="" explicitFocusOrder="0" pos="1140 605 180 33" min="0"
+          virtualName="" explicitFocusOrder="0" pos="1165 715 180 33" min="0"
           max="3000" int="0.010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="" id="87db63f1017ff04b" memberName="button_programm_delete"
-              virtualName="" explicitFocusOrder="0" pos="930r 870r 60 30" bgColOff="ff000000"
-              textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="895r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="120408211886469e" memberName="button_open_config"
-              virtualName="" explicitFocusOrder="0" pos="1090r 870r 60 30"
+              virtualName="" explicitFocusOrder="0" pos="1085r 1030r 60 30"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CFG"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="980r 30 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="980r 190 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="980r 350 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="1516b3c138a9fbe8" memberName="label_monolisa2" virtualName=""
-         explicitFocusOrder="0" pos="1395r 840r 435 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M   O   N   O   P   L   U   G   S"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="120r 870r 50 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="LEARN" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1205r 1030r 60 30"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LEARN"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
-              virtualName="" explicitFocusOrder="0" pos="170r 870r 50 30" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="560r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="mono_ModulationSlider"
                     params="new FColourSlConfig()"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
-                    explicitFocusOrder="0" pos="1260r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 950r 60 130" class="mono_ModulationSlider"
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
-              virtualName="" explicitFocusOrder="0" pos="1140r 605 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="CFG" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
-              virtualName="" explicitFocusOrder="0" pos="495r 510 25 130" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="520r 620 25 130" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="F X" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af640d06672c6a96" memberName="label_ui_headline2"
-         virtualName="" explicitFocusOrder="0" pos="1080 506 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1105 616 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M-OSC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="6cf55c2697d84492" memberName="label_ui_headline3"
-         virtualName="" explicitFocusOrder="0" pos="1140 506 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1165 616 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M-FLT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="31349ce13448848e" memberName="label_ui_headline5"
-         virtualName="" explicitFocusOrder="0" pos="1200 506 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1225 616 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M-FX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="1e86fc07c2fe9e40" memberName="label_ui_headline6"
-         virtualName="" explicitFocusOrder="0" pos="1260 506 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1285 616 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M-ARP" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="170r 900r 50 30" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="VAL" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="710r 640r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="735r 750r 60 130" class="mono_ModulationSlider"
                     params="new RWidthSlConfig()"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
-                    explicitFocusOrder="0" pos="1410r 800r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 950r 60 130" class="mono_ModulationSlider"
                     params="new OctaveOffsetSlConfig()"/>
+  <LABEL name="" id="b59f286362d58d43" memberName="label_ui_headline4"
+         virtualName="" explicitFocusOrder="0" pos="245 5 120 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER INPUTS" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="706628ef52338a3" memberName="label_ui_headline7"
+         virtualName="" explicitFocusOrder="0" pos="40 5 110 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="OSCILLATORS" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="40822f39512f59ee" memberName="label_ui_headline8"
+         virtualName="" explicitFocusOrder="0" pos="510 5 130 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER ENVELOPE"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="4a296c8c1b36d5b5" memberName="label_ui_headline9"
+         virtualName="" explicitFocusOrder="0" pos="850 5 50 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="8dfe8598a2227d6" memberName="label_ui_headline10"
+         virtualName="" explicitFocusOrder="0" pos="975 5 190 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER CONFIGURATION"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="624597a6e0fd4f43" memberName="label_ui_headline11"
+         virtualName="" explicitFocusOrder="0" pos="1230 5 110 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER FX" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="d111f7d6b78091bd" memberName="label_ui_headline12"
+         virtualName="" explicitFocusOrder="0" pos="1375 5 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="OUTPUT" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="cc8c514c76739c41" memberName="label_ui_headline13"
+         virtualName="" explicitFocusOrder="0" pos="270 580 130 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="MAIN ENVELOPE" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="c10833d7ab234ea1" memberName="label_ui_headline14"
+         virtualName="" explicitFocusOrder="0" pos="525 580 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="bfabeb8da43f3421" memberName="label_ui_headline15"
+         virtualName="" explicitFocusOrder="0" pos="665 580 80 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="7a6e3d75d5abc4de" memberName="label_ui_headline16"
+         virtualName="" explicitFocusOrder="0" pos="825 580 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="a4b6cc975d476069" memberName="label_ui_headline17"
+         virtualName="" explicitFocusOrder="0" pos="910 580 70 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="fcb9d931dfbdfa5d" memberName="label_ui_headline18"
+         virtualName="" explicitFocusOrder="0" pos="1005 580 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FX MIX" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="660b9ead77642f4f" memberName="label_ui_headline19"
+         virtualName="" explicitFocusOrder="0" pos="1135 580 180 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="MORPH SECTION" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="c72f149b5e4ef3a1" memberName="label_ui_headline20"
+         virtualName="" explicitFocusOrder="0" pos="615 780 190 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="ARPEGGIATOR" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="365d9d273db6db3a" memberName="label_ui_headline21"
+         virtualName="" explicitFocusOrder="0" pos="100 780 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="GLIDE" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="9b0c123898785ff8" memberName="label_ui_headline22"
+         virtualName="" explicitFocusOrder="0" pos="1260 780 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="3dc587f677ecc27f" memberName="label_ui_headline23"
+         virtualName="" explicitFocusOrder="0" pos="1375 580 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="MASTER" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="de3bbc3ac23fc36a" memberName="label_ui_headline24"
+         virtualName="" explicitFocusOrder="0" pos="1375 780 60 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="OCTAVE" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="ecf3af4d030b7b19" memberName="label_ui_headline25"
+         virtualName="" explicitFocusOrder="0" pos="35 563 120 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FM" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
+                    virtualName="SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
+                    class="Component" params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
