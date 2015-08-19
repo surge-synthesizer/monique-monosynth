@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -897,7 +897,8 @@ UiEditorSettings::UiEditorSettings ()
 
 
     //[Constructor] You can add your own custom stuff here..
-
+    slider_env_shape->setValue(DATA(synth_data).curve_shape,sendNotification);
+    refresh();
     //[/Constructor]
 }
 
@@ -1005,10 +1006,7 @@ void UiEditorSettings::paint (Graphics& g)
 #include "UiDynamicSizeStart.h"
     //[/UserPrePaint]
 
-    g.fillAll (Colours::black);
-
-    g.setColour (Colours::black);
-    g.fillRect (0, 0, 650, 590);
+    g.fillAll (Colour (0xff000033));
 
     g.setColour (Colour (0xffff3b00));
     g.drawRect (0, 0, 650, 590, 2);
@@ -1101,12 +1099,12 @@ void UiEditorSettings::paint (Graphics& g)
             if( i >= sustain_start && count_sustain < sustain_size )
             {
 	        value = 0.5f;
-                col = Colours::yellow;
+                col = Colours::orange;
                 count_sustain++;
             }
             else
             {
-                col = Colours::red;
+                col = Colours::yellow;
                 value = 1.0f-curve[count_sustain == sustain_size ? i-sustain_size : i];
             }
 
@@ -1504,8 +1502,8 @@ BEGIN_JUCER_METADATA
   <METHODS>
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
   </METHODS>
-  <BACKGROUND backgroundColour="ff000000">
-    <RECT pos="0 0 650 590" fill="solid: ff000000" hasStroke="1" stroke="2, mitered, butt"
+  <BACKGROUND backgroundColour="ff000033">
+    <RECT pos="0 0 650 590" fill="solid: 0" hasStroke="1" stroke="2, mitered, butt"
           strokeColour="solid: ffff3b00"/>
     <ROUNDRECT pos="260 85 10 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <PATH pos="0 0 100 100" fill="solid: 0" hasStroke="1" stroke="1, mitered, rounded"

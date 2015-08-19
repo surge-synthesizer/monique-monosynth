@@ -90,7 +90,6 @@ private:
     ScopedPointer<ComboBox> combo_output_clock;
     ScopedPointer<TextButton> close;
     ScopedPointer<Slider> slider_midi_pickup;
-    ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<Label> label_17;
     ScopedPointer<Label> label_2;
 

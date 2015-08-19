@@ -219,13 +219,6 @@ UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manag
     slider_midi_pickup->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_midi_pickup->addListener (this);
 
-    addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
-    button_midi_learn->setButtonText (TRANS("REFRESH"));
-    button_midi_learn->addListener (this);
-    button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
-    button_midi_learn->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (label_17 = new Label (String::empty,
                                              TRANS("MUTE")));
     label_17->setFont (Font (30.00f, Font::plain));
@@ -283,7 +276,6 @@ UiEditorMIDIIO::~UiEditorMIDIIO()
     combo_output_clock = nullptr;
     close = nullptr;
     slider_midi_pickup = nullptr;
-    button_midi_learn = nullptr;
     label_17 = nullptr;
     label_2 = nullptr;
 
@@ -299,7 +291,7 @@ void UiEditorMIDIIO::paint (Graphics& g)
 #include "UiDynamicSizeStart.h"
     //[/UserPrePaint]
 
-    g.fillAll (Colours::black);
+    g.fillAll (Colour (0xff330033));
 
     g.setColour (Colour (0xffff3b00));
     g.drawRect (0, 0, 610, 360, 2);
@@ -343,7 +335,6 @@ void UiEditorMIDIIO::resized()
     combo_output_clock->setBounds (240 - 130, 340 - 30, 130, 30);
     close->setBounds (605 - 45, 5, 45, 20);
     slider_midi_pickup->setBounds (110, 190 - 10, 480, 10);
-    button_midi_learn->setBounds (310 - 60, 230 - 30, 60, 30);
     label_17->setBounds (530 - 50, 230 - 30, 50, 30);
     label_2->setBounds (100 - 80, 200 - 30, 80, 30);
     //[UserResized] Add your own custom resize handling here..
@@ -431,11 +422,6 @@ void UiEditorMIDIIO::buttonClicked (Button* buttonThatWasClicked)
         return;
         //[/UserButtonCode_close]
     }
-    else if (buttonThatWasClicked == button_midi_learn)
-    {
-        //[UserButtonCode_button_midi_learn] -- add your button handler code here..
-        //[/UserButtonCode_button_midi_learn]
-    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -493,7 +479,7 @@ BEGIN_JUCER_METADATA
   <METHODS>
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
   </METHODS>
-  <BACKGROUND backgroundColour="ff000000">
+  <BACKGROUND backgroundColour="ff330033">
     <RECT pos="0 0 610 360" fill="solid: 161616" hasStroke="1" stroke="2, mitered, butt"
           strokeColour="solid: ffff3b00"/>
     <ROUNDRECT pos="20 118 570 4" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
@@ -590,10 +576,6 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1000" int="1" style="LinearHorizontal"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="310r 230r 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="REFRESH"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="833d176af8d85d12" memberName="label_17" virtualName=""
          explicitFocusOrder="0" pos="530r 230r 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MUTE" editableSingleClick="0"
