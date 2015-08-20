@@ -1,81 +1,56 @@
-BUGS:
-can crash on shutdown
-lfo amp on osc looks ugly????
-midi sync disabled for speed multies
-bg für second ADSR slider
-bug: arp arbeitet weiter, auch beim notenspiel
+CHANGES 0.5:
+- add: more speed multies (1,2,3,4,5,7,8,9,12,16)
+- replace: speed multi buttons with a slider
+- add: multi core support
+- improve: performance (reduce cpu usage, reduce memory usage)
+- add: crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
+- fix: engine crashs (mostly on switch programs)
+- fix: peak meter crashs
+- add: octave offset
+- improve: ui sliders, clean it up (and resize)
+
+:!: KNOWN BUGS:
+- bug: can crash on to short morph motor time
+- bug: can crash on to short attack time
+- check/test/bug: multi instance support
+- bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
+- crackls: on eq if you switch from > 0 to < 0 or in the other direction
+- load save sustain replacements
+- update settings if editor is open (shows old values if you load a new program while a settings editor is open
+- multi instance support is not working
+- lfo's are not processed if the synth is silent
+- clicken beim umschalten auf fix input
+- knacken beim bewegen des compression & shape slider
+- kein background value für linear slider
+- can crash on shutdown
+- lfo amp on osc looks ugly????
+- midi sync disabled for speed multies
+- arp arbeitet weiter, auch beim notenspiel
+
+TODO:
+- improve editors style, add different colours for each
+- add: modulation amounts as automation params
+- add: midi bank select
+- add: midi mod wheel; pitch wheel support
+- add: panic
+- add/fix: morph for some values are not supported now (e.g. pulse)
+- add: store ui size
+- add: store osci settings
+- add-back: morph toggles
+- shuffle: snap to note durations
+- add: audio device settings (standalone)
+- improve/fix style of some background sliders: e.g modulation of the OSC tune
+- add: modwheel to ui
+- store last programm as filename in last session file (not as sepperate project)
+- bg für second ADSR slider
+
+QUESTS
+- sync lfo with note on?
+- how to set return value?
 
 -------------------------------------------------------------------
 
-add more speed multies
-add multi core support
-add crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
-improve performance (reduce cpu usage, reduce memory usage)
-fix engine crashs (mostly on switch programs)
-fix peak meter crashs
-add octave offset
-fix engine crashs
-improve ui (and resize)
-add smooth filter change
-
--------------------------------------------------------------------
-todo add modwheel to ui
-
-todo: midi controller push note e.g. 64 and controll with 1 to 8 a dial, define feedback colour/value for each button/note
-todo: store last programm as last session as file info not as programm and load it on start
-todo: modulation parameters for autormation params
-todo: update settings if editor is open
-
-todo midi bank select
-todo midi mod wheel; pitch wheel
-
-todo panic
-
-todo morph int
-store ui size
-store oszi settings
-
-
-bug: crash on to short morph motor time
-bug: crash on to short attack time
-
-
-load save sustain replacements
-
-todo remove statics (multi instance)
-
-select audio device
-
-morph pad right of morph groups
-peak meter horizontal for aliasing and remove that!
-morph slider changes in slider config
-toggle morph
-sync problem if osc freq is same!!!
-
-todo crackls on eq if you switch from > 0 to < 0 or in the other direction
-
-sync lfo on load
-sync lfo with note on?
-
-todo return value not set on load
-
-clicken beim umschalten auf fix input
-knacken beim bewegen des compression slider bei filter 3
-kein background value für linear slider
-
------------------------------
-
-
-
-
-synthtopia
-mic
-b-step builds
-
-
-change google price
-
-
+mic rechner
 
 
 LIVE
@@ -108,29 +83,3 @@ bücher
 - leben als haustier von ausserirdischen, wird jedem sein lebensraum gestallted (artgerecht)
 
 -------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-bundle volume, effects, eq by default to one morph group
-
-try again BASS (key C#1) all up!!!
-
-
-mic news
-
-
-
-
-
-
-
-

@@ -110,7 +110,7 @@ pattern=*.o
 targets=1
 
 [MakeBuilder]
-Number Of Jobs=7
+Number Of Jobs=3
 
 [Project]
 VersionControlSupport=kdevgit
