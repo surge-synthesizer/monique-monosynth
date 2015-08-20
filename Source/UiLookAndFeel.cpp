@@ -203,7 +203,7 @@ UiLookAndFeel::UiLookAndFeel()
 
         FileChooserDialogBox::titleTextColourId,                0xffff3b00,
     };
-    
+
     show_values_always = false;
     midi_learn_comp = nullptr;
 
@@ -257,7 +257,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     if( button.isOpaque() )
         g.fillAll (colours.bg);
 
-    
+
     const bool is_midi_learn_mode = static_cast< Component* >( &button ) == midi_learn_comp;
 
     // isMouseOverButton
@@ -1218,10 +1218,10 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
         Colour col = colours.label_text_colour;
         if( labelStyle ==  IS_VALUE_LABEL )
             col = colours.slider_track_colour;
-	else if( labelStyle ==  IS_SECOND_VALUE_LABEL )
-	{
+        else if( labelStyle ==  IS_SECOND_VALUE_LABEL )
+        {
             col = colours.slider_track_colour_2;
-	}
+        }
 
         Rectangle<int> textArea (label.getBorderSize().subtractedFrom (label.getLocalBounds()));
         g.setColour (col);
@@ -1298,14 +1298,14 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
                                         iw, height + sliderRadius*2 - sliderPos,
                                         5.0f);
 
-            g.fillPath (indent);
             if( is_enabled )
             {
-                DropShadow drop_shadow( col, 2, Point<int>(0,0) );
+                DropShadow drop_shadow( col, 1, Point<int>(0,0) );
                 drop_shadow.drawForPath( g, indent );
             }
-
-            g.setColour (col.darker(6.6f));
+	    
+            g.fillPath (indent);
+            g.setColour (col.darker(6.6f).withAlpha(0.4f));
             g.strokePath (indent, PathStrokeType (1.0f));
         }
 
@@ -1512,15 +1512,10 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
             SliderCol = colours.label_text_colour; //.brighter (0.4f);
     }
 
-    const float thickness = 0.8 ; // (1.f/40*slider.getWidth()); // 0.7f;
+    const float thickness = 0.85 ; // (1.f/40*slider.getWidth()); // 0.7f;
 
     if ( ! slider.isEnabled())
-        SliderCol = Colour(0xff777777);
-
-    ColourGradient cg (SliderCol,
-                       centreX, centreY,
-                       Colours::black.withAlpha(0.1f),
-                       centreX*3, centreY, true);
+        SliderCol = Colour(0xff444444);
     {
 
         Path filledArc;
@@ -1531,33 +1526,30 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
             //g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
             g.setColour (Colour (0xff222222) ) ; //.interpolatedWith(SliderCol.darker(0.8),0.2));
             g.fillPath (filledArc);
-            g.setColour(Colour(0xff777777).darker(7.8));
+            g.setColour(Colour(0xff444444).darker(7.8));
             g.strokePath(filledArc,PathStrokeType(1.f));
         }
 
-        g.setGradientFill (cg);
+        g.setColour (SliderCol);
         filledArc.clear();
         filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, thickness);
 
         //g.fillPath (filledArc);
-        if( slider.isEnabled() )
+        //if( slider.isEnabled() )
         {
             {
                 DropShadow drop_shadow( SliderCol, 1, Point<int>(0,0) );
                 drop_shadow.drawForPath( g, filledArc );
             }
             {
-                g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
-                g.strokePath(filledArc,PathStrokeType(1.5f));
+                g.setColour (SliderCol.darker(6.6f).withAlpha(0.4f));
+                g.strokePath (filledArc, PathStrokeType (1.0f));
             }
         }
 
 
         {
-            g.setGradientFill (cg);
-            //g.setColour (Colours::black);
-            filledArc.clear();
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, thickness);
+            g.setColour (SliderCol);
             g.fillPath (filledArc);
         }
     }
@@ -1742,12 +1734,11 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
             p.applyTransform( AffineTransform::rotation (angle).translated (centreX, centreY) );
             if( slider.isEnabled() )
             {
-                DropShadow drop_shadow( SliderCol, 1, Point<int>(0,0) );
+                DropShadow drop_shadow( SliderCol.darker(), 1, Point<int>(0,0) );
                 drop_shadow.drawForPath( g, p );
             }
             {
                 g.setColour (SliderCol);
-                g.setGradientFill (cg);
                 g.fillPath (p);
             }
         }
@@ -3115,6 +3106,8 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
+
+
 
 
 

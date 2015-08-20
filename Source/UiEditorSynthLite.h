@@ -274,11 +274,11 @@ private:
     ScopedPointer<Label> label_ui_headline11;
     ScopedPointer<Label> label_ui_headline12;
     ScopedPointer<Label> label_ui_headline13;
-    ScopedPointer<Label> label_ui_headline14;
-    ScopedPointer<Label> label_ui_headline15;
-    ScopedPointer<Label> label_ui_headline16;
-    ScopedPointer<Label> label_ui_headline17;
-    ScopedPointer<Label> label_ui_headline18;
+    ScopedPointer<Label> label_shape;
+    ScopedPointer<Label> label_reverb;
+    ScopedPointer<Label> label_delay;
+    ScopedPointer<Label> label_chorus;
+    ScopedPointer<Label> label_fx_mix;
     ScopedPointer<Label> label_ui_headline19;
     ScopedPointer<Label> label_ui_headline20;
     ScopedPointer<Label> label_ui_headline21;
@@ -287,6 +287,7 @@ private:
     ScopedPointer<Label> label_ui_headline24;
     ScopedPointer<Label> label_ui_headline25;
     ScopedPointer<SegmentedMeter> volume_master_meter;
+    ScopedPointer<Label> label_eq;
 
 
     //==============================================================================

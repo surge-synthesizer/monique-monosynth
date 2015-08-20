@@ -204,8 +204,14 @@ void UiEditorSynthLite::switch_finalizer_tab() {
     chorus_modulation->setVisible( state_switch );
     bypass->setVisible( state_switch );
     label_effect_hider->setVisible( !state_switch );
+    label_reverb->setVisible( state_switch );
 
     //eg
+    label_shape->setVisible( !state_switch );
+    label_eq->setVisible( !state_switch );
+    label_delay->setVisible( !state_switch );
+    label_chorus->setVisible( !state_switch );
+    label_fx_mix->setVisible( !state_switch );
     eq_1->setVisible( !state_switch );
     eq_2->setVisible( !state_switch );
     eq_3->setVisible( !state_switch );
@@ -243,7 +249,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     addAndMakeVisible (morpher_1 = new mono_ModulationSlider (new MorphSLConfig(0)));
 
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
-                                                       String::empty));
+            String::empty));
     label_effect_hider->setFont (Font (30.00f, Font::plain));
     label_effect_hider->setJustificationType (Justification::centredLeft);
     label_effect_hider->setEditable (false, false, false);
@@ -354,7 +360,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     addAndMakeVisible (flt_attack_1 = new mono_ModulationSlider (new FAttackSlConfig(0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
-                                                   TRANS("M O N I Q U E")));
+            TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
     label_monolisa->setJustificationType (Justification::centredRight);
     label_monolisa->setEditable (false, false, false);
@@ -772,7 +778,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-                                                       TRANS("M-OSC")));
+            TRANS("M-OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -781,7 +787,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-                                                       TRANS("M-FLT")));
+            TRANS("M-FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -790,7 +796,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-                                                       TRANS("M-FX")));
+            TRANS("M-FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -799,7 +805,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-                                                       TRANS("M-ARP")));
+            TRANS("M-ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -819,7 +825,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     addAndMakeVisible (octave_offset = new mono_ModulationSlider (new OctaveOffsetSlConfig()));
 
     addAndMakeVisible (label_ui_headline4 = new Label (String::empty,
-                                                       TRANS("FILTER INPUTS")));
+            TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
@@ -828,7 +834,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline7 = new Label (String::empty,
-                                                       TRANS("OSCILLATORS")));
+            TRANS("OSCILLATORS")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
@@ -837,7 +843,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline8 = new Label (String::empty,
-                                                       TRANS("FILTER ENVELOPE")));
+            TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
@@ -846,7 +852,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline9 = new Label (String::empty,
-                                                       TRANS("LFO")));
+            TRANS("LFO")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
@@ -855,7 +861,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline10 = new Label (String::empty,
-                                                        TRANS("FILTER CONFIGURATION")));
+            TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
@@ -864,7 +870,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline11 = new Label (String::empty,
-                                                        TRANS("FILTER FX")));
+            TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
@@ -873,7 +879,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline12 = new Label (String::empty,
-                                                        TRANS("OUTPUT")));
+            TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
@@ -882,7 +888,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label (String::empty,
-                                                        TRANS("MAIN ENVELOPE")));
+            TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -890,53 +896,53 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline13->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline14 = new Label (String::empty,
-                                                        TRANS("SHAPE")));
-    label_ui_headline14->setFont (Font (30.00f, Font::plain));
-    label_ui_headline14->setJustificationType (Justification::centred);
-    label_ui_headline14->setEditable (false, false, false);
-    label_ui_headline14->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline14->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline14->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_shape = new Label (String::empty,
+            TRANS("SHAPE")));
+    label_shape->setFont (Font (30.00f, Font::plain));
+    label_shape->setJustificationType (Justification::centred);
+    label_shape->setEditable (false, false, false);
+    label_shape->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_shape->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline15 = new Label (String::empty,
-                                                        TRANS("REVERB")));
-    label_ui_headline15->setFont (Font (30.00f, Font::plain));
-    label_ui_headline15->setJustificationType (Justification::centred);
-    label_ui_headline15->setEditable (false, false, false);
-    label_ui_headline15->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline15->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline15->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_reverb = new Label (String::empty,
+            TRANS("REVERB")));
+    label_reverb->setFont (Font (30.00f, Font::plain));
+    label_reverb->setJustificationType (Justification::centred);
+    label_reverb->setEditable (false, false, false);
+    label_reverb->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_reverb->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline16 = new Label (String::empty,
-                                                        TRANS("DELAY")));
-    label_ui_headline16->setFont (Font (30.00f, Font::plain));
-    label_ui_headline16->setJustificationType (Justification::centred);
-    label_ui_headline16->setEditable (false, false, false);
-    label_ui_headline16->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline16->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_delay = new Label (String::empty,
+            TRANS("DELAY")));
+    label_delay->setFont (Font (30.00f, Font::plain));
+    label_delay->setJustificationType (Justification::centred);
+    label_delay->setEditable (false, false, false);
+    label_delay->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_delay->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline17 = new Label (String::empty,
-                                                        TRANS("CHORUS")));
-    label_ui_headline17->setFont (Font (30.00f, Font::plain));
-    label_ui_headline17->setJustificationType (Justification::centred);
-    label_ui_headline17->setEditable (false, false, false);
-    label_ui_headline17->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline17->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline17->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_chorus = new Label (String::empty,
+            TRANS("CHORUS")));
+    label_chorus->setFont (Font (30.00f, Font::plain));
+    label_chorus->setJustificationType (Justification::centred);
+    label_chorus->setEditable (false, false, false);
+    label_chorus->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_chorus->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline18 = new Label (String::empty,
-                                                        TRANS("FX MIX")));
-    label_ui_headline18->setFont (Font (30.00f, Font::plain));
-    label_ui_headline18->setJustificationType (Justification::centred);
-    label_ui_headline18->setEditable (false, false, false);
-    label_ui_headline18->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline18->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_fx_mix = new Label (String::empty,
+            TRANS("FX MIX")));
+    label_fx_mix->setFont (Font (30.00f, Font::plain));
+    label_fx_mix->setJustificationType (Justification::centred);
+    label_fx_mix->setEditable (false, false, false);
+    label_fx_mix->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_fx_mix->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline19 = new Label (String::empty,
-                                                        TRANS("MORPH SECTION")));
+            TRANS("MORPH SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
@@ -945,7 +951,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline20 = new Label (String::empty,
-                                                        TRANS("ARPEGGIATOR")));
+            TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
@@ -954,7 +960,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline21 = new Label (String::empty,
-                                                        TRANS("GLIDE")));
+            TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
@@ -963,7 +969,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline22 = new Label (String::empty,
-                                                        TRANS("SPEED")));
+            TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
@@ -972,7 +978,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline23 = new Label (String::empty,
-                                                        TRANS("MASTER")));
+            TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
@@ -981,7 +987,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline24 = new Label (String::empty,
-                                                        TRANS("OCTAVE")));
+            TRANS("OCTAVE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
@@ -990,7 +996,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline25 = new Label (String::empty,
-                                                        TRANS("FM")));
+            TRANS("FM")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
@@ -999,6 +1005,15 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (volume_master_meter = new SegmentedMeter());
+
+    addAndMakeVisible (label_eq = new Label (String::empty,
+            TRANS("EQUALIZER")));
+    label_eq->setFont (Font (30.00f, Font::plain));
+    label_eq->setJustificationType (Justification::centred);
+    label_eq->setEditable (false, false, false);
+    label_eq->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_eq->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_eq->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -1065,12 +1080,12 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     if( false )
     {
-    //[/UserPreSize]
+        //[/UserPreSize]
 
-    setSize (1465, 1235);
+        setSize (1465, 1235);
 
 
-    //[Constructor] You can add your own custom stuff here..
+        //[Constructor] You can add your own custom stuff here..
     }
     addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
 #ifdef IS_PLUGIN
@@ -1286,11 +1301,11 @@ UiEditorSynthLite::~UiEditorSynthLite()
     label_ui_headline11 = nullptr;
     label_ui_headline12 = nullptr;
     label_ui_headline13 = nullptr;
-    label_ui_headline14 = nullptr;
-    label_ui_headline15 = nullptr;
-    label_ui_headline16 = nullptr;
-    label_ui_headline17 = nullptr;
-    label_ui_headline18 = nullptr;
+    label_shape = nullptr;
+    label_reverb = nullptr;
+    label_delay = nullptr;
+    label_chorus = nullptr;
+    label_fx_mix = nullptr;
     label_ui_headline19 = nullptr;
     label_ui_headline20 = nullptr;
     label_ui_headline21 = nullptr;
@@ -1299,6 +1314,7 @@ UiEditorSynthLite::~UiEditorSynthLite()
     label_ui_headline24 = nullptr;
     label_ui_headline25 = nullptr;
     volume_master_meter = nullptr;
+    label_eq = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1961,11 +1977,11 @@ void UiEditorSynthLite::resized()
     label_ui_headline11->setBounds (1230, 5, 110, 35);
     label_ui_headline12->setBounds (1375, 5, 60, 35);
     label_ui_headline13->setBounds (270, 580, 130, 35);
-    label_ui_headline14->setBounds (525, 580, 60, 35);
-    label_ui_headline15->setBounds (665, 580, 80, 35);
-    label_ui_headline16->setBounds (825, 580, 60, 35);
-    label_ui_headline17->setBounds (910, 580, 70, 35);
-    label_ui_headline18->setBounds (1005, 580, 60, 35);
+    label_shape->setBounds (525, 580, 60, 35);
+    label_reverb->setBounds (665, 580, 80, 35);
+    label_delay->setBounds (825, 580, 60, 35);
+    label_chorus->setBounds (910, 580, 70, 35);
+    label_fx_mix->setBounds (1005, 580, 60, 35);
     label_ui_headline19->setBounds (1135, 580, 180, 35);
     label_ui_headline20->setBounds (615, 780, 190, 35);
     label_ui_headline21->setBounds (100, 780, 60, 35);
@@ -1974,6 +1990,7 @@ void UiEditorSynthLite::resized()
     label_ui_headline24->setBounds (1375, 780, 60, 35);
     label_ui_headline25->setBounds (35, 563, 120, 35);
     volume_master_meter->setBounds (1375, 620, 60, 27);
+    label_eq->setBounds (740, 580, 90, 35);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3570,28 +3587,28 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="MAIN ENVELOPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="c10833d7ab234ea1" memberName="label_ui_headline14"
-         virtualName="" explicitFocusOrder="0" pos="525 580 60 35" textCol="ffff3b00"
+  <LABEL name="" id="c10833d7ab234ea1" memberName="label_shape" virtualName=""
+         explicitFocusOrder="0" pos="525 580 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="bfabeb8da43f3421" memberName="label_ui_headline15"
-         virtualName="" explicitFocusOrder="0" pos="665 580 80 35" textCol="ffff3b00"
+  <LABEL name="" id="bfabeb8da43f3421" memberName="label_reverb" virtualName=""
+         explicitFocusOrder="0" pos="665 580 80 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="7a6e3d75d5abc4de" memberName="label_ui_headline16"
-         virtualName="" explicitFocusOrder="0" pos="825 580 60 35" textCol="ffff3b00"
+  <LABEL name="" id="7a6e3d75d5abc4de" memberName="label_delay" virtualName=""
+         explicitFocusOrder="0" pos="825 580 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="a4b6cc975d476069" memberName="label_ui_headline17"
-         virtualName="" explicitFocusOrder="0" pos="910 580 70 35" textCol="ffff3b00"
+  <LABEL name="" id="a4b6cc975d476069" memberName="label_chorus" virtualName=""
+         explicitFocusOrder="0" pos="910 580 70 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="fcb9d931dfbdfa5d" memberName="label_ui_headline18"
-         virtualName="" explicitFocusOrder="0" pos="1005 580 60 35" textCol="ffff3b00"
+  <LABEL name="" id="fcb9d931dfbdfa5d" memberName="label_fx_mix" virtualName=""
+         explicitFocusOrder="0" pos="1005 580 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX MIX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
@@ -3633,6 +3650,11 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
                     virtualName="SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
                     class="Component" params=""/>
+  <LABEL name="" id="ad887653d405d154" memberName="label_eq" virtualName=""
+         explicitFocusOrder="0" pos="740 580 90 35" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="EQUALIZER" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
