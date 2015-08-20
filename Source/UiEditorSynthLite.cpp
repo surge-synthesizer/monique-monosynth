@@ -205,13 +205,13 @@ void UiEditorSynthLite::switch_finalizer_tab() {
     bypass->setVisible( state_switch );
     label_effect_hider->setVisible( !state_switch );
     label_reverb->setVisible( state_switch );
+    label_shape->setVisible( state_switch );
+    label_delay->setVisible( state_switch );
+    label_chorus->setVisible( state_switch );
+    label_fx_mix->setVisible( state_switch );
 
     //eg
-    label_shape->setVisible( !state_switch );
     label_eq->setVisible( !state_switch );
-    label_delay->setVisible( !state_switch );
-    label_chorus->setVisible( !state_switch );
-    label_fx_mix->setVisible( !state_switch );
     eq_1->setVisible( !state_switch );
     eq_2->setVisible( !state_switch );
     eq_3->setVisible( !state_switch );
