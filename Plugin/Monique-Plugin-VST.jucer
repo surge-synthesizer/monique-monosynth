@@ -186,17 +186,16 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2013 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" toolset="v120_xp"
-            extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1" extraCompilerFlags="">
+    <VS2015 targetFolder="Builds/WINDOWS" vstFolder="../vstsdk2.4/" extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1"
+            toolset="v140_xp">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique_32" fastMath="1"
-                       binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0"/>
+                       isDebug="0" optimisation="3" targetName="Monique_32" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
+                       binaryPath="Builds/WINDOWS" useRuntimeLibDLL="0" fastMath="1"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique_64" fastMath="1"
-                       binaryPath="Builds/WINDOWS" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0" alwaysGenerateDebugSymbols="0"/>
+                       isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
+                       headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
+                       useRuntimeLibDLL="0" fastMath="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
@@ -213,7 +212,7 @@
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
-    </VS2013>
+    </VS2015>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>

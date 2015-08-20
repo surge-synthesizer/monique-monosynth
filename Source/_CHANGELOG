@@ -14,6 +14,9 @@ improve performance (reduce cpu usage, reduce memory usage)
 fix engine crashs (mostly on switch programs)
 fix peak meter crashs
 add octave offset
+fix engine crashs
+improve ui (and resize)
+add smooth filter change
 
 -------------------------------------------------------------------
 todo add modwheel to ui

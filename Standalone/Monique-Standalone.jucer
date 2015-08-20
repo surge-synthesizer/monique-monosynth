@@ -179,20 +179,18 @@
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2013 targetFolder="Builds/WINDOWS" smallIcon="S5O3Z0" bigIcon="MCWLE6"
-            toolset="v120_xp" extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1" extraCompilerFlags=""
-            userNotes="">
+    <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1"
+            toolset="v140_xp">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique" useRuntimeLibDLL="0"
-                       headerPath="" fastMath="1" binaryPath="Builds/WINDOWS" alwaysGenerateDebugSymbols="0"
-                       wholeProgramOptimisation="" defines=""/>
+                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique" useRuntimeLibDLL="0"
-                       headerPath="" fastMath="1" binaryPath="Builds/WINDOWS" wholeProgramOptimisation=""
-                       alwaysGenerateDebugSymbols="0" defines="" libraryPath=""/>
+                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
@@ -200,12 +198,11 @@
         <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
         <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
-    </VS2013>
+    </VS2015>
   </EXPORTFORMATS>
   <MODULES>
     <MODULES id="juce_audio_basics" showAllCode="0" useLocalCopy="0"/>
