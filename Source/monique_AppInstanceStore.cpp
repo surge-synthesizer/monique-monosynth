@@ -5,7 +5,8 @@
 #include "mono_AmpPainter.h"
 
 //==============================================================================
-static inline UiLookAndFeel* init_lock_and_feel_hack() noexcept {
+static inline UiLookAndFeel* init_lock_and_feel_hack() noexcept 
+{
     LookAndFeel::setDefaultLookAndFeel( UiLookAndFeel::getInstance() );
     return UiLookAndFeel::getInstance();
 }
