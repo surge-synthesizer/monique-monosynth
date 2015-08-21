@@ -22,7 +22,7 @@
 #include "SynthData.h"
 #include "UiDragPad.h"
 #include "UiEditorSynthLite.h"
-#include "AppInstanceStore.h"
+
 //[/Headers]
 
 #include "UiEditorMorph.h"

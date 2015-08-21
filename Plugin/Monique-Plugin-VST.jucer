@@ -15,11 +15,13 @@
   <MAINGROUP id="tx7Kez" name="Monique">
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
+      <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="Thvgla" name="monique_AppInstanceStore.cpp" compile="1" resource="0"
+              file="../Source/monique_AppInstanceStore.cpp"/>
+        <FILE id="XK3W5Q" name="monique_AppInstanceStore.h" compile="0" resource="0"
+              file="../Source/monique_AppInstanceStore.h"/>
+      </GROUP>
       <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
-      <FILE id="CsLT9o" name="AppInstanceStore.cpp" compile="1" resource="0"
-            file="../Source/AppInstanceStore.cpp"/>
-      <FILE id="rNnSID" name="AppInstanceStore.h" compile="0" resource="0"
-            file="../Source/AppInstanceStore.h"/>
       <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="xJCyIj" name="dRowAudio_Buffer.h" compile="0" resource="0"

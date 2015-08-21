@@ -11,11 +11,13 @@
       <FILE id="OtCcn4" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>
     <GROUP id="{388FBA28-CADB-4019-1A38-AFB2EBC5FC12}" name="Source">
+      <GROUP id="{AF2B749D-8206-B30F-0788-6CC655365B13}" name="Monique">
+        <FILE id="kC0aTK" name="monique_AppInstanceStore.cpp" compile="1" resource="0"
+              file="../Source/monique_AppInstanceStore.cpp"/>
+        <FILE id="fGCgIv" name="monique_AppInstanceStore.h" compile="0" resource="0"
+              file="../Source/monique_AppInstanceStore.h"/>
+      </GROUP>
       <FILE id="CX9lWP" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
-      <FILE id="MG907H" name="AppInstanceStore.cpp" compile="1" resource="0"
-            file="../Source/AppInstanceStore.cpp"/>
-      <FILE id="dboPPC" name="AppInstanceStore.h" compile="0" resource="0"
-            file="../Source/AppInstanceStore.h"/>
       <FILE id="SZ80SS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="y9IvYI" name="dRowAudio_Constants.h" compile="0" resource="0"

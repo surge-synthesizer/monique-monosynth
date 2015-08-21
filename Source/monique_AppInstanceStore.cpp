@@ -1,6 +1,6 @@
 
-#include "AppInstanceStore.h"
-#include "PluginProcessor.h"
+#include "monique_AppInstanceStore.h"
+
 #include "UiLookAndFeel.h"
 #include "mono_AmpPainter.h"
 

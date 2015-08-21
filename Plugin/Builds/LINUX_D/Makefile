@@ -29,7 +29,7 @@ ifeq ($(CONFIG),DEVEL)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/AppInstanceStore_4ba26d25.o \
+  $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o \
   $(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o \
   $(OBJDIR)/mono_AmpPainter_dfaca393.o \
@@ -83,9 +83,9 @@ strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/AppInstanceStore_4ba26d25.o: ../../../Source/AppInstanceStore.cpp
+$(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling AppInstanceStore.cpp"
+	@echo "Compiling monique_AppInstanceStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o: ../../../Source/dRowAudio_GraphicalComponent.cpp
