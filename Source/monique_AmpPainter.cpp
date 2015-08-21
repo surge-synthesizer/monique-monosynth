@@ -25,33 +25,6 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void mono_AmpPainter::refresh() noexcept {
-    repaint();
-}
-
-void mono_AmpPainter::refresh_buttons() {
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours;
-    Colour button_on = colours.button_on_colour;
-    Colour button_off = colours.button_off_colour;
-
-    osc_1->setColour( TextButton::buttonColourId, show_osc[0] ? Colours::lightblue : button_off );
-    osc_2->setColour( TextButton::buttonColourId, show_osc[1] ? Colours::blueviolet : button_off );
-    osc_3->setColour( TextButton::buttonColourId, show_osc[2] ? Colours::violet : button_off );
-
-    lfo_1->setColour( TextButton::buttonColourId, show_eq ? Colours::green : button_off );
-
-    f_1->setColour( TextButton::buttonColourId, show_filter[0] ? Colours::red : button_off );
-    f_2->setColour( TextButton::buttonColourId, show_filter[1] ? Colours::orangered : button_off );
-    f_3->setColour( TextButton::buttonColourId, show_filter[2] ? Colours::orange : button_off );
-
-    f_env_1->setColour( TextButton::buttonColourId, show_filter_env[0] ? Colours::red : button_off );
-    f_env_2->setColour( TextButton::buttonColourId, show_filter_env[1] ? Colours::orangered : button_off );
-    f_env_3->setColour( TextButton::buttonColourId, show_filter_env[2] ? Colours::orange : button_off );
-
-    out->setColour( TextButton::buttonColourId, show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
-}
-
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -122,8 +95,6 @@ mono_AmpPainter::mono_AmpPainter ()
 
 
     //[UserPreSize]
-    resizer = 1;
-
     osc_values.add( new EndlessSwitchBuffer() );
     osc_values.add( new EndlessSwitchBuffer() );
     osc_values.add( new EndlessSwitchBuffer() );
@@ -162,14 +133,26 @@ mono_AmpPainter::mono_AmpPainter ()
 
     refresh_buttons();
 
+    for( int i = 0 ; i != getNumChildComponents() ; ++i )
+    {
+        getChildComponent(i)->setOpaque(true);
+    }
+    drawing_area->setOpaque(false);
+    sl_osc_octave_3->setOpaque(false);
     setOpaque(true);
+
+    sl_osc_octave_3->setValue(0.05);
+
+    /*
     //[/UserPreSize]
 
     setSize (1000, 400);
 
 
     //[Constructor] You can add your own custom stuff here..
-    sl_osc_octave_3->setValue(2048);
+    */
+    
+    startTimer(UI_REFRESH_RATE);
     //[/Constructor]
 }
 
@@ -206,10 +189,10 @@ void mono_AmpPainter::paint (Graphics& g)
     {
         g.fillAll (Colour(0xff050505));
 
-	lock_for_reading();
-	
+        lock_for_reading();
+
         // TODO MAKE INTS!
-        const int samples_to_paint = sl_osc_octave_3->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate();
+        const int samples_to_paint = sl_osc_octave_3->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
         float scale = float(drawing_area->getWidth())/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
         const int paint_start_offset_y = drawing_area->getY();
@@ -217,7 +200,6 @@ void mono_AmpPainter::paint (Graphics& g)
         const int line_center = paint_start_offset_y + height/2;
 
         const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);
-        std::cout << " pos:" << current_position << " samples to paint:" << samples_to_paint << std::endl;
         {
             Colour colour = Colour(0xff444444 );
             g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff161617), 0.0f, height, false));
@@ -259,7 +241,7 @@ void mono_AmpPainter::paint (Graphics& g)
                 int pos_counter = buffer_start_pos_;
                 for( int sid = 0 ; sid < num_samples_ ; ++sid )
                 {
-                    const int x = std::floor((scale_*sid)+x_offset_);
+                    const int x = mono_floor((scale_*sid)+x_offset_);
                     float y = source_buffer_.get_next_and_count(pos_counter);
                     bool paint_line = true;
                     if( last_x == x )
@@ -272,7 +254,7 @@ void mono_AmpPainter::paint (Graphics& g)
                             if( y > 1 )
                                 y = 1;
 
-                            int h = std::floor(y*height_)/2;
+                            int h = mono_floor(y*height_)*0.5f;
 
                             if( paint_line )
                             {
@@ -292,7 +274,7 @@ void mono_AmpPainter::paint (Graphics& g)
                             if( y < -1 )
                                 y = -1;
 
-                            int h = std::floor(y*height_)*-1/2;
+                            int h = mono_floor(y*height_)*-0.5f;
                             if( paint_line )
                             {
                                 g.setColour(col_fill);
@@ -464,11 +446,11 @@ void mono_AmpPainter::paint (Graphics& g)
                 samples_to_paint
             );
         }
-        
+
         unlock_for_reading();
     }
 
-    return;
+    /*
     //[/UserPrePaint]
 
     g.fillAll (Colours::black);
@@ -509,6 +491,7 @@ void mono_AmpPainter::paint (Graphics& g)
     g.fillRect (proportionOfWidth (0.1650f), proportionOfHeight (0.0275f), proportionOfWidth (0.8250f), proportionOfHeight (0.8475f));
 
     //[UserPaint] Add your own custom painting code here..
+    */
     //[/UserPaint]
 }
 
@@ -636,12 +619,46 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
+
+
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 //==============================================================================
-NOINLINE EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0)
-{}
+//==============================================================================
+//==============================================================================
+void mono_AmpPainter::timerCallback() {
+    repaint( drawing_area->getBounds() );
+}
+
+void mono_AmpPainter::refresh_buttons() {
+    ComponentColours colours = UiLookAndFeel::getInstance()->colours;
+    Colour button_on = colours.button_on_colour;
+    Colour button_off = colours.button_off_colour;
+
+    osc_1->setColour( TextButton::buttonColourId, show_osc[0] ? Colours::lightblue : button_off );
+    osc_2->setColour( TextButton::buttonColourId, show_osc[1] ? Colours::blueviolet : button_off );
+    osc_3->setColour( TextButton::buttonColourId, show_osc[2] ? Colours::violet : button_off );
+
+    lfo_1->setColour( TextButton::buttonColourId, show_eq ? Colours::green : button_off );
+
+    f_1->setColour( TextButton::buttonColourId, show_filter[0] ? Colours::red : button_off );
+    f_2->setColour( TextButton::buttonColourId, show_filter[1] ? Colours::orangered : button_off );
+    f_3->setColour( TextButton::buttonColourId, show_filter[2] ? Colours::orange : button_off );
+
+    f_env_1->setColour( TextButton::buttonColourId, show_filter_env[0] ? Colours::red : button_off );
+    f_env_2->setColour( TextButton::buttonColourId, show_filter_env[1] ? Colours::orangered : button_off );
+    f_env_3->setColour( TextButton::buttonColourId, show_filter_env[2] ? Colours::orange : button_off );
+
+    out->setColour( TextButton::buttonColourId, show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
+    out_env->setColour( TextButton::buttonColourId, show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0) {}
 NOINLINE EndlessBuffer::~EndlessBuffer() {}
 
+//==============================================================================
 NOINLINE void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
     ScopedLock locked(writer_lock);
@@ -684,10 +701,10 @@ inline void EndlessBuffer::read_unlock() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size )
-{}
+NOINLINE EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {}
 NOINLINE EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
 
+//==============================================================================
 NOINLINE void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
     ScopedLock locked(writer_lock);
@@ -742,7 +759,7 @@ int EndlessSwitchBuffer::get_new_reader_start_position( int samples_to_paint_ ) 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="mono_AmpPainter" componentName=""
-                 parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
+                 parentClasses="public Component, public Timer" constructorParams=""
                  variableInitialisers="original_w(1000), original_h(400)" snapPixels="5"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="1000" initialHeight="400">
@@ -812,3 +829,5 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
+

@@ -120,6 +120,8 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
 }
 //[/Headers]
 
+
+
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -129,9 +131,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class mono_AmpPainter  : public Component,
-    public mono_UiRefreshable,
-    public SliderListener,
-    public ButtonListener
+                         public Timer,
+                         public SliderListener,
+                         public ButtonListener
 {
 public:
     //==============================================================================
@@ -144,8 +146,6 @@ public:
     const float original_h;
 
 private:
-    int resizer;
-
     OwnedArray<EndlessBuffer> filter_values;
     OwnedArray<EndlessBuffer> filter_env_values;
     EndlessBuffer eq_values;
@@ -177,18 +177,22 @@ public:
         for( int i = 0 ; i != buffers.size() ; ++i )
             buffers.getUnchecked(i)->write_unlock();
     }
-
 private:
-    void refresh() noexcept override;
+    inline void lock_for_reading() noexcept;
+    inline void unlock_for_reading() noexcept;
+    
+private:
+    void timerCallback() override;
 
     void refresh_buttons();
     //[/UserMethods]
-    void lock_for_reading() noexcept;
+
     void paint (Graphics& g);
-    void unlock_for_reading() noexcept;
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
+
+
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
@@ -209,6 +213,7 @@ private:
     ScopedPointer<TextButton> f_env_3;
     ScopedPointer<TextButton> out_env;
     ScopedPointer<Component> drawing_area;
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_AmpPainter)
