@@ -30,8 +30,6 @@
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
             file="../Source/dRowAudio_Constants.h"/>
-      <FILE id="OTthBH" name="dRowAudio_MathsUtilities.h" compile="0" resource="0"
-            file="../Source/dRowAudio_MathsUtilities.h"/>
       <FILE id="xRz9s6" name="mono_AmpPainter.cpp" compile="1" resource="0"
             file="../Source/mono_AmpPainter.cpp"/>
       <FILE id="xmwNmk" name="mono_AmpPainter.h" compile="0" resource="0"
