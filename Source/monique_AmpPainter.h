@@ -112,9 +112,9 @@ public:
                                                                     //[/Comments]
 */
 class mono_AmpPainter  : public Component,
-                         public mono_UiRefreshable,
-                         public SliderListener,
-                         public ButtonListener
+    public mono_UiRefreshable,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
@@ -126,48 +126,35 @@ public:
     const float original_w;
     const float original_h;
 
+private:
     int resizer;
 
     OwnedArray<EndlessBuffer<float>> filter_values;
-    Array<bool> show_filter;
-    void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
-
     OwnedArray<EndlessBuffer<float>> filter_env_values;
-    Array<bool> show_filter_env;
-    void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
-
     EndlessBuffer<float> eq_values;
-    bool show_eq;
-    void add_eq( const float* values_, int num_samples_ ) noexcept;
-
     EndlessBuffer<float> values_env;
-    bool show_out_env;
-    void add_out_env( const float* values_, int num_samples_ ) noexcept;
-
     EndlessBuffer<float> values;
-    bool show_out;
-    void add_out( const float* values_, int num_samples_ ) noexcept;
-
-
-
-
-
-
-
     OwnedArray<EndlessBuffer<float>> osc_values;
-    Array<bool> show_osc;
-    inline void add_osc( int id_, float value_, bool is_switch_ ) {
-        osc_values.getUnchecked(id_)->add( value_, is_switch_ );
-    };
-
-
-
-
-
-
-    void refresh() noexcept override;
-
+    
     Array<EndlessBuffer<float>*> buffers;
+
+    Array<bool> show_filter;
+    Array<bool> show_filter_env;
+    bool show_eq;
+    bool show_out_env;
+    bool show_out;
+    Array<bool> show_osc;
+
+public:
+    void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
+    void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
+    void add_eq( const float* values_, int num_samples_ ) noexcept;
+    void add_out_env( const float* values_, int num_samples_ ) noexcept;
+    void add_out( const float* values_, int num_samples_ ) noexcept;
+    void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
+
+private:
+    void refresh() noexcept override;
 
     void refresh_buttons();
     //[/UserMethods]
@@ -176,8 +163,6 @@ public:
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
-
-
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.

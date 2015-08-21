@@ -21,7 +21,7 @@
 #include "UiLookAndFeel.h"
 //[/Headers]
 
-#include "mono_AmpPainter.h"
+#include "monique_AmpPainter.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -624,34 +624,58 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-
-
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
 {
-    for( int i = 0; i != num_samples_ ; ++i )
-        filter_env_values.getUnchecked(id_)->add( values_[i] );
+    if( show_filter_env[id_] )
+    {
+        EndlessBuffer<float>*const values = filter_env_values.getUnchecked(id_);
+        for( int i = 0; i != num_samples_ ; ++i )
+            values->add( values_[i] );
+    }
 }
 void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
 {
-    for( int i = 0; i != num_samples_ ; ++i )
-        filter_values.getUnchecked(id_)->add( values_[i] );
+    if( show_filter[id_] )
+    {
+        EndlessBuffer<float>*const values = filter_values.getUnchecked(id_);
+        for( int i = 0; i != num_samples_ ; ++i )
+            values->add( values_[i] );
+    }
 }
 void mono_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
 {
-    for( int i = 0; i != num_samples_ ; ++i )
-        eq_values.add( values_[i] );
+    if( show_eq )
+    {
+        for( int i = 0; i != num_samples_ ; ++i )
+            eq_values.add( values_[i] );
+    }
 }
 void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
 {
-    for( int i = 0; i != num_samples_ ; ++i )
-        values_env.add( values_[i] );
+    if( show_out_env )
+    {
+        for( int i = 0; i != num_samples_ ; ++i )
+            values_env.add( values_[i] );
+    }
 }
 void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
 {
-    for( int i = 0; i != num_samples_ ; ++i )
-        values.add( values_[i] );
+    if( show_out )
+    {
+        for( int i = 0; i != num_samples_ ; ++i )
+            values.add( values_[i] );
+    }
 }
+void mono_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
+{
+    //if( id_ == 0 || show_osc[id_] )
+    {
+        EndlessBuffer<float>*const values = osc_values.getUnchecked(id_);
+        for( int i = 0; i != num_samples_ ; ++i )
+            values->add( values_[i], bool(is_switch_values[i]) );
+    }
+};
 //[/MiscUserCode]
 
 

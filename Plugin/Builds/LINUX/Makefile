@@ -49,9 +49,9 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_AmpPainter_597e4f3c.o \
   $(OBJDIR)/monique_SegmentedMeter_586d93ac.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
-  $(OBJDIR)/mono_AmpPainter_dfaca393.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
   $(OBJDIR)/mono_Parameters_6e808cd6.o \
@@ -102,6 +102,11 @@ strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
+$(OBJDIR)/monique_AmpPainter_597e4f3c.o: ../../../Source/monique_AmpPainter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_AmpPainter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_SegmentedMeter_586d93ac.o: ../../../Source/monique_SegmentedMeter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_SegmentedMeter.cpp"
@@ -110,11 +115,6 @@ $(OBJDIR)/monique_SegmentedMeter_586d93ac.o: ../../../Source/monique_SegmentedMe
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_AppInstanceStore.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/mono_AmpPainter_dfaca393.o: ../../../Source/mono_AmpPainter.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_AmpPainter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceManager.cpp

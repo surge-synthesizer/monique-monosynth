@@ -2,7 +2,7 @@
 #include "monique_AppInstanceStore.h"
 
 #include "UiLookAndFeel.h"
-#include "mono_AmpPainter.h"
+#include "monique_AmpPainter.h"
 
 //==============================================================================
 static inline UiLookAndFeel* init_lock_and_feel_hack() noexcept 

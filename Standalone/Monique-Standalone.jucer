@@ -12,6 +12,10 @@
     </GROUP>
     <GROUP id="{388FBA28-CADB-4019-1A38-AFB2EBC5FC12}" name="Source">
       <GROUP id="{AF2B749D-8206-B30F-0788-6CC655365B13}" name="Monique">
+        <FILE id="A5Tgzn" name="monique_AmpPainter.cpp" compile="1" resource="0"
+              file="../Source/monique_AmpPainter.cpp"/>
+        <FILE id="GK0SA6" name="monique_AmpPainter.h" compile="0" resource="0"
+              file="../Source/monique_AmpPainter.h"/>
         <FILE id="ogxHnn" name="monique_SegmentedMeter.cpp" compile="1" resource="0"
               file="../Source/monique_SegmentedMeter.cpp"/>
         <FILE id="yBAHqc" name="monique_SegmentedMeter.h" compile="0" resource="0"
@@ -26,10 +30,6 @@
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="y9IvYI" name="dRowAudio_Constants.h" compile="0" resource="0"
             file="../Source/dRowAudio_Constants.h"/>
-      <FILE id="uvtpG7" name="mono_AmpPainter.cpp" compile="1" resource="0"
-            file="../Source/mono_AmpPainter.cpp"/>
-      <FILE id="UAQqc1" name="mono_AmpPainter.h" compile="0" resource="0"
-            file="../Source/mono_AmpPainter.h"/>
       <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="mGKqYB" name="mono_AudioDeviceManager.h" compile="0" resource="0"

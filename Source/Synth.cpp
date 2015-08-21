@@ -1,6 +1,6 @@
 
 #include "Synth.h"
-#include "mono_AmpPainter.h"
+#include "monique_AmpPainter.h"
 
 
 #define THREAD_LIMIT 2
@@ -5037,12 +5037,11 @@ void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_numbe
 
     // VISUALIZE
     if( amp_painter )
-        for( int osc_id = 0 ; osc_id != SUM_OSCS ; ++osc_id )
-            for( int i = 0 ; i != num_samples ; ++i )
-                amp_painter->add_osc( osc_id,
-                                      data_buffer->osc_samples.getReadPointer(osc_id)[i],
-                                      data_buffer->osc_switchs.getReadPointer(osc_id)[i]
-                                    );
+    {
+        amp_painter->add_osc( 0, data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
+        amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), data_buffer->osc_switchs.getReadPointer(1), num_samples_ );
+        amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), data_buffer->osc_switchs.getReadPointer(2), num_samples_ );
+    }
 
     // UI INFORMATIONS
     for( int i = 0 ; i != SUM_OSCS ; ++i )
