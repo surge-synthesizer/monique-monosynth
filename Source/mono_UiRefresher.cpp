@@ -20,21 +20,28 @@ void mono_UiRefresher::timerCallback() {
 }
 
 //==============================================================================
-mono_UiRefreshable::mono_UiRefreshable() {
+mono_UiRefreshable::mono_UiRefreshable() noexcept {
     mono_UiRefresher::getInstance()->add(this);
 }
-mono_UiRefreshable::~mono_UiRefreshable() {
+mono_UiRefreshable::~mono_UiRefreshable() noexcept {
     mono_UiRefresher::getInstance()->remove( this );
 }
-void mono_UiRefresher::add(mono_UiRefreshable*const r_) {
+
+//==============================================================================
+mono_UiRefresher::mono_UiRefresher() noexcept {}
+mono_UiRefresher::~mono_UiRefresher() noexcept {
+    clearSingletonInstance();
+}
+
+NOINLINE void mono_UiRefresher::add(mono_UiRefreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.add(r_);
 }
-void mono_UiRefresher::remove(mono_UiRefreshable*const r_) {
+NOINLINE void mono_UiRefresher::remove(mono_UiRefreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.removeFirstMatchingValue(r_);
 }
-void mono_UiRefresher::remove_all() {
+NOINLINE void mono_UiRefresher::remove_all() noexcept {
     ScopedLock locked(lock);
     refreshables.clearQuick();
 }

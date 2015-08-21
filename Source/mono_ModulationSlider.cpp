@@ -356,8 +356,6 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
 
 
     //[Constructor] You can add your own custom stuff here..
-    mono_UiRefresher::getInstance()->add( this );
-
     setWantsKeyboardFocus(false);
     for( int i = 0 ; i < getNumChildComponents() ; ++i ) {
         getChildComponent(i)->setWantsKeyboardFocus(false);
