@@ -278,8 +278,6 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept {
 
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
-    mono_UiRefresher::getInstance()->try_lock();
-  
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
         prepareToPlay(getSampleRate(),getBlockSize());
 
@@ -459,9 +457,6 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
             }
         }
     }
-    
-
-    mono_UiRefresher::getInstance()->unlock();
 }
 
 // ********************************************************************************************

@@ -10,7 +10,7 @@ public Component,
 public mono_UiRefreshable
 {
     Image onImage, offImage;
-
+    
     float sampleMax;
     float level;
 

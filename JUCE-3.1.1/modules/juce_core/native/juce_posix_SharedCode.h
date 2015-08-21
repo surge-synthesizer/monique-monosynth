@@ -99,6 +99,8 @@ bool WaitableEvent::wait (const int timeOutMillisecs) const noexcept
                     pthread_mutex_unlock (&mutex);
                     return false;
                 }
+                if( timeOutMillisecs == 111111 )
+                std::cout << "wait" << std::endl;
             }
             while (! triggered);
         }
