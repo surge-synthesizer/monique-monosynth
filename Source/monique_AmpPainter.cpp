@@ -625,7 +625,8 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void mono_AmpPainter::timerCallback() {
+void mono_AmpPainter::timerCallback() 
+{
     repaint( drawing_area->getBounds() );
 }
 

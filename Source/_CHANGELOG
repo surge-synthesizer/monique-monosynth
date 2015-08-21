@@ -9,6 +9,7 @@ CHANGES 0.5:
 - add: octave offset
 - improve: ui sliders, clean it up (and resize)
 - change path to monique (please rename your folder)
+- fix: oscilloscope repaint lag/bug
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
