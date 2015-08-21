@@ -125,7 +125,7 @@ public:
 private:
     RuntimeInfo info;
 
-    GstepAudioProcessor*const audio_processor;
+    MoniqueAudioProcessor*const audio_processor;
 // TODO VELOCITY GLIDE
 //==============================================================================
     SynthData& synth_data;
@@ -171,7 +171,7 @@ public:
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
 
-    NOINLINE MONOVoice( GstepAudioProcessor*const audio_processor_ );
+    NOINLINE MONOVoice( MoniqueAudioProcessor*const audio_processor_ );
     NOINLINE ~MONOVoice();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MONOVoice)

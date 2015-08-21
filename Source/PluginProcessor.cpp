@@ -162,7 +162,7 @@ public:
             buffer[i] = 0;
     }
 };
-GstepAudioProcessor::GstepAudioProcessor()
+MoniqueAudioProcessor::MoniqueAudioProcessor()
     :
 #ifdef IS_STANDALONE
     clock_smoth_buffer( new type_CLOCK_SMOTH_BUFFER ),
@@ -194,7 +194,7 @@ GstepAudioProcessor::GstepAudioProcessor()
 }
 
 #ifdef IS_STANDALONE
-void GstepAudioProcessor::init_audio() {
+void MoniqueAudioProcessor::init_audio() {
     voice = new MONOVoice(this);
     synth.addVoice (voice);
     synth.addSound (new MonoSynthSound());
@@ -231,18 +231,18 @@ void GstepAudioProcessor::init_audio() {
 
 //==============================================================================
 #ifdef IS_STANDALONE
-void GstepAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept {
     data_in_processor->messageCollector.addMessageToQueue( message );
 }
-void GstepAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept {
 
     data_in_processor->messageCollector.addMessageToQueue( message );
 
 }
-void GstepAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept {
 
 }
-void GstepAudioProcessor::handle_extern_midi_clock( const MidiMessage& message ) noexcept
+void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message ) noexcept
 {
     if( synth_data->sync ) {
         clock_smoth_buffer->add( message.getTimeStamp()-last_clock_sample );
@@ -252,7 +252,7 @@ void GstepAudioProcessor::handle_extern_midi_clock( const MidiMessage& message )
     }
 }
 #endif
-void GstepAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept {
+void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept {
     //MidiKeyboardState::processNextMidiEvent( message );
     //MidiBuffer buffer( message );
     // data_in_processor->handle_note_input( buffer );
@@ -260,23 +260,23 @@ void GstepAudioProcessor::handle_extern_note_input( const MidiMessage& message )
     // TODO, TR SENDS NOTES
     data_in_processor->messageCollector.addMessageToQueue( message );
 }
-void GstepAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ ) noexcept {
+void MoniqueAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ ) noexcept {
     MidiBuffer buffer( message_ );
     data_in_processor->handle_cc_input( buffer );
 }
-void GstepAudioProcessor::trigger_send_feedback() noexcept
+void MoniqueAudioProcessor::trigger_send_feedback() noexcept
 {
     Array< mono_ParameterCompatibilityBase* >& parameters = synth_data->get_atomateable_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_feedback_only();
 }
-void GstepAudioProcessor::trigger_send_clear_feedback() noexcept {
+void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept {
     Array< mono_ParameterCompatibilityBase* >& parameters = synth_data->get_atomateable_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
 }
 
-void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
+void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
         prepareToPlay(getSampleRate(),getBlockSize());
@@ -475,7 +475,7 @@ void GstepAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer&
 // ********************************************************************************************
 // ********************************************************************************************
 // ********************************************************************************************
-void GstepAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
+void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
     DATA(data_buffer).resize_buffer_if_required(block_size_);
@@ -484,57 +484,57 @@ void GstepAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
 }
-void GstepAudioProcessor::releaseResources() {
+void MoniqueAudioProcessor::releaseResources() {
     // TODO reset all
 }
-void GstepAudioProcessor::reset() {
+void MoniqueAudioProcessor::reset() {
 }
 
 // ********************************************************************************************
 // ********************************************************************************************
 // ********************************************************************************************
-int GstepAudioProcessor::getNumParameters() {
+int MoniqueAudioProcessor::getNumParameters() {
     return synth_data->get_atomateable_parameters().size();
 }
-bool GstepAudioProcessor::isParameterAutomatable ( int ) const {
+bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const {
     return true;
 }
-float GstepAudioProcessor::getParameter( int i_ ) {
+float MoniqueAudioProcessor::getParameter( int i_ ) {
     return synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_value();
 }
-const String GstepAudioProcessor::getParameterText( int i_ ) {
+const String MoniqueAudioProcessor::getParameterText( int i_ ) {
     return String( synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_value() );
 }
-String GstepAudioProcessor::getParameterLabel (int i_) const {
+String MoniqueAudioProcessor::getParameterLabel (int i_) const {
     return  "N/A";
 }
-int GstepAudioProcessor::getParameterNumSteps( int i_ ) {
+int MoniqueAudioProcessor::getParameterNumSteps( int i_ ) {
     return synth_data->get_atomateable_parameters().getReference(i_)->get_num_steps();
 }
-float GstepAudioProcessor::getParameterDefaultValue( int i_ ) {
+float MoniqueAudioProcessor::getParameterDefaultValue( int i_ ) {
     return synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_dafault_value();
 }
-const String GstepAudioProcessor::getParameterName( int i_ ) {
+const String MoniqueAudioProcessor::getParameterName( int i_ ) {
     return synth_data->get_atomateable_parameters().getReference(i_)->get_short_name();
 }
-void GstepAudioProcessor::setParameter( int i_, float percent_ ) {
+void MoniqueAudioProcessor::setParameter( int i_, float percent_ ) {
     synth_data->get_atomateable_parameters().getReference(i_)->set_float_percent_value( percent_ );
 }
 
-void GstepAudioProcessor::getStateInformation ( MemoryBlock& destData ) {
+void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData ) {
     XmlElement xml("PROJECT-1.0");
     synth_data->save_to( &xml );
     copyXmlToBinary ( xml, destData );
 }
 
-void GstepAudioProcessor::setStateInformation ( const void* data, int sizeInBytes ) {
+void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes ) {
     ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
     if ( xml )
         if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
             synth_data->read_from( xml );
 }
 
-const String GstepAudioProcessor::getName() const {
+const String MoniqueAudioProcessor::getName() const {
 #ifdef IS_STANDALONE
     return "";
 #else
@@ -542,10 +542,10 @@ const String GstepAudioProcessor::getName() const {
 #endif
 }
 
-const String GstepAudioProcessor::getInputChannelName ( int channel_ ) const {
+const String MoniqueAudioProcessor::getInputChannelName ( int channel_ ) const {
     return "";
 }
-const String GstepAudioProcessor::getOutputChannelName ( int channel_ ) const {
+const String MoniqueAudioProcessor::getOutputChannelName ( int channel_ ) const {
     String name;
     switch( channel_ )
     {
@@ -572,11 +572,11 @@ const String GstepAudioProcessor::getOutputChannelName ( int channel_ ) const {
     return name;
 }
 
-bool GstepAudioProcessor::isInputChannelStereoPair ( int ) const {
+bool MoniqueAudioProcessor::isInputChannelStereoPair ( int ) const {
     return false;
 }
 
-bool GstepAudioProcessor::isOutputChannelStereoPair ( int id_ ) const {
+bool MoniqueAudioProcessor::isOutputChannelStereoPair ( int id_ ) const {
     bool is = false;
     if( id_ == 0 || id_ == 1 )
         is = true;
@@ -584,55 +584,55 @@ bool GstepAudioProcessor::isOutputChannelStereoPair ( int id_ ) const {
     return is;
 }
 
-bool GstepAudioProcessor::acceptsMidi() const {
+bool MoniqueAudioProcessor::acceptsMidi() const {
     return true;
 }
-bool GstepAudioProcessor::producesMidi() const {
+bool MoniqueAudioProcessor::producesMidi() const {
     return true;
 }
 
-bool GstepAudioProcessor::silenceInProducesSilenceOut() const {
+bool MoniqueAudioProcessor::silenceInProducesSilenceOut() const {
     return false;
 }
-double GstepAudioProcessor::getTailLengthSeconds() const {
+double MoniqueAudioProcessor::getTailLengthSeconds() const {
     return 0.0;
 }
 
-int GstepAudioProcessor::getNumPrograms() {
+int MoniqueAudioProcessor::getNumPrograms() {
     int size = 0;
     for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
         size += synth_data->get_programms( bank_id ).size();
 
     return size;
 }
-int GstepAudioProcessor::getCurrentProgram() {
+int MoniqueAudioProcessor::getCurrentProgram() {
     return synth_data->get_current_programm_id_abs();
 }
-void GstepAudioProcessor::setCurrentProgram ( int id_ ) {
+void MoniqueAudioProcessor::setCurrentProgram ( int id_ ) {
     synth_data->set_current_program_abs(id_);
     synth_data->load();
 }
-const String GstepAudioProcessor::getProgramName ( int id_ ) {
+const String MoniqueAudioProcessor::getProgramName ( int id_ ) {
     return synth_data->get_program_name_abs(id_);
 }
-void GstepAudioProcessor::changeProgramName ( int id_, const String& name_ ) {
+void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ ) {
     synth_data->set_current_program_abs(id_);
     synth_data->rename(name_);
 }
 
-bool GstepAudioProcessor::hasEditor() const {
+bool MoniqueAudioProcessor::hasEditor() const {
     return true;
 }
-AudioProcessorEditor* GstepAudioProcessor::createEditor() {
+AudioProcessorEditor* MoniqueAudioProcessor::createEditor() {
     return new UiEditorSynthLite ();
 }
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
-    return new GstepAudioProcessor();
+    return new MoniqueAudioProcessor();
 }
 
 // ----------------------------------------------------
-GstepAudioProcessor::~GstepAudioProcessor()
+MoniqueAudioProcessor::~MoniqueAudioProcessor()
 {
     trigger_send_clear_feedback();
     stop_midi_devices();

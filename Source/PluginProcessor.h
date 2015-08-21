@@ -14,7 +14,7 @@ class DATAINProcessor;
 template<typename,int>
 class CircularBuffer;
 #define type_CLOCK_SMOTH_BUFFER CircularBuffer< double, 12 >
-class GstepAudioProcessor :
+class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
     public MidiKeyboardStateListener,
@@ -93,13 +93,13 @@ private:
     AudioProcessorEditor* createEditor()  override;
 
 public:
-    GstepAudioProcessor();
+    MoniqueAudioProcessor();
 #ifdef IS_STANDALONE
     AudioProcessorPlayer player;
     void init_audio();
 #endif
 
-    ~GstepAudioProcessor();
+    ~MoniqueAudioProcessor();
 
 private:
     Array< MidiMessage > user_keyboard_messages;
@@ -123,7 +123,7 @@ public:
     bool repaint_peak_meter;
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR ( GstepAudioProcessor )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR ( MoniqueAudioProcessor )
 };
 
 #endif  // PLUGINPROCESSOR_H_INCLUDED

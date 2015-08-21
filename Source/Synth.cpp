@@ -4786,7 +4786,7 @@ inline void ArpSequencer::reset() noexcept {
     current_step = 0;
 }
 //==============================================================================
-NOINLINE MONOVoice::MONOVoice( GstepAudioProcessor*const audio_processor_ )
+NOINLINE MONOVoice::MONOVoice( MoniqueAudioProcessor*const audio_processor_ )
     :
     audio_processor( audio_processor_ ),
     synth_data( *audio_processor_->synth_data ),

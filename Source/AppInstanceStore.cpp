@@ -10,11 +10,12 @@
 
 juce_ImplementSingleton (AppInstanceStore)
 
-UiLookAndFeel* init_lock_and_feel_hack() {
+static inline UiLookAndFeel* init_lock_and_feel_hack() noexcept {
     LookAndFeel::setDefaultLookAndFeel( UiLookAndFeel::getInstance() );
-    return nullptr;
+    return UiLookAndFeel::getInstance();
 }
-AppInstanceStore::AppInstanceStore()
+
+AppInstanceStore::AppInstanceStore() noexcept
     :
     init_dummy( init_lock_and_feel_hack() ),
     editor( nullptr ),
@@ -22,30 +23,10 @@ AppInstanceStore::AppInstanceStore()
     try_to_kill_amp_painter(false)
 {
 }
-AppInstanceStore::~AppInstanceStore()
+
+AppInstanceStore::~AppInstanceStore() noexcept
 {
     editor = nullptr;
 
     clearSingletonInstance();
-}
-// ************************************************************************************************
-// ************************************************************************************************
-// ************************************************************************************************
-String AppInstanceStore::save_standalone() {
-    String error;
-    return error;
-}
-
-String AppInstanceStore::load_standalone() {
-    String error;
-    return error;
-}
-
-String AppInstanceStore::save_plugin( XmlElement& xml_ ) {
-    String error;
-    return error;
-}
-String AppInstanceStore::load_plugin( const XmlElement& xml_ ) {
-    String error;
-    return error;
 }
