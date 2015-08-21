@@ -159,7 +159,7 @@ void UiEditorSynthLite::show_current_voice_data() {
     button_open_config->setColour( TextButton::buttonColourId, editor_settings ? Colours::lightblue : button_off );
     button_open_midi_io_settings->setColour( TextButton::buttonColourId, editor_midiio ? Colours::lightblue : button_off );
     button_open_morph->setColour( TextButton::buttonColourId, editor_morph ? Colours::lightblue:button_off );
-    button_open_oszi->setColour( TextButton::buttonColourId, MONOVoice::get_amp_painter() ? Colours::lightblue : button_off );
+    button_open_oszi->setColour( TextButton::buttonColourId, AppInstanceStore::getInstance()->get_amp_painter_unsave() ? Colours::lightblue : button_off );
 
     button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
 
@@ -1125,10 +1125,10 @@ UiEditorSynthLite::~UiEditorSynthLite()
     AppInstanceStore::getInstance()->editor = nullptr;
     Thread::sleep(500); // to be sure we are no more in a update run
 
-    if( MONOVoice::get_amp_painter() )
+    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
-        removeChildComponent( MONOVoice::get_amp_painter() );
-        MONOVoice::kill_amp_painter();
+        removeChildComponent( amp_painter );
+        AppInstanceStore::getInstance()->kill_amp_painter();
     }
 
     peak_meter_thread->stopThread(500);
@@ -1996,8 +1996,8 @@ void UiEditorSynthLite::resized()
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
 #include "UiDynamicSizeEnd.h"
 
-    if( MONOVoice::get_amp_painter() )
-        MONOVoice::get_amp_painter()->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
+    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        amp_painter->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
     //[/UserResized]
 }
 
@@ -2527,16 +2527,15 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_open_oszi)
     {
         //[UserButtonCode_button_open_oszi] -- add your button handler code here..
-        if( MONOVoice::get_amp_painter() )
+        if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
-            removeChildComponent( MONOVoice::get_amp_painter() );
-            MONOVoice::kill_amp_painter();
+            removeChildComponent( amp_painter );
+            AppInstanceStore::getInstance()->kill_amp_painter();
         }
-        else
+        else if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_create_amp_painter() )
         {
-            MONOVoice::create_amp_painter();
-            addAndMakeVisible( MONOVoice::get_amp_painter() );
-            MONOVoice::get_amp_painter()->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
+            addAndMakeVisible( amp_painter );
+            amp_painter->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
         }
         //[/UserButtonCode_button_open_oszi]
     }
@@ -2807,10 +2806,10 @@ bool UiEditorSynthLite::keyPressed (const KeyPress& key)
         editor_settings = nullptr;
         popup = nullptr;
 
-        if( MONOVoice::get_amp_painter() )
+        if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
-            removeChildComponent( MONOVoice::get_amp_painter() );
-            MONOVoice::kill_amp_painter();
+            removeChildComponent( amp_painter );
+            AppInstanceStore::getInstance()->kill_amp_painter();
         }
         success = true;
     }
@@ -3664,3 +3663,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

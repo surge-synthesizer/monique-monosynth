@@ -116,13 +116,6 @@ class ArpSequencer;
 class mono_AmpPainter;
 class MONOVoice : public SynthesiserVoice
 {
-public:
-    static void create_amp_painter();
-    static mono_AmpPainter* get_amp_painter();
-    static mono_AmpPainter* get_lock_amp_painter();
-    static void unlock_amp_painter();
-    static void kill_amp_painter();
-private:
     RuntimeInfo info;
 
     MoniqueAudioProcessor*const audio_processor;

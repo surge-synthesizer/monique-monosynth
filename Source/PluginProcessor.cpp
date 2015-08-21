@@ -204,20 +204,20 @@ void MoniqueAudioProcessor::init_audio() {
     // TODO set sample rate
     setPlayConfigDetails ( 0, 2, 44100, 512);
     const OwnedArray< AudioIODeviceType >& devs = getAvailableDeviceTypes();
-/*
-    #if JUCE_LINUX && JUCE_JACK
-    DBG( devs[1]->getTypeName() );
-    setCurrentAudioDeviceType(devs[1]->getTypeName(),true);
-#else
-    DBG( devs[0]->getTypeName() );
-    setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
-#endif
-    */
+    /*
+        #if JUCE_LINUX && JUCE_JACK
+        DBG( devs[1]->getTypeName() );
+        setCurrentAudioDeviceType(devs[1]->getTypeName(),true);
+    #else
+        DBG( devs[0]->getTypeName() );
+        setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
+    #endif
+        */
     // JACK ONLY
     DBG( devs[0]->getTypeName() );
     setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
-    
-    
+
+
     if( initialise(0,2, nullptr, true ) == "" )
         addAudioCallback (&player);
     else
@@ -353,28 +353,28 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                         //todo not needed in plugin
                         int factor = 96/16;
                         static int samples_to_count = 96;
-			/*
-                        switch( synth_data->arp_sequencer_data->speed_multi ) {
-                        case _XNORM :
-                            factor = 96/16;
-                            break;
-                        case _X2 :
-                            factor = 96/32;
-                            break;
-                        case _X05 :
-                            factor = 96/8;
-                            break;
-                        case _X4 :
-                            factor = 96/64; // BUG
-                            break;
-                        case _X025 :
-                            factor = 96/4;
-                            break;
-                        default  : //TODO
-                            factor = 96/48;
-                            break;
-                        }
-                        */
+                        /*
+                                    switch( synth_data->arp_sequencer_data->speed_multi ) {
+                                    case _XNORM :
+                                        factor = 96/16;
+                                        break;
+                                    case _X2 :
+                                        factor = 96/32;
+                                        break;
+                                    case _X05 :
+                                        factor = 96/8;
+                                        break;
+                                    case _X4 :
+                                        factor = 96/64; // BUG
+                                        break;
+                                    case _X025 :
+                                        factor = 96/4;
+                                        break;
+                                    default  : //TODO
+                                        factor = 96/48;
+                                        break;
+                                    }
+                                    */
                         if( runtime_info.clock_counter%factor == 0 )
                         {
                             if( runtime_info.is_running )
@@ -388,30 +388,30 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                         {
                             runtime_info.clock_counter = 0;
 
-			    samples_to_count = 96;
-			    /*
-                            switch( synth_data->arp_sequencer_data->speed_multi )
-                            {
-                            case _XNORM :
-                                samples_to_count = 96;
-                                break;
-                            case _X2 :
-                                samples_to_count = 96/2;
-                                break;
-                            case _X05 :
-                                samples_to_count = 96*2;
-                                break;
-                            case _X4 :
-                                samples_to_count = 96/4;
-                                break;
-                            case _X025 :
-                                samples_to_count = 96*4;
-                                break;
-                            default   : //TODO
-                                samples_to_count = 96/3;
-                                break;
-                            }
-                            */
+                            samples_to_count = 96;
+                            /*
+                                        switch( synth_data->arp_sequencer_data->speed_multi )
+                                        {
+                                        case _XNORM :
+                                            samples_to_count = 96;
+                                            break;
+                                        case _X2 :
+                                            samples_to_count = 96/2;
+                                            break;
+                                        case _X05 :
+                                            samples_to_count = 96*2;
+                                            break;
+                                        case _X4 :
+                                            samples_to_count = 96/4;
+                                            break;
+                                        case _X025 :
+                                            samples_to_count = 96*4;
+                                            break;
+                                        default   : //TODO
+                                            samples_to_count = 96/3;
+                                            break;
+                                        }
+                                        */
                         }
                     }
                 }
@@ -421,49 +421,48 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 data_in_processor->processBlock( midi_messages_ );
                 data_in_processor->handle_cc_input( midi_messages_ );
 
-                MONOVoice::get_lock_amp_painter();
-
-                // SYNTH
-		
-                synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
-                midi_messages_.clear(); // WILL BE FILLED AT THE END
-
-                // VISUALIZE
-                if( peak_meter )
+                AppInstanceStore::getInstance()->lock_amp_painter();
                 {
-                    if( !repaint_peak_meter ) {
-                        peak_meter->my_red = Colours::red.getARGB();
-                        peak_meter->my_yellow = UiLookAndFeel::getInstance()->colours.bg_lines.getARGB();
-                        peak_meter->my_green = UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB();
-                        peak_meter->resized();
+                    // RENDER SYNTH
+                    synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
+                    midi_messages_.clear(); // WILL BE FILLED AT THE END
 
-                        repaint_peak_meter = true;
+                    // VISUALIZE // TODO move to ???
+                    if( peak_meter )
+                    {
+                        if( !repaint_peak_meter ) {
+                            peak_meter->my_red = Colours::red.getARGB();
+                            peak_meter->my_yellow = UiLookAndFeel::getInstance()->colours.bg_lines.getARGB();
+                            peak_meter->my_green = UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB();
+                            peak_meter->resized();
+
+                            repaint_peak_meter = true;
+                        }
+
+                        peak_meter->copySamples( buffer_.getReadPointer(0), num_samples );
+                        peak_meter->process();
                     }
-
-                    peak_meter->copySamples( buffer_.getReadPointer(0), num_samples );
-                    peak_meter->process();
                 }
-                
-                MONOVoice::unlock_amp_painter();
+                AppInstanceStore::getInstance()->unlock_amp_painter();
 
-		/*
-                {
-                    // MIDI FEEDBACK
-                    for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
-                        send_lfo_message( lfo_id,
-                                          voice->get_data_buffer().lfo_amplitudes.getReadPointer( lfo_id ),
-                                          num_samples );
-                    }
-                    for( int env_id = 0 ; env_id < SUM_FILTERS ; ++env_id ) {
-                        send_adsr_message( env_id,
-                                           voice->get_data_buffer().filtered_env_amps.getReadPointer( env_id ),
-                                           num_samples );
-                    }
-                    send_adsr_message( MAIN_ENV,
-                                       voice->get_data_buffer().env_amp.getReadPointer( 0 ),
-                                       num_samples );
-                }
-                */
+                /*
+                        {
+                            // MIDI FEEDBACK
+                            for( int lfo_id = 0 ; lfo_id < SUM_LFOS ; ++lfo_id ) {
+                                send_lfo_message( lfo_id,
+                                                  voice->get_data_buffer().lfo_amplitudes.getReadPointer( lfo_id ),
+                                                  num_samples );
+                            }
+                            for( int env_id = 0 ; env_id < SUM_FILTERS ; ++env_id ) {
+                                send_adsr_message( env_id,
+                                                   voice->get_data_buffer().filtered_env_amps.getReadPointer( env_id ),
+                                                   num_samples );
+                            }
+                            send_adsr_message( MAIN_ENV,
+                                               voice->get_data_buffer().env_amp.getReadPointer( 0 ),
+                                               num_samples );
+                        }
+                        */
 #ifdef IS_PLUGIN
                 //get_messages_to_send_to_daw(midi_messages_);
 #endif

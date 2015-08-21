@@ -12,13 +12,24 @@ struct AppInstanceStore : public DeletedAtShutdown
     UiLookAndFeel* init_dummy;
     UiEditorSynthLite* editor;
     MoniqueAudioProcessor* audio_processor;
-    
-    volatile bool try_to_kill_amp_painter;
+
+    //==============================================================================
+private:
     CriticalSection amp_painter_lock;
     ScopedPointer< mono_AmpPainter > ampPainter;
 
+public:
+    mono_AmpPainter* get_create_amp_painter() noexcept;
+    // PLEASE LOCK THE AMP PAINTER FOR A BIGGER BLOCK OF WORK AND THEN GET IT
+    void lock_amp_painter() noexcept;
+    inline mono_AmpPainter* get_amp_painter_unsave() noexcept { return ampPainter; }
+    void unlock_amp_painter() noexcept;
+    void kill_amp_painter() noexcept;
+
+public:
+    //==============================================================================
     juce_DeclareSingleton (AppInstanceStore,false)
-    
+
 private:
     AppInstanceStore() noexcept;
     ~AppInstanceStore() noexcept;

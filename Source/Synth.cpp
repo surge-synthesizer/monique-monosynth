@@ -3509,7 +3509,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     }
 
     // VISUALIZE
-    if( mono_AmpPainter*const amp_painter = MONOVoice::get_amp_painter() )
+    if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         amp_painter->add_filter_env( id, amp_mix, num_samples );
         amp_painter->add_filter( id, this_filter_output_buffer, num_samples );
@@ -3813,7 +3813,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             // SEE FilterProcessor, there we multiply with  1.0f/SUM_INPUTS_PER_FILTER;
             out_buffer[sid] = tmp_all_band_out_buffer[sid] / tmp_all_band_sum_gain_buffer[sid];
         }
-        if( mono_AmpPainter*const amp_painter = MONOVoice::get_amp_painter() )
+        if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             amp_painter->add_eq( out_buffer, num_samples_ );
         }
@@ -4625,7 +4625,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         }
 
         // VISUALIZE
-        if( mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter() )
+        if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             amp_painter->add_out( &output_buffer_.getReadPointer(RIGHT)[start_sample_final_out_], num_samples_ ); // NOTE LEFT STILL IN WORK
             amp_painter->add_out_env( data_buffer.tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_ENV), num_samples_ );
@@ -4828,41 +4828,6 @@ NOINLINE MONOVoice::~MONOVoice() {
     mono_ParameterOwnerStore::getInstance()->voice = nullptr;
 }
 
-void MONOVoice::create_amp_painter() {
-    if(!AppInstanceStore::getInstance()->ampPainter)
-        AppInstanceStore::getInstance()->ampPainter = new mono_AmpPainter();
-
-    AppInstanceStore::getInstance()->try_to_kill_amp_painter = false;
-}
-mono_AmpPainter* MONOVoice::get_amp_painter() {
-    if( !AppInstanceStore::getInstance()->try_to_kill_amp_painter )
-        return AppInstanceStore::getInstance()->ampPainter;
-    else
-        return nullptr;
-}
-mono_AmpPainter* MONOVoice::get_lock_amp_painter() {
-    if( !AppInstanceStore::getInstance()->try_to_kill_amp_painter )
-    {
-        AppInstanceStore::getInstance()->amp_painter_lock.enter();
-        return AppInstanceStore::getInstance()->ampPainter;
-    }
-    else
-        return nullptr;
-}
-void MONOVoice::unlock_amp_painter() {
-    AppInstanceStore::getInstance()->amp_painter_lock.exit();
-}
-void MONOVoice::kill_amp_painter() {
-    AppInstanceStore::getInstance()->try_to_kill_amp_painter = true;
-    ScopedLock locked(AppInstanceStore::getInstance()->amp_painter_lock);
-
-    if(AppInstanceStore::getInstance()->ampPainter)
-    {
-        AppInstanceStore::getInstance()->ampPainter->stopTimer();
-        AppInstanceStore::getInstance()->ampPainter = nullptr;
-    }
-}
-
 void MONOVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
 {
     start_internal( midi_note_number_, velocity_ );
@@ -5012,7 +4977,7 @@ float MONOVoice::get_current_frequency() const noexcept {
     return MidiMessage::getMidiNoteInHertz(current_note+arp_sequencer->get_current_tune());
 }
 void MONOVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) {
-    mono_AmpPainter* amp_painter = MONOVoice::get_amp_painter();
+    mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )
