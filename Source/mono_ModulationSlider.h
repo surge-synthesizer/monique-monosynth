@@ -214,7 +214,7 @@ private:
     float last_painted_value_slider_val;
     float last_painted_mod_slider_val;
     
-    void refresh() ;
+    void refresh() noexcept;
     void sliderClicked (Slider*s_) override;
 
 public:

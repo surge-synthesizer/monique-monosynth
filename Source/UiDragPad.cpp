@@ -197,7 +197,7 @@ void UiDragPad::set_left_to_right_states( float left2right_state_, float top2bot
 
      repaint();
 }
-void UiDragPad::refresh() {
+void UiDragPad::refresh() noexcept {
 
 }
 //[/MiscUserCode]

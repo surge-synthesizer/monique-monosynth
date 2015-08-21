@@ -4,9 +4,10 @@
 #include "App_h_includer.h"
 
 //==============================================================================
-class mono_UiRefreshable {
+class mono_UiRefreshable 
+{
 public:
-    virtual void refresh() = 0;
+    virtual void refresh() noexcept = 0;
 
 protected:
     mono_UiRefreshable() noexcept;

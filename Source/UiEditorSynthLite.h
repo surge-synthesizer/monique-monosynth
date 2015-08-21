@@ -69,7 +69,7 @@ public:
     ScopedPointer<UiEditorMorph> editor_morph;
     ScopedPointer<UiEditorSettings> editor_settings;
 
-    void refresh() override;
+    void refresh() noexcept override;
     void show_current_voice_data();
     void show_programs_and_select();
     void show_ctrl_state();

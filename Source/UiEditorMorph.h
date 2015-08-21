@@ -62,7 +62,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-    void refresh() override;
+    void refresh() noexcept override;
     Array< int > bank_start_indexs;
     //[/UserVariables]
 

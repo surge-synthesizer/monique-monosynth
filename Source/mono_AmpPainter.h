@@ -112,7 +112,7 @@ public:
                                                                     //[/Comments]
 */
 class mono_AmpPainter  : public Component,
-                         public Timer,
+                         public mono_UiRefreshable,
                          public SliderListener,
                          public ButtonListener
 {
@@ -165,7 +165,7 @@ public:
 
 
 
-    void timerCallback() override;
+    void refresh() noexcept override;
 
     Array<EndlessBuffer<float>*> buffers;
 

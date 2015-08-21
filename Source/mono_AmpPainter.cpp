@@ -25,7 +25,7 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void mono_AmpPainter::timerCallback() {
+void mono_AmpPainter::refresh() noexcept {
     repaint();
 }
 
@@ -170,8 +170,6 @@ mono_AmpPainter::mono_AmpPainter ()
 
     //[Constructor] You can add your own custom stuff here..
     sl_osc_octave_3->setValue(2048);
-
-    startTimer(40);
     //[/Constructor]
 }
 
@@ -667,7 +665,7 @@ void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="mono_AmpPainter" componentName=""
-                 parentClasses="public Component, public Timer" constructorParams=""
+                 parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
                  variableInitialisers="original_w(1000), original_h(400)" snapPixels="5"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="1000" initialHeight="400">

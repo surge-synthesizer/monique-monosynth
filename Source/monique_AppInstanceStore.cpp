@@ -53,10 +53,8 @@ void AppInstanceStore::unlock_amp_painter() noexcept
 void AppInstanceStore::kill_amp_painter() noexcept
 {
     ScopedLock locked(amp_painter_lock);
-
     if(ampPainter)
     {
-        ampPainter->stopTimer();
         ampPainter = nullptr;
     }
 }

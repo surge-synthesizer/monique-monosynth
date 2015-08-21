@@ -29,7 +29,7 @@ private:
     void resized() override;
     void paint (Graphics &g) override;
     void moved() override;
-    void refresh() override;
+    void refresh() noexcept override;
 
 public:
     inline void process( const float* values, int numSamples ) noexcept;

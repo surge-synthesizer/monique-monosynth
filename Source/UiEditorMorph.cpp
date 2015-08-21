@@ -29,7 +29,7 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorMorph::refresh()
+void UiEditorMorph::refresh() noexcept
 {
     // MORPH 1
     {

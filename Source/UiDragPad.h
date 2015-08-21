@@ -60,7 +60,7 @@ private:
     float top2bottom_state;
     Point<int> current_position;
 
-    void refresh() override;
+    void refresh() noexcept override;
     //[/UserVariables]
 
     //==============================================================================

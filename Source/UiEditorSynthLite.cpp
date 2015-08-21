@@ -46,7 +46,7 @@
 //==============================================================================
 //==============================================================================
 
-void UiEditorSynthLite::refresh() {
+void UiEditorSynthLite::refresh() noexcept{
     show_current_voice_data();
     resize_sequence_buttons();
     show_programs_and_select();

@@ -35,7 +35,7 @@ void mono_ModulationSlider::set_ctrl_view_mode( bool mode_ ) const {
     if( _modulator_is_own_parameter )
         _modulator_parameter.get_param()->midi_control->set_ctrl_mode( mode_ );
 }
-void mono_ModulationSlider::refresh() {
+void mono_ModulationSlider::refresh() noexcept {
     _parameter.write_value_to( slider_value );
     if( _button_parameter )
     {

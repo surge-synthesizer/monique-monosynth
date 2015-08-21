@@ -26,7 +26,7 @@ SegmentedMeter::SegmentedMeter()
 
 SegmentedMeter::~SegmentedMeter() {}
 
-void SegmentedMeter::refresh()
+void SegmentedMeter::refresh() noexcept
 {
     // map decibels to numSegs
     numSegs = jmax (0, roundToInt ((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
