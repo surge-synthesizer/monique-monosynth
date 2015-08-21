@@ -17,91 +17,108 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_C21DF0D02B821D7E__
-#define __JUCE_HEADER_C21DF0D02B821D7E__
+#ifndef __JUCE_HEADER_8D9EDD8BBD9CF53B__
+#define __JUCE_HEADER_8D9EDD8BBD9CF53B__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
+#include "SynthData.h"
 
-#define MAX_BUFFER_SIZE (44100*20)
-template<class type, int max_size = MAX_BUFFER_SIZE>
-class EndlessBuffer {
-    int position;
-    int last_switch_point;
-    int past_offset;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class EndlessBuffer : public RuntimeListener
+{
+protected:
+    CriticalSection writer_lock;
+    CriticalSection reader_lock;
+    mono_AudioSampleBuffer<1> sample_buffer;
 
-    int size;
-    Array<type, DummyCriticalSection, max_size> data;
-    Array<bool, DummyCriticalSection, max_size> switch_positions;
+    int current_size;
+    int reader_position;
 
 public:
-    void add( type value_, bool is_switch_ = true ) {
-        position++;
-        if( position >= (MAX_BUFFER_SIZE-1) )
-            position = 0;
+    inline void write_lock() noexcept;
+    inline void write( const float* samples_, int num_samples_ ) noexcept;
+    inline void write_unlock() noexcept;
 
-        data.getReference(position) = value_;
+public:
+    inline void read_lock() noexcept;
+    inline float get_next_and_count( int& pos_ ) const noexcept;
+    inline void read_unlock() noexcept;
 
-        if( is_switch_ )
-        {
-            last_switch_point = position;
-            switch_positions.getReference(position) = true;
-        }
-        else
-        {
-            switch_positions.getReference(position) = false;
-        }
-    }
+private:
+    NOINLINE virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    NOINLINE virtual void block_size_changed() noexcept override;
 
-    int get_current_position( int to_past_ ) {
-        int count_past = position - size - to_past_;
-        for( past_offset = size; ; ++past_offset, --count_past )
-        {
-            if( count_past < 0 )
-                count_past = MAX_BUFFER_SIZE-1;
-            if( count_past == position+1 ) {
-                count_past = position - size;
-                break;
-            }
-
-            if( switch_positions[count_past] ) {
-                break;
-            }
-        }
-        if( count_past < 0 )
-            count_past = MAX_BUFFER_SIZE-1;
-
-        return count_past;
-    }
-
-    int get_past_offset() {
-        int value = past_offset-size;
-        if( value <0 )
-            value = 0;
-        return value;
-    }
-
-    type get( int start_position_, int i_ ) {
-        int pos = start_position_+i_;
-        if( pos > (MAX_BUFFER_SIZE-1) ) {
-            pos = pos - (MAX_BUFFER_SIZE-1);
-        }
-
-        return data[pos];
-    }
-
-    void set_size( int size_ ) {
-        size = size_;
-    }
-
-    EndlessBuffer() : position(0), last_switch_point(0), past_offset(0), size(1024) {
-        data.resize( MAX_BUFFER_SIZE );
-        switch_positions.resize( MAX_BUFFER_SIZE );
-    }
+public:
+    NOINLINE EndlessBuffer();
+    NOINLINE ~EndlessBuffer();
 };
+//==============================================================================
+inline void EndlessBuffer::write_lock() noexcept
+{
+    writer_lock.enter();
+}
+inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noexcept
+{
+    float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
+    int tmp_position = reader_position;
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        tmp_sample_buffer[tmp_position] = samples_[sid];
+
+        tmp_position++;
+        if( tmp_position >= current_size )
+            tmp_position = 0;
+    }
+
+    reader_position = tmp_position;
+}
+inline void EndlessBuffer::write_unlock() noexcept
+{
+    writer_lock.enter();
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class EndlessSwitchBuffer : public EndlessBuffer
+{
+    mono_AudioSampleBuffer<1> switch_buffer;
+
+public:
+    inline void write( const float* samples_, const float* switchs_, int num_samples_ ) noexcept;
+    inline int get_new_reader_start_position( int samples_to_paint_ ) const noexcept;
+
+private:
+    NOINLINE void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    NOINLINE void block_size_changed() noexcept override;
+
+public:
+    NOINLINE EndlessSwitchBuffer();
+    NOINLINE ~EndlessSwitchBuffer();
+};
+
+//==============================================================================
+inline void EndlessSwitchBuffer::write( const float* samples_, const float* switchs_, int num_samples_ ) noexcept
+{
+    float*const tmp_sample_buffer = sample_buffer.getWritePointer();
+    float*const tmp_switch_buffer = switch_buffer.getWritePointer();
+    int tmp_position = reader_position;
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        tmp_sample_buffer[tmp_position] = samples_[sid];
+        tmp_switch_buffer[tmp_position] = switchs_[sid];
+
+        tmp_position++;
+        if( tmp_position >= current_size )
+            tmp_position = 0;
+    }
+
+    reader_position = tmp_position;
+}
 //[/Headers]
-
-
 
 //==============================================================================
 /**
@@ -129,14 +146,14 @@ public:
 private:
     int resizer;
 
-    OwnedArray<EndlessBuffer<float>> filter_values;
-    OwnedArray<EndlessBuffer<float>> filter_env_values;
-    EndlessBuffer<float> eq_values;
-    EndlessBuffer<float> values_env;
-    EndlessBuffer<float> values;
-    OwnedArray<EndlessBuffer<float>> osc_values;
-    
-    Array<EndlessBuffer<float>*> buffers;
+    OwnedArray<EndlessBuffer> filter_values;
+    OwnedArray<EndlessBuffer> filter_env_values;
+    EndlessBuffer eq_values;
+    EndlessBuffer values_env;
+    EndlessBuffer values;
+    OwnedArray<EndlessSwitchBuffer> osc_values;
+
+    Array<EndlessBuffer*> buffers;
 
     Array<bool> show_filter;
     Array<bool> show_filter_env;
@@ -146,20 +163,29 @@ private:
     Array<bool> show_osc;
 
 public:
-    void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
-    void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
-    void add_eq( const float* values_, int num_samples_ ) noexcept;
-    void add_out_env( const float* values_, int num_samples_ ) noexcept;
-    void add_out( const float* values_, int num_samples_ ) noexcept;
-    void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
+    inline void lock_for_writing() noexcept {
+        for( int i = 0 ; i != buffers.size() ; ++i )
+            buffers.getUnchecked(i)->write_lock();
+    }
+    inline void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
+    inline void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
+    inline void add_eq( const float* values_, int num_samples_ ) noexcept;
+    inline void add_out_env( const float* values_, int num_samples_ ) noexcept;
+    inline void add_out( const float* values_, int num_samples_ ) noexcept;
+    inline void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
+    inline void unlock_for_writing() noexcept {
+        for( int i = 0 ; i != buffers.size() ; ++i )
+            buffers.getUnchecked(i)->write_unlock();
+    }
 
 private:
     void refresh() noexcept override;
 
     void refresh_buttons();
     //[/UserMethods]
-
+    void lock_for_reading() noexcept;
     void paint (Graphics& g);
+    void unlock_for_reading() noexcept;
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
@@ -184,12 +210,56 @@ private:
     ScopedPointer<TextButton> out_env;
     ScopedPointer<Component> drawing_area;
 
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_AmpPainter)
 };
 
 //[EndFile] You can add extra defines here...
+inline void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
+{
+    //if( show_filter_env[id_] )
+    {
+        EndlessBuffer*const values = filter_env_values.getUnchecked(id_);
+        values->write( values_, num_samples_ );
+    }
+}
+inline void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
+{
+    //if( show_filter[id_] )
+    {
+        EndlessBuffer*const values = filter_values.getUnchecked(id_);
+        values->write( values_, num_samples_ );
+    }
+}
+inline void mono_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
+{
+    //if( show_eq )
+    {
+        eq_values.write( values_, num_samples_ );
+    }
+}
+inline void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
+{
+    //if( show_out_env )
+    {
+        values_env.write( values_, num_samples_ );
+    }
+}
+inline void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
+{
+    //if( show_out )
+    {
+        values.write( values_, num_samples_ );
+    }
+}
+inline void mono_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
+{
+    //if( id_ == 0 || show_osc[id_] )
+    {
+        EndlessSwitchBuffer*const values = osc_values.getUnchecked(id_);
+        values->write( values_, is_switch_values, num_samples_ );
+    }
+};
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_C21DF0D02B821D7E__
+#endif   // __JUCE_HEADER_8D9EDD8BBD9CF53B__

@@ -539,7 +539,7 @@ template<int num_channels>
 class mono_AudioSampleBuffer
 {
     int size;
-    size_t allocatedBytes; 
+    size_t allocatedBytes;
     float** channels;
     HeapBlock<char, true> allocatedData;
     float* preallocatedChannelSpace [num_channels];
@@ -555,6 +555,10 @@ public:
     {
         jassert (isPositiveAndBelow (channelNumber, num_channels));
         return channels [channelNumber];
+    }
+
+    inline int get_current_size() const noexcept {
+        return size;
     }
 
     void setSize (int newNumSamples,
@@ -607,9 +611,10 @@ void mono_AudioSampleBuffer<num_channels>::setSize(int newNumSamples, bool keepE
 }
 template<int num_channels>
 mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
-  : size (numSamples), 
-    allocatedBytes (0),
-    channels (static_cast<float**> (preallocatedChannelSpace))
+:
+size (numSamples),
+     allocatedBytes (0),
+     channels (static_cast<float**> (preallocatedChannelSpace))
 {
     jassert (numSamples >= 0);
 

@@ -62,7 +62,7 @@ mono_AmpPainter::mono_AmpPainter ()
     //[/Constructor_pre]
 
     addAndMakeVisible (sl_osc_octave_3 = new Slider (String::empty));
-    sl_osc_octave_3->setRange (300, 44100, 1);
+    sl_osc_octave_3->setRange (0.001, 1, 0.001);
     sl_osc_octave_3->setSliderStyle (Slider::LinearHorizontal);
     sl_osc_octave_3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sl_osc_octave_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -124,15 +124,15 @@ mono_AmpPainter::mono_AmpPainter ()
     //[UserPreSize]
     resizer = 1;
 
-    osc_values.add( new EndlessBuffer<float>() );
-    osc_values.add( new EndlessBuffer<float>() );
-    osc_values.add( new EndlessBuffer<float>() );
-    filter_values.add( new EndlessBuffer<float>() );
-    filter_values.add( new EndlessBuffer<float>() );
-    filter_values.add( new EndlessBuffer<float>() );
-    filter_env_values.add( new EndlessBuffer<float>() );
-    filter_env_values.add( new EndlessBuffer<float>() );
-    filter_env_values.add( new EndlessBuffer<float>() );
+    osc_values.add( new EndlessSwitchBuffer() );
+    osc_values.add( new EndlessSwitchBuffer() );
+    osc_values.add( new EndlessSwitchBuffer() );
+    filter_values.add( new EndlessBuffer() );
+    filter_values.add( new EndlessBuffer() );
+    filter_values.add( new EndlessBuffer() );
+    filter_env_values.add( new EndlessBuffer() );
+    filter_env_values.add( new EndlessBuffer() );
+    filter_env_values.add( new EndlessBuffer() );
 
     buffers.add( osc_values[0] );
     buffers.add( osc_values[1] );
@@ -202,20 +202,22 @@ mono_AmpPainter::~mono_AmpPainter()
 void mono_AmpPainter::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+    // TODO paint all or only values
     {
         g.fillAll (Colour(0xff050505));
 
+	lock_for_reading();
+	
         // TODO MAKE INTS!
-        const int size = sl_osc_octave_3->getValue();
-        float scale = float(drawing_area->getWidth())/size;
+        const int samples_to_paint = sl_osc_octave_3->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate();
+        float scale = float(drawing_area->getWidth())/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
         const int paint_start_offset_y = drawing_area->getY();
         const float height = drawing_area->getHeight();
         const int line_center = paint_start_offset_y + height/2;
 
-        const int current_position = osc_values[0]->get_current_position(0);
-        const int past_offaset = osc_values[0]->get_past_offset();
-
+        const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);
+        std::cout << " pos:" << current_position << " samples to paint:" << samples_to_paint << std::endl;
         {
             Colour colour = Colour(0xff444444 );
             g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff161617), 0.0f, height, false));
@@ -237,7 +239,7 @@ void mono_AmpPainter::paint (Graphics& g)
             (
                 Graphics& g,
 
-                const int buffer_pos_,
+                const int buffer_start_pos_,
                 const float scale_,
 
                 const int x_offset_,
@@ -246,17 +248,19 @@ void mono_AmpPainter::paint (Graphics& g)
 
                 const Colour& col_,
 
-                EndlessBuffer<float>& source_buffer_,
+                EndlessBuffer& source_buffer_,
                 int num_samples_
             )
             {
                 const Colour col_fill(col_.withAlpha(0.1f));
                 int last_x = -9999;
                 int last_y = -9999;
+
+                int pos_counter = buffer_start_pos_;
                 for( int sid = 0 ; sid < num_samples_ ; ++sid )
                 {
                     const int x = std::floor((scale_*sid)+x_offset_);
-                    float y = source_buffer_.get(buffer_pos_,sid);
+                    float y = source_buffer_.get_next_and_count(pos_counter);
                     bool paint_line = true;
                     if( last_x == x )
                     {
@@ -311,7 +315,7 @@ void mono_AmpPainter::paint (Graphics& g)
 
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
-            EndlessBuffer<float>& values = *osc_values[osc_id];
+            EndlessBuffer& values = *osc_values[osc_id];
             if( show_osc[osc_id] )
             {
                 Colour col;
@@ -335,7 +339,8 @@ void mono_AmpPainter::paint (Graphics& g)
 
                     col,
                     values,
-                    size
+
+                    samples_to_paint
                 );
             }
         }
@@ -357,7 +362,8 @@ void mono_AmpPainter::paint (Graphics& g)
 
                 col,
                 eq_values,
-                size
+
+                samples_to_paint
             );
         }
 
@@ -371,7 +377,7 @@ void mono_AmpPainter::paint (Graphics& g)
             else
                 col = Colours::orange;
 
-            EndlessBuffer<float>& values = *filter_values[filter_id];
+            EndlessBuffer& values = *filter_values[filter_id];
             if( show_filter[filter_id] )
             {
                 mono_AmpPainter::exec
@@ -386,12 +392,14 @@ void mono_AmpPainter::paint (Graphics& g)
                     height,
 
                     col,
+
                     values,
-                    size
+
+                    samples_to_paint
                 );
             }
 
-            EndlessBuffer<float>& values_env = *filter_env_values[filter_id];
+            EndlessBuffer& values_env = *filter_env_values[filter_id];
             if( show_filter_env[filter_id] )
             {
                 mono_AmpPainter::exec
@@ -406,21 +414,22 @@ void mono_AmpPainter::paint (Graphics& g)
                     height,
 
                     col,
+
                     values_env,
-                    size
+
+                    samples_to_paint
                 );
             }
 
         }
 
-        const int out_position = values.get_current_position(past_offaset);
         if( show_out )
         {
             mono_AmpPainter::exec
             (
                 g,
 
-                out_position,
+                current_position,
                 scale,
 
                 paint_start_offset_x,
@@ -428,8 +437,10 @@ void mono_AmpPainter::paint (Graphics& g)
                 height,
 
                 UiLookAndFeel::getInstance()->colours.slider_track_colour,
+
                 values,
-                size
+
+                samples_to_paint
             );
         }
 
@@ -439,7 +450,7 @@ void mono_AmpPainter::paint (Graphics& g)
             (
                 g,
 
-                out_position,
+                current_position,
                 scale,
 
                 paint_start_offset_x,
@@ -447,10 +458,14 @@ void mono_AmpPainter::paint (Graphics& g)
                 height,
 
                 UiLookAndFeel::getInstance()->colours.slider_track_colour.darker(),
+
                 values_env,
-                size
+
+                samples_to_paint
             );
         }
+        
+        unlock_for_reading();
     }
 
     return;
@@ -531,9 +546,6 @@ void mono_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == sl_osc_octave_3)
     {
         //[UserSliderCode_sl_osc_octave_3] -- add your slider handling code here..
-        for( int i = 0 ; i != buffers.size() ; ++i )
-            buffers.getReference(i)->set_size( sl_osc_octave_3->getValue() );
-
         //[/UserSliderCode_sl_osc_octave_3]
     }
 
@@ -625,57 +637,98 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 }
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
+//==============================================================================
+NOINLINE EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0)
+{}
+NOINLINE EndlessBuffer::~EndlessBuffer() {}
+
+NOINLINE void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
-    if( show_filter_env[id_] )
-    {
-        EndlessBuffer<float>*const values = filter_env_values.getUnchecked(id_);
-        for( int i = 0; i != num_samples_ ; ++i )
-            values->add( values_[i] );
-    }
+    ScopedLock locked(writer_lock);
+    ScopedLock locked2(reader_lock);
+    reader_position = 0;
+    current_size = sample_rate * 2 + block_size;
+    sample_buffer.setSize( current_size );
 }
-void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
+NOINLINE void EndlessBuffer::block_size_changed() noexcept
 {
-    if( show_filter[id_] )
-    {
-        EndlessBuffer<float>*const values = filter_values.getUnchecked(id_);
-        for( int i = 0; i != num_samples_ ; ++i )
-            values->add( values_[i] );
-    }
+    sample_rate_changed(0);
 }
-void mono_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
-{
-    if( show_eq )
-    {
-        for( int i = 0; i != num_samples_ ; ++i )
-            eq_values.add( values_[i] );
-    }
+
+//==============================================================================
+inline void mono_AmpPainter::lock_for_reading() noexcept {
+    for( int i = 0 ; i != buffers.size() ; ++i )
+        buffers.getUnchecked(i)->read_lock();
 }
-void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
+inline void EndlessBuffer::read_lock() noexcept
 {
-    if( show_out_env )
-    {
-        for( int i = 0; i != num_samples_ ; ++i )
-            values_env.add( values_[i] );
-    }
+    reader_lock.enter();
 }
-void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
+inline float EndlessBuffer::get_next_and_count( int& pos_ ) const noexcept
 {
-    if( show_out )
-    {
-        for( int i = 0; i != num_samples_ ; ++i )
-            values.add( values_[i] );
-    }
+    pos_++;
+    if( pos_ >= current_size )
+        pos_ = 0;
+
+    return sample_buffer.getReadPointer()[pos_];
 }
-void mono_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
+inline void mono_AmpPainter::unlock_for_reading() noexcept {
+    for( int i = 0 ; i != buffers.size() ; ++i )
+        buffers.getUnchecked(i)->read_unlock();
+}
+inline void EndlessBuffer::read_unlock() noexcept
 {
-    //if( id_ == 0 || show_osc[id_] )
+    reader_lock.enter();
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size )
+{}
+NOINLINE EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
+
+NOINLINE void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
+{
+    ScopedLock locked(writer_lock);
+    ScopedLock locked2(reader_lock);
+    reader_position = 0;
+    current_size = sample_rate * 2 + block_size;
+    sample_buffer.setSize( current_size );
+    switch_buffer.setSize( current_size );
+}
+NOINLINE void EndlessSwitchBuffer::block_size_changed() noexcept
+{
+    sample_rate_changed(0);
+}
+
+//==============================================================================
+int EndlessSwitchBuffer::get_new_reader_start_position( int samples_to_paint_ ) const noexcept
+{
+    int start_position = reader_position - samples_to_paint_;
+    if( start_position < 0 )
+        start_position = current_size - (start_position*-1);
+
+    const float*const tmp_switch_buffer = switch_buffer.getReadPointer();
+    // GO TO PAST AN FIND THE LAST SWICH
+    for( int i = 0 ; i != current_size ; ++i )
     {
-        EndlessBuffer<float>*const values = osc_values.getUnchecked(id_);
-        for( int i = 0; i != num_samples_ ; ++i )
-            values->add( values_[i], bool(is_switch_values[i]) );
+        if( tmp_switch_buffer[start_position] == 1 )
+        {
+            return start_position;
+        }
+        else
+        {
+            start_position--;
+            if( start_position < 0 )
+            {
+                start_position = current_size-1;
+            }
+        }
     }
-};
+
+    return 0;
+}
 //[/MiscUserCode]
 
 
@@ -707,9 +760,10 @@ BEGIN_JUCER_METADATA
   </BACKGROUND>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_osc_octave_3" virtualName=""
           explicitFocusOrder="0" pos="170 360 820 30" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" min="300"
-          max="44100" int="1" style="LinearHorizontal" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+          rotaryslideroutline="ff161616" textboxtext="ffffff00" min="0.0010000000000000000208"
+          max="1" int="0.0010000000000000000208" style="LinearHorizontal"
+          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
+          textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="new button" id="f50c5e2947daf2d9" memberName="osc_1" virtualName=""
               explicitFocusOrder="0" pos="10 15 40 50" buttonText="OSC 1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
