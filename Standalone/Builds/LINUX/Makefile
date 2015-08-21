@@ -50,9 +50,8 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/monique_SegmentedMeter_586d93ac.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
-  $(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o \
-  $(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o \
   $(OBJDIR)/mono_AmpPainter_dfaca393.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
@@ -105,19 +104,14 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	@echo "Compiling Main.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_SegmentedMeter_586d93ac.o: ../../../Source/monique_SegmentedMeter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_SegmentedMeter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_AppInstanceStore.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o: ../../../Source/dRowAudio_GraphicalComponent.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling dRowAudio_GraphicalComponent.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o: ../../../Source/dRowAudio_SegmentedMeter.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling dRowAudio_SegmentedMeter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_AmpPainter_dfaca393.o: ../../../Source/mono_AmpPainter.cpp

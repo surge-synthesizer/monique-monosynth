@@ -5,7 +5,7 @@
 #include "Synth.h"
 #include "UiLookAndFeel.h"
 
-#include "dRowAudio_SegmentedMeter.h"
+#include "monique_SegmentedMeter.h"
 #include "mono_AmpPainter.h"
 
 // ********************************************************************************************
@@ -427,21 +427,9 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
 
-                    // VISUALIZE // TODO move to ???
+                    // VISUALIZE 
                     if( peak_meter )
-                    {
-                        if( !repaint_peak_meter ) {
-                            peak_meter->my_red = Colours::red.getARGB();
-                            peak_meter->my_yellow = UiLookAndFeel::getInstance()->colours.bg_lines.getARGB();
-                            peak_meter->my_green = UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB();
-                            peak_meter->resized();
-
-                            repaint_peak_meter = true;
-                        }
-
-                        peak_meter->copySamples( buffer_.getReadPointer(0), num_samples );
-                        peak_meter->process();
-                    }
+                        peak_meter->process( buffer_.getReadPointer(0), num_samples );
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
 

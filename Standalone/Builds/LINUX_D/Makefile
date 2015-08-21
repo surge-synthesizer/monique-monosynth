@@ -18,10 +18,10 @@ ifeq ($(CONFIG),DEVEL)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "MONIQUE_STANDALONE" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -ffunction-sections  -fdata-sections -ffast-math -fomit-frame-pointer -ftree-vectorize
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG" -D "_DEBUG=1" -D "MONIQUE_STANDALONE" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
   CXXFLAGS += $(CFLAGS) -std=c++11
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
+  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
   TARGET := Monique_d
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
@@ -30,9 +30,8 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/monique_SegmentedMeter_586d93ac.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
-  $(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o \
-  $(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o \
   $(OBJDIR)/mono_AmpPainter_dfaca393.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
@@ -85,19 +84,14 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	@echo "Compiling Main.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_SegmentedMeter_586d93ac.o: ../../../Source/monique_SegmentedMeter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_SegmentedMeter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_AppInstanceStore.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/dRowAudio_GraphicalComponent_5fcebf23.o: ../../../Source/dRowAudio_GraphicalComponent.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling dRowAudio_GraphicalComponent.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/dRowAudio_SegmentedMeter_d28c1110.o: ../../../Source/dRowAudio_SegmentedMeter.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling dRowAudio_SegmentedMeter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_AmpPainter_dfaca393.o: ../../../Source/mono_AmpPainter.cpp

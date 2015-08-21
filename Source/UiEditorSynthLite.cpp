@@ -25,7 +25,7 @@
 #include "UiEditorSynthLitePopup.h"
 
 
-#include "dRowAudio_SegmentedMeter.h"
+#include "monique_SegmentedMeter.h"
 
 #include "mono_AmpPainter.h"
 #include "mono_ModulationSlider.h"
@@ -1023,9 +1023,6 @@ UiEditorSynthLite::UiEditorSynthLite ()
     last_programm = -1;
     is_in_help_mode = false;
 
-    peak_meter_thread = new TimeSliceThread("Monolisa-PeakThread");
-    peak_meter_thread->startThread (2);
-    peak_meter_thread->addTimeSliceClient (volume_master_meter);
     _app_instance_store->audio_processor->peak_meter = volume_master_meter;
 
     voice = reinterpret_cast< MONOVoice* >( _app_instance_store->audio_processor->synth.getVoice(0) );
@@ -1131,7 +1128,6 @@ UiEditorSynthLite::~UiEditorSynthLite()
         AppInstanceStore::getInstance()->kill_amp_painter();
     }
 
-    peak_meter_thread->stopThread(500);
     _app_instance_store->audio_processor->peak_meter = nullptr;
     //[/Destructor_pre]
 

@@ -49,6 +49,10 @@ forcedinline static double toDecibels (double absoluteValue) noexcept
 {
     return 20.0 * log10 (absoluteValue);
 }
+forcedinline static float toDecibels_fast (float absoluteValue) noexcept
+{
+    return 20.0f * log10 (absoluteValue);
+}
 
 /** Converts a value in decibels to an absolute value.
  */

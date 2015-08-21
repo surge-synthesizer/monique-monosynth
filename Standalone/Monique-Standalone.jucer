@@ -12,6 +12,10 @@
     </GROUP>
     <GROUP id="{388FBA28-CADB-4019-1A38-AFB2EBC5FC12}" name="Source">
       <GROUP id="{AF2B749D-8206-B30F-0788-6CC655365B13}" name="Monique">
+        <FILE id="ogxHnn" name="monique_SegmentedMeter.cpp" compile="1" resource="0"
+              file="../Source/monique_SegmentedMeter.cpp"/>
+        <FILE id="yBAHqc" name="monique_SegmentedMeter.h" compile="0" resource="0"
+              file="../Source/monique_SegmentedMeter.h"/>
         <FILE id="kC0aTK" name="monique_AppInstanceStore.cpp" compile="1" resource="0"
               file="../Source/monique_AppInstanceStore.cpp"/>
         <FILE id="fGCgIv" name="monique_AppInstanceStore.h" compile="0" resource="0"
@@ -22,18 +26,8 @@
             file="../Source/dRowAudio_AudioUtility.h"/>
       <FILE id="y9IvYI" name="dRowAudio_Constants.h" compile="0" resource="0"
             file="../Source/dRowAudio_Constants.h"/>
-      <FILE id="WpRCpZ" name="dRowAudio_GraphicalComponent.cpp" compile="1"
-            resource="0" file="../Source/dRowAudio_GraphicalComponent.cpp"/>
-      <FILE id="XBZAcK" name="dRowAudio_GraphicalComponent.h" compile="0"
-            resource="0" file="../Source/dRowAudio_GraphicalComponent.h"/>
       <FILE id="hjE0t8" name="dRowAudio_MathsUtilities.h" compile="0" resource="0"
             file="../Source/dRowAudio_MathsUtilities.h"/>
-      <FILE id="OIx5UG" name="dRowAudio_SegmentedMeter.cpp" compile="1" resource="0"
-            file="../Source/dRowAudio_SegmentedMeter.cpp"/>
-      <FILE id="YjseHh" name="dRowAudio_SegmentedMeter.h" compile="0" resource="0"
-            file="../Source/dRowAudio_SegmentedMeter.h"/>
-      <FILE id="KvnEah" name="dRowAudio_StateVariable.h" compile="0" resource="0"
-            file="../Source/dRowAudio_StateVariable.h"/>
       <FILE id="uvtpG7" name="mono_AmpPainter.cpp" compile="1" resource="0"
             file="../Source/mono_AmpPainter.cpp"/>
       <FILE id="UAQqc1" name="mono_AmpPainter.h" compile="0" resource="0"
@@ -111,11 +105,11 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize"
-                extraDefs="" userNotes="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto&#10;&#10;&#10;"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;"
+                userNotes="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;&#10;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-fno-inline-small-functions&#10;-fno-inline&#10;-fno-inline-functions&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto&#10;&#10;&#10;"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>
-        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
+        <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
                        targetName="Monique_d" headerPath="" defines="" linuxArchitecture="-m64"
                        binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>

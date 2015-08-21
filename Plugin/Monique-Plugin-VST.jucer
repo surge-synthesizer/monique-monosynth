@@ -16,6 +16,10 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="qZWkOv" name="monique_SegmentedMeter.cpp" compile="1" resource="0"
+              file="../Source/monique_SegmentedMeter.cpp"/>
+        <FILE id="P1fN8t" name="monique_SegmentedMeter.h" compile="0" resource="0"
+              file="../Source/monique_SegmentedMeter.h"/>
         <FILE id="Thvgla" name="monique_AppInstanceStore.cpp" compile="1" resource="0"
               file="../Source/monique_AppInstanceStore.cpp"/>
         <FILE id="XK3W5Q" name="monique_AppInstanceStore.h" compile="0" resource="0"
@@ -24,22 +28,10 @@
       <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
       <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
             file="../Source/dRowAudio_AudioUtility.h"/>
-      <FILE id="xJCyIj" name="dRowAudio_Buffer.h" compile="0" resource="0"
-            file="../Source/dRowAudio_Buffer.h"/>
       <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
             file="../Source/dRowAudio_Constants.h"/>
-      <FILE id="opqnhD" name="dRowAudio_GraphicalComponent.cpp" compile="1"
-            resource="0" file="../Source/dRowAudio_GraphicalComponent.cpp"/>
-      <FILE id="I2zoEx" name="dRowAudio_GraphicalComponent.h" compile="0"
-            resource="0" file="../Source/dRowAudio_GraphicalComponent.h"/>
       <FILE id="OTthBH" name="dRowAudio_MathsUtilities.h" compile="0" resource="0"
             file="../Source/dRowAudio_MathsUtilities.h"/>
-      <FILE id="tr4cTv" name="dRowAudio_SegmentedMeter.cpp" compile="1" resource="0"
-            file="../Source/dRowAudio_SegmentedMeter.cpp"/>
-      <FILE id="UUoF9D" name="dRowAudio_SegmentedMeter.h" compile="0" resource="0"
-            file="../Source/dRowAudio_SegmentedMeter.h"/>
-      <FILE id="iaUOBQ" name="dRowAudio_StateVariable.h" compile="0" resource="0"
-            file="../Source/dRowAudio_StateVariable.h"/>
       <FILE id="xRz9s6" name="mono_AmpPainter.cpp" compile="1" resource="0"
             file="../Source/mono_AmpPainter.cpp"/>
       <FILE id="xmwNmk" name="mono_AmpPainter.h" compile="0" resource="0"

@@ -80,8 +80,6 @@ public:
     void resize_sequence_buttons();
     void switch_finalizer_tab();
 
-    ScopedPointer<TimeSliceThread> peak_meter_thread;
-
     Array<int> last_morpher_index;
 
     const float original_w;
