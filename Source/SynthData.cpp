@@ -1566,7 +1566,7 @@ NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
 
 NOINLINE void SynthData::save_midi() const noexcept {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    folder = File(folder.getFullPathName()+"/Monoplugs/Monolisa/");
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
         File midi_file( File( folder.getFullPathName() + String("/") + "patch.midi") );
@@ -1580,7 +1580,7 @@ NOINLINE void SynthData::save_midi() const noexcept {
 }
 NOINLINE void SynthData::read_midi() noexcept {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    File midi_file = File(folder.getFullPathName()+"/Monoplugs/Monolisa/patch.midi");
+    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));
     ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
     if( xml )
     {
@@ -1890,7 +1890,7 @@ void SynthData::MorphGroup::parameter_value_changed( mono_ParameterBase< int >* 
 
 static inline File get_bank_folder( const String& bank_name_ ) {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    folder = File(folder.getFullPathName()+"/Monoplugs/Monolisa/"+bank_name_);
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER+bank_name_);
     folder.createDirectory();
 
     return folder;

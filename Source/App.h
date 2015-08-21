@@ -49,7 +49,7 @@
 #else
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
 #endif
-  
+
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -106,18 +106,16 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
+
+#define PROJECT_FOLDER String("/Monoplugs/Monique/")
 #if JUCE_MAC
 #	define ROOT_FOLDER userMusicDirectory
-#	define MONOLISA_ROOT_FOLDER "/MONOLisa"
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
 #	define ROOT_FOLDER userDocumentsDirectory
-#	define MONOLISA_ROOT_FOLDER "/MONOLisa"
 #elif JUCE_WINDOWS
 #	define ROOT_FOLDER userDocumentsDirectory
-#	define MONOLISA_ROOT_FOLDER "/MONOLisa"
 #elif JUCE_IOS
 #	define ROOT_FOLDER userDocumentsDirectory
-#	define MONOLISA_ROOT_FOLDER "/MONOLisa"
 #endif
 
 // --------------------------------------------------------------------------------------------

@@ -195,7 +195,7 @@ void mono_AudioDeviceManager::open_port(const String& port_ident_name_, const St
 NOINLINE void mono_AudioDeviceManager::save()  const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    folder = File(folder.getFullPathName()+"/Monoplugs/Monolisa/");
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
 #ifdef IS_PLUGIN
@@ -224,9 +224,9 @@ NOINLINE void mono_AudioDeviceManager::read() noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
 #ifdef IS_PLUGIN
-    File midi_file = File(folder.getFullPathName()+"/Monoplugs/Monolisa/config.pmidi");
+    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("config.pmidi"));
 #else
-    File midi_file = File(folder.getFullPathName()+"/Monoplugs/Monolisa/config.midi");
+    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("config.midi"));
 #endif
     ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
     if( xml )
