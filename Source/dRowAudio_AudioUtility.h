@@ -45,64 +45,64 @@
 //==============================================================================
 /** Converts an absolute value to decibels.
  */
-forcedinline static double toDecibels (double absoluteValue)
+forcedinline static double toDecibels (double absoluteValue) noexcept
 {
     return 20.0 * log10 (absoluteValue);
 }
 
 /** Converts a value in decibels to an absolute value.
  */
-forcedinline static double decibelsToAbsolute (double decibelsValue)
+forcedinline static double decibelsToAbsolute (double decibelsValue) noexcept
 {
     return pow (10, (decibelsValue * 0.05));
 }
 
 /** Converts a time in seconds to minutes.
  */
-forcedinline static double secondsToMins (double seconds)
+forcedinline static double secondsToMins (double seconds) noexcept
 {
     return seconds * oneOver60;
 }
 
 /** Converts a time in seconds to a number of samples for a given sample rate.
  */
-forcedinline static int64 secondsToSamples (double timeSeconds, double sampleRate)
+forcedinline static int64 secondsToSamples (double timeSeconds, double sampleRate) noexcept
 {
     return (int64) (timeSeconds * sampleRate);
 }
 
 /** Converts a time in milliseconds to a number of samples for a given sample rate.
  */
-forcedinline static int64 msToSamples (double timeMs, double sampleRate)
+forcedinline static int64 msToSamples (double timeMs, double sampleRate) noexcept
 {
     return (int64) (timeMs * 0.001 * sampleRate);
 }
-forcedinline static int64 msToSamplesFast (float timeMs, float sampleRate)
+forcedinline static int64 msToSamplesFast (float timeMs, float sampleRate) noexcept
 {
     return (int64) (timeMs * 0.001f * sampleRate);
 }
 
 /** Converts a number of samples to a time in ms for a given sample rate.
  */
-forcedinline static double samplesToMs (int64 numSamples, double sampleRate)
+forcedinline static double samplesToMs (int64 numSamples, double sampleRate) noexcept
 {
     return (1000 * (numSamples / sampleRate));
 }
-forcedinline static double samplesToMsFast (int64 numSamples, float sampleRate)
+forcedinline static double samplesToMsFast (int64 numSamples, float sampleRate) noexcept
 {
     return (1000.0f * (float(numSamples) / sampleRate));
 }
 
 /** Converts a number of samples to a time in seconds for a given sample rate.
  */
-forcedinline static double samplesToSeconds (int64 numSamples, double sampleRate)
+forcedinline static double samplesToSeconds (int64 numSamples, double sampleRate) noexcept
 {
     return (numSamples / sampleRate);
 }
 
 /** Converts a number of semitones to a given pitch ratio.
  */
-static inline double semitonesToPitchRatio (double numSemitones)  
+static inline double semitonesToPitchRatio (double numSemitones) noexcept
 {
     //return pow (10.0, numSemitones * (log10 (2.0) / 12.0));
     return pow (2.0, numSemitones / 12.0);
@@ -110,7 +110,7 @@ static inline double semitonesToPitchRatio (double numSemitones)
 
 /** Converts pitch ratio to a number of semitones.
  */
-static inline double pitchRatioToSemitones (double pitchRatio)    
+static inline double pitchRatioToSemitones (double pitchRatio) noexcept
 {
     //return (12.0 / log10 (2.0)) * log10 (pitchRatio);
     return 12.0 * log2 (pitchRatio);
@@ -118,21 +118,21 @@ static inline double pitchRatioToSemitones (double pitchRatio)
 
 /** Converts a frequency to MIDI note number.
  */
-static inline double frequencyToMidi (double frequency)
+static inline double frequencyToMidi (double frequency) noexcept
 {
     return 69.0 + (12.0 * log2 (frequency / 440.0));
 }
 
 /** Converts a MIDI note number to a frequency.
  */
-static inline double midiToFrequency (double midiNoteNumber)
+static inline double midiToFrequency (double midiNoteNumber) noexcept
 {
     return 440.0 * pow (2.0, (midiNoteNumber - 69.0) / 12.0);
 }
 
 /** Converts a time in seconds to a timecode string.
  */
-static inline const String timeToTimecodeString (const double seconds)
+static inline const String timeToTimecodeString (const double seconds) noexcept
 {
     const double absSecs = fabs (seconds);
     const String sign ((seconds < 0) ? "-" : "");
@@ -152,7 +152,7 @@ static inline const String timeToTimecodeString (const double seconds)
 
 /** Converts a time in seconds to a timecode string displaying mins, secs and 1/10th secs.
  */
-static inline const String timeToTimecodeStringLowRes (const double seconds)
+static inline const String timeToTimecodeStringLowRes (const double seconds) noexcept
 {
     const double absSecs = fabs (seconds);
     const String sign ((seconds < 0) ? "-" : "");
@@ -174,7 +174,7 @@ static inline const String timeToTimecodeStringLowRes (const double seconds)
 	This is useful when displaying times as hrs, mins secs etc.
 	as it will only display the units needed.
  */
-static inline const String secondsToTimeLength (double numSeconds)
+static inline const String secondsToTimeLength (double numSeconds) noexcept
 {
 	double decimalTime = numSeconds / 60000.0;
 	
@@ -205,7 +205,7 @@ static inline const String secondsToTimeLength (double numSeconds)
 static inline const String ppqToBarsBeatsString (const double ppq,
                                           const double /*lastBarPPQ*/,
                                           const int numerator,
-                                          const int denominator)
+                                          const int denominator) noexcept
 {
     if (numerator == 0 || denominator == 0)
         return "1|1|0";
@@ -224,7 +224,7 @@ static inline const String ppqToBarsBeatsString (const double ppq,
 
 /** Compares a filename extension with a wildcard string.
  */
-static inline bool matchesAudioWildcard (const String& extensionToTest, const String& wildcard, const bool ignoreCase=true)
+static inline bool matchesAudioWildcard (const String& extensionToTest, const String& wildcard, const bool ignoreCase=true) noexcept
 {
 	if (ignoreCase ? wildcard.containsIgnoreCase (extensionToTest)
                    : wildcard.contains (extensionToTest))
@@ -236,7 +236,7 @@ static inline bool matchesAudioWildcard (const String& extensionToTest, const St
 /** Converts a block of audio sample to floating point samples if the reader
     used an integer format.
  */
-static inline void convertToFloat (AudioFormatReader* reader, void* sourceBuffer, float* destBuffer, int numSamples)
+static inline void convertToFloat (AudioFormatReader* reader, void* sourceBuffer, float* destBuffer, int numSamples) noexcept
 {
 	if (reader != nullptr)
 	{
@@ -263,7 +263,7 @@ static inline void convertToFloat (AudioFormatReader* reader, void* sourceBuffer
  
     This can be used to find out how many bytes to pass to isAudioSampleBuffer().
  */
-static inline size_t getNumBytesForAudioSampleBuffer (const AudioSampleBuffer& buffer)
+static inline size_t getNumBytesForAudioSampleBuffer (const AudioSampleBuffer& buffer) noexcept
 {
     const size_t channelListSize = (buffer.getNumChannels() + 1) * sizeof (float*);
     const size_t sampleDataSize = buffer.getNumSamples() * buffer.getNumChannels() * sizeof (float);
@@ -285,7 +285,7 @@ static inline size_t getNumBytesForAudioSampleBuffer (const AudioSampleBuffer& b
  
     @see AudioSampleBufferAudioFormat, getNumBytesForAudioSampleBuffer, AudioSampleBuffer
  */
-static inline bool isAudioSampleBuffer (void* sourceData, size_t sourceDataSize, int maxNumChannels = 128)
+static inline bool isAudioSampleBuffer (void* sourceData, size_t sourceDataSize, int maxNumChannels = 128) noexcept
 {
     const float** channelList = reinterpret_cast<const float**> (sourceData);
  
@@ -335,7 +335,7 @@ static inline bool isAudioSampleBuffer (void* sourceData, size_t sourceDataSize,
  */
 static inline bool isAudioSampleBuffer (InputStream& inputStream,
                                  unsigned int &numChannels, int64 &numSamples,
-                                 int maxNumChannels = 128)
+                                 int maxNumChannels = 128) noexcept
 {
     // get start samples
     Array<float> channelStartSamples;
