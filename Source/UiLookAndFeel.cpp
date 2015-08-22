@@ -1521,7 +1521,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
         Path filledArc;
         if( slider.isOpaque() )
         {
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, rotaryEndAngle_, thickness);
+            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, thickness);
             //g.setColour(Colours::black.withAlpha(0.2f));
             //g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
             g.setColour (Colour (0xff222222) ) ; //.interpolatedWith(SliderCol.darker(0.8),0.2));

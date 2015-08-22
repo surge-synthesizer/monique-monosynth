@@ -110,7 +110,7 @@ noexcept
     bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
     bool has_bottom_label = not has_bottom_button;
 
-    front_slider_->setOpaque(false);
+    front_slider_->setOpaque(true);
     back_slider_->setVisible(false);
     back_slider_->setEnabled(false);
     back_slider_->setOpaque(true);
@@ -149,6 +149,7 @@ noexcept
     // BACK - SECOND AND MOD
     if( back_parameter )
     {
+        front_slider_->setOpaque(false);
         back_slider_->setVisible(true);
         back_slider_->setEnabled(false);
         back_slider_->toBack();
@@ -180,6 +181,8 @@ noexcept
                     back_slider_->setRange( back_parameter->min_unscaled(), back_parameter->max_unscaled(), back_parameter->slider_interval() );
                 else
                     back_slider_->setRange( override_front_value, back_parameter->max_unscaled(), back_parameter->slider_interval() );
+		
+		// TODO get_override_front_max_value
             }
         }
 
@@ -188,6 +191,7 @@ noexcept
         bottom_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
         bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
     }
+      
     
     if( top_parameter )
     {

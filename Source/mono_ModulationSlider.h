@@ -27,8 +27,6 @@
 // TODO
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
 
-typedef Array< float > snap_map_t;
-
 class mono_ModulationSlider;
 class SnapSlider : public Slider {
     friend class mono_ModulationSlider;
