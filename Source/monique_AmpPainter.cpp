@@ -34,14 +34,14 @@ mono_AmpPainter::mono_AmpPainter ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (sl_osc_octave_3 = new Slider (String::empty));
-    sl_osc_octave_3->setRange (0.001, 1, 0.001);
-    sl_osc_octave_3->setSliderStyle (Slider::LinearHorizontal);
-    sl_osc_octave_3->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    sl_osc_octave_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    sl_osc_octave_3->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    sl_osc_octave_3->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    sl_osc_octave_3->addListener (this);
+    addAndMakeVisible (sl_show_range = new Slider (String::empty));
+    sl_show_range->setRange (0.001, 1, 0.001);
+    sl_show_range->setSliderStyle (Slider::LinearHorizontal);
+    sl_show_range->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    sl_show_range->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
+    sl_show_range->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
+    sl_show_range->setColour (Slider::textBoxTextColourId, Colours::yellow);
+    sl_show_range->addListener (this);
 
     addAndMakeVisible (osc_1 = new TextButton ("new button"));
     osc_1->setButtonText (TRANS("OSC 1"));
@@ -55,9 +55,9 @@ mono_AmpPainter::mono_AmpPainter ()
     osc_3->setButtonText (TRANS("OSC 3"));
     osc_3->addListener (this);
 
-    addAndMakeVisible (lfo_1 = new TextButton ("new button"));
-    lfo_1->setButtonText (TRANS("EQ"));
-    lfo_1->addListener (this);
+    addAndMakeVisible (eq = new TextButton ("new button"));
+    eq->setButtonText (TRANS("EQ"));
+    eq->addListener (this);
 
     addAndMakeVisible (out = new TextButton ("new button"));
     out->setButtonText (TRANS("OUT"));
@@ -117,20 +117,6 @@ mono_AmpPainter::mono_AmpPainter ()
     buffers.add( &values );
     buffers.add( &values_env );
 
-    show_osc.add( false );
-    show_osc.add( false );
-    show_osc.add( false );
-    show_filter.add( false );
-    show_filter.add( false );
-    show_filter.add( false );
-    show_filter_env.add( false );
-    show_filter_env.add( false );
-    show_filter_env.add( false );
-
-    show_out = true;
-    show_out_env = false;
-    show_eq = false;
-
     refresh_buttons();
 
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
@@ -138,10 +124,9 @@ mono_AmpPainter::mono_AmpPainter ()
         getChildComponent(i)->setOpaque(true);
     }
     drawing_area->setOpaque(false);
-    sl_osc_octave_3->setOpaque(false);
+    sl_show_range->setOpaque(false);
     setOpaque(true);
 
-    sl_osc_octave_3->setValue(0.05);
 
     /*
     //[/UserPreSize]
@@ -151,7 +136,7 @@ mono_AmpPainter::mono_AmpPainter ()
 
     //[Constructor] You can add your own custom stuff here..
     */
-    
+
     startTimer(UI_REFRESH_RATE);
     //[/Constructor]
 }
@@ -161,11 +146,11 @@ mono_AmpPainter::~mono_AmpPainter()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    sl_osc_octave_3 = nullptr;
+    sl_show_range = nullptr;
     osc_1 = nullptr;
     osc_2 = nullptr;
     osc_3 = nullptr;
-    lfo_1 = nullptr;
+    eq = nullptr;
     out = nullptr;
     f_1 = nullptr;
     f_2 = nullptr;
@@ -192,7 +177,7 @@ void mono_AmpPainter::paint (Graphics& g)
         lock_for_reading();
 
         // TODO MAKE INTS!
-        const int samples_to_paint = sl_osc_octave_3->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
+        const int samples_to_paint = sl_show_range->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
         float scale = float(drawing_area->getWidth())/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
         const int paint_start_offset_y = drawing_area->getY();
@@ -214,7 +199,7 @@ void mono_AmpPainter::paint (Graphics& g)
             g.setColour (UiLookAndFeel::getInstance()->colours.label_text_colour.withAlpha(0.3f));
             g.fillRect (proportionOfWidth (0.170f), int(paint_start_offset_y+height/2), proportionOfWidth (0.8150f), 1 );
         }
-
+	
         struct mono_AmpPainter
         {
             static void exec
@@ -294,7 +279,14 @@ void mono_AmpPainter::paint (Graphics& g)
                 }
             }
         };
-
+	
+        SynthData& synth_data = DATA( synth_data );
+	const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
+	const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
+	const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
+	const bool show_eq = synth_data.osci_show_eq;
+	const bool show_out = synth_data.osci_show_out;
+	const bool show_out_env = synth_data.osci_show_out_env;
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
             EndlessBuffer& values = *osc_values[osc_id];
@@ -360,7 +352,7 @@ void mono_AmpPainter::paint (Graphics& g)
                 col = Colours::orange;
 
             EndlessBuffer& values = *filter_values[filter_id];
-            if( show_filter[filter_id] )
+            if( show_flt[filter_id] )
             {
                 mono_AmpPainter::exec
                 (
@@ -382,7 +374,7 @@ void mono_AmpPainter::paint (Graphics& g)
             }
 
             EndlessBuffer& values_env = *filter_env_values[filter_id];
-            if( show_filter_env[filter_id] )
+            if( show_flt_env[filter_id] )
             {
                 mono_AmpPainter::exec
                 (
@@ -501,11 +493,11 @@ void mono_AmpPainter::resized()
 #include "UiDynamicSizeStart.h"
     //[/UserPreResize]
 
-    sl_osc_octave_3->setBounds (170, 360, 820, 30);
+    sl_show_range->setBounds (170, 360, 820, 30);
     osc_1->setBounds (10, 15, 40, 50);
     osc_2->setBounds (10, 75, 40, 50);
     osc_3->setBounds (10, 135, 40, 50);
-    lfo_1->setBounds (60, 15, 40, 50);
+    eq->setBounds (60, 15, 40, 50);
     out->setBounds (60, 75, 40, 50);
     f_1->setBounds (10, 215, 40, 50);
     f_2->setBounds (10, 275, 40, 50);
@@ -526,10 +518,11 @@ void mono_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == sl_osc_octave_3)
+    if (sliderThatWasMoved == sl_show_range)
     {
-        //[UserSliderCode_sl_osc_octave_3] -- add your slider handling code here..
-        //[/UserSliderCode_sl_osc_octave_3]
+        //[UserSliderCode_sl_show_range] -- add your slider handling code here..
+        DATA( synth_data ).osci_show_range = sl_show_range->getValue();
+        //[/UserSliderCode_sl_show_range]
     }
 
     //[UsersliderValueChanged_Post]
@@ -544,73 +537,73 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == osc_1)
     {
         //[UserButtonCode_osc_1] -- add your button handler code here..
-        show_osc.getReference(0) ^= true;
+        DATA( synth_data ).osci_show_osc_1 ^= true;
         //[/UserButtonCode_osc_1]
     }
     else if (buttonThatWasClicked == osc_2)
     {
         //[UserButtonCode_osc_2] -- add your button handler code here..
-        show_osc.getReference(1) ^= true;
+        DATA( synth_data ).osci_show_osc_2 ^= true;
         //[/UserButtonCode_osc_2]
     }
     else if (buttonThatWasClicked == osc_3)
     {
         //[UserButtonCode_osc_3] -- add your button handler code here..
-        show_osc.getReference(2) ^= true;
+        DATA( synth_data ).osci_show_osc_3 ^= true;
         //[/UserButtonCode_osc_3]
     }
-    else if (buttonThatWasClicked == lfo_1)
+    else if (buttonThatWasClicked == eq)
     {
-        //[UserButtonCode_lfo_1] -- add your button handler code here..
-        show_eq ^= true;
-        //[/UserButtonCode_lfo_1]
+        //[UserButtonCode_eq] -- add your button handler code here..
+        DATA( synth_data ).osci_show_eq ^= true;
+        //[/UserButtonCode_eq]
     }
     else if (buttonThatWasClicked == out)
     {
         //[UserButtonCode_out] -- add your button handler code here..
-        show_out ^= true;
+        DATA( synth_data ).osci_show_out ^= true;
         //[/UserButtonCode_out]
     }
     else if (buttonThatWasClicked == f_1)
     {
         //[UserButtonCode_f_1] -- add your button handler code here..
-        show_filter.getReference(0) ^= true;
+        DATA( synth_data ).osci_show_flt_1 ^= true;
         //[/UserButtonCode_f_1]
     }
     else if (buttonThatWasClicked == f_2)
     {
         //[UserButtonCode_f_2] -- add your button handler code here..
-        show_filter.getReference(1) ^= true;
+        DATA( synth_data ).osci_show_flt_2 ^= true;
         //[/UserButtonCode_f_2]
     }
     else if (buttonThatWasClicked == f_3)
     {
         //[UserButtonCode_f_3] -- add your button handler code here..
-        show_filter.getReference(2) ^= true;
+        DATA( synth_data ).osci_show_flt_3 ^= true;
         //[/UserButtonCode_f_3]
     }
     else if (buttonThatWasClicked == f_env_1)
     {
         //[UserButtonCode_f_env_1] -- add your button handler code here..
-        show_filter_env.getReference(0) ^= true;
+        DATA( synth_data ).osci_show_flt_env_1 ^= true;
         //[/UserButtonCode_f_env_1]
     }
     else if (buttonThatWasClicked == f_env_2)
     {
         //[UserButtonCode_f_env_2] -- add your button handler code here..
-        show_filter_env.getReference(1) ^= true;
+        DATA( synth_data ).osci_show_flt_env_2 ^= true;
         //[/UserButtonCode_f_env_2]
     }
     else if (buttonThatWasClicked == f_env_3)
     {
         //[UserButtonCode_f_env_3] -- add your button handler code here..
-        show_filter_env.getReference(2) ^= true;
+        DATA( synth_data ).osci_show_flt_env_3 ^= true;
         //[/UserButtonCode_f_env_3]
     }
     else if (buttonThatWasClicked == out_env)
     {
         //[UserButtonCode_out_env] -- add your button handler code here..
-        show_out_env ^= true;
+        DATA( synth_data ).osci_show_out_env ^= true;
         //[/UserButtonCode_out_env]
     }
 
@@ -625,7 +618,7 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void mono_AmpPainter::timerCallback() 
+void mono_AmpPainter::timerCallback()
 {
     repaint( drawing_area->getBounds() );
 }
@@ -635,22 +628,26 @@ void mono_AmpPainter::refresh_buttons() {
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
-    osc_1->setColour( TextButton::buttonColourId, show_osc[0] ? Colours::lightblue : button_off );
-    osc_2->setColour( TextButton::buttonColourId, show_osc[1] ? Colours::blueviolet : button_off );
-    osc_3->setColour( TextButton::buttonColourId, show_osc[2] ? Colours::violet : button_off );
+    SynthData& synth_data = DATA( synth_data );
+    
+    sl_show_range->setValue(synth_data.osci_show_range, dontSendNotification );
 
-    lfo_1->setColour( TextButton::buttonColourId, show_eq ? Colours::green : button_off );
+    osc_1->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_1 ? Colours::lightblue : button_off );
+    osc_2->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_2 ? Colours::blueviolet : button_off );
+    osc_3->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_3 ? Colours::violet : button_off );
 
-    f_1->setColour( TextButton::buttonColourId, show_filter[0] ? Colours::red : button_off );
-    f_2->setColour( TextButton::buttonColourId, show_filter[1] ? Colours::orangered : button_off );
-    f_3->setColour( TextButton::buttonColourId, show_filter[2] ? Colours::orange : button_off );
+    eq->setColour( TextButton::buttonColourId, synth_data.osci_show_eq ? Colours::green : button_off );
 
-    f_env_1->setColour( TextButton::buttonColourId, show_filter_env[0] ? Colours::red : button_off );
-    f_env_2->setColour( TextButton::buttonColourId, show_filter_env[1] ? Colours::orangered : button_off );
-    f_env_3->setColour( TextButton::buttonColourId, show_filter_env[2] ? Colours::orange : button_off );
+    f_1->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_1 ? Colours::red : button_off );
+    f_2->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_2 ? Colours::orangered : button_off );
+    f_3->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_3 ? Colours::orange : button_off );
 
-    out->setColour( TextButton::buttonColourId, show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
+    f_env_1->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_1 ? Colours::red : button_off );
+    f_env_2->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_2 ? Colours::orangered : button_off );
+    f_env_3->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_3 ? Colours::orange : button_off );
+
+    out->setColour( TextButton::buttonColourId, synth_data.osci_show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
+    out_env->setColour( TextButton::buttonColourId, synth_data.osci_show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
 }
 
 //==============================================================================
@@ -776,7 +773,7 @@ BEGIN_JUCER_METADATA
     <RECT pos="16.5% 2.75% 82.5% 84.75%" fill=" radial: 57.5% 158.75%, 57.5% 1.25%, 0=ff2b3524, 1=ff000000"
           hasStroke="0"/>
   </BACKGROUND>
-  <SLIDER name="" id="6770eaa357af0c63" memberName="sl_osc_octave_3" virtualName=""
+  <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
           explicitFocusOrder="0" pos="170 360 820 30" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" min="0.0010000000000000000208"
           max="1" int="0.0010000000000000000208" style="LinearHorizontal"
@@ -791,7 +788,7 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="new button" id="2c8665efd6c0c37d" memberName="osc_3" virtualName=""
               explicitFocusOrder="0" pos="10 135 40 50" buttonText="OSC 3"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="lfo_1" virtualName=""
+  <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="eq" virtualName=""
               explicitFocusOrder="0" pos="60 15 40 50" buttonText="EQ" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""

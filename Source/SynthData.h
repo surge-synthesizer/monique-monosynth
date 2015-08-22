@@ -796,6 +796,20 @@ struct SynthData : mono_ParameterListener<float>
     mono_Parameter< bool, false > ctrl;
     mono_Parameter< float, 200, 0,1000, 1000, 100 > midi_pickup_offset;
 
+    mono_Parameter< bool, false > osci_show_osc_1;
+    mono_Parameter< bool, false > osci_show_osc_2;
+    mono_Parameter< bool, false > osci_show_osc_3;
+    mono_Parameter< bool, false > osci_show_flt_env_1;
+    mono_Parameter< bool, false > osci_show_flt_env_2;
+    mono_Parameter< bool, false > osci_show_flt_env_3;
+    mono_Parameter< bool, false > osci_show_flt_1;
+    mono_Parameter< bool, false > osci_show_flt_2;
+    mono_Parameter< bool, false > osci_show_flt_3;
+    mono_Parameter< bool, false > osci_show_eq;
+    mono_Parameter< bool, true > osci_show_out;
+    mono_Parameter< bool, false > osci_show_out_env;
+    mono_Parameter< float, 50, 0,1000, 1000, 100 > osci_show_range;
+    
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
     OwnedArray< ENVPresetData > filter_input_env_datas;

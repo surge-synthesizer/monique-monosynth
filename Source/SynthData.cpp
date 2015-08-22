@@ -649,6 +649,20 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     ctrl(generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),generate_short_human_name("MAIN","ctrl")),
     midi_pickup_offset(generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),generate_short_human_name("MAIN","midi_pick_up")),
 
+    osci_show_osc_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),generate_short_human_name("MAIN","osci_show_osc_1")),
+    osci_show_osc_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),generate_short_human_name("MAIN","osci_show_osc_2")),
+    osci_show_osc_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),generate_short_human_name("MAIN","osci_show_osc_3")),
+    osci_show_flt_env_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),generate_short_human_name("MAIN","osci_show_flt_env_1")),
+    osci_show_flt_env_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),generate_short_human_name("MAIN","osci_show_flt_env_2")),
+    osci_show_flt_env_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),generate_short_human_name("MAIN","osci_show_flt_env_3")),
+    osci_show_flt_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),generate_short_human_name("MAIN","osci_show_flt_1")),
+    osci_show_flt_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),generate_short_human_name("MAIN","osci_show_flt_2")),
+    osci_show_flt_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),generate_short_human_name("MAIN","osci_show_flt_3")),
+    osci_show_eq(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),generate_short_human_name("MAIN","osci_show_eq")),
+    osci_show_out(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),generate_short_human_name("MAIN","osci_show_out")),
+    osci_show_out_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),generate_short_human_name("MAIN","osci_show_out_env")),
+    osci_show_range(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),generate_short_human_name("MAIN","osci_show_range")),
+
     env_preset_def(new ENVPresetDef( MASTER ) ),
     eq_data(new EQData(MASTER, env_preset_def)),
     arp_sequencer_data(new ArpSequencerData( MASTER )),
@@ -733,13 +747,13 @@ NOINLINE SynthData::~SynthData() {
     arp_sequencer_data = nullptr;
     reverb_data = nullptr;
     chorus_data = nullptr;
-    
+
     lfo_datas.clear();
     osc_datas.clear();
     filter_input_env_datas.clear();
     filter_datas.clear();
     env_datas.clear();
-    
+
     // AS LAST!! unregister listeners
     env_preset_def = nullptr;
 }
@@ -809,6 +823,20 @@ NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibility
     params_.add( &animate_eq_env );
     params_.add( &animate_modulations );
     params_.add( &sync );
+
+    params_.add( &osci_show_osc_1 );
+    params_.add( &osci_show_osc_2 );
+    params_.add( &osci_show_osc_3 );
+    params_.add( &osci_show_flt_env_1 );
+    params_.add( &osci_show_flt_env_2 );
+    params_.add( &osci_show_flt_env_3 );
+    params_.add( &osci_show_flt_1 );
+    params_.add( &osci_show_flt_2 );
+    params_.add( &osci_show_flt_3 );
+    params_.add( &osci_show_eq );
+    params_.add( &osci_show_out );
+    params_.add( &osci_show_out_env );
+    params_.add( &osci_show_range );
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id ) {
         params_.add( &morhp_states[morpher_id] );

@@ -10,6 +10,7 @@ CHANGES 0.5:
 - improve: ui sliders, clean it up (and resize)
 - change path to monique (please rename your folder)
 - fix: oscilloscope repaint lag/bug
+- add: store oscilloscope settings withg program
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -37,7 +38,6 @@ TODO:
 - add: panic
 - add/fix: morph for some values are not supported now (e.g. pulse)
 - add: store ui size
-- add: store osci settings
 - add-back: morph toggles
 - shuffle: snap to note durations
 - add: audio device settings (standalone)

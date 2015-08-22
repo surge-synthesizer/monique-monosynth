@@ -155,13 +155,6 @@ private:
 
     Array<EndlessBuffer*> buffers;
 
-    Array<bool> show_filter;
-    Array<bool> show_filter_env;
-    bool show_eq;
-    bool show_out_env;
-    bool show_out;
-    Array<bool> show_osc;
-
 public:
     inline void lock_for_writing() noexcept {
         for( int i = 0 ; i != buffers.size() ; ++i )
@@ -199,11 +192,11 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Slider> sl_osc_octave_3;
+    ScopedPointer<Slider> sl_show_range;
     ScopedPointer<TextButton> osc_1;
     ScopedPointer<TextButton> osc_2;
     ScopedPointer<TextButton> osc_3;
-    ScopedPointer<TextButton> lfo_1;
+    ScopedPointer<TextButton> eq;
     ScopedPointer<TextButton> out;
     ScopedPointer<TextButton> f_1;
     ScopedPointer<TextButton> f_2;
