@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -22,6 +22,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
+#include "mono_Parameters.h"
 #include "mono_UiUtilities.h"
 
 typedef Array< float > snap_map_t;
@@ -103,79 +104,116 @@ public:
     {}
 };
 
-// TODO make a class as argument which hold all the init data, so you dont have to change the ui file again and again
 enum {
     NO_TOP_BUTTON_AMP = -3,
     FIXED_TOP_BUTTON_COLOUR = -2
 };
-struct ModulationSliderConfigBase {
-    virtual StringRef get_bottom_button_text() const {
-        return "";
-    }
-    virtual bool get_is_bottom_button_text_dynamic() const {
+
+struct ModulationSliderConfigBase
+{
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    virtual bool get_is_linear() const noexcept 
+    {
         return false;
     }
-    virtual mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const {
-        return nullptr;
+
+    //==============================================================================
+    // FRONT SLIDER
+    virtual SLIDER_STYLES get_front_slider_style() const noexcept
+    {
+        return UNDEFINED_SLIDER_STYLE;
     }
-    virtual mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const {
-        return get_parameter_compatibility_base();
+    virtual mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept = 0;
+    virtual int get_override_front_min_value() const noexcept
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    virtual int get_override_front_max_value() const noexcept
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
     }
 
-    virtual StringRef get_botton_button_switch_text() const {
-        return "";
+    //==============================================================================
+    // BACK SLIDER
+    virtual SLIDER_STYLES get_back_slider_style() const noexcept
+    {
+        return UNDEFINED_SLIDER_STYLE;
     }
-
-    virtual StringRef get_top_button_text() const {
-        return "";
-    }
-    virtual mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const {
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    virtual mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept
+    {
         return nullptr;
     }
-    virtual float get_top_button_amp() const {
+
+    //==============================================================================
+    // TOP BUTTON
+    enum TOP_BUTTON_TYPE
+    {
+        TOP_BUTTON_IS_MODULATOR,
+        TOP_BUTTON_IS_ON_OFF,
+
+        TOP_BUTTON_TYPE_IS_UNKNOWN
+    };
+    virtual TOP_BUTTON_TYPE get_top_button_type() const noexcept
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    virtual mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept
+    {
+        return nullptr;
+    }
+    virtual StringRef get_top_button_text() const noexcept
+    {
+        return "";
+    }
+    virtual float get_top_button_amp() const noexcept
+    {
         return NO_TOP_BUTTON_AMP;
     }
-    virtual StringArray get_modulation_source_list() const {
-        return StringArray();
-    }
 
-    virtual bool is_modulation_slider_centered() const {
+    //==============================================================================
+    // BOTTOM BUTTON
+    virtual StringRef get_bottom_button_text() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_bottom_button_switch_text() const noexcept
+    {
+        return "";
+    }
+    virtual bool get_is_bottom_button_text_dynamic() const noexcept 
+    {
         return false;
     }
 
-    virtual const snap_map_t* get_snap_map() const {
-        return nullptr;
-    }
-
-    virtual float get_override_min_value() const {
-        return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    virtual float get_override_max_value() const {
-        return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    virtual bool get_is_linear() const {
-        return false;
-    }
-    enum SHOW_TYPES {
+    //==============================================================================
+    // CENTER LABEL
+    enum SHOW_TYPES
+    {
         DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE,
         SHOW_OWN_VALUE
     };
-    virtual SHOW_TYPES show_slider_value_on_top_on_change() const {
+    virtual SHOW_TYPES show_slider_value_on_top_on_change() const noexcept
+    {
         return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
-    virtual String get_top_value() const {
+    virtual String get_center_value() const noexcept 
+    {
         return "";
     }
-    virtual StringRef get_top_suffix() const {
+    virtual StringRef get_center_suffix() const noexcept 
+    {
         return "";
     }
+
+protected:
+    ModulationSliderConfigBase() {}
+    
+public:
     virtual ~ModulationSliderConfigBase() {}
 };
-
-
 //[/Headers]
-
-
 
 //==============================================================================
 /**
@@ -186,9 +224,9 @@ struct ModulationSliderConfigBase {
                                                                     //[/Comments]
 */
 class mono_ModulationSlider  : public Component,
-                               public mono_UiRefreshable,
-                               public SliderListener,
-                               public ButtonListener
+    public mono_UiRefreshable,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
@@ -204,16 +242,18 @@ public:
 private:
     ModulationSliderConfigBase*const _config;
 
-    ParameterReference _parameter;
-    ParameterReference _modulator_parameter;
-    bool _modulator_is_own_parameter;
-    ParameterReference _button_parameter;
+    mono_ParameterCompatibilityBase* front_parameter;
+    mono_ParameterCompatibilityBase* modulation_parameter;
+    mono_ParameterCompatibilityBase* back_parameter;
+    ModulationSliderConfigBase::TOP_BUTTON_TYPE top_button_type;
+    mono_ParameterCompatibilityBase* top_parameter;
 
-    bool show_value_popup;
+    bool runtime_show_value_popup;
+    bool last_runtime_show_value_popup;
     ModulationSliderConfigBase::SHOW_TYPES show_value_popup_type;
     float last_painted_value_slider_val;
     float last_painted_mod_slider_val;
-    
+
     void refresh() noexcept;
     void sliderClicked (Slider*s_) override;
 
@@ -222,6 +262,7 @@ public:
     void sliderValueExit (Slider*s_);
     void sliderModEnter (Slider*s_);
     void sliderModExit (Slider*s_);
+    
 public:
     //[/UserMethods]
 
@@ -233,18 +274,16 @@ public:
     bool keyStateChanged (const bool isKeyDown);
     void modifierKeysChanged (const ModifierKeys& modifiers);
 
-
-
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
     ScopedPointer<SnapSlider> slider_value;
-    ScopedPointer<TextButton> button_switch;
+    ScopedPointer<TextButton> button_bottom;
     ScopedPointer<Left2MiddleSlider> slider_modulation;
     ScopedPointer<Label> label;
-    ScopedPointer<TextButton> button_modulator;
+    ScopedPointer<TextButton> button_top;
     ScopedPointer<Label> label_top;
 
 

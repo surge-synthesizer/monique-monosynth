@@ -49,13 +49,13 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_UiRefresher_6f1d9869.o \
   $(OBJDIR)/monique_AmpPainter_597e4f3c.o \
   $(OBJDIR)/monique_SegmentedMeter_586d93ac.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
   $(OBJDIR)/mono_Parameters_6e808cd6.o \
-  $(OBJDIR)/mono_UiRefresher_aeb9cef2.o \
   $(OBJDIR)/mono_UiUtilities_e0884034.o \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
   $(OBJDIR)/Synth_8129adcc.o \
@@ -102,6 +102,11 @@ strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
+$(OBJDIR)/monique_UiRefresher_6f1d9869.o: ../../../Source/monique_UiRefresher.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_UiRefresher.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_AmpPainter_597e4f3c.o: ../../../Source/monique_AmpPainter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_AmpPainter.cpp"
@@ -130,11 +135,6 @@ $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o: ../../../Source/mono_ModulationSlide
 $(OBJDIR)/mono_Parameters_6e808cd6.o: ../../../Source/mono_Parameters.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling mono_Parameters.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/mono_UiRefresher_aeb9cef2.o: ../../../Source/mono_UiRefresher.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_UiRefresher.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_UiUtilities_e0884034.o: ../../../Source/mono_UiUtilities.cpp

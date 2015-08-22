@@ -623,7 +623,8 @@ void mono_AmpPainter::timerCallback()
     repaint( drawing_area->getBounds() );
 }
 
-void mono_AmpPainter::refresh_buttons() {
+void mono_AmpPainter::refresh_buttons() 
+{
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;

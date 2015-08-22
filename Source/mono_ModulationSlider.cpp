@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -25,191 +25,391 @@
 
 #include "mono_ModulationSlider.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-bool mono_ModulationSlider::is_in_ctrl_view() const {
-    return _parameter.get_param()->midi_control->get_ctrl_mode();
-}
-void mono_ModulationSlider::set_ctrl_view_mode( bool mode_ ) const {
-    _parameter.get_param()->midi_control->set_ctrl_mode( mode_ );
-    if( _modulator_is_own_parameter )
-        _modulator_parameter.get_param()->midi_control->set_ctrl_mode( mode_ );
-}
-void mono_ModulationSlider::refresh() noexcept {
-    _parameter.write_value_to( slider_value );
-    if( _button_parameter )
+static inline void setup_slider
+(
+    Slider*const front_slider_,
+    Slider*const back_slider_,
+    TextButton*const top_button_,
+    TextButton*const bottom_button_,
+    Label*const top_label_,
+    Label*const bottom_label_,
+    ModulationSliderConfigBase* slider_config_
+)
+noexcept
+{
+    mono_ParameterCompatibilityBase* front_parameter = slider_config_->get_front_parameter_base();
+    mono_ParameterCompatibilityBase* back_parameter = slider_config_->get_back_parameter_base();
+    mono_ParameterCompatibilityBase* top_parameter = slider_config_->get_top_button_parameter_base();
+    bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
+    bool has_bottom_label = not has_bottom_button;
+
+    front_slider_->setOpaque(false);
+    back_slider_->setVisible(false);
+    back_slider_->setEnabled(false);
+    back_slider_->setOpaque(true);
+    top_button_->setVisible(false);
+    top_button_->setEnabled(false);
+    top_button_->setOpaque(true);
+    bottom_button_->setVisible(false);
+    bottom_button_->setEnabled(false);
+    bottom_button_->setOpaque(true);
+    top_label_->setVisible(false);
+    top_label_->setEnabled(false);
+    top_label_->setOpaque(true);
+    bottom_label_->setVisible(has_bottom_label);
+    bottom_label_->setEnabled(has_bottom_label);
+    bottom_label_->setOpaque(true);
+
+    // FRONT
+    if( front_parameter )
     {
-        float amp =_config->get_top_button_amp();
-        if( amp > -2 )
+        front_slider_->toFront(true);
+
+        SET_SLIDER_STYLE( front_slider_, slider_config_->get_front_slider_style() );
+
+        front_slider_->setRange( front_parameter->min_unscaled(), front_parameter->max_unscaled(), front_parameter->slider_interval() );
+        front_slider_->setDoubleClickReturnValue( true, front_parameter->reset_unscaled() );
+        front_slider_->setPopupMenuEnabled( true );
+        front_slider_->setValue( front_parameter->get_scaled_value(), dontSendNotification );
+
+        const int override_front_value = slider_config_->get_override_front_min_value();
+        if( override_front_value == DONT_OVERRIDE_SLIDER_VALUE )
+            front_slider_->setRange( front_parameter->min_unscaled(), front_parameter->max_unscaled(), front_parameter->slider_interval() );
+        else
+            front_slider_->setRange( override_front_value, front_parameter->max_unscaled(), front_parameter->slider_interval() );
+    }
+
+    // BACK - SECOND AND MOD
+    if( back_parameter )
+    {
+        back_slider_->setVisible(true);
+        back_slider_->setEnabled(false);
+        back_slider_->toBack();
+        bottom_button_->setVisible(true);
+        bottom_button_->setEnabled(true);
+
+        // SLIDER
         {
-            if( amp < 0 )
-                amp*=-1;
-            button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-amp ).interpolatedWith(UiLookAndFeel::getInstance()->colours.button_off_colour,1.0f-amp) );
-        }
-        else if( amp == FIXED_TOP_BUTTON_COLOUR )
-            button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
-        else if( _button_parameter.get_value() )
-        {
-            if( ! _modulator_is_own_parameter )
+            SLIDER_STYLES style = slider_config_->get_back_slider_style();
+
+            SET_SLIDER_STYLE( back_slider_, style );
+
+            if( style == MODULATION_SLIDER )
             {
-                if( DATA( synth_data ).animate_modulations )
+                back_slider_->setRange( -100, MODULATION_AMOUNT_MAX, 0.1 );
+                back_slider_->setDoubleClickReturnValue( true, 0 );
+                back_slider_->setPopupMenuEnabled( true );
+                back_slider_->setValue( back_parameter->get_modulation_amount()*MODULATION_AMOUNT_MAX, dontSendNotification );
+            }
+            else
+            {
+                back_slider_->setRange( back_parameter->min_unscaled(), back_parameter->max_unscaled(), back_parameter->slider_interval() );
+                back_slider_->setDoubleClickReturnValue( true, back_parameter->reset_unscaled() );
+                back_slider_->setPopupMenuEnabled( true );
+                back_slider_->setValue( back_parameter->get_scaled_value(), dontSendNotification );
+
+                const int override_front_value = slider_config_->get_override_front_min_value();
+                if( override_front_value == DONT_OVERRIDE_SLIDER_VALUE )
+                    back_slider_->setRange( back_parameter->min_unscaled(), back_parameter->max_unscaled(), back_parameter->slider_interval() );
+                else
+                    back_slider_->setRange( override_front_value, back_parameter->max_unscaled(), back_parameter->slider_interval() );
+            }
+        }
+
+        // BOTTOM BUTTON
+        bottom_button_->setButtonText( slider_config_->get_bottom_button_text().text );
+        bottom_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+        bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
+    }
+    
+    if( top_parameter )
+    {
+        top_button_->setVisible(true);
+        top_button_->setEnabled(true);
+
+        top_button_->setButtonText( slider_config_->get_top_button_text().text );
+        top_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+        top_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
+    }
+
+    if( has_bottom_label )
+    {
+        bottom_label_->setText( slider_config_->get_bottom_button_text().text, dontSendNotification );
+    }
+}
+
+bool mono_ModulationSlider::is_in_ctrl_view() const 
+{
+    return front_parameter->midi_control->get_ctrl_mode();
+}
+
+void mono_ModulationSlider::show_view_mode()
+{
+    // TODO front param is always required
+    if( front_parameter )
+    {
+        const bool is_in_ctrl_mode = front_parameter->midi_control->get_ctrl_mode();
+        if( slider_modulation )
+        {
+            slider_modulation->setOpaque( not is_in_ctrl_mode );
+            slider_value->setOpaque( is_in_ctrl_mode );
+
+            slider_modulation->setEnabled( is_in_ctrl_mode );
+            slider_value->setEnabled( not is_in_ctrl_mode );
+
+            is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
+
+            if( label_top )
+            {
+                label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
+                label_top->repaint();
+            }
+        }
+        if( button_bottom )
+        {
+            button_bottom->setButtonText( not is_in_ctrl_mode ? _config->get_bottom_button_text().text : _config->get_bottom_button_switch_text().text );
+            button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
+        }
+    }
+}
+
+void mono_ModulationSlider::refresh() noexcept
+{
+    //==============================================================================
+    // UPDATE TOP BUTTON
+    if( button_top )
+    {
+        if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_MODULATOR )
+        {
+            float amp = _config->get_top_button_amp();
+            if( amp > FIXED_TOP_BUTTON_COLOUR )
+            {
+                if( amp < 0 )
+                    amp*=-1;
+
+                button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-amp ).interpolatedWith(UiLookAndFeel::getInstance()->colours.button_off_colour,1.0f-amp) );
+            }
+            else if( amp == FIXED_TOP_BUTTON_COLOUR )
+            {
+                button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
+            }
+            else if( top_parameter->get_scaled_value() > 0 )
+            {
+                if( modulation_parameter )
                 {
-                    float modulation = _parameter.get_last_modulation();
-                    button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );
+                    if( DATA( synth_data ).animate_modulations )
+                    {
+                        float modulation = top_parameter->get_last_modulation_amount();
+                        button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );
+                    }
+                    else
+                        button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
                 }
                 else
-                    button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
+                    button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );
             }
-            else
-                button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );
         }
-        else
-            button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+        else if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_ON_OFF )
+        {
+            button_top->setColour (TextButton::buttonColourId, top_parameter->get_scaled_value() == true ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
+        }
     }
 
-    if( show_value_popup_type == ModulationSliderConfigBase::DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE )
+    //==============================================================================
+    // UPDATE BOTTOM BUTTON
+    // -> see show_view_mode
+    if( _config->get_is_bottom_button_text_dynamic() )
     {
-        if( (show_value_popup || UiLookAndFeel::getInstance()->show_values_always) and slider_modulation->isEnabled() and !_modulator_is_own_parameter )
-        {
-            bool is_repaint_required = false;
-            if( slider_value->isVertical() )
-            {
-                SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-                SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-            }
-            else if( slider_value->isHorizontal() )
-            {
-                SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-                SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-            }
-            else
-            {
-                float modulation_value = slider_modulation->getValue();
-                if( last_painted_mod_slider_val != modulation_value )
-                {
-                    last_painted_mod_slider_val = modulation_value;
-                    slider_modulation->SET_VALUE_TO_PAINT( String(std::floor(modulation_value)) + String( "@") + String("%") );
-                    is_repaint_required = true;
-                }
-                SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
-                SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
-            }
-
-            if( is_repaint_required )
-            {
-                slider_modulation->repaint();
-                slider_value->repaint();
-            }
-        }
-        else
-        {
-            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-            SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-        }
-    }
-    else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE )
-    {
-        if( (show_value_popup || UiLookAndFeel::getInstance()->show_values_always) )
-        {
-            bool is_repaint_required = false;
-            if( slider_value->isVertical() )
-            {
-                label_top->setVisible(true);
-		label_top->setText( _config->get_top_value()+String(_config->get_top_suffix().text), dontSendNotification );
-            }
-            else if( slider_value->isHorizontal() )
-            {
-
-            }
-            else
-            {
-                if( slider_value->isEnabled() )
-                {
-                    float value = slider_value->getValue();
-                    if( last_painted_value_slider_val != value )
-                    {
-                        last_painted_value_slider_val = value;
-                        slider_value->SET_VALUE_TO_PAINT( _config->get_top_value() + String( "@") + String(_config->get_top_suffix().text) );
-                        is_repaint_required = true;
-                    }
-                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
-                    SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
-                }
-                else
-                {
-                    float modulation_value = slider_modulation->getValue();
-                    if( last_painted_mod_slider_val != modulation_value )
-                    {
-                        last_painted_mod_slider_val = modulation_value;
-                        slider_modulation->SET_VALUE_TO_PAINT( _config->get_top_value() + String( "@") + String(_config->get_top_suffix().text) );
-                        is_repaint_required = true;
-                    }
-                    SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
-                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
-                }
-            }
-
-            if( is_repaint_required )
-            {
-                slider_modulation->repaint();
-                slider_value->repaint();
-            }
-        }
-        else
-        {
-            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-            SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-            label_top->setVisible(false);
-        }
-    }
-
-    if( _config->get_is_bottom_button_text_dynamic() ) {
         label->setText( _config->get_bottom_button_text().text, dontSendNotification );
     }
 
-    if( !_modulator_is_own_parameter )
-        _modulator_parameter.write_modulation_to( slider_modulation, _config->is_modulation_slider_centered() );
-    else
-        _modulator_parameter.write_value_to( slider_modulation );
-}
-void mono_ModulationSlider::show_view_mode() {
-
-    if( ! _parameter.get_param()->midi_control->get_ctrl_mode() )
+    //==============================================================================
+    // UPDATE SLIDERS
+    slider_value->setValue( front_parameter->get_scaled_value()*front_parameter->scale(), dontSendNotification );
+    if( slider_modulation )
     {
-        if( _parameter.has_modulation() || _modulator_is_own_parameter )
-            slider_value->setOpaque(false);
-        slider_value->toFront(true);
-        slider_modulation->setOpaque(true);
+        if( modulation_parameter )
+        {
+            // _modulator_parameter.write_modulation_to( slider_modulation, _config->is_modulation_slider_centered() );
 
-        slider_value->setEnabled(true);
-        slider_modulation->setEnabled(false);
+            /*
+                const float modulation_value = _base->get_modulation_amount();
+            float scaled_value = _base->get_scaled_value();
+            const float scale = _base->scale();
+            if( scale != 1000 )
+            {
+              if( scaled_value >= 0 )
+                  scaled_value /= _base->max_unscaled();
+              else
+                  scaled_value /= _base->min_unscaled();
+            }
 
-        button_switch->setButtonText( _config->get_bottom_button_text().text );
-        button_switch->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
-	
-	
-	label_top->SET_LABEL_STYLE(IS_VALUE_LABEL);
-	label_top->repaint();
+            int modulation_slider_style;
+            if( is_modulation_slider_centered_ )
+              modulation_slider_style = MODULATION_SLIDER_IS_FIXED_CENTERED;
+            else if( _base->min_unscaled() < 0 )
+              modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER;
+            else
+              modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO;
+
+            slider_->setRotaryParameters( scaled_value, modulation_slider_style, true );
+            slider_->setValue( modulation_value*MODULATION_AMOUNT_MAX ,dontSendNotification );
+            */
+        }
+        else if( back_parameter )
+        {
+            slider_modulation->setValue( back_parameter->get_scaled_value()*back_parameter->scale(), dontSendNotification );
+        }
     }
-    else
+
+    //==============================================================================
+    // UPDATE SLIDER CENTER LABEL
     {
-        slider_modulation->toFront(true);
+        bool is_repaint_required = false;
+        const bool show_popup = runtime_show_value_popup || UiLookAndFeel::getInstance()->show_values_always;
+        if( show_popup )
+        {
+            const bool show_value_popup_type = _config->show_slider_value_on_top_on_change();
+            const bool is_in_ctrl_mode = is_in_ctrl_view();
 
-        slider_modulation->setOpaque(false);
-        slider_value->setOpaque(true);
+            // SHOW DEFAUL CENTER LABEL
+            if( show_value_popup_type == ModulationSliderConfigBase::DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE )
+            {
+                // NON ROTARY
+                if( slider_value->isVertical() )
+                {
+                    if( slider_modulation )
+                        SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                }
+                else if( slider_value->isHorizontal() )
+                {
+                    if( slider_modulation )
+                        SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                }
+                // ROTARY
+                else
+                {
+                    // BACK SLIDER
+                    if( is_in_ctrl_mode )
+                    {
+                        if( slider_modulation )
+                        {
+                            float modulation_value = slider_modulation->getValue();
+                            if( last_painted_mod_slider_val != modulation_value )
+                            {
+                                last_painted_mod_slider_val = modulation_value;
+                                slider_modulation->SET_VALUE_TO_PAINT( String(mono_floor(modulation_value)) + String("@") + String("%") );
 
-        slider_modulation->setEnabled(true);
-        slider_value->setEnabled(false);
+                                is_repaint_required = true;
+                            }
+                            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+                        }
+                        SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
+                    }
+                    // FRONT SLIDER
+                    else
+                    {
+                        float value = slider_value->getValue();
+                        if( last_painted_value_slider_val != value )
+                        {
+                            last_painted_value_slider_val = value;
+                            slider_value->SET_VALUE_TO_PAINT( String(mono_floor(value/10)) );
 
-        button_switch->setButtonText( _config->get_botton_button_switch_text().text );
-        button_switch->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );
-	
-	
-	label_top->SET_LABEL_STYLE(IS_SECOND_VALUE_LABEL);
-	label_top->repaint();
+                            is_repaint_required = true;
+                        }
+                        SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+                        if( slider_modulation )
+                            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
+                    }
+                }
+            }
+            // SHOW DEFINED CENTER LABEL
+            else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE )
+            {
+                // NON ROTARY
+                if( slider_value->isVertical() )
+                {
+                    label_top->setVisible(true);
+                    label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+                }
+                else if( slider_value->isHorizontal() )
+                {
+
+                }
+                // ROTARY
+                else
+                {
+                    // BACK SLIDER
+                    if( is_in_ctrl_mode )
+                    {
+                        if( slider_modulation )
+                        {
+                            float modulation_value = slider_modulation->getValue();
+                            if( last_painted_mod_slider_val != modulation_value )
+                            {
+                                last_painted_mod_slider_val = modulation_value;
+                                slider_modulation->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
+                                is_repaint_required = true;
+                            }
+                            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+                        }
+                        SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
+                    }
+                    // FRONT SLIDER
+                    else
+                    {
+                        float value = slider_value->getValue();
+                        if( last_painted_value_slider_val != value )
+                        {
+                            last_painted_value_slider_val = value;
+                            slider_value->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
+
+                            is_repaint_required = true;
+                        }
+                        SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+                        if( slider_modulation )
+                            SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
+                    }
+                }
+            }
+            else
+            {
+                SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                if( slider_modulation )
+                    SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+            }
+        }
+        else
+        {
+            SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+            if( slider_modulation )
+                SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+        }
+
+        // REPAINT
+        if( is_repaint_required or show_popup != last_runtime_show_value_popup )
+        {
+            last_runtime_show_value_popup = show_popup;
+
+            if( slider_modulation )
+                slider_modulation->repaint();
+            slider_value->repaint();
+        }
     }
 }
-void mono_ModulationSlider::sliderClicked (Slider*s_) {
+
+void mono_ModulationSlider::set_ctrl_view_mode( bool mode_ ) const
+{
+    front_parameter->midi_control->set_ctrl_mode( mode_ );
+    if( back_parameter )
+        back_parameter->midi_control->set_ctrl_mode( mode_ );
+}
+
+void mono_ModulationSlider::sliderClicked (Slider*s_) 
+{
     if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
         sliderValueChanged(s_);
 }
@@ -217,10 +417,7 @@ void mono_ModulationSlider::sliderClicked (Slider*s_) {
 
 //==============================================================================
 mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config_)
-    : _config(config_),
-      _parameter(_config->get_parameter_compatibility_base()),
-      _modulator_parameter(_config->get_modulation_parameter_compatibility_base()),
-      _button_parameter(_config->get_button_parameter_compatibility_base())
+    : _config(config_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -236,11 +433,11 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     slider_value->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_value->addListener (this);
 
-    addAndMakeVisible (button_switch = new TextButton (String::empty));
-    button_switch->addListener (this);
-    button_switch->setColour (TextButton::buttonColourId, Colours::black);
-    button_switch->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_switch->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible (button_bottom = new TextButton (String::empty));
+    button_bottom->addListener (this);
+    button_bottom->setColour (TextButton::buttonColourId, Colours::black);
+    button_bottom->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_bottom->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (slider_modulation = new Left2MiddleSlider ("1"));
     slider_modulation->setRange (0, 100, 1);
@@ -266,11 +463,11 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     label->setColour (TextEditor::textColourId, Colours::black);
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_modulator = new TextButton (String::empty));
-    button_modulator->addListener (this);
-    button_modulator->setColour (TextButton::buttonColourId, Colours::black);
-    button_modulator->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_modulator->setColour (TextButton::textColourOffId, Colours::yellow);
+    addAndMakeVisible (button_top = new TextButton (String::empty));
+    button_top->addListener (this);
+    button_top->setColour (TextButton::buttonColourId, Colours::black);
+    button_top->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
             String::empty));
@@ -285,70 +482,63 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     //[UserPreSize]
     last_painted_mod_slider_val = -999999;
     last_painted_value_slider_val = -999999;
-    
-    // IS THE SECOND SLIDER A OWN PARAM?
-    _modulator_is_own_parameter = _parameter != _modulator_parameter;
 
+    // INIT SLIDERS AND BUTTONS
     slider_value->owner = this;
     slider_modulation->owner = this;
-
-    // STYLE
     if( _config->get_is_linear() )
     {
         slider_modulation->setSliderStyle (Slider::LinearVertical );
         slider_value->setSliderStyle (Slider::LinearVertical );
     }
+    setup_slider
+    (
+        slider_value,
+        slider_modulation,
+        button_top,
+        button_bottom,
+        label_top,
+        label,
+        _config
+    );
 
-    // INIT SLIDERS AND BUTTONS
+    jassert( slider_value->isVisible() );
+    if( not slider_modulation->isVisible() )
+        slider_modulation = nullptr;
+    if( not button_top->isVisible() )
+        button_top = nullptr;
+    /*
+    if( !button_bottom.isVisible() )
+      button_bottom = nullptr;
+    if( !label_top.isVisible() )
+      label_top = nullptr;
+    if( !label.isVisible() )
+      label = nullptr;
+    */
+
+    front_parameter = _config->get_front_parameter_base();
+    back_parameter = _config->get_back_parameter_base();
+    if( front_parameter == back_parameter )
     {
-        if( ! _parameter.has_modulation() && ! _modulator_is_own_parameter )
-        {
-            button_switch->setVisible(false);
-            slider_modulation->setVisible( false );
-        }
-        else
-        {
-            label->setVisible(false);
-        }
+        modulation_parameter = front_parameter;
+        back_parameter = nullptr;
+    }
+    else
+        modulation_parameter = nullptr;
+    top_parameter = _config->get_top_button_parameter_base();
+    top_button_type = _config->get_top_button_type();
 
-        if( ! _button_parameter )
-        {
-            button_modulator->setVisible( false );
-        }
+    runtime_show_value_popup = false;
+    last_runtime_show_value_popup = false;
 
-        SET_SLIDER_STYLE( slider_value, SLIDER_STYLES::VALUE_SLIDER );
-        _parameter.init_value_slider( slider_value, _config->get_override_min_value() );
-        if( !_modulator_is_own_parameter )
-        {
-            SET_SLIDER_STYLE( slider_modulation, SLIDER_STYLES::MODULATION_SLIDER );
-            _modulator_parameter.init_modulation_slider( slider_modulation, _config->is_modulation_slider_centered());
-        }
-        else
-        {
-            SET_SLIDER_STYLE( slider_modulation, SLIDER_STYLES::VALUE_SLIDER_2 );
-            _modulator_parameter.init_value_slider( slider_modulation, -99999 );
-        }
-
-        show_value_popup = false;
-        show_value_popup_type = _config->show_slider_value_on_top_on_change();
-        label_top->setVisible(false);
+    setWantsKeyboardFocus(false);
+    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    {
+        getChildComponent(i)->setWantsKeyboardFocus(false);
+        getChildComponent(i)->setRepaintsOnMouseActivity(false);
     }
 
-    // SET COLOURS AND TEXT
-    {
-        button_modulator->setButtonText( _config->get_top_button_text().text );
-        button_modulator->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
-        button_modulator->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
-
-        // BUTTON / LABEL
-        label->setText( _config->get_bottom_button_text().text, dontSendNotification );
-        button_switch->setButtonText( _config->get_bottom_button_text().text );
-        button_switch->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
-        button_switch->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
-    }
-
-    slider_modulation->setEnabled(false);
-
+    show_view_mode();
     setOpaque(true);
     //[/UserPreSize]
 
@@ -356,18 +546,6 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
 
 
     //[Constructor] You can add your own custom stuff here..
-    setWantsKeyboardFocus(false);
-    for( int i = 0 ; i < getNumChildComponents() ; ++i ) {
-        getChildComponent(i)->setWantsKeyboardFocus(false);
-        // getChildComponent(i)->setPaintingIsUnclipped(true);
-        getChildComponent(i)->setOpaque(true);
-        getChildComponent(i)->setRepaintsOnMouseActivity(false);
-    }
-    if( ! _modulator_parameter )
-        slider_value->setOpaque(true);
-    slider_modulation->setOpaque(true);
-
-    show_view_mode();
     //[/Constructor]
 }
 
@@ -377,10 +555,10 @@ mono_ModulationSlider::~mono_ModulationSlider()
     //[/Destructor_pre]
 
     slider_value = nullptr;
-    button_switch = nullptr;
+    button_bottom = nullptr;
     slider_modulation = nullptr;
     label = nullptr;
-    button_modulator = nullptr;
+    button_top = nullptr;
     label_top = nullptr;
 
 
@@ -394,12 +572,13 @@ void mono_ModulationSlider::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     g.fillAll (UiLookAndFeel::getInstance()->colours.bg);
-    return;
+    /*
     //[/UserPrePaint]
 
     g.fillAll (Colours::black);
 
     //[UserPaint] Add your own custom painting code here..
+    */
 #define original_w 60.0f
 #define original_h 130.0f
 #include "UiDynamicSizeStart.h"
@@ -409,21 +588,29 @@ void mono_ModulationSlider::paint (Graphics& g)
 void mono_ModulationSlider::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+    if( slider_value )
+        slider_value->setBounds (0, 37, 60, 56);
+    if( button_bottom )
+        button_bottom->setBounds (0, 95, 60, 33);
+    if( slider_modulation )
+        slider_modulation->setBounds (0, 37, 60, 56);
+    if( label )
+        label->setBounds (0, 95, 60, 33);
+    if( button_top )
+        button_top->setBounds (0, 0, 60, 27);
+    if( label_top )
+        label_top->setBounds (0, -4, 60, 35);
+    /*
     //[/UserPreResize]
 
     slider_value->setBounds (0, 37, 60, 56);
-    button_switch->setBounds (0, 95, 60, 33);
+    button_bottom->setBounds (0, 95, 60, 33);
     slider_modulation->setBounds (0, 37, 60, 56);
     label->setBounds (0, 95, 60, 33);
-    button_modulator->setBounds (0, 0, 60, 27);
+    button_top->setBounds (0, 0, 60, 27);
     label_top->setBounds (0, -4, 60, 35);
     //[UserResized] Add your own custom resize handling here..
-    {
-        // const float width = 56.0f*(1.0f/original_w*getWidth());
-        // const float height = 20.0f*(1.0f/original_h*getHeight());
-        // slider_modulation->setTextBoxStyle (Slider::TextBoxBelow, false,  width, height);
-        // slider_value->setTextBoxStyle (Slider::TextBoxBelow, false, width, height);
-    }
+    */
 #include "UiDynamicSizeEnd.h"
 #undef original_w
 #undef original_h
@@ -438,63 +625,49 @@ void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_value)
     {
         //[UserSliderCode_slider_value] -- add your slider handling code here..
-        if( _modulator_is_own_parameter )
-        {
-            IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
-            (
-                _parameter.get_param(),
-                _modulator_parameter.get_param(),
-                sliderThatWasMoved
-            )
-            else
-            {
-                _parameter.read_value_from( slider_value );
-            }
-        }
-        else
         {
             IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
             (
-                _parameter.get_param(),
+                front_parameter,
                 sliderThatWasMoved
             )
             else
             {
-                _parameter.read_value_from( slider_value );
+                front_parameter->set_scaled_value( sliderThatWasMoved->getValue()/front_parameter->scale() );
             }
         }
-        AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, _parameter.get_param()->midi_control );
+        AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
         //[/UserSliderCode_slider_value]
     }
     else if (sliderThatWasMoved == slider_modulation)
     {
         //[UserSliderCode_slider_modulation] -- add your slider handling code here..
-        if( _modulator_is_own_parameter )
+        if( back_parameter )
         {
             IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
             (
-                _parameter.get_param(),
-                _modulator_parameter.get_param(),
+                front_parameter,
+                back_parameter,
                 sliderThatWasMoved
             )
             else
             {
-                _modulator_parameter.read_value_from( slider_modulation );
+                back_parameter->set_scaled_value( sliderThatWasMoved->getValue()/back_parameter->scale() );
             }
-            AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, _modulator_parameter.get_param()->midi_control );
+            AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, back_parameter->midi_control );
         }
         else
         {
             IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
             (
-                _parameter.get_param(),
+                front_parameter,
                 sliderThatWasMoved
             )
             else
             {
-                _modulator_parameter.read_modulation_from( slider_modulation );
+                modulation_parameter->set_modulation_amount( sliderThatWasMoved->getValue() / MODULATION_AMOUNT_MAX );
             }
-            AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, _parameter.get_param()->midi_control );
+            AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
         }
         //[/UserSliderCode_slider_modulation]
     }
@@ -508,29 +681,26 @@ void mono_ModulationSlider::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == button_switch)
+    if (buttonThatWasClicked == button_bottom)
     {
-        //[UserButtonCode_button_switch] -- add your button handler code here..
-        set_ctrl_view_mode( ! _parameter.get_param()->midi_control->get_ctrl_mode() );
+        //[UserButtonCode_button_bottom] -- add your button handler code here..
+        set_ctrl_view_mode( ! front_parameter->midi_control->get_ctrl_mode() );
         show_view_mode();
-        //[/UserButtonCode_button_switch]
+        //[/UserButtonCode_button_bottom]
     }
-    else if (buttonThatWasClicked == button_modulator)
+    else if (buttonThatWasClicked == button_top)
     {
-        //[UserButtonCode_button_modulator] -- add your button handler code here..
-        if( _button_parameter )
+        //[UserButtonCode_button_top] -- add your button handler code here..
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            top_parameter, buttonThatWasClicked
+        )
+        else
         {
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                _button_parameter.get_param(), buttonThatWasClicked
-            )
-            else
-            {
-                _button_parameter.invert();
-            }
-            AppInstanceStore::getInstance()->editor->show_info_popup( buttonThatWasClicked, _button_parameter.get_param()->midi_control );
+            top_parameter->set_scaled_value( top_parameter->get_scaled_value() == true ? false : true );
         }
-        //[/UserButtonCode_button_modulator]
+        AppInstanceStore::getInstance()->editor->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
+        //[/UserButtonCode_button_top]
     }
 
     //[UserbuttonClicked_Post]
@@ -578,16 +748,16 @@ void Left2MiddleSlider::mouseExit(const MouseEvent& event)
 
 }
 void mono_ModulationSlider::sliderValueEnter (Slider*s_) {
-    show_value_popup = true;
+    runtime_show_value_popup = true;
 };
 void mono_ModulationSlider::sliderValueExit (Slider*s_) {
-    show_value_popup = false;
+    runtime_show_value_popup = false;
 };
 void mono_ModulationSlider::sliderModEnter (Slider*s_) {
-    show_value_popup = true;
+    runtime_show_value_popup = true;
 };
 void mono_ModulationSlider::sliderModExit (Slider*s_) {
-    show_value_popup = false;
+    runtime_show_value_popup = false;
 };
 //[/MiscUserCode]
 
@@ -603,9 +773,9 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="mono_ModulationSlider" componentName=""
                  parentClasses="public Component, public mono_UiRefreshable" constructorParams="ModulationSliderConfigBase* config_"
-                 variableInitialisers="_config(config_),&#10;_parameter(_config-&gt;get_parameter_compatibility_base()),&#10;_modulator_parameter(_config-&gt;get_modulation_parameter_compatibility_base()),&#10;_button_parameter(_config-&gt;get_button_parameter_compatibility_base())"
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="60" initialHeight="130">
+                 variableInitialisers="_config(config_)" snapPixels="8" snapActive="1"
+                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="60"
+                 initialHeight="130">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
     <METHOD name="keyStateChanged (const bool isKeyDown)"/>
@@ -618,7 +788,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="RotaryHorizontalVerticalDrag"
           textBoxPos="NoTextBox" textBoxEditable="0" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <TEXTBUTTON name="" id="75a8f1f978ef7ab5" memberName="button_switch" virtualName=""
+  <TEXTBUTTON name="" id="75a8f1f978ef7ab5" memberName="button_bottom" virtualName=""
               explicitFocusOrder="0" pos="0 95 60 33" bgColOff="ff000000" textCol="ffff3b00"
               textColOn="ffffff00" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
@@ -634,7 +804,7 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="5c83d26e935f379d" memberName="button_modulator" virtualName=""
+  <TEXTBUTTON name="" id="5c83d26e935f379d" memberName="button_top" virtualName=""
               explicitFocusOrder="0" pos="0 0 60 27" bgColOff="ff000000" textCol="ffff3b00"
               textColOn="ffffff00" buttonText="" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
@@ -652,3 +822,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

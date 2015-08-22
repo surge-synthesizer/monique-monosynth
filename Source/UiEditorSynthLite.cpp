@@ -331,9 +331,9 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     addAndMakeVisible (shuffle = new mono_ModulationSlider (new ShuffleConfig()));
 
-    addAndMakeVisible (flt_sustain_4 = new mono_ModulationSlider (new SustainSlConfig(MAIN_ENV)));
+    addAndMakeVisible (flt_sustain_4 = new mono_ModulationSlider (new FSustainSlConfig(MAIN_ENV)));
 
-    addAndMakeVisible (flt_decay_4 = new mono_ModulationSlider (new DecaySlConfig(MAIN_ENV)));
+    addAndMakeVisible (flt_decay_4 = new mono_ModulationSlider (new FDecaySlConfig(MAIN_ENV)));
 
     addAndMakeVisible (flt_attack_4 = new mono_ModulationSlider (new FAttackSlConfig(MAIN_ENV)));
 
@@ -687,7 +687,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_release_4 = new mono_ModulationSlider (new ReleaseSlConfig(MAIN_ENV)));
+    addAndMakeVisible (flt_release_4 = new mono_ModulationSlider (new FReleaseSlConfig(MAIN_ENV)));
 
     addAndMakeVisible (delay2 = new mono_ModulationSlider (new DelaySlConfig()));
 
@@ -3137,10 +3137,10 @@ BEGIN_JUCER_METADATA
                     params="new ShuffleConfig()"/>
   <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
                     explicitFocusOrder="0" pos="395r 750r 60 130" class="mono_ModulationSlider"
-                    params="new SustainSlConfig(MAIN_ENV)"/>
+                    params="new FSustainSlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
                     explicitFocusOrder="0" pos="335r 750r 60 130" class="mono_ModulationSlider"
-                    params="new DecaySlConfig(MAIN_ENV)"/>
+                    params="new FDecaySlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
                     explicitFocusOrder="0" pos="275r 750r 60 130" class="mono_ModulationSlider"
                     params="new FAttackSlConfig(MAIN_ENV)"/>
@@ -3444,7 +3444,7 @@ BEGIN_JUCER_METADATA
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
                     explicitFocusOrder="0" pos="455r 750r 60 130" class="mono_ModulationSlider"
-                    params="new ReleaseSlConfig(MAIN_ENV)"/>
+                    params="new FReleaseSlConfig(MAIN_ENV)"/>
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
                     explicitFocusOrder="0" pos="885r 750r 60 130" class="mono_ModulationSlider"
                     params="new DelaySlConfig()"/>

@@ -13,115 +13,265 @@
 
 #include "mono_ModulationSlider.h"
 #include "SynthData.h"
+#include "UiLookAndFeel.h"
 
-// TODO store references to the most uses objects
+// TODO replace the pointers to the base by references to the real params
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct WAVESlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class WAVESlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const wave;
+    mono_ParameterCompatibilityBase*const fm_amount;
+    mono_ParameterCompatibilityBase*const top_parameter;
 
-    StringRef get_bottom_button_text() const override {
+    const String top_text;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return wave;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return fm_amount;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return top_parameter;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return top_text;
+    }
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "WAVE";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[id]->wave);
-    }
-
-    StringRef get_botton_button_switch_text() const override {
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
         return "FM";
     }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
 
-    StringRef get_top_button_text() const override {
-        if( id == 0 )
-            return "MOD OFF";
-        else
-            return "SYNC";
-    }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        if( id == 0 )
-            return SYNTH_PARAM(osc_datas[id]->mod_off);
-        else
-            return SYNTH_PARAM(osc_datas[id]->sync);
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[id]->fm_amount);
-    }
-
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // CENTER LABEL
+    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        if( DATA(osc_datas[id]).fm_amount.midi_control->get_ctrl_mode() )
-            return String( round0(DATA(osc_datas[id]).fm_amount*100) );
+    String get_center_value() const noexcept override
+    {
+        if( fm_amount->midi_control->get_ctrl_mode() )
+            return String( round0(fm_amount->get_scaled_value()*100) );
         else
-            return String( DATA(osc_datas[id]).wave );
+            return String( wave->get_scaled_value() );
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(osc_datas[id]).fm_amount.midi_control->get_ctrl_mode() )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( fm_amount->midi_control->get_ctrl_mode() )
             return "%";
         else
             return "wav";
     }
+
+public:
     WAVESlConfig( int id_ )
         :
-        id( id_ )
+        wave( &(DATA(osc_datas[id_]).wave) ),
+        fm_amount( &(DATA(osc_datas[id_]).fm_amount) ),
+        top_parameter( id_ == 0 ? &(DATA(osc_datas[id_]).mod_off) : &(DATA(osc_datas[id_]).sync) ),
+        top_text( id_ == 0 ? "MOD OFF" : "SYNC" )
     {}
 
     JUCE_LEAK_DETECTOR (WAVESlConfig)
 };
 
 //==============================================================================
-struct OSCSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class OSCSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const octave;
+    mono_ParameterCompatibilityBase*const is_lfo_modulated;
 
-    String bottom_text;
-    StringRef get_bottom_button_text() const override {
-        return bottom_text;
+    const String top_text;
+    const String bottom_text;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[id]->octave);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return octave;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return octave;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
     }
-
-    String top_text;
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return is_lfo_modulated;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return top_text;
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[id]->is_lfo_modulated);
+    float get_top_button_amp() const noexcept override
+    {
+        return octave->get_last_modulation_amount();
     }
 
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return bottom_text;
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        const float octave = DATA(osc_datas[id]).octave;
-        if( DATA(osc_datas[id]).octave.midi_control->get_ctrl_mode() )
-            return String( round0(DATA(osc_datas[id]).octave.get_modulation_amount() * 100) );
+    String get_center_value() const noexcept override
+    {
+        const float value = octave->get_scaled_value();
+        if( octave->midi_control->get_ctrl_mode() )
+            return String( round0(octave->get_modulation_amount() * 100) );
         else
         {
-            if( octave < 10 and octave > -10 )
-                return String(round001(octave));
+            if( value < 10 and value > -10 )
+                return String(round001(value));
             else
-                return String(round01(octave));
+                return String(round01(value));
         }
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(osc_datas[id]).octave.midi_control->get_ctrl_mode() )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( octave->midi_control->get_ctrl_mode() )
             return "%";
         else
             return "#";
     }
+
+public:
     OSCSlConfig( int id_ )
         :
-        id( id_ ),
-        bottom_text( "OSC " + String(id+1) ),
-        top_text( "LFO " + String(id+1) )
+        octave( &(DATA(osc_datas[id_]).octave) ),
+        is_lfo_modulated( &(DATA(osc_datas[id_]).is_lfo_modulated ) ),
+        top_text( String("LFO ") + String(id_+1) ),
+        bottom_text( String("OSC ") + String(id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (OSCSlConfig)
@@ -130,30 +280,120 @@ struct OSCSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FMFreqSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "FM FREQ";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->fm_multi);
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FMFreqSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const fm_multi;
+    mono_ParameterCompatibilityBase*const fm_swing;
+    mono_ParameterCompatibilityBase*const sync;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "FM SWING";
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return fm_multi;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return fm_swing;
     }
 
-    StringRef get_top_button_text() const override {
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return sync;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "SYNC -";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->sync);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->fm_swing);
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "FM FREQ";
     }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "FM SWING";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
 
-    FMFreqSlConfig() {}
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    FMFreqSlConfig()
+        :
+        fm_multi( &(DATA(osc_datas[0]).fm_multi) ),
+        fm_swing( &(DATA(osc_datas[0]).fm_swing) ),
+        sync( &(DATA(osc_datas[0]).sync) )
+    {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
 };
@@ -161,40 +401,123 @@ struct FMFreqSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FMAmountSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "OSC PLUS";
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FMAmountSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const puls_width;
+    mono_ParameterCompatibilityBase*const osc_switch;
+    mono_ParameterCompatibilityBase*const fm_wave;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->puls_width);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return puls_width;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return osc_switch;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "OSC SWITCH";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
     }
-
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return fm_wave;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "- SHOT";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->fm_wave);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "OSC PLUS";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "OSC SWITCH";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
     }
 
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(osc_datas[0]->osc_switch);
-    }
-
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        if( DATA(osc_datas[0]).puls_width.midi_control->get_ctrl_mode() )
-            return String( DATA(osc_datas[0]).osc_switch );
+    String get_center_value() const noexcept override
+    {
+        if( puls_width->midi_control->get_ctrl_mode() )
+            return String( osc_switch->get_scaled_value() );
         else
-            return String( DATA(osc_datas[0]).puls_width );
+            return String( puls_width->get_scaled_value() );
     }
+    /*
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
 
-    FMAmountSlConfig() {}
+public:
+    FMAmountSlConfig()
+        :
+        puls_width( &(DATA(osc_datas[0]).puls_width) ),
+        osc_switch( &(DATA(osc_datas[0]).osc_switch) ),
+        fm_wave( &(DATA(osc_datas[0]).fm_wave) )
+    {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)
 };
@@ -202,63 +525,128 @@ struct FMAmountSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct InputSlConfig : public ModulationSliderConfigBase {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class InputSlConfig : public ModulationSliderConfigBase
+{
     const int filter_id;
     const int input_id;
 
-    String bottom_text;
-    StringRef get_bottom_button_text() const override {
-        return bottom_text;
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[filter_id]->input_sustains[input_id]);
-    }
+    mono_ParameterCompatibilityBase*const input_sustain;
+    mono_ParameterCompatibilityBase*const state;
+    mono_ParameterCompatibilityBase*const input_hold;
 
-    String top_text;
-    StringRef get_botton_button_switch_text() const override {
-        return top_text;
-    }
+    const String bottom_text;
 
-    StringRef get_top_button_text() const override {
-        return "FIX IN";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[filter_id]->input_holds[input_id]);
-    }
-    float get_top_button_amp() const override {
-        float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! DATA( synth_data ).animate_input_env )
-            value = NO_TOP_BUTTON_AMP;
-        else if( ! DATA(filter_datas[filter_id]).input_holds[input_id] )
-            value = mono_ParameterOwnerStore::getInstance()->get_flt_input_env_amp(filter_id,input_id);
+    */
 
-        return value;
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-
-    float get_override_min_value() const override {
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return input_sustain;
+    }
+    int get_override_front_min_value() const noexcept override
+    {
         if( filter_id == 0 )
             return 0;
         else
             return DONT_OVERRIDE_SLIDER_VALUE;
     }
+    /*
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
 
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_input_env_datas[input_id + SUM_INPUTS_PER_FILTER*filter_id]->state);
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return state;
     }
 
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return input_hold;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "FIX IN";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        float value = FIXED_TOP_BUTTON_COLOUR;
+        if( ! DATA( synth_data ).animate_input_env )
+            value = NO_TOP_BUTTON_AMP;
+        else if( not input_hold )
+            value = mono_ParameterOwnerStore::getInstance()->get_flt_input_env_amp(filter_id,input_id);
+
+        return value;
+    }
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return bottom_text;
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "ADR";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        if( DATA(filter_input_env_datas[input_id + SUM_INPUTS_PER_FILTER*filter_id]).state.midi_control->get_ctrl_mode() )
-            return String( round001(DATA(filter_input_env_datas[input_id + SUM_INPUTS_PER_FILTER*filter_id]).state) );
+    String get_center_value() const noexcept override
+    {
+        if( state->midi_control->get_ctrl_mode() )
+            return String( round001(state->get_scaled_value()) );
         else
-            return String( round01(DATA(filter_datas[filter_id]).input_sustains[input_id]*100)  );
+            return String( round01(input_sustain->get_scaled_value()*100)  );
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(filter_input_env_datas[input_id + SUM_INPUTS_PER_FILTER*filter_id]).state.midi_control->get_ctrl_mode() )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( state->midi_control->get_ctrl_mode() )
             return "X";
-        else if( DATA(filter_datas[filter_id]).input_sustains[input_id] >= 0 )
+        else if( input_sustain->get_scaled_value() >= 0 )
         {
             if( filter_id == 1 )
                 return "F1";
@@ -271,12 +659,15 @@ struct InputSlConfig : public ModulationSliderConfigBase {
             return "O";
     }
 
+public:
     InputSlConfig( int filter_id_, int input_id_ )
         :
         filter_id( filter_id_ ),
         input_id( input_id_ ),
-        bottom_text( "OSC " + String(input_id+1) ),
-        top_text( "ADR" )
+        input_sustain( &(DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
+        state( &(DATA(filter_input_env_datas[input_id_ + SUM_INPUTS_PER_FILTER*filter_id_]).state) ),
+        input_hold( &(DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
+        bottom_text( String("OSC ") + String(input_id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (InputSlConfig)
@@ -285,30 +676,117 @@ struct InputSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct GForceSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class GForceSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const distortion;
+    mono_ParameterCompatibilityBase*const modulate_distortion;
 
-    StringRef get_bottom_button_text() const override {
-        return "DESTROY";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->distortion);
-    }
-
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
 
-    StringRef get_top_button_text() const override {
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return distortion;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return distortion;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_distortion;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "MODUL";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->modulate_distortion);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "DESTROY";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     GForceSlConfig( int id_ )
         :
-        id( id_ )
+        distortion( &(DATA(filter_datas[id_]).distortion) ),
+        modulate_distortion( &(DATA(filter_datas[id_]).modulate_distortion) )
     {}
 
     JUCE_LEAK_DETECTOR (GForceSlConfig)
@@ -317,69 +795,224 @@ struct GForceSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FAttackSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FAttackSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const attack;
+    mono_ParameterCompatibilityBase*const max_attack_time;
 
-    StringRef get_bottom_button_text() const override {
-        return "ATTACK";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->attack);
-    }
-
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_attack_time);
-    }
-    bool get_is_linear() const {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
         return true;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return attack;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return max_attack_time;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "ATTACK";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MAX T(ms)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).attack * DATA(env_datas[id]).max_attack_time * 1000;
+    String get_center_value() const noexcept override
+    {
+        float value = attack->get_scaled_value() * max_attack_time->get_scaled_value() * 1000;
         if( value < 100 )
             return String(round01(value));
         else
             return String(round0(value));
     }
-    StringRef get_top_suffix() const override {
+    StringRef get_center_suffix() const noexcept override
+    {
         return "ms";
     }
+
+public:
     FAttackSlConfig( int id_ )
         :
-        id( id_ )
+        attack( &(DATA(env_datas[id_]).attack) ),
+        max_attack_time( &(DATA(env_datas[id_]).max_attack_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FAttackSlConfig)
 };
 //==============================================================================
-struct FDecaySlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FDecaySlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const decay;
+    mono_ParameterCompatibilityBase*const max_decay_time;
 
-    StringRef get_bottom_button_text() const override {
-        return "DECAY";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->decay);
-    }
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_decay_time);
-    }
-    bool get_is_linear() const {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
         return true;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return decay;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return max_decay_time;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "DECAY";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MAX T(ms)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).decay * DATA(env_datas[id]).max_decay_time * 1000;
+    String get_center_value() const noexcept override
+    {
+        float value = decay->get_scaled_value() * max_decay_time->get_scaled_value() * 1000;
         if( value < 0 )
             return "OFF";
         else if( value < 100 )
@@ -387,67 +1020,239 @@ struct FDecaySlConfig : public ModulationSliderConfigBase {
         else
             return String(round0(value));
     }
-    StringRef get_top_suffix() const override {
+    StringRef get_center_suffix() const noexcept override
+    {
         return "ms";
     }
+
+public:
     FDecaySlConfig( int id_ )
         :
-        id( id_ )
+        decay( &(DATA(env_datas[id_]).decay) ),
+        max_decay_time( &(DATA(env_datas[id_]).max_decay_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FDecaySlConfig)
 };
 //==============================================================================
-struct FSustainSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FSustainSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const sustain;
 
-    StringRef get_bottom_button_text() const override {
-        return "SUSTAIN";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->sustain);
-    }
-    bool get_is_linear() const {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
         return true;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return sustain;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return max_decay_time;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "SUSTAIN";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MAX T(ms)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).sustain * 100;
+    String get_center_value() const noexcept override
+    {
+        float value = sustain->get_scaled_value() * 100;
         if( value < 100 )
             return String(round01(value));
         else
             return String(round0(value));
     }
-    StringRef get_top_suffix() const override {
+    StringRef get_center_suffix() const noexcept override
+    {
         return "%";
     }
-    FSustainSlConfig( int id_ )
-        :
-        id( id_ )
-    {}
+
+public:
+    FSustainSlConfig( int id_ ) : sustain( &(DATA(env_datas[id_]).sustain) ) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
 //==============================================================================
-struct FSustainTimeSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FSustainTimeSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const sustain_time;
 
-    StringRef get_bottom_button_text() const override {
-        return "SUS TIME";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->sustain_time);
-    }
-    bool get_is_linear() const {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
         return true;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return sustain_time;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return max_decay_time;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "SUS TIME";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MAX T(ms)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).sustain_time * 8.0f * 1000;
+    String get_center_value() const noexcept override
+    {
+        float value = sustain_time->get_scaled_value() * 8.0f * 1000;
         if( value < 100 )
             return String(round01(value));
         else if( value == 8000 )
@@ -455,75 +1260,258 @@ struct FSustainTimeSlConfig : public ModulationSliderConfigBase {
         else
             return String(round0(value));
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(env_datas[id]).sustain_time == 1 )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( sustain_time->get_scaled_value() == 1 )
             return "";
         else
             return "ms";
     }
+
+public:
     FSustainTimeSlConfig( int id_ )
         :
-        id( id_ )
+        sustain_time( &(DATA(env_datas[id_]).sustain_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
 //==============================================================================
-struct FReleaseSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FReleaseSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const release;
+    mono_ParameterCompatibilityBase*const max_release_time;
 
-    StringRef get_bottom_button_text() const override {
-        return "RELEASE";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->release);
-    }
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_release_time);
-    }
-    bool get_is_linear() const {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    bool get_is_linear() const noexcept override
+    {
         return true;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return release;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return max_release_time;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "RELEASE";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MAX T(ms)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).release * DATA(env_datas[id]).max_release_time * 1000;
+    String get_center_value() const noexcept override
+    {
+        float value = release->get_scaled_value() * max_release_time->get_scaled_value() * 1000;
         if( value < 100 )
             return String(round01(value));
         else
             return String(round0(value));
     }
-    StringRef get_top_suffix() const override {
+    StringRef get_center_suffix() const noexcept override
+    {
         return "ms";
     }
+
+public:
     FReleaseSlConfig( int id_ )
         :
-        id( id_ )
+        release( &(DATA(env_datas[id_]).release) ),
+        max_release_time( &(DATA(env_datas[id_]).max_release_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FReleaseSlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class EnvLfoSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const adsr_lfo_mix;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct EnvLfoSlConfig : public ModulationSliderConfigBase {
-    const int id;
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
 
-    StringRef get_bottom_button_text() const override {
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return adsr_lfo_mix;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return UNDEFINED_SLIDER_STYLE;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "MOD MIX";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->adsr_lfo_mix);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
 
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     EnvLfoSlConfig( int id_ )
         :
-        id( id_ )
+        adsr_lfo_mix( &(DATA(filter_datas[id_]).adsr_lfo_mix) )
     {}
 
     JUCE_LEAK_DETECTOR (EnvLfoSlConfig)
@@ -532,196 +1520,647 @@ struct EnvLfoSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct LFOSlConfig : public ModulationSliderConfigBase {
-    const int id;
-
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class LFOSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const speed;
     String bottom_text;
-    StringRef get_bottom_button_text() const override {
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return speed;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return UNDEFINED_SLIDER_STYLE;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return bottom_text;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(lfo_datas[id]->speed);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        const float speed = DATA(lfo_datas[id]).speed;
-        if( speed <= 6 )
+    String get_center_value() const noexcept override
+    {
+        const float speed_ = speed->get_scaled_value();
+        if( speed_ <= 6 )
         {
-            if( speed == 0 )
+            if( speed_ == 0 )
                 return "16/1";
-            else if( speed == 1 )
+            else if( speed_ == 1 )
                 return "12/1";
-            else if( speed == 2 )
+            else if( speed_ == 2 )
                 return "8/1";
-            else if( speed == 3 )
+            else if( speed_ == 3 )
                 return "4/1";
-            else if( speed == 4 )
+            else if( speed_ == 4 )
                 return "3/1";
-            else if( speed == 5 )
+            else if( speed_ == 5 )
                 return "2/1";
             else
                 return "1/1";
         }
-        else if( speed <= 17 )
-            if( speed == 7 )
+        else if( speed_ <= 17 )
+            if( speed_ == 7 )
                 return "3/4";
-            else if( speed == 8 )
+            else if( speed_ == 8 )
                 return "1/2";
-            else if( speed == 9 )
+            else if( speed_ == 9 )
                 return "1/3";
-            else if( speed == 10 )
+            else if( speed_ == 10 )
                 return "1/4";
-            else if( speed == 11 )
+            else if( speed_ == 11 )
                 return "1/8";
-            else if( speed == 12 )
+            else if( speed_ == 12 )
                 return "1/12";
-            else if( speed == 13 )
+            else if( speed_ == 13 )
                 return "1/16";
-            else if( speed == 14 )
+            else if( speed_ == 14 )
                 return "1/24";
-            else if( speed == 15 )
+            else if( speed_ == 15 )
                 return "1/32";
-            else if( speed == 16 )
+            else if( speed_ == 16 )
                 return "1/64";
             else
                 return "1/128";
         else
         {
-            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed-18)),true,true,0);
+            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
         }
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(lfo_datas[id]).speed <= 17 )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( speed->get_scaled_value() <= 17 )
             return "th";
         else
             return "#";
     }
+
+public:
     LFOSlConfig( int id_ )
         :
-        id( id_ ),
-        bottom_text( "LFO " + String(id+1) )
+        speed( &(DATA(lfo_datas[id_]).speed) ),
+        bottom_text( "LFO " + String(id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (LFOSlConfig)
 };
 
 //==============================================================================
-struct FCutoffSLConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FCutoffSLConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const cutoff;
+    mono_ParameterCompatibilityBase*const modulate_cutoff;
 
-    StringRef get_bottom_button_text() const override {
-        return "CUTOFF";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->cutoff);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return cutoff;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return cutoff;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
     }
-
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_cutoff;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "MODUL";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->modulate_cutoff);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "CUTOFF";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     FCutoffSLConfig( int id_ )
         :
-        id( id_ )
+        cutoff( &(DATA(filter_datas[id_]).cutoff) ),
+        modulate_cutoff( &(DATA(filter_datas[id_]).modulate_cutoff) )
     {}
 
     JUCE_LEAK_DETECTOR (FCutoffSLConfig)
 };
 //==============================================================================
-struct FResonanceSLConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FResonanceSLConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const resonance;
+    mono_ParameterCompatibilityBase*const modulate_resonance;
 
-    StringRef get_bottom_button_text() const override {
-        return "RESO";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->resonance);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return resonance;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return resonance;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
     }
-
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_resonance;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "MODUL";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->modulate_resonance);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "RESO";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     FResonanceSLConfig( int id_ )
         :
-        id( id_ )
+        resonance( &(DATA(filter_datas[id_]).resonance) ),
+        modulate_resonance( &(DATA(filter_datas[id_]).modulate_resonance) )
     {}
 
     JUCE_LEAK_DETECTOR (FResonanceSLConfig)
 };
 //==============================================================================
-struct FGainSLConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FGainSLConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const gain;
+    mono_ParameterCompatibilityBase*const modulate_gain;
 
-    StringRef get_bottom_button_text() const override {
-        return "GAIN";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->gain);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return gain;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return gain;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
     }
-
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_gain;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "MODUL";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->modulate_gain);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "GAIN";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     FGainSLConfig( int id_ )
         :
-        id( id_ )
+        gain( &(DATA(filter_datas[id_]).gain) ),
+        modulate_gain( &(DATA(filter_datas[id_]).modulate_gain) )
     {}
 
     JUCE_LEAK_DETECTOR (FGainSLConfig)
 };
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FVolumeSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FVolumeSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const volume;
+    mono_ParameterCompatibilityBase*const modulate_volume;
 
-    StringRef get_bottom_button_text() const override {
-        return "VOLUME";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->output);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return volume;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return volume;
     }
 
-    StringRef get_botton_button_switch_text() const override {
-        return "MOD (%)";
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
     }
-
-    StringRef get_top_button_text() const override {
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_volume;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "MODUL";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->modulate_output);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "VOLUME";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD (%)";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     FVolumeSlConfig( int id_ )
         :
-        id( id_ )
+        volume( &(DATA(filter_datas[id_]).output) ),
+        modulate_volume( &(DATA(filter_datas[id_]).modulate_output) )
     {}
 
     JUCE_LEAK_DETECTOR (FVolumeSlConfig)
@@ -730,77 +2169,374 @@ struct FVolumeSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct BPMSlConfig : public ModulationSliderConfigBase {
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->speed);
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class BPMSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const speed;
+    mono_ParameterCompatibilityBase*const sync;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    bool get_is_bottom_button_text_dynamic() const override {
-        return true;
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-    StringRef get_bottom_button_text() const override {
-        return String(DATA(synth_data).speed)+String(" BPM");
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return speed;
     }
-    StringRef get_top_button_text() const override {
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return speed;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return sync;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "SYNC";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->sync);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return String(speed->get_scaled_value())+String(" BPM");
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    */
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return true;
     }
 
-    BPMSlConfig() {}
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    BPMSlConfig()
+        :
+        speed( &(DATA(synth_data).speed) ),
+        sync( &(DATA(synth_data).sync) )
+    {}
 
     JUCE_LEAK_DETECTOR (BPMSlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class SpeedMultiSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const speed_multi;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct SpeedMultiSlConfig : public ModulationSliderConfigBase {
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(arp_data->speed_multi);
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    bool get_is_bottom_button_text_dynamic() const override {
-        return true;
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-    StringRef get_bottom_button_text() const override {
-        return speed_multi_to_text( DATA( arp_data ).speed_multi );
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return speed_multi;
     }
-    StringRef get_top_button_text() const override {
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return speed_multi;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "x1";
     }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
 
-    SpeedMultiSlConfig() {}
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return speed_multi_to_text( speed_multi->get_scaled_value() );
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    */
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return true;
+    }
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    SpeedMultiSlConfig()
+        :
+        speed_multi( &(DATA(arp_data).speed_multi) )
+    {}
 
     JUCE_LEAK_DETECTOR (SpeedMultiSlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class OctaveOffsetSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const octave_offset;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct OctaveOffsetSlConfig : public ModulationSliderConfigBase {
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->octave_offset);
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    StringRef get_bottom_button_text() const override {
-        return "OCTAVE";
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override 
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return octave_offset;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return speed_multi;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "x1";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    /*
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return speed_multi_to_text( speed_multi->get_scaled_value() );
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return true;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override 
+    String get_center_value() const noexcept override
     {
-        switch( DATA(synth_data).octave_offset )
-	{
-	  case 0 : return "+/-";
-	  case 1 : return "+12";
-	  case 2 : return "+24";
-	  case -1 : return "-12";
-	  default : return "-24";
-	}
+        switch( int(octave_offset->get_scaled_value()) )
+        {
+        case 0 :
+            return "+/-";
+        case 1 :
+            return "+1";
+        case 2 :
+            return "+2";
+        case -1 :
+            return "-1";
+        default :
+            return "-2";
+        }
     }
+    /*
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
 
-    OctaveOffsetSlConfig() {}
+public:
+    OctaveOffsetSlConfig()
+        :
+        octave_offset( &(DATA(synth_data).octave_offset) )
+    {}
 
     JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)
 };
@@ -808,298 +2544,1098 @@ struct OctaveOffsetSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FCompressorSlConfig : public ModulationSliderConfigBase {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FCompressorSlConfig : public ModulationSliderConfigBase
+{
     const int id;
 
-    StringRef get_bottom_button_text() const override {
-        if( id == 0 )
-            return "PEAK-BOOST";
-        else
-            return "COMP|BOOST";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->compressor);
-    }
+    mono_ParameterCompatibilityBase*const compressor;
+    mono_ParameterCompatibilityBase*const clipping;
 
-    float get_override_min_value() const override {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return compressor;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+    int get_override_front_max_value() const noexcept override
+    {
         if( id == 0 )
             return 0;
         else
             return DONT_OVERRIDE_SLIDER_VALUE;
     }
 
-    StringRef get_botton_button_switch_text() const override {
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "BOOST";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
         return "CLIPP";
     }
-
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(filter_datas[id]->output_clipping);
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
     }
+    */
 
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
     FCompressorSlConfig( int id_ )
         :
-        id( id_ )
+        id( id_ ),
+        compressor( &(DATA(filter_datas[id]).compressor) ),
+        clipping( &(DATA(filter_datas[id]).output_clipping) )
     {}
 
     JUCE_LEAK_DETECTOR (FCompressorSlConfig)
 };
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct AttackSlConfig : public ModulationSliderConfigBase {
-    const int id;
 
-    StringRef get_bottom_button_text() const override {
-        return "ATTACK";
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FColourSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const shape;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->attack);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return shape;
     }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_attack_time);
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
     }
-    bool get_is_linear() const {
-        return true;
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
     }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
-        return SHOW_OWN_VALUE;
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
     }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).attack * DATA(env_datas[id]).max_attack_time * 1000;
-        if( value < 100 )
-            return String(round01(value));
-        else
-            return String(round0(value));
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
     }
-    StringRef get_top_suffix() const override {
-        return "ms";
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    AttackSlConfig( int id_ )
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "SHAPE";
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    FColourSlConfig()
         :
-        id( id_ )
+        shape( &(DATA(synth_data).resonance) )
     {}
 
-    JUCE_LEAK_DETECTOR (AttackSlConfig)
+    JUCE_LEAK_DETECTOR (FColourSlConfig)
 };
 //==============================================================================
-struct DecaySlConfig : public ModulationSliderConfigBase {
-    const int id;
-
-    StringRef get_bottom_button_text() const override {
-        return "DECAY";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->decay);
-    }
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_decay_time);
-    }
-    bool get_is_linear() const {
-        return true;
-    }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
-        return SHOW_OWN_VALUE;
-    }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).decay * DATA(env_datas[id]).max_decay_time * 1000;
-        if( value < 0 )
-            return "OFF";
-        else if( value < 100 )
-            return String(round01(value));
-        else
-            return String(round0(value));
-    }
-    StringRef get_top_suffix() const override {
-        return "ms";
-    }
-    DecaySlConfig( int id_ )
-        :
-        id( id_ )
-    {}
-
-    JUCE_LEAK_DETECTOR (DecaySlConfig)
-};
-//==============================================================================
-struct SustainSlConfig : public ModulationSliderConfigBase {
-    const int id;
-
-    StringRef get_bottom_button_text() const override {
-        return "SUSTAIN";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->sustain);
-    }
-
-    bool get_is_linear() const {
-        return true;
-    }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
-        return SHOW_OWN_VALUE;
-    }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).sustain * 100;
-        if( value < 100 )
-            return String(round01(value));
-        else
-            return String(round0(value));
-    }
-    StringRef get_top_suffix() const override {
-        return "%";
-    }
-    SustainSlConfig( int id_ )
-        :
-        id( id_ )
-    {}
-
-    JUCE_LEAK_DETECTOR (SustainSlConfig)
-};
-//==============================================================================
-struct ReleaseSlConfig : public ModulationSliderConfigBase {
-    const int id;
-
-    StringRef get_bottom_button_text() const override {
-        return "RELEASE";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->release);
-    }
-    StringRef get_botton_button_switch_text() const override {
-        return "MAX T(ms)";
-    }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(env_datas[id]->max_release_time);
-    }
-    bool get_is_linear() const {
-        return true;
-    }
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
-        return SHOW_OWN_VALUE;
-    }
-    String get_top_value() const override {
-        float value = DATA(env_datas[id]).release * DATA(env_datas[id]).max_release_time * 1000;
-        if( value < 100 )
-            return String(round01(value));
-        else
-            return String(round0(value));
-    }
-    StringRef get_top_suffix() const override {
-        return "ms";
-    }
-    ReleaseSlConfig( int id_ )
-        :
-        id( id_ )
-    {}
-
-    JUCE_LEAK_DETECTOR (ReleaseSlConfig)
-};
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct RRoomSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class RRoomSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const room;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return room;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "ROOM";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(reverb_data->room);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    RRoomSlConfig()
+        :
+        room( &(DATA(reverb_data).room) )
+    {}
+
     JUCE_LEAK_DETECTOR (RRoomSlConfig)
 };
 //==============================================================================
-struct RWidthSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class RWidthSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const width;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return width;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "WIDTH";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(reverb_data->width);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    RWidthSlConfig()
+        :
+        width( &(DATA(reverb_data).width) )
+    {}
+
     JUCE_LEAK_DETECTOR (RWidthSlConfig)
 };
 //==============================================================================
-struct RDrySlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class RDrySlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const dry_wet_mix;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return dry_wet_mix;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "WET|DRY";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(reverb_data->dry_wet_mix);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    RDrySlConfig()
+        :
+        dry_wet_mix( &(DATA(reverb_data).dry_wet_mix) )
+    {}
 
     JUCE_LEAK_DETECTOR (RDrySlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class DelaySlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const delay;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct DelaySlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return delay;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
         return "DELAY";
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->delay);
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
     }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    DelaySlConfig()
+        :
+        delay( &(DATA(synth_data).delay) )
+    {}
 
     JUCE_LEAK_DETECTOR (DelaySlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class BypassConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const effect_bypass;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct CModSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "CHORS";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(chorus_data->modulation);
-    }
-    StringRef get_botton_button_switch_text() const override {
-        return "ADR";
-    }
-    StringRef get_top_button_text() const override {
-        return "FIX";
-    }
+    //==============================================================================
+    // BASIC SLIDER TYPE
     /*
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-    return SYNTH_PARAM(chorus_data->shine);
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
     */
-    float get_top_button_amp() const override
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return effect_bypass;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "MIX";
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    BypassConfig()
+        :
+        effect_bypass( &(DATA(synth_data).effect_bypass) )
+    {}
+
+    JUCE_LEAK_DETECTOR (BypassConfig)
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class VolumeConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const volume;
+    mono_ParameterCompatibilityBase*const final_compression;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return volume;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return final_compression;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "VOLUME";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "CLIPP";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    VolumeConfig()
+        :
+        volume( &(DATA(synth_data).volume) ),
+        final_compression( &(DATA(synth_data).final_compression) )
+    {}
+
+    JUCE_LEAK_DETECTOR (VolumeConfig)
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class CModSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const modulation;
+    mono_ParameterCompatibilityBase*const state;
+    mono_ParameterCompatibilityBase*const hold_modulation;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return modulation;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return state;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return hold_modulation;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "FIX";
+    }
+    float get_top_button_amp() const noexcept override
     {
         float value = FIXED_TOP_BUTTON_COLOUR;
         if( ! DATA( synth_data ).animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
-        else if( ! DATA(chorus_data).hold_modulation )
+        else if( ! bool(hold_modulation->get_scaled_value())  )
         {
             value = mono_ParameterOwnerStore::getInstance()->get_chorus_modulation_env_amp();
         }
 
         return value;
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(chorus_data->hold_modulation);
-    }
 
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "CHORS";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "ADR";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        if( DATA(chorus_data).modulation.midi_control->get_ctrl_mode() )
-            return String( round001(DATA(chorus_data).modulation_env_data->state) );
+    String get_center_value() const noexcept override
+    {
+        if( modulation->midi_control->get_ctrl_mode() )
+            return String( round001(state->get_scaled_value()) );
         else
             return String( round01(DATA(chorus_data).modulation*100)  );
     }
-
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(chorus_data->modulation_env_data->state);
+    /*
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
     }
+    */
+
+public:
+    CModSlConfig()
+        :
+        modulation( &(DATA(chorus_data).modulation) ),
+        state( &(DATA(chorus_data).modulation_env_data->state) ),
+        hold_modulation( &(DATA(chorus_data).hold_modulation) )
+    {}
 
     JUCE_LEAK_DETECTOR (CModSlConfig)
 };
@@ -1107,147 +3643,375 @@ struct CModSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct BypassConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "MIX";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->effect_bypass);
-    }
-
-    JUCE_LEAK_DETECTOR (BypassConfig)
-};
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct VolumeConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "VOLUME";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->volume);
-    }
-
-    StringRef get_botton_button_switch_text() const override {
-        return "CLIPP";
-    }
-
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->final_compression);
-    }
-
-    JUCE_LEAK_DETECTOR (VolumeConfig)
-};
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct GlideConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "NOTE-G";
+class GlideConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const glide;
+    mono_ParameterCompatibilityBase*const velocity_glide_time;
+    mono_ParameterCompatibilityBase*const connect;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->glide);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
     }
-    StringRef get_botton_button_switch_text() const override {
-        return "VELO-G";
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return glide;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return velocity_glide_time;
     }
 
-    StringRef get_top_button_text() const override {
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return connect;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "BIND";
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->arp_sequencer_data->connect);
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
     }
+    */
 
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->velocity_glide_time);
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "NOTE-G";
     }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "VELO-G";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    GlideConfig()
+        :
+        glide( &(DATA(synth_data).glide) ),
+        velocity_glide_time( &(DATA(synth_data).velocity_glide_time) ),
+        connect( &(DATA(arp_data).connect) )
+    {}
 
     JUCE_LEAK_DETECTOR (GlideConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class ShuffleConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const shuffle;
+    mono_ParameterCompatibilityBase*const is_on;
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct ShuffleConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "SHUFL";
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(arp_data->shuffle);
-    }
+    */
 
-    StringRef get_top_button_text() const override {
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return shuffle;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return is_on;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return is_on;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "ARP";
     }
-    float get_top_button_amp() const override {
-        return DATA(arp_data).is_on ? 1 : 0 ;
+    float get_top_button_amp() const noexcept override
+    {
+        return is_on->get_scaled_value() ? 1 : 0;
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(arp_data->is_on);
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "SHUFL";
     }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    ShuffleConfig()
+        :
+        shuffle( &(DATA(arp_data).shuffle) ),
+        is_on( &(DATA(arp_data).is_on) )
+    {}
 
     JUCE_LEAK_DETECTOR (ShuffleConfig)
 };
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FColourSlConfig : public ModulationSliderConfigBase {
-    StringRef get_bottom_button_text() const override {
-        return "SHAPE";
-    }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->resonance);
-    }
-    JUCE_LEAK_DETECTOR (ShuffleConfig)
-};
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct EQSlConfig : public ModulationSliderConfigBase {
+class EQSlConfig : public ModulationSliderConfigBase
+{
     const int id;
 
+    mono_ParameterCompatibilityBase*const velocity;
+    mono_ParameterCompatibilityBase*const hold;
+    mono_ParameterCompatibilityBase*const state;
+
     String bottom_text;
-    StringRef get_bottom_button_text() const override {
-        return bottom_text;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(eq_data->velocity[id]);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return velocity;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return state;
     }
 
-    StringRef get_top_button_text() const override {
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return hold;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
         return "FIX";
     }
-    float get_top_button_amp() const override {
+    float get_top_button_amp() const noexcept override
+    {
         float value = FIXED_TOP_BUTTON_COLOUR;
         if( ! DATA( synth_data ).animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
-        else if( ! DATA(eq_data).hold[id] ) {
+        else if( ! bool(hold->get_scaled_value()) ) {
             value = mono_ParameterOwnerStore::getInstance()->get_band_env_amp(id);
         }
 
         return value;
     }
-    mono_ParameterCompatibilityBase* get_button_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(eq_data->hold[id]);
-    }
 
-    StringRef get_botton_button_switch_text() const override {
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return bottom_text;
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
         return "ADR";
     }
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(eq_data->env_datas[id]->state);
-    }
-
-    EQSlConfig( int id_ ) : id( id_ )
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        const float frequency_low_pass = (62.5/2) * pow(2,id+1);
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    EQSlConfig( int id_ )
+        :
+        id( id_ ),
+        velocity( &(DATA(eq_data).velocity[id_]) ),
+        hold( &(DATA(eq_data).hold[id]) ),
+        state( &(DATA(eq_data).env_datas[id_]->state) )
+    {
+        const float frequency_low_pass = (62.5f/2) * pow(2,id_+1);
         const float frequency_high_pass = frequency_low_pass / 2.0f;
         bottom_text = String( frequency_high_pass ) + String("Hz");
     }
@@ -1261,148 +4025,326 @@ struct EQSlConfig : public ModulationSliderConfigBase {
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct ArpStepSlConfig : public ModulationSliderConfigBase {
-    const int id;
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class ArpStepSlConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const tune;
+    mono_ParameterCompatibilityBase*const velocity;
 
-    String bottom_text;
-    StringRef get_bottom_button_text() const override {
-        if( id == 0 )
-            return bottom_text;
-        else
-            return String(id+1);
+    const String bottom_text;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
     }
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(arp_data->tune[id]);
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return tune;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return velocity;
     }
 
-    mono_ParameterCompatibilityBase* get_modulation_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(arp_data->velocity[id]);
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
 
-    StringRef get_botton_button_switch_text() const override {
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return bottom_text;
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
         return "VELOCITY";
     }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
 
-    ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const override {
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
         return SHOW_OWN_VALUE;
     }
-    String get_top_value() const override {
-        if( DATA(arp_data).tune[id].midi_control->get_ctrl_mode() )
-            return String( round01(DATA(arp_data).velocity[id]*100) );
+    String get_center_value() const noexcept override
+    {
+        if( tune->midi_control->get_ctrl_mode() )
+            return String( round01(velocity->get_scaled_value()*100) );
         else
-            return String( DATA(arp_data).tune[id] );
+            return String( tune->get_scaled_value() );
     }
-    StringRef get_top_suffix() const override {
-        if( DATA(arp_data).tune[id].midi_control->get_ctrl_mode() )
+    StringRef get_center_suffix() const noexcept override
+    {
+        if( tune->midi_control->get_ctrl_mode() )
             return "%";
         else
             return "#";
     }
 
+public:
     ArpStepSlConfig( int id_ )
         :
-        id( id_ ),
-        bottom_text( "STEP " + String(id+1) )
+        tune( &(DATA(arp_data).tune[id_]) ),
+        velocity( &(DATA(arp_data).velocity[id_]) ),
+        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_) )
     {}
 
     JUCE_LEAK_DETECTOR (ArpStepSlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class MorphSLConfig : public ModulationSliderConfigBase
+{
+    mono_ParameterCompatibilityBase*const morhp_state;
+    const String bottom_text;
 
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return false;
+    }
+    */
 
-struct MorphSLConfig : public ModulationSliderConfigBase {
-    const int id;
-
-    String bottom_text;
-
-    mono_ParameterCompatibilityBase* get_parameter_compatibility_base() const override {
-        return SYNTH_PARAM(synth_data->morhp_states[id]);
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    {
+        return morhp_state;
     }
     /*
-        if (sliderThatWasMoved == sl_morph_1)
-        {
-            //[UserSliderCode_sl_morph_1] -- add your slider handling code here..
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                &synth_data->morhp_states[0],
-                sliderThatWasMoved
-            )
-            else
-            {
-                synth_data->morph( 0, sl_morph_1->getValue()/1000, true );
-            }
-            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[0].midi_control );
-            //[/UserSliderCode_sl_morph_1]
-        }
-        else if (sliderThatWasMoved == sl_morph_2)
-        {
-            //[UserSliderCode_sl_morph_2] -- add your slider handling code here..
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                &synth_data->morhp_states[1],
-                sliderThatWasMoved
-            )
-            else
-            {
-                synth_data->morph( 1, sl_morph_2->getValue()/1000, true );
-            }
-            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[1].midi_control );
-            //[/UserSliderCode_sl_morph_2]
-        }
-        else if (sliderThatWasMoved == sl_morph_3)
-        {
-            //[UserSliderCode_sl_morph_3] -- add your slider handling code here..
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                &synth_data->morhp_states[2],
-                sliderThatWasMoved
-            )
-            else
-            {
-                synth_data->morph( 2, sl_morph_3->getValue()/1000, true );
-            }
-            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[2].midi_control );
-            //[/UserSliderCode_sl_morph_3]
-        }
-        else if (sliderThatWasMoved == sl_morph_4)
-        {
-            //[UserSliderCode_sl_morph_4] -- add your slider handling code here..
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                &synth_data->morhp_states[3],
-                sliderThatWasMoved
-            )
-            else
-            {
-                synth_data->morph( 3, sl_morph_4->getValue()/1000, true );
-            }
-            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[3].midi_control );
-            //[/UserSliderCode_sl_morph_4]
-        }
-        else if (sliderThatWasMoved == sl_morhp_mix)
-        {
-            //[UserSliderCode_sl_morhp_mix] -- add your slider handling code here..
-            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-            (
-                &synth_data->linear_morhp_state,
-                sliderThatWasMoved
-            )
-            else
-            {
-                synth_data->linear_morhp_state = sl_morhp_mix->getValue()/1000;
-            }
-            show_info_popup( sliderThatWasMoved, synth_data->linear_morhp_state.midi_control );
-            //[/UserSliderCode_sl_morhp_mix]
-        }
-    */
-    MorphSLConfig( int id_ ) : id( id_ )
+    int get_override_front_min_value() const noexcept override
     {
-        bottom_text = String( "TOGGL" ) + String(id_+1);
+        return DONT_OVERRIDE_SLIDER_VALUE;
     }
+    int get_override_front_max_value() const noexcept override
+    {
+        return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    {
+        return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    {
+        return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+        return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "MIX";
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+        return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+    */
+
+public:
+    MorphSLConfig(int id_)
+        :
+        morhp_state( &(DATA(synth_data).morhp_states[id_]) ),
+        bottom_text( String( "TOGGL" ) + String(id_+1) )
+    {}
 
     JUCE_LEAK_DETECTOR (MorphSLConfig)
 };
 
+    /*
+            if (sliderThatWasMoved == sl_morph_1)
+        {
+            //[UserSliderCode_sl_morph_1] -- add your slider handling code here..
+            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+            (
+            &synth_data->morhp_states[0],
+            sliderThatWasMoved
+            )
+            else
+        {
+            synth_data->morph( 0, sl_morph_1->getValue()/1000, true );
+        }
+            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[0].midi_control );
+            //[/UserSliderCode_sl_morph_1]
+        }
+            else if (sliderThatWasMoved == sl_morph_2)
+        {
+            //[UserSliderCode_sl_morph_2] -- add your slider handling code here..
+            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+            (
+            &synth_data->morhp_states[1],
+            sliderThatWasMoved
+            )
+            else
+        {
+            synth_data->morph( 1, sl_morph_2->getValue()/1000, true );
+        }
+            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[1].midi_control );
+            //[/UserSliderCode_sl_morph_2]
+        }
+            else if (sliderThatWasMoved == sl_morph_3)
+        {
+            //[UserSliderCode_sl_morph_3] -- add your slider handling code here..
+            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+            (
+            &synth_data->morhp_states[2],
+            sliderThatWasMoved
+            )
+            else
+        {
+            synth_data->morph( 2, sl_morph_3->getValue()/1000, true );
+        }
+            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[2].midi_control );
+            //[/UserSliderCode_sl_morph_3]
+        }
+            else if (sliderThatWasMoved == sl_morph_4)
+        {
+            //[UserSliderCode_sl_morph_4] -- add your slider handling code here..
+            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+            (
+            &synth_data->morhp_states[3],
+            sliderThatWasMoved
+            )
+            else
+        {
+            synth_data->morph( 3, sl_morph_4->getValue()/1000, true );
+        }
+            show_info_popup( sliderThatWasMoved, synth_data->morhp_states[3].midi_control );
+            //[/UserSliderCode_sl_morph_4]
+        }
+            else if (sliderThatWasMoved == sl_morhp_mix)
+        {
+            //[UserSliderCode_sl_morhp_mix] -- add your slider handling code here..
+            IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+            (
+            &synth_data->linear_morhp_state,
+            sliderThatWasMoved
+            )
+            else
+        {
+            synth_data->linear_morhp_state = sl_morhp_mix->getValue()/1000;
+        }
+            show_info_popup( sliderThatWasMoved, synth_data->linear_morhp_state.midi_control );
+            //[/UserSliderCode_sl_morhp_mix]
+        }
+            */
+
 #endif  // UIEDITORSYNTHLITECONFIG_H_INCLUDED
-
-
-

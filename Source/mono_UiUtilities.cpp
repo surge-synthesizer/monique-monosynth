@@ -10,7 +10,7 @@
 
 #include "mono_UiUtilities.h"
 #include "UiLookAndFeel.h"
-
+/*
 // ==============================================================================
 ParameterReference::ParameterReference( mono_ParameterCompatibilityBase*const param_compatibility_base_ ) : _base( param_compatibility_base_ ) {}
 
@@ -18,16 +18,6 @@ ParameterReference::operator bool() const {
     return _base;
 }
 
-void ParameterReference::init_value_slider( Slider*const slider_, float min_value_override ) const {
-    if( min_value_override == DONT_OVERRIDE_SLIDER_VALUE )
-        slider_->setRange( _base->min_unscaled(), _base->max_unscaled(), _base->slider_interval() );
-    else
-        slider_->setRange( min_value_override, _base->max_unscaled(), _base->slider_interval() );
-
-    slider_->setDoubleClickReturnValue( true, _base->reset_unscaled() );
-    slider_->setPopupMenuEnabled( true );
-    write_value_to( slider_ );
-}
 void ParameterReference::write_value_to( Slider*const slider_ ) const {
     slider_->setValue( _base->get_scaled_value()*_base->scale() ,dontSendNotification );
 }
@@ -82,3 +72,4 @@ float ParameterReference::get_last_modulation() const {
 bool ParameterReference::has_modulation() const {
     return _base->has_modulation();
 }
+*/
