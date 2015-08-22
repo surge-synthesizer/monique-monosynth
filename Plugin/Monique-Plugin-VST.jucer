@@ -50,10 +50,6 @@
             file="../Source/mono_Parameters.cpp"/>
       <FILE id="faB2bl" name="mono_Parameters.h" compile="0" resource="0"
             file="../Source/mono_Parameters.h"/>
-      <FILE id="kxih0T" name="mono_UiUtilities.cpp" compile="1" resource="0"
-            file="../Source/mono_UiUtilities.cpp"/>
-      <FILE id="l6olRD" name="mono_UiUtilities.h" compile="0" resource="0"
-            file="../Source/mono_UiUtilities.h"/>
       <FILE id="fNOmoO" name="PluginProcessor.cpp" compile="1" resource="0"
             file="../Source/PluginProcessor.cpp"/>
       <FILE id="DRNZAz" name="PluginProcessor.h" compile="0" resource="0"

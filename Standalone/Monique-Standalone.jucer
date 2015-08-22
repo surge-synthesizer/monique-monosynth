@@ -46,10 +46,6 @@
             file="../Source/mono_Parameters.cpp"/>
       <FILE id="QlWRm5" name="mono_Parameters.h" compile="0" resource="0"
             file="../Source/mono_Parameters.h"/>
-      <FILE id="J7T0Dh" name="mono_UiUtilities.cpp" compile="1" resource="0"
-            file="../Source/mono_UiUtilities.cpp"/>
-      <FILE id="yw7hQS" name="mono_UiUtilities.h" compile="0" resource="0"
-            file="../Source/mono_UiUtilities.h"/>
       <FILE id="ztrOO4" name="PluginProcessor.cpp" compile="1" resource="0"
             file="../Source/PluginProcessor.cpp"/>
       <FILE id="QZxhpT" name="PluginProcessor.h" compile="0" resource="0"

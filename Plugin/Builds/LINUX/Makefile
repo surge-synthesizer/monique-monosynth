@@ -56,7 +56,6 @@ OBJECTS := \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
   $(OBJDIR)/mono_Parameters_6e808cd6.o \
-  $(OBJDIR)/mono_UiUtilities_e0884034.o \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
   $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/SynthData_df69b916.o \
@@ -135,11 +134,6 @@ $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o: ../../../Source/mono_ModulationSlide
 $(OBJDIR)/mono_Parameters_6e808cd6.o: ../../../Source/mono_Parameters.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling mono_Parameters.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/mono_UiUtilities_e0884034.o: ../../../Source/mono_UiUtilities.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_UiUtilities.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/PluginProcessor_319d19ef.o: ../../../Source/PluginProcessor.cpp
