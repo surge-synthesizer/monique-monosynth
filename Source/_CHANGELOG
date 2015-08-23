@@ -46,7 +46,7 @@ TODO:
 - add: modwheel to ui
 - store last programm as filename in last session file (not as sepperate project)
 - bg für second ADSR slider
-
+- close editors if you open a new one
 
 QUESTS
 - sync lfo with note on?
