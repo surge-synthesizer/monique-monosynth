@@ -29,6 +29,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="cNv2QT" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MIDIIO.cpp"/>
+        <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"
+              file="../Source/monique_ui_MIDIIO.h"/>
         <FILE id="kBcOho" name="monique_ui_ModulationSlider.cpp" compile="1"
               resource="0" file="../Source/monique_ui_ModulationSlider.cpp"/>
         <FILE id="VLzWyf" name="monique_ui_ModulationSlider.h" compile="0"
@@ -60,8 +64,6 @@
       <FILE id="aJbsC0" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
       <FILE id="OKoiqV" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
       <FILE id="h55lZl" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="emuN1D" name="UI_MoveEvent2ChildsComponent.h" compile="0"
-            resource="0" file="../Source/UI_MoveEvent2ChildsComponent.h"/>
       <FILE id="rlKMCE" name="UiDragPad.cpp" compile="1" resource="0" file="../Source/UiDragPad.cpp"/>
       <FILE id="l71Y0y" name="UiDragPad.h" compile="0" resource="0" file="../Source/UiDragPad.h"/>
       <FILE id="L3ocBA" name="UiDynamicSizeEnd.h" compile="0" resource="0"
@@ -72,10 +74,6 @@
             file="../Source/UiEditorColours.cpp"/>
       <FILE id="fCtjsa" name="UiEditorColours.h" compile="0" resource="0"
             file="../Source/UiEditorColours.h"/>
-      <FILE id="uajFTh" name="UiEditorMIDIIO.cpp" compile="1" resource="0"
-            file="../Source/UiEditorMIDIIO.cpp"/>
-      <FILE id="uEH6EK" name="UiEditorMIDIIO.h" compile="0" resource="0"
-            file="../Source/UiEditorMIDIIO.h"/>
       <FILE id="qw8i65" name="UiEditorMorph.cpp" compile="1" resource="0"
             file="../Source/UiEditorMorph.cpp"/>
       <FILE id="csSLiL" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>

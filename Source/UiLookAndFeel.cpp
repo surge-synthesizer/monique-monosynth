@@ -361,11 +361,14 @@ void UiLookAndFeel::drawTickBox (Graphics& g, Component& component,
 void UiLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
                                       bool isMouseOverButton, bool isButtonDown)
 {
+    if( button.isOpaque() )
+        g.fillAll (colours.bg);
+
     float prop_h = 1.f/25.f*button.getHeight();
     float top = prop_h*4.f;
     float rect_size = button.getHeight()-top*2;
     drawTickBox (g, button,
-                 1, top,
+                 (button.getWidth() - rect_size)/2, top,
                  rect_size, rect_size,
                  button.getToggleState(),
                  button.isEnabled(),
@@ -1219,9 +1222,13 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
         Colour col = colours.label_text_colour;
         if( labelStyle ==  IS_VALUE_LABEL )
             col = colours.slider_track_colour;
-        else if( labelStyle ==  IS_SECOND_VALUE_LABEL )
+        else if( labelStyle == IS_SECOND_VALUE_LABEL )
         {
             col = colours.slider_track_colour_2;
+        }
+        else if( labelStyle == IS_DESCRIPTION_LABEL )
+        {
+            //   col = Colour(0xffff3b00);
         }
 
         Rectangle<int> textArea (label.getBorderSize().subtractedFrom (label.getLocalBounds()));

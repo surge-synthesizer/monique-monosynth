@@ -125,6 +125,7 @@ enum SLIDER_LABEL_STYLES {
 
 #define IS_VALUE_LABEL "VL"
 #define IS_SECOND_VALUE_LABEL "SVL"
+#define IS_DESCRIPTION_LABEL "DL"
 
 #define GET_VALUE_TO_PAINT getName
 #define SET_VALUE_TO_PAINT setName

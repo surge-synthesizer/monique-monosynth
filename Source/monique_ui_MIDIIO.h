@@ -52,6 +52,8 @@ public:
 
     const float original_w;
     const float original_h;
+
+    bool has_grabbed_focus;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -59,7 +61,6 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
-    bool keyPressed (const KeyPress& key);
 
 
 
@@ -72,26 +73,20 @@ private:
     ScopedPointer<Label> label_7;
     ScopedPointer<ComboBox> combo_input_main;
     ScopedPointer<ComboBox> combo_input_main_channel;
-    ScopedPointer<Label> label_1;
     ScopedPointer<Label> label_3;
     ScopedPointer<ToggleButton> toggle_input_main_thru;
-    ScopedPointer<Label> label_4;
     ScopedPointer<Label> label_5;
     ScopedPointer<ComboBox> combo_output_thru;
     ScopedPointer<Label> label_6;
     ScopedPointer<ComboBox> combo_input_cc;
     ScopedPointer<ToggleButton> toggle_input_main_cc;
     ScopedPointer<ToggleButton> toggle_input_cc_thru;
-    ScopedPointer<Label> label_8;
     ScopedPointer<Label> label_9;
     ScopedPointer<ComboBox> combo_output_cc;
-    ScopedPointer<ToggleButton> toggle_output_cc_mute;
-    ScopedPointer<Label> label_23;
-    ScopedPointer<ComboBox> combo_output_clock;
-    ScopedPointer<TextButton> close;
     ScopedPointer<Slider> slider_midi_pickup;
-    ScopedPointer<Label> label_17;
     ScopedPointer<Label> label_2;
+    ScopedPointer<Label> label_4;
+    ScopedPointer<Label> label_8;
 
 
     //==============================================================================

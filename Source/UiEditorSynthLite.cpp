@@ -33,13 +33,13 @@
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_ModulationSlider.h"
 #include "monique_ui_SliderConfig.h"
+#include "monique_ui_MIDIIO.h"
 
 
 
 
 
 
-#include "UiEditorMIDIIO.h"
 #include "UiEditorMorph.h"
 #include "UiEditorSettings.h"
 //[/Headers]
@@ -831,194 +831,194 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     addAndMakeVisible (octave_offset = new mono_ModulationSlider (new OctaveOffsetSlConfig()));
 
-    addAndMakeVisible (label_ui_headline4 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline4 = new Label ("DL",
                                                        TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
-    label_ui_headline4->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline4->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline7 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline7 = new Label ("DL",
                                                        TRANS("OSCILLATORS")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
-    label_ui_headline7->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline7->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline8 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline8 = new Label ("DL",
                                                        TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
-    label_ui_headline8->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline8->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline9 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline9 = new Label ("DL",
                                                        TRANS("LFO")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
-    label_ui_headline9->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline9->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline10 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline10 = new Label ("DL",
                                                         TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
-    label_ui_headline10->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline10->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline10->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline11 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline11 = new Label ("DL",
                                                         TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
-    label_ui_headline11->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline11->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline11->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline12 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline12 = new Label ("DL",
                                                         TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
-    label_ui_headline12->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline12->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline12->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline13 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline13 = new Label ("DL",
                                                         TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
-    label_ui_headline13->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline13->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline13->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_shape = new Label (String::empty,
+    addAndMakeVisible (label_shape = new Label ("DL",
                                                 TRANS("SHAPE")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
-    label_shape->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_shape->setColour (Label::textColourId, Colour (0xff1111ff));
     label_shape->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_reverb = new Label (String::empty,
+    addAndMakeVisible (label_reverb = new Label ("DL",
                                                  TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
     label_reverb->setEditable (false, false, false);
-    label_reverb->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_reverb->setColour (Label::textColourId, Colour (0xff1111ff));
     label_reverb->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_delay = new Label (String::empty,
+    addAndMakeVisible (label_delay = new Label ("DL",
                                                 TRANS("DELAY")));
     label_delay->setFont (Font (30.00f, Font::plain));
     label_delay->setJustificationType (Justification::centred);
     label_delay->setEditable (false, false, false);
-    label_delay->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_delay->setColour (Label::textColourId, Colour (0xff1111ff));
     label_delay->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_chorus = new Label (String::empty,
+    addAndMakeVisible (label_chorus = new Label ("DL",
                                                  TRANS("CHORUS")));
     label_chorus->setFont (Font (30.00f, Font::plain));
     label_chorus->setJustificationType (Justification::centred);
     label_chorus->setEditable (false, false, false);
-    label_chorus->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_chorus->setColour (Label::textColourId, Colour (0xff1111ff));
     label_chorus->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_fx_mix = new Label (String::empty,
+    addAndMakeVisible (label_fx_mix = new Label ("DL",
                                                  TRANS("FX MIX")));
     label_fx_mix->setFont (Font (30.00f, Font::plain));
     label_fx_mix->setJustificationType (Justification::centred);
     label_fx_mix->setEditable (false, false, false);
-    label_fx_mix->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_fx_mix->setColour (Label::textColourId, Colour (0xff1111ff));
     label_fx_mix->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline19 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline19 = new Label ("DL",
                                                         TRANS("MORPH SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
-    label_ui_headline19->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline19->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline19->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline20 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline20 = new Label ("DL",
                                                         TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
-    label_ui_headline20->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline20->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline20->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline21 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline21 = new Label ("DL",
                                                         TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
-    label_ui_headline21->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline21->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline21->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline22 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline22 = new Label ("DL",
                                                         TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
-    label_ui_headline22->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline22->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline22->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline23 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline23 = new Label ("DL",
                                                         TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
-    label_ui_headline23->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline23->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline23->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline24 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline24 = new Label ("DL",
                                                         TRANS("OCTAVE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
-    label_ui_headline24->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline24->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline24->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline25 = new Label (String::empty,
+    addAndMakeVisible (label_ui_headline25 = new Label ("DL",
                                                         TRANS("FM")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
-    label_ui_headline25->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_ui_headline25->setColour (Label::textColourId, Colour (0xff1111ff));
     label_ui_headline25->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (volume_master_meter = new SegmentedMeter());
 
-    addAndMakeVisible (label_eq = new Label (String::empty,
+    addAndMakeVisible (label_eq = new Label ("DL",
                                              TRANS("EQUALIZER")));
     label_eq->setFont (Font (30.00f, Font::plain));
     label_eq->setJustificationType (Justification::centred);
     label_eq->setEditable (false, false, false);
-    label_eq->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_eq->setColour (Label::textColourId, Colour (0xff1111ff));
     label_eq->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_eq->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
@@ -2550,9 +2550,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         else
         {
             addAndMakeVisible( editor_midiio = new UiEditorMIDIIO( _app_instance_store->audio_processor ) );
-            float width_factor = 1.0f/original_w*getWidth();
-            float height_factor = 1.0f/original_h*getHeight();
-            editor_midiio->setBounds( 20*width_factor, 20*height_factor, editor_midiio->original_w*width_factor, editor_midiio->original_h*height_factor );
+            editor_midiio->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
         }
         //[/UserButtonCode_button_open_midi_io_settings]
     }
@@ -3549,111 +3547,111 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
                     explicitFocusOrder="0" pos="1435r 950r 60 130" class="mono_ModulationSlider"
                     params="new OctaveOffsetSlConfig()"/>
-  <LABEL name="" id="b59f286362d58d43" memberName="label_ui_headline4"
-         virtualName="" explicitFocusOrder="0" pos="245 5 120 35" textCol="ffff3b00"
+  <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline4"
+         virtualName="" explicitFocusOrder="0" pos="245 5 120 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER INPUTS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="706628ef52338a3" memberName="label_ui_headline7"
-         virtualName="" explicitFocusOrder="0" pos="40 5 110 35" textCol="ffff3b00"
+  <LABEL name="DL" id="706628ef52338a3" memberName="label_ui_headline7"
+         virtualName="" explicitFocusOrder="0" pos="40 5 110 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSCILLATORS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="40822f39512f59ee" memberName="label_ui_headline8"
-         virtualName="" explicitFocusOrder="0" pos="510 5 130 35" textCol="ffff3b00"
+  <LABEL name="DL" id="40822f39512f59ee" memberName="label_ui_headline8"
+         virtualName="" explicitFocusOrder="0" pos="510 5 130 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER ENVELOPE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="4a296c8c1b36d5b5" memberName="label_ui_headline9"
-         virtualName="" explicitFocusOrder="0" pos="850 5 50 35" textCol="ffff3b00"
+  <LABEL name="DL" id="4a296c8c1b36d5b5" memberName="label_ui_headline9"
+         virtualName="" explicitFocusOrder="0" pos="850 5 50 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LFO" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="8dfe8598a2227d6" memberName="label_ui_headline10"
-         virtualName="" explicitFocusOrder="0" pos="975 5 190 35" textCol="ffff3b00"
+  <LABEL name="DL" id="8dfe8598a2227d6" memberName="label_ui_headline10"
+         virtualName="" explicitFocusOrder="0" pos="975 5 190 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER CONFIGURATION"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="624597a6e0fd4f43" memberName="label_ui_headline11"
-         virtualName="" explicitFocusOrder="0" pos="1230 5 110 35" textCol="ffff3b00"
+  <LABEL name="DL" id="624597a6e0fd4f43" memberName="label_ui_headline11"
+         virtualName="" explicitFocusOrder="0" pos="1230 5 110 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER FX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="d111f7d6b78091bd" memberName="label_ui_headline12"
-         virtualName="" explicitFocusOrder="0" pos="1375 5 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="d111f7d6b78091bd" memberName="label_ui_headline12"
+         virtualName="" explicitFocusOrder="0" pos="1375 5 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OUTPUT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="cc8c514c76739c41" memberName="label_ui_headline13"
-         virtualName="" explicitFocusOrder="0" pos="270 580 130 35" textCol="ffff3b00"
+  <LABEL name="DL" id="cc8c514c76739c41" memberName="label_ui_headline13"
+         virtualName="" explicitFocusOrder="0" pos="270 580 130 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MAIN ENVELOPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="c10833d7ab234ea1" memberName="label_shape" virtualName=""
-         explicitFocusOrder="0" pos="525 580 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="c10833d7ab234ea1" memberName="label_shape" virtualName=""
+         explicitFocusOrder="0" pos="525 580 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="bfabeb8da43f3421" memberName="label_reverb" virtualName=""
-         explicitFocusOrder="0" pos="665 580 80 35" textCol="ffff3b00"
+  <LABEL name="DL" id="bfabeb8da43f3421" memberName="label_reverb" virtualName=""
+         explicitFocusOrder="0" pos="665 580 80 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="7a6e3d75d5abc4de" memberName="label_delay" virtualName=""
-         explicitFocusOrder="0" pos="825 580 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="7a6e3d75d5abc4de" memberName="label_delay" virtualName=""
+         explicitFocusOrder="0" pos="825 580 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="a4b6cc975d476069" memberName="label_chorus" virtualName=""
-         explicitFocusOrder="0" pos="910 580 70 35" textCol="ffff3b00"
+  <LABEL name="DL" id="a4b6cc975d476069" memberName="label_chorus" virtualName=""
+         explicitFocusOrder="0" pos="910 580 70 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="fcb9d931dfbdfa5d" memberName="label_fx_mix" virtualName=""
-         explicitFocusOrder="0" pos="1005 580 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="fcb9d931dfbdfa5d" memberName="label_fx_mix" virtualName=""
+         explicitFocusOrder="0" pos="1005 580 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX MIX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="660b9ead77642f4f" memberName="label_ui_headline19"
-         virtualName="" explicitFocusOrder="0" pos="1135 580 180 35" textCol="ffff3b00"
+  <LABEL name="DL" id="660b9ead77642f4f" memberName="label_ui_headline19"
+         virtualName="" explicitFocusOrder="0" pos="1135 580 180 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MORPH SECTION" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="c72f149b5e4ef3a1" memberName="label_ui_headline20"
-         virtualName="" explicitFocusOrder="0" pos="615 780 190 35" textCol="ffff3b00"
+  <LABEL name="DL" id="c72f149b5e4ef3a1" memberName="label_ui_headline20"
+         virtualName="" explicitFocusOrder="0" pos="615 780 190 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ARPEGGIATOR" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="365d9d273db6db3a" memberName="label_ui_headline21"
-         virtualName="" explicitFocusOrder="0" pos="100 780 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="365d9d273db6db3a" memberName="label_ui_headline21"
+         virtualName="" explicitFocusOrder="0" pos="100 780 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="GLIDE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="9b0c123898785ff8" memberName="label_ui_headline22"
-         virtualName="" explicitFocusOrder="0" pos="1260 780 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="9b0c123898785ff8" memberName="label_ui_headline22"
+         virtualName="" explicitFocusOrder="0" pos="1260 780 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="3dc587f677ecc27f" memberName="label_ui_headline23"
-         virtualName="" explicitFocusOrder="0" pos="1375 580 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="3dc587f677ecc27f" memberName="label_ui_headline23"
+         virtualName="" explicitFocusOrder="0" pos="1375 580 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MASTER" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="de3bbc3ac23fc36a" memberName="label_ui_headline24"
-         virtualName="" explicitFocusOrder="0" pos="1375 780 60 35" textCol="ffff3b00"
+  <LABEL name="DL" id="de3bbc3ac23fc36a" memberName="label_ui_headline24"
+         virtualName="" explicitFocusOrder="0" pos="1375 780 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OCTAVE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="ecf3af4d030b7b19" memberName="label_ui_headline25"
-         virtualName="" explicitFocusOrder="0" pos="35 563 120 35" textCol="ffff3b00"
+  <LABEL name="DL" id="ecf3af4d030b7b19" memberName="label_ui_headline25"
+         virtualName="" explicitFocusOrder="0" pos="35 563 120 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FM" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
                     virtualName="SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
                     class="Component" params=""/>
-  <LABEL name="" id="ad887653d405d154" memberName="label_eq" virtualName=""
-         explicitFocusOrder="0" pos="740 580 90 35" textCol="ffff3b00"
+  <LABEL name="DL" id="ad887653d405d154" memberName="label_eq" virtualName=""
+         explicitFocusOrder="0" pos="740 580 90 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="EQUALIZER" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
