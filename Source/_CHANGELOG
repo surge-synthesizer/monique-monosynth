@@ -28,13 +28,11 @@ CHANGES 0.5:
 - knacken beim bewegen des compression & shape slider
 - kein background value für linear slider
 - can crash on shutdown
-- lfo amp on osc looks ugly????
 - midi sync disabled for speed multies
 - arp arbeitet weiter, auch beim notenspiel
 - osc square and saw going out of center on higher octaves
 
 TODO:
-- improve editors style, add different colours for each
 - add: modulation amounts as automation params
 - add: midi bank select
 - add: midi mod wheel; pitch wheel support

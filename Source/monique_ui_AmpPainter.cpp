@@ -186,8 +186,8 @@ void mono_AmpPainter::paint (Graphics& g)
 
         const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);
         {
-            Colour colour = Colour(0xff444444 );
-            g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff161617), 0.0f, height, false));
+            Colour colour = Colour(0xff222222 );
+            g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
             //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
             g.fillRoundedRectangle (proportionOfWidth (0.170f), proportionOfHeight (0.0375f),
                                     proportionOfWidth (0.8150f), proportionOfHeight (0.825f), 3);
@@ -608,7 +608,6 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     }
 
     //[UserbuttonClicked_Post]
-    refresh_buttons();
     //[/UserbuttonClicked_Post]
 }
 
@@ -621,6 +620,7 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 void mono_AmpPainter::timerCallback()
 {
     repaint( drawing_area->getBounds() );
+    refresh_buttons();
 }
 
 void mono_AmpPainter::refresh_buttons() 
