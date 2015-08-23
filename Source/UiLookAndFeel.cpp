@@ -1304,7 +1304,7 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
                 DropShadow drop_shadow( col, 1, Point<int>(0,0) );
                 drop_shadow.drawForPath( g, indent );
             }
-	    
+
             g.fillPath (indent);
             g.setColour (col.darker(6.6f).withAlpha(0.4f));
             g.strokePath (indent, PathStrokeType (1.0f));
@@ -1417,8 +1417,11 @@ int UiLookAndFeel::getSliderThumbRadius (Slider& slider)
                  slider.getWidth() / 2) + 2;
 }
 
-void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int height, float sliderPos,
-                                      const float rotaryStartAngle, const float rotaryEndAngle, Slider& slider)
+void UiLookAndFeel::drawRotarySlider (Graphics& g,
+                                      int x, int y, int width, int height,
+                                      float sliderPos,
+                                      const float rotaryStartAngle, const float rotaryEndAngle,
+                                      Slider& slider)
 {
     if( slider.isOpaque() )
         g.fillAll (colours.bg);
@@ -1431,66 +1434,24 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
 
     const bool is_midi_learn_mode = static_cast< Component* >( &slider ) == midi_learn_comp;
 
-    if( slider_type == FIRST_MODULATION_BUT_HAS_SECOND_MODULATION )
+    if( slider.getMinimum() < 0 )
     {
-        // MOVES FROM LEFT TO CENTER
-        rotaryStartAngle_ = float_Pi*-0.8f;
-        rotaryEndAngle_ = 0;
-    }
-    else if( slider.getMinimum() < 0 ) {
         if( slider_type == MODULATION_SLIDER )
         {
             slider_value = slider_value/100;
-
-            // HACK, set in mono_UiUtilities as startAngleRadians
-            const float master_slider_value = rotaryStartAngle;
-            int modulation_slider_style = rotaryEndAngle;  // HACK
-            rotaryEndAngle_ = float_Pi*0.8;
+            rotaryEndAngle_ = float_Pi*0.8f;
             rotaryStartAngle_ = 0;
-            if( modulation_slider_style == MODULATION_SLIDER_MOVES_WITH_MASTER )
-            {
-                if( (master_slider_value >= 0 && master_slider_value <= 1.0)
-                        || (master_slider_value <= 0 && master_slider_value >= -1.0) ) {
-                    rotaryStartAngle_ = rotaryEndAngle_*master_slider_value;
-
-                    if( slider_value <= 0 )
-                        rotaryEndAngle_ *= -1;
-                }
-            }
-            else if( modulation_slider_style == MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO ) // POSITIVE ONLY
-            {
-                if( master_slider_value >= 0 && master_slider_value <= 1.0 ) {
-                    rotaryStartAngle_ = float_Pi*master_slider_value*0.8;
-                    rotaryStartAngle_ -= (rotaryEndAngle_-rotaryStartAngle_);
-
-                    if( slider_value < 0 )
-                        rotaryEndAngle_ += rotaryStartAngle_;
-                }
-                else if( master_slider_value <= 0 && master_slider_value >= -1.0 ) {
-                    rotaryStartAngle_ = float_Pi*master_slider_value*0.8;
-                    rotaryEndAngle_ = float_Pi*0.8;
-
-                    if( slider_value < 0 )
-                        rotaryEndAngle_ += rotaryStartAngle_;
-                }
-            }
-            else if( modulation_slider_style == MODULATION_SLIDER_IS_FIXED_CENTERED ) {
-                rotaryStartAngle_ = 0;
-                rotaryEndAngle_ = float_Pi*0.8;
-            }
-
-            sliderPos = slider_value * rotaryEndAngle_/2.5;
+            sliderPos = slider_value * rotaryEndAngle_/2.5f;
         }
         else
         {
             rotaryStartAngle_ = 0;
-            rotaryEndAngle_ = float_Pi*0.8;
-
-            sliderPos = (1.0f/slider.getMaximum()*slider_value) * rotaryEndAngle_/2.5;
+            rotaryEndAngle_ = float_Pi*0.8f;
+            sliderPos = (1.0f/slider.getMaximum()*slider_value) * rotaryEndAngle_/2.5f;
         }
     }
 
-    const float radius = jmin (width / 2, height / 2) - 2.0f;
+    const float radius = jmin (width * 0.5f, height * 0.5f) - 2.0f;
     const float centreX = x + width * 0.5f;
     const float centreY = y + height * 0.5f;
     const float rx = centreX - radius;
@@ -1513,7 +1474,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
             SliderCol = colours.label_text_colour; //.brighter (0.4f);
     }
 
-    const float thickness = 0.85 ; // (1.f/40*slider.getWidth()); // 0.7f;
+#define THICKNESS 0.85f /* (1.f/40*slider.getWidth()); // 0.7f; */
 
     if ( ! slider.isEnabled())
         SliderCol = Colour(0xff444444);
@@ -1522,7 +1483,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
         Path filledArc;
         if( slider.isOpaque() )
         {
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, thickness);
+            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, THICKNESS);
             //g.setColour(Colours::black.withAlpha(0.2f));
             //g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
             g.setColour (Colour (0xff222222) ) ; //.interpolatedWith(SliderCol.darker(0.8),0.2));
@@ -1533,7 +1494,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
 
         g.setColour (SliderCol);
         filledArc.clear();
-        filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, thickness);
+        filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
 
         //g.fillPath (filledArc);
         //if( slider.isEnabled() )
@@ -1728,7 +1689,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g, int x, int y, int width, int 
             const float innerRadius = radius * 0.2f;
             Path p;
             p.addTriangle (-innerRadius, 0.0f,
-                           0.0f, -radius * thickness * 0.7f,
+                           0.0f, -radius * THICKNESS * 0.7f,
                            innerRadius, 0.0f);
 
             p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
