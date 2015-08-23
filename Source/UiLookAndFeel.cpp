@@ -218,6 +218,7 @@ UiLookAndFeel::UiLookAndFeel()
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::OswaldRegular_ttf,BinaryData::OswaldRegular_ttfSize));
     //defaultFont.setBold(true);
     // defaultFont = Font();
+
 }
 
 //==============================================================================

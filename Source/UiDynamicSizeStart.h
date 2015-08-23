@@ -8,12 +8,20 @@
 
 // repaint colours
 //*****************************************************************************
+/*
 #define COLOUR_REPLACEMENT_START \
     ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \
     Colour blue_replacement = colours.bg_lines.darker(0.9); \
-    Colour border_replacement = colours.button_on_colour.darker(0); \
-    
+    Colour border_replacement = colours.button_on_colour.darker(0); 
+*/
+#define COLOUR_REPLACEMENT_START \
+    ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
+    Colour orange_replacement = colours.bg_lines; \
+    Colour blue_replacement = colours.slider_track_colour.darker(); \
+    Colour border_replacement = Colour(0xffff3b00); 
+  
+
 COLOUR_REPLACEMENT_START
 #define Colour(x) ( \
                        (x == 0xffff3b00) ? orange_replacement : \

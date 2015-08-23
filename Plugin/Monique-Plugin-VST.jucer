@@ -16,36 +16,38 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
-        <FILE id="SZ5oXD" name="monique_UiRefresher.cpp" compile="1" resource="0"
-              file="../Source/monique_UiRefresher.cpp"/>
-        <FILE id="Fx1Sgo" name="monique_UiRefresher.h" compile="0" resource="0"
-              file="../Source/monique_UiRefresher.h"/>
-        <FILE id="NPpO5B" name="monique_AmpPainter.cpp" compile="1" resource="0"
-              file="../Source/monique_AmpPainter.cpp"/>
-        <FILE id="UFwdZc" name="monique_AmpPainter.h" compile="0" resource="0"
-              file="../Source/monique_AmpPainter.h"/>
-        <FILE id="qZWkOv" name="monique_SegmentedMeter.cpp" compile="1" resource="0"
-              file="../Source/monique_SegmentedMeter.cpp"/>
-        <FILE id="P1fN8t" name="monique_SegmentedMeter.h" compile="0" resource="0"
-              file="../Source/monique_SegmentedMeter.h"/>
+        <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
+        <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
+              file="../Source/dRowAudio_AudioUtility.h"/>
+        <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
+              file="../Source/dRowAudio_Constants.h"/>
         <FILE id="Thvgla" name="monique_AppInstanceStore.cpp" compile="1" resource="0"
               file="../Source/monique_AppInstanceStore.cpp"/>
         <FILE id="XK3W5Q" name="monique_AppInstanceStore.h" compile="0" resource="0"
               file="../Source/monique_AppInstanceStore.h"/>
+        <FILE id="Vvxu4K" name="monique_ui_AmpPainter.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_AmpPainter.cpp"/>
+        <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
+              file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="kBcOho" name="monique_ui_ModulationSlider.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_ModulationSlider.cpp"/>
+        <FILE id="VLzWyf" name="monique_ui_ModulationSlider.h" compile="0"
+              resource="0" file="../Source/monique_ui_ModulationSlider.h"/>
+        <FILE id="Rcl3AZ" name="monique_ui_Refresher.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Refresher.cpp"/>
+        <FILE id="wfhwmk" name="monique_ui_Refresher.h" compile="0" resource="0"
+              file="../Source/monique_ui_Refresher.h"/>
+        <FILE id="LEXIS2" name="monique_ui_SegmentedMeter.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_SegmentedMeter.cpp"/>
+        <FILE id="oYYnsi" name="monique_ui_SegmentedMeter.h" compile="0" resource="0"
+              file="../Source/monique_ui_SegmentedMeter.h"/>
+        <FILE id="nRVqW1" name="monique_ui_SliderConfig.h" compile="0" resource="0"
+              file="../Source/monique_ui_SliderConfig.h"/>
       </GROUP>
-      <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
-      <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
-            file="../Source/dRowAudio_AudioUtility.h"/>
-      <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
-            file="../Source/dRowAudio_Constants.h"/>
       <FILE id="TLV810" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="zuO4aC" name="mono_AudioDeviceManager.h" compile="0" resource="0"
             file="../Source/mono_AudioDeviceManager.h"/>
-      <FILE id="E8wrkW" name="mono_ModulationSlider.cpp" compile="1" resource="0"
-            file="../Source/mono_ModulationSlider.cpp"/>
-      <FILE id="hoGqtJ" name="mono_ModulationSlider.h" compile="0" resource="0"
-            file="../Source/mono_ModulationSlider.h"/>
       <FILE id="cletLI" name="mono_Parameters.cpp" compile="1" resource="0"
             file="../Source/mono_Parameters.cpp"/>
       <FILE id="faB2bl" name="mono_Parameters.h" compile="0" resource="0"
@@ -85,8 +87,6 @@
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="ngYxWI" name="UiEditorSynthLite.h" compile="0" resource="0"
             file="../Source/UiEditorSynthLite.h"/>
-      <FILE id="J4F8Iu" name="UiEditorSynthLiteConfig.h" compile="0" resource="0"
-            file="../Source/UiEditorSynthLiteConfig.h"/>
       <FILE id="AV6UqG" name="UiEditorSynthLitePopup.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLitePopup.cpp"/>
       <FILE id="ZMZ8yB" name="UiEditorSynthLitePopup.h" compile="0" resource="0"

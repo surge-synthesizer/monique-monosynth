@@ -1,6 +1,6 @@
 
 #include "Synth.h"
-#include "monique_AmpPainter.h"
+#include "monique_ui_AmpPainter.h"
 
 
 #define THREAD_LIMIT 2

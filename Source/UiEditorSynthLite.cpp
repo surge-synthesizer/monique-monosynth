@@ -29,16 +29,15 @@
 
 
 
-#include "monique_SegmentedMeter.h"
-#include "monique_AmpPainter.h"
+#include "monique_ui_SegmentedMeter.h"
+#include "monique_ui_AmpPainter.h"
+#include "monique_ui_ModulationSlider.h"
+#include "monique_ui_SliderConfig.h"
 
 
 
 
 
-#include "mono_ModulationSlider.h"
-
-#include "UiEditorSynthLiteConfig.h"
 
 #include "UiEditorMIDIIO.h"
 #include "UiEditorMorph.h"

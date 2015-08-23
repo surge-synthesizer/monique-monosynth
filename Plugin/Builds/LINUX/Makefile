@@ -49,12 +49,12 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/monique_UiRefresher_6f1d9869.o \
-  $(OBJDIR)/monique_AmpPainter_597e4f3c.o \
-  $(OBJDIR)/monique_SegmentedMeter_586d93ac.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
+  $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
+  $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
+  $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
+  $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
-  $(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o \
   $(OBJDIR)/mono_Parameters_6e808cd6.o \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
   $(OBJDIR)/Synth_8129adcc.o \
@@ -101,34 +101,34 @@ strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/monique_UiRefresher_6f1d9869.o: ../../../Source/monique_UiRefresher.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_UiRefresher.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/monique_AmpPainter_597e4f3c.o: ../../../Source/monique_AmpPainter.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_AmpPainter.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/monique_SegmentedMeter_586d93ac.o: ../../../Source/monique_SegmentedMeter.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_SegmentedMeter.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_AppInstanceStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_AmpPainter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o: ../../../Source/monique_ui_ModulationSlider.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_ModulationSlider.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_Refresher_b7c42db2.o: ../../../Source/monique_ui_Refresher.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_Refresher.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o: ../../../Source/monique_ui_SegmentedMeter.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_SegmentedMeter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceManager.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling mono_AudioDeviceManager.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/mono_ModulationSlider_1c5ca1a9.o: ../../../Source/mono_ModulationSlider.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_ModulationSlider.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/mono_Parameters_6e808cd6.o: ../../../Source/mono_Parameters.cpp
