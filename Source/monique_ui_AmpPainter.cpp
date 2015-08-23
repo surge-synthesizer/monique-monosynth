@@ -29,7 +29,7 @@
 
 //==============================================================================
 mono_AmpPainter::mono_AmpPainter ()
-    : original_w(1000), original_h(400)
+    : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -131,7 +131,7 @@ mono_AmpPainter::mono_AmpPainter ()
     /*
     //[/UserPreSize]
 
-    setSize (1000, 400);
+    setSize (1465, 180);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -170,6 +170,7 @@ mono_AmpPainter::~mono_AmpPainter()
 void mono_AmpPainter::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+
     // TODO paint all or only values
     {
         g.fillAll (Colour(0xff050505));
@@ -178,10 +179,11 @@ void mono_AmpPainter::paint (Graphics& g)
 
         // TODO MAKE INTS!
         const int samples_to_paint = sl_show_range->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
-        float scale = float(drawing_area->getWidth())/samples_to_paint;
+        int width = drawing_area->getWidth();
+        float scale = float(width)/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
         const int paint_start_offset_y = drawing_area->getY();
-        const float height = drawing_area->getHeight();
+        const float height = drawing_area->getHeight()-1;
         const int line_center = paint_start_offset_y + height/2;
 
         const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);
@@ -189,17 +191,15 @@ void mono_AmpPainter::paint (Graphics& g)
             Colour colour = Colour(0xff222222 );
             g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
             //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
-            g.fillRoundedRectangle (proportionOfWidth (0.170f), proportionOfHeight (0.0375f),
-                                    proportionOfWidth (0.8150f), proportionOfHeight (0.825f), 3);
+            g.fillRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3);
 
             g.setColour (colour.darker (0.6f));
-            g.drawRoundedRectangle (proportionOfWidth (0.170f), proportionOfHeight (0.0375f),
-                                    proportionOfWidth (0.8150f), proportionOfHeight (0.825f), 3, 1);
+            g.drawRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3, 1);
 
             g.setColour (UiLookAndFeel::getInstance()->colours.label_text_colour.withAlpha(0.3f));
-            g.fillRect (proportionOfWidth (0.170f), int(paint_start_offset_y+height/2), proportionOfWidth (0.8150f), 1 );
+            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
         }
-	
+
         struct mono_AmpPainter
         {
             static void exec
@@ -279,14 +279,14 @@ void mono_AmpPainter::paint (Graphics& g)
                 }
             }
         };
-	
+
         SynthData& synth_data = DATA( synth_data );
-	const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
-	const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
-	const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
-	const bool show_eq = synth_data.osci_show_eq;
-	const bool show_out = synth_data.osci_show_out;
-	const bool show_out_env = synth_data.osci_show_out_env;
+        const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
+        const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
+        const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
+        const bool show_eq = synth_data.osci_show_eq;
+        const bool show_out = synth_data.osci_show_out;
+        const bool show_out_env = synth_data.osci_show_out_env;
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
             EndlessBuffer& values = *osc_values[osc_id];
@@ -445,42 +445,7 @@ void mono_AmpPainter::paint (Graphics& g)
     /*
     //[/UserPrePaint]
 
-    g.fillAll (Colours::black);
-
-    g.setGradientFill (ColourGradient (Colour (0xff161616),
-                                       static_cast<float> (proportionOfWidth (0.5000f)), static_cast<float> (proportionOfHeight (0.0375f)),
-                                       Colour (0x00000000),
-                                       static_cast<float> (proportionOfWidth (0.5000f)), static_cast<float> (proportionOfHeight (0.0625f)),
-                                       false));
-    g.fillRect (0, 0, getWidth() - 0, getHeight() - 0);
-
-    g.setGradientFill (ColourGradient (Colour (0xff161616),
-                                       static_cast<float> (proportionOfWidth (0.1700f)), static_cast<float> (proportionOfHeight (0.5000f)),
-                                       Colour (0x00000000),
-                                       static_cast<float> (proportionOfWidth (0.1800f)), static_cast<float> (proportionOfHeight (0.5000f)),
-                                       false));
-    g.fillRect (0, 0, getWidth() - 0, getHeight() - 0);
-
-    g.setGradientFill (ColourGradient (Colour (0xff161616),
-                                       static_cast<float> (proportionOfWidth (0.9850f)), static_cast<float> (proportionOfHeight (0.5000f)),
-                                       Colour (0x00000000),
-                                       static_cast<float> (proportionOfWidth (0.9750f)), static_cast<float> (proportionOfHeight (0.5000f)),
-                                       false));
-    g.fillRect (0, 0, getWidth() - 0, getHeight() - 0);
-
-    g.setGradientFill (ColourGradient (Colour (0xff161616),
-                                       static_cast<float> (proportionOfWidth (0.5000f)), static_cast<float> (proportionOfHeight (0.8625f)),
-                                       Colour (0x00000000),
-                                       static_cast<float> (proportionOfWidth (0.5000f)), static_cast<float> (proportionOfHeight (0.8375f)),
-                                       false));
-    g.fillRect (0, 0, getWidth() - 0, getHeight() - 0);
-
-    g.setGradientFill (ColourGradient (Colour (0xff2b3524),
-                                       static_cast<float> (proportionOfWidth (0.5750f)), static_cast<float> (proportionOfHeight (1.5875f)),
-                                       Colours::black,
-                                       static_cast<float> (proportionOfWidth (0.5750f)), static_cast<float> (proportionOfHeight (0.0125f)),
-                                       true));
-    g.fillRect (proportionOfWidth (0.1650f), proportionOfHeight (0.0275f), proportionOfWidth (0.8250f), proportionOfHeight (0.8475f));
+    g.fillAll (Colour (0xff050505));
 
     //[UserPaint] Add your own custom painting code here..
     */
@@ -493,20 +458,20 @@ void mono_AmpPainter::resized()
 #include "UiDynamicSizeStart.h"
     //[/UserPreResize]
 
-    sl_show_range->setBounds (170, 360, 820, 30);
-    osc_1->setBounds (10, 15, 40, 50);
-    osc_2->setBounds (10, 75, 40, 50);
-    osc_3->setBounds (10, 135, 40, 50);
-    eq->setBounds (60, 15, 40, 50);
-    out->setBounds (60, 75, 40, 50);
-    f_1->setBounds (10, 215, 40, 50);
-    f_2->setBounds (10, 275, 40, 50);
-    f_3->setBounds (10, 335, 40, 50);
-    f_env_1->setBounds (60, 215, 40, 50);
-    f_env_2->setBounds (60, 275, 40, 50);
-    f_env_3->setBounds (60, 335, 40, 50);
-    out_env->setBounds (60, 135, 40, 50);
-    drawing_area->setBounds (170, 15, 815, 330);
+    sl_show_range->setBounds (215, 150, 1215, 30);
+    osc_1->setBounds (30, 10, 60, 20);
+    osc_2->setBounds (30, 35, 60, 20);
+    osc_3->setBounds (30, 60, 60, 20);
+    eq->setBounds (100, 10, 60, 20);
+    out->setBounds (100, 35, 60, 20);
+    f_1->setBounds (30, 95, 60, 20);
+    f_2->setBounds (30, 120, 60, 20);
+    f_3->setBounds (30, 145, 60, 20);
+    f_env_1->setBounds (100, 95, 60, 20);
+    f_env_2->setBounds (100, 120, 60, 20);
+    f_env_3->setBounds (100, 145, 60, 20);
+    out_env->setBounds (100, 60, 60, 20);
+    drawing_area->setBounds (215, 10, 1215, 135);
     //[UserResized] Add your own custom resize handling here..
 
 #include "UiDynamicSizeEnd.h"
@@ -623,14 +588,14 @@ void mono_AmpPainter::timerCallback()
     refresh_buttons();
 }
 
-void mono_AmpPainter::refresh_buttons() 
+void mono_AmpPainter::refresh_buttons()
 {
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
     SynthData& synth_data = DATA( synth_data );
-    
+
     sl_show_range->setValue(synth_data.osci_show_range, dontSendNotification );
 
     osc_1->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_1 ? Colours::lightblue : button_off );
@@ -759,65 +724,54 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="mono_AmpPainter" componentName=""
                  parentClasses="public Component, public Timer" constructorParams=""
-                 variableInitialisers="original_w(1000), original_h(400)" snapPixels="5"
+                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="5"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="1000" initialHeight="400">
-  <BACKGROUND backgroundColour="ff000000">
-    <RECT pos="0 0 0M 0M" fill="linear: 50% 3.75%, 50% 6.25%, 0=ff161616, 1=0"
-          hasStroke="0"/>
-    <RECT pos="0 0 0M 0M" fill="linear: 17% 50%, 18% 50%, 0=ff161616, 1=0"
-          hasStroke="0"/>
-    <RECT pos="0 0 0M 0M" fill="linear: 98.5% 50%, 97.5% 50%, 0=ff161616, 1=0"
-          hasStroke="0"/>
-    <RECT pos="0 0 0M 0M" fill="linear: 50% 86.25%, 50% 83.75%, 0=ff161616, 1=0"
-          hasStroke="0"/>
-    <RECT pos="16.5% 2.75% 82.5% 84.75%" fill=" radial: 57.5% 158.75%, 57.5% 1.25%, 0=ff2b3524, 1=ff000000"
-          hasStroke="0"/>
-  </BACKGROUND>
+                 initialWidth="1465" initialHeight="180">
+  <BACKGROUND backgroundColour="ff050505"/>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
-          explicitFocusOrder="0" pos="170 360 820 30" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="215 150 1215 30" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" min="0.0010000000000000000208"
           max="1" int="0.0010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="new button" id="f50c5e2947daf2d9" memberName="osc_1" virtualName=""
-              explicitFocusOrder="0" pos="10 15 40 50" buttonText="OSC 1" connectedEdges="0"
+              explicitFocusOrder="0" pos="30 10 60 20" buttonText="OSC 1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="430b47338d775167" memberName="osc_2" virtualName=""
-              explicitFocusOrder="0" pos="10 75 40 50" buttonText="OSC 2" connectedEdges="0"
+              explicitFocusOrder="0" pos="30 35 60 20" buttonText="OSC 2" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2c8665efd6c0c37d" memberName="osc_3" virtualName=""
-              explicitFocusOrder="0" pos="10 135 40 50" buttonText="OSC 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 60 60 20" buttonText="OSC 3" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="eq" virtualName=""
-              explicitFocusOrder="0" pos="60 15 40 50" buttonText="EQ" connectedEdges="0"
+              explicitFocusOrder="0" pos="100 10 60 20" buttonText="EQ" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="60 75 40 50" buttonText="OUT" connectedEdges="0"
+              explicitFocusOrder="0" pos="100 35 60 20" buttonText="OUT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
-              explicitFocusOrder="0" pos="10 215 40 50" buttonText="F 1" connectedEdges="0"
+              explicitFocusOrder="0" pos="30 95 60 20" buttonText="F 1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="773e5360237ed15c" memberName="f_2" virtualName=""
-              explicitFocusOrder="0" pos="10 275 40 50" buttonText="F 2" connectedEdges="0"
+              explicitFocusOrder="0" pos="30 120 60 20" buttonText="F 2" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="60cf3f432ebdbf40" memberName="f_3" virtualName=""
-              explicitFocusOrder="0" pos="10 335 40 50" buttonText="F 3" connectedEdges="0"
+              explicitFocusOrder="0" pos="30 145 60 20" buttonText="F 3" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
-              virtualName="" explicitFocusOrder="0" pos="60 215 40 50" buttonText="F-ADSR 1"
+              virtualName="" explicitFocusOrder="0" pos="100 95 60 20" buttonText="F-ADSR 1"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="68fc0bbd2cf58e73" memberName="f_env_2"
-              virtualName="" explicitFocusOrder="0" pos="60 275 40 50" buttonText="F-ADSR 2"
+              virtualName="" explicitFocusOrder="0" pos="100 120 60 20" buttonText="F-ADSR 2"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="1d48bab8b4aaf7c9" memberName="f_env_3"
-              virtualName="" explicitFocusOrder="0" pos="60 335 40 50" buttonText="F-ADSR 3"
+              virtualName="" explicitFocusOrder="0" pos="100 145 60 20" buttonText="F-ADSR 3"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="60 135 40 50" buttonText="O-ADSR"
+              explicitFocusOrder="0" pos="100 60 60 20" buttonText="O-ADSR"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
-                    explicitFocusOrder="0" pos="170 15 815 330" class="Component"
+                    explicitFocusOrder="0" pos="215 10 1215 135" class="Component"
                     params=""/>
 </JUCER_COMPONENT>
 
@@ -828,5 +782,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-
-

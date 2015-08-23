@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_8D9EDD8BBD9CF53B__
-#define __JUCE_HEADER_8D9EDD8BBD9CF53B__
+#ifndef __JUCE_HEADER_18B5A51C4AF6A8D4__
+#define __JUCE_HEADER_18B5A51C4AF6A8D4__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -173,7 +173,7 @@ public:
 private:
     inline void lock_for_reading() noexcept;
     inline void unlock_for_reading() noexcept;
-    
+
 private:
     void timerCallback() override;
 
@@ -260,4 +260,4 @@ inline void mono_AmpPainter::add_osc( int id_, const float* values_, const float
 };
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_8D9EDD8BBD9CF53B__
+#endif   // __JUCE_HEADER_18B5A51C4AF6A8D4__
