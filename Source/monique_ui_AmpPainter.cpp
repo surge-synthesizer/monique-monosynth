@@ -458,7 +458,7 @@ void mono_AmpPainter::resized()
 #include "UiDynamicSizeStart.h"
     //[/UserPreResize]
 
-    sl_show_range->setBounds (215, 150, 1215, 30);
+    sl_show_range->setBounds (215, 150, 1215, 20);
     osc_1->setBounds (30, 10, 60, 20);
     osc_2->setBounds (30, 35, 60, 20);
     osc_3->setBounds (30, 60, 60, 20);
@@ -729,7 +729,7 @@ BEGIN_JUCER_METADATA
                  initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505"/>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
-          explicitFocusOrder="0" pos="215 150 1215 30" rotarysliderfill="ffffff00"
+          explicitFocusOrder="0" pos="215 150 1215 20" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" min="0.0010000000000000000208"
           max="1" int="0.0010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
