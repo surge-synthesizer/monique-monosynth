@@ -33,6 +33,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="VPlKOB" name="monique_ui_GlobalSettings.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
+        <FILE id="jVmeyU" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
+              file="../Source/monique_ui_GlobalSettings.h"/>
         <FILE id="cNv2QT" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"

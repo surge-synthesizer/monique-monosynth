@@ -32,6 +32,7 @@ OBJECTS := \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
+  $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
@@ -94,6 +95,11 @@ $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o: ../../../Source/monique_ui_ADRDesig
 $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainter.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_AmpPainter.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_GlobalSettings.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_GlobalSettings.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp

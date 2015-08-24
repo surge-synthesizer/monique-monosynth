@@ -19,8 +19,6 @@
 
 //[Headers] You can add your own extra header files here...
 #include "UiLookAndFeel.h"
-#include "UiEditorSynthLite.h"
-
 #include "SynthData.h"
 //[/Headers]
 
@@ -28,10 +26,8 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorSettings::refresh() {
-    stop_current_painting = true;
-    repaint_curve = true;
-
+void UiEditorSettings::refresh() noexcept
+{
     slider_attack_1->setValue( DATA( env_preset_def ).attack_1*1000, dontSendNotification );
     slider_attack_2->setValue( DATA( env_preset_def ).attack_2*1000, dontSendNotification );
     slider_attack_3->setValue( DATA( env_preset_def ).attack_3*1000, dontSendNotification );
@@ -68,18 +64,11 @@ void UiEditorSettings::refresh() {
     label_release_3->setText(String(round01(slider_release_3->getValue()*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
     label_release_4->setText(String(round01(slider_release_4->getValue()*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
 
-    slider_max_adr_attack->setValue( DATA( env_preset_def ).max_attack_time*1000, dontSendNotification );
-    slider_max_adr_decay->setValue( DATA( env_preset_def ).max_decay_time*1000, dontSendNotification );
-    slider_max_adr_release->setValue( DATA( env_preset_def ).max_release_time*1000, dontSendNotification );
-
-    slider_morph_motor_time->setValue( DATA( synth_data ).morph_motor_time, dontSendNotification );
-    slider_glide_time->setValue( DATA( synth_data ).glide_motor_time, dontSendNotification );
-
-    toggle_animate_input_env->setToggleState( DATA( synth_data ).animate_input_env ,dontSendNotification );
-    toggle_animate_eq_env->setToggleState( DATA( synth_data ).animate_eq_env ,dontSendNotification );
-    toggle_output_cc_mute4->setToggleState( DATA( synth_data ).animate_modulations ,dontSendNotification );
-
-    repaint();
+    if( last_repaint_counter != repaint_counter )
+    {
+        last_repaint_counter = repaint_counter;
+        repaint(plotter->getBounds());
+    }
 }
 //[/MiscUserDefs]
 
@@ -126,34 +115,34 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_21 = new Label (String::empty,
-                                             TRANS("SUS TIME")));
-    label_21->setFont (Font (15.00f, Font::plain));
-    label_21->setJustificationType (Justification::centred);
-    label_21->setEditable (false, false, false);
-    label_21->setColour (Label::textColourId, Colours::yellow);
-    label_21->setColour (TextEditor::textColourId, Colours::black);
-    label_21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_sus_3 = new Label (String::empty,
+                                                TRANS("SUS TIME")));
+    label_sus_3->setFont (Font (15.00f, Font::plain));
+    label_sus_3->setJustificationType (Justification::centred);
+    label_sus_3->setEditable (false, false, false);
+    label_sus_3->setColour (Label::textColourId, Colours::yellow);
+    label_sus_3->setColour (TextEditor::textColourId, Colours::black);
+    label_sus_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_22 = new Label (String::empty,
-                                             TRANS("SUS TIME")));
-    label_22->setFont (Font (15.00f, Font::plain));
-    label_22->setJustificationType (Justification::centred);
-    label_22->setEditable (false, false, false);
-    label_22->setColour (Label::textColourId, Colours::yellow);
-    label_22->setColour (TextEditor::textColourId, Colours::black);
-    label_22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_sus_2 = new Label (String::empty,
+                                                TRANS("SUS TIME")));
+    label_sus_2->setFont (Font (15.00f, Font::plain));
+    label_sus_2->setJustificationType (Justification::centred);
+    label_sus_2->setEditable (false, false, false);
+    label_sus_2->setColour (Label::textColourId, Colours::yellow);
+    label_sus_2->setColour (TextEditor::textColourId, Colours::black);
+    label_sus_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (plotter = new Component());
 
-    addAndMakeVisible (label_1 = new Label (String::empty,
-                                            TRANS("ATTACK")));
-    label_1->setFont (Font (15.00f, Font::plain));
-    label_1->setJustificationType (Justification::centred);
-    label_1->setEditable (false, false, false);
-    label_1->setColour (Label::textColourId, Colours::yellow);
-    label_1->setColour (TextEditor::textColourId, Colours::black);
-    label_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_att_1 = new Label (String::empty,
+                                                TRANS("ATTACK")));
+    label_att_1->setFont (Font (15.00f, Font::plain));
+    label_att_1->setJustificationType (Justification::centred);
+    label_att_1->setEditable (false, false, false);
+    label_att_1->setColour (Label::textColourId, Colours::yellow);
+    label_att_1->setColour (TextEditor::textColourId, Colours::black);
+    label_att_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_1 = new Slider ("0"));
     slider_attack_1->setRange (0, 1000, 0.01);
@@ -165,14 +154,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_1->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_attack_1->addListener (this);
 
-    addAndMakeVisible (label_2 = new Label (String::empty,
-                                            TRANS("DECAY")));
-    label_2->setFont (Font (15.00f, Font::plain));
-    label_2->setJustificationType (Justification::centred);
-    label_2->setEditable (false, false, false);
-    label_2->setColour (Label::textColourId, Colours::yellow);
-    label_2->setColour (TextEditor::textColourId, Colours::black);
-    label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_dec_1 = new Label (String::empty,
+                                                TRANS("DECAY")));
+    label_dec_1->setFont (Font (15.00f, Font::plain));
+    label_dec_1->setJustificationType (Justification::centred);
+    label_dec_1->setEditable (false, false, false);
+    label_dec_1->setColour (Label::textColourId, Colours::yellow);
+    label_dec_1->setColour (TextEditor::textColourId, Colours::black);
+    label_dec_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_decay_1 = new Slider ("0"));
     slider_decay_1->setRange (0, 1000, 0.01);
@@ -184,14 +173,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_1->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_decay_1->addListener (this);
 
-    addAndMakeVisible (label_3 = new Label (String::empty,
-                                            TRANS("RELEASE")));
-    label_3->setFont (Font (15.00f, Font::plain));
-    label_3->setJustificationType (Justification::centred);
-    label_3->setEditable (false, false, false);
-    label_3->setColour (Label::textColourId, Colours::yellow);
-    label_3->setColour (TextEditor::textColourId, Colours::black);
-    label_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_rel_1 = new Label (String::empty,
+                                                TRANS("RELEASE")));
+    label_rel_1->setFont (Font (15.00f, Font::plain));
+    label_rel_1->setJustificationType (Justification::centred);
+    label_rel_1->setEditable (false, false, false);
+    label_rel_1->setColour (Label::textColourId, Colours::yellow);
+    label_rel_1->setColour (TextEditor::textColourId, Colours::black);
+    label_rel_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_1 = new Slider ("0"));
     slider_release_1->setRange (0, 1000, 0.01);
@@ -203,14 +192,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_1->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_release_1->addListener (this);
 
-    addAndMakeVisible (label_4 = new Label (String::empty,
-                                            TRANS("ATTACK")));
-    label_4->setFont (Font (15.00f, Font::plain));
-    label_4->setJustificationType (Justification::centred);
-    label_4->setEditable (false, false, false);
-    label_4->setColour (Label::textColourId, Colours::yellow);
-    label_4->setColour (TextEditor::textColourId, Colours::black);
-    label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_att_2 = new Label (String::empty,
+                                                TRANS("ATTACK")));
+    label_att_2->setFont (Font (15.00f, Font::plain));
+    label_att_2->setJustificationType (Justification::centred);
+    label_att_2->setEditable (false, false, false);
+    label_att_2->setColour (Label::textColourId, Colours::yellow);
+    label_att_2->setColour (TextEditor::textColourId, Colours::black);
+    label_att_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_2 = new Slider ("0"));
     slider_attack_2->setRange (0, 1000, 0.01);
@@ -222,14 +211,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_attack_2->addListener (this);
 
-    addAndMakeVisible (label_5 = new Label (String::empty,
-                                            TRANS("DECAY")));
-    label_5->setFont (Font (15.00f, Font::plain));
-    label_5->setJustificationType (Justification::centred);
-    label_5->setEditable (false, false, false);
-    label_5->setColour (Label::textColourId, Colours::yellow);
-    label_5->setColour (TextEditor::textColourId, Colours::black);
-    label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_dec_2 = new Label (String::empty,
+                                                TRANS("DECAY")));
+    label_dec_2->setFont (Font (15.00f, Font::plain));
+    label_dec_2->setJustificationType (Justification::centred);
+    label_dec_2->setEditable (false, false, false);
+    label_dec_2->setColour (Label::textColourId, Colours::yellow);
+    label_dec_2->setColour (TextEditor::textColourId, Colours::black);
+    label_dec_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_decay_2 = new Slider ("0"));
     slider_decay_2->setRange (0, 1000, 0.01);
@@ -241,14 +230,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_decay_2->addListener (this);
 
-    addAndMakeVisible (label_6 = new Label (String::empty,
-                                            TRANS("RELEASE")));
-    label_6->setFont (Font (15.00f, Font::plain));
-    label_6->setJustificationType (Justification::centred);
-    label_6->setEditable (false, false, false);
-    label_6->setColour (Label::textColourId, Colours::yellow);
-    label_6->setColour (TextEditor::textColourId, Colours::black);
-    label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_rel_2 = new Label (String::empty,
+                                                TRANS("RELEASE")));
+    label_rel_2->setFont (Font (15.00f, Font::plain));
+    label_rel_2->setJustificationType (Justification::centred);
+    label_rel_2->setEditable (false, false, false);
+    label_rel_2->setColour (Label::textColourId, Colours::yellow);
+    label_rel_2->setColour (TextEditor::textColourId, Colours::black);
+    label_rel_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_2 = new Slider ("0"));
     slider_release_2->setRange (0, 1000, 0.01);
@@ -260,14 +249,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_release_2->addListener (this);
 
-    addAndMakeVisible (label_7 = new Label (String::empty,
-                                            TRANS("ATTACK")));
-    label_7->setFont (Font (15.00f, Font::plain));
-    label_7->setJustificationType (Justification::centred);
-    label_7->setEditable (false, false, false);
-    label_7->setColour (Label::textColourId, Colours::yellow);
-    label_7->setColour (TextEditor::textColourId, Colours::black);
-    label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_att_3 = new Label (String::empty,
+                                                TRANS("ATTACK")));
+    label_att_3->setFont (Font (15.00f, Font::plain));
+    label_att_3->setJustificationType (Justification::centred);
+    label_att_3->setEditable (false, false, false);
+    label_att_3->setColour (Label::textColourId, Colours::yellow);
+    label_att_3->setColour (TextEditor::textColourId, Colours::black);
+    label_att_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_3 = new Slider ("0"));
     slider_attack_3->setRange (0, 1000, 0.01);
@@ -279,14 +268,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_attack_3->addListener (this);
 
-    addAndMakeVisible (label_8 = new Label (String::empty,
-                                            TRANS("DECAY")));
-    label_8->setFont (Font (15.00f, Font::plain));
-    label_8->setJustificationType (Justification::centred);
-    label_8->setEditable (false, false, false);
-    label_8->setColour (Label::textColourId, Colours::yellow);
-    label_8->setColour (TextEditor::textColourId, Colours::black);
-    label_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_dec_3 = new Label (String::empty,
+                                                TRANS("DECAY")));
+    label_dec_3->setFont (Font (15.00f, Font::plain));
+    label_dec_3->setJustificationType (Justification::centred);
+    label_dec_3->setEditable (false, false, false);
+    label_dec_3->setColour (Label::textColourId, Colours::yellow);
+    label_dec_3->setColour (TextEditor::textColourId, Colours::black);
+    label_dec_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_decay_3 = new Slider ("0"));
     slider_decay_3->setRange (0, 1000, 0.01);
@@ -298,14 +287,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_decay_3->addListener (this);
 
-    addAndMakeVisible (label_9 = new Label (String::empty,
-                                            TRANS("RELEASE")));
-    label_9->setFont (Font (15.00f, Font::plain));
-    label_9->setJustificationType (Justification::centred);
-    label_9->setEditable (false, false, false);
-    label_9->setColour (Label::textColourId, Colours::yellow);
-    label_9->setColour (TextEditor::textColourId, Colours::black);
-    label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_rel_3 = new Label (String::empty,
+                                                TRANS("RELEASE")));
+    label_rel_3->setFont (Font (15.00f, Font::plain));
+    label_rel_3->setJustificationType (Justification::centred);
+    label_rel_3->setEditable (false, false, false);
+    label_rel_3->setColour (Label::textColourId, Colours::yellow);
+    label_rel_3->setColour (TextEditor::textColourId, Colours::black);
+    label_rel_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_3 = new Slider ("0"));
     slider_release_3->setRange (0, 1000, 0.01);
@@ -317,14 +306,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_3->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_release_3->addListener (this);
 
-    addAndMakeVisible (label_10 = new Label (String::empty,
-                                             TRANS("ATTACK")));
-    label_10->setFont (Font (15.00f, Font::plain));
-    label_10->setJustificationType (Justification::centred);
-    label_10->setEditable (false, false, false);
-    label_10->setColour (Label::textColourId, Colours::yellow);
-    label_10->setColour (TextEditor::textColourId, Colours::black);
-    label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_att_4 = new Label (String::empty,
+                                                TRANS("ATTACK")));
+    label_att_4->setFont (Font (15.00f, Font::plain));
+    label_att_4->setJustificationType (Justification::centred);
+    label_att_4->setEditable (false, false, false);
+    label_att_4->setColour (Label::textColourId, Colours::yellow);
+    label_att_4->setColour (TextEditor::textColourId, Colours::black);
+    label_att_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_4 = new Slider ("0"));
     slider_attack_4->setRange (0, 1000, 0.01);
@@ -336,14 +325,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_4->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_attack_4->addListener (this);
 
-    addAndMakeVisible (label_11 = new Label (String::empty,
-                                             TRANS("DECAY")));
-    label_11->setFont (Font (15.00f, Font::plain));
-    label_11->setJustificationType (Justification::centred);
-    label_11->setEditable (false, false, false);
-    label_11->setColour (Label::textColourId, Colours::yellow);
-    label_11->setColour (TextEditor::textColourId, Colours::black);
-    label_11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_dec_4 = new Label (String::empty,
+                                                TRANS("DECAY")));
+    label_dec_4->setFont (Font (15.00f, Font::plain));
+    label_dec_4->setJustificationType (Justification::centred);
+    label_dec_4->setEditable (false, false, false);
+    label_dec_4->setColour (Label::textColourId, Colours::yellow);
+    label_dec_4->setColour (TextEditor::textColourId, Colours::black);
+    label_dec_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_decay_4 = new Slider ("0"));
     slider_decay_4->setRange (0, 1000, 0.01);
@@ -355,14 +344,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_4->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_decay_4->addListener (this);
 
-    addAndMakeVisible (label_12 = new Label (String::empty,
-                                             TRANS("RELEASE")));
-    label_12->setFont (Font (15.00f, Font::plain));
-    label_12->setJustificationType (Justification::centred);
-    label_12->setEditable (false, false, false);
-    label_12->setColour (Label::textColourId, Colours::yellow);
-    label_12->setColour (TextEditor::textColourId, Colours::black);
-    label_12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_rel_4 = new Label (String::empty,
+                                                TRANS("RELEASE")));
+    label_rel_4->setFont (Font (15.00f, Font::plain));
+    label_rel_4->setJustificationType (Justification::centred);
+    label_rel_4->setEditable (false, false, false);
+    label_rel_4->setColour (Label::textColourId, Colours::yellow);
+    label_rel_4->setColour (TextEditor::textColourId, Colours::black);
+    label_rel_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_4 = new Slider ("0"));
     slider_release_4->setRange (0, 1000, 0.01);
@@ -392,140 +381,6 @@ UiEditorSettings::UiEditorSettings ()
     slider_test->setColour (Slider::textBoxTextColourId, Colours::yellow);
     slider_test->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_test->addListener (this);
-
-    addAndMakeVisible (slider_max_adr_attack = new Slider ("0"));
-    slider_max_adr_attack->setRange (100, 20000, 1);
-    slider_max_adr_attack->setSliderStyle (Slider::LinearVertical);
-    slider_max_adr_attack->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_max_adr_attack->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_max_adr_attack->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_max_adr_attack->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_max_adr_attack->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_max_adr_attack->addListener (this);
-
-    addAndMakeVisible (slider_max_adr_decay = new Slider ("0"));
-    slider_max_adr_decay->setRange (100, 20000, 1);
-    slider_max_adr_decay->setSliderStyle (Slider::LinearVertical);
-    slider_max_adr_decay->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_max_adr_decay->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_max_adr_decay->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_max_adr_decay->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_max_adr_decay->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_max_adr_decay->addListener (this);
-
-    addAndMakeVisible (slider_max_adr_release = new Slider ("0"));
-    slider_max_adr_release->setRange (100, 20000, 1);
-    slider_max_adr_release->setSliderStyle (Slider::LinearVertical);
-    slider_max_adr_release->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_max_adr_release->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_max_adr_release->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_max_adr_release->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_max_adr_release->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_max_adr_release->addListener (this);
-
-    addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-                                                       TRANS("GLOBAL")));
-    label_ui_headline2->setFont (Font (30.00f, Font::plain));
-    label_ui_headline2->setJustificationType (Justification::centredLeft);
-    label_ui_headline2->setEditable (false, false, false);
-    label_ui_headline2->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_ui_headline2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (slider_morph_motor_time = new Slider ("0"));
-    slider_morph_motor_time->setRange (1, 20000, 1);
-    slider_morph_motor_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_morph_motor_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_morph_motor_time->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_morph_motor_time->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_morph_motor_time->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_morph_motor_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_morph_motor_time->addListener (this);
-
-    addAndMakeVisible (slider_glide_time = new Slider ("0"));
-    slider_glide_time->setRange (1, 20000, 1);
-    slider_glide_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_glide_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_glide_time->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_glide_time->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_glide_time->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_glide_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_glide_time->addListener (this);
-
-    addAndMakeVisible (label12 = new Label ("new label",
-                                            TRANS("MAX REL T(ms)")));
-    label12->setFont (Font (15.00f, Font::plain));
-    label12->setJustificationType (Justification::centred);
-    label12->setEditable (false, false, false);
-    label12->setColour (Label::textColourId, Colours::yellow);
-    label12->setColour (TextEditor::textColourId, Colours::black);
-    label12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label13 = new Label ("new label",
-                                            TRANS("MORPH MOTOR TIME")));
-    label13->setFont (Font (15.00f, Font::plain));
-    label13->setJustificationType (Justification::centred);
-    label13->setEditable (false, false, false);
-    label13->setColour (Label::textColourId, Colours::yellow);
-    label13->setColour (TextEditor::textColourId, Colours::black);
-    label13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (textEditor = new TextEditor ("new text editor"));
-    textEditor->setMultiLine (true);
-    textEditor->setReturnKeyStartsNewLine (false);
-    textEditor->setReadOnly (true);
-    textEditor->setScrollbarsShown (false);
-    textEditor->setCaretVisible (false);
-    textEditor->setPopupMenuEnabled (false);
-    textEditor->setColour (TextEditor::textColourId, Colours::aliceblue);
-    textEditor->setColour (TextEditor::backgroundColourId, Colours::black);
-    textEditor->setText (TRANS("On the left side you can define the presets for single slider ADR curves. With the test slider you can check the mixed results of the 4 presets.\n"
-    "Note: this are global settings and will by morphed by the \"main\" option."));
-
-    addAndMakeVisible (label7 = new Label ("new label",
-                                           TRANS("GLIDE TIME")));
-    label7->setFont (Font (15.00f, Font::plain));
-    label7->setJustificationType (Justification::centred);
-    label7->setEditable (false, false, false);
-    label7->setColour (Label::textColourId, Colours::yellow);
-    label7->setColour (TextEditor::textColourId, Colours::black);
-    label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_16 = new Label (String::empty,
-                                             TRANS("ANIMATE INPUT ENV")));
-    label_16->setFont (Font (30.00f, Font::plain));
-    label_16->setJustificationType (Justification::centredLeft);
-    label_16->setEditable (false, false, false);
-    label_16->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_16->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (toggle_animate_input_env = new ToggleButton (String::empty));
-    toggle_animate_input_env->addListener (this);
-
-    addAndMakeVisible (label_18 = new Label (String::empty,
-                                             TRANS("ANIMATE EQ ENV")));
-    label_18->setFont (Font (30.00f, Font::plain));
-    label_18->setJustificationType (Justification::centredLeft);
-    label_18->setEditable (false, false, false);
-    label_18->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_18->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (toggle_animate_eq_env = new ToggleButton (String::empty));
-    toggle_animate_eq_env->addListener (this);
-
-    addAndMakeVisible (label_19 = new Label (String::empty,
-                                             TRANS("ANIMATE MODULATIONS")));
-    label_19->setFont (Font (30.00f, Font::plain));
-    label_19->setJustificationType (Justification::centredLeft);
-    label_19->setEditable (false, false, false);
-    label_19->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_19->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (toggle_output_cc_mute4 = new ToggleButton (String::empty));
-    toggle_output_cc_mute4->addListener (this);
 
     addAndMakeVisible (slider_sustain_time_1 = new Slider ("0"));
     slider_sustain_time_1->setRange (0, 1000, 0.01);
@@ -567,23 +422,23 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_4->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_sustain_time_4->addListener (this);
 
-    addAndMakeVisible (label_20 = new Label (String::empty,
-                                             TRANS("SUS TIME")));
-    label_20->setFont (Font (15.00f, Font::plain));
-    label_20->setJustificationType (Justification::centred);
-    label_20->setEditable (false, false, false);
-    label_20->setColour (Label::textColourId, Colours::yellow);
-    label_20->setColour (TextEditor::textColourId, Colours::black);
-    label_20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_sus_4 = new Label (String::empty,
+                                                TRANS("SUS TIME")));
+    label_sus_4->setFont (Font (15.00f, Font::plain));
+    label_sus_4->setJustificationType (Justification::centred);
+    label_sus_4->setEditable (false, false, false);
+    label_sus_4->setColour (Label::textColourId, Colours::yellow);
+    label_sus_4->setColour (TextEditor::textColourId, Colours::black);
+    label_sus_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_23 = new Label (String::empty,
-                                             TRANS("SUS TIME")));
-    label_23->setFont (Font (15.00f, Font::plain));
-    label_23->setJustificationType (Justification::centred);
-    label_23->setEditable (false, false, false);
-    label_23->setColour (Label::textColourId, Colours::yellow);
-    label_23->setColour (TextEditor::textColourId, Colours::black);
-    label_23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_sus_1 = new Label (String::empty,
+                                                TRANS("SUS TIME")));
+    label_sus_1->setFont (Font (15.00f, Font::plain));
+    label_sus_1->setJustificationType (Justification::centred);
+    label_sus_1->setEditable (false, false, false);
+    label_sus_1->setColour (Label::textColourId, Colours::yellow);
+    label_sus_1->setColour (TextEditor::textColourId, Colours::black);
+    label_sus_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_1 = new Label ("VL",
                                                    TRANS("x\n")));
@@ -739,14 +594,14 @@ UiEditorSettings::UiEditorSettings ()
     slider_env_shape->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_env_shape->addListener (this);
 
-    addAndMakeVisible (label8 = new Label ("new label",
-                                           TRANS("SHAPE")));
-    label8->setFont (Font (15.00f, Font::plain));
-    label8->setJustificationType (Justification::centred);
-    label8->setEditable (false, false, false);
-    label8->setColour (Label::textColourId, Colours::yellow);
-    label8->setColour (TextEditor::textColourId, Colours::black);
-    label8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    addAndMakeVisible (label_shape = new Label ("new label",
+                                                TRANS("SHAPE")));
+    label_shape->setFont (Font (15.00f, Font::plain));
+    label_shape->setJustificationType (Justification::centred);
+    label_shape->setEditable (false, false, false);
+    label_shape->setColour (Label::textColourId, Colours::yellow);
+    label_shape->setColour (TextEditor::textColourId, Colours::black);
+    label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_test_value = new Label (String::empty,
                                                      TRANS("x\n")));
@@ -756,6 +611,15 @@ UiEditorSettings::UiEditorSettings ()
     label_test_value->setColour (Label::textColourId, Colours::yellow);
     label_test_value->setColour (TextEditor::textColourId, Colours::black);
     label_test_value->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
+                                                        TRANS("123ms")));
+    label_ui_headline_5->setFont (Font (30.00f, Font::plain));
+    label_ui_headline_5->setJustificationType (Justification::centred);
+    label_ui_headline_5->setEditable (false, false, false);
+    label_ui_headline_5->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label3 = new Label ("new label",
                                            TRANS("(GLOBAL)")));
@@ -768,30 +632,37 @@ UiEditorSettings::UiEditorSettings ()
 
 
     //[UserPreSize]
-    for( int i = 0 ; i != getNumChildComponents() ; ++i ) {
-        //getChildComponent(i)->setOpaque(true);
-        if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) ) {
-            SET_SLIDER_STYLE( slider, VALUE_SLIDER );
-        }
-    }
+    last_repaint_counter = -99;
+    repaint_counter = 0;
 
-    refresh();
-    repaint_curve = true;
-    stop_current_painting = false;
-
-    /*
-    //[/UserPreSize]
-
-    setSize (1465, 600);
-
-
-    //[Constructor] You can add your own custom stuff here..
-    */
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         getChildComponent(i)->setRepaintsOnMouseActivity(false);
         getChildComponent(i)->setWantsKeyboardFocus(false);
+
+        if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) ) {
+            SET_SLIDER_STYLE( slider, VALUE_SLIDER );
+	    slider->setOpaque(true);
+        }
     }
+    slider_test->setOpaque(false);
+    label_shape->setOpaque(true);
+    label_att_1->setOpaque(true);
+    label_att_2->setOpaque(true);
+    label_att_3->setOpaque(true);
+    label_att_4->setOpaque(true);
+    label_dec_1->setOpaque(true);
+    label_dec_2->setOpaque(true);
+    label_dec_3->setOpaque(true);
+    label_dec_4->setOpaque(true);
+    label_sus_1->setOpaque(true);
+    label_sus_2->setOpaque(true);
+    label_sus_3->setOpaque(true);
+    label_sus_4->setOpaque(true);
+    label_rel_1->setOpaque(true);
+    label_rel_2->setOpaque(true);
+    label_rel_3->setOpaque(true);
+    label_rel_4->setOpaque(true);
     label_ui_headline_1->setOpaque(true);
     label_ui_headline_2->setOpaque(true);
     label_ui_headline_3->setOpaque(true);
@@ -799,6 +670,14 @@ UiEditorSettings::UiEditorSettings ()
 
     slider_env_shape->setValue(DATA(synth_data).curve_shape,sendNotification);
     refresh();
+
+    /*
+    //[/UserPreSize]
+
+    setSize (1465, 180);
+
+    //[Constructor] You can add your own custom stuff here..
+    */
     //[/Constructor]
 }
 
@@ -811,57 +690,41 @@ UiEditorSettings::~UiEditorSettings()
     label_ui_headline_3 = nullptr;
     label_ui_headline_2 = nullptr;
     label_ui_headline_1 = nullptr;
-    label_21 = nullptr;
-    label_22 = nullptr;
+    label_sus_3 = nullptr;
+    label_sus_2 = nullptr;
     plotter = nullptr;
-    label_1 = nullptr;
+    label_att_1 = nullptr;
     slider_attack_1 = nullptr;
-    label_2 = nullptr;
+    label_dec_1 = nullptr;
     slider_decay_1 = nullptr;
-    label_3 = nullptr;
+    label_rel_1 = nullptr;
     slider_release_1 = nullptr;
-    label_4 = nullptr;
+    label_att_2 = nullptr;
     slider_attack_2 = nullptr;
-    label_5 = nullptr;
+    label_dec_2 = nullptr;
     slider_decay_2 = nullptr;
-    label_6 = nullptr;
+    label_rel_2 = nullptr;
     slider_release_2 = nullptr;
-    label_7 = nullptr;
+    label_att_3 = nullptr;
     slider_attack_3 = nullptr;
-    label_8 = nullptr;
+    label_dec_3 = nullptr;
     slider_decay_3 = nullptr;
-    label_9 = nullptr;
+    label_rel_3 = nullptr;
     slider_release_3 = nullptr;
-    label_10 = nullptr;
+    label_att_4 = nullptr;
     slider_attack_4 = nullptr;
-    label_11 = nullptr;
+    label_dec_4 = nullptr;
     slider_decay_4 = nullptr;
-    label_12 = nullptr;
+    label_rel_4 = nullptr;
     slider_release_4 = nullptr;
     label6 = nullptr;
     slider_test = nullptr;
-    slider_max_adr_attack = nullptr;
-    slider_max_adr_decay = nullptr;
-    slider_max_adr_release = nullptr;
-    label_ui_headline2 = nullptr;
-    slider_morph_motor_time = nullptr;
-    slider_glide_time = nullptr;
-    label12 = nullptr;
-    label13 = nullptr;
-    textEditor = nullptr;
-    label7 = nullptr;
-    label_16 = nullptr;
-    toggle_animate_input_env = nullptr;
-    label_18 = nullptr;
-    toggle_animate_eq_env = nullptr;
-    label_19 = nullptr;
-    toggle_output_cc_mute4 = nullptr;
     slider_sustain_time_1 = nullptr;
     slider_sustain_time_2 = nullptr;
     slider_sustain_time_3 = nullptr;
     slider_sustain_time_4 = nullptr;
-    label_20 = nullptr;
-    label_23 = nullptr;
+    label_sus_4 = nullptr;
+    label_sus_1 = nullptr;
     label_attack_1 = nullptr;
     label_decay_1 = nullptr;
     label_sustain_time_1 = nullptr;
@@ -879,8 +742,9 @@ UiEditorSettings::~UiEditorSettings()
     label_sustain_time_4 = nullptr;
     label_release_4 = nullptr;
     slider_env_shape = nullptr;
-    label8 = nullptr;
+    label_shape = nullptr;
     label_test_value = nullptr;
+    label_ui_headline_5 = nullptr;
     label3 = nullptr;
 
 
@@ -947,14 +811,7 @@ void UiEditorSettings::paint (Graphics& g)
 
     //[UserPaint] Add your own custom painting code here..
 #include "UiDynamicSizeEnd.h"
-
-
-
-    if( repaint_curve )
     {
-        repaint_curve = false;
-        stop_current_painting = false;
-
         curve.clearQuick();
         curve.ensureStorageAllocated( 50000 );
 
@@ -987,9 +844,6 @@ void UiEditorSettings::paint (Graphics& g)
         Colour col;
         for( int i = 0 ; i != curve_size+sustain_size ; ++i )
         {
-            if(stop_current_painting)
-                return;
-
             float value;
             if( i >= sustain_start && count_sustain < sustain_size )
             {
@@ -1033,57 +887,41 @@ void UiEditorSettings::resized()
     label_ui_headline_3->setBounds (600, -4, 140, 35);
     label_ui_headline_2->setBounds (340, -4, 140, 35);
     label_ui_headline_1->setBounds (60, -4, 180, 35);
-    label_21->setBounds (670, 105, 60, 33);
-    label_22->setBounds (410, 105, 60, 33);
+    label_sus_3->setBounds (670, 105, 60, 33);
+    label_sus_2->setBounds (410, 105, 60, 33);
     plotter->setBounds (1170, 15, 270, 135);
-    label_1->setBounds (30, 105, 60, 33);
+    label_att_1->setBounds (30, 105, 60, 33);
     slider_attack_1->setBounds (30, 55, 60, 50);
-    label_2->setBounds (90, 105, 60, 33);
+    label_dec_1->setBounds (90, 105, 60, 33);
     slider_decay_1->setBounds (90, 55, 60, 50);
-    label_3->setBounds (210, 105, 60, 33);
+    label_rel_1->setBounds (210, 105, 60, 33);
     slider_release_1->setBounds (210, 55, 60, 50);
-    label_4->setBounds (290, 105, 60, 33);
+    label_att_2->setBounds (290, 105, 60, 33);
     slider_attack_2->setBounds (290, 55, 60, 50);
-    label_5->setBounds (350, 105, 60, 33);
+    label_dec_2->setBounds (350, 105, 60, 33);
     slider_decay_2->setBounds (410 - 60, 105 - 50, 60, 50);
-    label_6->setBounds (470, 105, 60, 33);
+    label_rel_2->setBounds (470, 105, 60, 33);
     slider_release_2->setBounds (530 - 60, 105 - 50, 60, 50);
-    label_7->setBounds (550, 105, 60, 33);
+    label_att_3->setBounds (550, 105, 60, 33);
     slider_attack_3->setBounds (610 - 60, 105 - 50, 60, 50);
-    label_8->setBounds (610, 105, 60, 33);
+    label_dec_3->setBounds (610, 105, 60, 33);
     slider_decay_3->setBounds (670 - 60, 105 - 50, 60, 50);
-    label_9->setBounds (730, 105, 60, 33);
+    label_rel_3->setBounds (730, 105, 60, 33);
     slider_release_3->setBounds (790 - 60, 105 - 50, 60, 50);
-    label_10->setBounds (810, 105, 60, 33);
+    label_att_4->setBounds (810, 105, 60, 33);
     slider_attack_4->setBounds (870 - 60, 105 - 50, 60, 50);
-    label_11->setBounds (870, 105, 60, 33);
+    label_dec_4->setBounds (870, 105, 60, 33);
     slider_decay_4->setBounds (930 - 60, 105 - 50, 60, 50);
-    label_12->setBounds (990, 105, 60, 33);
+    label_rel_4->setBounds (990, 105, 60, 33);
     slider_release_4->setBounds (1050 - 60, 105 - 50, 60, 50);
     label6->setBounds (30, 150, 60, 33);
     slider_test->setBounds (145, 185 - 40, 792, 40);
-    slider_max_adr_attack->setBounds (700 - 60, 540 - 70, 60, 70);
-    slider_max_adr_decay->setBounds (760 - 60, 540 - 70, 60, 70);
-    slider_max_adr_release->setBounds (880 - 60, 540 - 70, 60, 70);
-    label_ui_headline2->setBounds (440, 200, 490, 30);
-    slider_morph_motor_time->setBounds (500 - 60, 300 - 70, 60, 70);
-    slider_glide_time->setBounds (570 - 60, 300 - 70, 60, 70);
-    label12->setBounds (640, 540, 60, 26);
-    label13->setBounds (440, 300, 60, 26);
-    textEditor->setBounds (100, 230, 310, 70);
-    label7->setBounds (510, 300, 60, 26);
-    label_16->setBounds (900 - 160, 240 - 30, 160, 30);
-    toggle_animate_input_env->setBounds (700, 210, 30, 30);
-    label_18->setBounds (900 - 160, 270 - 30, 160, 30);
-    toggle_animate_eq_env->setBounds (700, 240, 30, 30);
-    label_19->setBounds (900 - 160, 300 - 30, 160, 30);
-    toggle_output_cc_mute4->setBounds (700, 270, 30, 30);
     slider_sustain_time_1->setBounds (150, 55, 60, 50);
     slider_sustain_time_2->setBounds (470 - 60, 105 - 50, 60, 50);
     slider_sustain_time_3->setBounds (730 - 60, 105 - 50, 60, 50);
     slider_sustain_time_4->setBounds (990 - 60, 105 - 50, 60, 50);
-    label_20->setBounds (930, 105, 60, 33);
-    label_23->setBounds (150, 105, 60, 33);
+    label_sus_4->setBounds (930, 105, 60, 33);
+    label_sus_1->setBounds (150, 105, 60, 33);
     label_attack_1->setBounds (30, 17, 60, 33);
     label_decay_1->setBounds (90, 17, 60, 33);
     label_sustain_time_1->setBounds (150, 17, 60, 33);
@@ -1101,8 +939,9 @@ void UiEditorSettings::resized()
     label_sustain_time_4->setBounds (930, 17, 60, 33);
     label_release_4->setBounds (990, 17, 60, 33);
     slider_env_shape->setBounds (1150 - 60, 105 - 70, 60, 70);
-    label8->setBounds (1090, 105, 60, 33);
+    label_shape->setBounds (1090, 105, 60, 33);
     label_test_value->setBounds (90, 150, 50, 33);
+    label_ui_headline_5->setBounds (1380, 20, 60, 33);
     label3->setBounds (1090, 125, 60, 33);
     //[UserResized] Add your own custom resize handling here..
 #include "UiDynamicSizeEnd.h"
@@ -1118,192 +957,114 @@ void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_slider_attack_1] -- add your slider handling code here..
         DATA( env_preset_def ).attack_1 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_attack_1]
     }
     else if (sliderThatWasMoved == slider_decay_1)
     {
         //[UserSliderCode_slider_decay_1] -- add your slider handling code here..
         DATA( env_preset_def ).decay_1 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_decay_1]
     }
     else if (sliderThatWasMoved == slider_release_1)
     {
         //[UserSliderCode_slider_release_1] -- add your slider handling code here..
         DATA( env_preset_def ).release_1 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_release_1]
     }
     else if (sliderThatWasMoved == slider_attack_2)
     {
         //[UserSliderCode_slider_attack_2] -- add your slider handling code here..
         DATA( env_preset_def ).attack_2 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_attack_2]
     }
     else if (sliderThatWasMoved == slider_decay_2)
     {
         //[UserSliderCode_slider_decay_2] -- add your slider handling code here..
         DATA( env_preset_def ).decay_2 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_decay_2]
     }
     else if (sliderThatWasMoved == slider_release_2)
     {
         //[UserSliderCode_slider_release_2] -- add your slider handling code here..
         DATA( env_preset_def ).release_2 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_release_2]
     }
     else if (sliderThatWasMoved == slider_attack_3)
     {
         //[UserSliderCode_slider_attack_3] -- add your slider handling code here..
         DATA( env_preset_def ).attack_3 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_attack_3]
     }
     else if (sliderThatWasMoved == slider_decay_3)
     {
         //[UserSliderCode_slider_decay_3] -- add your slider handling code here..
         DATA( env_preset_def ).decay_3 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_decay_3]
     }
     else if (sliderThatWasMoved == slider_release_3)
     {
         //[UserSliderCode_slider_release_3] -- add your slider handling code here..
         DATA( env_preset_def ).release_3 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_release_3]
     }
     else if (sliderThatWasMoved == slider_attack_4)
     {
         //[UserSliderCode_slider_attack_4] -- add your slider handling code here..
         DATA( env_preset_def ).attack_4 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_attack_4]
     }
     else if (sliderThatWasMoved == slider_decay_4)
     {
         //[UserSliderCode_slider_decay_4] -- add your slider handling code here..
         DATA( env_preset_def ).decay_4 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_decay_4]
     }
     else if (sliderThatWasMoved == slider_release_4)
     {
         //[UserSliderCode_slider_release_4] -- add your slider handling code here..
         DATA( env_preset_def ).release_4 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_release_4]
     }
     else if (sliderThatWasMoved == slider_test)
     {
         //[UserSliderCode_slider_test] -- add your slider handling code here..
         label_test_value->setText(String(slider_test->getValue()+1),dontSendNotification);
-        refresh();
         //[/UserSliderCode_slider_test]
-    }
-    else if (sliderThatWasMoved == slider_max_adr_attack)
-    {
-        //[UserSliderCode_slider_max_adr_attack] -- add your slider handling code here..
-        DATA( env_preset_def ).max_attack_time = sliderThatWasMoved->getValue()/1000;
-        refresh();
-        //[/UserSliderCode_slider_max_adr_attack]
-    }
-    else if (sliderThatWasMoved == slider_max_adr_decay)
-    {
-        //[UserSliderCode_slider_max_adr_decay] -- add your slider handling code here..
-        DATA( env_preset_def ).max_decay_time = sliderThatWasMoved->getValue()/1000;
-        refresh();
-        //[/UserSliderCode_slider_max_adr_decay]
-    }
-    else if (sliderThatWasMoved == slider_max_adr_release)
-    {
-        //[UserSliderCode_slider_max_adr_release] -- add your slider handling code here..
-        DATA( env_preset_def ).max_release_time = sliderThatWasMoved->getValue()/1000;
-        refresh();
-        //[/UserSliderCode_slider_max_adr_release]
-    }
-    else if (sliderThatWasMoved == slider_morph_motor_time)
-    {
-        //[UserSliderCode_slider_morph_motor_time] -- add your slider handling code here..
-        DATA( synth_data ).morph_motor_time = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_morph_motor_time]
-    }
-    else if (sliderThatWasMoved == slider_glide_time)
-    {
-        //[UserSliderCode_slider_glide_time] -- add your slider handling code here..
-        DATA( synth_data ).glide_motor_time = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_glide_time]
     }
     else if (sliderThatWasMoved == slider_sustain_time_1)
     {
         //[UserSliderCode_slider_sustain_time_1] -- add your slider handling code here..
         DATA( env_preset_def ).sustain_time_1 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_sustain_time_1]
     }
     else if (sliderThatWasMoved == slider_sustain_time_2)
     {
         //[UserSliderCode_slider_sustain_time_2] -- add your slider handling code here..
         DATA( env_preset_def ).sustain_time_2 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_sustain_time_2]
     }
     else if (sliderThatWasMoved == slider_sustain_time_3)
     {
         //[UserSliderCode_slider_sustain_time_3] -- add your slider handling code here..
         DATA( env_preset_def ).sustain_time_3 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_sustain_time_3]
     }
     else if (sliderThatWasMoved == slider_sustain_time_4)
     {
         //[UserSliderCode_slider_sustain_time_4] -- add your slider handling code here..
         DATA( env_preset_def ).sustain_time_4 = sliderThatWasMoved->getValue()/1000;
-        refresh();
         //[/UserSliderCode_slider_sustain_time_4]
     }
     else if (sliderThatWasMoved == slider_env_shape)
     {
         //[UserSliderCode_slider_env_shape] -- add your slider handling code here..
         DATA(synth_data).curve_shape = slider_env_shape->getValue();
-        refresh();
         //[/UserSliderCode_slider_env_shape]
     }
 
     //[UsersliderValueChanged_Post]
+    repaint_counter++;
     //[/UsersliderValueChanged_Post]
-}
-
-void UiEditorSettings::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == toggle_animate_input_env)
-    {
-        //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
-        DATA( synth_data ).animate_input_env = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_input_env]
-    }
-    else if (buttonThatWasClicked == toggle_animate_eq_env)
-    {
-        //[UserButtonCode_toggle_animate_eq_env] -- add your button handler code here..
-        DATA( synth_data ).animate_eq_env = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_eq_env]
-    }
-    else if (buttonThatWasClicked == toggle_output_cc_mute4)
-    {
-        //[UserButtonCode_toggle_output_cc_mute4] -- add your button handler code here..
-        DATA( synth_data ).animate_modulations = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_output_cc_mute4]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
 }
 
 
@@ -1322,9 +1083,10 @@ void UiEditorSettings::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorSettings" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="600">
+                 parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
+                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
+                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
+                 initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505">
     <ROUNDRECT pos="20 10 260 135" cornerSize="6" fill="solid: 66000000" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
@@ -1363,12 +1125,12 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="ADSR PRESET GROUP 1 (MIX: 1 to 2)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="63733ef294c01fe3" memberName="label_21" virtualName=""
+  <LABEL name="" id="63733ef294c01fe3" memberName="label_sus_3" virtualName=""
          explicitFocusOrder="0" pos="670 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="b86afc1f9a82c57b" memberName="label_22" virtualName=""
+  <LABEL name="" id="b86afc1f9a82c57b" memberName="label_sus_2" virtualName=""
          explicitFocusOrder="0" pos="410 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1376,7 +1138,7 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="c88b6f548bad2da7" memberName="plotter" virtualName=""
                     explicitFocusOrder="0" pos="1170 15 270 135" class="Component"
                     params=""/>
-  <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_1" virtualName=""
+  <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_att_1" virtualName=""
          explicitFocusOrder="0" pos="30 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1387,7 +1149,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="5269c763f2d5a37b" memberName="label_2" virtualName=""
+  <LABEL name="" id="5269c763f2d5a37b" memberName="label_dec_1" virtualName=""
          explicitFocusOrder="0" pos="90 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1398,7 +1160,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="d001c80859e5b7cb" memberName="label_3" virtualName=""
+  <LABEL name="" id="d001c80859e5b7cb" memberName="label_rel_1" virtualName=""
          explicitFocusOrder="0" pos="210 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1409,7 +1171,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="652f8c698bf6e2c7" memberName="label_4" virtualName=""
+  <LABEL name="" id="652f8c698bf6e2c7" memberName="label_att_2" virtualName=""
          explicitFocusOrder="0" pos="290 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1420,7 +1182,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="29cbca18263366d5" memberName="label_5" virtualName=""
+  <LABEL name="" id="29cbca18263366d5" memberName="label_dec_2" virtualName=""
          explicitFocusOrder="0" pos="350 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1431,7 +1193,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="7ef526dd8315ebcb" memberName="label_6" virtualName=""
+  <LABEL name="" id="7ef526dd8315ebcb" memberName="label_rel_2" virtualName=""
          explicitFocusOrder="0" pos="470 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1442,7 +1204,7 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="69b28ea11658a763" memberName="label_7" virtualName=""
+  <LABEL name="" id="69b28ea11658a763" memberName="label_att_3" virtualName=""
          explicitFocusOrder="0" pos="550 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1453,7 +1215,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="c285c1141eaa0118" memberName="label_8" virtualName=""
+  <LABEL name="" id="c285c1141eaa0118" memberName="label_dec_3" virtualName=""
          explicitFocusOrder="0" pos="610 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1464,7 +1226,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="f5e6e332ab87bc22" memberName="label_9" virtualName=""
+  <LABEL name="" id="f5e6e332ab87bc22" memberName="label_rel_3" virtualName=""
          explicitFocusOrder="0" pos="730 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1475,7 +1237,7 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="ac7391e000b56ff6" memberName="label_10" virtualName=""
+  <LABEL name="" id="ac7391e000b56ff6" memberName="label_att_4" virtualName=""
          explicitFocusOrder="0" pos="810 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATTACK" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1486,7 +1248,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="117c28f4bd17a85e" memberName="label_11" virtualName=""
+  <LABEL name="" id="117c28f4bd17a85e" memberName="label_dec_4" virtualName=""
          explicitFocusOrder="0" pos="870 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DECAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1497,7 +1259,7 @@ BEGIN_JUCER_METADATA
           min="0" max="1000" int="0.010000000000000000208" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="228028476280a34e" memberName="label_12" virtualName=""
+  <LABEL name="" id="228028476280a34e" memberName="label_rel_4" virtualName=""
          explicitFocusOrder="0" pos="990 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="RELEASE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1519,85 +1281,6 @@ BEGIN_JUCER_METADATA
           min="0" max="3" int="0.0010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="a006df15a71ff5d1" memberName="slider_max_adr_attack"
-          virtualName="Slider" explicitFocusOrder="0" pos="700r 540r 60 70"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="100" max="20000" int="1" style="LinearVertical"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="6d2e354993098bc4" memberName="slider_max_adr_decay"
-          virtualName="Slider" explicitFocusOrder="0" pos="760r 540r 60 70"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="100" max="20000" int="1" style="LinearVertical"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="fe766d25b223b503" memberName="slider_max_adr_release"
-          virtualName="Slider" explicitFocusOrder="0" pos="880r 540r 60 70"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="100" max="20000" int="1" style="LinearVertical"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="db0b469687f2859" memberName="label_ui_headline2"
-         virtualName="" explicitFocusOrder="0" pos="440 200 490 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="GLOBAL" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
-  <SLIDER name="0" id="30eb597ef479a74e" memberName="slider_morph_motor_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="500r 300r 60 70"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="c244467fb56dffee" memberName="slider_glide_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="570r 300r 60 70"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="a82df65802aa4467" memberName="label12" virtualName=""
-         explicitFocusOrder="0" pos="640 540 60 26" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="MAX REL T(ms)" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="new label" id="796db125cec623bd" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="440 300 60 26" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="MORPH MOTOR TIME"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
-  <TEXTEDITOR name="new text editor" id="44485d10c8ab48b1" memberName="textEditor"
-              virtualName="" explicitFocusOrder="0" pos="100 230 310 70" textcol="fff0f8ff"
-              bkgcol="ff000000" initialText="On the left side you can define the presets for single slider ADR curves. With the test slider you can check the mixed results of the 4 presets.&#10;Note: this are global settings and will by morphed by the &quot;main&quot; option."
-              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
-              caret="0" popupmenu="0"/>
-  <LABEL name="new label" id="2c68301961d63e82" memberName="label7" virtualName=""
-         explicitFocusOrder="0" pos="510 300 60 26" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="GLIDE TIME" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="dfd8e91824767f78" memberName="label_16" virtualName=""
-         explicitFocusOrder="0" pos="900r 240r 160 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATE INPUT ENV"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="f342323c5495d0a1" memberName="toggle_animate_input_env"
-                virtualName="" explicitFocusOrder="0" pos="700 210 30 30" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <LABEL name="" id="55ed48882dea6ac8" memberName="label_18" virtualName=""
-         explicitFocusOrder="0" pos="900r 270r 160 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATE EQ ENV"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_animate_eq_env"
-                virtualName="" explicitFocusOrder="0" pos="700 240 30 30" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <LABEL name="" id="48465e518b2a9587" memberName="label_19" virtualName=""
-         explicitFocusOrder="0" pos="900r 300r 160 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATE MODULATIONS"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="13a54c23c88819cb" memberName="toggle_output_cc_mute4"
-                virtualName="" explicitFocusOrder="0" pos="700 270 30 30" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time_1"
           virtualName="Slider" explicitFocusOrder="0" pos="150 55 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
@@ -1622,12 +1305,12 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1000" int="0.010000000000000000208"
           style="LinearVertical" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="" id="ebbaa43d5c1e571e" memberName="label_20" virtualName=""
+  <LABEL name="" id="ebbaa43d5c1e571e" memberName="label_sus_4" virtualName=""
          explicitFocusOrder="0" pos="930 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="ffcf23120599c6e5" memberName="label_23" virtualName=""
+  <LABEL name="" id="ffcf23120599c6e5" memberName="label_sus_1" virtualName=""
          explicitFocusOrder="0" pos="150 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
@@ -1718,8 +1401,8 @@ BEGIN_JUCER_METADATA
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label8" virtualName=""
-         explicitFocusOrder="0" pos="1090 105 60 33" textCol="ffffff00"
+  <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"
+         virtualName="" explicitFocusOrder="0" pos="1090 105 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -1728,6 +1411,11 @@ BEGIN_JUCER_METADATA
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
+  <LABEL name="DL" id="4b4915adb0dcf9ee" memberName="label_ui_headline_5"
+         virtualName="" explicitFocusOrder="0" pos="1380 20 60 33" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="123ms" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="6a35bf0fb43137d1" memberName="label3" virtualName=""
          explicitFocusOrder="0" pos="1090 125 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="(GLOBAL)" editableSingleClick="0"

@@ -17,15 +17,12 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_D0A211EF20981AF4__
-#define __JUCE_HEADER_D0A211EF20981AF4__
+#ifndef __JUCE_HEADER_8EB35BC3F04D7C4__
+#define __JUCE_HEADER_8EB35BC3F04D7C4__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
-#include "SynthData.h"
 //[/Headers]
-
-
 
 //==============================================================================
 /**
@@ -36,8 +33,8 @@
                                                                     //[/Comments]
 */
 class UiEditorSettings  : public Component,
-                          public SliderListener,
-                          public ButtonListener
+                          public mono_UiRefreshable,
+                          public SliderListener
 {
 public:
     //==============================================================================
@@ -46,21 +43,21 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void refresh();
-    bool repaint_curve;
-    bool stop_current_painting;
-    Array< float > curve;
-
     const float original_w;
     const float original_h;
+    
+private:
+    int repaint_counter;
+    int last_repaint_counter;
+    
+    void refresh() noexcept override;
+    Array< float > curve;
+
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
-    void buttonClicked (Button* buttonThatWasClicked);
-
-
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
@@ -71,57 +68,41 @@ private:
     ScopedPointer<Label> label_ui_headline_3;
     ScopedPointer<Label> label_ui_headline_2;
     ScopedPointer<Label> label_ui_headline_1;
-    ScopedPointer<Label> label_21;
-    ScopedPointer<Label> label_22;
+    ScopedPointer<Label> label_sus_3;
+    ScopedPointer<Label> label_sus_2;
     ScopedPointer<Component> plotter;
-    ScopedPointer<Label> label_1;
+    ScopedPointer<Label> label_att_1;
     ScopedPointer<Slider> slider_attack_1;
-    ScopedPointer<Label> label_2;
+    ScopedPointer<Label> label_dec_1;
     ScopedPointer<Slider> slider_decay_1;
-    ScopedPointer<Label> label_3;
+    ScopedPointer<Label> label_rel_1;
     ScopedPointer<Slider> slider_release_1;
-    ScopedPointer<Label> label_4;
+    ScopedPointer<Label> label_att_2;
     ScopedPointer<Slider> slider_attack_2;
-    ScopedPointer<Label> label_5;
+    ScopedPointer<Label> label_dec_2;
     ScopedPointer<Slider> slider_decay_2;
-    ScopedPointer<Label> label_6;
+    ScopedPointer<Label> label_rel_2;
     ScopedPointer<Slider> slider_release_2;
-    ScopedPointer<Label> label_7;
+    ScopedPointer<Label> label_att_3;
     ScopedPointer<Slider> slider_attack_3;
-    ScopedPointer<Label> label_8;
+    ScopedPointer<Label> label_dec_3;
     ScopedPointer<Slider> slider_decay_3;
-    ScopedPointer<Label> label_9;
+    ScopedPointer<Label> label_rel_3;
     ScopedPointer<Slider> slider_release_3;
-    ScopedPointer<Label> label_10;
+    ScopedPointer<Label> label_att_4;
     ScopedPointer<Slider> slider_attack_4;
-    ScopedPointer<Label> label_11;
+    ScopedPointer<Label> label_dec_4;
     ScopedPointer<Slider> slider_decay_4;
-    ScopedPointer<Label> label_12;
+    ScopedPointer<Label> label_rel_4;
     ScopedPointer<Slider> slider_release_4;
     ScopedPointer<Label> label6;
     ScopedPointer<Slider> slider_test;
-    ScopedPointer<Slider> slider_max_adr_attack;
-    ScopedPointer<Slider> slider_max_adr_decay;
-    ScopedPointer<Slider> slider_max_adr_release;
-    ScopedPointer<Label> label_ui_headline2;
-    ScopedPointer<Slider> slider_morph_motor_time;
-    ScopedPointer<Slider> slider_glide_time;
-    ScopedPointer<Label> label12;
-    ScopedPointer<Label> label13;
-    ScopedPointer<TextEditor> textEditor;
-    ScopedPointer<Label> label7;
-    ScopedPointer<Label> label_16;
-    ScopedPointer<ToggleButton> toggle_animate_input_env;
-    ScopedPointer<Label> label_18;
-    ScopedPointer<ToggleButton> toggle_animate_eq_env;
-    ScopedPointer<Label> label_19;
-    ScopedPointer<ToggleButton> toggle_output_cc_mute4;
     ScopedPointer<Slider> slider_sustain_time_1;
     ScopedPointer<Slider> slider_sustain_time_2;
     ScopedPointer<Slider> slider_sustain_time_3;
     ScopedPointer<Slider> slider_sustain_time_4;
-    ScopedPointer<Label> label_20;
-    ScopedPointer<Label> label_23;
+    ScopedPointer<Label> label_sus_4;
+    ScopedPointer<Label> label_sus_1;
     ScopedPointer<Label> label_attack_1;
     ScopedPointer<Label> label_decay_1;
     ScopedPointer<Label> label_sustain_time_1;
@@ -139,8 +120,9 @@ private:
     ScopedPointer<Label> label_sustain_time_4;
     ScopedPointer<Label> label_release_4;
     ScopedPointer<Slider> slider_env_shape;
-    ScopedPointer<Label> label8;
+    ScopedPointer<Label> label_shape;
     ScopedPointer<Label> label_test_value;
+    ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label3;
 
 
@@ -151,4 +133,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_D0A211EF20981AF4__
+#endif   // __JUCE_HEADER_8EB35BC3F04D7C4__
