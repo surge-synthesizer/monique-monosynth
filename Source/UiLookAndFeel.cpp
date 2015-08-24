@@ -193,7 +193,7 @@ UiLookAndFeel::UiLookAndFeel()
         0x1004504, /*CodeEditorComponent::lineNumberBackgroundId*/            0x44999999,
         0x1004505, /*CodeEditorComponent::lineNumberTextId*/                  0x44000000,
 
-        0x1007000, /*ColourSelector::backgroundColourId*/                     0xffe5e5e5,
+        0x1007000, /*ColourSelector::backgroundColourId*/                     0xff050505,
         0x1007001, /*ColourSelector::labelTextColourId*/                      0xff000000,
 
         0x100ad00, /*KeyMappingEditorComponent::backgroundColourId*/          0x00000000,
@@ -1478,7 +1478,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         else if( slider_type == VALUE_SLIDER_2 )
             SliderCol = colours.slider_track_colour_2; //.brighter (0.4f);
         else
-            SliderCol = colours.label_text_colour; //.brighter (0.4f);
+            SliderCol = colours.slider_track_colour_modulation; //.brighter (0.4f);
     }
 
 #define THICKNESS 0.85f /* (1.f/40*slider.getWidth()); // 0.7f; */

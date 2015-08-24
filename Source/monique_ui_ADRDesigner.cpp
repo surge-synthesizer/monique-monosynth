@@ -676,6 +676,7 @@ UiEditorSettings::UiEditorSettings ()
 
     setSize (1465, 180);
 
+
     //[Constructor] You can add your own custom stuff here..
     */
     //[/Constructor]

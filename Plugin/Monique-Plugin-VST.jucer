@@ -78,10 +78,6 @@
             file="../Source/UiDynamicSizeEnd.h"/>
       <FILE id="f2L0aU" name="UiDynamicSizeStart.h" compile="0" resource="0"
             file="../Source/UiDynamicSizeStart.h"/>
-      <FILE id="LxcuoQ" name="UiEditorColours.cpp" compile="1" resource="0"
-            file="../Source/UiEditorColours.cpp"/>
-      <FILE id="fCtjsa" name="UiEditorColours.h" compile="0" resource="0"
-            file="../Source/UiEditorColours.h"/>
       <FILE id="qw8i65" name="UiEditorMorph.cpp" compile="1" resource="0"
             file="../Source/UiEditorMorph.cpp"/>
       <FILE id="csSLiL" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>

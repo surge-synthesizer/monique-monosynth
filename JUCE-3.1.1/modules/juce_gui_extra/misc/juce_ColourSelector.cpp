@@ -419,7 +419,7 @@ void ColourSelector::update()
 //==============================================================================
 void ColourSelector::paint (Graphics& g)
 { 
-    g.fillAll (Colour (0xff161616));
+    g.fillAll (Colour (0xff050505));
 
     if ((flags & showColourAtTop) != 0)
     {

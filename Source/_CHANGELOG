@@ -13,6 +13,11 @@ CHANGES 0.5:
 - add: store oscilloscope settings withg program
 - fix: slider bg was not correct for some slider
 - change: modulation slider from -100% to 100 are now fixed in the center (maybe we loos a bit of self explaining, but it is more clear if the front slider is on min or max)
+- clean and move the subeditors to the bottom (like the osci)
+- remove: max attack, decay, sus, release times in ADR preset editor (to simplify)
+- change: ADR preset setting are now in the new editor "ADR"
+- add cpu usage and multicore options to "CFG" editor
+- 
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -49,6 +54,7 @@ TODO:
 - close editors if you open a new one
 - auto resize ui if screen is to small
 - todo no repaint on mouse activity!
+- todo set fixed max times in adr editor
 
 QUESTS
 - sync lfo with note on?

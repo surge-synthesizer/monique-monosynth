@@ -28,6 +28,7 @@ class UiEditorSynthLitePopup;
 class UiEditorMIDIIO;
 class UiEditorMorph;
 class UiEditorSettings;
+class UiEditorGlobalSettings;
 class MONOVoice;
 class SynthData;
 class SegmentedMeter;
@@ -68,6 +69,7 @@ public:
     ScopedPointer<UiEditorMIDIIO> editor_midiio;
     ScopedPointer<UiEditorMorph> editor_morph;
     ScopedPointer<UiEditorSettings> editor_settings;
+    ScopedPointer<UiEditorGlobalSettings> editor_global_settings;
 
     void refresh() noexcept override;
     void show_current_voice_data();
@@ -287,6 +289,7 @@ private:
     ScopedPointer<Label> label_ui_headline25;
     ScopedPointer<SegmentedMeter> volume_master_meter;
     ScopedPointer<Label> label_eq;
+    ScopedPointer<TextButton> button_open_config2;
 
 
     //==============================================================================

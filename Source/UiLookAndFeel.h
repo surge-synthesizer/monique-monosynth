@@ -26,7 +26,6 @@
 #define MONO_LOOKANDFEEL
 
 #include "App_h_includer.h"
-#include "UiEditorColours.h"
 
 //==============================================================================
 /**
@@ -35,6 +34,7 @@
 struct ComponentColours {
     Colour slider_track_colour;
     Colour slider_track_colour_2;
+    Colour slider_track_colour_modulation;
     Colour slider_line_colour;
     Colour slider_text_colour;
     Colour button_on_colour;
@@ -46,6 +46,7 @@ struct ComponentColours {
     
     Colour bg;
     Colour bg_lines;
+    Colour signal_lines;
 
     void edit() {
         //UiEditorColourStyler* styler = new UiEditorColourStyler( this );
@@ -57,6 +58,7 @@ struct ComponentColours {
     ComponentColours() :
         slider_track_colour( 4278251775 ),
         slider_track_colour_2( Colour(0xffff6600) ),
+        slider_track_colour_modulation( 4294942532 ),
         slider_line_colour( 4278218356 ),
         slider_text_colour( 4294967295 ),
         button_on_colour( 4294942532 ),

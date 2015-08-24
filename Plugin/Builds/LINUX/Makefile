@@ -63,7 +63,6 @@ OBJECTS := \
   $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/SynthData_df69b916.o \
   $(OBJDIR)/UiDragPad_6d9b971b.o \
-  $(OBJDIR)/UiEditorColours_a32a796.o \
   $(OBJDIR)/UiEditorMorph_b9084a77.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/UiEditorSynthLitePopup_a4990cfd.o \
@@ -170,11 +169,6 @@ $(OBJDIR)/SynthData_df69b916.o: ../../../Source/SynthData.cpp
 $(OBJDIR)/UiDragPad_6d9b971b.o: ../../../Source/UiDragPad.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling UiDragPad.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/UiEditorColours_a32a796.o: ../../../Source/UiEditorColours.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling UiEditorColours.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/UiEditorMorph_b9084a77.o: ../../../Source/UiEditorMorph.cpp

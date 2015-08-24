@@ -24,6 +24,8 @@
 #include "App_h_includer.h"
 //[/Headers]
 
+
+
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -45,11 +47,11 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     const float original_w;
     const float original_h;
-    
+
 private:
     int repaint_counter;
     int last_repaint_counter;
-    
+
     void refresh() noexcept override;
     Array< float > curve;
 
@@ -58,6 +60,8 @@ private:
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+
+
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.

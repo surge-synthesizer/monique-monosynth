@@ -29,6 +29,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="GK0SA6" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="miAAJA" name="monique_ui_GlobalSettings.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
+        <FILE id="dCx8my" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
+              file="../Source/monique_ui_GlobalSettings.h"/>
         <FILE id="oZrMWF" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="zLSzVA" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -70,10 +74,6 @@
             file="../Source/UiDynamicSizeEnd.h"/>
       <FILE id="JLxEwm" name="UiDynamicSizeStart.h" compile="0" resource="0"
             file="../Source/UiDynamicSizeStart.h"/>
-      <FILE id="oVtW6l" name="UiEditorColours.cpp" compile="1" resource="0"
-            file="../Source/UiEditorColours.cpp"/>
-      <FILE id="zOlX6o" name="UiEditorColours.h" compile="0" resource="0"
-            file="../Source/UiEditorColours.h"/>
       <FILE id="HIam5M" name="UiEditorMorph.cpp" compile="1" resource="0"
             file="../Source/UiEditorMorph.cpp"/>
       <FILE id="I7c2kl" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>

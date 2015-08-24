@@ -53,6 +53,7 @@ OBJECTS := \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
+  $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
@@ -63,7 +64,6 @@ OBJECTS := \
   $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/SynthData_df69b916.o \
   $(OBJDIR)/UiDragPad_6d9b971b.o \
-  $(OBJDIR)/UiEditorColours_a32a796.o \
   $(OBJDIR)/UiEditorMorph_b9084a77.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/UiEditorSynthLitePopup_a4990cfd.o \
@@ -118,6 +118,11 @@ $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainte
 	@echo "Compiling monique_ui_AmpPainter.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_GlobalSettings.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_GlobalSettings.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_MIDIIO.cpp"
@@ -166,11 +171,6 @@ $(OBJDIR)/SynthData_df69b916.o: ../../../Source/SynthData.cpp
 $(OBJDIR)/UiDragPad_6d9b971b.o: ../../../Source/UiDragPad.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling UiDragPad.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/UiEditorColours_a32a796.o: ../../../Source/UiEditorColours.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling UiEditorColours.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/UiEditorMorph_b9084a77.o: ../../../Source/UiEditorMorph.cpp
