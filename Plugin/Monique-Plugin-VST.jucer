@@ -25,6 +25,10 @@
               file="../Source/monique_AppInstanceStore.cpp"/>
         <FILE id="XK3W5Q" name="monique_AppInstanceStore.h" compile="0" resource="0"
               file="../Source/monique_AppInstanceStore.h"/>
+        <FILE id="wWqYhP" name="monique_ui_ADRDesigner.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_ADRDesigner.cpp"/>
+        <FILE id="ga0juf" name="monique_ui_ADRDesigner.h" compile="0" resource="0"
+              file="../Source/monique_ui_ADRDesigner.h"/>
         <FILE id="Vvxu4K" name="monique_ui_AmpPainter.cpp" compile="1" resource="0"
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="OfFssx" name="monique_ui_AmpPainter.h" compile="0" resource="0"
@@ -77,10 +81,6 @@
       <FILE id="qw8i65" name="UiEditorMorph.cpp" compile="1" resource="0"
             file="../Source/UiEditorMorph.cpp"/>
       <FILE id="csSLiL" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>
-      <FILE id="tbfGE0" name="UiEditorSettings.cpp" compile="1" resource="0"
-            file="../Source/UiEditorSettings.cpp"/>
-      <FILE id="rD0ahm" name="UiEditorSettings.h" compile="0" resource="0"
-            file="../Source/UiEditorSettings.h"/>
       <FILE id="Sc12uW" name="UiEditorSynthLite.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="ngYxWI" name="UiEditorSynthLite.h" compile="0" resource="0"

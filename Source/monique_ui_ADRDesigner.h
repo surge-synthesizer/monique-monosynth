@@ -59,7 +59,6 @@ public:
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
-    bool keyPressed (const KeyPress& key);
 
 
 
@@ -68,13 +67,15 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Label> label_ui_headline_4;
+    ScopedPointer<Label> label_ui_headline_3;
+    ScopedPointer<Label> label_ui_headline_2;
+    ScopedPointer<Label> label_ui_headline_1;
     ScopedPointer<Label> label_21;
     ScopedPointer<Label> label_22;
     ScopedPointer<Component> plotter;
     ScopedPointer<Label> label_1;
     ScopedPointer<Slider> slider_attack_1;
-    ScopedPointer<Label> label_ui_headline4;
-    ScopedPointer<Label> label2;
     ScopedPointer<Label> label_2;
     ScopedPointer<Slider> slider_decay_1;
     ScopedPointer<Label> label_3;
@@ -99,29 +100,16 @@ private:
     ScopedPointer<Slider> slider_release_4;
     ScopedPointer<Label> label6;
     ScopedPointer<Slider> slider_test;
-    ScopedPointer<Label> label_13;
-    ScopedPointer<Slider> slider_test_attack;
-    ScopedPointer<Label> label_14;
-    ScopedPointer<Slider> slider_test_decay;
-    ScopedPointer<Label> label_15;
-    ScopedPointer<Slider> slider_test_release;
     ScopedPointer<Slider> slider_max_adr_attack;
     ScopedPointer<Slider> slider_max_adr_decay;
     ScopedPointer<Slider> slider_max_adr_release;
-    ScopedPointer<Label> label5;
-    ScopedPointer<Label> label3;
-    ScopedPointer<Label> label4;
     ScopedPointer<Label> label_ui_headline2;
     ScopedPointer<Slider> slider_morph_motor_time;
-    ScopedPointer<Label> label10;
     ScopedPointer<Slider> slider_glide_time;
-    ScopedPointer<Label> label11;
     ScopedPointer<Label> label12;
     ScopedPointer<Label> label13;
-    ScopedPointer<TextButton> close;
     ScopedPointer<TextEditor> textEditor;
     ScopedPointer<Label> label7;
-    ScopedPointer<Label> label_17;
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
     ScopedPointer<Label> label_18;
@@ -134,8 +122,6 @@ private:
     ScopedPointer<Slider> slider_sustain_time_4;
     ScopedPointer<Label> label_20;
     ScopedPointer<Label> label_23;
-    ScopedPointer<Slider> slider_test_suatain_time;
-    ScopedPointer<Label> label_24;
     ScopedPointer<Label> label_attack_1;
     ScopedPointer<Label> label_decay_1;
     ScopedPointer<Label> label_sustain_time_1;
@@ -154,10 +140,8 @@ private:
     ScopedPointer<Label> label_release_4;
     ScopedPointer<Slider> slider_env_shape;
     ScopedPointer<Label> label8;
-    Path internalPath1;
-    Path internalPath2;
-    Path internalPath3;
-    Path internalPath4;
+    ScopedPointer<Label> label_test_value;
+    ScopedPointer<Label> label3;
 
 
     //==============================================================================
