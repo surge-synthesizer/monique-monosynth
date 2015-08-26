@@ -2,8 +2,6 @@
 #include "Synth.h"
 #include "monique_ui_AmpPainter.h"
 
-
-#define THREAD_LIMIT 2
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -60,21 +58,25 @@ class mono_ThreadManager
     friend class mono_Thread;
     inline void execute_me( mono_MultiThreaded*const executer_ ) noexcept
     {
-        if( cs.tryEnter() )
+        const int num_threads = DATA( synth_data ).num_extra_threads;
+        if( num_threads > 0 )
         {
-            for( int i = 0 ; i != THREAD_LIMIT ; ++i )
+            if( cs.tryEnter() )
             {
-                mono_ExecuterThread*thread( threads.getUnchecked(i) );
-                if( ! thread->isThreadRunning() )
+                for( int i = 0 ; i < num_threads ; ++i )
                 {
-                    thread->executeable = executer_;
-                    executer_->thread = thread;
-                    thread->startThread();
-                    cs.exit();
-                    return;
+                    mono_ExecuterThread*thread( threads.getUnchecked(i) );
+                    if( ! thread->isThreadRunning() )
+                    {
+                        thread->executeable = executer_;
+                        executer_->thread = thread;
+                        thread->startThread();
+                        cs.exit();
+                        return;
+                    }
                 }
+                cs.exit();
             }
-            cs.exit();
         }
 
         executer_->thread = nullptr;
@@ -90,7 +92,7 @@ private:
 juce_ImplementSingleton (mono_ThreadManager)
 mono_ThreadManager::mono_ThreadManager()
 {
-    for( int i = 0 ; i != THREAD_LIMIT ; ++i )
+    for( int i = 0 ; i < DATA( synth_data ).num_extra_threads ; ++i )
     {
         mono_ExecuterThread*thread( new mono_ExecuterThread() );
         thread->setPriority(10);

@@ -662,6 +662,8 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     osci_show_out(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),generate_short_human_name("MAIN","osci_show_out")),
     osci_show_out_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),generate_short_human_name("MAIN","osci_show_out_env")),
     osci_show_range(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),generate_short_human_name("MAIN","osci_show_range")),
+    
+    num_extra_threads(generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),generate_short_human_name("MAIN","cpus")),
 
     env_preset_def(new ENVPresetDef( MASTER ) ),
     eq_data(new EQData(MASTER, env_preset_def)),
@@ -837,6 +839,8 @@ NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibility
     params_.add( &osci_show_out );
     params_.add( &osci_show_out_env );
     params_.add( &osci_show_range );
+    
+    params_.add( &num_extra_threads );
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id ) {
         params_.add( &morhp_states[morpher_id] );

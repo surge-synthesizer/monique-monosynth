@@ -61,12 +61,12 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 //==============================================================================
 UiLookAndFeel::UiLookAndFeel()
 {
+    std::cout << "MONIQUE: init style" << std::endl;
+  
     // initialise the standard set of colours..
     const uint32 textButtonColour      = 0xffbbbbff;
     const uint32 textHighlightColour   = 0x401111ee;
     const uint32 standardOutlineColour = 0xb2808080;
-
-    DBG ( "BOOT::UiLookAndFeel::SET-COLOURS");
 
     static const uint32 standardColours[] =
     {
@@ -207,7 +207,6 @@ UiLookAndFeel::UiLookAndFeel()
     show_values_always = false;
     midi_learn_comp = nullptr;
 
-    DBG ( "BOOT::UiLookAndFeel::SET-COLOURS::DONE");
 
     for (int i = 0; i < numElementsInArray (standardColours); i += 2)
         setColour ((int) standardColours [i], Colour ((uint32) standardColours [i + 1]));
@@ -218,7 +217,6 @@ UiLookAndFeel::UiLookAndFeel()
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::OswaldRegular_ttf,BinaryData::OswaldRegular_ttfSize));
     //defaultFont.setBold(true);
     // defaultFont = Font();
-
 }
 
 //==============================================================================

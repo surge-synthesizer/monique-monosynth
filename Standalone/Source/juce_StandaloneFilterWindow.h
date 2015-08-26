@@ -75,7 +75,7 @@ public:
         editor = dynamic_cast<UiEditorSynthLite*>(filter->createEditorIfNeeded());
         store = editor->_app_instance_store;
         setContentOwned(editor, true);
-
+	
 #if IS_MOBILE_APP
         Desktop::getInstance().setKioskModeComponent(this);
         editor->timerCallback();
@@ -97,7 +97,7 @@ public:
     void createFilter()
     {
         AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Standalone);
-        filter = createPluginFilter();
+        filter = reinterpret_cast<MoniqueAudioProcessor*>( createPluginFilter() );
 
 #ifdef USE_PLUGIN_PROCESS_BLOCK
         AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Undefined);
@@ -170,7 +170,7 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<AudioProcessor> filter;
+    ScopedPointer<MoniqueAudioProcessor> filter;
 
 public:
     UiEditorSynthLite* editor;

@@ -96,6 +96,7 @@ public:
     MoniqueAudioProcessor();
 #ifdef IS_STANDALONE
     AudioProcessorPlayer player;
+    bool audio_is_successful_initalized;
     void init_audio();
 #endif
 

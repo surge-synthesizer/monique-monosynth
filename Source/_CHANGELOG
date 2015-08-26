@@ -17,7 +17,7 @@ CHANGES 0.5:
 - remove: max attack, decay, sus, release times in ADR preset editor (to simplify)
 - change: ADR preset setting are now in the new editor "ADR"
 - add cpu usage and multicore options to "CFG" editor
-- 
+- add select audio card and driver (standalone)
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -55,6 +55,7 @@ TODO:
 - auto resize ui if screen is to small
 - todo no repaint on mouse activity!
 - todo set fixed max times in adr editor
+- todo: check colours global, save colours
 
 QUESTS
 - sync lfo with note on?

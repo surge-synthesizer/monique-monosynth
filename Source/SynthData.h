@@ -810,6 +810,9 @@ struct SynthData : mono_ParameterListener<float>
     mono_Parameter< bool, false > osci_show_out_env;
     mono_Parameter< float, 50, 0,1000, 1000, 100 > osci_show_range;
     
+    
+    mono_Parameter< int, 0, 0,2 > num_extra_threads;
+    
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
     OwnedArray< ENVPresetData > filter_input_env_datas;

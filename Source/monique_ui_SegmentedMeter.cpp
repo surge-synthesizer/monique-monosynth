@@ -21,7 +21,6 @@ SegmentedMeter::SegmentedMeter()
       needsRepaint  (true)
 {
     setOpaque (true);
-    resized();
 }
 
 SegmentedMeter::~SegmentedMeter() {}

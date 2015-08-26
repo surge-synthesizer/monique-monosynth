@@ -171,60 +171,75 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     peak_meter(nullptr),
     repaint_peak_meter(false)
 {
-    AppInstanceStore::getInstance()->audio_processor = this;
+    std::cout << "MONIQUE: init processor" << std::endl;
 
-    synth_data = new SynthData(MASTER);
+    {
+        AppInstanceStore::getInstance()->audio_processor = this;
+
+        synth_data = new SynthData(MASTER);
 
 #ifdef IS_PLUGIN
-    voice = new MONOVoice(this);
-    synth.addVoice (voice);
-    synth.addSound (new MonoSynthSound());
-    data_in_processor = new DATAINProcessor();
+        voice = new MONOVoice(this);
+        synth.addVoice (voice);
+        synth.addSound (new MonoSynthSound());
+        data_in_processor = new DATAINProcessor();
 #endif
 
-    MidiKeyboardState::addListener(this);
+        MidiKeyboardState::addListener(this);
 
 #ifdef IS_STANDALONE
-    init_audio();
+        init_audio();
 #endif
+    }
 
-    mono_AudioDeviceManager::read();
-    synth_data->read_midi();
+    std::cout << "MONIQUE: init midi" << std::endl;
+    {
+        mono_AudioDeviceManager::read();
+        synth_data->read_midi();
+    }
 }
 
 #ifdef IS_STANDALONE
-void MoniqueAudioProcessor::init_audio() {
-    voice = new MONOVoice(this);
-    synth.addVoice (voice);
-    synth.addSound (new MonoSynthSound());
-    data_in_processor = new DATAINProcessor();
-    synth_data->load_session ();
+void MoniqueAudioProcessor::init_audio()
+{
+    std::cout << "MONIQUE: init core" << std::endl;
+    {
+        voice = new MONOVoice(this);
+        synth.addVoice (voice);
+        synth.addSound (new MonoSynthSound());
+        data_in_processor = new DATAINProcessor();
+        synth_data->load_session ();
+    }
 
-    // TODO set sample rate
-    setPlayConfigDetails ( 0, 2, 44100, 512);
-    const OwnedArray< AudioIODeviceType >& devs = getAvailableDeviceTypes();
-    /*
-        #if JUCE_LINUX && JUCE_JACK
-        DBG( devs[1]->getTypeName() );
-        setCurrentAudioDeviceType(devs[1]->getTypeName(),true);
-    #else
-        DBG( devs[0]->getTypeName() );
-        setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
-    #endif
-        */
-    // JACK ONLY
-    DBG( devs[0]->getTypeName() );
-    setCurrentAudioDeviceType(devs[0]->getTypeName(),true);
+    std::cout << "MONIQUE: init audio" << std::endl;
+    {
+        const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
+#if JUCE_LINUX
+        bool is_jack_available = false;
+        for( int i = 0 ; i != types.size() ; ++i )
+        {
+            AudioIODeviceType* type = types[i];
+            if( type->getTypeName() == "JACK" )
+                is_jack_available = true;
+        }
+        if( is_jack_available )
+            setCurrentAudioDeviceType("JACK",false);
+#endif
+        setPlayConfigDetails ( 0, 2, 0, 0);
 
-
-    if( initialise(0,2, nullptr, true ) == "" )
-        addAudioCallback (&player);
-    else
-        DBG("FAILED BOOT AUDIO THREAD");
-
-    player.setProcessor (this);
-
-    // playTestSound();
+        String error = initialise(0,2, nullptr, false );
+        if( error == "" )
+        {
+            addAudioCallback (&player);
+            player.setProcessor (this);
+            audio_is_successful_initalized = true;
+        }
+        else
+        {
+            std::cout << error << std::endl;
+            audio_is_successful_initalized = false;
+        }
+    }
 }
 #endif
 
@@ -426,7 +441,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
 
-                    // VISUALIZE 
+                    // VISUALIZE
                     if( peak_meter )
                         peak_meter->process( buffer_.getReadPointer(0), num_samples );
                 }
@@ -637,3 +652,4 @@ MoniqueAudioProcessor::~MoniqueAudioProcessor()
 
     AppInstanceStore::getInstance()->audio_processor = nullptr;
 }
+
