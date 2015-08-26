@@ -19,7 +19,7 @@
     ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \
     Colour blue_replacement = colours.slider_track_colour.darker(); \
-    Colour border_replacement = Colour(0xffff3b00); \
+    Colour border_replacement = colours.bg_lines; \
     Colour bg_replacement = colours.bg;
   
 

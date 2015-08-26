@@ -92,7 +92,7 @@ private:
 juce_ImplementSingleton (mono_ThreadManager)
 mono_ThreadManager::mono_ThreadManager()
 {
-    for( int i = 0 ; i < DATA( synth_data ).num_extra_threads ; ++i )
+    for( int i = 0 ; i < THREAD_LIMIT ; ++i )
     {
         mono_ExecuterThread*thread( new mono_ExecuterThread() );
         thread->setPriority(10);

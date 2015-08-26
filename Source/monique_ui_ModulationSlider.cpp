@@ -190,7 +190,7 @@ noexcept
         // BOTTOM BUTTON
         bottom_button_->setButtonText( slider_config_->get_bottom_button_text().text );
         bottom_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
-        bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
+        bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
     }
 
 
@@ -201,7 +201,7 @@ noexcept
 
         top_button_->setButtonText( slider_config_->get_top_button_text().text );
         top_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
-        top_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.button_text_colour );
+        top_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
     }
 
     if( has_bottom_label )

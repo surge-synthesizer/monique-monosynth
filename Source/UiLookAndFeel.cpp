@@ -310,7 +310,7 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
     if( ! button.isEnabled() )
         color_1 = Colour (0xff414141);
     else if( is_bg_button )
-        color_1 = colours.button_text_colour;
+        color_1 = colours.label_text_colour;
     else
         color_1 = colours.button_off_colour;
 
@@ -352,7 +352,7 @@ void UiLookAndFeel::drawTickBox (Graphics& g, Component& component,
         g.setColour (Colours::black);
     g.fillRect (int(x)-1, int(y)-1, int(w), int(h) );
 
-    g.setColour (Colour (colours.bg_lines));
+    g.setColour (Colour (colours.label_text_colour));
     g.drawRect (int(x)-1, int(y)-1, int(w), int(h), 1);
 }
 

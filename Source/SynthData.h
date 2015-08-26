@@ -771,6 +771,7 @@ inline const ChorusData& ChorusData::operator=( const ChorusData& other_ ) noexc
 // ==============================================================================
 // TODO LFO SNAP & SNAP DURATION
 //==============================================================================
+#define THREAD_LIMIT 3
 struct SynthData : mono_ParameterListener<float>
 {
     const int id;
@@ -811,7 +812,7 @@ struct SynthData : mono_ParameterListener<float>
     mono_Parameter< float, 50, 0,1000, 1000, 100 > osci_show_range;
     
     
-    mono_Parameter< int, 0, 0,2 > num_extra_threads;
+    mono_Parameter< int, 0, 0,THREAD_LIMIT > num_extra_threads;
     
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;

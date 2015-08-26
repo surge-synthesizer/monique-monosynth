@@ -35,11 +35,8 @@ struct ComponentColours {
     Colour slider_track_colour;
     Colour slider_track_colour_2;
     Colour slider_track_colour_modulation;
-    Colour slider_line_colour;
-    Colour slider_text_colour;
     Colour button_on_colour;
     Colour button_off_colour;
-    Colour button_text_colour;
     Colour label_text_colour;
 
     Colour midi_learn;
@@ -59,16 +56,13 @@ struct ComponentColours {
         slider_track_colour( 4278251775 ),
         slider_track_colour_2( Colour(0xffff6600) ),
         slider_track_colour_modulation( 4294942532 ),
-        slider_line_colour( 4278218356 ),
-        slider_text_colour( 4294967295 ),
         button_on_colour( 4294942532 ),
         button_off_colour( 4279308561 ),
-        button_text_colour( 4294942532 ),
         label_text_colour( 4294942532 ),
         midi_learn( Colours::red ),
 
         bg( 0xff050505 ),
-        bg_lines( 4287387171 )
+        bg_lines( 0xffff3b00 )
     {}
 
     NOINLINE void read_from( XmlElement*xml_ ) {
