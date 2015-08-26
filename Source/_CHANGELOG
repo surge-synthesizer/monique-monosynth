@@ -38,20 +38,20 @@ CHANGES 0.5:
 - osc square and saw going out of center on higher octaves
 
 TODO:
+- need: global file (cpus, colours, slider cfg etc...)
+- add: store ui size
 - add: modulation amounts as automation params
 - add: midi bank select
 - add: midi mod wheel; pitch wheel support
 - add: panic
 - add/fix: morph for some values are not supported now (e.g. pulse)
-- add: store ui size
 - add-back: morph toggles
 - shuffle: snap to note durations
-- add: audio device settings (standalone)
 - improve/fix style of some background sliders: e.g modulation of the OSC tune
 - add: modwheel to ui
 - store last programm as filename in last session file (not as sepperate project)
 - bg für second ADSR slider
-- close editors if you open a new one
+- close editors if you open a new one+
 - auto resize ui if screen is to small
 - todo no repaint on mouse activity!
 - todo set fixed max times in adr editor

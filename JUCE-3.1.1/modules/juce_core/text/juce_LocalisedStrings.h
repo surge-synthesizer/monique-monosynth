@@ -211,7 +211,7 @@ private:
      instead, and avoid using macros.
      @see translate(), LocalisedStrings
  */
- #define TRANS(stringLiteral) juce::translate (stringLiteral)
+ #define TRANS(stringLiteral) String(stringLiteral) /*juce::translate (stringLiteral)*/
 #endif
 
 /** A dummy version of the TRANS macro, used to indicate a string literal that should be

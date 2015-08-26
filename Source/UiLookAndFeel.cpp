@@ -1835,7 +1835,7 @@ void UiLookAndFeel::drawCornerResizer (Graphics& g,
 
     for (float i = 0.0f; i < 1.0f; i += 0.3f)
     {
-        g.setColour (Colour (0xffff3b00));
+        g.setColour (colours.bg_lines);
         g.drawLine (w * i + lineThickness,
                     h + 1.0f,
                     w + 1.0f,

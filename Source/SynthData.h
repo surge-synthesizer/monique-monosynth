@@ -771,7 +771,7 @@ inline const ChorusData& ChorusData::operator=( const ChorusData& other_ ) noexc
 // ==============================================================================
 // TODO LFO SNAP & SNAP DURATION
 //==============================================================================
-#define THREAD_LIMIT 3
+#define THREAD_LIMIT 4
 struct SynthData : mono_ParameterListener<float>
 {
     const int id;
