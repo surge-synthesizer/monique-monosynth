@@ -64,13 +64,13 @@ void UiEditorGlobalSettings::refresh() noexcept
     else
     {
         button_colour_bg->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.bg);
-        button_colour_border->setColour (TextButton::buttonColourId, Colour(0xffff3b00) ); //  // UiLookAndFeel::getInstance()->colours.bg
+        button_colour_border->setColour (TextButton::buttonColourId,  UiLookAndFeel::getInstance()->colours.bg_lines );
         button_colour_buttons_on->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour);
         button_colour_buttons_off->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour);
         button_colour_slider_1->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.slider_track_colour);
         button_colour_slider_2->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.slider_track_colour_2);
         button_colour_slider_mod->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.slider_track_colour_modulation);
-        button_colour_signal_lines->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.slider_track_colour.darker());
+        button_colour_signal_lines->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.signal_lines);
         button_colour_labels->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.label_text_colour);
     }
 

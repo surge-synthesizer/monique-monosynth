@@ -36,7 +36,6 @@
 
 #include "UiEditorSynthLite.h"
 
-
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 
 
@@ -1997,10 +1996,8 @@ void UiEditorSynthLite::resized()
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
+    
 #include "mono_ui_includeHacks_END.h"
-
-    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
-        amp_painter->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
     //[/UserResized]
 }
 

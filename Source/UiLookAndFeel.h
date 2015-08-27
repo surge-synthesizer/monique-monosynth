@@ -62,7 +62,8 @@ struct ComponentColours {
         midi_learn( Colours::red ),
 
         bg( 0xff050505 ),
-        bg_lines( 0xffff3b00 )
+        bg_lines( 0xffff3b00 ),
+        signal_lines( 4278251775 )
     {}
 
     NOINLINE void read_from( XmlElement*xml_ ) {

@@ -11,7 +11,7 @@
 #define COLOUR_REPLACEMENT_START \
     ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \
-    Colour blue_replacement = colours.slider_track_colour.darker(); \
+    Colour blue_replacement = colours.signal_lines; \
     Colour border_replacement = colours.bg_lines; \
     Colour bg_replacement = colours.bg; \
     Colour yellow_replacement = colours.label_text_colour;
