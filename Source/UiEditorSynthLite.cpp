@@ -121,7 +121,6 @@ void UiEditorSynthLite::show_current_voice_data() {
     filter_type_5_3->setColour( TextButton::buttonColourId, f_type == PASS ? button_on : button_off );
 
     // SEQUENCE
-    MONOVoice* voice = reinterpret_cast< MONOVoice* >( _app_instance_store->audio_processor->synth.getVoice(0) );
     button_sequence_1->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->step[0] ? button_on.darker( 1.0f-voice->get_arp_sequence_amp(0) ) : button_off );
     button_sequence_2->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->step[1] ? button_on.darker( 1.0f-voice->get_arp_sequence_amp(1) ) : button_off );
     button_sequence_3->setColour( TextButton::buttonColourId, synth_data->arp_sequencer_data->step[2] ? button_on.darker( 1.0f-voice->get_arp_sequence_amp(2) ) : button_off );
@@ -158,9 +157,6 @@ void UiEditorSynthLite::show_current_voice_data() {
     button_open_config2->setColour( TextButton::buttonColourId, editor_global_settings ? Colours::lightblue:button_off );
 
     button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
-
-    if( popup )
-        popup->refresh();
 }
 
 void UiEditorSynthLite::resize_sequence_buttons() {

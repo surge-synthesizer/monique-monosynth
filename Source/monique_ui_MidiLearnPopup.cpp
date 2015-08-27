@@ -28,7 +28,7 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorSynthLitePopup::refresh()
+void UiEditorSynthLitePopup::refresh() noexcept
 {
     if( _midi_control )
     {
@@ -126,7 +126,6 @@ UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_,
         combo_midi_channel->addItem( String(i), i );
     }
 
-    refresh();
     /*
     //[/UserPreSize]
 
@@ -264,7 +263,7 @@ void UiEditorSynthLitePopup::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorSynthLitePopup" componentName=""
-                 parentClasses="public Component" constructorParams="UiEditorSynthLite*const parent_, MIDIControl* midi_control_"
+                 parentClasses="public Component, public mono_UiRefreshable" constructorParams="UiEditorSynthLite*const parent_, MIDIControl* midi_control_"
                  variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="140">

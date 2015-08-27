@@ -292,7 +292,6 @@ private:
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
 
-
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorSynthLite)
 };

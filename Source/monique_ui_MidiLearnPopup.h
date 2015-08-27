@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_BE41B261562DCF2__
-#define __JUCE_HEADER_BE41B261562DCF2__
+#ifndef __JUCE_HEADER_679129E1BACE7D54__
+#define __JUCE_HEADER_679129E1BACE7D54__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -38,6 +38,7 @@ class MIDIControl;
                                                                     //[/Comments]
 */
 class UiEditorSynthLitePopup  : public Component,
+                                public mono_UiRefreshable,
                                 public ComboBoxListener,
                                 public ButtonListener
 {
@@ -51,7 +52,7 @@ public:
     Component* related_to_comp;
     void set_element_to_show(Component*const);
     void update_positions();
-    void refresh();
+    void refresh() noexcept override;
 
     const float original_w;
     const float original_h;
@@ -65,7 +66,9 @@ private:
     void resized();
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
-    
+
+
+
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
@@ -77,6 +80,7 @@ private:
     ScopedPointer<ComboBox> combo_midi_channel;
     Path internalPath1;
 
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorSynthLitePopup)
 };
@@ -84,4 +88,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_BE41B261562DCF2__
+#endif   // __JUCE_HEADER_679129E1BACE7D54__
