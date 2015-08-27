@@ -211,7 +211,7 @@ void UiDragPad::paint (Graphics& g)
         w_h,
         colours_.slider_track_colour, 0.3f
     );
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     /*
     //[/UserPrePaint]
 
@@ -233,7 +233,7 @@ void UiDragPad::resized()
 
     track_area->setBounds (0, 0, 80, 130);
     //[UserResized] Add your own custom resize handling here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

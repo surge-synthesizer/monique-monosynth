@@ -448,7 +448,7 @@ UiEditorMorph::~UiEditorMorph()
 void UiEditorMorph::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
@@ -530,7 +530,7 @@ void UiEditorMorph::resized()
     label_35->setBounds (1050 + 405 / 2 - (130 / 2), 10 + 150 / 2 + 25 - (30 / 2), 130, 30);
     drag_pad->setBounds (1050, 10, 405, 150);
     //[UserResized] Add your own custom resize handling here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

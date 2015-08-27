@@ -721,7 +721,7 @@ UiEditorGlobalSettings::~UiEditorGlobalSettings()
 void UiEditorGlobalSettings::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
@@ -806,7 +806,7 @@ void UiEditorGlobalSettings::resized()
     label_10->setBounds (390, 30, 60, 33);
     combo_audio_driver->setBounds (460, 30, 80, 30);
     //[UserResized] Add your own custom resize handling here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

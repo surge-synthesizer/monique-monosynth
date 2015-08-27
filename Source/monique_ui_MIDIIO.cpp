@@ -249,7 +249,7 @@ UiEditorMIDIIO::~UiEditorMIDIIO()
 void UiEditorMIDIIO::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
@@ -308,7 +308,7 @@ void UiEditorMIDIIO::resized()
         combo_input_main->grabKeyboardFocus();
         has_grabbed_focus = true;
     }
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

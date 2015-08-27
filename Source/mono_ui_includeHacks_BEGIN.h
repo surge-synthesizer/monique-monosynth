@@ -2,19 +2,12 @@
 #ifndef DYNAMIC_FILE_INCLUDED
   #define DYNAMIC_FILE_INCLUDED 1
 #else
-    PLEASE_INCLUDE_DYNAMIC_SIZE_END_IN_RESIZED
+    PLEASE_INCLUDE_END_IN_RESIZED
 #endif
 //*****************************************************************************
 
 // repaint colours
 //*****************************************************************************
-/*
-#define COLOUR_REPLACEMENT_START \
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
-    Colour orange_replacement = colours.bg_lines; \
-    Colour blue_replacement = colours.slider_track_colour.darker(); \
-    Colour border_replacement = colours.button_on_colour.interpolatedWith(colours.slider_track_colour,0.5f); 
-*/
 #define COLOUR_REPLACEMENT_START \
     ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \

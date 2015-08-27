@@ -461,7 +461,7 @@ void mono_AmpPainter::paint (Graphics& g)
 void mono_AmpPainter::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPreResize]
 
     sl_show_range->setBounds (215, 150, 1240, 20);
@@ -480,7 +480,7 @@ void mono_AmpPainter::resized()
     drawing_area->setBounds (215, 10, 1240, 135);
     //[UserResized] Add your own custom resize handling here..
 
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

@@ -11,7 +11,7 @@
 
 SegmentedMeter::SegmentedMeter()
     : my_red( Colours::red.getARGB() ),
-      my_yellow( UiLookAndFeel::getInstance()->colours.bg_lines.getARGB()),
+      my_yellow( UiLookAndFeel::getInstance()->colours.button_on_colour.getARGB()),
       my_green( UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB() ),
       numSegs       (0),
       last_numSeg   (-1),

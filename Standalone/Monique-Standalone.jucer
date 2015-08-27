@@ -59,6 +59,10 @@
               file="../Source/monique_ui_SegmentedMeter.h"/>
         <FILE id="LcZpDB" name="monique_ui_SliderConfig.h" compile="0" resource="0"
               file="../Source/monique_ui_SliderConfig.h"/>
+        <FILE id="hU1q28" name="mono_ui_includeHacks_BEGIN.h" compile="0" resource="0"
+              file="../Source/mono_ui_includeHacks_BEGIN.h"/>
+        <FILE id="QV1MI3" name="mono_ui_includeHacks_END.h" compile="0" resource="0"
+              file="../Source/mono_ui_includeHacks_END.h"/>
       </GROUP>
       <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>
@@ -76,10 +80,6 @@
       <FILE id="gOmGCe" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
       <FILE id="WLgmrQ" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
       <FILE id="Sy24e7" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="RdGhRR" name="UiDynamicSizeEnd.h" compile="0" resource="0"
-            file="../Source/UiDynamicSizeEnd.h"/>
-      <FILE id="JLxEwm" name="UiDynamicSizeStart.h" compile="0" resource="0"
-            file="../Source/UiDynamicSizeStart.h"/>
       <FILE id="M5rtTx" name="UiEditorSynthLite.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"

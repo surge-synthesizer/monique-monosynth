@@ -758,7 +758,7 @@ UiEditorSettings::~UiEditorSettings()
 void UiEditorSettings::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
@@ -812,7 +812,7 @@ void UiEditorSettings::paint (Graphics& g)
     g.fillRect (1145, 65, 10, 1);
 
     //[UserPaint] Add your own custom painting code here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     {
         curve.clearQuick();
         curve.ensureStorageAllocated( 50000 );
@@ -882,7 +882,7 @@ void UiEditorSettings::paint (Graphics& g)
 void UiEditorSettings::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPreResize]
 
     label_ui_headline_4->setBounds (850, -4, 140, 35);
@@ -946,7 +946,7 @@ void UiEditorSettings::resized()
     label_ui_headline_5->setBounds (1380, 20, 60, 33);
     label3->setBounds (1080, 125, 60, 33);
     //[UserResized] Add your own custom resize handling here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

@@ -63,6 +63,10 @@
               file="../Source/monique_ui_SegmentedMeter.h"/>
         <FILE id="nRVqW1" name="monique_ui_SliderConfig.h" compile="0" resource="0"
               file="../Source/monique_ui_SliderConfig.h"/>
+        <FILE id="vJWp0D" name="mono_ui_includeHacks_BEGIN.h" compile="0" resource="0"
+              file="../Source/mono_ui_includeHacks_BEGIN.h"/>
+        <FILE id="QRh7fS" name="mono_ui_includeHacks_END.h" compile="0" resource="0"
+              file="../Source/mono_ui_includeHacks_END.h"/>
       </GROUP>
       <FILE id="TLV810" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>

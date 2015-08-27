@@ -10,6 +10,7 @@
 #undef fillRect
 #undef drawRect
 #undef fillEllipse
+#undef drawEllipse
 #undef WIDTH_AND_HIGHT_FACTORS
 
 // resize

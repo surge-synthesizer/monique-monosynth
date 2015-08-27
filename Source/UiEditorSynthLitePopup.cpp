@@ -145,7 +145,7 @@ UiEditorSynthLitePopup::~UiEditorSynthLitePopup()
 void UiEditorSynthLitePopup::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
     g.setColour (Colour (0x885f9ea0));
@@ -174,7 +174,7 @@ void UiEditorSynthLitePopup::resized()
     internalPath1.closeSubPath();
 
     //[UserResized] Add your own custom resize handling here..
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 

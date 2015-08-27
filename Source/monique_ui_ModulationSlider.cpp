@@ -655,7 +655,7 @@ void mono_ModulationSlider::paint (Graphics& g)
 
     //[UserPaint] Add your own custom painting code here..
     */
-#include "UiDynamicSizeStart.h"
+#include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPaint]
 }
 
@@ -685,7 +685,7 @@ void mono_ModulationSlider::resized()
     label_top->setBounds (0, -4, 60, 35);
     //[UserResized] Add your own custom resize handling here..
     */
-#include "UiDynamicSizeEnd.h"
+#include "mono_ui_includeHacks_END.h"
     //[/UserResized]
 }
 
