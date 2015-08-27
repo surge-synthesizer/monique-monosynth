@@ -19,6 +19,7 @@ CHANGES 0.5:
 - add cpu usage and multicore options to "CFG" editor
 - add select audio card and driver (standalone)
 - add: double click on the morph pad resets it to the center (center == all morph sliders set to zero or LEFT side)
+- fix: resize editors on main ui size change
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -58,7 +59,6 @@ TODO:
 - todo no repaint on mouse activity!
 - todo set fixed max times in adr editor
 - todo: check colours global, save colours
-- resize all subeditors
 
 QUESTS
 - sync lfo with note on?
