@@ -173,9 +173,9 @@ void mono_AmpPainter::paint (Graphics& g)
 
     // TODO paint all or only values
     {
-        g.fillAll (Colour(0xff050505));
-
         lock_for_reading();
+	
+        g.fillAll (Colour(0xff050505));
 
         // TODO MAKE INTS!
         const int samples_to_paint = sl_show_range->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
@@ -287,6 +287,8 @@ void mono_AmpPainter::paint (Graphics& g)
         const bool show_eq = synth_data.osci_show_eq;
         const bool show_out = synth_data.osci_show_out;
         const bool show_out_env = synth_data.osci_show_out_env;
+	
+	// OSC'S
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
             EndlessBuffer& values = *osc_values[osc_id];
@@ -319,6 +321,7 @@ void mono_AmpPainter::paint (Graphics& g)
             }
         }
 
+        // EQ
         if( show_eq )
         {
             Colour col = Colours::green;
@@ -341,6 +344,7 @@ void mono_AmpPainter::paint (Graphics& g)
             );
         }
 
+        // FILTERS
         for( int filter_id = 0 ; filter_id != filter_values.size() ; ++filter_id )
         {
             Colour col;
@@ -397,6 +401,7 @@ void mono_AmpPainter::paint (Graphics& g)
 
         }
 
+        // FINAL OUTPUT
         if( show_out )
         {
             mono_AmpPainter::exec
@@ -418,6 +423,7 @@ void mono_AmpPainter::paint (Graphics& g)
             );
         }
 
+        // MAIN ENV
         if( show_out_env )
         {
             mono_AmpPainter::exec
