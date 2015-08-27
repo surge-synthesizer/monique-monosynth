@@ -24,11 +24,6 @@
 #include "UiLookAndFeel.h"
 #include "UiEditorSynthLitePopup.h"
 
-
-
-
-
-
 #include "monique_ui_SegmentedMeter.h"
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_ModulationSlider.h"
@@ -36,12 +31,7 @@
 #include "monique_ui_MIDIIO.h"
 #include "monique_ui_ADRDesigner.h"
 #include "monique_ui_GlobalSettings.h"
-
-
-
-
-
-#include "UiEditorMorph.h"
+#include "monique_ui_Morph.h"
 //[/Headers]
 
 #include "UiEditorSynthLite.h"
@@ -772,7 +762,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     addAndMakeVisible (speed = new mono_ModulationSlider (new BPMSlConfig()));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
-    button_open_morph->setButtonText (TRANS("CFG"));
+    button_open_morph->setButtonText (TRANS("EDIT"));
     button_open_morph->addListener (this);
     button_open_morph->setColour (TextButton::buttonColourId, Colours::black);
     button_open_morph->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -786,7 +776,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-                                                       TRANS("M-OSC")));
+                                                       TRANS("OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -795,7 +785,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-                                                       TRANS("M-FLT")));
+                                                       TRANS("FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -804,7 +794,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-                                                       TRANS("M-FX")));
+                                                       TRANS("FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -813,7 +803,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-                                                       TRANS("M-ARP")));
+                                                       TRANS("ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -1629,10 +1619,10 @@ void UiEditorSynthLite::paint (Graphics& g)
     g.drawRoundedRectangle (1085.0f, 595.0f, 269.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (1355.0f, 595.0f, 99.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (1355.0f, 595.0f, 99.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (575.0f, 230.0f, 201.0f, 1.0f, 1.000f);
@@ -1892,7 +1882,7 @@ void UiEditorSynthLite::resized()
     filter_type_3_3->setBounds (1005 - 60, 496, 60, 25);
     filter_type_5_1->setBounds (1005 - 60, 161, 60, 27);
     filter_type_5_2->setBounds (1005 - 60, 341, 60, 27);
-    filter_type_5_3->setBounds (1005 - 60, 496, 60, 27);
+    filter_type_5_3->setBounds (1005 - 60, 520, 60, 27);
     button_sequence_2->setBounds (335 - 60, 840 - 20, 60, 20);
     button_sequence_3->setBounds (395 - 60, 840 - 20, 60, 20);
     button_sequence_4->setBounds (455 - 60, 840 - 20, 60, 20);
@@ -1968,7 +1958,7 @@ void UiEditorSynthLite::resized()
     filter_type_6_1->setBounds (1005 - 60, 60, 60, 27);
     filter_type_6_2->setBounds (1005 - 60, 240, 60, 27);
     filter_type_6_3->setBounds (1005 - 60, 420, 60, 27);
-    button_midi_learn->setBounds (1205 - 60, 1060 - 30, 60, 30);
+    button_midi_learn->setBounds (1205 - 60, 1000 - 30, 60, 30);
     button_ctrl_toggle->setBounds (100, 1000, 60, 30);
     colour->setBounds (585 - 60, 750 - 130, 60, 130);
     speed->setBounds (1285 - 60, 950 - 130, 60, 130);
@@ -2726,7 +2716,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         if( ! editor_morph )
         {
 	    close_all_subeditors();
-	  
+
             addAndMakeVisible( editor_morph = new UiEditorMorph() );
             editor_morph->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
         }
@@ -2989,8 +2979,8 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="260 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1085 595 269 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="1355 595 99 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
+    <ROUNDRECT pos="1355 595 100 180" cornerSize="6" fill="solid: ff050505"
+               hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="575 230 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="435 235 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="855 235 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3275,7 +3265,7 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 496 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 520 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
@@ -3535,7 +3525,7 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="1205r 1060r 60 30"
+              virtualName="" explicitFocusOrder="0" pos="1205r 1000r 60 30"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LEARN"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
@@ -3550,7 +3540,7 @@ BEGIN_JUCER_METADATA
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
               virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="CFG" connectedEdges="0"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
               virtualName="" explicitFocusOrder="0" pos="520r 620 25 130" bgColOff="ff000000"
@@ -3558,22 +3548,22 @@ BEGIN_JUCER_METADATA
               needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af640d06672c6a96" memberName="label_ui_headline2"
          virtualName="" explicitFocusOrder="0" pos="1105 616 60 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M-OSC" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="OSC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="6cf55c2697d84492" memberName="label_ui_headline3"
          virtualName="" explicitFocusOrder="0" pos="1165 616 60 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M-FLT" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FLT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="31349ce13448848e" memberName="label_ui_headline5"
          virtualName="" explicitFocusOrder="0" pos="1225 616 60 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M-FX" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="FX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="1e86fc07c2fe9e40" memberName="label_ui_headline6"
          virtualName="" explicitFocusOrder="0" pos="1285 616 60 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="M-ARP" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="ARP" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"

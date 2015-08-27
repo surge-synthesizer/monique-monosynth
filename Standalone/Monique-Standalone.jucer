@@ -45,6 +45,10 @@
               resource="0" file="../Source/monique_ui_ModulationSlider.cpp"/>
         <FILE id="aAzlsd" name="monique_ui_ModulationSlider.h" compile="0"
               resource="0" file="../Source/monique_ui_ModulationSlider.h"/>
+        <FILE id="oXL8Tl" name="monique_ui_Morph.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_Morph.cpp"/>
+        <FILE id="A3cJBm" name="monique_ui_Morph.h" compile="0" resource="0"
+              file="../Source/monique_ui_Morph.h"/>
         <FILE id="q2Ipl5" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wjJSXf" name="monique_ui_Refresher.h" compile="0" resource="0"
@@ -76,9 +80,6 @@
             file="../Source/UiDynamicSizeEnd.h"/>
       <FILE id="JLxEwm" name="UiDynamicSizeStart.h" compile="0" resource="0"
             file="../Source/UiDynamicSizeStart.h"/>
-      <FILE id="HIam5M" name="UiEditorMorph.cpp" compile="1" resource="0"
-            file="../Source/UiEditorMorph.cpp"/>
-      <FILE id="I7c2kl" name="UiEditorMorph.h" compile="0" resource="0" file="../Source/UiEditorMorph.h"/>
       <FILE id="M5rtTx" name="UiEditorSynthLite.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"

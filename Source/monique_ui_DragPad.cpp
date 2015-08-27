@@ -158,20 +158,21 @@ UiDragPad::UiDragPad ()
     //[UserPreSize]
     this->setWantsKeyboardFocus(false);
     this->setRepaintsOnMouseActivity(false);
-    this->setOpaque(true);
+    //this->setOpaque(true);
 
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         Component* comp = getChildComponent(i);
         comp->setWantsKeyboardFocus(false);
         comp->setRepaintsOnMouseActivity(false);
-        comp->setOpaque(true);
+        // comp->setOpaque(true);
     }
 
     /*
     //[/UserPreSize]
 
     setSize (80, 130);
+
 
     //[Constructor] You can add your own custom stuff here..
     */
@@ -185,6 +186,7 @@ UiDragPad::~UiDragPad()
 
     track_area = nullptr;
 
+
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
@@ -193,30 +195,25 @@ UiDragPad::~UiDragPad()
 void UiDragPad::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    g.fillAll (Colour (0xff050505));
-
     ComponentColours colours_ = UiLookAndFeel::getInstance()->colours;
 
-    g.setColour (colours_.bg_lines);
-    g.drawRoundedRectangle (1.0f, 1.0f, track_area->getWidth()-2, track_area->getHeight()-2, 10.000f, 1.000f);
-
-    const float w_h = 20;
+    const float w_h = 15;
     const float x = track_area->getX()+1;
     const float y = track_area->getY()+1;
     const float w = track_area->getWidth()-w_h-2;
     const float h = track_area->getHeight()-w_h-2;
-    g.setColour (colours_.slider_track_colour);
-    g.fillEllipse (x+w*left2right_state, y+h*top2bottom_state, w_h, w_h);
 
-
-    g.setColour (colours_.bg_lines);
-    g.drawEllipse (x+w*left2right_state, y+h*top2bottom_state, w_h, w_h, 1.000f);
+    UiLookAndFeel::getInstance()->drawGlassSphere
+    (
+        g,
+        x+w*left2right_state,
+        y+h*top2bottom_state,
+        w_h,
+        colours_.slider_track_colour, 0.3f
+    );
 #include "UiDynamicSizeStart.h"
     /*
     //[/UserPrePaint]
-
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (1.0f, 1.0f, 78.0f, 128.0f, 10.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillEllipse (45.0f, 97.0f, 20.0f, 20.0f);
@@ -240,6 +237,8 @@ void UiDragPad::resized()
     //[/UserResized]
 }
 
+
+
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void UiDragPad::set_left_to_right_states( float left2right_state_, float top2bottom_state_ ) {
     left2right_state = left2right_state_;
@@ -260,13 +259,10 @@ void UiDragPad::set_left_to_right_states( float left2right_state_, float top2bot
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiDragPad" componentName=""
-                 parentClasses="public Component" constructorParams=""
-                 variableInitialisers="left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
+                 parentClasses="public Component" constructorParams="" variableInitialisers="left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="130">
   <BACKGROUND backgroundColour="50505">
-    <ROUNDRECT pos="1 1 78 128" cornerSize="10" fill="solid: a5312a" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
     <ELLIPSE pos="45 97 20 20" fill="solid: ff11ffff" hasStroke="1" stroke="2, mitered, butt"
              strokeColour="solid: ffff3b00"/>
   </BACKGROUND>

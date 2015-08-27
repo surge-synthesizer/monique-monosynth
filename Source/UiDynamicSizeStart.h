@@ -20,7 +20,8 @@
     Colour orange_replacement = colours.bg_lines; \
     Colour blue_replacement = colours.slider_track_colour.darker(); \
     Colour border_replacement = colours.bg_lines; \
-    Colour bg_replacement = colours.bg;
+    Colour bg_replacement = colours.bg; \
+    Colour yellow_replacement = colours.label_text_colour;
   
 
 COLOUR_REPLACEMENT_START
@@ -29,6 +30,7 @@ COLOUR_REPLACEMENT_START
                        (x == 0xff11ffff) ? blue_replacement   : \
                        (x == 0xff1111ff) ? border_replacement : \
                        (x == 0xff050505) ? bg_replacement : \
+                       (x == 0xffffff11) ? yellow_replacement : \
                                            Colour(x) \
                   )
 

@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_A794863F0F24616__
-#define __JUCE_HEADER_A794863F0F24616__
+#ifndef __JUCE_HEADER_7345134BC6695C0E__
+#define __JUCE_HEADER_7345134BC6695C0E__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -56,6 +56,8 @@ private:
     void paint (Graphics& g);
     void resized();
 
+
+
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     float left2right_state;
@@ -74,4 +76,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_A794863F0F24616__
+#endif   // __JUCE_HEADER_7345134BC6695C0E__
