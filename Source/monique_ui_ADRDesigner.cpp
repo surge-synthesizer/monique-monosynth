@@ -645,6 +645,7 @@ UiEditorSettings::UiEditorSettings ()
 	    slider->setOpaque(true);
         }
     }
+    setOpaque(true);
     slider_test->setOpaque(false);
     label_shape->setOpaque(true);
     label_att_1->setOpaque(true);

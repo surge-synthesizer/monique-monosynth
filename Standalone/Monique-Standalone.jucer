@@ -29,6 +29,10 @@
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="GK0SA6" name="monique_ui_AmpPainter.h" compile="0" resource="0"
               file="../Source/monique_ui_AmpPainter.h"/>
+        <FILE id="HBPx5M" name="monique_ui_DragPad.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_DragPad.cpp"/>
+        <FILE id="sYmvQi" name="monique_ui_DragPad.h" compile="0" resource="0"
+              file="../Source/monique_ui_DragPad.h"/>
         <FILE id="miAAJA" name="monique_ui_GlobalSettings.cpp" compile="1"
               resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
         <FILE id="dCx8my" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
@@ -68,8 +72,6 @@
       <FILE id="gOmGCe" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
       <FILE id="WLgmrQ" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
       <FILE id="Sy24e7" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="IG18IL" name="UiDragPad.cpp" compile="1" resource="0" file="../Source/UiDragPad.cpp"/>
-      <FILE id="YobfKx" name="UiDragPad.h" compile="0" resource="0" file="../Source/UiDragPad.h"/>
       <FILE id="RdGhRR" name="UiDynamicSizeEnd.h" compile="0" resource="0"
             file="../Source/UiDynamicSizeEnd.h"/>
       <FILE id="JLxEwm" name="UiDynamicSizeStart.h" compile="0" resource="0"

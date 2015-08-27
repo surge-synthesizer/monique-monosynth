@@ -493,7 +493,7 @@ void mono_ModulationSlider::sliderClicked (Slider*s_)
 
 //==============================================================================
 mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config_)
-    : _config(config_)
+    : _config(config_),original_w(60), original_h(130)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -546,7 +546,7 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
-            String::empty));
+                                              String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (false, false, false);
@@ -614,12 +614,14 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
 
     show_view_mode();
     setOpaque(true);
+    /*
     //[/UserPreSize]
 
     setSize (60, 130);
 
 
     //[Constructor] You can add your own custom stuff here..
+    */
     //[/Constructor]
 }
 
@@ -653,8 +655,6 @@ void mono_ModulationSlider::paint (Graphics& g)
 
     //[UserPaint] Add your own custom painting code here..
     */
-#define original_w 60.0f
-#define original_h 130.0f
 #include "UiDynamicSizeStart.h"
     //[/UserPaint]
 }
@@ -686,8 +686,6 @@ void mono_ModulationSlider::resized()
     //[UserResized] Add your own custom resize handling here..
     */
 #include "UiDynamicSizeEnd.h"
-#undef original_w
-#undef original_h
     //[/UserResized]
 }
 
@@ -781,6 +779,8 @@ void mono_ModulationSlider::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
+
+
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void SnapSlider::mouseEnter(const MouseEvent& event)
 {
@@ -829,9 +829,9 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="mono_ModulationSlider" componentName=""
                  parentClasses="public Component, public mono_UiRefreshable" constructorParams="ModulationSliderConfigBase* config_"
-                 variableInitialisers="_config(config_)" snapPixels="8" snapActive="1"
-                 snapShown="1" overlayOpacity="0.330" fixedSize="1" initialWidth="60"
-                 initialHeight="130">
+                 variableInitialisers="_config(config_),original_w(60), original_h(130)"
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="60" initialHeight="130">
   <BACKGROUND backgroundColour="ff000000"/>
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_value" virtualName="SnapSlider"
           explicitFocusOrder="0" pos="0 37 60 56" bkgcol="ff101010" rotarysliderfill="ffffff00"

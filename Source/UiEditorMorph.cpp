@@ -20,7 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "UiLookAndFeel.h"
 #include "SynthData.h"
-#include "UiDragPad.h"
+#include "monique_ui_DragPad.h"
 #include "UiEditorSynthLite.h"
 
 //[/Headers]
@@ -127,7 +127,7 @@ void UiEditorMorph::refresh() noexcept
 
 //==============================================================================
 UiEditorMorph::UiEditorMorph ()
-    : original_w(350), original_h(720)
+    : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -137,8 +137,6 @@ UiEditorMorph::UiEditorMorph ()
     addAndMakeVisible (hit_area_1 = new Component());
 
     addAndMakeVisible (hit_area_2 = new Component());
-
-    addAndMakeVisible (hit_area_through = new Component());
 
     addAndMakeVisible (label_g_1 = new Label (String::empty,
                                               TRANS("MORPH 1")));
@@ -711,19 +709,8 @@ UiEditorMorph::UiEditorMorph ()
     addAndMakeVisible (toggle_arp_switchs_4 = new ToggleButton (String::empty));
     toggle_arp_switchs_4->addListener (this);
 
-    addAndMakeVisible (close = new TextButton (String::empty));
-    close->setButtonText (TRANS("ESC X"));
-    close->addListener (this);
-    close->setColour (TextButton::buttonColourId, Colours::red);
-    close->setColour (TextButton::buttonOnColourId, Colours::red);
-    close->setColour (TextButton::textColourOnId, Colours::black);
-    close->setColour (TextButton::textColourOffId, Colours::black);
-
 
     //[UserPreSize]
-    this->setInterceptsMouseClicks( false, true );
-    hit_area_through->setInterceptsMouseClicks( false, false );
-
     Colour button_off = UiLookAndFeel::getInstance()->colours.button_off_colour;
     button_set_left_1->setColour( TextButton::buttonColourId, button_off );
     button_set_left_2->setColour( TextButton::buttonColourId, button_off );
@@ -768,12 +755,15 @@ UiEditorMorph::UiEditorMorph ()
     for( int i = 0 ; i < getNumChildComponents() ; ++i ) {
         getChildComponent(i)->setPaintingIsUnclipped(true);
     }
+    setOpaque(true);
+    /*
     //[/UserPreSize]
 
-    setSize (350, 720);
+    setSize (1465, 720);
 
 
     //[Constructor] You can add your own custom stuff here..
+    */
     //[/Constructor]
 }
 
@@ -785,7 +775,6 @@ UiEditorMorph::~UiEditorMorph()
     hit_area_3 = nullptr;
     hit_area_1 = nullptr;
     hit_area_2 = nullptr;
-    hit_area_through = nullptr;
     label_g_1 = nullptr;
     label_1 = nullptr;
     label_2 = nullptr;
@@ -902,7 +891,6 @@ UiEditorMorph::~UiEditorMorph()
     toggle_arp_switchs_2 = nullptr;
     toggle_arp_switchs_3 = nullptr;
     toggle_arp_switchs_4 = nullptr;
-    close = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -916,14 +904,7 @@ void UiEditorMorph::paint (Graphics& g)
 #include "UiDynamicSizeStart.h"
     //[/UserPrePaint]
 
-    g.setColour (Colours::black);
-    g.fillRect (0, 0, 350, 480);
-
-    g.setColour (Colours::black);
-    g.fillRect (50, 720 - 110, 300, 110);
-
-    g.setColour (Colours::black);
-    g.fillRect (0, 720 - 260, 80, 260);
+    g.fillAll (Colour (0xff050505));
 
     g.setColour (Colour (0xffff3b00));
     g.fillRoundedRectangle (106.0f, 40.0f, 1.0f, 273.0f, 1.000f);
@@ -1189,12 +1170,6 @@ void UiEditorMorph::paint (Graphics& g)
     g.setColour (Colour (0xffff3b00));
     g.fillRoundedRectangle (296.0f, 393.0f, 5.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.strokePath (internalPath1, PathStrokeType (1.000f, PathStrokeType::mitered, PathStrokeType::rounded));
-
-    g.setColour (Colour (0xffff3b00));
-    g.strokePath (internalPath2, PathStrokeType (2.000f));
-
     //[UserPaint] Add your own custom painting code here..
 
     //[/UserPaint]
@@ -1208,7 +1183,6 @@ void UiEditorMorph::resized()
     hit_area_3->setBounds (80, 610, 270, 110);
     hit_area_1->setBounds (0, 0, 350, 480);
     hit_area_2->setBounds (0, 480, 80, 220);
-    hit_area_through->setBounds (80, 480, 270, 130);
     label_g_1->setBounds (75, 10, 60, 30);
     label_1->setBounds (0, 70 - 30, 50, 30);
     label_2->setBounds (20, 210 - 30, 50, 30);
@@ -1319,27 +1293,12 @@ void UiEditorMorph::resized()
     button_set_right_3->setBounds (210, 649, 60, 27);
     button_set_right_4->setBounds (270, 649, 60, 27);
     button_set_all_from_current->setBounds (90, 680, 240, 27);
-    track_pad->setBounds (5, 475, 70, 140);
+    track_pad->setBounds (1200, 10, 250, 160);
     label_23->setBounds (40, 410 - 30, 50, 30);
     toggle_arp_switchs_1->setBounds (120, 385, 30, 20);
     toggle_arp_switchs_2->setBounds (180, 385, 30, 20);
     toggle_arp_switchs_3->setBounds (240, 385, 30, 20);
     toggle_arp_switchs_4->setBounds (300, 385, 30, 20);
-    close->setBounds (345 - 45, 5, 45, 20);
-    internalPath1.clear();
-    internalPath1.startNewSubPath (350.0f, 610.0f);
-    internalPath1.lineTo (80.0f, 610.0f);
-    internalPath1.lineTo (80.0f, 480.0f);
-    internalPath1.lineTo (350.0f, 480.0f);
-
-    internalPath2.clear();
-    internalPath2.startNewSubPath (350.0f, 610.0f);
-    internalPath2.lineTo (350.0f, 720.0f);
-    internalPath2.lineTo (0.0f, 720.0f);
-    internalPath2.lineTo (0.0f, 0.0f);
-    internalPath2.lineTo (350.0f, 0.0f);
-    internalPath2.lineTo (350.0f, 480.0f);
-
     //[UserResized] Add your own custom resize handling here..
 #include "UiDynamicSizeEnd.h"
     //[/UserResized]
@@ -1843,13 +1802,6 @@ void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
         DATA( synth_data ).activate_morph_selection( 3, SynthData::MORPH_SELCTIONS_IDS::ARP_SWITCHS );
         //[/UserButtonCode_toggle_arp_switchs_4]
     }
-    else if (buttonThatWasClicked == close)
-    {
-        //[UserButtonCode_close] -- add your button handler code here..
-        AppInstanceStore::getInstance()->editor->editor_morph = nullptr;
-        return;
-        //[/UserButtonCode_close]
-    }
 
     //[UserbuttonClicked_Post]
     refresh();
@@ -1924,19 +1876,6 @@ void UiEditorMorph::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-bool UiEditorMorph::keyPressed (const KeyPress& key)
-{
-    //[UserCode_keyPressed] -- Add your code here...
-    bool success = false;
-    if( key == KeyPress::escapeKey )
-    {
-        AppInstanceStore::getInstance()->editor->editor_morph = nullptr;
-        return true;
-    }
-    return success;
-    //[/UserCode_keyPressed]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -1954,16 +1893,10 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorMorph" componentName=""
                  parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
-                 variableInitialisers="original_w(350), original_h(720)" snapPixels="10"
+                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="350" initialHeight="720">
-  <METHODS>
-    <METHOD name="keyPressed (const KeyPress&amp; key)"/>
-  </METHODS>
-  <BACKGROUND backgroundColour="0">
-    <RECT pos="0 0 350 480" fill="solid: ff000000" hasStroke="0"/>
-    <RECT pos="50 720r 300 110" fill="solid: ff000000" hasStroke="0"/>
-    <RECT pos="0 720r 80 260" fill="solid: ff000000" hasStroke="0"/>
+                 initialWidth="1465" initialHeight="720">
+  <BACKGROUND backgroundColour="ff050505">
     <ROUNDRECT pos="106 40 1 273" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="106 173 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="106 193 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
@@ -2052,10 +1985,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="176 393 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="236 393 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
     <ROUNDRECT pos="296 393 5 1" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
-    <PATH pos="0 0 100 100" fill="solid: 0" hasStroke="1" stroke="1, mitered, rounded"
-          strokeColour="solid: ffff3b00" nonZeroWinding="1">s 350 610 l 80 610 l 80 480 l 350 480</PATH>
-    <PATH pos="0 0 100 100" fill="solid: 0" hasStroke="1" stroke="2, mitered, butt"
-          strokeColour="solid: ffff3b00" nonZeroWinding="1">s 350 610 l 350 720 l 0 720 l 0 0 l 350 0 l 350 480</PATH>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="1071c0eb324a9419" memberName="hit_area_3" virtualName=""
                     explicitFocusOrder="0" pos="80 610 270 110" class="Component"
@@ -2064,9 +1993,6 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="0 0 350 480" class="Component" params=""/>
   <GENERICCOMPONENT name="" id="7afb75fad7b0007b" memberName="hit_area_2" virtualName=""
                     explicitFocusOrder="0" pos="0 480 80 220" class="Component" params=""/>
-  <GENERICCOMPONENT name="" id="e457cfe3632c73db" memberName="hit_area_through" virtualName=""
-                    explicitFocusOrder="0" pos="80 480 270 130" class="Component"
-                    params=""/>
   <LABEL name="" id="d152f9e6390795d1" memberName="label_g_1" virtualName=""
          explicitFocusOrder="0" pos="75 10 60 30" textCol="ffff3b00" edTextCol="ffff3b00"
          edBkgCol="0" labelText="MORPH 1" editableSingleClick="0" editableDoubleClick="0"
@@ -2457,7 +2383,8 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="SET ALL TO CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="track_pad" virtualName="UiDragPad"
-                    explicitFocusOrder="0" pos="5 475 70 140" class="Component" params=""/>
+                    explicitFocusOrder="0" pos="1200 10 250 160" class="Component"
+                    params=""/>
   <LABEL name="" id="e02c3237c9152618" memberName="label_23" virtualName=""
          explicitFocusOrder="0" pos="40 410r 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SWITCHS" editableSingleClick="0"
@@ -2475,10 +2402,6 @@ BEGIN_JUCER_METADATA
   <TOGGLEBUTTON name="" id="c3d3beaacf9b4aaa" memberName="toggle_arp_switchs_4"
                 virtualName="" explicitFocusOrder="0" pos="300 385 30 20" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="345r 5 45 20" bgColOff="ffff0000"
-              bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000" buttonText="ESC X"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

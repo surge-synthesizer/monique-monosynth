@@ -62,10 +62,18 @@ WIDTH_AND_HIGHT_FACTORS
                                                               y > 2 ? float(y)*height_factor : y, \
                                                               w > 2 ? float(w)*width_factor : w, \
                                                               h > 2 ? float(h)*height_factor : h, float(r))
+                                                              
 #define fillEllipse(x,y,w,h)                         fillEllipse(float(x)*width_factor, \
                                                               float(y)*height_factor, \
-                                                              float(w)*width_factor, \
-                                                              float(h)*height_factor)
+                                                              float(w), \
+                                                              float(h))
+                                                              
+#define drawEllipse(x,y,w,h,b)                       drawEllipse(float(x)*width_factor, \
+                                                              float(y)*height_factor, \
+                                                              float(w), \
+                                                              float(h), \
+                                                              b)
+                                                              
 // resized
 //*****************************************************************************
 #define setBounds(x,y,w,h)         setBounds (x > 2 ? float(x)*(1.0f/original_w*getWidth()) : x, \

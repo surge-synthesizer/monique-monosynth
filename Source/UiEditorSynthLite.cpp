@@ -2725,10 +2725,10 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_button_open_morph] -- add your button handler code here..
         if( ! editor_morph )
         {
+	    close_all_subeditors();
+	  
             addAndMakeVisible( editor_morph = new UiEditorMorph() );
-            float width_factor = 1.0f/original_w*getWidth();
-            float height_factor = 1.0f/original_h*getHeight();
-            editor_morph->setBounds( 990.0f*width_factor, 28.0f*height_factor, editor_morph->original_w*width_factor, editor_morph->original_h*height_factor );
+            editor_morph->setBounds( keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight() );
         }
         else
             editor_morph = nullptr;

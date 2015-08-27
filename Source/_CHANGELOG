@@ -18,6 +18,7 @@ CHANGES 0.5:
 - change: ADR preset setting are now in the new editor "ADR"
 - add cpu usage and multicore options to "CFG" editor
 - add select audio card and driver (standalone)
+- add: double click on the morph pad resets it to the center (center == all morph sliders set to zero or LEFT side)
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -38,6 +39,7 @@ CHANGES 0.5:
 - osc square and saw going out of center on higher octaves
 
 TODO:
+- fix layout sub editors  (align left and right)
 - need: global file (cpus, colours, slider cfg etc...)
 - add: store ui size
 - add: modulation amounts as automation params

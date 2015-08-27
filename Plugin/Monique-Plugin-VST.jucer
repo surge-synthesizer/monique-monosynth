@@ -16,6 +16,10 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="nDrASH" name="monique_ui_DragPad.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_DragPad.cpp"/>
+        <FILE id="gR4Btz" name="monique_ui_DragPad.h" compile="0" resource="0"
+              file="../Source/monique_ui_DragPad.h"/>
         <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
         <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
               file="../Source/dRowAudio_AudioUtility.h"/>
@@ -72,8 +76,6 @@
       <FILE id="aJbsC0" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
       <FILE id="OKoiqV" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
       <FILE id="h55lZl" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="rlKMCE" name="UiDragPad.cpp" compile="1" resource="0" file="../Source/UiDragPad.cpp"/>
-      <FILE id="l71Y0y" name="UiDragPad.h" compile="0" resource="0" file="../Source/UiDragPad.h"/>
       <FILE id="L3ocBA" name="UiDynamicSizeEnd.h" compile="0" resource="0"
             file="../Source/UiDynamicSizeEnd.h"/>
       <FILE id="f2L0aU" name="UiDynamicSizeStart.h" compile="0" resource="0"

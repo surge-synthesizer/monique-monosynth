@@ -50,13 +50,14 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     const float original_w;
     const float original_h;
+
+private:
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    bool keyPressed (const KeyPress& key);
 
 
 
@@ -70,7 +71,6 @@ private:
     ScopedPointer<Component> hit_area_3;
     ScopedPointer<Component> hit_area_1;
     ScopedPointer<Component> hit_area_2;
-    ScopedPointer<Component> hit_area_through;
     ScopedPointer<Label> label_g_1;
     ScopedPointer<Label> label_1;
     ScopedPointer<Label> label_2;
@@ -187,9 +187,6 @@ private:
     ScopedPointer<ToggleButton> toggle_arp_switchs_2;
     ScopedPointer<ToggleButton> toggle_arp_switchs_3;
     ScopedPointer<ToggleButton> toggle_arp_switchs_4;
-    ScopedPointer<TextButton> close;
-    Path internalPath1;
-    Path internalPath2;
 
 
     //==============================================================================

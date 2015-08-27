@@ -49,6 +49,7 @@ ifeq ($(CONFIG),x32)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
@@ -62,7 +63,6 @@ OBJECTS := \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
   $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/SynthData_df69b916.o \
-  $(OBJDIR)/UiDragPad_6d9b971b.o \
   $(OBJDIR)/UiEditorMorph_b9084a77.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/UiEditorSynthLitePopup_a4990cfd.o \
@@ -100,6 +100,11 @@ clean:
 strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/monique_ui_DragPad_4a969d69.o: ../../../Source/monique_ui_DragPad.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_DragPad.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
@@ -164,11 +169,6 @@ $(OBJDIR)/Synth_8129adcc.o: ../../../Source/Synth.cpp
 $(OBJDIR)/SynthData_df69b916.o: ../../../Source/SynthData.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling SynthData.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/UiDragPad_6d9b971b.o: ../../../Source/UiDragPad.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling UiDragPad.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/UiEditorMorph_b9084a77.o: ../../../Source/UiEditorMorph.cpp

@@ -194,6 +194,7 @@ UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manag
 
 
     //[UserPreSize]
+    setOpaque(true);
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
         Component* comp = getChildComponent(i);

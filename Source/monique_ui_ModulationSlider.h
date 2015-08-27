@@ -241,6 +241,8 @@ public:
     void set_ctrl_view_mode( bool mode_ ) const;
     void show_view_mode();
 
+    const float original_w;
+    const float original_h;
 private:
     ModulationSliderConfigBase*const _config;
 
@@ -267,11 +269,13 @@ public:
 
 public:
     //[/UserMethods]
-  
+
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
+
+
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
