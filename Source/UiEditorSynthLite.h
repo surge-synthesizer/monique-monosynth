@@ -77,6 +77,7 @@ public:
     void show_ctrl_state();
     void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
     void close_all_subeditors();
+    void resize_subeditors();
 
     float last_shuffle;
     Array< TextButton* > sequence_buttons;

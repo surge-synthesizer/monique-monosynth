@@ -58,6 +58,7 @@ TODO:
 - todo no repaint on mouse activity!
 - todo set fixed max times in adr editor
 - todo: check colours global, save colours
+- resize all subeditors
 
 QUESTS
 - sync lfo with note on?

@@ -48,7 +48,9 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    Component* related_to_comp;
     void set_element_to_show(Component*const);
+    void update_positions();
     void refresh();
 
     const float original_w;

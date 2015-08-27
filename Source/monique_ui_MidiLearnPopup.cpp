@@ -50,6 +50,7 @@ void UiEditorSynthLitePopup::refresh()
 
 void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ )
 {
+    related_to_comp = comp_;
     Component* parent = comp_->getParentComponent();
     int x = comp_->getX();
     int y = comp_->getY()+comp_->getHeight();
@@ -63,6 +64,11 @@ void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ )
         parent = parent->getParentComponent();
     }
     setBounds( x-10, y, comp_->getWidth()+20, original_h );
+}
+void UiEditorSynthLitePopup::update_positions( )
+{
+    if( related_to_comp )
+        set_element_to_show( related_to_comp );
 }
 //[/MiscUserDefs]
 
@@ -104,6 +110,8 @@ UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_,
 
 
     //[UserPreSize]
+    related_to_comp = nullptr;
+
     combo_midi_listen_type->addItem( "N/A", 1 );
     combo_midi_listen_type->addItem( "CC", 2 );
     combo_midi_listen_type->addItem( "NOTE", 3 );
