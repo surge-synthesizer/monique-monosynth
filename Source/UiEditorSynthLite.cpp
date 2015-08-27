@@ -1334,10 +1334,10 @@ void UiEditorSynthLite::paint (Graphics& g)
     g.fillAll (Colour (0xff050505));
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (480.0f, 595.0f, 604.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (480.0f, 595.0f, 605.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (480.0f, 595.0f, 604.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (480.0f, 595.0f, 605.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
     g.fillRoundedRectangle (10.0f, 795.0f, 1445.0f, 180.0f, 6.000f);
@@ -1382,10 +1382,10 @@ void UiEditorSynthLite::paint (Graphics& g)
     g.drawRoundedRectangle (195.0f, 215.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (195.0f, 595.0f, 284.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (195.0f, 595.0f, 285.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (195.0f, 595.0f, 284.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (195.0f, 595.0f, 285.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (20.0f, 60.0f, 1.0f, 541.0f, 1.000f);
@@ -1613,10 +1613,10 @@ void UiEditorSynthLite::paint (Graphics& g)
     g.fillRoundedRectangle (260.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (1085.0f, 595.0f, 269.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (1085.0f, 595.0f, 270.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (1085.0f, 595.0f, 269.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (1085.0f, 595.0f, 270.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
     g.fillRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f);
@@ -2884,7 +2884,7 @@ BEGIN_JUCER_METADATA
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
   </METHODS>
   <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="480 595 604 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="480 595 605 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="10 795 1445 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
@@ -2900,7 +2900,7 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="195 215 1260 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="195 595 284 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="195 595 285 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="20 60 1 541" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 50 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -2977,7 +2977,7 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="380 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="320 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="260 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1085 595 269 180" cornerSize="6" fill="solid: ff050505"
+    <ROUNDRECT pos="1085 595 270 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="1355 595 100 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
