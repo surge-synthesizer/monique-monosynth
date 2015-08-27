@@ -15,7 +15,6 @@
     Colour border_replacement = colours.bg_lines; \
     Colour bg_replacement = colours.bg; \
     Colour yellow_replacement = colours.label_text_colour;
-  
 
 COLOUR_REPLACEMENT_START
 #define Colour(x) ( \
@@ -32,7 +31,6 @@ COLOUR_REPLACEMENT_START
 #define WIDTH_AND_HIGHT_FACTORS \
   const float width_factor = 1.0f/original_w*getWidth(); \
   const float height_factor = 1.0f/original_h*getHeight();
-  
 
 WIDTH_AND_HIGHT_FACTORS
 #define fillRoundedRectangle(x,y,w,h,r) fillRoundedRectangle (x > 2 ? float(x)*width_factor : x, \

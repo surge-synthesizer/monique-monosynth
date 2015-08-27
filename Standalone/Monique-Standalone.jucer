@@ -41,6 +41,10 @@
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="zLSzVA" name="monique_ui_MIDIIO.h" compile="0" resource="0"
               file="../Source/monique_ui_MIDIIO.h"/>
+        <FILE id="N4hQhv" name="monique_ui_MidiLearnPopup.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_MidiLearnPopup.cpp"/>
+        <FILE id="B0grqg" name="monique_ui_MidiLearnPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_MidiLearnPopup.h"/>
         <FILE id="gMeSOp" name="monique_ui_ModulationSlider.cpp" compile="1"
               resource="0" file="../Source/monique_ui_ModulationSlider.cpp"/>
         <FILE id="aAzlsd" name="monique_ui_ModulationSlider.h" compile="0"
@@ -84,10 +88,6 @@
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"
             file="../Source/UiEditorSynthLite.h"/>
-      <FILE id="YMcwSV" name="UiEditorSynthLitePopup.cpp" compile="1" resource="0"
-            file="../Source/UiEditorSynthLitePopup.cpp"/>
-      <FILE id="zpVtwH" name="UiEditorSynthLitePopup.h" compile="0" resource="0"
-            file="../Source/UiEditorSynthLitePopup.h"/>
       <FILE id="KBkZyS" name="UiLookAndFeel.cpp" compile="1" resource="0"
             file="../Source/UiLookAndFeel.cpp"/>
       <FILE id="bMKNuS" name="UiLookAndFeel.h" compile="0" resource="0" file="../Source/UiLookAndFeel.h"/>

@@ -22,7 +22,6 @@
 #include "Synth.h"
 
 #include "UiLookAndFeel.h"
-#include "UiEditorSynthLitePopup.h"
 
 #include "monique_ui_SegmentedMeter.h"
 #include "monique_ui_AmpPainter.h"
@@ -32,6 +31,7 @@
 #include "monique_ui_ADRDesigner.h"
 #include "monique_ui_GlobalSettings.h"
 #include "monique_ui_Morph.h"
+#include "monique_ui_MidiLearnPopup.h"
 //[/Headers]
 
 #include "UiEditorSynthLite.h"

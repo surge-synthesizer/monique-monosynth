@@ -7,12 +7,12 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Introjucer version: 3.1.1
+  Created with Introjucer version: 3.2.0
 
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"
-  Copyright 2004-13 by Raw Material Software Ltd.
+  Copyright (c) 2015 - ROLI Ltd.
 
   ==============================================================================
 */
@@ -22,12 +22,9 @@
 #include "mono_Parameters.h"
 #include "UiLookAndFeel.h"
 #include "PluginProcessor.h"
-
-static constexpr float original_w = 80;
-static constexpr float original_h = 110;
 //[/Headers]
 
-#include "UiEditorSynthLitePopup.h"
+#include "monique_ui_MidiLearnPopup.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -51,24 +48,27 @@ void UiEditorSynthLitePopup::refresh()
     }
 }
 
-void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ ) {
+void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ )
+{
     Component* parent = comp_->getParentComponent();
     int x = comp_->getX();
-    int y = comp_->getY();
-    while( parent ) {
-        if( parent->getParentComponent() ) { // IGNORES THE MAIN WINDOW
+    int y = comp_->getY()+comp_->getHeight();
+    while( parent )
+    {
+        if( parent->getParentComponent() ) // IGNORES THE MAIN WINDOW
+        {
             x += parent->getX();
             y += parent->getY();
         }
         parent = parent->getParentComponent();
     }
-    setBounds( x-10, y-10, comp_->getWidth()+20, original_h );
+    setBounds( x-10, y, comp_->getWidth()+20, original_h );
 }
 //[/MiscUserDefs]
 
 //==============================================================================
 UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_, MIDIControl* midi_control_)
-    : parent(parent_),_midi_control(midi_control_)
+    : parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -108,21 +108,25 @@ UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_,
     combo_midi_listen_type->addItem( "CC", 2 );
     combo_midi_listen_type->addItem( "NOTE", 3 );
 
-    for( int i = 1 ; i != 129 ; ++i ) {
+    for( int i = 1 ; i != 129 ; ++i )
+    {
         combo_midi_number->addItem( String(i), i );
     }
 
-    for( int i = 1 ; i != 17 ; ++i ) {
+    for( int i = 1 ; i != 17 ; ++i )
+    {
         combo_midi_channel->addItem( String(i), i );
     }
 
     refresh();
+    /*
     //[/UserPreSize]
 
-    setSize (80, 110);
+    setSize (80, 140);
 
 
     //[Constructor] You can add your own custom stuff here..
+    */
     //[/Constructor]
 }
 
@@ -148,10 +152,13 @@ void UiEditorSynthLitePopup::paint (Graphics& g)
 #include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
-    g.setColour (Colour (0x885f9ea0));
-    g.fillRoundedRectangle (1.0f, 10.0f, 80.0f, 100.0f, 10.000f);
+    g.setColour (Colour (0xbaffffff));
+    g.fillRoundedRectangle (1.0f, 10.0f, 78.0f, 129.0f, 10.000f);
 
-    g.setColour (Colour (0x885f9ea0));
+    g.setColour (Colours::red);
+    g.drawRoundedRectangle (1.0f, 10.0f, 78.0f, 129.0f, 10.000f, 1.000f);
+
+    g.setColour (Colours::red);
     g.fillPath (internalPath1);
 
     //[UserPaint] Add your own custom painting code here..
@@ -163,10 +170,10 @@ void UiEditorSynthLitePopup::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    combo_midi_listen_type->setBounds (10, 20, 60, 20);
-    combo_midi_number->setBounds (10, 60, 60, 20);
-    close->setBounds (15, 85, 50, 20);
-    combo_midi_channel->setBounds (10, 40, 60, 20);
+    combo_midi_listen_type->setBounds (10, 20, 60, 30);
+    combo_midi_number->setBounds (10, 80, 60, 30);
+    close->setBounds (10, 113, 60, 20);
+    combo_midi_channel->setBounds (10, 50, 60, 30);
     internalPath1.clear();
     internalPath1.startNewSubPath (40.0f, 0.0f);
     internalPath1.lineTo (50.0f, 10.0f);
@@ -233,21 +240,6 @@ void UiEditorSynthLitePopup::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-bool UiEditorSynthLitePopup::keyPressed (const KeyPress& key)
-{
-    //[UserCode_keyPressed] -- Add your code here...
-    bool success = false;
-    if( key == KeyPress::escapeKey )
-    {
-        MIDIControlHandler::getInstance()->clear();
-        parent->popup = nullptr;
-
-        return true;
-    }
-    return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
-    //[/UserCode_keyPressed]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -265,28 +257,26 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorSynthLitePopup" componentName=""
                  parentClasses="public Component" constructorParams="UiEditorSynthLite*const parent_, MIDIControl* midi_control_"
-                 variableInitialisers="parent(parent_),_midi_control(midi_control_)"
+                 variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="80" initialHeight="110">
-  <METHODS>
-    <METHOD name="keyPressed (const KeyPress&amp; key)"/>
-  </METHODS>
+                 fixedSize="1" initialWidth="80" initialHeight="140">
   <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="1 10 80 100" cornerSize="10" fill="solid: 885f9ea0" hasStroke="0"/>
-    <PATH pos="0 0 100 100" fill="solid: 885f9ea0" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
+    <ROUNDRECT pos="1 10 78 129" cornerSize="10" fill="solid: baffffff" hasStroke="1"
+               stroke="1, mitered, butt" strokeColour="solid: ffff0000"/>
+    <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
   </BACKGROUND>
   <COMBOBOX name="" id="c07cef797cf3a611" memberName="combo_midi_listen_type"
-            virtualName="" explicitFocusOrder="0" pos="10 20 60 20" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="10 20 60 30" editable="0"
             layout="33" items="" textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="" id="eaa2024654148814" memberName="combo_midi_number"
-            virtualName="" explicitFocusOrder="0" pos="10 60 60 20" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="10 80 60 30" editable="0"
             layout="33" items="" textWhenNonSelected="NR" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="15 85 50 20" bgColOff="ffff0000"
+              explicitFocusOrder="0" pos="10 113 60 20" bgColOff="ffff0000"
               bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000" buttonText="ESC X"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="10b3f623cea9c053" memberName="combo_midi_channel"
-            virtualName="" explicitFocusOrder="0" pos="10 40 60 20" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="10 50 60 30" editable="0"
             layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 

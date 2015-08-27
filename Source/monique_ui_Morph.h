@@ -58,6 +58,8 @@ private:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
+
+
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     Array< int > bank_start_indexs;

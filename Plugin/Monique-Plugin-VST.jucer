@@ -45,6 +45,10 @@
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"
               file="../Source/monique_ui_MIDIIO.h"/>
+        <FILE id="Bp6RIp" name="monique_ui_MidiLearnPopup.cpp" compile="1"
+              resource="0" file="../Source/monique_ui_MidiLearnPopup.cpp"/>
+        <FILE id="umgp9C" name="monique_ui_MidiLearnPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_MidiLearnPopup.h"/>
         <FILE id="kBcOho" name="monique_ui_ModulationSlider.cpp" compile="1"
               resource="0" file="../Source/monique_ui_ModulationSlider.cpp"/>
         <FILE id="VLzWyf" name="monique_ui_ModulationSlider.h" compile="0"
@@ -84,18 +88,10 @@
       <FILE id="aJbsC0" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
       <FILE id="OKoiqV" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
       <FILE id="h55lZl" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="L3ocBA" name="UiDynamicSizeEnd.h" compile="0" resource="0"
-            file="../Source/UiDynamicSizeEnd.h"/>
-      <FILE id="f2L0aU" name="UiDynamicSizeStart.h" compile="0" resource="0"
-            file="../Source/UiDynamicSizeStart.h"/>
       <FILE id="Sc12uW" name="UiEditorSynthLite.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="ngYxWI" name="UiEditorSynthLite.h" compile="0" resource="0"
             file="../Source/UiEditorSynthLite.h"/>
-      <FILE id="AV6UqG" name="UiEditorSynthLitePopup.cpp" compile="1" resource="0"
-            file="../Source/UiEditorSynthLitePopup.cpp"/>
-      <FILE id="ZMZ8yB" name="UiEditorSynthLitePopup.h" compile="0" resource="0"
-            file="../Source/UiEditorSynthLitePopup.h"/>
       <FILE id="VZ5LPp" name="UiLookAndFeel.cpp" compile="1" resource="0"
             file="../Source/UiLookAndFeel.cpp"/>
       <FILE id="SAmtBl" name="UiLookAndFeel.h" compile="0" resource="0" file="../Source/UiLookAndFeel.h"/>
