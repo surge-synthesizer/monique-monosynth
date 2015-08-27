@@ -39,7 +39,7 @@ UiEditorMorph::UiEditorMorph ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_31 = new Label (String::empty,
-            TRANS("FILTER (R)")));
+                                             TRANS("FILTER (R)")));
     label_31->setFont (Font (30.00f, Font::plain));
     label_31->setJustificationType (Justification::centredRight);
     label_31->setEditable (false, false, false);
@@ -48,7 +48,7 @@ UiEditorMorph::UiEditorMorph ()
     label_31->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_32 = new Label (String::empty,
-            TRANS("ARP (R)")));
+                                             TRANS("ARP (R)")));
     label_32->setFont (Font (30.00f, Font::plain));
     label_32->setJustificationType (Justification::centredRight);
     label_32->setEditable (false, false, false);
@@ -57,7 +57,7 @@ UiEditorMorph::UiEditorMorph ()
     label_32->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_33 = new Label (String::empty,
-            TRANS("FX (R)")));
+                                             TRANS("FX (R)")));
     label_33->setFont (Font (30.00f, Font::plain));
     label_33->setJustificationType (Justification::centredLeft);
     label_33->setEditable (false, false, false);
@@ -66,7 +66,7 @@ UiEditorMorph::UiEditorMorph ()
     label_33->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_30 = new Label (String::empty,
-            TRANS("OSC (R)")));
+                                             TRANS("OSC (R)")));
     label_30->setFont (Font (30.00f, Font::plain));
     label_30->setJustificationType (Justification::centredLeft);
     label_30->setEditable (false, false, false);
@@ -75,7 +75,7 @@ UiEditorMorph::UiEditorMorph ()
     label_30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_34 = new Label (String::empty,
-            TRANS("ALL (L)")));
+                                             TRANS("ALL (L)")));
     label_34->setFont (Font (30.00f, Font::plain));
     label_34->setJustificationType (Justification::centred);
     label_34->setEditable (false, false, false);
@@ -140,7 +140,7 @@ UiEditorMorph::UiEditorMorph ()
     combo_morph_group_8->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredRight);
     label_19->setEditable (false, false, false);
@@ -212,7 +212,7 @@ UiEditorMorph::UiEditorMorph ()
     button_set_all_from_current->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-            TRANS("OSC MORPH (GROUP 1)")));
+                                                        TRANS("OSC MORPH (GROUP 1)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -221,7 +221,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-            TRANS("FILTER MORPH (GROUP 2)")));
+                                                        TRANS("FILTER MORPH (GROUP 2)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -230,7 +230,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-            TRANS("FX MORPH (GROUP 3)")));
+                                                        TRANS("FX MORPH (GROUP 3)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -239,7 +239,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-            TRANS("ARP MORPH (GROUP 4)")));
+                                                        TRANS("ARP MORPH (GROUP 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -266,7 +266,7 @@ UiEditorMorph::UiEditorMorph ()
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_25 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_25->setFont (Font (30.00f, Font::plain));
     label_25->setJustificationType (Justification::centredRight);
     label_25->setEditable (false, false, false);
@@ -275,7 +275,7 @@ UiEditorMorph::UiEditorMorph ()
     label_25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_26 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_26->setFont (Font (30.00f, Font::plain));
     label_26->setJustificationType (Justification::centredRight);
     label_26->setEditable (false, false, false);
@@ -284,7 +284,7 @@ UiEditorMorph::UiEditorMorph ()
     label_26->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_27 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_27->setFont (Font (30.00f, Font::plain));
     label_27->setJustificationType (Justification::centredRight);
     label_27->setEditable (false, false, false);
@@ -293,7 +293,7 @@ UiEditorMorph::UiEditorMorph ()
     label_27->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_28 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_28->setFont (Font (30.00f, Font::plain));
     label_28->setJustificationType (Justification::centredRight);
     label_28->setEditable (false, false, false);
@@ -302,7 +302,7 @@ UiEditorMorph::UiEditorMorph ()
     label_28->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_29 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_29->setFont (Font (30.00f, Font::plain));
     label_29->setJustificationType (Justification::centredRight);
     label_29->setEditable (false, false, false);
@@ -311,7 +311,7 @@ UiEditorMorph::UiEditorMorph ()
     label_29->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-            TRANS("MORPH PAD (DRAG IT!)")));
+                                                        TRANS("MORPH PAD (DRAG IT!)")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -320,7 +320,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_35 = new Label (String::empty,
-            TRANS("(DOUBLE CLICK)")));
+                                             TRANS("(DOUBLE CLICK)")));
     label_35->setFont (Font (30.00f, Font::plain));
     label_35->setJustificationType (Justification::centred);
     label_35->setEditable (false, false, false);
@@ -497,23 +497,23 @@ void UiEditorMorph::resized()
     label_33->setBounds (1060, 120, 80, 30);
     label_30->setBounds (1060, 20, 80, 30);
     label_34->setBounds (1050 + 405 / 2 - (80 / 2), 10 + 150 / 2 - (30 / 2), 80, 30);
-    combo_morph_group_1->setBounds (100, 90, 160, 30);
-    combo_morph_group_2->setBounds (360, 90, 160, 30);
-    combo_morph_group_3->setBounds (620, 90, 160, 30);
-    combo_morph_group_4->setBounds (880, 90, 160, 30);
-    combo_morph_group_5->setBounds (100, 30, 160, 30);
-    combo_morph_group_6->setBounds (360, 30, 160, 30);
-    combo_morph_group_7->setBounds (620, 30, 160, 30);
-    combo_morph_group_8->setBounds (880, 30, 160, 30);
+    combo_morph_group_1->setBounds (100, 90, 150, 30);
+    combo_morph_group_2->setBounds (360, 90, 150, 30);
+    combo_morph_group_3->setBounds (620, 90, 150, 30);
+    combo_morph_group_4->setBounds (880, 90, 150, 30);
+    combo_morph_group_5->setBounds (100, 30, 150, 30);
+    combo_morph_group_6->setBounds (360, 30, 150, 30);
+    combo_morph_group_7->setBounds (620, 30, 150, 30);
+    combo_morph_group_8->setBounds (880, 30, 150, 30);
     label_19->setBounds (20, 30, 80, 30);
-    button_set_left_1->setBounds (100, 60, 160, 25);
-    button_set_left_2->setBounds (360, 60, 160, 25);
-    button_set_left_3->setBounds (620, 60, 160, 25);
-    button_set_left_4->setBounds (880, 60, 160, 25);
-    button_set_right_1->setBounds (100, 120, 160, 25);
-    button_set_right_2->setBounds (360, 120, 160, 25);
-    button_set_right_3->setBounds (620, 120, 160, 25);
-    button_set_right_4->setBounds (880, 120, 160, 25);
+    button_set_left_1->setBounds (100, 60, 150, 25);
+    button_set_left_2->setBounds (360, 60, 150, 25);
+    button_set_left_3->setBounds (620, 60, 150, 25);
+    button_set_left_4->setBounds (880, 60, 150, 25);
+    button_set_right_1->setBounds (100, 120, 150, 25);
+    button_set_right_2->setBounds (360, 120, 150, 25);
+    button_set_right_3->setBounds (620, 120, 150, 25);
+    button_set_right_4->setBounds (880, 120, 150, 25);
     button_set_all_from_current->setBounds (900, 200, 50, 120);
     label_ui_headline_1->setBounds (50, -4, 180, 35);
     label_ui_headline_2->setBounds (310, -4, 180, 35);
@@ -688,10 +688,9 @@ void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="UiEditorMorph" componentName=""
-                 parentClasses="public Component" constructorParams=""
-                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="1465" initialHeight="720">
+                 parentClasses="public Component" constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="1465" initialHeight="720">
   <BACKGROUND backgroundColour="ff050505">
     <ROUNDRECT pos="10 10 260 150" cornerSize="6" fill="solid: 66000000" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
@@ -731,28 +730,28 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="36"/>
   <COMBOBOX name="" id="6b20aebfc73aac49" memberName="combo_morph_group_1"
-            virtualName="" explicitFocusOrder="0" pos="100 90 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="100 90 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="feb2297e12b64ba2" memberName="combo_morph_group_2"
-            virtualName="" explicitFocusOrder="0" pos="360 90 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="360 90 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="308668407147eb6a" memberName="combo_morph_group_3"
-            virtualName="" explicitFocusOrder="0" pos="620 90 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="620 90 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="6f35e1d484c7ec07" memberName="combo_morph_group_4"
-            virtualName="" explicitFocusOrder="0" pos="880 90 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="880 90 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="bc6993231c0c71b4" memberName="combo_morph_group_5"
-            virtualName="" explicitFocusOrder="0" pos="100 30 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="100 30 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="bd00414d21da9940" memberName="combo_morph_group_6"
-            virtualName="" explicitFocusOrder="0" pos="360 30 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="360 30 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="dc620a04b2f3c235" memberName="combo_morph_group_7"
-            virtualName="" explicitFocusOrder="0" pos="620 30 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="620 30 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <COMBOBOX name="" id="97e42362463feae7" memberName="combo_morph_group_8"
-            virtualName="" explicitFocusOrder="0" pos="880 30 160 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="880 30 150 30" editable="0"
             layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
   <LABEL name="" id="2d5427059e8d821" memberName="label_19" virtualName=""
          explicitFocusOrder="0" pos="20 30 80 30" textCol="ffff3b00" edTextCol="ffff3b00"
@@ -760,35 +759,35 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="" id="9a3c3dfa23389bbf" memberName="button_set_left_1"
-              virtualName="" explicitFocusOrder="0" pos="100 60 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="100 60 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c49e8ed08e43c50b" memberName="button_set_left_2"
-              virtualName="" explicitFocusOrder="0" pos="360 60 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="360 60 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8097b16b582b5ab8" memberName="button_set_left_3"
-              virtualName="" explicitFocusOrder="0" pos="620 60 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="620 60 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ebaf45ab7ef39acf" memberName="button_set_left_4"
-              virtualName="" explicitFocusOrder="0" pos="880 60 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="880 60 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8906266e2ef4832" memberName="button_set_right_1"
-              virtualName="" explicitFocusOrder="0" pos="100 120 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="100 120 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="edc15917a087fcef" memberName="button_set_right_2"
-              virtualName="" explicitFocusOrder="0" pos="360 120 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="360 120 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="22e64fa9111b2ae3" memberName="button_set_right_3"
-              virtualName="" explicitFocusOrder="0" pos="620 120 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="620 120 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ffe2586bcf362e2a" memberName="button_set_right_4"
-              virtualName="" explicitFocusOrder="0" pos="880 120 160 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="880 120 150 25" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="273817f565f46996" memberName="button_set_all_from_current"
