@@ -9,7 +9,6 @@
 */
 
 #include "mono_Parameters.h"
-#include "UiLookAndFeel.h"
 #include "SynthData.h"
 #include "PluginProcessor.h"
 

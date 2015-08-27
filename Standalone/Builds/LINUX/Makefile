@@ -55,6 +55,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
+  $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
@@ -67,7 +68,6 @@ OBJECTS := \
   $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/SynthData_df69b916.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
-  $(OBJDIR)/UiLookAndFeel_8efd25da.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/juce_audio_basics_49d7f937.o \
   $(OBJDIR)/juce_audio_devices_b969dc35.o \
@@ -128,6 +128,11 @@ $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_Globa
 	@echo "Compiling monique_ui_GlobalSettings.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_ui_LookAndFeel_cf505528.o: ../../../Source/monique_ui_LookAndFeel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_LookAndFeel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_MIDIIO.cpp"
@@ -186,11 +191,6 @@ $(OBJDIR)/SynthData_df69b916.o: ../../../Source/SynthData.cpp
 $(OBJDIR)/UiEditorSynthLite_e00d3d79.o: ../../../Source/UiEditorSynthLite.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling UiEditorSynthLite.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/UiLookAndFeel_8efd25da.o: ../../../Source/UiLookAndFeel.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling UiLookAndFeel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp

@@ -21,8 +21,7 @@
 #include "PluginProcessor.h"
 #include "Synth.h"
 
-#include "UiLookAndFeel.h"
-
+#include "monique_ui_LookAndFeel.h"
 #include "monique_ui_SegmentedMeter.h"
 #include "monique_ui_AmpPainter.h"
 #include "monique_ui_ModulationSlider.h"

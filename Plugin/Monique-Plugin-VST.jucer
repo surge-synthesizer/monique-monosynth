@@ -41,6 +41,10 @@
               resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
         <FILE id="jVmeyU" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
               file="../Source/monique_ui_GlobalSettings.h"/>
+        <FILE id="mM7EQm" name="monique_ui_LookAndFeel.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_LookAndFeel.cpp"/>
+        <FILE id="X6a3oA" name="monique_ui_LookAndFeel.h" compile="0" resource="0"
+              file="../Source/monique_ui_LookAndFeel.h"/>
         <FILE id="cNv2QT" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"

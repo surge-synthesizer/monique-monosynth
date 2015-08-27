@@ -54,6 +54,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
+  $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
@@ -124,6 +125,11 @@ $(OBJDIR)/monique_ui_DragPad_4a969d69.o: ../../../Source/monique_ui_DragPad.cpp
 $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_GlobalSettings.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_GlobalSettings.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_LookAndFeel_cf505528.o: ../../../Source/monique_ui_LookAndFeel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_LookAndFeel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp

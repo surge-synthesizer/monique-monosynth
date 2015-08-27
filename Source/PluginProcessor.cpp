@@ -3,7 +3,6 @@
 #include "UiEditorSynthLite.h"
 #include "SynthData.h"
 #include "Synth.h"
-#include "UiLookAndFeel.h"
 
 #include "monique_ui_SegmentedMeter.h"
 

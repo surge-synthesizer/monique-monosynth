@@ -20,7 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "UiEditorSynthLite.h"
 #include "mono_Parameters.h"
-#include "UiLookAndFeel.h"
+#include "monique_ui_LookAndFeel.h"
 #include "PluginProcessor.h"
 //[/Headers]
 

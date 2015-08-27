@@ -11,6 +11,8 @@
 #define MONO_PARAMETER_H_INCLUDED
 
 #include "App_h_includer.h"
+#include "monique_ui_LookAndFeel.h"
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 

@@ -1,7 +1,7 @@
 
 #include "monique_AppInstanceStore.h"
 
-#include "UiLookAndFeel.h"
+#include "monique_ui_LookAndFeel.h"
 #include "monique_ui_AmpPainter.h"
 
 //==============================================================================

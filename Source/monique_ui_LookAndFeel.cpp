@@ -22,7 +22,7 @@
   ==============================================================================
 */
 
-#include "UiLookAndFeel.h"
+#include "monique_ui_LookAndFeel.h"
 #include <iomanip>
 
 juce_ImplementSingleton (UiLookAndFeel)

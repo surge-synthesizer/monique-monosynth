@@ -11,9 +11,9 @@
 #ifndef UIEDITORSYNTHLITECONFIG_H_INCLUDED
 #define UIEDITORSYNTHLITECONFIG_H_INCLUDED
 
-#include "monique_ui_ModulationSlider.h"
 #include "SynthData.h"
-#include "UiLookAndFeel.h"
+#include "monique_ui_ModulationSlider.h"
+#include "monique_ui_LookAndFeel.h"
 
 // TODO replace the pointers to the base by references to the real params
 

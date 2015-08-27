@@ -37,6 +37,10 @@
               resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
         <FILE id="dCx8my" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
               file="../Source/monique_ui_GlobalSettings.h"/>
+        <FILE id="pZ1Ftu" name="monique_ui_LookAndFeel.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_LookAndFeel.cpp"/>
+        <FILE id="hg4CuD" name="monique_ui_LookAndFeel.h" compile="0" resource="0"
+              file="../Source/monique_ui_LookAndFeel.h"/>
         <FILE id="oZrMWF" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="zLSzVA" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -88,9 +92,6 @@
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"
             file="../Source/UiEditorSynthLite.h"/>
-      <FILE id="KBkZyS" name="UiLookAndFeel.cpp" compile="1" resource="0"
-            file="../Source/UiLookAndFeel.cpp"/>
-      <FILE id="bMKNuS" name="UiLookAndFeel.h" compile="0" resource="0" file="../Source/UiLookAndFeel.h"/>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">

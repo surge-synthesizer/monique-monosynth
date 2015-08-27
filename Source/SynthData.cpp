@@ -1549,7 +1549,6 @@ NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
     }
 }
 
-#include "UiLookAndFeel.h"
 NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
     if( xml_ )
     {
