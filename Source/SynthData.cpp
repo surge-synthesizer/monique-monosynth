@@ -84,7 +84,15 @@ NOINLINE LFOData::LFOData( int id_ )
     :
     id( id_ ),
 
-    speed(generate_param_name(LFO_NAME,id_,"speed"),generate_short_human_name(LFO_NAME,id_,"speed"))
+    speed
+    (
+        MIN_MAX( 0, 16+127-33 ),
+        4,
+        16+127-33,
+
+        generate_param_name(LFO_NAME,id_,"speed"),
+        generate_short_human_name(LFO_NAME,id_,"speed")
+    )
 {
 }
 NOINLINE LFOData::~LFOData() {}
@@ -99,19 +107,89 @@ NOINLINE OSCData::OSCData( int id_ )
     :
     id(id_),
 
-    wave(generate_param_name(OSC_NAME,id,"wave"),generate_short_human_name(OSC_NAME,id_,"sync")),
-    octave(generate_param_name(OSC_NAME,id,"octave"),generate_short_human_name(OSC_NAME,id_,"octave")),
-    is_lfo_modulated(generate_param_name(OSC_NAME,id,"is_lfo_mod"),generate_short_human_name(OSC_NAME,id_,"mod_lfo")),
+    wave
+    (
+        MIN_MAX( SINE, NOICE ),
+        SINE,
+        1000,
+        generate_param_name(OSC_NAME,id,"wave"),
+        generate_short_human_name(OSC_NAME,id_,"sync")
+    ),
+    octave
+    (
+        MIN_MAX( -24, 24 ),
+        0,
+        48*100,
+        generate_param_name(OSC_NAME,id,"octave"),
+        generate_short_human_name(OSC_NAME,id_,"octave")
+    ),
+    is_lfo_modulated
+    (
+        false,
+        generate_param_name(OSC_NAME,id,"is_lfo_mod"),
+        generate_short_human_name(OSC_NAME,id_,"mod_lfo")
+    ),
 
-    fm_multi(generate_param_name(OSC_NAME,id,"fm_multi"),generate_short_human_name(OSC_NAME,id_,"fm_freq")),
-    fm_amount(generate_param_name(OSC_NAME,id,"fm_power"),generate_short_human_name(OSC_NAME,id_,"fm_power")),
-    fm_wave(generate_param_name(OSC_NAME,id,"fm_wave"),generate_short_human_name(OSC_NAME,id_,"fm_shot")),
-    sync(generate_param_name(OSC_NAME,id,"sync"),generate_short_human_name(OSC_NAME,id_,"fm_sync")),
-    mod_off(generate_param_name(OSC_NAME,id,"mod_off"),generate_short_human_name(OSC_NAME,id_,"mod_off")),
+    // -------------------------------------------------------
+    fm_multi
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(OSC_NAME,id,"fm_multi"),
+        generate_short_human_name(OSC_NAME,id_,"fm_freq")
+    ),
+    fm_amount
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(OSC_NAME,id,"fm_power"),
+        generate_short_human_name(OSC_NAME,id_,"fm_power")
+    ),
+    fm_wave
+    (
+        FM_WAVE_SINE,
+        generate_param_name(OSC_NAME,id,"fm_wave"),
+        generate_short_human_name(OSC_NAME,id_,"fm_shot")
+    ),
+    sync
+    (
+        true,
+        generate_param_name(OSC_NAME,id,"sync"),
+        generate_short_human_name(OSC_NAME,id_,"fm_sync")
+    ),
+    mod_off
+    (
+        true,
+        generate_param_name(OSC_NAME,id,"mod_off"),
+        generate_short_human_name(OSC_NAME,id_,"mod_off")
+    ),
 
-    puls_width(generate_param_name(OSC_NAME,id,"puls_width"),generate_short_human_name(OSC_NAME,id_,"puls_width")),
-    fm_swing(generate_param_name(OSC_NAME,id,"fm_swing"),generate_short_human_name(OSC_NAME,id_,"fm_swing")),
-    osc_switch(generate_param_name(OSC_NAME,id,"osc_switch"),generate_short_human_name(OSC_NAME,id_,"switch")),
+    puls_width
+    (
+        MIN_MAX( -12, 12 ),
+        0,
+        24,
+        generate_param_name(OSC_NAME,id,"puls_width"),
+        generate_short_human_name(OSC_NAME,id_,"puls_width")
+    ),
+    fm_swing
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(OSC_NAME,id,"fm_swing"),
+        generate_short_human_name(OSC_NAME,id_,"fm_swing")
+    ),
+    osc_switch
+    (
+        MIN_MAX( 0, 16 ),
+        0,
+        16,
+        generate_param_name(OSC_NAME,id,"osc_switch"),
+        generate_short_human_name(OSC_NAME,id_,"switch")
+    ),
 
     last_modulation_value( 0 )
 {}
@@ -136,14 +214,73 @@ NOINLINE ENVData::ENVData( int id_ )
     :
     id( id_ ),
 
-    attack(generate_param_name(ENV_NAME,id,"attack"),generate_short_human_name(ENV_NAME,id_,"attack")),
-    max_attack_time(generate_param_name(ENV_NAME,id,"max_attack_t"),generate_short_human_name(ENV_NAME,id_,"max_attack_t")),
-    decay(generate_param_name(ENV_NAME,id,"decay"),generate_short_human_name(ENV_NAME,id_,"decay")),
-    max_decay_time(generate_param_name(ENV_NAME,id,"max_decay_t"),generate_short_human_name(ENV_NAME,id_,"max_decay_t")),
-    sustain(generate_param_name(ENV_NAME,id,"sustain"),generate_short_human_name(ENV_NAME,id_,"sustain")),
-    sustain_time(generate_param_name(ENV_NAME,id,"sustain_time"),generate_short_human_name(ENV_NAME,id_,"sus_time")),
-    release(generate_param_name(ENV_NAME,id,"release"),generate_short_human_name(ENV_NAME,id_,"release")),
-    max_release_time(generate_param_name(ENV_NAME,id,"max_release_t"),generate_short_human_name(ENV_NAME,id_,"max_release_t"))
+    attack
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.05,
+        1000,
+        generate_param_name(ENV_NAME,id,"attack"),
+        generate_short_human_name(ENV_NAME,id_,"attack")
+    ),
+    max_attack_time
+    (
+        MIN_MAX( 100, 20000 ),
+        2000,
+        20000,
+        generate_param_name(ENV_NAME,id,"max_attack_t"),
+        generate_short_human_name(ENV_NAME,id_,"max_attack_t")
+    ),
+
+    decay
+    (
+        MIN_MAX( 0, 1 ),
+        0.02,
+        1000,
+        generate_param_name(ENV_NAME,id,"decay"),
+        generate_short_human_name(ENV_NAME,id_,"decay")
+    ),
+    max_decay_time
+    (
+        MIN_MAX( 100, 20000 ),
+        250,
+        20000,
+        generate_param_name(ENV_NAME,id,"max_decay_t"),
+        generate_short_human_name(ENV_NAME,id_,"max_decay_t")
+    ),
+
+    sustain
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.9,
+        1000,
+        generate_param_name(ENV_NAME,id,"sustain"),
+        generate_short_human_name(ENV_NAME,id_,"sustain")
+    ),
+
+    sustain_time
+    (
+        MIN_MAX( 0.001, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_NAME,id,"sustain_time"),
+        generate_short_human_name(ENV_NAME,id_,"sus_time")),
+
+    release
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.2,
+        1000,
+        generate_param_name(ENV_NAME,id,"release"),
+        generate_short_human_name(ENV_NAME,id_,"release")
+    ),
+    max_release_time
+    (
+        MIN_MAX( 100, 20000 ),
+        4000,
+        20000,
+        generate_param_name(ENV_NAME,id,"max_release_t"),
+        generate_short_human_name(ENV_NAME,id_,"max_release_t")
+    )
 {
 }
 NOINLINE ENVData::~ENVData() {}
@@ -163,25 +300,166 @@ NOINLINE void ENVData::get_saveable_params( Array< mono_ParameterCompatibilityBa
 #define ENV_PRESET_DEF_NAME "ENVPD"
 NOINLINE ENVPresetDef::ENVPresetDef ( int id_ )
     :
-    attack_1(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_1_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_1")),
-    decay_1(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_1_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_1")),
-    sustain_time_1(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_1_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_1")),
-    release_1(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_1_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"release_1")),
-    attack_2(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_2_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_2")),
-    decay_2(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_2_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_2")),
-    sustain_time_2(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_2_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_2")),
-    release_2(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_2_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"release_2")),
-    attack_3(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_3_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_3")),
-    decay_3(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_3_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_3")),
-    sustain_time_3(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_3_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_3")),
-    release_3(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_3_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"release_3")),
-    attack_4(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_4_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_4")),
-    decay_4(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_4_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_4")),
-    sustain_time_4(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_4_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_4")),
-    release_4(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_4_"),generate_short_human_name(ENV_PRESET_DEF_NAME,"release_4")),
-    max_attack_time(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_attack_t"),generate_short_human_name(ENV_PRESET_DEF_NAME,"max_attack_t")),
-    max_decay_time(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_decay_t"),generate_short_human_name(ENV_PRESET_DEF_NAME,"max_decay_t")),
-    max_release_time(generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_release_t"),generate_short_human_name(ENV_PRESET_DEF_NAME,"max_release_t"))
+    attack_1
+    (
+        MIN_MAX( 0, 1 ),
+        0.001,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_1_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_1")
+    ),
+    decay_1
+    (
+        MIN_MAX( 0, 1 ),
+        0.1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_1_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_1")
+    ),
+    sustain_time_1
+    (
+        MIN_MAX( 0.001, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_1_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_1")
+    ),
+    release_1
+    (
+        MIN_MAX( 0, 1 ),
+        0.001,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_1_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"release_1")
+    ),
+
+    // ----
+    attack_2
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_2_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_2")
+    ),
+    decay_2
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_2_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_2")
+    ),
+    sustain_time_2
+    (
+        MIN_MAX( 0.001, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_2_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_2")
+    ),
+    release_2
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_2_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"release_2")
+    ),
+
+    // ----
+    attack_3
+    (
+        MIN_MAX( 0, 1 ),
+        0.5,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_3_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_3")
+    ),
+    decay_3
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_3_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_3")
+    ),
+    sustain_time_3
+    (
+        MIN_MAX( 0.001, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_3_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_3")
+    ),
+    release_3
+    (
+        MIN_MAX( 0, 1 ),
+        0.1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_3_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"release_3")
+    ),
+
+    // ----
+    attack_4
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_4_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_4")
+    ),
+    decay_4
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_4_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_4")
+    ),
+    sustain_time_4
+    (
+        MIN_MAX( 0.001, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_4_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_4")
+    ),
+    release_4
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_4_"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"release_4")
+    ),
+
+    // ----
+    max_attack_time
+    (
+        MIN_MAX( 100, 20000 ),
+        2000,
+        20000*10,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_attack_t"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"max_attack_t")
+    ),
+    max_decay_time
+    (
+        MIN_MAX( 100, 20000 ),
+        250,
+        20000*10,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_decay_t"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"max_decay_t")
+    ),
+    max_release_time
+    (
+        MIN_MAX( 100, 20000 ),
+        4000,
+        20000*10,
+        generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_release_t"),
+        generate_short_human_name(ENV_PRESET_DEF_NAME,"max_release_t")
+    )
 {
 }
 NOINLINE ENVPresetDef::~ENVPresetDef() {}

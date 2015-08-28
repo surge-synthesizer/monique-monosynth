@@ -178,7 +178,7 @@ struct RuntimeInfo { /* TODO singleton */
 struct LFOData {
     const int id;
 
-    mono_Parameter<float, 4, 0,16+127-33> speed;
+    Parameter speed;
 
     inline const LFOData& operator=( const LFOData& other_ ) noexcept;
 
@@ -201,40 +201,24 @@ inline const LFOData& LFOData::operator=( const LFOData& other_ ) noexcept {
 }
 
 //==============================================================================
-struct OSCData {
+struct OSCData
+{
     const int id;
 
-    typedef mono_Parameter<float, SINE, SINE,NOICE, 1, 10> wave_t;
-    wave_t wave;
+    Parameter wave;
+    Parameter octave;
+    BoolParameter is_lfo_modulated;
 
-    // TODO snap slider
-    typedef mono_ParameterGlideModulated<float, 0, -24,24, 1, 100> octave_t;
-    octave_t octave;
-    typedef mono_Parameter<bool, false> is_lfo_modulated_t;
-    is_lfo_modulated_t is_lfo_modulated;
+    Parameter fm_multi;
+    Parameter fm_amount;
 
-    // TODO snap slider
-    typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_multi_t;
-    fm_multi_t fm_multi;
+    BoolParameter fm_wave; // TODO RENAME!
+    BoolParameter sync;
+    BoolParameter mod_off;
 
-    typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_amount_t;
-    fm_amount_t fm_amount;
-
-    typedef mono_Parameter<bool, FM_WAVE_SINE, false,FM_WAVE_SINE> fm_wave_t;
-    fm_wave_t fm_wave;
-
-    typedef mono_Parameter<bool, true> sync_t;
-    sync_t sync;
-    typedef mono_Parameter<bool, true> mod_off_t;
-    mod_off_t mod_off;
-
-    typedef mono_Parameter<int, 0, -12,12, 1, 1000 > puls_width_t;
-    puls_width_t puls_width;
-
-    typedef mono_Parameter<float, 0, 0,1000, 1000, 100> fm_swing_t;
-    fm_swing_t fm_swing;
-    typedef mono_Parameter<int, 0, 0,16, 1, 1000> osc_switch_t;
-    osc_switch_t osc_switch;
+    Parameter puls_width; // WAS AN INT PARAM
+    Parameter fm_swing;
+    Parameter osc_switch; // WAS AN INT PARAM
 
     inline const OSCData& operator=( const OSCData& other_ ) noexcept;
 
@@ -275,14 +259,14 @@ struct ENVData
 {
     const int id;
 
-    mono_Parameter< float, 50, 1,1000, 1000, 100 > attack;
-    mono_Parameter< float, 2000, 100,20000, 1000, 100 > max_attack_time;
-    mono_Parameter< float, 20, 0,1000, 1000, 100 > decay;
-    mono_Parameter< float, 250, 100,20000, 1000, 100 > max_decay_time;
-    mono_Parameter< float, 900, 1,1000, 1000, 100 > sustain;
-    mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time;
-    mono_Parameter< float, 200, 1,1000, 1000, 100 > release;
-    mono_Parameter< float, 4000, 100,20000, 1000, 100 > max_release_time;
+    Parameter attack;
+    Parameter max_attack_time;
+    Parameter decay;
+    Parameter max_decay_time;
+    Parameter sustain;
+    Parameter sustain_time;
+    Parameter release;
+    Parameter max_release_time;
 
     inline const ENVData& operator=( const ENVData& other_ ) noexcept;
 
@@ -311,26 +295,27 @@ inline const ENVData& ENVData::operator=( const ENVData& other_ ) noexcept {
 }
 
 //==============================================================================
-struct ENVPresetDef {
-    mono_Parameter< float, 1, 0,1000, 1000, 100 > attack_1;
-    mono_Parameter< float, 100, 0,1000, 1000, 100 > decay_1;
-    mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time_1;
-    mono_Parameter< float, 1, 0,1000, 1000, 100 > release_1;
-    mono_Parameter< float, 0, 0,1000, 1000, 100 > attack_2;
-    mono_Parameter< float, 1000, 0,1000, 1000, 100 > decay_2;
-    mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time_2;
-    mono_Parameter< float, 1000, 0,1000, 1000, 100 > release_2;
-    mono_Parameter< float, 500, 0,1000, 1000, 100 > attack_3;
-    mono_Parameter< float, 0, 0,1000, 1000, 100 > decay_3;
-    mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time_3;
-    mono_Parameter< float, 100, 0,1000, 1000, 100 > release_3;
-    mono_Parameter< float, 1000, 0,1000, 1000, 100 > attack_4;
-    mono_Parameter< float, 0, 0,1000, 1000, 100 > decay_4;
-    mono_Parameter< float, 1000, 1,1000, 1000, 100 > sustain_time_4;
-    mono_Parameter< float, 1000, 0,1000, 1000, 100 > release_4;
-    mono_Parameter< float, 2000, 100,20000, 1000, 100 > max_attack_time;
-    mono_Parameter< float, 250, 100,20000, 1000, 100 > max_decay_time;
-    mono_Parameter< float, 4000, 100,20000, 1000, 100 > max_release_time;
+struct ENVPresetDef
+{
+    Parameter attack_1;
+    Parameter decay_1;
+    Parameter sustain_time_1;
+    Parameter release_1;
+    Parameter attack_2;
+    Parameter decay_2;
+    Parameter sustain_time_2;
+    Parameter release_2;
+    Parameter attack_3;
+    Parameter decay_3;
+    Parameter sustain_time_3;
+    Parameter release_3;
+    Parameter attack_4;
+    Parameter decay_4;
+    Parameter sustain_time_4;
+    Parameter release_4;
+    Parameter max_attack_time;
+    Parameter max_decay_time;
+    Parameter max_release_time;
 
     inline const ENVPresetDef& operator=( const ENVPresetDef& other_ ) noexcept;
 
@@ -786,10 +771,10 @@ struct SynthData : mono_ParameterListener<float>
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     Parameter octave_offset;	// WAS AN INT PARAM
-    
+
     BoolParameter sync;
     Parameter speed;
-    
+
     Parameter glide_motor_time;
     Parameter velocity_glide_time;
 
@@ -811,15 +796,15 @@ struct SynthData : mono_ParameterListener<float>
     BoolParameter osci_show_out;
     BoolParameter osci_show_out_env;
     Parameter osci_show_range;
-    
+
     // MULTITHREADING
     Parameter num_extra_threads;
-       
+
     // SETTINGS
     BoolParameter animate_input_env;
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
-    
+
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
     OwnedArray< ENVPresetData > filter_input_env_datas;
