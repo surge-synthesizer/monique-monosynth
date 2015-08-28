@@ -248,7 +248,6 @@ protected:
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
-// TODO this is an static class and we can set it as argument in the ctor of the param
 struct ParameterInfo
 {
     const float min_value;
@@ -264,7 +263,7 @@ struct ParameterInfo
                             const int num_steps_,
                             const String& name_, const String& short_name_ ) noexcept;
     NOINLINE ~ParameterInfo() noexcept;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ParameterInfo )
 };
 
@@ -357,8 +356,21 @@ public:
     NOINLINE BoolParameter( const bool init_value_,
                             const String& name_, const String& short_name_ ) noexcept;
     NOINLINE ~BoolParameter() noexcept;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( BoolParameter )
+};
+
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+class ModulatedParameter : public Parameter
+{
+
+public:
+    NOINLINE ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
+                                const int num_steps_,
+                                const String& name_, const String& short_name_) noexcept;
+    NOINLINE ~ModulatedParameter() noexcept;
 };
 
 // ==============================================================================
@@ -885,7 +897,6 @@ template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE const char* mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::get_short_name() const noexcept {
     return short_name.toRawUTF8();
 }
-
 
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::mono_Parameter( const String& name_, const String& short_name_ ) noexcept

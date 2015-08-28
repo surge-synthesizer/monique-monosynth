@@ -86,6 +86,20 @@ NOINLINE BoolParameter::~BoolParameter() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
+NOINLINE ModulatedParameter::ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
+        const int num_steps_,
+        const String& name_, const String& short_name_) noexcept
+:
+Parameter( min_value_, max_value_, init_value_,
+           num_steps_,
+           name_, short_name_)
+{}
+
+NOINLINE ModulatedParameter::~ModulatedParameter() noexcept {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 NOINLINE ParameterObservable::ParameterObservable
 (
     const float min_value_, const float max_value_, const float init_value_,
