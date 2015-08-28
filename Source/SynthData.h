@@ -770,51 +770,55 @@ inline const ChorusData& ChorusData::operator=( const ChorusData& other_ ) noexc
 // ==============================================================================
 // ==============================================================================
 // TODO LFO SNAP & SNAP DURATION
+// TODO get global saveable parameters
 //==============================================================================
 #define THREAD_LIMIT 4
 struct SynthData : mono_ParameterListener<float>
 {
     const int id;
 
-    mono_Parameter< float, 900, 0,1000, 1000, 1000 > volume;
-    Parameter master_volume;
+    Parameter volume;
+    Parameter glide;
+    Parameter delay;
+    Parameter effect_bypass;
+    Parameter final_compression;
+    Parameter colour;
+    Parameter resonance;
+    Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
+    Parameter octave_offset;	// WAS AN INT PARAM
     
-    mono_Parameter< float, 50, 0,1000, 1000, 1000 > glide;
-    mono_Parameter< float, 0, 0,1000, 1000, 1000 > delay;
-    mono_Parameter< float, 1000, 0,1000, 1000, 1000 > effect_bypass;
-    mono_Parameter< float, 700, 0,1000, 1000, 100 > final_compression;
-    // TODO GLIDE?
-    mono_Parameter< float, 900, 0,1000, 1000, 100 > colour;
-    mono_Parameter< float, 50, 0,1000, 1000, 100 > resonance;
-    mono_Parameter< float, 500, 0,1000, 1000, 100 > curve_shape;
-    mono_Parameter< int, 0, -2,2 > octave_offset;
-
-    mono_Parameter< bool, true > sync;
-    typedef mono_Parameter< float, 128,20,1000, 1, 100 > speed_t;
-    speed_t speed;
-
-    mono_Parameter< int, 500, 1,20000 > glide_motor_time;
-    mono_Parameter< int, 500, 1,20000 > velocity_glide_time;
-
-    mono_Parameter< bool, false > ctrl;
-    mono_Parameter< float, 200, 0,1000, 1000, 100 > midi_pickup_offset;
-
-    mono_Parameter< bool, false > osci_show_osc_1;
-    mono_Parameter< bool, false > osci_show_osc_2;
-    mono_Parameter< bool, false > osci_show_osc_3;
-    mono_Parameter< bool, false > osci_show_flt_env_1;
-    mono_Parameter< bool, false > osci_show_flt_env_2;
-    mono_Parameter< bool, false > osci_show_flt_env_3;
-    mono_Parameter< bool, false > osci_show_flt_1;
-    mono_Parameter< bool, false > osci_show_flt_2;
-    mono_Parameter< bool, false > osci_show_flt_3;
-    mono_Parameter< bool, false > osci_show_eq;
-    mono_Parameter< bool, true > osci_show_out;
-    mono_Parameter< bool, false > osci_show_out_env;
-    mono_Parameter< float, 50, 0,1000, 1000, 100 > osci_show_range;
+    BoolParameter sync;
+    Parameter speed;
     
+    Parameter glide_motor_time;
+    Parameter velocity_glide_time;
+
+    BoolParameter ctrl;
+
+    Parameter midi_pickup_offset;
+
+    // OSCILLOSCOPE SETTINGS
+    BoolParameter osci_show_osc_1;
+    BoolParameter osci_show_osc_2;
+    BoolParameter osci_show_osc_3;
+    BoolParameter osci_show_flt_env_1;
+    BoolParameter osci_show_flt_env_2;
+    BoolParameter osci_show_flt_env_3;
+    BoolParameter osci_show_flt_1;
+    BoolParameter osci_show_flt_2;
+    BoolParameter osci_show_flt_3;
+    BoolParameter osci_show_eq;
+    BoolParameter osci_show_out;
+    BoolParameter osci_show_out_env;
+    Parameter osci_show_range;
     
-    mono_Parameter< int, 0, 0,THREAD_LIMIT > num_extra_threads;
+    // MULTITHREADING
+    Parameter num_extra_threads;
+       
+    // SETTINGS
+    BoolParameter animate_input_env;
+    BoolParameter animate_eq_env;
+    BoolParameter animate_modulations;
     
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
@@ -970,12 +974,10 @@ private:
 
 public:
     // CHANGE THE STATE TO MORPH
-    typedef mono_Parameter< float, 0, 0,1000, 1000, 100 > morhp_state_t;
-    mono_ParameterArray< morhp_state_t, SUM_MORPHER_GROUPS > morhp_states;
-    typedef mono_Parameter< bool, LEFT, LEFT,RIGHT > morhp_switch_state_t;
-    mono_ParameterArray< morhp_switch_state_t, SUM_MORPHER_GROUPS > morhp_switch_states;
-    mono_Parameter< float, 0, 0,3000, 1000, 100 > linear_morhp_state;
-    mono_Parameter< int, 1000, 1,20000 > morph_motor_time;
+    ArrayOfParameters morhp_states;
+    ArrayOfParameters morhp_switch_states;
+    Parameter linear_morhp_state;
+    Parameter morph_motor_time;  // WAS AN INT PARAM
 
     bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
     bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
@@ -992,9 +994,6 @@ public:
     NOINLINE SynthData( DATA_TYPES data_type );
     NOINLINE ~SynthData();
 
-    mono_Parameter< bool, true > animate_input_env;
-    mono_Parameter< bool, true > animate_eq_env;
-    mono_Parameter< bool, true > animate_modulations;
 private:
     StringArray banks;
     Array< StringArray > program_names;

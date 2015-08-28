@@ -627,53 +627,278 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     :
     id( data_type ),
 
-    master_volume
+    volume
     (
-        0,
-        1,
+        MIN_MAX( 0, 1 ),
         0.9,
         1000,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
         generate_short_human_name("MAIN","volume")
     ),
+    glide
+    (
+        MIN_MAX( 0, 1 ),
+        0.05,
+        1000,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
+        generate_short_human_name("MAIN","glide")
+    ),
+    delay
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
+        generate_short_human_name("MAIN","delay")
+    ),
+    effect_bypass
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
+        generate_short_human_name("MAIN","fx_bypass")
+    ),
+    final_compression
+    (
+        MIN_MAX( 0, 1 ),
+        0.7,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
+        generate_short_human_name("MAIN","clipping")
+    ),
+    colour
+    (
+        MIN_MAX( 0, 1 ),
+        0.9,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),
+        generate_short_human_name("MAIN","colour")
+    ),
+    resonance
+    (
+        MIN_MAX( 0, 1 ),
+        0.05,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
+        generate_short_human_name("MAIN","shape")
+    ),
+    curve_shape
+    (
+        MIN_MAX( 0, 1 ),
+        0.5,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),
+        generate_short_human_name("MAIN","env_shape")
+    ),
+    octave_offset
+    (
+        MIN_MAX( -2, 2 ),
+        0,
+        4,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
+        generate_short_human_name("MAIN","octave")
+    ),
 
-    volume(generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),generate_short_human_name("MAIN","volume")),
-    glide(generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),generate_short_human_name("MAIN","glide")),
+    sync
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
+        generate_short_human_name("MAIN","sync")
+    ),
+    speed
+    (
+        MIN_MAX( 20, 1000 ),
+        128,
+        980*10,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
+        generate_short_human_name("MAIN","speed")
+    ),
 
-    delay(generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),generate_short_human_name("MAIN","delay")),
+    glide_motor_time
+    (
+        MIN_MAX( 1, 20000 ),
+        500,
+        20000*10,
+        param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
+        generate_short_human_name("MAIN","glide_motor_time")
+    ),
+    velocity_glide_time
+    (
+        MIN_MAX( 1, 20000 ),
+        500,
+        20000*10,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
+        generate_short_human_name("MAIN","velocity_glide_time")
+    ),
 
-    effect_bypass(generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),generate_short_human_name("MAIN","fx_bypass")),
+    ctrl
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
+        generate_short_human_name("MAIN","ctrl")
+    ),
+    midi_pickup_offset
+    (
+        MIN_MAX( 0, 1 ),
+        0.2,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
+        generate_short_human_name("MAIN","midi_pick_up")
+    ),
 
-    final_compression(generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),generate_short_human_name("MAIN","clipping")),
-    colour(generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),generate_short_human_name("MAIN","colour")),
-    resonance(generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),generate_short_human_name("MAIN","shape")),
-    curve_shape(generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),generate_short_human_name("MAIN","env_shape")),
-    octave_offset(generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),generate_short_human_name("MAIN","octave")),
+    // -------------------------------------------------------------
+    osci_show_osc_1
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
+        generate_short_human_name("MAIN","osci_show_osc_1")
+    ),
+    osci_show_osc_2
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
+        generate_short_human_name("MAIN","osci_show_osc_2")
+    ),
+    osci_show_osc_3
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
+        generate_short_human_name("MAIN","osci_show_osc_3")
+    ),
+    osci_show_flt_env_1
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
+        generate_short_human_name("MAIN","osci_show_flt_env_1")
+    ),
+    osci_show_flt_env_2
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
+        generate_short_human_name("MAIN","osci_show_flt_env_2")
+    ),
+    osci_show_flt_env_3
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
+        generate_short_human_name("MAIN","osci_show_flt_env_3")
+    ),
+    osci_show_flt_1
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
+        generate_short_human_name("MAIN","osci_show_flt_1")
+    ),
+    osci_show_flt_2
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
+        generate_short_human_name("MAIN","osci_show_flt_2")
+    ),
+    osci_show_flt_3
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
+        generate_short_human_name("MAIN","osci_show_flt_3")
+    ),
+    osci_show_eq
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
+        generate_short_human_name("MAIN","osci_show_eq")
+    ),
+    osci_show_out
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
+        generate_short_human_name("MAIN","osci_show_out")
+    ),
+    osci_show_out_env
+    (
+        false,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
+        generate_short_human_name("MAIN","osci_show_out_env")
+    ),
+    osci_show_range
+    (
+        MIN_MAX( 0, 1 ),
+        0.05,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
+        generate_short_human_name("MAIN","osci_show_range")
+    ),
 
-    sync(generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),generate_short_human_name("MAIN","sync")),
-    speed(generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),generate_short_human_name("MAIN","speed")),
+    // -------------------------------------------------------------
+    num_extra_threads
+    (
+        MIN_MAX( 0, THREAD_LIMIT ),
+        0,
+        THREAD_LIMIT,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
+        generate_short_human_name("MAIN","cpus")
+    ),
 
-    glide_motor_time(generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),generate_short_human_name("MAIN","glide_motor_time")),
-    velocity_glide_time(generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),generate_short_human_name("MAIN","velocity_glide_time")),
+    // -------------------------------------------------------------
+    animate_input_env
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_input_env"),
+        generate_short_human_name("animate_input_env")
+    ),
+    animate_eq_env
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_eq_env"),
+        generate_short_human_name("animate_eq_env")
+    ),
+    animate_modulations
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),
+        generate_short_human_name("animate_modulations")
+    ),
 
-    ctrl(generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),generate_short_human_name("MAIN","ctrl")),
-    midi_pickup_offset(generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),generate_short_human_name("MAIN","midi_pick_up")),
+    // -------------------------------------------------------------
+    morhp_states
+    (
+        SUM_MORPHER_GROUPS,
 
-    osci_show_osc_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),generate_short_human_name("MAIN","osci_show_osc_1")),
-    osci_show_osc_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),generate_short_human_name("MAIN","osci_show_osc_2")),
-    osci_show_osc_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),generate_short_human_name("MAIN","osci_show_osc_3")),
-    osci_show_flt_env_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),generate_short_human_name("MAIN","osci_show_flt_env_1")),
-    osci_show_flt_env_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),generate_short_human_name("MAIN","osci_show_flt_env_2")),
-    osci_show_flt_env_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),generate_short_human_name("MAIN","osci_show_flt_env_3")),
-    osci_show_flt_1(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),generate_short_human_name("MAIN","osci_show_flt_1")),
-    osci_show_flt_2(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),generate_short_human_name("MAIN","osci_show_flt_2")),
-    osci_show_flt_3(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),generate_short_human_name("MAIN","osci_show_flt_3")),
-    osci_show_eq(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),generate_short_human_name("MAIN","osci_show_eq")),
-    osci_show_out(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),generate_short_human_name("MAIN","osci_show_out")),
-    osci_show_out_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),generate_short_human_name("MAIN","osci_show_out_env")),
-    osci_show_range(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),generate_short_human_name("MAIN","osci_show_range")),
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
 
-    num_extra_threads(generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),generate_short_human_name("MAIN","cpus")),
+        SYNTH_DATA_NAME,MASTER,
+        "morph_state","morph",false
+    ),
+    morhp_switch_states
+    (
+        SUM_MORPHER_GROUPS,
+
+        MIN_MAX( LEFT, RIGHT ),
+        LEFT,
+        1,
+
+        SYNTH_DATA_NAME,MASTER,
+        "morph_switch_state","morph_tgl",false
+    ),
+    linear_morhp_state
+    (
+        MIN_MAX( 0, 3 ),
+        0,
+        100,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
+        generate_short_human_name("morph_line")
+    ),
+    morph_motor_time
+    (
+        MIN_MAX( 1, 20000 ),
+        1000,
+        20000*10,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
+        generate_short_human_name("morph_motor")
+    ),
+
 
     env_preset_def(new ENVPresetDef( MASTER ) ),
     eq_data(new EQData(MASTER, env_preset_def)),
@@ -681,18 +906,10 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     reverb_data(new ReverbData( MASTER ) ),
     chorus_data(new ChorusData( MASTER, env_preset_def )),
 
-    morhp_states( SYNTH_DATA_NAME,MASTER,"morph_state","morph",false ),
-    morhp_switch_states( SYNTH_DATA_NAME,MASTER,"morph_switch_state","morph_tgl",false ),
-    linear_morhp_state(generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),generate_short_human_name("morph_line")),
-    morph_motor_time(generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),generate_short_human_name("morph_motor")),
 
     current_program(-1),
     current_program_abs(-1),
-    current_bank(0),
-
-    animate_input_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_input_env"),generate_short_human_name("animate_input_env")),
-    animate_eq_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_eq_env"),generate_short_human_name("animate_eq_env")),
-    animate_modulations(generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),generate_short_human_name("animate_modulations"))
+    current_bank(0)
 {
     if( data_type == MASTER ) {
         mono_ParameterOwnerStore::getInstance()->env_preset_def = env_preset_def;
@@ -2302,6 +2519,7 @@ NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore() : ui_env(nullptr),
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
 
 
 

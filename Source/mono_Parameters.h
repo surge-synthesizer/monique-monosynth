@@ -259,6 +259,7 @@ struct ParameterInfo
     const String name;
     const String short_name;
 
+#define MIN_MAX(min_,max_) min_,max_
     NOINLINE ParameterInfo( const float min_value_, const float max_value_, const float init_value_,
                             const int num_steps_,
                             const String& name_, const String& short_name_ ) noexcept;
@@ -296,6 +297,7 @@ private:
 public:
     // ==============================================================================
     // SETTER
+#if DEBUG
 #define DBG_CHECK_RANGE( x ) \
     if( x > info->init_value ) { \
       std::cout << "ERROR: value is bigger as max: " << info->short_name << "->" << x << " max:"<<  info->max_value << std::endl; \
@@ -303,6 +305,9 @@ public:
     else if( x < info->min_value ) { \
       std::cout << "ERROR: value is smaller as min: " << info->short_name << "->" << x << " max:"<<  info->min_value << std::endl; \
     }
+#else
+#define DBG_CHECK_RANGE( x )
+#endif
 
     inline void set_value( float value_ ) noexcept
     {
@@ -333,7 +338,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( Parameter )
 };
 
-class BoolParameter : Parameter
+class BoolParameter : public Parameter
 {
 public:
     // ==============================================================================
@@ -450,6 +455,63 @@ public:
     NOINLINE ~ParameterObservable() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ParameterObservable )
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class ArrayOfParameters
+{
+    FastArray<Parameter*> parameters;
+
+public:
+#if DEBUG
+#define DEBUG_CHECK_ARRAY_RANGE( x ) if( x >= parameters.size() ) { std::cout << "ERROR: ARRAY ACCESS OUT OF RANGE" << std::endl; }
+#else
+#define DEBUG_CHECK_ARRAY_RANGE( x )
+#endif
+    inline Parameter& operator[]( int index_ ) const noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters.getUnchecked( index_ );
+    }
+    inline Parameter& get( int index_ ) const noexcept 
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters.getUnchecked( index_ );
+    }
+    inline const Parameter& operator[]( int index_ ) const noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters.getUnchecked( index_ );
+    }
+    inline const Parameter& get( int index_ ) const noexcept 
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters.getUnchecked( index_ );
+    }
+
+public:
+    NOINLINE ArrayOfParameters( const int num_parameters_,
+
+                                const float min_value_, const float max_value_, const float init_value_,
+                                const int num_steps_,
+
+                                const String& owner_class_name_,
+                                const int owner_id_,
+
+                                const String& param_name_,
+                                const String& param_name_short_,
+                                bool create_human_id_ = true
+                              ) noexcept;
+    NOINLINE ~ArrayOfParameters() noexcept;
 };
 
 //==============================================================================
@@ -1181,9 +1243,8 @@ NOINLINE void mono_ParameterGlideModulated<MONO_PARAMETER_TEMPLATE_DEFINITION>::
         xml_.getStringAttribute( parameter_t::name + "_MIDI_CTRL", "" )
     );
 }
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
+
+
 template< class mono_Parameter_t, int size_ >
 class mono_ParameterArray {
     OwnedArray< mono_Parameter_t > array;
@@ -1242,7 +1303,8 @@ mono_ParameterArray< mono_Parameter_t,size_ >::~mono_ParameterArray() {}
 // ==============================================================================
 // ==============================================================================
 template< class mono_ParameterArray_t >
-class mono_ParameterReferenceArray {
+class mono_ParameterReferenceArray
+{
     Array< typename mono_ParameterArray_t::mono_Parameter_type* > array;
 
 public:

@@ -79,7 +79,13 @@ NOINLINE Parameter::~Parameter() noexcept
 NOINLINE BoolParameter::BoolParameter( const bool init_value_,
                                        const String& name_, const String& short_name_ ) noexcept
 :
-Parameter( false, true, float(init_value_), 1, name_, short_name_ )
+Parameter
+(
+    MIN_MAX( false, true ),
+    float(init_value_),
+    1,
+    name_, short_name_ 
+)
 {}
 NOINLINE BoolParameter::~BoolParameter() noexcept {}
 
@@ -146,6 +152,65 @@ NOINLINE void ParameterObservable::remove_listener( const ParameterListener* lis
     always_value_listeners.minimiseStorageOverheads();
     value_listeners.minimiseStorageOverheads();
 }
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ArrayOfParameters::ArrayOfParameters( const int num_parameters_,
+
+        const float min_value_, const float max_value_, const float init_value_,
+        const int num_steps_,
+
+        const String& owner_class_name_,
+        const int owner_id_,
+
+        const String& param_name_,
+        const String& param_name_short_,
+        bool create_human_id_ = true
+                                             ) noexcept
+{
+    for( int i = 0 ; i != num_parameters_ ; ++i )
+    {
+        parameters.add
+        (
+            new Parameter
+            (
+                MIN_MAX( min_value_, max_value_ ),
+                init_value_,
+                generate_param_name(owner_class_name_,owner_id_,param_name_,i),
+                create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+            )
+        );
+    }
+    parameters.minimiseStorageOverheads();
+}
+NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
+{
+    for( int i = 0 ; i != parameters.size() ; ++i )
+    {
+        delete parameters.getUnchecked(i);
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 
 
 
