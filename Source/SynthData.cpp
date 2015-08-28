@@ -1534,7 +1534,9 @@ NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
     if( xml_ )
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-            saveable_parameters.getUnchecked(i)->write_to(*xml_);
+	{
+           write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
+	}
 
         // MORPH SELECTIONS
         if( id == MASTER )
@@ -1553,8 +1555,10 @@ NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
     if( xml_ )
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-            saveable_parameters.getUnchecked(i)->read_from(*xml_);
-
+	{
+           read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+	}
+	    
         // FIRST LOAD THE MORPH SOURCES
         if( id == MASTER )
         {

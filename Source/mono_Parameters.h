@@ -211,14 +211,20 @@ class mono_ParameterListener;
 
 // TODO add the values to the base class and dont overwrite the expensive virtual functions
 struct mono_ParameterCompatibilityBase {
-    virtual float get_scaled_value() = 0;
-    virtual void set_scaled_value( float ) = 0;
-    virtual void toggle_value() = 0;
+    virtual float get_scaled_value() const noexcept = 0;
+    virtual void set_scaled_value( float ) noexcept = 0;
+    virtual void set_scaled_without_notification( float ) noexcept = 0;
+    virtual float get_scaled_init_value() const noexcept = 0;
+    virtual void toggle_value() noexcept = 0;
+
+    virtual void notify_on_load_value_listeners() noexcept {};
 
     // NEEDED FOR SET BY USER
     NOINLINE virtual float slider_interval() const noexcept = 0;
     NOINLINE virtual int min_unscaled() const noexcept = 0;
     NOINLINE virtual int max_unscaled() const noexcept = 0;
+    virtual float get_min() noexcept { return 0; }
+    virtual float get_max() noexcept { return 0; }
     NOINLINE virtual int reset_unscaled() const noexcept = 0;
     NOINLINE virtual int scale() const noexcept = 0;
 
@@ -234,8 +240,8 @@ struct mono_ParameterCompatibilityBase {
     }
 
     // SAVE AND RESTORE
-    NOINLINE virtual void write_to( XmlElement& xml_ ) const noexcept {};
-    NOINLINE virtual void read_from( const XmlElement& xml_ ) noexcept {};
+    //NOINLINE virtual void write_to( XmlElement& xml_ ) const noexcept {};
+    //NOINLINE virtual void read_from( const XmlElement& xml_ ) noexcept {};
     NOINLINE virtual void write_midi_to( XmlElement& xml_ ) const noexcept {};
     NOINLINE virtual void read_midi_from( const XmlElement& xml_ ) noexcept {};
 
@@ -298,20 +304,14 @@ public:
         return value;
     }
     // TODO, we dont need a return here.
-    inline T set_scaled( T value_ ) noexcept {
+    inline void set_scaled( T value_ ) noexcept {
         value = value_;
         notify_value_listeners();
-
-        return value_;
     }
-    virtual T get_min() noexcept { return 0; }
-    virtual T get_max() noexcept { return 0; }
 
-    inline T set_scaled_without_notification( T value_ ) noexcept {
+    inline void set_scaled_without_notification( float value_ ) noexcept override {
         value = value_;
         notify_always_value_listeners();
-
-        return value_;
     }
 
     int get_type() const noexcept override {
@@ -333,7 +333,7 @@ protected:
             listeners.getUnchecked(i)->parameter_modulation_value_changed( this );
         }
     }
-    inline void notify_on_load_value_listeners() {
+    inline void notify_on_load_value_listeners() noexcept override {
         for( int i = 0 ; i != listeners.size() ; ++i ) {
             listeners.getUnchecked(i)->parameter_value_on_load_changed( this );
         }
@@ -471,14 +471,14 @@ public:
         return static_cast< parameter_base_t* >( this );
     }
 
-    T get_min() noexcept override {
+    float get_min() noexcept override {
         return MIN_SCALED;
     }
-    T get_max() noexcept override {
+    float get_max() noexcept override {
         return MAX_SCALED;
     }
 
-    void toggle_value() override {
+    void toggle_value() noexcept override {
         if( parameter_base_t::value == MIN_SCALED )
             parameter_base_t::set_scaled( MAX_SCALED );
         else
@@ -502,7 +502,8 @@ private:
     NOINLINE int reset_unscaled() const noexcept override;
     NOINLINE int scale() const noexcept override;
 
-    NOINLINE float get_scaled_value() noexcept override;
+    NOINLINE float get_scaled_value() const noexcept override;
+    NOINLINE float get_scaled_init_value() const noexcept override;
     NOINLINE void set_scaled_value( float v_ ) noexcept override;
 public:
     const String name;
@@ -510,9 +511,10 @@ public:
 
     NOINLINE mono_Parameter( const String& name_, const String& short_name_ ) noexcept;
     NOINLINE ~mono_Parameter() noexcept;
-
-    NOINLINE void write_to( XmlElement& xml_ ) const noexcept override;
-    NOINLINE void read_from( const XmlElement& xml_ ) noexcept override;
+    /*
+        NOINLINE void write_to( XmlElement& xml_ ) const noexcept override;
+        NOINLINE void read_from( const XmlElement& xml_ ) noexcept override;
+        */
     NOINLINE void write_midi_to( XmlElement& xml_ ) const noexcept override;
     NOINLINE void read_midi_from( const XmlElement& xml_ ) noexcept override;
 
@@ -559,7 +561,11 @@ NOINLINE float mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::slider_interv
 }
 
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
-NOINLINE float mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::get_scaled_value() noexcept {
+NOINLINE float mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::get_scaled_init_value() const noexcept {
+    return INIT_SCALED;
+}
+template<MONO_PARAMETER_TEMPLATE_DECLARATION>
+NOINLINE float mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::get_scaled_value() const noexcept {
     return parameter_base_t::value;
 }
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
@@ -600,7 +606,7 @@ parameter_base_t( T(init_value_)/scale_factor ), name( name_ ), short_name(short
 {}
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::~mono_Parameter() noexcept {}
-
+/*
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE void mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::write_to( XmlElement& xml_ ) const noexcept {
     if( parameter_base_t::value != INIT_SCALED )
@@ -618,6 +624,7 @@ NOINLINE void mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::read_from( con
     parameter_base_t::set_scaled_without_notification ( new_value );
     parameter_base_t::notify_on_load_value_listeners();
 }
+*/
 template<MONO_PARAMETER_TEMPLATE_DECLARATION>
 NOINLINE void mono_Parameter<MONO_PARAMETER_TEMPLATE_DEFINITION>::write_midi_to( XmlElement& xml_ ) const noexcept {
     if( parameter_base_t::midi_control->get_listen_type() != MIDIControl::NOT_SET )
@@ -797,9 +804,9 @@ public:
     NOINLINE ~mono_ParameterGlideModulated();
 
 private:
-  // TODO make this ti a function which takes the param as arg?
-    NOINLINE void write_to( XmlElement& xml_ ) const noexcept override;
-    NOINLINE void read_from( const XmlElement& xml_ ) noexcept override;
+    // TODO make this ti a function which takes the param as arg?
+    NOINLINE void write_to( XmlElement& xml_ ) const noexcept;
+    NOINLINE void read_from( const XmlElement& xml_ ) noexcept;
     NOINLINE void write_midi_to( XmlElement& xml_ ) const noexcept override;
     NOINLINE void read_midi_from( const XmlElement& xml_ ) noexcept override;
 
@@ -965,9 +972,53 @@ private:
 
 };
 
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+// FILE IO
+template<class parmeter_t>
+static inline void write_parameter_to_file( XmlElement& xml_, const parmeter_t* param_ ) noexcept
+{
+    // FOR SIMPLIFY WE JUST USE ALWAYS FLOAT
+    const float value = param_->get_scaled_value();
+    if( value != param_->get_scaled_init_value() )
+    {
+        xml_.setAttribute( param_->get_name(), value );
+    }
+}
+template<class parmeter_t>
+static inline void read_parameter_from_file( const XmlElement& xml_, parmeter_t* param_ ) noexcept
+{
+    // FOR SIMPLIFY WE JUST USE ALWAYS FLOAT
+    const float old_value = param_->get_scaled_value();
+    float new_value = xml_.getDoubleAttribute( param_->get_name(), param_->get_scaled_init_value() );
+    if( new_value != old_value )
+    {
+        // TODO dont read the value two times
+        const float max_value = param_->get_max();
+        if( new_value > max_value )
+        {
+            new_value = max_value;
+        }
+        else if( new_value < param_->get_min() )
+        {
+            new_value = param_->get_min();
+        }
+
+        param_->set_scaled_without_notification( new_value );
+        param_->notify_on_load_value_listeners();
+    }
+}
+
 #pragma GCC diagnostic pop
 
 #endif
-
-
-
