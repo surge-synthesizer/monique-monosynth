@@ -203,9 +203,297 @@ struct simple_type_info<float> {
         return IS_FLOAT;
     }
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+template<class T>
+struct FastArray : public Array<T>
+{
+    inline T getUnchecked( int index_ ) const noexcept
+    {
+        return Array<T>::data.elements[index_];
+    }
+
+    NOINLINE FastArray();
+    NOINLINE ~FastArray();
+};
+
+//==============================================================================
+template<class T> NOINLINE FastArray<T>::FastArray() {}
+template<class T> NOINLINE FastArray<T>::~FastArray() {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class ParameterObservable;
+class ParameterListener
+{
+    friend class ParameterObservable;
+    virtual inline void parameter_value_changed( ParameterObservable* ) noexcept {}
+    virtual inline void parameter_value_changed_always_notification( ParameterObservable* ) noexcept {}
+    virtual inline void parameter_value_on_load_changed( ParameterObservable* ) noexcept {}
+
+protected:
+    NOINLINE ParameterListener() noexcept;
+    NOINLINE ~ParameterListener() noexcept;
+};
+
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
+// TODO this is an static class and we can set it as argument in the ctor of the param
+struct ParameterInfo
+{
+    const float min_value;
+    const float max_value;
+    const float init_value;
+
+    const int num_steps;
+
+    const String name;
+    const String short_name;
+
+    NOINLINE ParameterInfo( const float min_value_, const float max_value_, const float init_value_,
+                            const int num_steps_,
+                            const String& name_, const String& short_name_ ) noexcept;
+    NOINLINE ~ParameterInfo() noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ParameterInfo )
+};
+
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+class Parameter
+{
+protected:
+    const ParameterInfo*const info;
+
+    float value;
+
+public:
+    // ==============================================================================
+    // GETTER
+    inline operator float() const noexcept
+    {
+        return value;
+    }
+    inline float get_value() const noexcept
+    {
+        return value;
+    }
+
+private:
+    // IF YOU GET AN COMPILE ERROR YOU SHOULD TAKE A LOOK AT BoolParameter
+    inline operator bool() const noexcept = delete;
+
+public:
+    // ==============================================================================
+    // SETTER
+#define DBG_CHECK_RANGE( x ) \
+    if( x > info->init_value ) { \
+      std::cout << "ERROR: value is bigger as max: " << info->short_name << "->" << x << " max:"<<  info->max_value << std::endl; \
+    } \
+    else if( x < info->min_value ) { \
+      std::cout << "ERROR: value is smaller as min: " << info->short_name << "->" << x << " max:"<<  info->min_value << std::endl; \
+    }
+
+    inline void set_value( float value_ ) noexcept
+    {
+        DBG_CHECK_RANGE( value_ )
+        value = value_;
+    }
+    inline float operator= ( float value_ ) noexcept
+    {
+        DBG_CHECK_RANGE( value_ )
+        return value = value_;
+    }
+
+public:
+    // ==============================================================================
+    // STATIC GETTER
+    const ParameterInfo& get_info() const noexcept
+    {
+        return *info;
+    }
+
+public:
+    // ==============================================================================
+    NOINLINE Parameter(const float min_value_, const float max_value_, const float init_value_,
+                       const int num_steps_,
+                       const String& name_, const String& short_name_ ) noexcept;
+    NOINLINE ~Parameter() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( Parameter )
+};
+
+class BoolParameter : Parameter
+{
+public:
+    // ==============================================================================
+    // GETTER
+    inline bool operator^=( bool ) noexcept
+    {
+        value = !value;
+        return value;
+    }
+    inline operator bool() const noexcept
+    {
+        return bool(value);
+    }
+
+private:
+    // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
+    inline operator float() const noexcept = delete;
+
+public:
+    NOINLINE BoolParameter( const bool init_value_,
+                            const String& name_, const String& short_name_ ) noexcept;
+    NOINLINE ~BoolParameter() noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( BoolParameter )
+};
+
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+class ParameterObservable : public Parameter
+{
+    FastArray< ParameterListener* > value_listeners;
+    FastArray< ParameterListener* > always_value_listeners;
+
+public:
+    // ==============================================================================
+    // SETTER - OVERRIDES THE PARAM ONES
+    inline void set_value( float value_ ) noexcept
+    {
+        if( value != value_ )
+        {
+            value = value_;
+            notify_value_listeners();
+        }
+    }
+    inline float operator= ( float value_ ) noexcept
+    {
+        DBG_CHECK_RANGE( value_ )
+        set_value( value_ );
+        return value;
+    }
+
+    inline void set_value_without_notification( float value_ ) noexcept
+    {
+        DBG_CHECK_RANGE( value_ )
+        if( value != value_ )
+        {
+            value = value_;
+            notify_always_value_listeners();
+        }
+    }
+
+private:
+    // ==============================================================================
+    // NOTIFICATIONS
+    // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
+    inline void notify_value_listeners() noexcept
+    {
+        for( int i = 0 ; i != value_listeners.size() ; ++i )
+        {
+            value_listeners.getUnchecked(i)->parameter_value_changed( this );
+        }
+    };
+    inline void notify_always_value_listeners() noexcept
+    {
+        for( int i = 0 ; i != always_value_listeners.size() ; ++i )
+        {
+            always_value_listeners.getUnchecked(i)->parameter_value_changed_always_notification( this );
+        }
+    };
+    inline void notify_on_load_value_listeners() noexcept
+    {
+        for( int i = 0 ; i != value_listeners.size() ; ++i )
+        {
+            value_listeners.getUnchecked(i)->parameter_value_on_load_changed( this );
+        }
+    }
+
+public:
+    // ==============================================================================
+    // REGISTRATIONS
+    void register_listener( ParameterListener* listener_ ) noexcept;
+    void register_always_listener( ParameterListener* listener_ ) noexcept;
+    void remove_listener( const ParameterListener* listener_ ) noexcept;
+
+public:
+    // ==============================================================================
+    NOINLINE ParameterObservable(const float min_value_, const float max_value_, const float init_value_,
+                                 const int num_steps_,
+                                 const String& name_, const String& short_name_ ) noexcept;
+    NOINLINE ~ParameterObservable() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ParameterObservable )
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+// PLUGIN PARAMETER SUPPORT
+static inline float get_percent_value( const Parameter* param_ ) noexcept
+{
+    const ParameterInfo& info = param_->get_info();
+    const float min = info.min_value;
+    const float max = info.max_value;
+    const float value = param_->get_value();
+
+    return 1.0f/(max-min)*(value-min);
+}
+
+//==============================================================================
+static inline void set_percent_value( Parameter* param_, float value_in_percent_ ) noexcept
+{
+    const ParameterInfo& info = param_->get_info();
+    const float min = info.min_value;
+    const float max = info.max_value;
+
+    param_->set_value( (max-min)*value_in_percent_ + min );
+}
+
+//==============================================================================
+static inline float get_percent_default_value( const Parameter* param_ ) noexcept
+{
+    const ParameterInfo& info = param_->get_info();
+    return 1.0f/(info.max_value-info.min_value)*(info.init_value-info.min_value);
+}
+
+//==============================================================================
+static inline int get_num_steps( const Parameter* param_ ) noexcept
+{
+    return param_->get_info().num_steps;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 template<typename T>
 class mono_ParameterListener;
 
@@ -972,7 +1260,7 @@ private:
 
 };
 
-
+// TODO thee to store the static values (init, min max... )
 
 //==============================================================================
 //==============================================================================

@@ -627,6 +627,16 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     :
     id( data_type ),
 
+    master_volume
+    (
+        0,
+        1,
+        0.9,
+        1000,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
+        generate_short_human_name("MAIN","volume")
+    ),
+
     volume(generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),generate_short_human_name("MAIN","volume")),
     glide(generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),generate_short_human_name("MAIN","glide")),
 
@@ -662,7 +672,7 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     osci_show_out(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),generate_short_human_name("MAIN","osci_show_out")),
     osci_show_out_env(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),generate_short_human_name("MAIN","osci_show_out_env")),
     osci_show_range(generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),generate_short_human_name("MAIN","osci_show_range")),
-    
+
     num_extra_threads(generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),generate_short_human_name("MAIN","cpus")),
 
     env_preset_def(new ENVPresetDef( MASTER ) ),
@@ -839,7 +849,7 @@ NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibility
     params_.add( &osci_show_out );
     params_.add( &osci_show_out_env );
     params_.add( &osci_show_range );
-    
+
     params_.add( &num_extra_threads );
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id ) {
@@ -1534,9 +1544,9 @@ NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
     if( xml_ )
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-	{
-           write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
-	}
+        {
+            write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
+        }
 
         // MORPH SELECTIONS
         if( id == MASTER )
@@ -1555,10 +1565,10 @@ NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
     if( xml_ )
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-	{
-           read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
-	}
-	    
+        {
+            read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+        }
+
         // FIRST LOAD THE MORPH SOURCES
         if( id == MASTER )
         {

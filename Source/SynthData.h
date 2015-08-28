@@ -777,6 +777,8 @@ struct SynthData : mono_ParameterListener<float>
     const int id;
 
     mono_Parameter< float, 900, 0,1000, 1000, 1000 > volume;
+    Parameter master_volume;
+    
     mono_Parameter< float, 50, 0,1000, 1000, 1000 > glide;
     mono_Parameter< float, 0, 0,1000, 1000, 1000 > delay;
     mono_Parameter< float, 1000, 0,1000, 1000, 1000 > effect_bypass;

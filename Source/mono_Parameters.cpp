@@ -12,6 +12,130 @@
 #include "SynthData.h"
 #include "PluginProcessor.h"
 
+
+
+
+
+
+
+// TODO NOINLINE
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ParameterListener::ParameterListener() noexcept {};
+NOINLINE ParameterListener::~ParameterListener() noexcept {};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ParameterInfo::ParameterInfo
+(
+    const float min_value_, const float max_value_, const float init_value_,
+    const int num_steps_,
+    const String& name_, const String& short_name_
+) noexcept
+:
+min_value(min_value_),
+          max_value(max_value_),
+          init_value(init_value_),
+
+          num_steps(num_steps_),
+
+          name(name_),
+          short_name(short_name_)
+{}
+
+NOINLINE ParameterInfo::~ParameterInfo() noexcept {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE Parameter::Parameter
+(
+    const float min_value_, const float max_value_, const float init_value_,
+    const int num_steps_,
+    const String& name_, const String& short_name_
+) noexcept
+:
+info( new ParameterInfo(min_value_,max_value_,init_value_,num_steps_,name_,short_name_) ),
+value(init_value_)
+{}
+
+NOINLINE Parameter::~Parameter() noexcept
+{
+    delete info;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE BoolParameter::BoolParameter( const bool init_value_,
+                                       const String& name_, const String& short_name_ ) noexcept
+:
+Parameter( false, true, float(init_value_), 1, name_, short_name_ )
+{}
+NOINLINE BoolParameter::~BoolParameter() noexcept {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ParameterObservable::ParameterObservable
+(
+    const float min_value_, const float max_value_, const float init_value_,
+    const int num_steps_,
+    const String& name_, const String& short_name_
+) noexcept
+:
+Parameter( min_value_, max_value_, init_value_,
+           num_steps_,
+           name_, short_name_ )
+{
+    always_value_listeners.minimiseStorageOverheads();
+    value_listeners.minimiseStorageOverheads();
+}
+
+NOINLINE ParameterObservable::~ParameterObservable() noexcept {}
+
+//==============================================================================
+NOINLINE void ParameterObservable::register_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! value_listeners.contains( listener_ ) )
+    {
+        value_listeners.add( listener_ );
+
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+NOINLINE void ParameterObservable::register_always_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! always_value_listeners.contains( listener_ ) )
+    {
+        always_value_listeners.add( listener_ );
+        value_listeners.add( listener_ );
+
+        always_value_listeners.minimiseStorageOverheads();
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+NOINLINE void ParameterObservable::remove_listener( const ParameterListener* listener_ ) noexcept
+{
+    always_value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+    value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+
+    always_value_listeners.minimiseStorageOverheads();
+    value_listeners.minimiseStorageOverheads();
+}
+
+
+
+
 // ==============================================================================
 juce_ImplementSingleton (MIDIControlHandler)
 
