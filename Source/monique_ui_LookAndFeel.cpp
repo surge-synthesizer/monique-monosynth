@@ -1006,7 +1006,6 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
     {
         if( slider_type == MODULATION_SLIDER )
         {
-            slider_value = slider_value/100;
             rotaryEndAngle_ = float_Pi*0.8f;
             rotaryStartAngle_ = 0;
             sliderPos = slider_value * rotaryEndAngle_/2.5f;
