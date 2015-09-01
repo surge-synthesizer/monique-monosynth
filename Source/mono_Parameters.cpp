@@ -35,6 +35,7 @@ NOINLINE ParameterInfo::ParameterInfo
     TYPES_DEF type_,
 
     const float min_value_, const float max_value_, const float init_value_,
+    const float init_modulation_amount_,
     const int num_steps_,
     const String& name_, const String& short_name_
 ) noexcept
@@ -44,6 +45,8 @@ type( type_ ),
       min_value(min_value_),
       max_value(max_value_),
       init_value(init_value_),
+
+      init_modulation_amount( init_modulation_amount_ ),
 
       num_steps(num_steps_),
 
@@ -60,8 +63,11 @@ NOINLINE ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept :
 current_modulation_amount(0), timeChanger(nullptr) {}
 NOINLINE ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
 {
-    timeChanger->forceStopAndKill();
-    timeChanger = nullptr;
+    if( timeChanger )
+    {
+        timeChanger->forceStopAndKill();
+        timeChanger = nullptr;
+    }
 }
 
 //==============================================================================
@@ -78,7 +84,7 @@ NOINLINE Parameter::Parameter
 :
 value(init_value_),
 modulation_amount( init_modulation_amount_ ),
-info( new ParameterInfo(type_,min_value_,max_value_,init_value_,num_steps_,name_,short_name_) ),
+info( new ParameterInfo(type_,min_value_,max_value_,init_value_,init_modulation_amount_,num_steps_,name_,short_name_) ),
 runtime_info( new ParameterRuntimeInfo() ),
 
 midi_control(new MIDIControl( this ))

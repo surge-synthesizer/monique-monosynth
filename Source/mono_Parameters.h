@@ -96,6 +96,8 @@ struct ParameterInfo
     const float max_value;
     const float init_value;
 
+    const float init_modulation_amount;
+
     const int num_steps;
 
     const String name;
@@ -107,6 +109,7 @@ private:
 #define MIN_MAX(min_,max_) min_,max_ /* HELPER MACRO TO MAKE CTOR ARGUMENTS MORE READABLE */
     NOINLINE ParameterInfo( TYPES_DEF type_,
                             const float min_value_, const float max_value_, const float init_value_,
+                            const float init_modulation_amount_,
                             const int num_steps_,
                             const String& name_, const String& short_name_ ) noexcept;
     NOINLINE ~ParameterInfo() noexcept;
@@ -315,7 +318,7 @@ public:
         };
 
         template<typename T>
-        NOINLINE mono_ParameterListener<T>::mono_ParameterListener() {};
+        NOINLINE mono_ParameterListener<T>::mono_ParameterListener() {};_to_file
         template<typename T>
         NOINLINE mono_ParameterListener<T>::~mono_ParameterListener() {};
         */
@@ -927,27 +930,50 @@ static inline void write_parameter_to_file( XmlElement& xml_, const Parameter* p
     {
         xml_.setAttribute( info.name, value );
     }
+
+    if( has_modulation( param_ ) )
+    {
+        float modulation_amount = param_->get_modulation_amount();
+        if( param_->get_modulation_amount() != info.init_modulation_amount )
+        {
+            xml_.setAttribute( info.name + String("_mod"), modulation_amount );
+        }
+    }
 }
 static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
     const ParameterInfo& info = param_->get_info();
-    const float old_value = param_->get_value();
-    float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
-    if( new_value != old_value )
     {
-        // TODO dont read the value two times
-        const float max_value = info.max_value;
-        if( new_value > max_value )
-        {
-            new_value = max_value;
-        }
-        else if( new_value < info.min_value )
-        {
-            new_value = info.min_value;
-        }
+        const float old_value = param_->get_value();
+        float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
 
-        param_->set_value_without_notification( new_value );
-        param_->notify_on_load_value_listeners();
+        if( new_value != old_value )
+        {
+            const float max_value = info.max_value;
+            if( new_value > max_value )
+            {
+                new_value = max_value;
+            }
+            else if( new_value < info.min_value )
+            {
+                new_value = info.min_value;
+            }
+
+            param_->set_value_without_notification( new_value );
+            param_->notify_on_load_value_listeners();
+        }
+    }
+
+    if( has_modulation( param_ ) )
+    {
+        const float old_modulation_amount = param_->get_modulation_amount();
+        const float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
+
+        if( old_modulation_amount != new_modulation_amount )
+        {
+            param_->set_modulation_amount_without_notification( new_modulation_amount );
+            param_->notify_on_load_value_listeners();
+        }
     }
 }
 
@@ -1942,4 +1968,6 @@ NOINLINE mono_ParameterListener<T>::~mono_ParameterListener() {};
 #pragma GCC diagnostic pop
 
 #endif
+
+
 
