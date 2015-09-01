@@ -509,33 +509,34 @@ public:
 //==============================================================================
 class ArrayOfParameters
 {
-    Array<Parameter*> parameters;
+    const int size;
+    Parameter** parameters;
 
 public:
 #if DEBUG
-#define DEBUG_CHECK_ARRAY_RANGE( x ) if( x >= parameters.size() ) { std::cout << "ERROR: ARRAY ACCESS OUT OF RANGE" << std::endl; }
+#define DEBUG_CHECK_ARRAY_RANGE( x ) if( x >= size ) { std::cout << "ERROR: ARRAY ACCESS OUT OF RANGE" << std::endl; }
 #else
 #define DEBUG_CHECK_ARRAY_RANGE( x )
 #endif
     inline Parameter& operator[]( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline Parameter& get( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline const Parameter& operator[]( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline const Parameter& get( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
 
 public:
@@ -564,28 +565,29 @@ private:
 //==============================================================================
 class ArrayOfBoolParameters
 {
-    Array<BoolParameter*> parameters;
+    const int size;
+    BoolParameter** parameters;
 
 public:
     inline BoolParameter& operator[]( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline BoolParameter& get( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline const BoolParameter& operator[]( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
     inline const BoolParameter& get( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
-        return *parameters.getUnchecked( index_ );
+        return *parameters[ index_ ];
     }
 
 public:

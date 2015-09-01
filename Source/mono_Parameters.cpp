@@ -209,28 +209,27 @@ NOINLINE ArrayOfParameters::ArrayOfParameters
 
     bool create_human_id_
 ) noexcept
+:
+size( num_parameters_ )
 {
-    for( int i = 0 ; i != num_parameters_ ; ++i )
+    parameters = new Parameter*[size];
+    for( int i = 0 ; i != size ; ++i )
     {
-        parameters.add
+        parameters[i] = new Parameter
         (
-            new Parameter
-            (
-                MIN_MAX( min_value_, max_value_ ),
-                init_value_,
-                num_steps_,
-                generate_param_name(owner_class_name_,owner_id_,param_name_,i),
-                create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
-            )
+            MIN_MAX( min_value_, max_value_ ),
+            init_value_,
+            num_steps_,
+            generate_param_name(owner_class_name_,owner_id_,param_name_,i),
+            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
         );
     }
-    parameters.minimiseStorageOverheads();
 }
 NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
 {
-    for( int i = 0 ; i != parameters.size() ; ++i )
+    for( int i = size-1 ; i > -1 ; ++i )
     {
-        delete parameters.getUnchecked(i);
+        delete parameters[i];
     }
 }
 //==============================================================================
@@ -250,26 +249,25 @@ NOINLINE ArrayOfBoolParameters::ArrayOfBoolParameters
 
     bool create_human_id_
 ) noexcept
+:
+size( num_parameters_ )
 {
-    for( int i = 0 ; i != num_parameters_ ; ++i )
+    parameters = new BoolParameter*[size];
+    for( int i = 0 ; i != size ; ++i )
     {
-        parameters.add
+        parameters[i] = new BoolParameter
         (
-            new BoolParameter
-            (
-                init_value_,
-                generate_param_name(owner_class_name_,owner_id_,param_name_,i),
-                create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
-            )
+            init_value_,
+            generate_param_name(owner_class_name_,owner_id_,param_name_,i),
+            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
         );
     }
-    parameters.minimiseStorageOverheads();
 }
 NOINLINE ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
 {
-    for( int i = 0 ; i != parameters.size() ; ++i )
+    for( int i = size-1 ; i > -1 ; ++i )
     {
-        delete parameters.getUnchecked(i);
+        delete parameters[i];
     }
 }
 

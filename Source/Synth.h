@@ -10,9 +10,10 @@ class MoniqueSynthesiserSound : public SynthesiserSound
 {
     bool appliesToNote (int /*midiNoteNumber*/) override;
     bool appliesToChannel (int /*midiChannel*/) override;
+    
 public:
-    NOINLINE MoniqueSynthesiserSound();
-    NOINLINE ~MoniqueSynthesiserSound();
+    NOINLINE MoniqueSynthesiserSound() noexcept;
+    NOINLINE ~MoniqueSynthesiserSound() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserSound)
 };
@@ -81,6 +82,8 @@ public:
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
 
+public:
+    //==============================================================================
     NOINLINE MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, SynthData*const synth_data_ ) noexcept;
     NOINLINE ~MoniqueSynthesiserVoice() noexcept;
 

@@ -4665,9 +4665,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() {}
-
-NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() {}
+NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
+NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
 
 //==============================================================================
 bool MoniqueSynthesiserSound::appliesToNote(int)
