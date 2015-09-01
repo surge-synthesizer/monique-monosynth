@@ -315,9 +315,9 @@ struct ENVPresetDef
     Parameter release_4;
 
     // TODO int params
-    Parameter max_attack_time;
-    Parameter max_decay_time;
-    Parameter max_release_time;
+    IntParameter max_attack_time;
+    IntParameter max_decay_time;
+    IntParameter max_release_time;
 
     inline const ENVPresetDef& operator=( const ENVPresetDef& other_ ) noexcept;
 
@@ -403,7 +403,7 @@ struct FilterData : ParameterListener
     IntParameter filter_type;
     Parameter adsr_lfo_mix;
 
-    Parameter distortion;
+    ModulatedParameter distortion;
     BoolParameter modulate_distortion;
 
     ModulatedParameter cutoff;

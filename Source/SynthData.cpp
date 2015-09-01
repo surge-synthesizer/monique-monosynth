@@ -436,7 +436,6 @@ NOINLINE ENVPresetDef::ENVPresetDef ( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         2000,
-        20000*10,
         generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_attack_t"),
         generate_short_human_name(ENV_PRESET_DEF_NAME,"max_attack_t")
     ),
@@ -444,7 +443,6 @@ NOINLINE ENVPresetDef::ENVPresetDef ( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         250,
-        20000*10,
         generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_decay_t"),
         generate_short_human_name(ENV_PRESET_DEF_NAME,"max_decay_t")
     ),
@@ -452,7 +450,6 @@ NOINLINE ENVPresetDef::ENVPresetDef ( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         4000,
-        20000*10,
         generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_release_t"),
         generate_short_human_name(ENV_PRESET_DEF_NAME,"max_release_t")
     )
@@ -639,15 +636,15 @@ void ENVPresetData::parameter_value_changed( Parameter* param_ ) noexcept
     }
     else if( param_ == def->max_attack_time.ptr() )
     {
-        max_attack_time.set_value_without_notification( def->max_attack_time );
+        max_attack_time.set_value_without_notification( def->max_attack_time.get_value() );
     }
     else if( param_ == def->max_decay_time.ptr() )
     {
-        max_decay_time.set_value_without_notification( def->max_decay_time );
+        max_decay_time.set_value_without_notification( def->max_decay_time.get_value() );
     }
     else if( param_ == def->max_release_time.ptr() )
     {
-        max_release_time.set_value_without_notification( def->max_release_time );
+        max_release_time.set_value_without_notification( def->max_release_time.get_value() );
     }
     else
     {
@@ -722,7 +719,8 @@ NOINLINE FilterData::FilterData( int id_,  Array<ENVData*>& input_env_datas_  )
         0,
         1000,
         generate_param_name(FILTER_NAME,id,"distortion"),
-        generate_short_human_name(FILTER_NAME,id_,"destroy")
+        generate_short_human_name(FILTER_NAME,id_,"destroy"),
+        0.6
     ),
     modulate_distortion
     (

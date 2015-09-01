@@ -247,7 +247,7 @@ public:
 
     inline void update( int glide_time_in_samples_ ) noexcept;
 
-    NOINLINE ValueSmootherModulated( Parameter*const base_ ) noexcept;
+    NOINLINE ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
     NOINLINE ~ValueSmootherModulated() noexcept;
 
 private:
@@ -256,7 +256,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulated::ValueSmootherModulated( Parameter*const base_ ) noexcept
+NOINLINE ValueSmootherModulated::ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept
 :
 ValueSmoother( base_ ),
                modulation_amount( base->get_modulation_amount() ),
@@ -303,7 +303,7 @@ public:
     inline float tick( float current_modulation_in_percent_ ) noexcept;
     inline bool is_changed_since_last_tick() const noexcept;
 
-    NOINLINE ValueSmootherModulatedTracked( Parameter*const base_ );
+    NOINLINE ValueSmootherModulatedTracked( ModulatedParameter*const base_ );
     NOINLINE ~ValueSmootherModulatedTracked();
 
 private:
@@ -312,7 +312,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( Parameter*const base_ )
+NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( ModulatedParameter*const base_ )
     :
     ValueSmootherModulated( base_ ),
     is_changed(true),
