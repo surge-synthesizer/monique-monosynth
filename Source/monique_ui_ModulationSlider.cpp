@@ -105,9 +105,9 @@ static inline void setup_slider
 )
 noexcept
 {
-    mono_ParameterCompatibilityBase* front_parameter = slider_config_->get_front_parameter_base();
-    mono_ParameterCompatibilityBase* back_parameter = slider_config_->get_back_parameter_base();
-    mono_ParameterCompatibilityBase* top_parameter = slider_config_->get_top_button_parameter_base();
+    Parameter* front_parameter = slider_config_->get_front_parameter_base();
+    Parameter* back_parameter = slider_config_->get_back_parameter_base();
+    BoolParameter* top_parameter = slider_config_->get_top_button_parameter_base();
     bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
     bool has_bottom_label = not has_bottom_button;
 
@@ -135,16 +135,30 @@ noexcept
 
         SET_SLIDER_STYLE( front_slider_, slider_config_->get_front_slider_style() );
 
-        front_slider_->setRange( front_parameter->min_unscaled(), front_parameter->max_unscaled(), front_parameter->slider_interval() );
-        front_slider_->setDoubleClickReturnValue( true, front_parameter->reset_unscaled() );
-        front_slider_->setPopupMenuEnabled( true );
-        front_slider_->setValue( front_parameter->get_scaled_value(), dontSendNotification );
+        const ParameterInfo& info = front_parameter->get_info();
+        {
+            const float init = info.init_value;
+            // TODO dynamically update?
+            front_slider_->setDoubleClickReturnValue( true, init );
+            front_slider_->setPopupMenuEnabled( true );
+            front_slider_->setValue( front_parameter->get_value(), dontSendNotification );
+        }
 
-        const int override_front_value = slider_config_->get_override_front_min_value();
-        if( override_front_value == DONT_OVERRIDE_SLIDER_VALUE )
-            front_slider_->setRange( front_parameter->min_unscaled(), front_parameter->max_unscaled(), front_parameter->slider_interval() );
-        else
-            front_slider_->setRange( override_front_value, front_parameter->max_unscaled(), front_parameter->slider_interval() );
+        {
+            const float max = info.max_value;
+            const int override_min_value = slider_config_->get_override_front_min_value();
+            if( override_min_value != DONT_OVERRIDE_SLIDER_VALUE )
+            {
+                const float interval = (max-override_min_value)/info.num_steps;
+                front_slider_->setRange( override_min_value, max, interval );
+            }
+            else
+            {
+                const float min = info.min_value;
+                const float interval = (max-min)/info.num_steps;
+                front_slider_->setRange( min, max, interval );
+            }
+        }
     }
 
     // BACK - SECOND AND MOD
@@ -165,23 +179,38 @@ noexcept
 
             if( style == MODULATION_SLIDER )
             {
-                back_slider_->setRange( -100, MODULATION_AMOUNT_MAX, 0.1 );
+                back_slider_->setRange( -1, 1, 0.001 );
+                // TODO dynamically update?
                 back_slider_->setDoubleClickReturnValue( true, 0 );
                 back_slider_->setPopupMenuEnabled( true );
-                back_slider_->setValue( back_parameter->get_modulation_amount()*MODULATION_AMOUNT_MAX, dontSendNotification );
+                back_slider_->setValue( back_parameter->get_modulation_amount(), dontSendNotification );
             }
             else
             {
-                back_slider_->setRange( back_parameter->min_unscaled(), back_parameter->max_unscaled(), back_parameter->slider_interval() );
-                back_slider_->setDoubleClickReturnValue( true, back_parameter->reset_unscaled() );
-                back_slider_->setPopupMenuEnabled( true );
-                back_slider_->setValue( back_parameter->get_scaled_value(), dontSendNotification );
+                const ParameterInfo& info = back_parameter->get_info();
+                {
+                    const float init = info.init_value;
+                    // TODO dynamically update?
+                    back_slider_->setDoubleClickReturnValue( true, init );
+                    back_slider_->setPopupMenuEnabled( true );
+                    back_slider_->setValue( back_parameter->get_value(), dontSendNotification );
+                }
 
-                const int override_front_value = slider_config_->get_override_front_min_value();
-                if( override_front_value == DONT_OVERRIDE_SLIDER_VALUE )
-                    back_slider_->setRange( back_parameter->min_unscaled(), back_parameter->max_unscaled(), back_parameter->slider_interval() );
-                else
-                    back_slider_->setRange( override_front_value, back_parameter->max_unscaled(), back_parameter->slider_interval() );
+                {
+                    const int override_min_value = slider_config_->get_override_front_min_value();
+                    const float max = info.max_value;
+                    if( override_min_value != DONT_OVERRIDE_SLIDER_VALUE )
+                    {
+                        const float interval = (max-override_min_value)/info.num_steps;
+                        back_slider_->setRange( override_min_value, max, interval );
+                    }
+                    else
+                    {
+                        const float min = info.min_value;
+                        const float interval = (max-min)/info.num_steps;
+                        back_slider_->setRange( min, max, interval );
+                    }
+                }
 
                 // TODO get_override_front_max_value
             }
@@ -254,8 +283,8 @@ void mono_ModulationSlider::refresh() noexcept
             {
                 if( amp < 0 )
                     amp*=-1;
-		if( amp > 1 )
-		  amp = 1;
+                if( amp > 1 )
+                    amp = 1;
 
                 button_top->setColour
                 (
@@ -267,13 +296,13 @@ void mono_ModulationSlider::refresh() noexcept
             {
                 button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
             }
-            else if( top_parameter->get_scaled_value() > 0 )
+            else if( top_parameter->get_value() != false )
             {
                 if( modulation_parameter )
                 {
                     if( DATA( synth_data ).animate_modulations )
                     {
-                        float modulation = modulation_parameter->get_last_modulation_amount();
+                        float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
                         button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );
                     }
                     else
@@ -285,7 +314,7 @@ void mono_ModulationSlider::refresh() noexcept
         }
         else if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_ON_OFF )
         {
-            button_top->setColour (TextButton::buttonColourId, top_parameter->get_scaled_value() == true ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
+            button_top->setColour (TextButton::buttonColourId, top_parameter->get_value() == true ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
         }
     }
 
@@ -299,7 +328,7 @@ void mono_ModulationSlider::refresh() noexcept
 
     //==============================================================================
     // UPDATE SLIDERS
-    slider_value->setValue( front_parameter->get_scaled_value()*front_parameter->scale(), dontSendNotification );
+    slider_value->setValue( front_parameter->get_value(), dontSendNotification );
     if( slider_modulation )
     {
         if( modulation_parameter )
@@ -332,7 +361,7 @@ void mono_ModulationSlider::refresh() noexcept
         }
         else if( back_parameter )
         {
-            slider_modulation->setValue( back_parameter->get_scaled_value()*back_parameter->scale(), dontSendNotification );
+            slider_modulation->setValue( back_parameter->get_value(), dontSendNotification );
         }
     }
 
@@ -546,7 +575,7 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
-                                              String::empty));
+            String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (false, false, false);
@@ -705,7 +734,7 @@ void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
             )
             else
             {
-                front_parameter->set_scaled_value( sliderThatWasMoved->getValue()/front_parameter->scale() );
+                front_parameter->set_value( sliderThatWasMoved->getValue() );
             }
         }
         AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
@@ -724,7 +753,7 @@ void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
             )
             else
             {
-                back_parameter->set_scaled_value( sliderThatWasMoved->getValue()/back_parameter->scale() );
+                back_parameter->set_value( sliderThatWasMoved->getValue() );
             }
             AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, back_parameter->midi_control );
         }
@@ -737,7 +766,7 @@ void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
             )
             else
             {
-                modulation_parameter->set_modulation_amount( sliderThatWasMoved->getValue() / MODULATION_AMOUNT_MAX );
+                modulation_parameter->set_modulation_amount( sliderThatWasMoved->getValue() );
             }
             AppInstanceStore::getInstance()->editor->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
         }
@@ -769,7 +798,7 @@ void mono_ModulationSlider::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            top_parameter->set_scaled_value( top_parameter->get_scaled_value() == true ? false : true );
+            top_parameter->set_value( top_parameter->get_value() == true ? false : true );
         }
         AppInstanceStore::getInstance()->editor->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
         //[/UserButtonCode_button_top]

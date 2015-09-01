@@ -54,7 +54,7 @@ NOINLINE DragPad::~DragPad() {}
 //==============================================================================
 void DragPad::mouseDoubleClick (const MouseEvent&)
 {
-    const float morph_motor_time = DATA( synth_data ).morph_motor_time;
+    const int morph_motor_time( DATA( synth_data ).morph_motor_time );
     ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[0], 0, morph_motor_time );
     ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[1], 0, morph_motor_time );
     ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[2], 0, morph_motor_time );
@@ -99,7 +99,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
     }
 
     {
-        const float morph_motor_time = DATA( synth_data ).morph_motor_time;
+        const int morph_motor_time( DATA( synth_data ).morph_motor_time );
 
         float morph_top_left = 1.0f-left2right_state-top2bottom_state;
         {

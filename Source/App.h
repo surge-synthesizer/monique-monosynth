@@ -16,17 +16,6 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-#ifdef MONIQUE_STANDALONE
-#	define IS_STANDALONE
-#else
-#	define IS_PLUGIN
-#endif
-
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------------
-
 #define MONO_NOT_CTOR_COPYABLE( class_name ) 	\
   class_name( const class_name& );		\
   class_name( class_name&& );
@@ -44,9 +33,9 @@
 // --------------------------------------------------------------------------------------------
 
 // JUCE
-#ifdef MONIQUE_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
+#ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
-#else
+#elif IS_STANDALONE
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
 #endif
 
@@ -208,3 +197,6 @@ inline static int mono_floor(float x) noexcept
 
 
 #endif  // APP_H_INCLUDED
+
+
+

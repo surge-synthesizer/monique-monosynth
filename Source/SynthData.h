@@ -186,7 +186,7 @@ struct LFOData {
     NOINLINE ~LFOData();
 
     // TODO can be static
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     NOINLINE LFOData();
@@ -206,7 +206,7 @@ struct OSCData
     const int id;
 
     Parameter wave;
-    Parameter octave;
+    ModulatedParameter octave;
     BoolParameter is_lfo_modulated;
 
     Parameter fm_multi;
@@ -216,9 +216,9 @@ struct OSCData
     BoolParameter sync;
     BoolParameter mod_off;
 
-    Parameter puls_width; // WAS AN INT PARAM
+    IntParameter puls_width;
     Parameter fm_swing;
-    Parameter osc_switch; // WAS AN INT PARAM
+    IntParameter osc_switch;
 
     inline const OSCData& operator=( const OSCData& other_ ) noexcept;
 
@@ -229,7 +229,7 @@ struct OSCData
     NOINLINE OSCData( int id_ );
     NOINLINE ~OSCData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( OSCData )
@@ -274,7 +274,7 @@ public:
     NOINLINE ENVData( int id_ );
     NOINLINE virtual ~ENVData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ENVData )
@@ -313,6 +313,8 @@ struct ENVPresetDef
     Parameter decay_4;
     Parameter sustain_time_4;
     Parameter release_4;
+
+    // TODO int params
     Parameter max_attack_time;
     Parameter max_decay_time;
     Parameter max_release_time;
@@ -322,7 +324,7 @@ struct ENVPresetDef
     NOINLINE ENVPresetDef( int id_ );
     NOINLINE ~ENVPresetDef();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ENVPresetDef )
@@ -355,11 +357,11 @@ inline const ENVPresetDef& ENVPresetDef::operator=( const ENVPresetDef& other_ )
     return *this;
 }
 
-struct ENVPresetData : public ENVData, mono_ParameterListener< float >
+struct ENVPresetData : public ENVData, ParameterListener
 {
     ENVPresetDef*const def;
 
-    mono_Parameter< float, 50, 0,3000, 1000, 100 > state;
+    Parameter state;
 
     static float get_attack_at( const ENVPresetDef& def_, float state_ ) noexcept;
     static float get_decay_at( const ENVPresetDef& def_, float state_ ) noexcept;
@@ -367,10 +369,10 @@ struct ENVPresetData : public ENVData, mono_ParameterListener< float >
     static float get_release_at( const ENVPresetDef& def_, float state_ ) noexcept;
 
 private:
-    void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept override;
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
     void update_adr_values( float value_ ) noexcept;
-    void parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept override;
+    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
     inline const ENVPresetData& operator=( const ENVPresetData& other_ ) noexcept;
@@ -378,7 +380,7 @@ public:
     NOINLINE ENVPresetData( int id_, ENVPresetDef* def_ );
     NOINLINE ~ENVPresetData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ENVPresetData )
@@ -394,60 +396,39 @@ inline const ENVPresetData& ENVPresetData::operator=( const ENVPresetData& other
 }
 
 //==============================================================================
-struct FilterData : mono_ParameterListener< float > {
+struct FilterData : ParameterListener
+{
     const int id;
 
-    typedef mono_Parameter< int, LPF_2_PASS, LPF_2_PASS,MOOG_AND_LPF > filter_type_t;
-    filter_type_t filter_type;
+    IntParameter filter_type;
+    Parameter adsr_lfo_mix;
 
-    typedef mono_Parameter< float, -900, -1000,1000, 1000, 100 > adsr_lfo_mix_t;
-    adsr_lfo_mix_t adsr_lfo_mix;
+    Parameter distortion;
+    BoolParameter modulate_distortion;
 
-    typedef mono_ParameterGlideModulated< float, 0, 0,1000, 1000, 1000 > distortion_t;
-    distortion_t distortion;
-    typedef mono_Parameter< bool, false > modulate_distortion_t;
-    modulate_distortion_t modulate_distortion;
+    ModulatedParameter cutoff;
+    BoolParameter modulate_cutoff;
 
-    typedef mono_ParameterGlideModulated< float, 200, 1,1000, 1000, 100 > cutoff_t;
-    cutoff_t cutoff;
-    typedef mono_Parameter< bool, true > modulate_cutoff_t;
-    modulate_cutoff_t modulate_cutoff;
+    ModulatedParameter resonance;
+    BoolParameter modulate_resonance;
 
-    typedef mono_ParameterGlideModulated< float, 300, 1,1000, 1000, 100 > resonance_t;
-    resonance_t resonance;
-    typedef mono_Parameter< bool, true > modulate_resonance_t;
-    modulate_resonance_t modulate_resonance;
+    ModulatedParameter width;
+    BoolParameter modulate_width;
 
-    typedef mono_ParameterGlideModulated< float, 500, 1,1000, 1000, 100 > width_t;
-    width_t width;
-    typedef mono_Parameter< bool, true > modulate_width_t;
-    modulate_width_t modulate_width;
-
-    typedef mono_ParameterGlideModulated< float, 300, 1,1000, 1000, 100 > gain_t;
-    gain_t gain;
-    typedef mono_Parameter< bool, true > modulate_gain_t;
-    modulate_gain_t modulate_gain;
+    ModulatedParameter gain;
+    BoolParameter modulate_gain;
 
     Array<ENVData*> input_env_datas;
-    typedef mono_Parameter< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
-    typedef mono_ParameterArray< sustain_replacement_t, SUM_INPUTS_PER_FILTER > input_sustain_array_t;
-    input_sustain_array_t input_sustains;
-    void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept override;
+    ArrayOfParameters input_sustains;
+    ArrayOfBoolParameters input_holds;
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
-    typedef mono_Parameter< bool, true > input_hold_t;
-    typedef mono_ParameterArray< input_hold_t, SUM_INPUTS_PER_FILTER > input_hold_array_t;
-    input_hold_array_t input_holds;
-
-    typedef mono_Parameter< float, 0, -1000,1000, 1000, 100 > compressor_t;
-    compressor_t compressor;
-    typedef mono_ParameterGlideModulated< float, 750, 0,1000, 1000, 100 > output_t;
-    output_t output;
-    typedef mono_Parameter< float, 1000, 0,1000, 1000, 100 > output_clipping_t;
-    output_clipping_t output_clipping;
-    typedef mono_Parameter< bool, false > modulate_output_t;
-    modulate_output_t modulate_output;
+    Parameter compressor;
+    ModulatedParameter output;
+    Parameter output_clipping;
+    BoolParameter modulate_output;
 
     inline const FilterData& operator=( const FilterData& other_ ) noexcept;
 
@@ -455,7 +436,7 @@ struct FilterData : mono_ParameterListener< float > {
     NOINLINE FilterData( int id_, Array<ENVData*>& input_env_datas_ );
     NOINLINE ~FilterData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( FilterData )
@@ -583,33 +564,27 @@ static inline double speed_multi_to_value( int speed_multi_ ) noexcept {
         return (1.0/16);
     }
 }
-struct ArpSequencerData {
+struct ArpSequencerData
+{
     const int id;
 
-    mono_Parameter< bool, true > is_on;
+    BoolParameter is_on;
 
-    // SECONDARY VALUE HOLDS THE VELOCITY
-    typedef mono_Parameter< bool, false > step_t;
-    mono_ParameterArray< step_t, SUM_ENV_ARP_STEPS > step;
+    ArrayOfBoolParameters step;
+    ArrayOfParameters tune;
+    ArrayOfParameters velocity;
 
-    typedef mono_Parameter< float, 0, -48,48 > tune_t;
-    mono_ParameterArray< tune_t, SUM_ENV_ARP_STEPS > tune;
+    Parameter shuffle;
+    BoolParameter connect;
 
-    typedef mono_Parameter< float, 850, 1,1000, 1000, 1000 > velocity_t;
-    mono_ParameterArray< velocity_t, SUM_ENV_ARP_STEPS > velocity;
-
-    mono_Parameter< float, 333, 0,1000, 1000, 1000 > shuffle;
-    mono_Parameter< bool, false > connect;
-
-    typedef mono_Parameter< int, 0, -9,9 > speed_multi_t;
-    speed_multi_t speed_multi;
+    IntParameter speed_multi;
 
     inline const ArpSequencerData& operator=( const ArpSequencerData& other_ ) noexcept;
 
     NOINLINE ArpSequencerData( int id_ );
     NOINLINE ~ArpSequencerData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ArpSequencerData )
@@ -647,29 +622,26 @@ enum EQ {
 
 };
 
-struct EQData : mono_ParameterListener< float >
+struct EQData : ParameterListener
 {
     const int id;
 
-    typedef mono_Parameter< float, 0, -1000,1000, 1000, 100 > sustain_replacement_t;
-    mono_ParameterArray< sustain_replacement_t, SUM_EQ_BANDS > velocity;
+    ArrayOfParameters velocity;
+    ArrayOfBoolParameters hold;
 
-    void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-
-    typedef mono_Parameter< bool, true > hold_t;
-    mono_ParameterArray< hold_t, SUM_EQ_BANDS > hold;
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
     OwnedArray< ENVPresetData > env_datas;
 
 public:
     inline const EQData& operator=( const EQData& other_ ) noexcept;
 
-    NOINLINE EQData( int id_, ENVPresetDef*const def_ );
-    NOINLINE ~EQData();
+    NOINLINE EQData( int id_, ENVPresetDef*const def_ ) noexcept;
+    NOINLINE ~EQData() noexcept;
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( EQData )
@@ -692,16 +664,16 @@ inline const EQData& EQData::operator=( const EQData& other_ ) noexcept {
 struct ReverbData {
     const int id;
 
-    mono_Parameter< float, 333, 0,1000, 1000, 1000 > room;
-    mono_Parameter< float, 750, 0,1000, 1000, 1000 > dry_wet_mix;
-    mono_Parameter< float, 300, 0,1000, 1000, 1000 > width;
+    Parameter room;
+    Parameter dry_wet_mix;
+    Parameter width;
 
     inline const ReverbData& operator=( const ReverbData& other_ ) noexcept;
 
     NOINLINE ReverbData( int id_ );
     NOINLINE ~ReverbData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     NOINLINE ReverbData();
@@ -717,27 +689,26 @@ inline const ReverbData& ReverbData::operator=( const ReverbData& other_ ) noexc
     return *this;
 }
 //==============================================================================
-struct ChorusData : mono_ParameterListener< float > {
+struct ChorusData : ParameterListener
+{
     const int id;
 
-    typedef mono_Parameter< float, 333, 0,1000, 1000, 1000 > sustain_replacement_t;
-    sustain_replacement_t modulation;
-    mono_Parameter< bool, true > hold_modulation;
+    Parameter modulation;
+    BoolParameter hold_modulation;
 
     inline const ChorusData& operator=( const ChorusData& other_ ) noexcept;
 
     ScopedPointer< ENVPresetData > modulation_env_data;
     ScopedPointer< ENVPresetData > shine_env_data;
 
-    void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept override;
-    void parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
     NOINLINE ChorusData( int id_, ENVPresetDef*const def_ );
     NOINLINE ~ChorusData();
 
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ChorusData )
@@ -758,7 +729,7 @@ inline const ChorusData& ChorusData::operator=( const ChorusData& other_ ) noexc
 // TODO get global saveable parameters
 //==============================================================================
 #define THREAD_LIMIT 4
-struct SynthData : mono_ParameterListener<float>
+struct SynthData : ParameterListener
 {
     const int id;
 
@@ -770,13 +741,13 @@ struct SynthData : mono_ParameterListener<float>
     Parameter colour;
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
-    Parameter octave_offset;	// WAS AN INT PARAM
+    IntParameter octave_offset;
 
     BoolParameter sync;
     Parameter speed;
 
-    Parameter glide_motor_time;
-    Parameter velocity_glide_time;
+    IntParameter glide_motor_time;
+    IntParameter velocity_glide_time;
 
     BoolParameter ctrl;
 
@@ -798,7 +769,7 @@ struct SynthData : mono_ParameterListener<float>
     Parameter osci_show_range;
 
     // MULTITHREADING
-    Parameter num_extra_threads;
+    IntParameter num_extra_threads;
 
     // SETTINGS
     BoolParameter animate_input_env;
@@ -821,11 +792,11 @@ public:
 
     // ==============================================================================
 private:
-    Array< mono_ParameterCompatibilityBase* > saveable_parameters;
-    NOINLINE void get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept;
+    Array< Parameter* > saveable_parameters;
+    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
     NOINLINE void colect_saveable_parameters() noexcept;
 public:
-    Array< mono_ParameterCompatibilityBase* >& get_atomateable_parameters() noexcept {
+    Array< Parameter* >& get_atomateable_parameters() noexcept {
         return saveable_parameters;
     }
 
@@ -887,22 +858,18 @@ public:
     const Array< int >& get_active_morph_selections( int morpher_id_ ) const;
 
 private:
-    class MorphGroup
-        : public Timer,
-          mono_ParameterListener< float >,
-          mono_ParameterListener< bool >,
-          mono_ParameterListener< int >
+    class MorphGroup : public Timer, ParameterListener
     {
         int id;
 
         MorphGroup* left_morph_group;
         MorphGroup* right_morph_group;
 
-        Array< mono_ParameterBase< float >* > params;
+        Array< Parameter* > params;
         float last_power_of_right;
-        Array< mono_ParameterBase< bool >* > switch_bool_params;
+        Array< BoolParameter* > switch_bool_params;
         bool current_switch;
-        Array< mono_ParameterBase< int >* > switch_int_params;
+        Array< IntParameter* > switch_int_params;
     public:
         NOINLINE void set_sources( SynthData* left_source_,
                                    SynthData* right_source_,
@@ -920,15 +887,13 @@ private:
     public:
         NOINLINE MorphGroup();
         NOINLINE void set_id( int id_ );
-        NOINLINE void register_parameter( mono_ParameterBase< float >*const param_, bool is_master_ );
-        NOINLINE void register_switch_parameter( mono_ParameterBase< bool >*const param_, bool is_master_ );
-        NOINLINE void register_switch_parameter( mono_ParameterBase< int >*const param_, bool is_master_ );
+        NOINLINE void register_parameter( Parameter* param_, bool is_master_ );
+        NOINLINE void register_switch_parameter( BoolParameter* param_, bool is_master_ );
+        NOINLINE void register_switch_parameter( IntParameter* param_, bool is_master_ );
 
     private:
-        void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-        void parameter_modulation_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
-        void parameter_value_changed( mono_ParameterBase< bool >* param_ ) noexcept override;
-        void parameter_value_changed( mono_ParameterBase< int >* param_ ) noexcept override;
+        void parameter_value_changed( Parameter* param_ ) noexcept override;
+        void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
 
     private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
@@ -950,7 +915,7 @@ private:
 
     Array< MorphGroup* > morph_groups;
     Array< Array< MorphGroup* > > morph_groups_per_morpher;
-    void parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept override;
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
 
     NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
     inline const MorphGroup& get_morph_group( int id_ ) const noexcept;
@@ -960,9 +925,9 @@ private:
 public:
     // CHANGE THE STATE TO MORPH
     ArrayOfParameters morhp_states;
-    ArrayOfParameters morhp_switch_states;
+    ArrayOfBoolParameters morhp_switch_states;
     Parameter linear_morhp_state;
-    Parameter morph_motor_time;  // WAS AN INT PARAM
+    IntParameter morph_motor_time;
 
     bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
     bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;

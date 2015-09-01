@@ -30,8 +30,8 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void UiEditorGlobalSettings::refresh() noexcept
 {
-    slider_morph_motor_time->setValue( DATA( synth_data ).morph_motor_time, dontSendNotification );
-    slider_glide_time->setValue( DATA( synth_data ).glide_motor_time, dontSendNotification );
+    slider_morph_motor_time->setValue( DATA( synth_data ).morph_motor_time.get_value(), dontSendNotification );
+    slider_glide_time->setValue( DATA( synth_data ).glide_motor_time.get_value(), dontSendNotification );
 
     toggle_animate_input_env->setToggleState( DATA( synth_data ).animate_input_env ,dontSendNotification );
     toggle_animate_eq_env->setToggleState( DATA( synth_data ).animate_eq_env ,dontSendNotification );

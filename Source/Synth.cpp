@@ -146,7 +146,7 @@ class ValueSmoother
 {
 protected:
     friend class ValueSmootherModulatedUpdater;
-    mono_ParameterBase<float>*const base;
+    Parameter*const base;
 
     float current_value;
     float target_value;
@@ -159,9 +159,9 @@ public:
 
     inline void reset() noexcept;
 
-    NOINLINE ValueSmoother( mono_ParameterBase<float>*const base_ );
-    NOINLINE ValueSmoother( const ValueSmoother& other_ );
-    NOINLINE ~ValueSmoother();
+    NOINLINE ValueSmoother( Parameter*const base_ ) noexcept;
+    NOINLINE ValueSmoother( const ValueSmoother& other_ ) noexcept;
+    NOINLINE ~ValueSmoother() noexcept;
 
 private:
     //MONO_NOT_CTOR_COPYABLE( ValueSmoother )
@@ -169,24 +169,25 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmoother::ValueSmoother( mono_ParameterBase<float>*const base_ )
-    :
-    base( base_ ),
-    current_value( base_->get_scaled_value() ),
-    target_value( current_value ),
-    delta(0),
-    counter(0)
-{}
-NOINLINE ValueSmoother::ValueSmoother( const ValueSmoother& other_ )
-    :
-    base( other_.base ),
-    current_value( other_.current_value ),
-    target_value( other_.target_value ),
-    delta(other_.delta),
-    counter(other_.counter)
+NOINLINE ValueSmoother::ValueSmoother( Parameter*const base_ ) noexcept
+:
+base( base_ ),
+      current_value( base_->get_value() ),
+      target_value( current_value ),
+      delta(0),
+      counter(0)
 {}
 
-NOINLINE ValueSmoother::~ValueSmoother() {}
+NOINLINE ValueSmoother::ValueSmoother( const ValueSmoother& other_ ) noexcept
+:
+base( other_.base ),
+current_value( other_.current_value ),
+target_value( other_.target_value ),
+delta(other_.delta),
+counter(other_.counter)
+{}
+
+NOINLINE ValueSmoother::~ValueSmoother() noexcept {}
 
 //==============================================================================
 inline float ValueSmoother::tick() noexcept
@@ -208,8 +209,9 @@ inline float ValueSmoother::tick() noexcept
 
     return current_value;
 }
-inline void ValueSmoother::update( int glide_time_in_samples_ ) noexcept {
-    float target = base->get_scaled_value();
+inline void ValueSmoother::update( int glide_time_in_samples_ ) noexcept
+{
+    float target = base->get_value();
     if( target_value != target )
     {
         counter = glide_time_in_samples_;
@@ -217,8 +219,9 @@ inline void ValueSmoother::update( int glide_time_in_samples_ ) noexcept {
         target_value = target;
     }
 }
-inline void ValueSmoother::reset() noexcept {
-    target_value = base->get_scaled_value();
+inline void ValueSmoother::reset() noexcept
+{
+    target_value = base->get_value();
     current_value = target_value;
     delta = 0;
     counter = 0;
@@ -232,33 +235,20 @@ class ValueSmootherModulated : public ValueSmoother
     float modulation_amount;
     float modulation_range;
 
+    const float min_value;
+    const float max_value;
+
     friend class ValueSmootherModulatedUpdater;
     float last_modulation;
 
 public:
-    inline float tick( float current_modulation_in_percent_ ) noexcept {
-        last_modulation = modulation_range*current_modulation_in_percent_;
-        return ValueSmoother::tick() + last_modulation;
-    }
-    inline float tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept {
-        if( add_modulation_ )
-            return ValueSmootherModulated::tick(current_modulation_in_percent_);
-        else
-            return ValueSmoother::tick();
-    }
+    inline float tick( float current_modulation_in_percent_ ) noexcept ;
+    inline float tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept;
 
-    inline void update( int glide_time_in_samples_ ) noexcept {
-        //TODO MODULATION AMOUNT SMOOTHER
-        ValueSmoother::update( glide_time_in_samples_ );
-        modulation_amount = base->get_modulation_amount();
-        if( modulation_amount >= 0 )
-            modulation_range = (base->get_max()-current_value) * modulation_amount;
-        else
-            modulation_range = (current_value-base->get_min()) * (modulation_amount*-1);
-    }
+    inline void update( int glide_time_in_samples_ ) noexcept;
 
-    NOINLINE ValueSmootherModulated( mono_ParameterBase<float>*const base_ );
-    NOINLINE ~ValueSmootherModulated();
+    NOINLINE ValueSmootherModulated( Parameter*const base_ ) noexcept;
+    NOINLINE ~ValueSmootherModulated() noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ValueSmootherModulated )
@@ -266,14 +256,40 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulated::ValueSmootherModulated( mono_ParameterBase<float>*const base_ )
-    :
-    ValueSmoother( base_ ),
-    modulation_amount( base->get_modulation_amount() ),
-    modulation_range(0),
-    last_modulation(0)
+NOINLINE ValueSmootherModulated::ValueSmootherModulated( Parameter*const base_ ) noexcept
+:
+ValueSmoother( base_ ),
+               modulation_amount( base->get_modulation_amount() ),
+               modulation_range(0),
+               min_value( base->get_info().min_value ),
+               max_value( base->get_info().max_value ),
+               last_modulation(0)
 {}
-NOINLINE ValueSmootherModulated::~ValueSmootherModulated() {}
+NOINLINE ValueSmootherModulated::~ValueSmootherModulated() noexcept {}
+
+//==============================================================================
+inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
+{
+    last_modulation = modulation_range*current_modulation_in_percent_;
+    return ValueSmoother::tick() + last_modulation;
+}
+inline float ValueSmootherModulated::tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept
+{
+    if( add_modulation_ )
+        return ValueSmootherModulated::tick(current_modulation_in_percent_);
+    else
+        return ValueSmoother::tick();
+}
+inline void ValueSmootherModulated::update( int glide_time_in_samples_ ) noexcept
+{
+    //TODO MODULATION AMOUNT SMOOTHER
+    ValueSmoother::update( glide_time_in_samples_ );
+    modulation_amount = base->get_modulation_amount();
+    if( modulation_amount >= 0 )
+        modulation_range = (max_value-current_value) * modulation_amount;
+    else
+        modulation_range = (current_value-min_value) * (modulation_amount*-1);
+}
 
 //==============================================================================
 //==============================================================================
@@ -284,17 +300,10 @@ class ValueSmootherModulatedTracked : public ValueSmootherModulated
     bool is_changed;
 
 public:
-    inline float tick( float current_modulation_in_percent_ ) noexcept {
-        float out = ValueSmootherModulated::tick( current_modulation_in_percent_, true );
-        is_changed = out != last_out;
-        last_out = out;
-        return out;
-    }
-    inline bool is_changed_since_last_tick() const noexcept {
-        return is_changed;
-    }
+    inline float tick( float current_modulation_in_percent_ ) noexcept;
+    inline bool is_changed_since_last_tick() const noexcept;
 
-    NOINLINE ValueSmootherModulatedTracked( mono_ParameterBase<float>*const base_ );
+    NOINLINE ValueSmootherModulatedTracked( Parameter*const base_ );
     NOINLINE ~ValueSmootherModulatedTracked();
 
 private:
@@ -303,7 +312,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( mono_ParameterBase<float>*const base_ )
+NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( Parameter*const base_ )
     :
     ValueSmootherModulated( base_ ),
     is_changed(true),
@@ -312,9 +321,24 @@ NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( mono_Para
 NOINLINE ValueSmootherModulatedTracked::~ValueSmootherModulatedTracked() {}
 
 //==============================================================================
+inline float ValueSmootherModulatedTracked::tick( float current_modulation_in_percent_ ) noexcept
+{
+    float out = ValueSmootherModulated::tick( current_modulation_in_percent_, true );
+    is_changed = out != last_out;
+    last_out = out;
+    return out;
+}
+inline bool ValueSmootherModulatedTracked::is_changed_since_last_tick() const noexcept
+{
+    return is_changed;
+}
+
 //==============================================================================
 //==============================================================================
-class ValueSmootherModulatedUpdater {
+//==============================================================================
+// UPDATAES THE MODULATION AMOUNT ON KILL
+class ValueSmootherModulatedUpdater
+{
     ValueSmootherModulated*const smoother;
 
 public:
@@ -327,10 +351,11 @@ inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( ValueSmooth
 :
 smoother( smoother_ )
 {
-    smoother->update(glide_time_in_samples_);
+    smoother_->update(glide_time_in_samples_);
 }
-inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept {
-    smoother->base->last_modulation_amount = smoother->last_modulation;
+inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept
+{
+    smoother->base->get_runtime_info().set_last_modulation_amount( smoother->last_modulation );
 }
 
 //==============================================================================
@@ -1956,7 +1981,7 @@ inline void ENV::update_stage() noexcept {
     {
     case TRIGGER_START :
     {
-        if( data.decay )
+        if( data.decay > 0 )
             envelop.update( 1, data.attack*data.max_attack_time );
         else
         {
@@ -1968,7 +1993,7 @@ inline void ENV::update_stage() noexcept {
     }
     case ATTACK :
     {
-        if( data.decay )
+        if( data.decay > 0 )
         {
             envelop.update( sustain_smoother.tick(), data.decay*data.max_decay_time );
             current_stage = DECAY;
@@ -4328,14 +4353,14 @@ public:
     // reset chorus
 
 public:
-    NOINLINE FXProcessor( mono_ParameterBase< float >* sequencer_velocity_ );
+    NOINLINE FXProcessor( Parameter* sequencer_velocity_ );
     NOINLINE ~FXProcessor();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
 };
 
 // -----------------------------------------------------------------
-NOINLINE FXProcessor::FXProcessor( mono_ParameterBase< float >* sequencer_velocity_ )
+NOINLINE FXProcessor::FXProcessor( Parameter* sequencer_velocity_ )
     :
     reverb_l(),
     reverb_r(),
@@ -4654,7 +4679,7 @@ class ArpSequencer : public RuntimeListener {
     const ArpSequencerData& data;
 
     friend class MONOVoice;
-    ArpSequencerData::velocity_t current_velocity;
+    Parameter current_velocity;
 
     int current_step;
     int next_step_on_hold;
@@ -4682,7 +4707,14 @@ NOINLINE ArpSequencer::ArpSequencer( RuntimeInfo& info_, const ArpSequencerData&
     info(info_),
     data(data_),
 
-    current_velocity(generate_param_name("ARP_RT",0,"vc"),generate_short_human_name("ARP_RT","vc")),
+    current_velocity
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name("ARP_RT",0,"vc"),
+        generate_short_human_name("ARP_RT","vc")
+    ),
 
     current_step(0),
     next_step_on_hold(0),
@@ -5081,14 +5113,17 @@ NOINLINE mono_ParameterOwnerStore::~mono_ParameterOwnerStore()
     clearSingletonInstance();
 }
 
-float mono_ParameterOwnerStore::get_flt_input_env_amp( int flt_id_, int input_id_ ) {
+float mono_ParameterOwnerStore::get_flt_input_env_amp( int flt_id_, int input_id_ )
+{
     return mono_ParameterOwnerStore::getInstance()->voice->filter_processors[flt_id_]->input_envs[input_id_]->get_amp();
 }
 
-float mono_ParameterOwnerStore::get_band_env_amp( int band_id_ ) {
+float mono_ParameterOwnerStore::get_band_env_amp( int band_id_ )
+{
     return mono_ParameterOwnerStore::getInstance()->voice->eq_processor->envs[band_id_]->get_amp();
 }
-float mono_ParameterOwnerStore::get_chorus_modulation_env_amp() {
+float mono_ParameterOwnerStore::get_chorus_modulation_env_amp()
+{
     return mono_ParameterOwnerStore::getInstance()->voice->fx_processor->chorus_modulation_env->get_amp();
 }
 void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ )

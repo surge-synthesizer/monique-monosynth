@@ -28,9 +28,9 @@
 //==============================================================================
 class WAVESlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const wave;
-    mono_ParameterCompatibilityBase*const fm_amount;
-    mono_ParameterCompatibilityBase*const top_parameter;
+    Parameter*const wave;
+    Parameter*const fm_amount;
+    BoolParameter*const top_parameter;
 
     const String top_text;
 
@@ -47,7 +47,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return wave;
     }
@@ -68,7 +68,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER_2;
     }
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return fm_amount;
     }
@@ -79,7 +79,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return top_parameter;
     }
@@ -120,9 +120,9 @@ class WAVESlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( fm_amount->midi_control->get_ctrl_mode() )
-            return String( round0(fm_amount->get_scaled_value()*100) );
+            return String( round0(fm_amount->get_value()*100) );
         else
-            return String( wave->get_scaled_value() );
+            return String( wave->get_value() );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -155,8 +155,8 @@ public:
 //==============================================================================
 class OSCSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const octave;
-    mono_ParameterCompatibilityBase*const is_lfo_modulated;
+    ModulatedParameter*const octave;
+    BoolParameter*const is_lfo_modulated;
 
     const String top_text;
     const String bottom_text;
@@ -176,7 +176,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return octave;
     }
@@ -197,7 +197,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         return MODULATION_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return octave;
     }
@@ -208,7 +208,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return is_lfo_modulated;
     }
@@ -218,7 +218,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     float get_top_button_amp() const noexcept override
     {
-        return octave->get_last_modulation_amount()*(1.0f/48);
+        return get_last_modulation_amount(octave)*(1.0f/48);
     }
 
     //==============================================================================
@@ -246,7 +246,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        const float value = octave->get_scaled_value();
+        const float value = octave->get_value();
         if( octave->midi_control->get_ctrl_mode() )
             return String( round0(octave->get_modulation_amount() * 100) );
         else
@@ -288,9 +288,9 @@ public:
 //==============================================================================
 class FMFreqSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const fm_multi;
-    mono_ParameterCompatibilityBase*const fm_swing;
-    mono_ParameterCompatibilityBase*const sync;
+    Parameter*const fm_multi;
+    Parameter*const fm_swing;
+    BoolParameter*const sync;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -305,7 +305,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return fm_multi;
     }
@@ -327,7 +327,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return fm_swing;
     }
@@ -338,7 +338,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return sync;
     }
@@ -409,9 +409,9 @@ public:
 //==============================================================================
 class FMAmountSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const puls_width;
-    mono_ParameterCompatibilityBase*const osc_switch;
-    mono_ParameterCompatibilityBase*const fm_wave;
+    Parameter*const puls_width;
+    Parameter*const osc_switch;
+    BoolParameter*const fm_wave;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -428,7 +428,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return puls_width;
     }
@@ -450,7 +450,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return osc_switch;
     }
@@ -461,7 +461,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return fm_wave;
     }
@@ -500,9 +500,9 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( puls_width->midi_control->get_ctrl_mode() )
-            return String( osc_switch->get_scaled_value() );
+            return String( osc_switch->get_value() );
         else
-            return String( puls_width->get_scaled_value() );
+            return String( puls_width->get_value() );
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -536,9 +536,9 @@ class InputSlConfig : public ModulationSliderConfigBase
     const int filter_id;
     const int input_id;
 
-    mono_ParameterCompatibilityBase*const input_sustain;
-    mono_ParameterCompatibilityBase*const state;
-    mono_ParameterCompatibilityBase*const input_hold;
+    Parameter*const input_sustain;
+    Parameter*const state;
+    BoolParameter*const input_hold;
 
     const String bottom_text;
     const String input_text;
@@ -558,7 +558,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return input_sustain;
     }
@@ -583,7 +583,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return state;
     }
@@ -594,7 +594,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return input_hold;
     }
@@ -607,7 +607,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         float value = FIXED_TOP_BUTTON_COLOUR;
         if( ! DATA( synth_data ).animate_input_env )
             value = NO_TOP_BUTTON_AMP;
-        else if( not bool(input_hold->get_scaled_value()) )
+        else if( not bool(input_hold->get_value()) )
             value = mono_ParameterOwnerStore::getInstance()->get_flt_input_env_amp(filter_id,input_id);
 
         return value;
@@ -639,15 +639,15 @@ class InputSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( state->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_scaled_value()) );
+            return String( round001(state->get_value()) );
         else
-            return String( round01(input_sustain->get_scaled_value()*100)  );
+            return String( round01(input_sustain->get_value()*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
         if( state->midi_control->get_ctrl_mode() )
             return "X";
-        else if( input_sustain->get_scaled_value() >= 0 )
+        else if( input_sustain->get_value() >= 0 )
         {
             if( filter_id == 1 )
                 return "F1";
@@ -685,8 +685,8 @@ public:
 //==============================================================================
 class GForceSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const distortion;
-    mono_ParameterCompatibilityBase*const modulate_distortion;
+    Parameter*const distortion;
+    BoolParameter*const modulate_distortion;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -701,7 +701,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return distortion;
     }
@@ -723,7 +723,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return distortion;
     }
@@ -734,7 +734,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return modulate_distortion;
     }
@@ -804,8 +804,8 @@ public:
 //==============================================================================
 class FAttackSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const attack;
-    mono_ParameterCompatibilityBase*const max_attack_time;
+    Parameter*const attack;
+    Parameter*const max_attack_time;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -820,7 +820,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return attack;
     }
@@ -842,7 +842,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return max_attack_time;
     }
@@ -854,7 +854,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -893,7 +893,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = attack->get_scaled_value() * max_attack_time->get_scaled_value() * 1000;
+        float value = attack->get_value() * max_attack_time->get_value() * 1000;
         if( value < 100 )
             return String(round01(value));
         else
@@ -924,8 +924,8 @@ public:
 //==============================================================================
 class FDecaySlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const decay;
-    mono_ParameterCompatibilityBase*const max_decay_time;
+    Parameter*const decay;
+    Parameter*const max_decay_time;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -940,7 +940,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return decay;
     }
@@ -962,7 +962,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return max_decay_time;
     }
@@ -974,7 +974,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1013,7 +1013,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = decay->get_scaled_value() * max_decay_time->get_scaled_value() * 1000;
+        float value = decay->get_value() * max_decay_time->get_value() * 1000;
         if( value < 0 )
             return "OFF";
         else if( value < 100 )
@@ -1046,7 +1046,7 @@ public:
 //==============================================================================
 class FSustainSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const sustain;
+    Parameter*const sustain;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1061,7 +1061,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return sustain;
     }
@@ -1084,7 +1084,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return max_decay_time;
     }
@@ -1097,7 +1097,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1136,7 +1136,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain->get_scaled_value() * 100;
+        float value = sustain->get_value() * 100;
         if( value < 100 )
             return String(round01(value));
         else
@@ -1163,7 +1163,7 @@ public:
 //==============================================================================
 class FSustainTimeSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const sustain_time;
+    Parameter*const sustain_time;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1178,7 +1178,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return sustain_time;
     }
@@ -1201,7 +1201,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return max_decay_time;
     }
@@ -1214,7 +1214,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1253,7 +1253,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain_time->get_scaled_value() * 8.0f * 1000;
+        float value = sustain_time->get_value() * 8.0f * 1000;
         if( value < 100 )
             return String(round01(value));
         else if( value == 8000 )
@@ -1263,7 +1263,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( sustain_time->get_scaled_value() == 1 )
+        if( sustain_time->get_value() == 1 )
             return "";
         else
             return "ms";
@@ -1288,8 +1288,8 @@ public:
 //==============================================================================
 class FReleaseSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const release;
-    mono_ParameterCompatibilityBase*const max_release_time;
+    Parameter*const release;
+    Parameter*const max_release_time;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1304,7 +1304,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return release;
     }
@@ -1326,7 +1326,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return max_release_time;
     }
@@ -1338,7 +1338,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1377,7 +1377,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = release->get_scaled_value() * max_release_time->get_scaled_value() * 1000;
+        float value = release->get_value() * max_release_time->get_value() * 1000;
         if( value < 100 )
             return String(round01(value));
         else
@@ -1408,7 +1408,7 @@ public:
 //==============================================================================
 class EnvLfoSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const adsr_lfo_mix;
+    Parameter*const adsr_lfo_mix;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1425,7 +1425,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return adsr_lfo_mix;
     }
@@ -1448,7 +1448,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
         return UNDEFINED_SLIDER_STYLE;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1461,7 +1461,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1529,7 +1529,7 @@ public:
 //==============================================================================
 class LFOSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const speed;
+    Parameter*const speed;
     String bottom_text;
 
     //==============================================================================
@@ -1547,7 +1547,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return speed;
     }
@@ -1570,7 +1570,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
         return UNDEFINED_SLIDER_STYLE;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1583,7 +1583,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -1622,7 +1622,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        const float speed_ = speed->get_scaled_value();
+        const float speed_ = speed->get_value();
         if( speed_ <= 6 )
         {
             if( speed_ == 0 )
@@ -1670,7 +1670,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( speed->get_scaled_value() <= 17 )
+        if( speed->get_value() <= 17 )
             return "th";
         else
             return "#";
@@ -1697,8 +1697,8 @@ public:
 //==============================================================================
 class FCutoffSLConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const cutoff;
-    mono_ParameterCompatibilityBase*const modulate_cutoff;
+    Parameter*const cutoff;
+    BoolParameter*const modulate_cutoff;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1715,7 +1715,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return cutoff;
     }
@@ -1737,7 +1737,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return cutoff;
     }
@@ -1748,7 +1748,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return modulate_cutoff;
     }
@@ -1817,8 +1817,8 @@ public:
 //==============================================================================
 class FResonanceSLConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const resonance;
-    mono_ParameterCompatibilityBase*const modulate_resonance;
+    Parameter*const resonance;
+    BoolParameter*const modulate_resonance;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1835,7 +1835,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return resonance;
     }
@@ -1857,7 +1857,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return resonance;
     }
@@ -1868,7 +1868,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return modulate_resonance;
     }
@@ -1937,8 +1937,8 @@ public:
 //==============================================================================
 class FGainSLConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const gain;
-    mono_ParameterCompatibilityBase*const modulate_gain;
+    Parameter*const gain;
+    BoolParameter*const modulate_gain;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1955,7 +1955,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return gain;
     }
@@ -1977,7 +1977,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return gain;
     }
@@ -1988,7 +1988,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return modulate_gain;
     }
@@ -2057,8 +2057,8 @@ public:
 //==============================================================================
 class FVolumeSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const volume;
-    mono_ParameterCompatibilityBase*const modulate_volume;
+    Parameter*const volume;
+    BoolParameter*const modulate_volume;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2075,7 +2075,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return volume;
     }
@@ -2097,7 +2097,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return volume;
     }
@@ -2108,7 +2108,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return modulate_volume;
     }
@@ -2178,8 +2178,8 @@ public:
 //==============================================================================
 class BPMSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const speed;
-    mono_ParameterCompatibilityBase*const sync;
+    Parameter*const speed;
+    BoolParameter*const sync;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2196,7 +2196,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return speed;
     }
@@ -2219,7 +2219,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return speed;
     }
@@ -2231,7 +2231,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return sync;
     }
@@ -2250,7 +2250,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return String(speed->get_scaled_value())+String(" BPM");
+        return String(speed->get_value())+String(" BPM");
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -2271,7 +2271,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(speed->get_scaled_value());
+        return String(speed->get_value());
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -2300,7 +2300,7 @@ public:
 //==============================================================================
 class SpeedMultiSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const speed_multi;
+    Parameter*const speed_multi;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2317,7 +2317,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return speed_multi;
     }
@@ -2340,7 +2340,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return speed_multi;
     }
@@ -2353,7 +2353,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -2371,7 +2371,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return speed_multi_to_text( speed_multi->get_scaled_value() );
+        return speed_multi_to_text( speed_multi->get_value() );
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -2420,7 +2420,7 @@ public:
 //==============================================================================
 class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const octave_offset;
+    Parameter*const octave_offset;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2437,7 +2437,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return octave_offset;
     }
@@ -2460,7 +2460,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
         return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return speed_multi;
     }
@@ -2473,7 +2473,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -2512,7 +2512,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        switch( int(octave_offset->get_scaled_value()) )
+        switch( int(octave_offset->get_value()) )
         {
         case 0 :
             return "+/-";
@@ -2555,8 +2555,8 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
 {
     const int id;
 
-    mono_ParameterCompatibilityBase*const compressor;
-    mono_ParameterCompatibilityBase*const clipping;
+    Parameter*const compressor;
+    Parameter*const clipping;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2573,7 +2573,7 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return compressor;
     }
@@ -2601,7 +2601,7 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -2613,7 +2613,7 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -2683,7 +2683,7 @@ public:
 //==============================================================================
 class FColourSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const shape;
+    Parameter*const shape;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2700,7 +2700,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return shape;
     }
@@ -2723,7 +2723,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -2736,7 +2736,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -2803,7 +2803,7 @@ public:
 //==============================================================================
 class RRoomSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const room;
+    Parameter*const room;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2820,7 +2820,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return room;
     }
@@ -2843,7 +2843,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -2856,7 +2856,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -2923,7 +2923,7 @@ public:
 //==============================================================================
 class RWidthSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const width;
+    Parameter*const width;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2940,7 +2940,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return width;
     }
@@ -2963,7 +2963,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -2976,7 +2976,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -3043,7 +3043,7 @@ public:
 //==============================================================================
 class RDrySlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const dry_wet_mix;
+    Parameter*const dry_wet_mix;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3060,7 +3060,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return dry_wet_mix;
     }
@@ -3083,7 +3083,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -3096,7 +3096,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -3163,7 +3163,7 @@ public:
 //==============================================================================
 class DelaySlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const delay;
+    Parameter*const delay;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3180,7 +3180,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return delay;
     }
@@ -3203,7 +3203,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -3216,7 +3216,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -3283,7 +3283,7 @@ public:
 //==============================================================================
 class BypassConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const effect_bypass;
+    Parameter*const effect_bypass;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3300,7 +3300,7 @@ class BypassConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return effect_bypass;
     }
@@ -3323,7 +3323,7 @@ class BypassConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -3336,7 +3336,7 @@ class BypassConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -3403,8 +3403,8 @@ public:
 //==============================================================================
 class VolumeConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const volume;
-    mono_ParameterCompatibilityBase*const final_compression;
+    Parameter*const volume;
+    Parameter*const final_compression;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3421,7 +3421,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return volume;
     }
@@ -3443,7 +3443,7 @@ class VolumeConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return final_compression;
     }
@@ -3455,7 +3455,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -3523,9 +3523,9 @@ public:
 //==============================================================================
 class CModSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const modulation;
-    mono_ParameterCompatibilityBase*const state;
-    mono_ParameterCompatibilityBase*const hold_modulation;
+    Parameter*const modulation;
+    Parameter*const state;
+    BoolParameter*const hold_modulation;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3542,7 +3542,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return modulation;
     }
@@ -3564,7 +3564,7 @@ class CModSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return state;
     }
@@ -3575,7 +3575,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return hold_modulation;
     }
@@ -3588,7 +3588,7 @@ class CModSlConfig : public ModulationSliderConfigBase
         float value = FIXED_TOP_BUTTON_COLOUR;
         if( ! DATA( synth_data ).animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
-        else if( ! bool(hold_modulation->get_scaled_value())  )
+        else if( ! bool(hold_modulation->get_value())  )
         {
             value = mono_ParameterOwnerStore::getInstance()->get_chorus_modulation_env_amp();
         }
@@ -3622,7 +3622,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( modulation->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_scaled_value()) );
+            return String( round001(state->get_value()) );
         else
             return String( round01(DATA(chorus_data).modulation*100)  );
     }
@@ -3655,9 +3655,9 @@ public:
 //==============================================================================
 class GlideConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const glide;
-    mono_ParameterCompatibilityBase*const velocity_glide_time;
-    mono_ParameterCompatibilityBase*const connect;
+    Parameter*const glide;
+    Parameter*const velocity_glide_time;
+    BoolParameter*const connect;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3674,7 +3674,7 @@ class GlideConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return glide;
     }
@@ -3696,7 +3696,7 @@ class GlideConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return velocity_glide_time;
     }
@@ -3707,7 +3707,7 @@ class GlideConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return connect;
     }
@@ -3777,8 +3777,8 @@ public:
 //==============================================================================
 class ShuffleConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const shuffle;
-    mono_ParameterCompatibilityBase*const is_on;
+    Parameter*const shuffle;
+    BoolParameter*const is_on;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3795,7 +3795,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return shuffle;
     }
@@ -3818,7 +3818,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return is_on;
     }
@@ -3830,7 +3830,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_ON_OFF;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return is_on;
     }
@@ -3840,7 +3840,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     float get_top_button_amp() const noexcept override
     {
-        return is_on->get_scaled_value() ? 1 : 0;
+        return is_on->get_value() ? 1 : 0;
     }
 
     //==============================================================================
@@ -3899,9 +3899,9 @@ class EQSlConfig : public ModulationSliderConfigBase
 {
     const int id;
 
-    mono_ParameterCompatibilityBase*const velocity;
-    mono_ParameterCompatibilityBase*const hold;
-    mono_ParameterCompatibilityBase*const state;
+    Parameter*const velocity;
+    BoolParameter*const hold;
+    Parameter*const state;
 
     String bottom_text;
 
@@ -3920,7 +3920,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return velocity;
     }
@@ -3942,7 +3942,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return state;
     }
@@ -3953,7 +3953,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_IS_MODULATOR;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return hold;
     }
@@ -3966,7 +3966,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         float value = FIXED_TOP_BUTTON_COLOUR;
         if( ! DATA( synth_data ).animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
-        else if( ! bool(hold->get_scaled_value()) ) {
+        else if( ! bool(hold->get_value()) ) {
             value = mono_ParameterOwnerStore::getInstance()->get_band_env_amp(id);
         }
 
@@ -4034,8 +4034,8 @@ public:
 //==============================================================================
 class ArpStepSlConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const tune;
-    mono_ParameterCompatibilityBase*const velocity;
+    Parameter*const tune;
+    Parameter*const velocity;
 
     const String bottom_text;
 
@@ -4054,7 +4054,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return tune;
     }
@@ -4076,7 +4076,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return velocity;
     }
@@ -4088,7 +4088,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }
@@ -4128,9 +4128,9 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( tune->midi_control->get_ctrl_mode() )
-            return String( round01(velocity->get_scaled_value()*100) );
+            return String( round01(velocity->get_value()*100) );
         else
-            return String( tune->get_scaled_value() );
+            return String( tune->get_value() );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -4161,7 +4161,7 @@ public:
 //==============================================================================
 class MorphSLConfig : public ModulationSliderConfigBase
 {
-    mono_ParameterCompatibilityBase*const morhp_state;
+    Parameter*const morhp_state;
     const String bottom_text;
 
     //==============================================================================
@@ -4179,7 +4179,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     {
         return VALUE_SLIDER;
     }
-    mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept override
+    Parameter* get_front_parameter_base() const noexcept override
     {
         return morhp_state;
     }
@@ -4202,7 +4202,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
         return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept override
+    Parameter* get_back_parameter_base() const noexcept override
     {
         return clipping;
     }
@@ -4215,7 +4215,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept override
+    BoolParameter* get_top_button_parameter_base() const noexcept override
     {
         return nullptr;
     }

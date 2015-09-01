@@ -11,7 +11,7 @@
               jucerVersion="3.2.0" companyName="Monoplugs" buildAAX="0" buildVST3="0"
               buildRTAS="0" pluginManufacturerEmail="support@monoplugs.com"
               companyWebsite="http://monique-synthesizer.monoplugs.com" companyEmail="info@monoplugs.com"
-              defines="MONIQUE_PLUGIN">
+              defines="IS_PLUGIN">
   <MAINGROUP id="tx7Kez" name="Monique">
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">

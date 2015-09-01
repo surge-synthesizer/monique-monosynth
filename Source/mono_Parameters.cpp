@@ -13,11 +13,6 @@
 #include "PluginProcessor.h"
 
 
-
-
-
-
-
 // TODO NOINLINE
 //==============================================================================
 //==============================================================================
@@ -37,22 +32,37 @@ NOINLINE ParameterListener::~ParameterListener() noexcept {};
 //==============================================================================
 NOINLINE ParameterInfo::ParameterInfo
 (
+    TYPES_DEF type_,
+
     const float min_value_, const float max_value_, const float init_value_,
     const int num_steps_,
     const String& name_, const String& short_name_
 ) noexcept
 :
-min_value(min_value_),
-          max_value(max_value_),
-          init_value(init_value_),
+type( type_ ),
 
-          num_steps(num_steps_),
+      min_value(min_value_),
+      max_value(max_value_),
+      init_value(init_value_),
 
-          name(name_),
-          short_name(short_name_)
+      num_steps(num_steps_),
+
+      name(name_),
+      short_name(short_name_)
 {}
 
 NOINLINE ParameterInfo::~ParameterInfo() noexcept {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept :
+current_modulation_amount(0), timeChanger(nullptr) {}
+NOINLINE ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
+{
+    timeChanger->forceStopAndKill();
+    timeChanger = nullptr;
+}
 
 //==============================================================================
 //==============================================================================
@@ -61,16 +71,57 @@ NOINLINE Parameter::Parameter
 (
     const float min_value_, const float max_value_, const float init_value_,
     const int num_steps_,
-    const String& name_, const String& short_name_
+    const String& name_, const String& short_name_,
+    const float init_modulation_amount_,
+    TYPES_DEF type_
 ) noexcept
 :
-info( new ParameterInfo(min_value_,max_value_,init_value_,num_steps_,name_,short_name_) ),
-value(init_value_)
-{}
+value(init_value_),
+modulation_amount( init_modulation_amount_ ),
+info( new ParameterInfo(type_,min_value_,max_value_,init_value_,num_steps_,name_,short_name_) ),
+runtime_info( new ParameterRuntimeInfo() ),
+
+midi_control(new MIDIControl( this ))
+{
+    always_value_listeners.minimiseStorageOverheads();
+    value_listeners.minimiseStorageOverheads();
+}
 
 NOINLINE Parameter::~Parameter() noexcept
 {
+    delete midi_control;
+    delete runtime_info;
     delete info;
+}
+
+//==============================================================================
+void Parameter::register_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! value_listeners.contains( listener_ ) )
+    {
+        value_listeners.add( listener_ );
+
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+void Parameter::register_always_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! always_value_listeners.contains( listener_ ) )
+    {
+        always_value_listeners.add( listener_ );
+        value_listeners.add( listener_ );
+
+        always_value_listeners.minimiseStorageOverheads();
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+void Parameter::remove_listener( const ParameterListener* listener_ ) noexcept
+{
+    always_value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+    value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+
+    always_value_listeners.minimiseStorageOverheads();
+    value_listeners.minimiseStorageOverheads();
 }
 
 //==============================================================================
@@ -84,21 +135,50 @@ Parameter
     MIN_MAX( false, true ),
     float(init_value_),
     1,
-    name_, short_name_ 
+    name_, short_name_,
+
+    HAS_NO_MODULATION,
+    IS_BOOL
 )
 {}
+
 NOINLINE BoolParameter::~BoolParameter() noexcept {}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE IntParameter::IntParameter( const int min_value_, const int max_value_, const int init_value_,
+                                     const String& name_, const String& short_name_ ) noexcept
+:
+Parameter
+(
+    MIN_MAX( min_value_, max_value_ ),
+    float(init_value_),
+    max_value_ - min_value_,
+    name_, short_name_,
+
+    HAS_NO_MODULATION,
+    IS_INT
+)
+{}
+NOINLINE IntParameter::~IntParameter() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 NOINLINE ModulatedParameter::ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
         const int num_steps_,
-        const String& name_, const String& short_name_) noexcept
+        const String& name_, const String& short_name_,
+        const float init_modulation_amount_ ) noexcept
 :
-Parameter( min_value_, max_value_, init_value_,
-           num_steps_,
-           name_, short_name_)
+Parameter
+(
+    min_value_, max_value_, init_value_,
+    num_steps_,
+    name_, short_name_,
+    init_modulation_amount_,
+    IS_FLOAT
+)
 {}
 
 NOINLINE ModulatedParameter::~ModulatedParameter() noexcept {}
@@ -106,68 +186,21 @@ NOINLINE ModulatedParameter::~ModulatedParameter() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ParameterObservable::ParameterObservable
+NOINLINE ArrayOfParameters::ArrayOfParameters
 (
+    const int num_parameters_,
+
     const float min_value_, const float max_value_, const float init_value_,
     const int num_steps_,
-    const String& name_, const String& short_name_
+
+    const String& owner_class_name_,
+    const int owner_id_,
+
+    const String& param_name_,
+    const String& param_name_short_,
+
+    bool create_human_id_
 ) noexcept
-:
-Parameter( min_value_, max_value_, init_value_,
-           num_steps_,
-           name_, short_name_ )
-{
-    always_value_listeners.minimiseStorageOverheads();
-    value_listeners.minimiseStorageOverheads();
-}
-
-NOINLINE ParameterObservable::~ParameterObservable() noexcept {}
-
-//==============================================================================
-NOINLINE void ParameterObservable::register_listener( ParameterListener* listener_ ) noexcept
-{
-    if( ! value_listeners.contains( listener_ ) )
-    {
-        value_listeners.add( listener_ );
-
-        value_listeners.minimiseStorageOverheads();
-    }
-}
-NOINLINE void ParameterObservable::register_always_listener( ParameterListener* listener_ ) noexcept
-{
-    if( ! always_value_listeners.contains( listener_ ) )
-    {
-        always_value_listeners.add( listener_ );
-        value_listeners.add( listener_ );
-
-        always_value_listeners.minimiseStorageOverheads();
-        value_listeners.minimiseStorageOverheads();
-    }
-}
-NOINLINE void ParameterObservable::remove_listener( const ParameterListener* listener_ ) noexcept
-{
-    always_value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
-    value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
-
-    always_value_listeners.minimiseStorageOverheads();
-    value_listeners.minimiseStorageOverheads();
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-NOINLINE ArrayOfParameters::ArrayOfParameters( const int num_parameters_,
-
-        const float min_value_, const float max_value_, const float init_value_,
-        const int num_steps_,
-
-        const String& owner_class_name_,
-        const int owner_id_,
-
-        const String& param_name_,
-        const String& param_name_short_,
-        bool create_human_id_ = true
-                                             ) noexcept
 {
     for( int i = 0 ; i != num_parameters_ ; ++i )
     {
@@ -177,6 +210,7 @@ NOINLINE ArrayOfParameters::ArrayOfParameters( const int num_parameters_,
             (
                 MIN_MAX( min_value_, max_value_ ),
                 init_value_,
+                num_steps_,
                 generate_param_name(owner_class_name_,owner_id_,param_name_,i),
                 create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
             )
@@ -190,6 +224,103 @@ NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
     {
         delete parameters.getUnchecked(i);
     }
+}
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE ArrayOfBoolParameters::ArrayOfBoolParameters
+(
+    const int num_parameters_,
+
+    const bool init_value_,
+
+    const String& owner_class_name_,
+    const int owner_id_,
+
+    const String& param_name_,
+    const String& param_name_short_,
+
+    bool create_human_id_
+) noexcept
+{
+    for( int i = 0 ; i != num_parameters_ ; ++i )
+    {
+        parameters.add
+        (
+            new BoolParameter
+            (
+                init_value_,
+                generate_param_name(owner_class_name_,owner_id_,param_name_,i),
+                create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+            )
+        );
+    }
+    parameters.minimiseStorageOverheads();
+}
+NOINLINE ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
+{
+    for( int i = 0 ; i != parameters.size() ; ++i )
+    {
+        delete parameters.getUnchecked(i);
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+ChangeParamOverTime::ChangeParamOverTime( Parameter& param_, float target_value_, int time_in_ms_) noexcept
+:
+param( param_ ),
+
+sum_callbacks( time_in_ms_/PARAM_CHANGE_INTERVAL_IN_MS ),
+
+current_value( param_ ),
+target_value( target_value_ ),
+value_delta( (target_value_-current_value)/sum_callbacks ),
+
+min( param_.get_info().min_value ),
+max( param_.get_info().max_value )
+{
+    ChangeParamOverTime* current_time_changer = param_.get_runtime_info().timeChanger;
+    if( current_time_changer != nullptr )
+    {
+        current_time_changer->forceStopAndKill();
+    }
+    param_.get_runtime_info().timeChanger = this;
+
+    change();
+    startTimer( PARAM_CHANGE_INTERVAL_IN_MS );
+}
+ChangeParamOverTime::~ChangeParamOverTime() noexcept {}
+
+void ChangeParamOverTime::timerCallback()
+{
+    sum_callbacks--;
+
+    if( sum_callbacks > 0 )
+    {
+        change();
+    }
+    else
+    {
+        param = target_value;
+        forceStopAndKill();
+        return;
+    }
+}
+inline void ChangeParamOverTime::change() noexcept
+{
+    current_value += value_delta;
+    if( current_value > max )
+    {
+        current_value = max;
+    }
+    else if( current_value < min )
+    {
+        current_value = min;
+    }
+
+    param = current_value;
 }
 
 //==============================================================================
@@ -216,15 +347,15 @@ NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
 
 
 // ==============================================================================
-juce_ImplementSingleton (MIDIControlHandler)
 
-NOINLINE MIDIControl::MIDIControl(mono_ParameterCompatibilityBase*const owner_): is_in_ctrl_mode(false), owner(owner_) {
+
+MIDIControl::MIDIControl(Parameter*const owner_): is_in_ctrl_mode(false), owner(owner_) {
     midi_number = -1;
     listen_type = NOT_SET;
     channel = -1;
     is_ctrl_version_of_name = "";
 }
-NOINLINE MIDIControl::~MIDIControl() {}
+MIDIControl::~MIDIControl() {}
 
 void MIDIControl::clear()
 {
@@ -259,12 +390,12 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
         if( midi_number == input_message_.getControllerNumber() ) {
             if( input_message_.getChannel() == channel ) {
                 float value = 1.0f/127.0f*input_message_.getControllerValue();
-                if( owner->get_type() == IS_BOOL )
+                if( type_of( owner ) == IS_BOOL )
                 {
                     if( value > 0.5 )
-                        owner->set_scaled_value(true);
+                        owner->set_value(true);
                     else
-                        owner->set_scaled_value(false);
+                        owner->set_value(false);
                     success = true;
                 }
                 else
@@ -273,14 +404,14 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
                     {
                         if( is_ctrl_version_of_name != "" )
                         {
-                            float current_value = owner->get_float_percent_value();
+                            float current_value = get_percent_value( owner );
                             // PICKUP
                             if( current_value + pickup > value && current_value - pickup < value ) {
-                                owner->set_float_percent_value( value );
+                                set_percent_value( owner, value );
                                 success = true;
                             }
                         }
-                        else if( owner->has_modulation() )
+                        else if( has_modulation( owner ) )
                         {
                             float current_modulation = owner->get_modulation_amount();
                             float new_modulation = value*2.0f - 1.0f;
@@ -294,10 +425,10 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
                     else
                     {
                         if( is_ctrl_version_of_name == "" ) {
-                            float current_value = owner->get_float_percent_value();
+                            float current_value = get_percent_value( owner );
                             // PICKUP
                             if( current_value + pickup > value && current_value - pickup < value ) {
-                                owner->set_float_percent_value( value );
+                                set_percent_value( owner, value );
                                 success = true;
                             }
                         }
@@ -310,9 +441,9 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
         if( midi_number == input_message_.getNoteNumber() ) {
             if( input_message_.getChannel() == channel )
             {
-                if( owner->get_type() == IS_BOOL )
+                if( type_of( owner ) == IS_BOOL )
                 {
-                    owner->toggle_value();
+                    toggle( owner );
                     success = true;
                 }
                 else
@@ -321,10 +452,10 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
                     {
                         if( is_ctrl_version_of_name != "" )
                         {
-                            owner->toggle_value();
+                            min_max_switch( owner );
                             success = true;
                         }
-                        else if( owner->has_modulation() )
+                        else if( has_modulation( owner ) )
                         {
                             float current_modulation = owner->get_modulation_amount();
                             if( current_modulation == -1 )
@@ -339,7 +470,7 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
                     {
                         if( is_ctrl_version_of_name == "" )
                         {
-                            owner->toggle_value();
+                            min_max_switch( owner );
                             success = true;
                         }
                     }
@@ -350,7 +481,7 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
 
     return success;
 }
-bool MIDIControl::train( const MidiMessage& input_message_, mono_ParameterCompatibilityBase*const is_ctrl_version_of_ ) noexcept
+bool MIDIControl::train( const MidiMessage& input_message_, Parameter*const is_ctrl_version_of_ ) noexcept
 {
     send_clear_feedback_only();
 
@@ -361,7 +492,7 @@ bool MIDIControl::train( const MidiMessage& input_message_, mono_ParameterCompat
         channel = input_message_.getChannel();
         midi_number = input_message_.getControllerNumber();
         if( is_ctrl_version_of_ )
-            is_ctrl_version_of_name = is_ctrl_version_of_->get_name();
+            is_ctrl_version_of_name = is_ctrl_version_of_->get_info().name;
         else
             is_ctrl_version_of_name = "";
 
@@ -373,7 +504,7 @@ bool MIDIControl::train( const MidiMessage& input_message_, mono_ParameterCompat
         channel = input_message_.getChannel();
         midi_number = input_message_.getNoteNumber();
         if( is_ctrl_version_of_ )
-            is_ctrl_version_of_name = is_ctrl_version_of_->get_name();
+            is_ctrl_version_of_name = is_ctrl_version_of_->get_info().name;
         else
             is_ctrl_version_of_name = "";
 
@@ -425,82 +556,49 @@ bool MIDIControl::is_valid_trained() const noexcept {
     return success;
 }
 
-void MIDIControl::start_listen_for_feedback() noexcept {
-    switch( owner->get_type() )
-    {
-    case IS_FLOAT :
-        reinterpret_cast< mono_ParameterBase< float >* >( owner )->register_listener( this );
-        break;
-    case IS_BOOL :
-        reinterpret_cast< mono_ParameterBase< bool >* >( owner )->register_listener( this );
-        break;
-    case IS_INT :
-        reinterpret_cast< mono_ParameterBase< int >* >( owner )->register_listener( this );
-        break;
-    }
+void MIDIControl::start_listen_for_feedback() noexcept
+{
+    owner->register_listener( this );
 }
-void MIDIControl::stop_listen_for_feedback() noexcept {
-    switch( owner->get_type() )
-    {
-    case IS_FLOAT :
-        reinterpret_cast< mono_ParameterBase< float >* >( owner )->remove_listener( this );
-        break;
-    case IS_BOOL :
-        reinterpret_cast< mono_ParameterBase< bool >* >( owner )->remove_listener( this );
-        break;
-    case IS_INT :
-        reinterpret_cast< mono_ParameterBase< int >* >( owner )->remove_listener( this );
-        break;
-    }
+void MIDIControl::stop_listen_for_feedback() noexcept
+{
+    owner->remove_listener( this );
 }
 
-void MIDIControl::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept
+void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    bool is_ctrl_version_of = is_ctrl_version_of_name != "";
-    bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( is_ctrl_version_of && is_in_ctrl_mode );
-    if( do_send )
-        send_standard_feedback();
+    const bool is_ctrl_version_of = is_ctrl_version_of_name != "";
+    if( type_of( param_ ) == IS_BOOL )
+    {
+        bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || &(DATA( synth_data ).ctrl) == param_ );
+        if( do_send )
+            send_standard_feedback();
+    }
+    {
+        bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( is_ctrl_version_of && is_in_ctrl_mode );
+        if( do_send )
+            send_standard_feedback();
+    }
 }
-void MIDIControl::parameter_modulation_value_changed( mono_ParameterBase< float >* param_ ) noexcept
+void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+}
+void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexcept
 {
     if( is_in_ctrl_mode )
         send_modulation_feedback();
 }
-void MIDIControl::parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void MIDIControl::parameter_value_changed( mono_ParameterBase< bool >* param_ ) noexcept
-{
-    bool is_ctrl_version_of = is_ctrl_version_of_name != "";
-    bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || DATA( synth_data ).ctrl.get_base() == param_ );
-    if( do_send )
-        send_standard_feedback();
-}
-void MIDIControl::parameter_value_on_load_changed( mono_ParameterBase< bool >* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void MIDIControl::parameter_value_changed( mono_ParameterBase< int >* param_ ) noexcept
-{
-    bool is_ctrl_version_of = is_ctrl_version_of_name != "";
-    bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( is_ctrl_version_of && is_in_ctrl_mode );
-    if( do_send )
-        send_standard_feedback();
-}
-void MIDIControl::parameter_value_on_load_changed( mono_ParameterBase< int >* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
+
 void MIDIControl::generate_feedback_message( MidiMessage& message_ ) const noexcept {
     if( listen_type == CC )
-        message_ = MidiMessage::controllerEvent( channel, midi_number, 127.0f*owner->get_float_percent_value() );
+        message_ = MidiMessage::controllerEvent( channel, midi_number, mono_floor(127.0f*get_percent_value( owner )) );
     else
-        message_ = MidiMessage::noteOn( channel, midi_number, owner->get_float_percent_value() );
+        message_ = MidiMessage::noteOn( channel, midi_number, get_percent_value( owner ) );
 }
 void MIDIControl::generate_modulation_feedback_message( MidiMessage& message_ ) const noexcept {
     if( listen_type == CC )
-        message_ = MidiMessage::controllerEvent( channel, midi_number, 127.0f*(owner->get_modulation_amount()*0.5f + 1.0f) );
+        message_ = MidiMessage::controllerEvent( channel, midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
     else
         message_ = MidiMessage::noteOn( channel, midi_number, (owner->get_modulation_amount()*0.5f + 1.0f) );
 }
@@ -516,7 +614,7 @@ void MIDIControl::send_feedback_only() const noexcept {
         {
             send_standard_feedback();
         }
-        else if( is_in_ctrl_mode && owner->has_modulation() )
+        else if( is_in_ctrl_mode && has_modulation(owner) )
         {
             send_modulation_feedback();
         }
@@ -552,25 +650,39 @@ void MIDIControl::send_modulation_feedback() const noexcept {
     AppInstanceStore::getInstance()->audio_processor->send_feedback_message( fb_message );
 }
 // ==============================================================================
-MIDIControlHandler::MIDIControlHandler() {
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+juce_ImplementSingleton (MIDIControlHandler)
+
+MIDIControlHandler::MIDIControlHandler() noexcept
+{
     clear();
+    clearSingletonInstance();
 }
 
-void MIDIControlHandler::toggle_midi_learn() {
+MIDIControlHandler::~MIDIControlHandler() noexcept {}
+
+// ==============================================================================
+void MIDIControlHandler::toggle_midi_learn() noexcept
+{
     bool tmp_activated = is_activated_and_waiting_for_param;
     bool tmp_learning = learning_param;
     clear();
     is_activated_and_waiting_for_param = !(tmp_activated || tmp_learning);
 }
-bool MIDIControlHandler::is_waiting_for_param() const {
+bool MIDIControlHandler::is_waiting_for_param() const noexcept
+{
     return is_activated_and_waiting_for_param;
 }
-void MIDIControlHandler::set_learn_param(mono_ParameterCompatibilityBase* param_) {
+void MIDIControlHandler::set_learn_param( Parameter* param_ ) noexcept
+{
     clear();
 
     learning_param = param_;
 }
-void MIDIControlHandler::set_learn_width_ctrl_param( mono_ParameterCompatibilityBase* param_, mono_ParameterCompatibilityBase* ctrl_param_, Component* comp_ ) {
+void MIDIControlHandler::set_learn_width_ctrl_param( Parameter* param_, Parameter* ctrl_param_, Component* comp_ ) noexcept
+{
     clear();
 
     learning_param = param_;
@@ -579,7 +691,8 @@ void MIDIControlHandler::set_learn_width_ctrl_param( mono_ParameterCompatibility
     learning_comps.add( comp_ );
     SET_COMPONENT_TO_MIDI_LEARN( comp_ )
 }
-void MIDIControlHandler::set_learn_param(mono_ParameterCompatibilityBase* param_, Component* comp_ ) {
+void MIDIControlHandler::set_learn_param( Parameter* param_, Component* comp_ ) noexcept
+{
     clear();
 
     learning_param = param_;
@@ -587,19 +700,24 @@ void MIDIControlHandler::set_learn_param(mono_ParameterCompatibilityBase* param_
     learning_comps.add( comp_ );
     SET_COMPONENT_TO_MIDI_LEARN( comp_ )
 }
-void MIDIControlHandler::set_learn_param(mono_ParameterCompatibilityBase* param_, Array< Component* > comps_ ) {
+void MIDIControlHandler::set_learn_param( Parameter* param_, Array< Component* > comps_ ) noexcept
+{
     clear();
 
     learning_param = param_;
 
     learning_comps = comps_;
     for( int i = 0 ; i != learning_comps.size() ; ++i )
-        SET_COMPONENT_TO_MIDI_LEARN( learning_comps[i] )
+    {
+        SET_COMPONENT_TO_MIDI_LEARN( learning_comps[i] );
     }
-mono_ParameterCompatibilityBase* MIDIControlHandler::is_learning() const {
+}
+Parameter* MIDIControlHandler::is_learning() const noexcept
+{
     return learning_param;
 }
-bool MIDIControlHandler::handle_incoming_message( const MidiMessage& input_message_ ) {
+bool MIDIControlHandler::handle_incoming_message( const MidiMessage& input_message_ ) noexcept
+{
     bool success = false;
     if( learning_param )
     {
@@ -615,7 +733,8 @@ bool MIDIControlHandler::handle_incoming_message( const MidiMessage& input_messa
 
     return success;
 }
-void MIDIControlHandler::clear() {
+void MIDIControlHandler::clear() noexcept
+{
     learning_param = nullptr;
     learning_ctrl_param = nullptr;
     is_activated_and_waiting_for_param = false;
@@ -624,68 +743,3 @@ void MIDIControlHandler::clear() {
         UNSET_COMPONENT_MIDI_LEARN( learning_comps[i] )
         learning_comps.clearQuick();
 }
-
-// ==============================================================================
-NOINLINE mono_ParameterCompatibilityBase::mono_ParameterCompatibilityBase() noexcept :
-midi_control( new MIDIControl( this ) ), last_modulation_amount(0) {}
-NOINLINE mono_ParameterCompatibilityBase::~mono_ParameterCompatibilityBase() noexcept {}
-
-NOINLINE float mono_ParameterCompatibilityBase::get_modulation_amount() const noexcept {
-    return HAS_NO_MODULATION;
-};
-
-float mono_ParameterCompatibilityBase::get_last_modulation_amount() const noexcept {
-    return last_modulation_amount;
-}
-
-// ==============================================================================
-void ChangeParamOverTime::timerCallback() {
-    _sum_callbacks--;
-
-    if( _sum_callbacks > 0 ) {
-        change();
-    }
-    else
-    {
-        _param.set_scaled( _target_value );
-        forceStopAndKill();
-        return;
-    }
-}
-void ChangeParamOverTime::change() {
-    float new_value = _param + _value_delta;
-    if( new_value > _param.get_max() )
-        new_value = _param.get_max();
-    else if( new_value < _param.get_min() )
-        new_value = _param.get_min();
-
-    _param.set_scaled( new_value );
-}
-
-ChangeParamOverTime::ChangeParamOverTime(mono_ParameterBase< float >& param_, float target_value_, int time_in_ms_)
-    : _param( param_ ),
-      _sum_callbacks( time_in_ms_/PARAM_CHANGE_INTERVAL_IN_MS ),
-      _target_value( target_value_ ),
-      _value_delta( (target_value_-param_)/_sum_callbacks )
-{
-    if( param_.timeChanger != nullptr ) {
-        param_.timeChanger->forceStopAndKill();
-    }
-    param_.timeChanger = this;
-
-    change();
-    startTimer( PARAM_CHANGE_INTERVAL_IN_MS );
-}
-void ChangeParamOverTime::forceStopAndKill()
-{
-    stopTimer();
-    if( _param.timeChanger == this )
-        _param.timeChanger = nullptr;
-
-    delete this;
-    return;
-}
-
-
-
-

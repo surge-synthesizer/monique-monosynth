@@ -81,14 +81,14 @@ public:
     void handle_midi_controller( MidiBuffer& input_messages_ )
     {
         const ScopedLock locked(lock);
-        Array< mono_ParameterCompatibilityBase* >& parameters = _synth_data->get_atomateable_parameters();
+        Array< Parameter* >& parameters = _synth_data->get_atomateable_parameters();
         MidiBuffer::Iterator message_iter( input_messages_ );
         MidiMessage in_message;
         int sample_position;
         while( message_iter.getNextEvent( in_message, sample_position ) )
         {
             MIDIControlHandler*const midi_learn_handler = MIDIControlHandler::getInstance();
-            mono_ParameterCompatibilityBase* learing_param = midi_learn_handler->is_learning();
+            Parameter* learing_param = midi_learn_handler->is_learning();
             if( learing_param )
             {
                 if( midi_learn_handler->handle_incoming_message( in_message ) )
@@ -96,9 +96,9 @@ public:
                     // CLEAR SIBLINGS
                     for( int i = 0 ; i != parameters.size() ; ++ i )
                     {
-                        mono_ParameterCompatibilityBase* param = parameters.getUnchecked(i);
+                        Parameter* param = parameters.getUnchecked(i);
                         //bool clear_ctrl_version = !param->midi_control.is_ctrl_version;
-                        if( param != learing_param && param->midi_control->get_is_ctrl_version_of_name() != learing_param->get_name() )
+                        if( param != learing_param && param->midi_control->get_is_ctrl_version_of_name() != learing_param->get_info().name )
                         {
                             if( param->midi_control->is_listen_to( in_message ) )
                             {
@@ -112,7 +112,7 @@ public:
             {
                 for( int i = 0 ; i != parameters.size() ; ++ i )
                 {
-                    mono_ParameterCompatibilityBase* param = parameters.getUnchecked(i);
+                    Parameter* param = parameters.getUnchecked(i);
                     bool success = param->midi_control->read_from_if_you_listen( in_message );
                     // TODO max tow listeners per CC
                     //if( success ) // SYSEX is the default empty midi message
@@ -279,12 +279,12 @@ void MoniqueAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ 
 }
 void MoniqueAudioProcessor::trigger_send_feedback() noexcept
 {
-    Array< mono_ParameterCompatibilityBase* >& parameters = synth_data->get_atomateable_parameters();
+    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_feedback_only();
 }
 void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept {
-    Array< mono_ParameterCompatibilityBase* >& parameters = synth_data->get_atomateable_parameters();
+    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
 }
@@ -493,32 +493,40 @@ void MoniqueAudioProcessor::reset() {
 // ********************************************************************************************
 // ********************************************************************************************
 // ********************************************************************************************
-int MoniqueAudioProcessor::getNumParameters() {
+int MoniqueAudioProcessor::getNumParameters() 
+{
     return synth_data->get_atomateable_parameters().size();
 }
-bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const {
+bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const 
+{
     return true;
 }
-float MoniqueAudioProcessor::getParameter( int i_ ) {
-    return synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_value();
+float MoniqueAudioProcessor::getParameter( int i_ )
+{
+    return get_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_) );
 }
-const String MoniqueAudioProcessor::getParameterText( int i_ ) {
-    return String( synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_value() );
+const String MoniqueAudioProcessor::getParameterText( int i_ )
+{
+    return String( get_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_) ) );
 }
 String MoniqueAudioProcessor::getParameterLabel (int i_) const {
     return  "N/A";
 }
-int MoniqueAudioProcessor::getParameterNumSteps( int i_ ) {
-    return synth_data->get_atomateable_parameters().getReference(i_)->get_num_steps();
+int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
+{
+    return synth_data->get_atomateable_parameters().getUnchecked(i_)->get_info().num_steps;
 }
-float MoniqueAudioProcessor::getParameterDefaultValue( int i_ ) {
-    return synth_data->get_atomateable_parameters().getReference(i_)->get_float_percent_dafault_value();
+float MoniqueAudioProcessor::getParameterDefaultValue( int i_ )
+{
+    return get_percent_default_value( synth_data->get_atomateable_parameters().getUnchecked(i_) );
 }
-const String MoniqueAudioProcessor::getParameterName( int i_ ) {
-    return synth_data->get_atomateable_parameters().getReference(i_)->get_short_name();
+const String MoniqueAudioProcessor::getParameterName( int i_ )
+{
+    return synth_data->get_atomateable_parameters().getUnchecked(i_)->get_info().short_name;
 }
-void MoniqueAudioProcessor::setParameter( int i_, float percent_ ) {
-    synth_data->get_atomateable_parameters().getReference(i_)->set_float_percent_value( percent_ );
+void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
+{
+    set_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_), percent_ );
 }
 
 void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData ) {

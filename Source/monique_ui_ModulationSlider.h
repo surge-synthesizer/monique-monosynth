@@ -124,7 +124,7 @@ struct ModulationSliderConfigBase
     {
         return UNDEFINED_SLIDER_STYLE;
     }
-    virtual mono_ParameterCompatibilityBase* get_front_parameter_base() const noexcept = 0;
+    virtual Parameter* get_front_parameter_base() const noexcept = 0;
     virtual int get_override_front_min_value() const noexcept
     {
         return DONT_OVERRIDE_SLIDER_VALUE;
@@ -141,7 +141,7 @@ struct ModulationSliderConfigBase
         return UNDEFINED_SLIDER_STYLE;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    virtual mono_ParameterCompatibilityBase* get_back_parameter_base() const noexcept
+    virtual Parameter* get_back_parameter_base() const noexcept
     {
         return nullptr;
     }
@@ -159,7 +159,7 @@ struct ModulationSliderConfigBase
     {
         return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
-    virtual mono_ParameterCompatibilityBase* get_top_button_parameter_base() const noexcept
+    virtual BoolParameter* get_top_button_parameter_base() const noexcept
     {
         return nullptr;
     }
@@ -246,11 +246,11 @@ public:
 private:
     ModulationSliderConfigBase*const _config;
 
-    mono_ParameterCompatibilityBase* front_parameter;
-    mono_ParameterCompatibilityBase* modulation_parameter;
-    mono_ParameterCompatibilityBase* back_parameter;
+    Parameter* front_parameter;
+    Parameter* modulation_parameter;
+    Parameter* back_parameter;
     ModulationSliderConfigBase::TOP_BUTTON_TYPE top_button_type;
-    mono_ParameterCompatibilityBase* top_parameter;
+    BoolParameter* top_parameter;
 
     bool runtime_show_value_popup;
     bool last_runtime_show_value_popup;

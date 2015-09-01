@@ -97,7 +97,7 @@ void UiEditorSynthLite::show_current_voice_data() {
     Colour button_off = colours.button_off_colour;
 
     // FILTER 1
-    uint8 f_type = synth_data->filter_datas[0]->filter_type;
+    int f_type = synth_data->filter_datas[0]->filter_type;
     filter_type_6_1->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
     filter_type_2_1->setColour( TextButton::buttonColourId, f_type == HPF || f_type == HIGH_2_PASS ? button_on : button_off );
     filter_type_1_1->setColour( TextButton::buttonColourId, f_type == LPF_2_PASS || f_type == HIGH_2_PASS || f_type == MOOG_AND_LPF ? button_on : button_off );
@@ -2021,7 +2021,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF_2_PASS ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF;
             }
@@ -2051,7 +2051,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == HPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
             }
@@ -2087,7 +2087,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF_2_PASS ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF;
             }
@@ -2117,7 +2117,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == HPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
             }
@@ -2153,7 +2153,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF_2_PASS ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF;
             }
@@ -2183,7 +2183,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == HPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
             }
@@ -2629,7 +2629,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
             }
@@ -2650,7 +2650,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
             }
@@ -2671,7 +2671,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            uint8 current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
+            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
             if( current_filter_type == LPF ) {
                 synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
             }

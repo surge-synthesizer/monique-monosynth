@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.5"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
-              jucerVersion="3.2.0" defines="MONIQUE_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
+              jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
   <MAINGROUP id="vwAslV" name="Monique">
     <GROUP id="{F7A64294-EE7C-8355-FEA2-62B9C2983130}" name="STANDALONE">

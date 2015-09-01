@@ -97,7 +97,7 @@ NOINLINE LFOData::LFOData( int id_ )
 }
 NOINLINE LFOData::~LFOData() {}
 
-NOINLINE void LFOData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void LFOData::get_saveable_params( Array< Parameter* >& params_ ) noexcept {
     params_.add( &speed );
 }
 
@@ -121,7 +121,8 @@ NOINLINE OSCData::OSCData( int id_ )
         0,
         48*100,
         generate_param_name(OSC_NAME,id,"octave"),
-        generate_short_human_name(OSC_NAME,id_,"octave")
+        generate_short_human_name(OSC_NAME,id_,"octave"),
+        0.5 // one octave
     ),
     is_lfo_modulated
     (
@@ -170,7 +171,6 @@ NOINLINE OSCData::OSCData( int id_ )
     (
         MIN_MAX( -12, 12 ),
         0,
-        24,
         generate_param_name(OSC_NAME,id,"puls_width"),
         generate_short_human_name(OSC_NAME,id_,"puls_width")
     ),
@@ -186,7 +186,6 @@ NOINLINE OSCData::OSCData( int id_ )
     (
         MIN_MAX( 0, 16 ),
         0,
-        16,
         generate_param_name(OSC_NAME,id,"osc_switch"),
         generate_short_human_name(OSC_NAME,id_,"switch")
     ),
@@ -195,7 +194,7 @@ NOINLINE OSCData::OSCData( int id_ )
 {}
 NOINLINE OSCData::~OSCData() {}
 
-NOINLINE void OSCData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void OSCData::get_saveable_params( Array< Parameter* >& params_ ) noexcept {
     params_.add( &wave );
     params_.add( &octave );
     params_.add( &is_lfo_modulated );
@@ -285,7 +284,7 @@ NOINLINE ENVData::ENVData( int id_ )
 }
 NOINLINE ENVData::~ENVData() {}
 
-NOINLINE void ENVData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ENVData::get_saveable_params( Array< Parameter* >& params_ ) noexcept {
     params_.add( &attack );
     params_.add( &max_attack_time );
     params_.add( &decay );
@@ -465,7 +464,8 @@ NOINLINE ENVPresetDef::ENVPresetDef ( int id_ )
 NOINLINE ENVPresetDef::~ENVPresetDef() {}
 
 
-NOINLINE void ENVPresetDef::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ENVPresetDef::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &attack_1 );
     params_.add( &decay_1 );
     params_.add( &sustain_time_1 );
@@ -493,7 +493,14 @@ NOINLINE ENVPresetData::ENVPresetData( int id_,
     ENVData( id_ ),
     def( def_ ),
 
-    state(generate_param_name(ENV_PRESET_NAME,id,"state"),generate_short_human_name(ENV_PRESET_NAME,id_,"state"))
+    state
+    (
+        MIN_MAX( 0, 3 ),
+        0.05,
+        3000,
+        generate_param_name(ENV_PRESET_NAME,id,"state"),
+        generate_short_human_name(ENV_PRESET_NAME,id_,"state")
+    )
 {
     state.register_always_listener( this );
 
@@ -517,13 +524,13 @@ NOINLINE ENVPresetData::ENVPresetData( int id_,
     def_->max_decay_time.register_listener( this );
     def_->max_release_time.register_listener( this );
 
-    sustain_time = def->sustain_time_1.get_reference();
-    attack = def->attack_1.get_reference();
-    decay = def->decay_1.get_reference();
-    release = def->release_1.get_reference();
-    max_attack_time = def->max_attack_time.get_reference();
-    max_decay_time = def->max_decay_time.get_reference();
-    max_release_time = def->max_release_time.get_reference();
+    sustain_time = def->sustain_time_1;
+    attack = def->attack_1;
+    decay = def->decay_1;
+    release = def->release_1;
+    max_attack_time = def->max_attack_time;
+    max_decay_time = def->max_decay_time;
+    max_release_time = def->max_release_time;
 
     update_adr_values(state);
 }
@@ -550,7 +557,8 @@ NOINLINE ENVPresetData::~ENVPresetData() {
     def->max_release_time.remove_listener( this );
 }
 
-NOINLINE void ENVPresetData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ENVPresetData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &state );
 }
 
@@ -626,59 +634,62 @@ float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) no
         return def_.release_3*( 1.0f-factor ) + def_.release_4 * factor;
     }
 }
-void ENVPresetData::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept
+void ENVPresetData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    if( param_ == state.get_base() )
+    if( param_ == state.ptr() )
     {
         update_adr_values(*param_);
     }
-    else if( param_ == def->max_attack_time.get_base() )
+    else if( param_ == def->max_attack_time.ptr() )
     {
-        max_attack_time.set_scaled_without_notification( def->max_attack_time );
+        max_attack_time.set_value_without_notification( def->max_attack_time );
     }
-    else if( param_ == def->max_decay_time.get_base() )
+    else if( param_ == def->max_decay_time.ptr() )
     {
-        max_decay_time.set_scaled_without_notification( def->max_decay_time );
+        max_decay_time.set_value_without_notification( def->max_decay_time );
     }
-    else if( param_ == def->max_release_time.get_base() )
+    else if( param_ == def->max_release_time.ptr() )
     {
-        max_release_time.set_scaled_without_notification( def->max_release_time );
+        max_release_time.set_value_without_notification( def->max_release_time );
     }
     else
     {
         update_adr_values(state);
     }
 }
-void ENVPresetData::parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept {
+void ENVPresetData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept {
     update_adr_values(*param_);
 }
 void ENVPresetData::update_adr_values( float value_ ) noexcept {
-    if( value_ < 1 ) {
+    if( value_ < 1 )
+    {
         float factor = 1.0f/1.0f * value_;
 
-        attack.set_scaled_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
-        decay.set_scaled_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
-        sustain_time.set_scaled_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
-        release.set_scaled_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
+        attack.set_value_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
+        decay.set_value_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
+        release.set_value_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
     }
-    else if( value_ < 2 ) {
+    else if( value_ < 2 )
+    {
         float factor = 1.0f/1.0f * (value_-1.0f);
 
-        attack.set_scaled_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
-        decay.set_scaled_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
-        sustain_time.set_scaled_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
-        release.set_scaled_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
+        attack.set_value_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
+        decay.set_value_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
+        release.set_value_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
     }
-    else if( value_ <= 3 ) {
+    else if( value_ <= 3 )
+    {
         float factor = 1.0f/1.0f * (value_-2.0f);
 
-        attack.set_scaled_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
-        decay.set_scaled_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
-        sustain_time.set_scaled_without_notification( def->sustain_time_4*( 1.0f-factor ) + def->sustain_time_4 * factor );
-        release.set_scaled_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
+        attack.set_value_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
+        decay.set_value_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_4*( 1.0f-factor ) + def->sustain_time_4 * factor );
+        release.set_value_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
     }
 }
-void ENVPresetData::parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept {
+void ENVPresetData::parameter_value_on_load_changed( Parameter* param_ ) noexcept {
     parameter_value_changed( param_ );
 }
 
@@ -688,63 +699,195 @@ NOINLINE FilterData::FilterData( int id_,  Array<ENVData*>& input_env_datas_  )
     :
     id( id_ ),
 
+    // ----
+    filter_type
+    (
+        MIN_MAX( LPF_2_PASS, MOOG_AND_LPF ),
+        LPF_2_PASS,
+        generate_param_name(FILTER_NAME,id,"filter_type"),
+        generate_short_human_name(FILTER_NAME,id_,"type")
+    ),
 
-    filter_type(generate_param_name(FILTER_NAME,id,"filter_type"),generate_short_human_name(FILTER_NAME,id_,"type")),
+    // ----
+    adsr_lfo_mix
+    (
+        MIN_MAX( -1, 1 ),
+        -0.9,
+        2000,
+        generate_param_name(FILTER_NAME,id,"adsr_lfo_mix"),
+        generate_short_human_name(FILTER_NAME,id_,"lfo_mix")
+    ),
 
-    adsr_lfo_mix(generate_param_name(FILTER_NAME,id,"adsr_lfo_mix"),generate_short_human_name(FILTER_NAME,id_,"lfo_mix")),
+    // ----
+    distortion
+    (
+        MIN_MAX( 0, 1 ),
+        0,
+        1000,
+        generate_param_name(FILTER_NAME,id,"distortion"),
+        generate_short_human_name(FILTER_NAME,id_,"destroy")
+    ),
+    modulate_distortion
+    (
+        false,
+        generate_param_name(FILTER_NAME,id,"modulate_distortion"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_destroy")
+    ),
 
-    distortion(generate_param_name(FILTER_NAME,id,"distortion"),generate_short_human_name(FILTER_NAME,id_,"destroy")),
-    modulate_distortion(generate_param_name(FILTER_NAME,id,"modulate_distortion"),generate_short_human_name(FILTER_NAME,id_,"mod_destroy")),
+    // ----
+    cutoff
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.2,
+        1000,
+        generate_param_name(FILTER_NAME,id,"cutoff"),
+        generate_short_human_name(FILTER_NAME,id_,"cutoff"),
+        0.7
+    ),
+    modulate_cutoff
+    (
+        true,
+        generate_param_name(FILTER_NAME,id,"modulate_cutoff"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_cutoff")
+    ),
 
-    cutoff(generate_param_name(FILTER_NAME,id,"cutoff"),generate_short_human_name(FILTER_NAME,id_,"cutoff")),
-    modulate_cutoff(generate_param_name(FILTER_NAME,id,"modulate_cutoff"),generate_short_human_name(FILTER_NAME,id_,"mod_cutoff")),
+    // ----
+    resonance
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.3,
+        1000,
+        generate_param_name(FILTER_NAME,id,"resonance"),
+        generate_short_human_name(FILTER_NAME,id_,"resonance"),
+        0.2
+    ),
+    modulate_resonance
+    (
+        true,
+        generate_param_name(FILTER_NAME,id,"modulate_resonance"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_resonance")
+    ),
 
-    resonance(generate_param_name(FILTER_NAME,id,"resonance"),generate_short_human_name(FILTER_NAME,id_,"resonance")),
-    modulate_resonance(generate_param_name(FILTER_NAME,id,"modulate_resonance"),generate_short_human_name(FILTER_NAME,id_,"mod_resonance")),
+    // ----
+    width
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.5,
+        1000,
+        generate_param_name(FILTER_NAME,id,"width"),
+        generate_short_human_name(FILTER_NAME,id_,"width"),
+        0.2
+    ),
+    modulate_width
+    (
+        true,
+        generate_param_name(FILTER_NAME,id,"modulate_width"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_width")
+    ),
 
-    width(generate_param_name(FILTER_NAME,id,"width"),generate_short_human_name(FILTER_NAME,id_,"width")),
-    modulate_width(generate_param_name(FILTER_NAME,id,"modulate_width"),generate_short_human_name(FILTER_NAME,id_,"mod_width")),
+    // ----
+    gain
+    (
+        MIN_MAX( 0.001, 1 ),
+        0.3,
+        1000,
+        generate_param_name(FILTER_NAME,id,"gain"),
+        generate_short_human_name(FILTER_NAME,id_,"gain"),
+        0.8
+    ),
+    modulate_gain
+    (
+        true,
+        generate_param_name(FILTER_NAME,id,"modulate_gain"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_gain")
+    ),
 
-    gain(generate_param_name(FILTER_NAME,id,"gain"),generate_short_human_name(FILTER_NAME,id_,"gain")),
-    modulate_gain(generate_param_name(FILTER_NAME,id,"modulate_gain"),generate_short_human_name(FILTER_NAME,id_,"mod_gain")),
-
+    // ----
     input_env_datas( input_env_datas_ ),
-    input_sustains( FILTER_NAME,id,"input_sustain","in_sustain" ),
-    input_holds( FILTER_NAME,id,"input_hold","in_fix_sus" ),
+    input_sustains
+    (
+        SUM_INPUTS_PER_FILTER,
 
-    compressor( generate_param_name(FILTER_NAME,id,"compressor"),generate_short_human_name(FILTER_NAME,id_,"peak") ),
-    output( generate_param_name(FILTER_NAME,id,"output"),generate_short_human_name(FILTER_NAME,id_,"volume") ),
-    output_clipping( generate_param_name(FILTER_NAME,id,"output_clipping"),generate_short_human_name(FILTER_NAME,id_,"clipping") ),
-    modulate_output( generate_param_name(FILTER_NAME,id,"modulate_output"),generate_short_human_name(FILTER_NAME,id_,"mod_volume") )
+        MIN_MAX( -1, 1 ),
+        0,
+        2000,
+
+        FILTER_NAME,id,
+        "input_sustain","in_sustain",true
+    ),
+    input_holds
+    (
+        SUM_INPUTS_PER_FILTER,
+
+        true,
+
+        FILTER_NAME,id,
+        "input_hold","in_fix_sus",true
+    ),
+    // ----
+    compressor
+    (
+        MIN_MAX( -1, 1 ),
+        0,
+        2000,
+        generate_param_name(FILTER_NAME,id,"compressor"),
+        generate_short_human_name(FILTER_NAME,id_,"peak")
+    ),
+    output
+    (
+        MIN_MAX( 0, 1 ),
+        0.75,
+        1000,
+        generate_param_name(FILTER_NAME,id,"output"),
+        generate_short_human_name(FILTER_NAME,id_,"volume"),
+        0.6
+    ),
+    output_clipping
+    (
+        MIN_MAX( 0, 1 ),
+        1,
+        1000,
+        generate_param_name(FILTER_NAME,id,"output_clipping"),
+        generate_short_human_name(FILTER_NAME,id_,"clipping")
+    ),
+    modulate_output
+    (
+        false,
+        generate_param_name(FILTER_NAME,id,"modulate_output"),
+        generate_short_human_name(FILTER_NAME,id_,"mod_volume")
+    )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         input_sustains[i].register_always_listener(this);
 }
-NOINLINE FilterData::~FilterData() {
+NOINLINE FilterData::~FilterData()
+{
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         input_sustains[i].remove_listener(this);
 }
 
-void FilterData::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept
+void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i ) {
-        if( input_sustains[i].get_base() == param_ )
+        if( input_sustains[i].ptr() == param_ )
         {
             // TODO copy sustain!
-            input_env_datas[i]->sustain.set_scaled_without_notification( positive( param_->get_reference() ) );
+            input_env_datas[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
             break;
         }
     }
 }
-void FilterData::parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept {
+void FilterData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+{
     parameter_value_changed( param_ );
 }
-void FilterData::parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept
+void FilterData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
 }
 
-NOINLINE void FilterData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void FilterData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &filter_type );
     params_.add( &adsr_lfo_mix );
     params_.add( &distortion );
@@ -762,7 +905,8 @@ NOINLINE void FilterData::get_saveable_params( Array< mono_ParameterCompatibilit
     params_.add( &modulate_output );
     params_.add( &output_clipping );
 
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i ) {
+    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
+    {
         params_.add( &input_holds[i] );
         params_.add( &input_sustains[i] );
     }
@@ -774,21 +918,75 @@ NOINLINE ArpSequencerData::ArpSequencerData( int id_ )
     :
     id( id_ ),
 
-    is_on(generate_param_name(ARP_NAME,id,"is_on"),generate_short_human_name(ARP_NAME,"on")),
+    is_on
+    (
+        true,
+        generate_param_name(ARP_NAME,id,"is_on"),
+        generate_short_human_name(ARP_NAME,"on")
+    ),
 
-    step( ARP_NAME,id,"step","step", false ),
-    tune( ARP_NAME,id,"tune","tune", false ),
-    velocity( ARP_NAME,id,"velocity","velocity", false ),
+    // ----
+    step
+    (
+        SUM_ENV_ARP_STEPS,
 
-    shuffle(generate_param_name(ARP_NAME,id,"shuffle"),generate_short_human_name(ARP_NAME,"shuffle")),
-    connect(generate_param_name(ARP_NAME,id,"connect"),generate_short_human_name(ARP_NAME,"connect")),
+        false,
 
-    speed_multi(generate_param_name(ARP_NAME,id,"speed_multi"),generate_short_human_name(ARP_NAME,"speed_multi"))
-{
-}
+        ARP_NAME,id,
+        "step","step", false
+    ),
+    tune
+    (
+        SUM_ENV_ARP_STEPS,
+
+        MIN_MAX( -48, 48 ),
+        false,
+        96*10,
+
+        ARP_NAME,id,
+        "tune","tune", false
+    ),
+    velocity
+    (
+        SUM_ENV_ARP_STEPS,
+
+        MIN_MAX( 0.001, 1 ),
+        0.85,
+        1000,
+
+        ARP_NAME,id,
+        "velocity","velocity", false
+    ),
+
+    // ----
+    shuffle
+    (
+        MIN_MAX( 0, 1 ),
+        0.333,
+        1000,
+        generate_param_name(ARP_NAME,id,"shuffle"),
+        generate_short_human_name(ARP_NAME,"shuffle")
+    ),
+    connect
+    (
+        false,
+        generate_param_name(ARP_NAME,id,"connect"),
+        generate_short_human_name(ARP_NAME,"connect")
+    ),
+
+    // ----
+    speed_multi
+    (
+        MIN_MAX( -9, 9 ),
+        0,
+        generate_param_name(ARP_NAME,id,"speed_multi"),
+        generate_short_human_name(ARP_NAME,"speed_multi")
+    )
+{}
+
 NOINLINE ArpSequencerData::~ArpSequencerData() {}
 
-NOINLINE void ArpSequencerData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ArpSequencerData::get_saveable_params( Array< Parameter* >& params_ ) noexcept {
     params_.add( &is_on );
 
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i ) {
@@ -804,44 +1002,72 @@ NOINLINE void ArpSequencerData::get_saveable_params( Array< mono_ParameterCompat
 }
 //==============================================================================
 #define EQ_NAME "EQ"
-NOINLINE EQData::EQData( int id_, ENVPresetDef*const def_ )
-    :
-    id( id_ ),
+NOINLINE EQData::EQData( int id_, ENVPresetDef*const def_ ) noexcept
+:
+id( id_ ),
+    velocity
+    (
+        SUM_EQ_BANDS,
 
-    velocity( EQ_NAME,id,"velocity","velocity", false ),
-    hold( EQ_NAME,id,"hold","velocity", false )
+        MIN_MAX( -1, 1 ),
+        0,
+        2000,
+
+        EQ_NAME,id,
+        "velocity","velocity", false
+    ),
+    hold
+    (
+        SUM_EQ_BANDS,
+
+        true,
+
+        EQ_NAME,id,
+        "hold","velocity", false
+    )
 {
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id ) {
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
         ENVPresetData* data = new ENVPresetData( band_id+EQ_ENV_ID_OFFSET, def_ );
         env_datas.add( data );
 
         velocity[band_id].register_always_listener(this);
     }
 }
-NOINLINE EQData::~EQData() {
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id ) {
+NOINLINE EQData::~EQData() noexcept
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
         velocity[band_id].remove_listener(this);
     }
 }
 
-void EQData::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept {
-    for( int i = 0 ; i != SUM_EQ_BANDS ; ++i )
+void EQData::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    for( int i = 0 ;
+    i != SUM_EQ_BANDS ;
+    ++i )
     {
-        if( velocity[i].get_base() == param_ )
+        if( velocity[i].ptr() == param_ )
         {
-            env_datas[i]->sustain.set_scaled_without_notification( positive( param_->get_reference() ) );
+            env_datas[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
             break;
         }
     }
 }
-void EQData::parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept {
+void EQData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
     parameter_value_changed( param_ );
 }
-void EQData::parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept {
+void EQData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+{
     parameter_value_changed( param_ );
 }
-NOINLINE void EQData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
-    for( int i = 0 ; i != SUM_EQ_BANDS ; ++i )
+NOINLINE void EQData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
+    for( int i = 0 ;
+    i != SUM_EQ_BANDS ;
+    ++i )
     {
         env_datas.getUnchecked( i )->get_saveable_params( params_ );
         params_.add( &velocity[i] );
@@ -855,14 +1081,36 @@ NOINLINE ReverbData::ReverbData( int id_ )
     :
     id( id_ ),
 
-    room(generate_param_name(REVERB_NAME,id,"room"),generate_short_human_name(REVERB_NAME,id_,"room")),
-    dry_wet_mix(generate_param_name(REVERB_NAME,id,"dry-wet"),generate_short_human_name(REVERB_NAME,id_,"dry-wet")),
-    width(generate_param_name(REVERB_NAME,id,"width"),generate_short_human_name(REVERB_NAME,id_,"width"))
+    room
+    (
+        MIN_MAX( 0, 1 ),
+        0.333,
+        1000,
+        generate_param_name(REVERB_NAME,id,"room"),
+        generate_short_human_name(REVERB_NAME,id_,"room")
+    ),
+    dry_wet_mix
+    (
+        MIN_MAX( 0, 1 ),
+        0.75,
+        1000,
+        generate_param_name(REVERB_NAME,id,"dry-wet"),
+        generate_short_human_name(REVERB_NAME,id_,"dry-wet")
+    ),
+    width
+    (
+        MIN_MAX( 0, 1 ),
+        0.3,
+        1000,
+        generate_param_name(REVERB_NAME,id,"width"),
+        generate_short_human_name(REVERB_NAME,id_,"width")
+    )
 {
 }
 NOINLINE ReverbData::~ReverbData() {}
 
-NOINLINE void ReverbData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ReverbData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &room );
     params_.add( &dry_wet_mix );
     params_.add( &width );
@@ -874,9 +1122,23 @@ NOINLINE ChorusData::ChorusData( int id_, ENVPresetDef*const def_ )
     :
     id( id_ ),
 
-    modulation(generate_param_name(CHORUS_NAME,id,"modulation"),generate_short_human_name(CHORUS_NAME,id_,"chorus")),
-    hold_modulation(generate_param_name(CHORUS_NAME,id,"hold-modulation"),generate_short_human_name(CHORUS_NAME,id_,"chorus-fix")),
+    // ----
+    modulation
+    (
+        MIN_MAX( 0, 1 ),
+        0.333,
+        1000,
+        generate_param_name(CHORUS_NAME,id,"modulation"),
+        generate_short_human_name(CHORUS_NAME,id_,"chorus")
+    ),
+    hold_modulation
+    (
+        true,
+        generate_param_name(CHORUS_NAME,id,"hold-modulation"),
+        generate_short_human_name(CHORUS_NAME,id_,"chorus-fix")
+    ),
 
+    // ----
     modulation_env_data( new ENVPresetData( CHORUS_ENV_ID_OFFSET, def_ ) ),
     shine_env_data( new ENVPresetData( CHORUS_ENV_ID_OFFSET, def_ ) )
 {
@@ -884,18 +1146,22 @@ NOINLINE ChorusData::ChorusData( int id_, ENVPresetDef*const def_ )
 }
 NOINLINE ChorusData::~ChorusData() {}
 
-NOINLINE void ChorusData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void ChorusData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &modulation );
     params_.add( &hold_modulation );
 }
 
-void ChorusData::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept {
-    modulation_env_data->sustain.set_scaled_without_notification( positive( param_->get_reference() ) );
+void ChorusData::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    modulation_env_data->sustain.set_value( positive( param_->get_value() ) );
 }
-void ChorusData::parameter_value_on_load_changed( mono_ParameterBase< float >* param_ ) noexcept {
+void ChorusData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
     parameter_value_changed( param_ );
 }
-void ChorusData::parameter_value_changed_always_notification( mono_ParameterBase< float >* param_ ) noexcept {
+void ChorusData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+{
     parameter_value_changed( param_ );
 }
 
@@ -933,7 +1199,7 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         MIN_MAX( 0, 1 ),
         1,
-        1000
+        1000,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
         generate_short_human_name("MAIN","fx_bypass")
     ),
@@ -973,7 +1239,6 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         MIN_MAX( -2, 2 ),
         0,
-        4,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
         generate_short_human_name("MAIN","octave")
     ),
@@ -997,15 +1262,13 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         MIN_MAX( 1, 20000 ),
         500,
-        20000*10,
-        param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
         generate_short_human_name("MAIN","glide_motor_time")
     ),
     velocity_glide_time
     (
         MIN_MAX( 1, 20000 ),
         500,
-        20000*10,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
         generate_short_human_name("MAIN","velocity_glide_time")
     ),
@@ -1112,7 +1375,6 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         MIN_MAX( 0, THREAD_LIMIT ),
         0,
-        THREAD_LIMIT,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
         generate_short_human_name("MAIN","cpus")
     ),
@@ -1153,9 +1415,7 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         SUM_MORPHER_GROUPS,
 
-        MIN_MAX( LEFT, RIGHT ),
         LEFT,
-        1,
 
         SYNTH_DATA_NAME,MASTER,
         "morph_switch_state","morph_tgl",false
@@ -1172,7 +1432,6 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     (
         MIN_MAX( 1, 20000 ),
         1000,
-        20000*10,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
         generate_short_human_name("morph_motor")
     ),
@@ -1281,19 +1540,29 @@ inline const SynthData& SynthData::operator= ( const SynthData& other_ ) noexcep
     COPY_FROM_OTHER( curve_shape )
     COPY_FROM_OTHER( octave_offset )
 
-    for( int i = 0 ; i != other_.lfo_datas.size() ; ++i )
+    for( int i = 0 ;
+    i != other_.lfo_datas.size() ;
+    ++i )
         *lfo_datas[i] = *other_.lfo_datas[i];
 
-    for( int i = 0 ; i != other_.osc_datas.size() ; ++i )
+    for( int i = 0 ;
+    i != other_.osc_datas.size() ;
+    ++i )
         (*osc_datas[i]) = (*other_.osc_datas[i]);
 
-    for( int i = 0 ; i != other_.env_datas.size() ; ++i )
+    for( int i = 0 ;
+    i != other_.env_datas.size() ;
+    ++i )
         (*env_datas[i]) = (*other_.env_datas[i]);
 
-    for( int i = 0 ; i != other_.filter_datas.size() ; ++i )
+    for( int i = 0 ;
+    i != other_.filter_datas.size() ;
+    ++i )
         (*filter_datas[i]) = (*other_.filter_datas[i]);
 
-    for( int i = 0 ; i != other_.filter_input_env_datas.size() ; ++i )
+    for( int i = 0 ;
+    i != other_.filter_input_env_datas.size() ;
+    ++i )
         (*filter_input_env_datas[i]) = (*other_.filter_input_env_datas[i]);
 
     *env_preset_def = *other_.env_preset_def;
@@ -1309,7 +1578,8 @@ inline const SynthData& SynthData::operator= ( const SynthData& other_ ) noexcep
 
     return *this;
 }
-NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibilityBase* >& params_ ) noexcept {
+NOINLINE void SynthData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+{
     params_.add( &volume );
     params_.add( &glide );
     params_.add( &delay );
@@ -1347,7 +1617,9 @@ NOINLINE void SynthData::get_saveable_params( Array< mono_ParameterCompatibility
 
     params_.add( &num_extra_threads );
 
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id ) {
+    for( int morpher_id = 0 ;
+    morpher_id != SUM_MORPHER_GROUPS ;
+    ++morpher_id ) {
         params_.add( &morhp_states[morpher_id] );
         params_.add( &morhp_switch_states[morpher_id] );
     }
@@ -1358,12 +1630,17 @@ NOINLINE void SynthData::colect_saveable_parameters() noexcept {
     env_preset_def->get_saveable_params( saveable_parameters );
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
+    {
         lfo_datas[i]->get_saveable_params( saveable_parameters );
+    }
 
-    for( int i = 0 ; i != SUM_OSCS ; ++i )
+    for( int i = 0 ; i != SUM_OSCS ;  ++i )
+    {
         osc_datas[i]->get_saveable_params( saveable_parameters );
+    }
 
-    for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id ) {
+    for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
+    {
         for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
         {
             filter_input_env_datas[input_id+flt_id*SUM_INPUTS_PER_FILTER]->get_saveable_params( saveable_parameters );
@@ -1372,7 +1649,9 @@ NOINLINE void SynthData::colect_saveable_parameters() noexcept {
     }
 
     for( int i = 0 ; i != SUM_ENVS ; ++i )
+    {
         env_datas[i]->get_saveable_params( saveable_parameters );
+    }
 
     eq_data->get_saveable_params( saveable_parameters );
     arp_sequencer_data->get_saveable_params( saveable_parameters );
@@ -1388,29 +1667,29 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
             morph_groups.add( &morph_group_main );
             morph_group_main.set_id( MAIN );
 
-            morph_group_main.register_parameter( volume.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( final_compression.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->attack.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_attack_time.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->decay.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_decay_time.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain_time.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->release.get_base(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_release_time.get_base(), data_type == MASTER  );
+            morph_group_main.register_parameter( volume.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( final_compression.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->attack.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_attack_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->decay.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_decay_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->release.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_release_time.ptr(), data_type == MASTER  );
 
-            morph_group_main.register_parameter( env_preset_def->attack_1.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_1.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_1.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_2.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_2.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_2.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_3.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_3.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_3.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_4.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_4.get_base(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_4.get_base(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->attack_1.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->decay_1.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->release_1.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->attack_2.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->decay_2.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->release_2.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->attack_3.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->decay_3.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->release_3.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->attack_4.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
+            morph_group_main.register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
 
             //speed_multi
         }
@@ -1421,45 +1700,45 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_groups.add( &morph_group_osc_1 );
                 morph_group_osc_1.set_id( OSC_1 );
 
-                morph_group_osc_1.register_parameter( osc_datas[0]->wave.get_base(), data_type == MASTER );
-                morph_group_osc_1.register_parameter( osc_datas[0]->octave.get_base(), data_type == MASTER );
-                morph_group_osc_1.register_parameter( osc_datas[0]->fm_amount.get_base(), data_type == MASTER );
+                morph_group_osc_1.register_parameter( osc_datas[0]->wave.ptr(), data_type == MASTER );
+                morph_group_osc_1.register_parameter( osc_datas[0]->octave.ptr(), data_type == MASTER );
+                morph_group_osc_1.register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->is_lfo_modulated.get_base(), data_type == MASTER );
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->sync.get_base(), data_type == MASTER );
+                morph_group_osc_1.register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_osc_1.register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
 
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->puls_width.get_base(), data_type == MASTER );
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->osc_switch.get_base(), data_type == MASTER );
+                morph_group_osc_1.register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_osc_1.register_switch_parameter( osc_datas[0]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
                 morph_groups.add( &morph_group_osc_2 );
                 morph_group_osc_2.set_id( OSC_2 );
 
-                morph_group_osc_2.register_parameter( osc_datas[1]->wave.get_base(), data_type == MASTER );
-                morph_group_osc_2.register_parameter( osc_datas[1]->octave.get_base(), data_type == MASTER );
-                morph_group_osc_2.register_parameter( osc_datas[1]->fm_amount.get_base(), data_type == MASTER );
+                morph_group_osc_2.register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
+                morph_group_osc_2.register_parameter( osc_datas[1]->octave.ptr(), data_type == MASTER );
+                morph_group_osc_2.register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->is_lfo_modulated.get_base(), data_type == MASTER );
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->sync.get_base(), data_type == MASTER );
+                morph_group_osc_2.register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_osc_2.register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
 
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->puls_width.get_base(), data_type == MASTER );
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->osc_switch.get_base(), data_type == MASTER );
+                morph_group_osc_2.register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_osc_2.register_switch_parameter( osc_datas[1]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
                 morph_groups.add( &morph_group_osc_3 );
                 morph_group_osc_3.set_id( OSC_3 );
 
-                morph_group_osc_3.register_parameter( osc_datas[2]->wave.get_base() , data_type == MASTER  );
-                morph_group_osc_3.register_parameter( osc_datas[2]->octave.get_base(), data_type == MASTER  );
-                morph_group_osc_3.register_parameter( osc_datas[2]->fm_amount.get_base(), data_type == MASTER  );
+                morph_group_osc_3.register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
+                morph_group_osc_3.register_parameter( osc_datas[2]->octave.ptr(), data_type == MASTER  );
+                morph_group_osc_3.register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
 
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->is_lfo_modulated.get_base(), data_type == MASTER  );
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->sync.get_base(), data_type == MASTER  );
+                morph_group_osc_3.register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
+                morph_group_osc_3.register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
 
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->puls_width.get_base(), data_type == MASTER );
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->osc_switch.get_base(), data_type == MASTER );
+                morph_group_osc_3.register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_osc_3.register_switch_parameter( osc_datas[2]->osc_switch.int_ptr(), data_type == MASTER );
             }
         }
 
@@ -1468,19 +1747,19 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
             morph_groups.add( &morph_group_fm );
             morph_group_fm.set_id( FM );
 
-            morph_group_fm.register_parameter( osc_datas[0]->fm_multi.get_base(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[0]->fm_swing.get_base(), data_type == MASTER  );
+            morph_group_fm.register_parameter( osc_datas[0]->fm_multi.ptr(), data_type == MASTER  );
+            morph_group_fm.register_parameter( osc_datas[0]->fm_swing.ptr(), data_type == MASTER  );
             // TODO
-            //morph_group_fm.register_parameter( osc_datas[0]->osc_swing.get_base(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[1]->fm_multi.get_base(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[2]->fm_multi.get_base(), data_type == MASTER  );
+            //morph_group_fm.register_parameter( osc_datas[0]->osc_swing.ptr(), data_type == MASTER  );
+            morph_group_fm.register_parameter( osc_datas[1]->fm_multi.ptr(), data_type == MASTER  );
+            morph_group_fm.register_parameter( osc_datas[2]->fm_multi.ptr(), data_type == MASTER  );
 
-            morph_group_fm.register_switch_parameter( osc_datas[0]->puls_width.get_base(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[1]->puls_width.get_base(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[2]->puls_width.get_base(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[0]->fm_wave.get_base(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[1]->fm_wave.get_base(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[2]->fm_wave.get_base(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[0]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[1]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_fm.register_switch_parameter( osc_datas[2]->fm_wave.bool_ptr(), data_type == MASTER  );
         }
 
         // FILTERS
@@ -1490,45 +1769,49 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_group_filter_1.set_id( FILTER_1 );
 
                 // FLT
-                morph_group_filter_1.register_parameter( filter_datas[0]->adsr_lfo_mix.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->width.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->gain.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->output.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->output_clipping.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->compressor.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_1.register_parameter( filter_datas[0]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->distortion.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->width.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_1.register_parameter( filter_input_env_datas[input_id+0*SUM_INPUTS_PER_FILTER]->state.get_base(), data_type == MASTER  );
-                    morph_group_filter_1.register_parameter( filter_datas[0]->input_sustains[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_1.register_parameter( filter_input_env_datas[input_id+0*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_1.register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->filter_type.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_width.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_gain.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_1.register_switch_parameter( filter_datas[0]->input_holds[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_1.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_output.get_base(), data_type == MASTER  );
+                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_1.register_parameter( lfo_datas[0]->speed.get_base(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_1.register_parameter( env_datas[0]->attack.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_attack_time.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->decay.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_decay_time.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->sustain.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->sustain_time.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->release.get_base(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_release_time.get_base(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->release.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( env_datas[0]->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
@@ -1536,45 +1819,49 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_group_filter_2.set_id( FILTER_2 );
 
                 // FLT
-                morph_group_filter_2.register_parameter( filter_datas[1]->adsr_lfo_mix.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->width.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->gain.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->output.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->output_clipping.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->compressor.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_2.register_parameter( filter_datas[1]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->distortion.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->width.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_2.register_parameter( filter_input_env_datas[input_id+1*SUM_INPUTS_PER_FILTER]->state.get_base(), data_type == MASTER  );
-                    morph_group_filter_2.register_parameter( filter_datas[1]->input_sustains[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_2.register_parameter( filter_input_env_datas[input_id+1*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_2.register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->filter_type.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_width.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_gain.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_2.register_switch_parameter( filter_datas[1]->input_holds[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_2.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_output.get_base(), data_type == MASTER  );
+                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_2.register_parameter( lfo_datas[1]->speed.get_base(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_2.register_parameter( env_datas[1]->attack.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_attack_time.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->decay.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_decay_time.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->sustain.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->sustain_time.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->release.get_base(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_release_time.get_base(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->release.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( env_datas[1]->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
@@ -1582,45 +1869,49 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_group_filter_3.set_id( FILTER_3 );
 
                 // FLT
-                morph_group_filter_3.register_parameter( filter_datas[2]->adsr_lfo_mix.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->width.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->gain.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->output.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->output_clipping.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->compressor.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_3.register_parameter( filter_datas[2]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->distortion.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->width.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_3.register_parameter( filter_input_env_datas[input_id+2*SUM_INPUTS_PER_FILTER]->state.get_base(), data_type == MASTER  );
-                    morph_group_filter_3.register_parameter( filter_datas[2]->input_sustains[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_3.register_parameter( filter_input_env_datas[input_id+2*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_3.register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->filter_type.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_distortion.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_cutoff.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_resonance.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_width.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_gain.get_base(), data_type == MASTER  );
-                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                for( int input_id = 0 ;
+                input_id != SUM_INPUTS_PER_FILTER ;
+                ++input_id )
                 {
-                    morph_group_filter_3.register_switch_parameter( filter_datas[2]->input_holds[input_id].get_base(), data_type == MASTER  );
+                    morph_group_filter_3.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_output.get_base(), data_type == MASTER  );
+                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_3.register_parameter( lfo_datas[2]->speed.get_base(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_3.register_parameter( env_datas[2]->attack.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_attack_time.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->decay.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_decay_time.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->sustain.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->sustain_time.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->release.get_base(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_release_time.get_base(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->release.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( env_datas[2]->max_release_time.ptr(), data_type == MASTER  );
             }
         }
 
@@ -1630,11 +1921,13 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
             morph_groups.add( &morph_group_eq );
             morph_group_eq.set_id( EQ );
 
-            for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id ) {
-                morph_group_eq.register_parameter( eq_data->velocity[band_id].get_base(), data_type == MASTER  );
-                morph_group_eq.register_parameter( eq_data->env_datas[band_id]->state.get_base(), data_type == MASTER  );
+            for( int band_id = 0 ;
+            band_id != SUM_EQ_BANDS ;
+            ++band_id ) {
+                morph_group_eq.register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
+                morph_group_eq.register_parameter( eq_data->env_datas[band_id]->state.ptr(), data_type == MASTER  );
 
-                morph_group_eq.register_switch_parameter( eq_data->hold[band_id].get_base(), data_type == MASTER  );
+                morph_group_eq.register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
         }
 
@@ -1644,18 +1937,18 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
             morph_group_fx.set_id( FX );
 
             // MAIN
-            morph_group_fx.register_parameter( colour.get_base(), data_type == MASTER );
-            morph_group_fx.register_parameter( resonance.get_base(), data_type == MASTER );
-            morph_group_fx.register_parameter( effect_bypass.get_base(), data_type == MASTER  );
+            morph_group_fx.register_parameter( colour.ptr(), data_type == MASTER );
+            morph_group_fx.register_parameter( resonance.ptr(), data_type == MASTER );
+            morph_group_fx.register_parameter( effect_bypass.ptr(), data_type == MASTER  );
             // REVERB
-            morph_group_fx.register_parameter( reverb_data->room.get_base(), data_type == MASTER  );
-            morph_group_fx.register_parameter( reverb_data->dry_wet_mix.get_base(), data_type == MASTER  );
-            morph_group_fx.register_parameter( reverb_data->width.get_base(), data_type == MASTER  );
+            morph_group_fx.register_parameter( reverb_data->room.ptr(), data_type == MASTER  );
+            morph_group_fx.register_parameter( reverb_data->dry_wet_mix.ptr(), data_type == MASTER  );
+            morph_group_fx.register_parameter( reverb_data->width.ptr(), data_type == MASTER  );
             // DELAY
-            morph_group_fx.register_parameter( delay.get_base(), data_type == MASTER  );
+            morph_group_fx.register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
-            morph_group_fx.register_parameter( chorus_data->modulation.get_base(), data_type == MASTER  );
-            morph_group_fx.register_switch_parameter( chorus_data->hold_modulation.get_base(), data_type == MASTER  );
+            morph_group_fx.register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
+            morph_group_fx.register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
 
         // ARP
@@ -1664,8 +1957,10 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_groups.add( &morph_group_arp_tune );
                 morph_group_arp_tune.set_id( ARP_TUNE );
 
-                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id ) {
-                    morph_group_arp_tune.register_parameter( arp_sequencer_data->tune[step_id].get_base(), data_type == MASTER  );
+                for( int step_id = 0 ;
+                step_id != SUM_ENV_ARP_STEPS ;
+                ++step_id ) {
+                    morph_group_arp_tune.register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
                 }
             }
 
@@ -1673,8 +1968,10 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_groups.add( &morph_group_arp_velocity );
                 morph_group_arp_velocity.set_id( ARP_VELOCITY );
 
-                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id ) {
-                    morph_group_arp_velocity.register_parameter( arp_sequencer_data->velocity[step_id].get_base(), data_type == MASTER  );
+                for( int step_id = 0 ;
+                step_id != SUM_ENV_ARP_STEPS ;
+                ++step_id ) {
+                    morph_group_arp_velocity.register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
                 }
             }
 
@@ -1682,8 +1979,8 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
                 morph_groups.add( &morph_group_arp_glide_shuffle );
                 morph_group_arp_glide_shuffle.set_id( ARP_GLIDE_SHUFFLE );
 
-                morph_group_arp_glide_shuffle.register_parameter( arp_sequencer_data->shuffle.get_base(), data_type == MASTER  );
-                morph_group_arp_glide_shuffle.register_parameter( glide.get_base(), data_type == MASTER  );
+                morph_group_arp_glide_shuffle.register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
+                morph_group_arp_glide_shuffle.register_parameter( glide.ptr(), data_type == MASTER  );
             }
 
             {
@@ -1692,10 +1989,11 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept {
 
                 // is_on
                 // speed_multi
-                morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->connect.get_base(), data_type == MASTER  );
-                //morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data.connect.get_base(), data_type == MASTER  );
-                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id ) {
-                    morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->step[step_id].get_base(), data_type == MASTER  );
+                morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
+                //morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data.connect.ptr(), data_type == MASTER  );
+                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
+                {
+                    morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
                 }
             }
         }
@@ -1912,7 +2210,9 @@ inline SynthData::MorphGroup& SynthData::get_morph_group( int id_ ) noexcept {
     return *morph_groups.getUnchecked( id_ );
 }
 inline void SynthData::run_sync_morph() noexcept {
-    for( int i = 0 ; i != morph_groups.size() ; ++i )
+    for( int i = 0 ;
+    i != morph_groups.size() ;
+    ++i )
     {
         morph_groups[i]->run_sync_morph();
     }
@@ -1943,21 +2243,21 @@ void SynthData::update_left_morph_source( int morpher_id_ ) noexcept {
 void SynthData::update_right_morph_source( int morpher_id_ ) noexcept {
     (*right_morph_datas.getUnchecked(morpher_id_)) = *this;
 }
-void SynthData::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept
+void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    if( param_ == &morhp_states[0] ) {
+    if( param_ == morhp_states[0].ptr() ) {
         morph( 0, *param_ );
     }
-    else if( param_ == &morhp_states[1] ) {
+    else if( param_ == morhp_states[1].ptr() ) {
         morph( 1, *param_ );
     }
-    else if( param_ == &morhp_states[2] ) {
+    else if( param_ == morhp_states[2].ptr() ) {
         morph( 2, *param_ );
     }
-    else if( param_ == &morhp_states[3] ) {
+    else if( param_ == morhp_states[3].ptr() ) {
         morph( 3, *param_ );
     }
-    else if( param_ == &linear_morhp_state )
+    else if( param_ == linear_morhp_state.ptr() )
     {
         float value = *param_;
         if( value <= 1 )
@@ -2007,13 +2307,15 @@ void SynthData::parameter_value_changed( mono_ParameterBase< float >* param_ ) n
 }
 void SynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
 {
-    if( force_ ) {
-        morhp_states[morpher_id_].stopTimeChanger();
+    if( force_ )
+    {
+        morhp_states[morpher_id_].get_runtime_info().stop_time_change();
         morhp_states[morpher_id_] = morph_amount_left_to_right_;
     }
 
     Array< MorphGroup* >& morph_groups_for_morpher = morph_groups_per_morpher.getReference(morpher_id_);
-    for( int morph_group_id = 0 ; morph_group_id != morph_groups_for_morpher.size() ; ++morph_group_id ) {
+    for( int morph_group_id = 0 ; morph_group_id != morph_groups_for_morpher.size() ; ++morph_group_id )
+    {
         morph_groups_for_morpher[morph_group_id]->morph( morph_amount_left_to_right_ );
     }
 }
@@ -2028,7 +2330,9 @@ void SynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcep
         morhp_switch_states[morpher_id_] ^= true;
 
     Array< MorphGroup* >& morph_groups_for_morpher = morph_groups_per_morpher.getReference(morpher_id_);
-    for( int morph_group_id = 0 ; morph_group_id != morph_groups_for_morpher.size() ; ++morph_group_id )
+    for( int morph_group_id = 0 ;
+    morph_group_id != morph_groups_for_morpher.size() ;
+    ++morph_group_id )
         morph_groups_for_morpher[morph_group_id]->morph_switchs( morhp_switch_states[morpher_id_] );
 }
 bool SynthData::get_morph_switch_state( int morpher_id_ ) const noexcept {
@@ -2113,7 +2417,9 @@ NOINLINE void SynthData::save_midi() const noexcept {
 
         XmlElement xml("MIDI-PATCH-1.0");
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-            saveable_parameters.getUnchecked(i)->write_midi_to(xml);
+        {
+            write_midi_to( xml, saveable_parameters.getUnchecked(i) );
+        }
 
         xml.writeToFile(midi_file,"");
     }
@@ -2127,7 +2433,7 @@ NOINLINE void SynthData::read_midi() noexcept {
         if( xml->hasTagName("MIDI-PATCH-1.0") )
         {
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-                saveable_parameters.getUnchecked(i)->read_midi_from(*xml);
+                read_midi_from( *xml, saveable_parameters.getUnchecked(i) );
         }
     }
 }
@@ -2146,19 +2452,19 @@ NOINLINE void SynthData::MorphGroup::set_id( int id_ ) {
     id = id_;
 }
 
-NOINLINE void SynthData::MorphGroup::register_parameter( mono_ParameterBase< float >*const param_, bool is_master_ ) {
+NOINLINE void SynthData::MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) {
     params.add( param_ );
 
     if( is_master_ )
         param_->register_listener(this);
 }
-NOINLINE void SynthData::MorphGroup::register_switch_parameter( mono_ParameterBase< bool >*const param_, bool is_master_ ) {
+NOINLINE void SynthData::MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) {
     switch_bool_params.add( param_ );
 
     if( is_master_ )
         param_->register_listener(this);
 }
-NOINLINE void SynthData::MorphGroup::register_switch_parameter( mono_ParameterBase< int >*const param_, bool is_master_ ) {
+NOINLINE void SynthData::MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) {
     switch_int_params.add( param_ );
 
     if( is_master_ )
@@ -2196,10 +2502,10 @@ void SynthData::MorphGroup::morph( float power_of_right_ ) noexcept
         {
             // VALUE
             float new_value = (*left_morph_group->params[i] * (1.0f - power_of_right_ )) + (*right_morph_group->params[i] * power_of_right_);
-            params[i]->set_scaled_without_notification( new_value );
+            params[i]->set_value_without_notification( new_value );
 
             // MODULATION VALUE
-            if( params[i]->has_modulation() )
+            if( has_modulation( params[i] ) )
             {
                 params[i]->set_modulation_amount_without_notification
                 (
@@ -2226,7 +2532,7 @@ void SynthData::MorphGroup::run_sync_morph() noexcept {
                 float current_value = *params[i];
                 sync_param_deltas.add( (target_value-current_value)/SYNC_MORPH_STEPS );
             }
-            if( params[i]->has_modulation() )
+            if( has_modulation( params[i] ) )
             {
                 float target_modulation = (left_morph_group->params[i]->get_modulation_amount() * (1.0f - last_power_of_right )) + (right_morph_group->params[i]->get_modulation_amount() * last_power_of_right);
                 float current_modulation = params[i]->get_modulation_amount();
@@ -2244,15 +2550,16 @@ void SynthData::MorphGroup::timerCallback() {
     for( int i = 0 ; i != params.size() ; ++i )
     {
         {
-            float min = params[i]->get_min();
-            float max = params[i]->get_max();
+            const ParameterInfo& info = params[i]->get_info();
+            float min = info.min_value;
+            float max = info.max_value;
             float new_value = *params[i] + sync_param_deltas[i];
             if( new_value > max )
                 new_value = max;
             else if( new_value < min )
                 new_value = min;
 
-            params[i]->set_scaled_without_notification( new_value );
+            params[i]->set_value_without_notification( new_value );
         }
         float modulation_delta = sync_modulation_deltas[i];
         if( modulation_delta != -1 )
@@ -2282,84 +2589,114 @@ void SynthData::MorphGroup::morph_switchs( bool left_right_ ) noexcept
         for( int i = 0 ; i != switch_bool_params.size() ; ++i )
         {
             if( current_switch == RIGHT )
-                switch_bool_params[i]->set_scaled_without_notification( *right_morph_group->switch_bool_params[i] );
+                switch_bool_params[i]->set_value_without_notification( right_morph_group->switch_bool_params[i]->get_value() );
             else
-                switch_bool_params[i]->set_scaled_without_notification( *left_morph_group->switch_bool_params[i] );
+                switch_bool_params[i]->set_value_without_notification( left_morph_group->switch_bool_params[i]->get_value() );
         }
         for( int i = 0 ; i != switch_int_params.size() ; ++i )
         {
             if( current_switch == RIGHT )
-                switch_int_params[i]->set_scaled_without_notification( *right_morph_group->switch_int_params[i] );
+                switch_int_params[i]->set_value_without_notification( right_morph_group->switch_int_params[i]->get_value() );
             else
-                switch_int_params[i]->set_scaled_without_notification( *left_morph_group->switch_int_params[i] );
+                switch_int_params[i]->set_value_without_notification( left_morph_group->switch_int_params[i]->get_value() );
         }
     }
 }
 
-void SynthData::MorphGroup::parameter_value_changed( mono_ParameterBase< float >* param_ ) noexcept {
+void SynthData::MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    TYPES_DEF type = type_of( param_ );
+    if( type == IS_BOOL )
+    {
+        if( left_morph_group )
+        {
+            const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
+            if( param_id != -1 )
+            {
+                if( current_switch == LEFT )
+                    left_morph_group->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+                else
+                    right_morph_group->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
+        }
+    }
+    else if( type == IS_INT )
+    {
+        if( left_morph_group )
+        {
+            const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
+            if( param_id != -1 )
+            {
+                if( current_switch == LEFT )
+                    left_morph_group->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+                else
+                    right_morph_group->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
+        }
+    }
+    else
+    {
+        if( left_morph_group )
+        {
+            const int param_id = params.indexOf( param_ );
+            if( param_id != -1 )
+            {
+                Parameter& left_source_param = *left_morph_group->params[param_id];
+                Parameter& right_source_param = *right_morph_group->params[param_id];
+
+                // x = l*(1-m)+r*m
+                // r = (l*(m-1.0f)+x)/m
+                // l = (m*r-x) / (m-1)
+                float current_value = *param_;
+                float right_value = right_source_param;
+                bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
+                const ParameterInfo& info = right_source_param.get_info();
+                const float max = info.max_value;
+                const float min = info.min_value;
+                if( update_left_or_right == RIGHT )
+                {
+                    float left_value = left_source_param;
+                    float new_right_value = (left_value*(last_power_of_right-1)+current_value) / last_power_of_right;
+                    if( new_right_value > max )
+                    {
+                        new_right_value = max;
+                        update_left_or_right = LEFT;
+                    }
+                    else if( new_right_value < min )
+                    {
+                        new_right_value = min;
+                        update_left_or_right = LEFT;
+                    }
+
+                    right_source_param.set_value_without_notification( new_right_value );
+                    right_value = new_right_value;
+                }
+                if( update_left_or_right == LEFT )
+                {
+                    float new_left_value = (last_power_of_right*right_value-current_value) / (last_power_of_right-1);
+                    if( new_left_value > max )
+                    {
+                        new_left_value = max;
+                    }
+                    else if( new_left_value < min )
+                    {
+                        new_left_value = min;
+                    }
+
+                    left_source_param.set_value_without_notification( new_left_value );
+                }
+            }
+        }
+    }
+}
+void SynthData::MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcept {
     if( left_morph_group )
     {
         const int param_id = params.indexOf( param_ );
         if( param_id != -1 )
         {
-            mono_ParameterBase< float >& left_source_param = *left_morph_group->params[param_id];
-            mono_ParameterBase< float >& right_source_param = *right_morph_group->params[param_id];
-
-            // x = l*(1-m)+r*m
-            // r = (l*(m-1.0f)+x)/m
-            // l = (m*r-x) / (m-1)
-            float current_value = *param_;
-            float right_value = right_source_param;
-            bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
-            if( update_left_or_right == RIGHT )
-            {
-                float left_value = left_source_param;
-                float new_right_value = (left_value*(last_power_of_right-1)+current_value) / last_power_of_right;
-
-                float max = right_source_param.get_max();
-                float min = right_source_param.get_min();
-                if( new_right_value > max )
-                {
-                    new_right_value = max;
-                    update_left_or_right = LEFT;
-                }
-                else if( new_right_value < min )
-                {
-                    new_right_value = min;
-                    update_left_or_right = LEFT;
-                }
-
-                right_source_param.set_scaled_without_notification( new_right_value );
-                right_value = new_right_value;
-            }
-            if( update_left_or_right == LEFT )
-            {
-                float new_left_value = (last_power_of_right*right_value-current_value) / (last_power_of_right-1);
-
-                float max = left_source_param.get_max();
-                float min = left_source_param.get_min();
-                if( new_left_value > max )
-                {
-                    new_left_value = max;
-                }
-                else if( new_left_value < min )
-                {
-                    new_left_value = min;
-                }
-
-                left_source_param.set_scaled_without_notification( new_left_value );
-            }
-        }
-    }
-}
-void SynthData::MorphGroup::parameter_modulation_value_changed( mono_ParameterBase< float >* param_ ) noexcept {
-    if( left_morph_group )
-    {
-        const int param_id = params.indexOf( param_ );
-        if( param_id != -1 )
-        {
-            mono_ParameterBase< float >& left_source_param = *left_morph_group->params[param_id];
-            mono_ParameterBase< float >& right_source_param = *right_morph_group->params[param_id];
+            Parameter& left_source_param = *left_morph_group->params[param_id];
+            Parameter& right_source_param = *right_morph_group->params[param_id];
 
             float current_modulation = param_->get_modulation_amount();
             float right_modulation = right_source_param.get_modulation_amount();
@@ -2398,32 +2735,6 @@ void SynthData::MorphGroup::parameter_modulation_value_changed( mono_ParameterBa
 
                 left_source_param.set_modulation_amount_without_notification( new_left_modulation );
             }
-        }
-    }
-}
-void SynthData::MorphGroup::parameter_value_changed( mono_ParameterBase< bool >* param_ ) noexcept {
-    if( left_morph_group )
-    {
-        const int param_id = switch_bool_params.indexOf( param_ );
-        if( param_id != -1 )
-        {
-            if( current_switch == LEFT )
-                left_morph_group->switch_bool_params[param_id]->set_scaled_without_notification( *param_ );
-            else
-                right_morph_group->switch_bool_params[param_id]->set_scaled_without_notification( *param_ );
-        }
-    }
-}
-void SynthData::MorphGroup::parameter_value_changed( mono_ParameterBase< int >* param_ ) noexcept {
-    if( left_morph_group )
-    {
-        const int param_id = switch_int_params.indexOf( param_ );
-        if( param_id != -1 )
-        {
-            if( current_switch == LEFT )
-                left_morph_group->switch_int_params[param_id]->set_scaled_without_notification( *param_ );
-            else
-                right_morph_group->switch_int_params[param_id]->set_scaled_without_notification( *param_ );
         }
     }
 }
@@ -2560,7 +2871,9 @@ void SynthData::calc_current_program_abs() noexcept {
     }
 
     current_program_abs = 0;
-    for( int bank_id = 0 ; bank_id != current_bank ; ++bank_id )
+    for( int bank_id = 0 ;
+    bank_id != current_bank ;
+    ++bank_id )
     {
         int bank_size = DATA( synth_data ).program_names.getReference(bank_id).size();
         if( current_program_abs+current_program < bank_size )
