@@ -403,7 +403,7 @@ void mono_ModulationSlider::refresh() noexcept
                             if( last_painted_mod_slider_val != modulation_value )
                             {
                                 last_painted_mod_slider_val = modulation_value;
-                                slider_modulation->SET_VALUE_TO_PAINT( String(mono_floor(modulation_value)) + String("@") + String("%") );
+                                slider_modulation->SET_VALUE_TO_PAINT( String(mono_floor(modulation_value*100)) + String("@") + String("%") );
 
                                 is_repaint_required = true;
                             }
@@ -418,7 +418,7 @@ void mono_ModulationSlider::refresh() noexcept
                         if( last_painted_value_slider_val != value )
                         {
                             last_painted_value_slider_val = value;
-                            slider_value->SET_VALUE_TO_PAINT( String(mono_floor(value/10)) );
+                            slider_value->SET_VALUE_TO_PAINT( String(mono_floor(value*100)) );
 
                             is_repaint_required = true;
                         }

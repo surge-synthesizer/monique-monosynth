@@ -225,7 +225,6 @@ NOINLINE ENVData::ENVData( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         2000,
-        20000,
         generate_param_name(ENV_NAME,id,"max_attack_t"),
         generate_short_human_name(ENV_NAME,id_,"max_attack_t")
     ),
@@ -242,7 +241,6 @@ NOINLINE ENVData::ENVData( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         250,
-        20000,
         generate_param_name(ENV_NAME,id,"max_decay_t"),
         generate_short_human_name(ENV_NAME,id_,"max_decay_t")
     ),
@@ -276,7 +274,6 @@ NOINLINE ENVData::ENVData( int id_ )
     (
         MIN_MAX( 100, 20000 ),
         4000,
-        20000,
         generate_param_name(ENV_NAME,id,"max_release_t"),
         generate_short_human_name(ENV_NAME,id_,"max_release_t")
     )

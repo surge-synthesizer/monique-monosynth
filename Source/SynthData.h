@@ -260,13 +260,13 @@ struct ENVData
     const int id;
 
     Parameter attack;
-    Parameter max_attack_time;
+    IntParameter max_attack_time;
     Parameter decay;
-    Parameter max_decay_time;
+    IntParameter max_decay_time;
     Parameter sustain;
     Parameter sustain_time;
     Parameter release;
-    Parameter max_release_time;
+    IntParameter max_release_time;
 
     inline const ENVData& operator=( const ENVData& other_ ) noexcept;
 

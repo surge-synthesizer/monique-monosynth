@@ -1891,7 +1891,7 @@ inline void ValueEnvelope::update( float end_value_,
 
     // CALC
     const float distance = end_value_-current_value;
-    samples_to_target_left = msToSamplesFast( time_sample_rate_factor_*1000, sample_rate );
+    samples_to_target_left = msToSamplesFast( time_sample_rate_factor_, sample_rate );
     if( samples_to_target_left > 0 )
     {
         delta = distance / samples_to_target_left;

@@ -893,7 +893,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = attack->get_value() * max_attack_time->get_value() * 1000;
+        float value = attack->get_value() * max_attack_time->get_value();
         if( value < 100 )
             return String(round01(value));
         else
@@ -1013,7 +1013,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = decay->get_value() * max_decay_time->get_value() * 1000;
+        float value = decay->get_value() * max_decay_time->get_value();
         if( value < 0 )
             return "OFF";
         else if( value < 100 )
@@ -1253,7 +1253,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain_time->get_value() * 8.0f * 1000;
+        float value = sustain_time->get_value() * 8.0f;
         if( value < 100 )
             return String(round01(value));
         else if( value == 8000 )
@@ -1377,7 +1377,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = release->get_value() * max_release_time->get_value() * 1000;
+        float value = release->get_value() * max_release_time->get_value();
         if( value < 100 )
             return String(round01(value));
         else
