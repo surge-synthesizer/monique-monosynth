@@ -4,15 +4,22 @@
 #include "App_h_includer.h"
 #include "mono_AudioDeviceManager.h"
 
-// ********************************************************************************************
-// ********************************************************************************************
-// ********************************************************************************************
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class SynthData;
 class SegmentedMeter;
-class MONOVoice;
+class MoniqueSynthesiserVoice;
 class DATAINProcessor;
-template<typename,int>
-class CircularBuffer;
+
+template<typename,int> class CircularBuffer;
 #define type_CLOCK_SMOTH_BUFFER CircularBuffer< double, 12 >
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -41,7 +48,7 @@ public:
     void trigger_send_clear_feedback() noexcept override;
 
     /// PROCESS
-    AudioPlayHead::CurrentPositionInfo current_pos_info;
+    // ==============================================================================
 private:
     DATAINProcessor* data_in_processor;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
@@ -105,20 +112,20 @@ public:
 private:
     Array< MidiMessage > user_keyboard_messages;
     virtual void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) {
-        synth.noteOn( midiChannel,midiNoteNumber,velocity );
+        synth->noteOn( midiChannel,midiNoteNumber,velocity );
     }
     virtual void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) {
-        synth.noteOff( midiChannel,midiNoteNumber,0, true );
+        synth->noteOff( midiChannel,midiNoteNumber,0, true );
     }
 
 public:
     // TODO privates!!!:
-    AudioPlayHead::CurrentPositionInfo pos;
+    AudioPlayHead::CurrentPositionInfo current_pos_info;
 
     // SYNTH
-    MONOVoice* voice;
-    ScopedPointer<SynthData> synth_data;
-    Synthesiser synth;
+    SynthData* synth_data;
+    MoniqueSynthesiserVoice* voice;
+    Synthesiser* synth;
 
     SegmentedMeter* peak_meter;
     bool repaint_peak_meter;

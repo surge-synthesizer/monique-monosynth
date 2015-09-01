@@ -1,110 +1,29 @@
-/*
-  ==============================================================================
-
-    Synth.h
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #ifndef MONOSYNTH___H_INCLUDED
 #define MONOSYNTH___H_INCLUDED
 
 #include "App_h_includer.h"
-#include "SynthData.h"
-
-float hidden_function_for_test_in_main(float x);
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float soft_clipping( float input_and_worker_ )
+class MoniqueSynthesiserSound : public SynthesiserSound
 {
-    //sample_ -= (sample_*sample_*sample_)/3.0f;
-    input_and_worker_ = (std::atan(input_and_worker_)/float_Pi)*2;
-
-    // TODO can be done by float vector
-    /*
-    if( input_and_worker_ > 1 )
-        input_and_worker_ = 1;
-    else if( input_and_worker_ < -1 )
-        input_and_worker_ = -1;
-    */
-
-    return input_and_worker_;
-}
-
-static inline float wave_mixer_v2( float s_, float s2_ ) noexcept
-{
-    if ((s_ > 0) && (s2_ > 0))
-    {
-        s_ += (s2_ - (s_ * s2_));
-    }
-    else if ((s_ < 0) && (s2_ < 0))
-    {
-        s_ += (s2_ + (s_ * s2_));
-    }
-    else
-    {
-        s_ += s2_;
-    }
-
-    return s_;
-}
-
-static inline float sample_mixer_v2( float s_, float s2_ ) noexcept
-{
-    return s_ + s2_;
-}
-
-static inline void final_mix( float* dest_buffer,
-                              float* s1_buffer,
-                              float* s2_buffer,
-                              int num_samples_ )
-{
-    for( int i = 0 ; i != num_samples_ ; ++ i )
-        dest_buffer[i] = soft_clipping(s1_buffer[i]+s2_buffer[i]);
-}
-static inline void final_mix( float* dest_buffer,
-                              float* s1_buffer,
-                              int num_samples_ )
-{
-    for( int i = 0 ; i != num_samples_ ; ++ i )
-        dest_buffer[i] = soft_clipping(s1_buffer[i]);
-}
-
-static inline float sample_mixer_v2( float* target_buffer,
-                                     const float* s1_buffer,
-                                     const float* s2_buffer,
-                                     int num_samples_ ) {
-    for( int i = 0 ; i != num_samples_ ; ++ i )
-        target_buffer[i] = sample_mixer_v2(s1_buffer[i],s2_buffer[i]);
-
-    return 0;
-}
-
-#define RUNTIME_CLASS_ID -1
-
-
-
-//==============================================================================
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#include "PluginProcessor.h"
-class MonoSynthSound : public SynthesiserSound {
     bool appliesToNote (int /*midiNoteNumber*/) override;
     bool appliesToChannel (int /*midiChannel*/) override;
 public:
-    NOINLINE MonoSynthSound();
-    NOINLINE ~MonoSynthSound();
+    NOINLINE MoniqueSynthesiserSound();
+    NOINLINE ~MoniqueSynthesiserSound();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonoSynthSound)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserSound)
 };
 
 //==============================================================================
-#define PERFORMANCE_TEST
+//==============================================================================
+//==============================================================================
+class MoniqueAudioProcessor;
+
+class SynthData;
+class RuntimeInfo;
 class LFO;
 class OSC;
 class ENV;
@@ -113,61 +32,59 @@ class EQProcessor;
 class FXProcessor;
 class DataBuffer;
 class ArpSequencer;
-class mono_AmpPainter;
-class MONOVoice : public SynthesiserVoice
+
+class MoniqueSynthesiserVoice : public SynthesiserVoice
 {
-    RuntimeInfo info;
-
+    //==============================================================================
     MoniqueAudioProcessor*const audio_processor;
-// TODO VELOCITY GLIDE
-//==============================================================================
-    SynthData& synth_data;
+    SynthData*const synth_data;
+    
+    //==============================================================================
+    RuntimeInfo*const info;
+    DataBuffer*const data_buffer;
 
-    ScopedPointer<DataBuffer> data_buffer;
-
-    OwnedArray< OSC > oscs;
-    OwnedArray< LFO > lfos;
-    ScopedPointer<ArpSequencer> arp_sequencer;
     friend class mono_ParameterOwnerStore;
-    OwnedArray< FilterProcessor > filter_processors;
-    ScopedPointer< EQProcessor > eq_processor;
-    ScopedPointer< FXProcessor > fx_processor;
-    OwnedArray< ENV > filter_envs;
+    ArpSequencer*const arp_sequencer;
+    EQProcessor*const eq_processor;
+    FXProcessor*const fx_processor;
+    
+    //==============================================================================
+    OSC** oscs;
+    LFO** lfos;
+    FilterProcessor** filter_processors;
+    ENV** filter_envs;
 
+    //==============================================================================
     bool is_stopped;
     bool was_arp_started;
     int current_note;
     float current_velocity;
     int current_step;
 
-    void renderNextBlock ( AudioSampleBuffer&, int startSample, int numSamples) override;
-    void render_block ( AudioSampleBuffer&, int step_number_, int startSample, int numSamples);
+    //==============================================================================
+    void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
+    void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
     void release_if_inactive() noexcept;
-    bool is_active() const noexcept;
 
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void start_internal( int midiNoteNumber, float velocity ) noexcept;
-
-    void noteOff();
-    void stopNote (float, bool allowTailOff) override;
-
+    void stopNote(float, bool allowTailOff) override;
     int getCurrentlyPlayingNote() const noexcept override;
-
     void pitchWheelMoved (int /*newValue*/) override;
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override;
 
-    //==============================================================================
 public:
+    //==============================================================================
     // UI INFOS
     float get_filter_env_amp( int filter_id_ ) const noexcept;
     float get_lfo_amp( int lfo_id_ ) const noexcept;
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
 
-    NOINLINE MONOVoice( MoniqueAudioProcessor*const audio_processor_ );
-    NOINLINE ~MONOVoice();
+    NOINLINE MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, SynthData*const synth_data_ ) noexcept;
+    NOINLINE ~MoniqueSynthesiserVoice() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MONOVoice)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)
 };
 
 #endif

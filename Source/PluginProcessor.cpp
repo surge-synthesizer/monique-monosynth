@@ -175,12 +175,13 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 
+	synth = new Synthesiser();
         synth_data = new SynthData(MASTER);
 
 #ifdef IS_PLUGIN
-        voice = new MONOVoice(this);
-        synth.addVoice (voice);
-        synth.addSound (new MonoSynthSound());
+        voice = new MONOVoice(this,synth_data);
+        synth->addVoice (voice);
+        synth->addSound (new MonoSynthSound());
         data_in_processor = new DATAINProcessor();
 #endif
 
@@ -198,14 +199,38 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     }
 }
 
+// ----------------------------------------------------
+MoniqueAudioProcessor::~MoniqueAudioProcessor()
+{
+    trigger_send_clear_feedback();
+    stop_midi_devices();
+
+#ifdef IS_STANDALONE
+    closeAudioDevice();
+    removeAudioCallback (&player);
+    player.setProcessor(nullptr);
+
+    synth_data->save_session();
+#endif
+    mono_AudioDeviceManager::save();
+    synth_data->save_midi();
+
+    delete data_in_processor;
+
+    AppInstanceStore::getInstance()->audio_processor = nullptr;
+
+    delete synth;
+    delete synth_data;
+}
+
 #ifdef IS_STANDALONE
 void MoniqueAudioProcessor::init_audio()
 {
     std::cout << "MONIQUE: init core" << std::endl;
     {
-        voice = new MONOVoice(this);
-        synth.addVoice (voice);
-        synth.addSound (new MonoSynthSound());
+        voice = new MoniqueSynthesiserVoice(this,synth_data);
+        synth->addVoice (voice);
+        synth->addSound (new MoniqueSynthesiserSound());
         data_in_processor = new DATAINProcessor();
         synth_data->load_session ();
     }
@@ -299,7 +324,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 
 #ifdef IS_STANDALONE
     static bool is_first_time = true;
-    if(is_first_time) {
+    if(is_first_time)
+    {
         current_pos_info.resetToDefault();
         is_first_time=false;
     }
@@ -309,18 +335,13 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
     current_pos_info.isPlaying = true;
     current_pos_info.isRecording = false;
     current_pos_info.timeInSamples += buffer_.getNumSamples();
-
-    pos = current_pos_info;
-#else
-    if ( getPlayHead() != 0 )
-#endif
     {
-#ifdef IS_PLUGIN
-        if( getPlayHead()->getCurrentPosition ( pos ) )
-#endif
         {
-#ifdef IS_PLUGIN
-            current_pos_info = pos;
+#else // PLUGIN
+    if ( getPlayHead() != 0 )
+    {
+        if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
+        {
 #endif
             if( current_pos_info.timeInSamples + num_samples >= 0 && current_pos_info.isPlaying )
             {
@@ -437,7 +458,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 AppInstanceStore::getInstance()->lock_amp_painter();
                 {
                     // RENDER SYNTH
-                    synth.renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
+                    synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
 
                     // VISUALIZE
@@ -480,7 +501,7 @@ void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
     // TODO replace audio sample buffer??
     DATA(data_buffer).resize_buffer_if_required(block_size_);
     data_in_processor->messageCollector.reset(sampleRate);
-    synth.setCurrentPlaybackSampleRate (sampleRate);
+    synth->setCurrentPlaybackSampleRate (sampleRate);
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
 }
@@ -493,11 +514,11 @@ void MoniqueAudioProcessor::reset() {
 // ********************************************************************************************
 // ********************************************************************************************
 // ********************************************************************************************
-int MoniqueAudioProcessor::getNumParameters() 
+int MoniqueAudioProcessor::getNumParameters()
 {
     return synth_data->get_atomateable_parameters().size();
 }
-bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const 
+bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const
 {
     return true;
 }
@@ -631,32 +652,15 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ ) {
 bool MoniqueAudioProcessor::hasEditor() const {
     return true;
 }
-AudioProcessorEditor* MoniqueAudioProcessor::createEditor() {
-    return new UiEditorSynthLite ();
+AudioProcessorEditor* MoniqueAudioProcessor::createEditor() 
+{
+    return new UiEditorSynthLite();
 }
 
-AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
+AudioProcessor* JUCE_CALLTYPE createPluginFilter() 
+{
     return new MoniqueAudioProcessor();
 }
 
-// ----------------------------------------------------
-MoniqueAudioProcessor::~MoniqueAudioProcessor()
-{
-    trigger_send_clear_feedback();
-    stop_midi_devices();
 
-#ifdef IS_STANDALONE
-    closeAudioDevice();
-    removeAudioCallback (&player);
-    player.setProcessor(nullptr);
-
-    synth_data->save_session();
-#endif
-    mono_AudioDeviceManager::save();
-    synth_data->save_midi();
-
-    delete data_in_processor;
-
-    AppInstanceStore::getInstance()->audio_processor = nullptr;
-}
 

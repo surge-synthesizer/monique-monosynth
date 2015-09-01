@@ -998,7 +998,7 @@ private:
 // ==============================================================================
 // ==============================================================================
 class ENV;
-class MONOVoice;
+class MoniqueSynthesiserVoice;
 class DataBuffer;
 class mono_ParameterOwnerStore : public DeletedAtShutdown {
 
@@ -1022,7 +1022,7 @@ public:
     ENVPresetData* ui_env_preset_data;
     ENV* ui_env;
 
-    MONOVoice* voice;
+    MoniqueSynthesiserVoice* voice;
 
     static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ );
     static float get_flt_input_env_amp( int flt_id_, int input_id_ );

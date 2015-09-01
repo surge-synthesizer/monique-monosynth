@@ -12,8 +12,6 @@
 #include "SynthData.h"
 #include "PluginProcessor.h"
 
-
-// TODO NOINLINE
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -59,8 +57,12 @@ NOINLINE ParameterInfo::~ParameterInfo() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept :
-current_modulation_amount(0), timeChanger(nullptr) {}
+NOINLINE ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
+:
+current_modulation_amount(0),
+timeChanger(nullptr)
+{}
+
 NOINLINE ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
 {
     if( timeChanger )
@@ -349,12 +351,7 @@ inline void ChangeParamOverTime::change() noexcept
 //==============================================================================
 //==============================================================================
 
-
-
-
 // ==============================================================================
-
-
 MIDIControl::MIDIControl(Parameter*const owner_): is_in_ctrl_mode(false), owner(owner_) {
     midi_number = -1;
     listen_type = NOT_SET;

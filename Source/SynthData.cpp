@@ -19,7 +19,9 @@ NOINLINE RuntimeInfo::RuntimeInfo()
 
     is_extern_synced(false),
     clock_counter(0)
-{}
+{
+    std::cout << "MONIQUE: init RTI" << std::endl;
+}
 NOINLINE RuntimeInfo::~RuntimeInfo() {}
 
 //==============================================================================
@@ -2460,12 +2462,12 @@ NOINLINE void SynthData::MorphGroup::register_switch_parameter( BoolParameter* p
         param_->register_listener(this);
 }
 NOINLINE void SynthData::MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) {
-  /* 
-  switch_int_params.add( param_ );
+    /*
+    switch_int_params.add( param_ );
 
-    if( is_master_ )
-        param_->register_listener(this);
-    */
+      if( is_master_ )
+          param_->register_listener(this);
+      */
 }
 
 NOINLINE void SynthData::MorphGroup::set_sources( SynthData* left_source_,

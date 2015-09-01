@@ -1024,8 +1024,8 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     _app_instance_store->audio_processor->peak_meter = volume_master_meter;
 
-    voice = reinterpret_cast< MONOVoice* >( _app_instance_store->audio_processor->synth.getVoice(0) );
-    synth_data = _app_instance_store->audio_processor->synth_data.get();
+    voice = reinterpret_cast< MoniqueSynthesiserVoice* >( _app_instance_store->audio_processor->synth->getVoice(0) );
+    synth_data = _app_instance_store->audio_processor->synth_data;
     last_ctrl_mode = synth_data->ctrl = false;
 
     last_shuffle = -1;

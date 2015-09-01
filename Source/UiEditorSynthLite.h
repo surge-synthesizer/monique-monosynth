@@ -29,7 +29,7 @@ class UiEditorMIDIIO;
 class UiEditorMorph;
 class UiEditorSettings;
 class UiEditorGlobalSettings;
-class MONOVoice;
+class MoniqueSynthesiserVoice;
 class SynthData;
 class SegmentedMeter;
 class MIDIControl;
@@ -60,7 +60,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     AppInstanceStore*const _app_instance_store;
-    MONOVoice*voice;
+    MoniqueSynthesiserVoice*voice;
     SynthData* synth_data;
 
     ScopedPointer<UiEditorSynthLitePopup> popup;
