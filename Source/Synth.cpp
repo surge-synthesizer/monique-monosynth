@@ -52,7 +52,7 @@ NOINLINE mono_ExecuterThread::~mono_ExecuterThread() {}
 //==============================================================================
 class mono_ThreadManager
 {
-    OwnedArray< mono_ExecuterThread > threads;
+    Array< mono_ExecuterThread* > threads;
     CriticalSection cs;
 
     friend class mono_Thread;
@@ -65,7 +65,7 @@ class mono_ThreadManager
             {
                 for( int i = 0 ; i < num_threads ; ++i )
                 {
-                    mono_ExecuterThread*thread( threads.getUnchecked(i) );
+                    mono_ExecuterThread*thread( threads[i] );
                     if( ! thread->isThreadRunning() )
                     {
                         thread->executeable = executer_;
@@ -98,8 +98,14 @@ mono_ThreadManager::mono_ThreadManager()
         thread->setPriority(10);
         threads.add( thread );
     }
+    threads.minimiseStorageOverheads();
 }
-mono_ThreadManager::~mono_ThreadManager() {
+mono_ThreadManager::~mono_ThreadManager()
+{
+    for( int i = 0 ; i < THREAD_LIMIT ; ++i )
+    {
+        delete threads[i];
+    }
     clearSingletonInstance();
 }
 //==============================================================================
@@ -3776,7 +3782,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             Array<BandExecuter*> copy_of_running_thereads = running_threads;
             for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
             {
-                BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
+                BandExecuter* executer( copy_of_running_thereads[i] );
                 if( not executer->isWorking() )
                 {
                     running_threads.removeFirstMatchingValue(executer);
