@@ -573,11 +573,11 @@ state
     def_->release_2.register_listener( this );
     def_->release_3.register_listener( this );
     def_->release_4.register_listener( this );
-    
+
     max_release_time.set_value_without_notification( 10000 );
     max_decay_time.set_value_without_notification( 10000 );
     max_release_time.set_value_without_notification( 10000 );
-    
+
     update_adr_values();
 }
 NOINLINE ENVPresetData::~ENVPresetData() noexcept
@@ -611,6 +611,51 @@ static inline void copy( ENVPresetData* dest_, const ENVPresetData* src_ ) noexc
 static inline void collect_saveable_parameters( ENVPresetData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->state );
+}
+
+//==============================================================================
+void ENVPresetData::parameter_value_changed( Parameter* ) noexcept
+{
+    update_adr_values();
+}
+void ENVPresetData::parameter_value_changed_always_notification( Parameter* ) noexcept
+{
+    update_adr_values();
+}
+void ENVPresetData::update_adr_values() noexcept
+{
+    const float value = state;
+    if( value < 1 )
+    {
+        float factor = 1.0f/1.0f * value;
+
+        attack.set_value_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
+        decay.set_value_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
+        release.set_value_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
+    }
+    else if( value < 2 )
+    {
+        float factor = 1.0f/1.0f * (value-1.0f);
+
+        attack.set_value_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
+        decay.set_value_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
+        release.set_value_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
+    }
+    else if( value <= 3 )
+    {
+        float factor = 1.0f/1.0f * (value-2.0f);
+
+        attack.set_value_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
+        decay.set_value_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
+        sustain_time.set_value_without_notification( def->sustain_time_4*( 1.0f-factor ) + def->sustain_time_4 * factor );
+        release.set_value_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
+    }
+}
+void ENVPresetData::parameter_value_on_load_changed( Parameter* ) noexcept
+{
+    parameter_value_changed(nullptr);
 }
 
 //==============================================================================
@@ -690,55 +735,12 @@ float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) no
         return def_.release_3*( 1.0f-factor ) + def_.release_4 * factor;
     }
 }
-void ENVPresetData::parameter_value_changed( Parameter* ) noexcept
-{
-    update_adr_values();
-}
-void ENVPresetData::parameter_value_changed_always_notification( Parameter* ) noexcept
-{
-    update_adr_values();
-}
-void ENVPresetData::update_adr_values() noexcept
-{
-    const float value = state;
-    if( value < 1 )
-    {
-        float factor = 1.0f/1.0f * value;
-
-        attack.set_value_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
-        decay.set_value_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
-        release.set_value_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
-    }
-    else if( value < 2 )
-    {
-        float factor = 1.0f/1.0f * (value-1.0f);
-
-        attack.set_value_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
-        decay.set_value_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
-        release.set_value_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
-    }
-    else if( value <= 3 )
-    {
-        float factor = 1.0f/1.0f * (value-2.0f);
-
-        attack.set_value_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
-        decay.set_value_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_4*( 1.0f-factor ) + def->sustain_time_4 * factor );
-        release.set_value_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
-    }
-}
-void ENVPresetData::parameter_value_on_load_changed( Parameter* ) noexcept
-{
-    parameter_value_changed(nullptr);
-}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 #define FILTER_NAME "FLT"
-NOINLINE FilterData::FilterData( int id_, Array<ENVData*>& input_env_datas_  ) noexcept
+NOINLINE FilterData::FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept
 :
 // ----
 filter_type
@@ -845,28 +847,6 @@ modulate_gain
 ),
 
 // ----
-input_env_datas( input_env_datas_ ),
-input_sustains
-(
-    SUM_INPUTS_PER_FILTER,
-
-    MIN_MAX( -1, 1 ),
-    0,
-    2000,
-
-    FILTER_NAME,id_,
-    "input_sustain","in_sustain",true
-),
-input_holds
-(
-    SUM_INPUTS_PER_FILTER,
-
-    true,
-
-    FILTER_NAME,id_,
-    "input_hold","in_fix_sus",true
-),
-// ----
 compressor
 (
     MIN_MAX( -1, 1 ),
@@ -899,10 +879,39 @@ modulate_output
     generate_short_human_name(FILTER_NAME,id_,"mod_volume")
 ),
 
+// ----
+input_sustains
+(
+    SUM_INPUTS_PER_FILTER,
+
+    MIN_MAX( -1, 1 ),
+    0,
+    2000,
+
+    FILTER_NAME,id_,
+    "input_sustain","in_sustain",true
+),
+input_holds
+(
+    SUM_INPUTS_PER_FILTER,
+
+    true,
+
+    FILTER_NAME,id_,
+    "input_hold","in_fix_sus",true
+),
+
+// ----
+input_env_datas( /* INIT IN BODY */ ),
 env_data( new ENVData( id_ ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
+    {
+        ENVPresetData*preset_data = new ENVPresetData( i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET, env_preset_def_ );
+        input_env_datas.add( preset_data );
+
         input_sustains[i].register_always_listener(this);
+    }
 }
 
 NOINLINE FilterData::~FilterData() noexcept
@@ -910,7 +919,9 @@ NOINLINE FilterData::~FilterData() noexcept
     delete env_data;
 
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
+    {
         input_sustains[i].remove_listener(this);
+    }
 }
 
 //==============================================================================
@@ -938,7 +949,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_env_datas.getUnchecked(i), src_->input_env_datas.getUnchecked(i), false );
+        copy( dest_->input_env_datas.getUnchecked(i), src_->input_env_datas.getUnchecked(i) );
     }
 
     copy( dest_->env_data, src_->env_data, true );
@@ -967,7 +978,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
         params_.add( &data_->input_holds[i] );
         params_.add( &data_->input_sustains[i] );
 
-        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_, false );
+        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_ );
     }
 
     collect_saveable_parameters( data_->env_data, params_, true );
@@ -1715,45 +1726,34 @@ current_bank(0)
     }
     lfo_datas.minimiseStorageOverheads();
 
-
-
-
-
-
-
-
-
+    // FILTERS
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        Array< ENVData* > input_envs;
-        for( int j = 0 ; j != SUM_INPUTS_PER_FILTER ; ++j )
-        {
-            ENVPresetData* filter_env_data = new ENVPresetData( j+i*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET, env_preset_def );
-            if( data_type == MASTER )
-                mono_ParameterOwnerStore::getInstance()->filter_input_env_datas.add( filter_env_data );
-            filter_input_env_datas.add( filter_env_data );
-
-            input_envs.add( filter_env_data );
-        }
-
-        FilterData* filter_data = new FilterData(i,input_envs);
-        if( data_type == MASTER )
-            mono_ParameterOwnerStore::getInstance()->filter_datas.add( filter_data );
+        FilterData* filter_data = new FilterData(i,env_preset_def);
         filter_datas.add( filter_data );
+
+        if( data_type == MASTER )
+        {
+            mono_ParameterOwnerStore::getInstance()->filter_datas.add( filter_data );
+            mono_ParameterOwnerStore::getInstance()->filter_datas.minimiseStorageOverheads();
+        }
     }
+    filter_datas.minimiseStorageOverheads();
 
-
+    // MORPH STUFF
     init_morph_groups( data_type );
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
     {
         morhp_states[morpher_id].register_listener(this);
     }
     linear_morhp_state.register_listener(this);
-
+    
+    // FILE HANDLING
     colect_saveable_parameters();
-
     if( data_type == MASTER )
+    {
         refresh_banks_and_programms();
+    }
 }
 NOINLINE SynthData::~SynthData() noexcept
 {
@@ -1764,7 +1764,6 @@ NOINLINE SynthData::~SynthData() noexcept
 
     lfo_datas.clear();
     osc_datas.clear();
-    filter_input_env_datas.clear();
     filter_datas.clear();
 
     // AS LAST!! unregister listeners
@@ -2009,11 +2008,9 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_1.register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
                 morph_group_filter_1.register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_filter_1.register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_1.register_parameter( filter_input_env_datas[input_id+0*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_1.register_parameter( filter_datas[0]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
                     morph_group_filter_1.register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2023,9 +2020,7 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_filter_1.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
@@ -2059,11 +2054,9 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_2.register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
                 morph_group_filter_2.register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_filter_2.register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_2.register_parameter( filter_input_env_datas[input_id+1*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_2.register_parameter( filter_datas[1]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
                     morph_group_filter_2.register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2073,9 +2066,7 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_filter_2.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
@@ -2109,11 +2100,9 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_3.register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
                 morph_group_filter_3.register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_filter_3.register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_3.register_parameter( filter_input_env_datas[input_id+2*SUM_INPUTS_PER_FILTER]->state.ptr(), data_type == MASTER  );
+                    morph_group_filter_3.register_parameter( filter_datas[2]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
                     morph_group_filter_3.register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2123,9 +2112,7 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
-                for( int input_id = 0 ;
-                input_id != SUM_INPUTS_PER_FILTER ;
-                ++input_id )
+                for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_filter_3.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
@@ -2152,9 +2139,8 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_groups.add( &morph_group_eq );
             morph_group_eq.set_id( EQ );
 
-            for( int band_id = 0 ;
-            band_id != SUM_EQ_BANDS ;
-            ++band_id ) {
+            for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+            {
                 morph_group_eq.register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
                 morph_group_eq.register_parameter( eq_data->env_datas[band_id]->state.ptr(), data_type == MASTER  );
 
@@ -2188,9 +2174,8 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_groups.add( &morph_group_arp_tune );
                 morph_group_arp_tune.set_id( ARP_TUNE );
 
-                for( int step_id = 0 ;
-                step_id != SUM_ENV_ARP_STEPS ;
-                ++step_id ) {
+                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
+                {
                     morph_group_arp_tune.register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
                 }
             }
@@ -2199,9 +2184,8 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_groups.add( &morph_group_arp_velocity );
                 morph_group_arp_velocity.set_id( ARP_VELOCITY );
 
-                for( int step_id = 0 ;
-                step_id != SUM_ENV_ARP_STEPS ;
-                ++step_id ) {
+                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
+                {
                     morph_group_arp_velocity.register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
                 }
             }
@@ -2229,6 +2213,7 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             }
         }
     }
+    morph_groups.minimiseStorageOverheads();
 
     // MAKE IT HOT
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
@@ -2252,6 +2237,9 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             activate_morph_selection( 3, ARP );
         }
     }
+    left_morph_datas.minimiseStorageOverheads();
+    right_morph_datas.minimiseStorageOverheads();
+    morpher_selections.minimiseStorageOverheads();
 }
 
 void SynthData::MorpherSelection::activate(SynthData::MORPH_SELCTIONS_IDS id_, OwnedArray< MorpherSelection >& peers_) {

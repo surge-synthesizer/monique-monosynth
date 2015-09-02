@@ -2975,7 +2975,7 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
-        input_envs.add( new ENV( synth_data_, GET_DATA_PTR( filter_input_env_datas[i + SUM_INPUTS_PER_FILTER * id_] ) ) );
+        input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_env_datas[i] ) );
     }
 }
 NOINLINE FilterProcessor::~FilterProcessor() {}

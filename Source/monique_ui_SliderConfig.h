@@ -666,7 +666,7 @@ public:
         filter_id( filter_id_ ),
         input_id( input_id_ ),
         input_sustain( &(GET_DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
-        state( &(GET_DATA(filter_input_env_datas[input_id_ + SUM_INPUTS_PER_FILTER*filter_id_]).state) ),
+        state( &(GET_DATA(filter_datas[filter_id_]).input_env_datas[input_id_]->state ) ),
         input_hold( &(GET_DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
 
         bottom_text( String("OSC ") + String(input_id_+1) ),

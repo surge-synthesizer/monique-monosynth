@@ -204,7 +204,6 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeInfo)
 };
 
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -212,11 +211,6 @@ private:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#define COPY_FROM_OTHER( value ) value = other_.value; // TODO delete
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -322,12 +316,8 @@ struct ENVPresetData : public ENVData, ParameterListener
 
     Parameter state;
 
-    static float get_attack_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_decay_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_sustain_time_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_release_at( const ENVPresetDef& def_, float state_ ) noexcept;
-
 private:
+    //==========================================================================
     void parameter_value_changed( Parameter* ) noexcept override;
     void parameter_value_changed_always_notification( Parameter* ) noexcept override;
     void update_adr_values() noexcept;
@@ -339,6 +329,12 @@ public:
     NOINLINE ~ENVPresetData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVPresetData)
+
+    //==========================================================================
+    static float get_attack_at( const ENVPresetDef& def_, float state_ ) noexcept;
+    static float get_decay_at( const ENVPresetDef& def_, float state_ ) noexcept;
+    static float get_sustain_time_at( const ENVPresetDef& def_, float state_ ) noexcept;
+    static float get_release_at( const ENVPresetDef& def_, float state_ ) noexcept;
 };
 
 //==============================================================================
@@ -364,15 +360,16 @@ struct FilterData : ParameterListener
     ModulatedParameter gain;
     BoolParameter modulate_gain;
 
-    Array<ENVData*> input_env_datas;
-    ArrayOfParameters input_sustains;
-    ArrayOfBoolParameters input_holds;
 
     Parameter compressor;
     ModulatedParameter output;
     Parameter output_clipping;
     BoolParameter modulate_output;
-    
+
+    ArrayOfParameters input_sustains;
+    ArrayOfBoolParameters input_holds;
+    OwnedArray<ENVPresetData> input_env_datas;
+
     ENVData*const env_data;
 
 private:
@@ -383,7 +380,7 @@ private:
 
 public:
     //==========================================================================
-    NOINLINE FilterData( int id_, Array<ENVData*>& input_env_datas_ ) noexcept;
+    NOINLINE FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept;
     NOINLINE ~FilterData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
@@ -550,12 +547,11 @@ struct SynthData : ParameterListener
     BoolParameter animate_input_env;
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
-    
+
     ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
-    OwnedArray< ENVPresetData > filter_input_env_datas;
     ScopedPointer< ENVPresetDef > env_preset_def;
     OwnedArray< FilterData > filter_datas;
     ScopedPointer< EQData > eq_data;
@@ -618,7 +614,7 @@ private:
 
     // CONTAINS THE IDS OF THE MORPH SOURCES
 public:
-    enum MORPH_SELCTIONS_IDS 
+    enum MORPH_SELCTIONS_IDS
     {
         MAIN = 0,
         OSC_1,
@@ -643,7 +639,8 @@ public:
     };
 
 private:
-    class MorpherSelection {
+    class MorpherSelection
+    {
     public:
         Array< int > active_morph_selections;
 
@@ -827,7 +824,6 @@ public:
 
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
-    Array< ENVPresetData* > filter_input_env_datas;
     Array< FilterData* > filter_datas;
     ENVPresetDef* env_preset_def;
     EQData* eq_data;

@@ -20,6 +20,7 @@ CHANGES 0.5:
 - add select audio card and driver (standalone)
 - add: double click on the morph pad resets it to the center (center == all morph sliders set to zero or LEFT side)
 - fix: resize editors on main ui size change
+- chnaged the ADSR preset MAX times to 10s (10000ms) and removed the max sliders
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
