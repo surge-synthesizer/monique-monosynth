@@ -54,11 +54,13 @@ NOINLINE DragPad::~DragPad() {}
 //==============================================================================
 void DragPad::mouseDoubleClick (const MouseEvent&)
 {
-    const int morph_motor_time( DATA( synth_data ).morph_motor_time );
-    ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[0], 0, morph_motor_time );
-    ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[1], 0, morph_motor_time );
-    ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[2], 0, morph_motor_time );
-    ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[3], 0, morph_motor_time );
+    SynthData& synth_data( GET_DATA( synth_data ) );
+
+    const int morph_motor_time( synth_data.morph_motor_time );
+    ChangeParamOverTime::execute( synth_data.morhp_states[0], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data.morhp_states[1], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data.morhp_states[2], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data.morhp_states[3], 0, morph_motor_time );
 
     parent->set_left_to_right_states( 0.5f, 0.5f );
 }
@@ -99,7 +101,8 @@ void DragPad::mouseDrag(const MouseEvent& event)
     }
 
     {
-        const int morph_motor_time( DATA( synth_data ).morph_motor_time );
+        SynthData& synth_data( GET_DATA( synth_data ) );
+        const int morph_motor_time( synth_data.morph_motor_time );
 
         float morph_top_left = 1.0f-left2right_state-top2bottom_state;
         {
@@ -107,7 +110,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_top_left = 0;
             else if( morph_top_left > 1 )
                 morph_top_left = 1;
-            ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[0], morph_top_left, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data.morhp_states[0], morph_top_left, morph_motor_time );
         }
 
         float morph_top_right = left2right_state-top2bottom_state;
@@ -116,7 +119,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_top_right = 0;
             else if( morph_top_right > 1 )
                 morph_top_right = 1;
-            ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[1], morph_top_right, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data.morhp_states[1], morph_top_right, morph_motor_time );
         }
 
         float morph_bottom_left = top2bottom_state-left2right_state;
@@ -125,7 +128,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_bottom_left = 0;
             else if( morph_bottom_left > 1 )
                 morph_bottom_left = 1;
-            ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[2], morph_bottom_left, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data.morhp_states[2], morph_bottom_left, morph_motor_time );
         }
 
         float morph_bottom_right = top2bottom_state-(1.0f-left2right_state);
@@ -134,7 +137,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_bottom_right = 0;
             else if( morph_bottom_right > 1 )
                 morph_bottom_right = 1;
-            ChangeParamOverTime::execute( DATA( synth_data ).morhp_states[3], morph_bottom_right, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data.morhp_states[3], morph_bottom_right, morph_motor_time );
         }
 
         parent->set_left_to_right_states( left2right_state, top2bottom_state );

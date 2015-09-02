@@ -121,7 +121,7 @@ public:
 
     //==============================================================================
     /** Returns true if the thread is currently active */
-    bool isThreadRunning() const;
+    bool isThreadRunning() const noexcept;
 
     /** Sets a flag to tell the thread it should stop.
 
@@ -286,7 +286,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Thread)
 };
 
-inline bool Thread::isThreadRunning() const
+inline bool Thread::isThreadRunning() const noexcept
 {
     return threadHandle != nullptr;
 }

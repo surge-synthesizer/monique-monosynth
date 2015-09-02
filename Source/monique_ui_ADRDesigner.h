@@ -22,6 +22,8 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
+
+class ENVPresetDef;
 //[/Headers]
 
 
@@ -54,7 +56,8 @@ private:
 
     void refresh() noexcept override;
     Array< float > curve;
-
+    
+    ENVPresetDef* env_preset_def;
     //[/UserMethods]
 
     void paint (Graphics& g);

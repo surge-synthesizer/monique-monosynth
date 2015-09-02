@@ -280,7 +280,7 @@ void mono_AmpPainter::paint (Graphics& g)
             }
         };
 
-        SynthData& synth_data = DATA( synth_data );
+        SynthData& synth_data = GET_DATA( synth_data );
         const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
         const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
         const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
@@ -492,7 +492,7 @@ void mono_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == sl_show_range)
     {
         //[UserSliderCode_sl_show_range] -- add your slider handling code here..
-        DATA( synth_data ).osci_show_range = sl_show_range->getValue();
+        GET_DATA( synth_data ).osci_show_range = sl_show_range->getValue();
         //[/UserSliderCode_sl_show_range]
     }
 
@@ -508,73 +508,73 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == osc_1)
     {
         //[UserButtonCode_osc_1] -- add your button handler code here..
-        DATA( synth_data ).osci_show_osc_1 ^= true;
+        GET_DATA( synth_data ).osci_show_osc_1 ^= true;
         //[/UserButtonCode_osc_1]
     }
     else if (buttonThatWasClicked == osc_2)
     {
         //[UserButtonCode_osc_2] -- add your button handler code here..
-        DATA( synth_data ).osci_show_osc_2 ^= true;
+        GET_DATA( synth_data ).osci_show_osc_2 ^= true;
         //[/UserButtonCode_osc_2]
     }
     else if (buttonThatWasClicked == osc_3)
     {
         //[UserButtonCode_osc_3] -- add your button handler code here..
-        DATA( synth_data ).osci_show_osc_3 ^= true;
+        GET_DATA( synth_data ).osci_show_osc_3 ^= true;
         //[/UserButtonCode_osc_3]
     }
     else if (buttonThatWasClicked == eq)
     {
         //[UserButtonCode_eq] -- add your button handler code here..
-        DATA( synth_data ).osci_show_eq ^= true;
+        GET_DATA( synth_data ).osci_show_eq ^= true;
         //[/UserButtonCode_eq]
     }
     else if (buttonThatWasClicked == out)
     {
         //[UserButtonCode_out] -- add your button handler code here..
-        DATA( synth_data ).osci_show_out ^= true;
+        GET_DATA( synth_data ).osci_show_out ^= true;
         //[/UserButtonCode_out]
     }
     else if (buttonThatWasClicked == f_1)
     {
         //[UserButtonCode_f_1] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_1 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_1 ^= true;
         //[/UserButtonCode_f_1]
     }
     else if (buttonThatWasClicked == f_2)
     {
         //[UserButtonCode_f_2] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_2 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_2 ^= true;
         //[/UserButtonCode_f_2]
     }
     else if (buttonThatWasClicked == f_3)
     {
         //[UserButtonCode_f_3] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_3 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_3 ^= true;
         //[/UserButtonCode_f_3]
     }
     else if (buttonThatWasClicked == f_env_1)
     {
         //[UserButtonCode_f_env_1] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_env_1 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_env_1 ^= true;
         //[/UserButtonCode_f_env_1]
     }
     else if (buttonThatWasClicked == f_env_2)
     {
         //[UserButtonCode_f_env_2] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_env_2 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_env_2 ^= true;
         //[/UserButtonCode_f_env_2]
     }
     else if (buttonThatWasClicked == f_env_3)
     {
         //[UserButtonCode_f_env_3] -- add your button handler code here..
-        DATA( synth_data ).osci_show_flt_env_3 ^= true;
+        GET_DATA( synth_data ).osci_show_flt_env_3 ^= true;
         //[/UserButtonCode_f_env_3]
     }
     else if (buttonThatWasClicked == out_env)
     {
         //[UserButtonCode_out_env] -- add your button handler code here..
-        DATA( synth_data ).osci_show_out_env ^= true;
+        GET_DATA( synth_data ).osci_show_out_env ^= true;
         //[/UserButtonCode_out_env]
     }
 
@@ -600,7 +600,7 @@ void mono_AmpPainter::refresh_buttons()
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
-    SynthData& synth_data = DATA( synth_data );
+    SynthData& synth_data = GET_DATA( synth_data );
 
     sl_show_range->setValue(synth_data.osci_show_range, dontSendNotification );
 

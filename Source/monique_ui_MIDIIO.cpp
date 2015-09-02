@@ -202,7 +202,7 @@ UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manag
             comp->setOpaque(true);
     }
 
-    slider_midi_pickup->setValue( DATA(synth_data).midi_pickup_offset*1000, dontSendNotification );
+    slider_midi_pickup->setValue( GET_DATA(synth_data).midi_pickup_offset*1000, dontSendNotification );
     refresh();
 
     has_grabbed_focus = false;
@@ -387,7 +387,7 @@ void UiEditorMIDIIO::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_midi_pickup)
     {
         //[UserSliderCode_slider_midi_pickup] -- add your slider handling code here..
-        DATA(synth_data).midi_pickup_offset = slider_midi_pickup->getValue()/1000;
+        GET_DATA(synth_data).midi_pickup_offset = slider_midi_pickup->getValue()/1000;
         //[/UserSliderCode_slider_midi_pickup]
     }
 

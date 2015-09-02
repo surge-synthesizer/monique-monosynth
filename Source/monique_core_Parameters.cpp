@@ -387,7 +387,7 @@ bool MIDIControl::is_listen_to( MidiMessage& message_ ) const noexcept {
 }
 bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) noexcept {
     bool success = false;
-    const float pickup = DATA( synth_data ).midi_pickup_offset;
+    const float pickup = GET_DATA( synth_data ).midi_pickup_offset;
     if( input_message_.isController() && listen_type == CC ) {
         if( midi_number == input_message_.getControllerNumber() ) {
             if( input_message_.getChannel() == channel ) {
@@ -572,7 +572,7 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
     const bool is_ctrl_version_of = is_ctrl_version_of_name != "";
     if( type_of( param_ ) == IS_BOOL )
     {
-        bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || &(DATA( synth_data ).ctrl) == param_ );
+        bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || &(GET_DATA( synth_data ).ctrl) == param_ );
         if( do_send )
             send_standard_feedback();
     }

@@ -135,9 +135,9 @@ class WAVESlConfig : public ModulationSliderConfigBase
 public:
     WAVESlConfig( int id_ )
         :
-        wave( &(DATA(osc_datas[id_]).wave) ),
-        fm_amount( &(DATA(osc_datas[id_]).fm_amount) ),
-        top_parameter( id_ == 0 ? &(DATA(osc_datas[id_]).mod_off) : &(DATA(osc_datas[id_]).sync) ),
+        wave( &(GET_DATA(osc_datas[id_]).wave) ),
+        fm_amount( &(GET_DATA(osc_datas[id_]).fm_amount) ),
+        top_parameter( id_ == 0 ? &(GET_DATA(osc_datas[id_]).mod_off) : &(GET_DATA(osc_datas[id_]).sync) ),
         top_text( id_ == 0 ? "MOD OFF" : "SYNC" )
     {}
 
@@ -268,8 +268,8 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( int id_ )
         :
-        octave( &(DATA(osc_datas[id_]).octave) ),
-        is_lfo_modulated( &(DATA(osc_datas[id_]).is_lfo_modulated ) ),
+        octave( &(GET_DATA(osc_datas[id_]).octave) ),
+        is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
         top_text( String("LFO ") + String(id_+1) ),
         bottom_text( String("OSC ") + String(id_+1) )
     {}
@@ -390,9 +390,9 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig()
         :
-        fm_multi( &(DATA(osc_datas[0]).fm_multi) ),
-        fm_swing( &(DATA(osc_datas[0]).fm_swing) ),
-        sync( &(DATA(osc_datas[0]).sync) )
+        fm_multi( &(GET_DATA(osc_datas[0]).fm_multi) ),
+        fm_swing( &(GET_DATA(osc_datas[0]).fm_swing) ),
+        sync( &(GET_DATA(osc_datas[0]).sync) )
     {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
@@ -514,9 +514,9 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig()
         :
-        puls_width( &(DATA(osc_datas[0]).puls_width) ),
-        osc_switch( &(DATA(osc_datas[0]).osc_switch) ),
-        fm_wave( &(DATA(osc_datas[0]).fm_wave) )
+        puls_width( &(GET_DATA(osc_datas[0]).puls_width) ),
+        osc_switch( &(GET_DATA(osc_datas[0]).osc_switch) ),
+        fm_wave( &(GET_DATA(osc_datas[0]).fm_wave) )
     {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)
@@ -542,6 +542,8 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     const String bottom_text;
     const String input_text;
+    
+    SynthData*const synth_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -605,7 +607,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! DATA( synth_data ).animate_input_env )
+        if( ! synth_data->animate_input_env )
             value = NO_TOP_BUTTON_AMP;
         else if( not bool(input_hold->get_value()) )
             value = mono_ParameterOwnerStore::getInstance()->get_flt_input_env_amp(filter_id,input_id);
@@ -663,12 +665,14 @@ public:
         :
         filter_id( filter_id_ ),
         input_id( input_id_ ),
-        input_sustain( &(DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
-        state( &(DATA(filter_input_env_datas[input_id_ + SUM_INPUTS_PER_FILTER*filter_id_]).state) ),
-        input_hold( &(DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
+        input_sustain( &(GET_DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
+        state( &(GET_DATA(filter_input_env_datas[input_id_ + SUM_INPUTS_PER_FILTER*filter_id_]).state) ),
+        input_hold( &(GET_DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
 
         bottom_text( String("OSC ") + String(input_id_+1) ),
-        input_text( String("O") + String(input_id_+1) )
+        input_text( String("O") + String(input_id_+1) ),
+        
+        synth_data( GET_DATA_PTR( synth_data ) )
     {}
 
     JUCE_LEAK_DETECTOR (InputSlConfig)
@@ -786,8 +790,8 @@ class GForceSlConfig : public ModulationSliderConfigBase
 public:
     GForceSlConfig( int id_ )
         :
-        distortion( &(DATA(filter_datas[id_]).distortion) ),
-        modulate_distortion( &(DATA(filter_datas[id_]).modulate_distortion) )
+        distortion( &(GET_DATA(filter_datas[id_]).distortion) ),
+        modulate_distortion( &(GET_DATA(filter_datas[id_]).modulate_distortion) )
     {}
 
     JUCE_LEAK_DETECTOR (GForceSlConfig)
@@ -907,8 +911,8 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 public:
     FAttackSlConfig( int id_ )
         :
-        attack( &(DATA(env_datas[id_]).attack) ),
-        max_attack_time( &(DATA(env_datas[id_]).max_attack_time) )
+        attack( &(GET_DATA(env_datas[id_]).attack) ),
+        max_attack_time( &(GET_DATA(env_datas[id_]).max_attack_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FAttackSlConfig)
@@ -1029,8 +1033,8 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 public:
     FDecaySlConfig( int id_ )
         :
-        decay( &(DATA(env_datas[id_]).decay) ),
-        max_decay_time( &(DATA(env_datas[id_]).max_decay_time) )
+        decay( &(GET_DATA(env_datas[id_]).decay) ),
+        max_decay_time( &(GET_DATA(env_datas[id_]).max_decay_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FDecaySlConfig)
@@ -1148,7 +1152,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     }
 
 public:
-    FSustainSlConfig( int id_ ) : sustain( &(DATA(env_datas[id_]).sustain) ) {}
+    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(env_datas[id_]).sustain) ) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1272,7 +1276,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 public:
     FSustainTimeSlConfig( int id_ )
         :
-        sustain_time( &(DATA(env_datas[id_]).sustain_time) )
+        sustain_time( &(GET_DATA(env_datas[id_]).sustain_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
@@ -1391,8 +1395,8 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 public:
     FReleaseSlConfig( int id_ )
         :
-        release( &(DATA(env_datas[id_]).release) ),
-        max_release_time( &(DATA(env_datas[id_]).max_release_time) )
+        release( &(GET_DATA(env_datas[id_]).release) ),
+        max_release_time( &(GET_DATA(env_datas[id_]).max_release_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FReleaseSlConfig)
@@ -1512,7 +1516,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
 public:
     EnvLfoSlConfig( int id_ )
         :
-        adsr_lfo_mix( &(DATA(filter_datas[id_]).adsr_lfo_mix) )
+        adsr_lfo_mix( &(GET_DATA(filter_datas[id_]).adsr_lfo_mix) )
     {}
 
     JUCE_LEAK_DETECTOR (EnvLfoSlConfig)
@@ -1679,7 +1683,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
 public:
     LFOSlConfig( int id_ )
         :
-        speed( &(DATA(lfo_datas[id_]).speed) ),
+        speed( &(GET_DATA(lfo_datas[id_]).speed) ),
         bottom_text( "LFO " + String(id_+1) )
     {}
 
@@ -1800,8 +1804,8 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
 public:
     FCutoffSLConfig( int id_ )
         :
-        cutoff( &(DATA(filter_datas[id_]).cutoff) ),
-        modulate_cutoff( &(DATA(filter_datas[id_]).modulate_cutoff) )
+        cutoff( &(GET_DATA(filter_datas[id_]).cutoff) ),
+        modulate_cutoff( &(GET_DATA(filter_datas[id_]).modulate_cutoff) )
     {}
 
     JUCE_LEAK_DETECTOR (FCutoffSLConfig)
@@ -1920,8 +1924,8 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
 public:
     FResonanceSLConfig( int id_ )
         :
-        resonance( &(DATA(filter_datas[id_]).resonance) ),
-        modulate_resonance( &(DATA(filter_datas[id_]).modulate_resonance) )
+        resonance( &(GET_DATA(filter_datas[id_]).resonance) ),
+        modulate_resonance( &(GET_DATA(filter_datas[id_]).modulate_resonance) )
     {}
 
     JUCE_LEAK_DETECTOR (FResonanceSLConfig)
@@ -2040,8 +2044,8 @@ class FGainSLConfig : public ModulationSliderConfigBase
 public:
     FGainSLConfig( int id_ )
         :
-        gain( &(DATA(filter_datas[id_]).gain) ),
-        modulate_gain( &(DATA(filter_datas[id_]).modulate_gain) )
+        gain( &(GET_DATA(filter_datas[id_]).gain) ),
+        modulate_gain( &(GET_DATA(filter_datas[id_]).modulate_gain) )
     {}
 
     JUCE_LEAK_DETECTOR (FGainSLConfig)
@@ -2160,8 +2164,8 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
 public:
     FVolumeSlConfig( int id_ )
         :
-        volume( &(DATA(filter_datas[id_]).output) ),
-        modulate_volume( &(DATA(filter_datas[id_]).modulate_output) )
+        volume( &(GET_DATA(filter_datas[id_]).output) ),
+        modulate_volume( &(GET_DATA(filter_datas[id_]).modulate_output) )
     {}
 
     JUCE_LEAK_DETECTOR (FVolumeSlConfig)
@@ -2283,8 +2287,8 @@ class BPMSlConfig : public ModulationSliderConfigBase
 public:
     BPMSlConfig()
         :
-        speed( &(DATA(synth_data).speed) ),
-        sync( &(DATA(synth_data).sync) )
+        speed( &(GET_DATA(synth_data).speed) ),
+        sync( &(GET_DATA(synth_data).sync) )
     {}
 
     JUCE_LEAK_DETECTOR (BPMSlConfig)
@@ -2404,7 +2408,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 public:
     SpeedMultiSlConfig()
         :
-        speed_multi( &(DATA(arp_data).speed_multi) )
+        speed_multi( &(GET_DATA(arp_data).speed_multi) )
     {}
 
     JUCE_LEAK_DETECTOR (SpeedMultiSlConfig)
@@ -2536,7 +2540,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 public:
     OctaveOffsetSlConfig()
         :
-        octave_offset( &(DATA(synth_data).octave_offset) )
+        octave_offset( &(GET_DATA(synth_data).octave_offset) )
     {}
 
     JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)
@@ -2665,8 +2669,8 @@ public:
     FCompressorSlConfig( int id_ )
         :
         id( id_ ),
-        compressor( &(DATA(filter_datas[id]).compressor) ),
-        clipping( &(DATA(filter_datas[id]).output_clipping) )
+        compressor( &(GET_DATA(filter_datas[id]).compressor) ),
+        clipping( &(GET_DATA(filter_datas[id]).output_clipping) )
     {}
 
     JUCE_LEAK_DETECTOR (FCompressorSlConfig)
@@ -2787,7 +2791,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig()
         :
-        shape( &(DATA(synth_data).resonance) )
+        shape( &(GET_DATA(synth_data).resonance) )
     {}
 
     JUCE_LEAK_DETECTOR (FColourSlConfig)
@@ -2907,7 +2911,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 public:
     RRoomSlConfig()
         :
-        room( &(DATA(reverb_data).room) )
+        room( &(GET_DATA(reverb_data).room) )
     {}
 
     JUCE_LEAK_DETECTOR (RRoomSlConfig)
@@ -3027,7 +3031,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
 public:
     RWidthSlConfig()
         :
-        width( &(DATA(reverb_data).width) )
+        width( &(GET_DATA(reverb_data).width) )
     {}
 
     JUCE_LEAK_DETECTOR (RWidthSlConfig)
@@ -3147,7 +3151,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
 public:
     RDrySlConfig()
         :
-        dry_wet_mix( &(DATA(reverb_data).dry_wet_mix) )
+        dry_wet_mix( &(GET_DATA(reverb_data).dry_wet_mix) )
     {}
 
     JUCE_LEAK_DETECTOR (RDrySlConfig)
@@ -3267,7 +3271,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
 public:
     DelaySlConfig()
         :
-        delay( &(DATA(synth_data).delay) )
+        delay( &(GET_DATA(synth_data).delay) )
     {}
 
     JUCE_LEAK_DETECTOR (DelaySlConfig)
@@ -3387,7 +3391,7 @@ class BypassConfig : public ModulationSliderConfigBase
 public:
     BypassConfig()
         :
-        effect_bypass( &(DATA(synth_data).effect_bypass) )
+        effect_bypass( &(GET_DATA(synth_data).effect_bypass) )
     {}
 
     JUCE_LEAK_DETECTOR (BypassConfig)
@@ -3506,8 +3510,8 @@ class VolumeConfig : public ModulationSliderConfigBase
 public:
     VolumeConfig()
         :
-        volume( &(DATA(synth_data).volume) ),
-        final_compression( &(DATA(synth_data).final_compression) )
+        volume( &(GET_DATA(synth_data).volume) ),
+        final_compression( &(GET_DATA(synth_data).final_compression) )
     {}
 
     JUCE_LEAK_DETECTOR (VolumeConfig)
@@ -3526,6 +3530,9 @@ class CModSlConfig : public ModulationSliderConfigBase
     Parameter*const modulation;
     Parameter*const state;
     BoolParameter*const hold_modulation;
+    
+    SynthData*const synth_data;
+    ChorusData*const chorus_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3586,7 +3593,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! DATA( synth_data ).animate_eq_env )
+        if( ! synth_data->animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
         else if( ! bool(hold_modulation->get_value())  )
         {
@@ -3624,7 +3631,7 @@ class CModSlConfig : public ModulationSliderConfigBase
         if( modulation->midi_control->get_ctrl_mode() )
             return String( round001(state->get_value()) );
         else
-            return String( round01(DATA(chorus_data).modulation*100)  );
+            return String( round01(chorus_data->modulation*100)  );
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -3636,9 +3643,12 @@ class CModSlConfig : public ModulationSliderConfigBase
 public:
     CModSlConfig()
         :
-        modulation( &(DATA(chorus_data).modulation) ),
-        state( &(DATA(chorus_data).modulation_env_data->state) ),
-        hold_modulation( &(DATA(chorus_data).hold_modulation) )
+        modulation( &(GET_DATA(chorus_data).modulation) ),
+        state( &(GET_DATA(chorus_data).modulation_env_data->state) ),
+        hold_modulation( &(GET_DATA(chorus_data).hold_modulation) ),
+        
+        synth_data( GET_DATA_PTR( synth_data ) ),
+        chorus_data( GET_DATA_PTR( chorus_data ) )
     {}
 
     JUCE_LEAK_DETECTOR (CModSlConfig)
@@ -3759,9 +3769,9 @@ class GlideConfig : public ModulationSliderConfigBase
 public:
     GlideConfig()
         :
-        glide( &(DATA(synth_data).glide) ),
-        velocity_glide_time( &(DATA(synth_data).velocity_glide_time) ),
-        connect( &(DATA(arp_data).connect) )
+        glide( &(GET_DATA(synth_data).glide) ),
+        velocity_glide_time( &(GET_DATA(synth_data).velocity_glide_time) ),
+        connect( &(GET_DATA(arp_data).connect) )
     {}
 
     JUCE_LEAK_DETECTOR (GlideConfig)
@@ -3880,8 +3890,8 @@ class ShuffleConfig : public ModulationSliderConfigBase
 public:
     ShuffleConfig()
         :
-        shuffle( &(DATA(arp_data).shuffle) ),
-        is_on( &(DATA(arp_data).is_on) )
+        shuffle( &(GET_DATA(arp_data).shuffle) ),
+        is_on( &(GET_DATA(arp_data).is_on) )
     {}
 
     JUCE_LEAK_DETECTOR (ShuffleConfig)
@@ -3904,6 +3914,8 @@ class EQSlConfig : public ModulationSliderConfigBase
     Parameter*const state;
 
     String bottom_text;
+    
+    SynthData*const synth_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3964,7 +3976,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! DATA( synth_data ).animate_eq_env )
+        if( ! synth_data->animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
         else if( ! bool(hold->get_value()) ) {
             value = mono_ParameterOwnerStore::getInstance()->get_band_env_amp(id);
@@ -4011,9 +4023,11 @@ public:
     EQSlConfig( int id_ )
         :
         id( id_ ),
-        velocity( &(DATA(eq_data).velocity[id_]) ),
-        hold( &(DATA(eq_data).hold[id]) ),
-        state( &(DATA(eq_data).env_datas[id_]->state) )
+        velocity( &(GET_DATA(eq_data).velocity[id_]) ),
+        hold( &(GET_DATA(eq_data).hold[id]) ),
+        state( &(GET_DATA(eq_data).env_datas[id_]->state) ),
+        
+        synth_data( GET_DATA_PTR( synth_data ) )
     {
         const float frequency_low_pass = (62.5f/2) * pow(2,id_+1);
         const float frequency_high_pass = frequency_low_pass / 2.0f;
@@ -4143,8 +4157,8 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 public:
     ArpStepSlConfig( int id_ )
         :
-        tune( &(DATA(arp_data).tune[id_]) ),
-        velocity( &(DATA(arp_data).velocity[id_]) ),
+        tune( &(GET_DATA(arp_data).tune[id_]) ),
+        velocity( &(GET_DATA(arp_data).velocity[id_]) ),
         bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_) )
     {}
 
@@ -4266,7 +4280,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
 public:
     MorphSLConfig(int id_)
         :
-        morhp_state( &(DATA(synth_data).morhp_states[id_]) ),
+        morhp_state( &(GET_DATA(synth_data).morhp_states[id_]) ),
         bottom_text( String( "TOGGL" ) + String(id_+1) )
     {}
 

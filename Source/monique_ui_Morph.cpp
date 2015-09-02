@@ -40,7 +40,7 @@ UiEditorMorph::UiEditorMorph ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_31 = new Label (String::empty,
-                                             TRANS("FILTER (R)")));
+            TRANS("FILTER (R)")));
     label_31->setFont (Font (30.00f, Font::plain));
     label_31->setJustificationType (Justification::centredRight);
     label_31->setEditable (false, false, false);
@@ -49,7 +49,7 @@ UiEditorMorph::UiEditorMorph ()
     label_31->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_32 = new Label (String::empty,
-                                             TRANS("ARP (R)")));
+            TRANS("ARP (R)")));
     label_32->setFont (Font (30.00f, Font::plain));
     label_32->setJustificationType (Justification::centredRight);
     label_32->setEditable (false, false, false);
@@ -58,7 +58,7 @@ UiEditorMorph::UiEditorMorph ()
     label_32->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_33 = new Label (String::empty,
-                                             TRANS("FX (R)")));
+            TRANS("FX (R)")));
     label_33->setFont (Font (30.00f, Font::plain));
     label_33->setJustificationType (Justification::centredLeft);
     label_33->setEditable (false, false, false);
@@ -67,7 +67,7 @@ UiEditorMorph::UiEditorMorph ()
     label_33->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_30 = new Label (String::empty,
-                                             TRANS("OSC (R)")));
+            TRANS("OSC (R)")));
     label_30->setFont (Font (30.00f, Font::plain));
     label_30->setJustificationType (Justification::centredLeft);
     label_30->setEditable (false, false, false);
@@ -76,7 +76,7 @@ UiEditorMorph::UiEditorMorph ()
     label_30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_34 = new Label (String::empty,
-                                             TRANS("ALL (L)")));
+            TRANS("ALL (L)")));
     label_34->setFont (Font (30.00f, Font::plain));
     label_34->setJustificationType (Justification::centred);
     label_34->setEditable (false, false, false);
@@ -141,7 +141,7 @@ UiEditorMorph::UiEditorMorph ()
     combo_morph_group_8->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
-                                             TRANS("LEFT PRESET")));
+            TRANS("LEFT PRESET")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredRight);
     label_19->setEditable (false, false, false);
@@ -213,7 +213,7 @@ UiEditorMorph::UiEditorMorph ()
     button_set_all_from_current->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-                                                        TRANS("OSC MORPH (GROUP 1)")));
+            TRANS("OSC MORPH (GROUP 1)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -222,7 +222,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-                                                        TRANS("FILTER MORPH (GROUP 2)")));
+            TRANS("FILTER MORPH (GROUP 2)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -231,7 +231,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-                                                        TRANS("FX MORPH (GROUP 3)")));
+            TRANS("FX MORPH (GROUP 3)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -240,7 +240,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-                                                        TRANS("ARP MORPH (GROUP 4)")));
+            TRANS("ARP MORPH (GROUP 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -267,7 +267,7 @@ UiEditorMorph::UiEditorMorph ()
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_25 = new Label (String::empty,
-                                             TRANS("RIGHT PRESET")));
+            TRANS("RIGHT PRESET")));
     label_25->setFont (Font (30.00f, Font::plain));
     label_25->setJustificationType (Justification::centredRight);
     label_25->setEditable (false, false, false);
@@ -276,7 +276,7 @@ UiEditorMorph::UiEditorMorph ()
     label_25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_26 = new Label (String::empty,
-                                             TRANS("LEFT PRESET")));
+            TRANS("LEFT PRESET")));
     label_26->setFont (Font (30.00f, Font::plain));
     label_26->setJustificationType (Justification::centredRight);
     label_26->setEditable (false, false, false);
@@ -285,7 +285,7 @@ UiEditorMorph::UiEditorMorph ()
     label_26->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_27 = new Label (String::empty,
-                                             TRANS("RIGHT PRESET")));
+            TRANS("RIGHT PRESET")));
     label_27->setFont (Font (30.00f, Font::plain));
     label_27->setJustificationType (Justification::centredRight);
     label_27->setEditable (false, false, false);
@@ -294,7 +294,7 @@ UiEditorMorph::UiEditorMorph ()
     label_27->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_28 = new Label (String::empty,
-                                             TRANS("LEFT PRESET")));
+            TRANS("LEFT PRESET")));
     label_28->setFont (Font (30.00f, Font::plain));
     label_28->setJustificationType (Justification::centredRight);
     label_28->setEditable (false, false, false);
@@ -303,7 +303,7 @@ UiEditorMorph::UiEditorMorph ()
     label_28->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_29 = new Label (String::empty,
-                                             TRANS("RIGHT PRESET")));
+            TRANS("RIGHT PRESET")));
     label_29->setFont (Font (30.00f, Font::plain));
     label_29->setJustificationType (Justification::centredRight);
     label_29->setEditable (false, false, false);
@@ -312,7 +312,7 @@ UiEditorMorph::UiEditorMorph ()
     label_29->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-                                                        TRANS("MORPH PAD (DRAG IT!)")));
+            TRANS("MORPH PAD (DRAG IT!)")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -321,7 +321,7 @@ UiEditorMorph::UiEditorMorph ()
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_35 = new Label (String::empty,
-                                             TRANS("(DOUBLE CLICK)")));
+            TRANS("(DOUBLE CLICK)")));
     label_35->setFont (Font (30.00f, Font::plain));
     label_35->setJustificationType (Justification::centred);
     label_35->setEditable (false, false, false);
@@ -363,7 +363,7 @@ UiEditorMorph::UiEditorMorph ()
                 box->addSectionHeading(String("Load preset to LEFT from bank: ")+bank);
             else
                 box->addSectionHeading(String("Load preset to RIGHT from bank: ")+bank);
-            StringArray morph_program_names( DATA( synth_data ).get_programms( bank_id ) );
+            StringArray morph_program_names( GET_DATA( synth_data ).get_programms( bank_id ) );
 
             int start_index = box->getNumItems()+1;
             box->addItemList( morph_program_names, start_index );
@@ -552,49 +552,49 @@ void UiEditorMorph::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == combo_morph_group_1)
     {
         //[UserComboBoxCode_combo_morph_group_1] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_right_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_1]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_2)
     {
         //[UserComboBoxCode_combo_morph_group_2] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_right_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_2]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_3)
     {
         //[UserComboBoxCode_combo_morph_group_3] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_right_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_3]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_4)
     {
         //[UserComboBoxCode_combo_morph_group_4] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_right_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_4]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_5)
     {
         //[UserComboBoxCode_combo_morph_group_5] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_left_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_5]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_6)
     {
         //[UserComboBoxCode_combo_morph_group_6] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_left_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_6]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_7)
     {
         //[UserComboBoxCode_combo_morph_group_7] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_left_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_7]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_8)
     {
         //[UserComboBoxCode_combo_morph_group_8] -- add your combo box handling code here..
-        DATA( synth_data ).try_to_load_programm_to_left_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_8]
     }
 
@@ -610,62 +610,62 @@ void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_set_left_1)
     {
         //[UserButtonCode_button_set_left_1] -- add your button handler code here..
-        DATA( synth_data ).update_left_morph_source( 0 );
+        GET_DATA( synth_data ).update_left_morph_source( 0 );
         //[/UserButtonCode_button_set_left_1]
     }
     else if (buttonThatWasClicked == button_set_left_2)
     {
         //[UserButtonCode_button_set_left_2] -- add your button handler code here..
-        DATA( synth_data ).update_left_morph_source( 1 );
+        GET_DATA( synth_data ).update_left_morph_source( 1 );
         //[/UserButtonCode_button_set_left_2]
     }
     else if (buttonThatWasClicked == button_set_left_3)
     {
         //[UserButtonCode_button_set_left_3] -- add your button handler code here..
-        DATA( synth_data ).update_left_morph_source( 2 );
+        GET_DATA( synth_data ).update_left_morph_source( 2 );
         //[/UserButtonCode_button_set_left_3]
     }
     else if (buttonThatWasClicked == button_set_left_4)
     {
         //[UserButtonCode_button_set_left_4] -- add your button handler code here..
-        DATA( synth_data ).update_left_morph_source( 3 );
+        GET_DATA( synth_data ).update_left_morph_source( 3 );
         //[/UserButtonCode_button_set_left_4]
     }
     else if (buttonThatWasClicked == button_set_right_1)
     {
         //[UserButtonCode_button_set_right_1] -- add your button handler code here..
-        DATA( synth_data ).update_right_morph_source( 0 );
+        GET_DATA( synth_data ).update_right_morph_source( 0 );
         //[/UserButtonCode_button_set_right_1]
     }
     else if (buttonThatWasClicked == button_set_right_2)
     {
         //[UserButtonCode_button_set_right_2] -- add your button handler code here..
-        DATA( synth_data ).update_right_morph_source( 1 );
+        GET_DATA( synth_data ).update_right_morph_source( 1 );
         //[/UserButtonCode_button_set_right_2]
     }
     else if (buttonThatWasClicked == button_set_right_3)
     {
         //[UserButtonCode_button_set_right_3] -- add your button handler code here..
-        DATA( synth_data ).update_right_morph_source( 2 );
+        GET_DATA( synth_data ).update_right_morph_source( 2 );
         //[/UserButtonCode_button_set_right_3]
     }
     else if (buttonThatWasClicked == button_set_right_4)
     {
         //[UserButtonCode_button_set_right_4] -- add your button handler code here..
-        DATA( synth_data ).update_right_morph_source( 3 );
+        GET_DATA( synth_data ).update_right_morph_source( 3 );
         //[/UserButtonCode_button_set_right_4]
     }
     else if (buttonThatWasClicked == button_set_all_from_current)
     {
         //[UserButtonCode_button_set_all_from_current] -- add your button handler code here..
-        DATA( synth_data ).update_left_morph_source( 0 );
-        DATA( synth_data ).update_left_morph_source( 1 );
-        DATA( synth_data ).update_left_morph_source( 2 );
-        DATA( synth_data ).update_left_morph_source( 3 );
-        DATA( synth_data ).update_right_morph_source( 0 );
-        DATA( synth_data ).update_right_morph_source( 1 );
-        DATA( synth_data ).update_right_morph_source( 2 );
-        DATA( synth_data ).update_right_morph_source( 3 );
+        GET_DATA( synth_data ).update_left_morph_source( 0 );
+        GET_DATA( synth_data ).update_left_morph_source( 1 );
+        GET_DATA( synth_data ).update_left_morph_source( 2 );
+        GET_DATA( synth_data ).update_left_morph_source( 3 );
+        GET_DATA( synth_data ).update_right_morph_source( 0 );
+        GET_DATA( synth_data ).update_right_morph_source( 1 );
+        GET_DATA( synth_data ).update_right_morph_source( 2 );
+        GET_DATA( synth_data ).update_right_morph_source( 3 );
         //[/UserButtonCode_button_set_all_from_current]
     }
 

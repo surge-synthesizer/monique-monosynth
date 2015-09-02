@@ -28,41 +28,42 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void UiEditorSettings::refresh() noexcept
 {
-    slider_attack_1->setValue( DATA( env_preset_def ).attack_1*1000, dontSendNotification );
-    slider_attack_2->setValue( DATA( env_preset_def ).attack_2*1000, dontSendNotification );
-    slider_attack_3->setValue( DATA( env_preset_def ).attack_3*1000, dontSendNotification );
-    slider_attack_4->setValue( DATA( env_preset_def ).attack_4*1000, dontSendNotification );
-    label_attack_1->setText(String(DATA( env_preset_def ).attack_1*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_attack_2->setText(String(DATA( env_preset_def ).attack_2*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_attack_3->setText(String(DATA( env_preset_def ).attack_3*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_attack_4->setText(String(DATA( env_preset_def ).attack_4*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
 
-    slider_decay_1->setValue( DATA( env_preset_def ).decay_1*1000, dontSendNotification );
-    slider_decay_2->setValue( DATA( env_preset_def ).decay_2*1000, dontSendNotification );
-    slider_decay_3->setValue( DATA( env_preset_def ).decay_3*1000, dontSendNotification );
-    slider_decay_4->setValue( DATA( env_preset_def ).decay_4*1000, dontSendNotification );
-    label_decay_1->setText(String(DATA( env_preset_def ).decay_1*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_decay_2->setText(String(DATA( env_preset_def ).decay_2*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_decay_3->setText(String(DATA( env_preset_def ).decay_3*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
-    label_decay_4->setText(String(DATA( env_preset_def ).decay_4*DATA( env_preset_def ).max_release_time)+String("ms"), dontSendNotification);
+    slider_attack_1->setValue( env_preset_def->attack_1*1000, dontSendNotification );
+    slider_attack_2->setValue( env_preset_def->attack_2*1000, dontSendNotification );
+    slider_attack_3->setValue( env_preset_def->attack_3*1000, dontSendNotification );
+    slider_attack_4->setValue( env_preset_def->attack_4*1000, dontSendNotification );
+    label_attack_1->setText(String(env_preset_def->attack_1*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_attack_2->setText(String(env_preset_def->attack_2*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_attack_3->setText(String(env_preset_def->attack_3*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_attack_4->setText(String(env_preset_def->attack_4*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
 
-    slider_sustain_time_1->setValue( DATA( env_preset_def ).sustain_time_1*1000, dontSendNotification );
-    slider_sustain_time_2->setValue( DATA( env_preset_def ).sustain_time_2*1000, dontSendNotification );
-    slider_sustain_time_3->setValue( DATA( env_preset_def ).sustain_time_3*1000, dontSendNotification );
-    slider_sustain_time_4->setValue( DATA( env_preset_def ).sustain_time_4*1000, dontSendNotification );
+    slider_decay_1->setValue( env_preset_def->decay_1*1000, dontSendNotification );
+    slider_decay_2->setValue( env_preset_def->decay_2*1000, dontSendNotification );
+    slider_decay_3->setValue( env_preset_def->decay_3*1000, dontSendNotification );
+    slider_decay_4->setValue( env_preset_def->decay_4*1000, dontSendNotification );
+    label_decay_1->setText(String(env_preset_def->decay_1*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_decay_2->setText(String(env_preset_def->decay_2*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_decay_3->setText(String(env_preset_def->decay_3*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_decay_4->setText(String(env_preset_def->decay_4*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+
+    slider_sustain_time_1->setValue( env_preset_def->sustain_time_1*1000, dontSendNotification );
+    slider_sustain_time_2->setValue( env_preset_def->sustain_time_2*1000, dontSendNotification );
+    slider_sustain_time_3->setValue( env_preset_def->sustain_time_3*1000, dontSendNotification );
+    slider_sustain_time_4->setValue( env_preset_def->sustain_time_4*1000, dontSendNotification );
     label_sustain_time_1->setText(String(slider_sustain_time_1->getValue()), dontSendNotification);
     label_sustain_time_2->setText(String(slider_sustain_time_2->getValue()), dontSendNotification);
     label_sustain_time_3->setText(String(slider_sustain_time_3->getValue()), dontSendNotification);
     label_sustain_time_4->setText(String(slider_sustain_time_4->getValue()), dontSendNotification);
 
-    slider_release_1->setValue( DATA( env_preset_def ).release_1*1000, dontSendNotification );
-    slider_release_2->setValue( DATA( env_preset_def ).release_2*1000, dontSendNotification );
-    slider_release_3->setValue( DATA( env_preset_def ).release_3*1000, dontSendNotification );
-    slider_release_4->setValue( DATA( env_preset_def ).release_4*1000, dontSendNotification );
-    label_release_1->setText(String(round01(DATA( env_preset_def ).release_1*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
-    label_release_2->setText(String(round01(DATA( env_preset_def ).release_2*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
-    label_release_3->setText(String(round01(DATA( env_preset_def ).release_3*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
-    label_release_4->setText(String(round01(DATA( env_preset_def ).release_4*DATA( env_preset_def ).max_release_time))+String("ms"), dontSendNotification);
+    slider_release_1->setValue( env_preset_def->release_1*1000, dontSendNotification );
+    slider_release_2->setValue( env_preset_def->release_2*1000, dontSendNotification );
+    slider_release_3->setValue( env_preset_def->release_3*1000, dontSendNotification );
+    slider_release_4->setValue( env_preset_def->release_4*1000, dontSendNotification );
+    label_release_1->setText(String(round01(env_preset_def->release_1*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
+    label_release_2->setText(String(round01(env_preset_def->release_2*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
+    label_release_3->setText(String(round01(env_preset_def->release_3*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
+    label_release_4->setText(String(round01(env_preset_def->release_4*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
 
     if( last_repaint_counter != repaint_counter )
     {
@@ -77,10 +78,11 @@ UiEditorSettings::UiEditorSettings ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    env_preset_def = GET_DATA_PTR( env_preset_def );
     //[/Constructor_pre]
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-                                                        TRANS("GROUP 4 (MIX: 3 to 4)")));
+            TRANS("GROUP 4 (MIX: 3 to 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -89,7 +91,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-                                                        TRANS("GROUP 3 (MIX: 2 to 4)")));
+            TRANS("GROUP 3 (MIX: 2 to 4)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -98,7 +100,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-                                                        TRANS("GROUP 2 (MIX: 1 to 3)")));
+            TRANS("GROUP 2 (MIX: 1 to 3)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -107,7 +109,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-                                                        TRANS("ADSR PRESET GROUP 1 (MIX: 1 to 2)")));
+            TRANS("ADSR PRESET GROUP 1 (MIX: 1 to 2)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -116,7 +118,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_3 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_3->setFont (Font (15.00f, Font::plain));
     label_sus_3->setJustificationType (Justification::centred);
     label_sus_3->setEditable (false, false, false);
@@ -125,7 +127,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_2 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_2->setFont (Font (15.00f, Font::plain));
     label_sus_2->setJustificationType (Justification::centred);
     label_sus_2->setEditable (false, false, false);
@@ -136,7 +138,7 @@ UiEditorSettings::UiEditorSettings ()
     addAndMakeVisible (plotter = new Component());
 
     addAndMakeVisible (label_att_1 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_1->setFont (Font (15.00f, Font::plain));
     label_att_1->setJustificationType (Justification::centred);
     label_att_1->setEditable (false, false, false);
@@ -155,7 +157,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_1->addListener (this);
 
     addAndMakeVisible (label_dec_1 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_1->setFont (Font (15.00f, Font::plain));
     label_dec_1->setJustificationType (Justification::centred);
     label_dec_1->setEditable (false, false, false);
@@ -174,7 +176,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_1->addListener (this);
 
     addAndMakeVisible (label_rel_1 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_1->setFont (Font (15.00f, Font::plain));
     label_rel_1->setJustificationType (Justification::centred);
     label_rel_1->setEditable (false, false, false);
@@ -193,7 +195,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_1->addListener (this);
 
     addAndMakeVisible (label_att_2 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_2->setFont (Font (15.00f, Font::plain));
     label_att_2->setJustificationType (Justification::centred);
     label_att_2->setEditable (false, false, false);
@@ -212,7 +214,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_2->addListener (this);
 
     addAndMakeVisible (label_dec_2 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_2->setFont (Font (15.00f, Font::plain));
     label_dec_2->setJustificationType (Justification::centred);
     label_dec_2->setEditable (false, false, false);
@@ -231,7 +233,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_2->addListener (this);
 
     addAndMakeVisible (label_rel_2 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_2->setFont (Font (15.00f, Font::plain));
     label_rel_2->setJustificationType (Justification::centred);
     label_rel_2->setEditable (false, false, false);
@@ -250,7 +252,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_2->addListener (this);
 
     addAndMakeVisible (label_att_3 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_3->setFont (Font (15.00f, Font::plain));
     label_att_3->setJustificationType (Justification::centred);
     label_att_3->setEditable (false, false, false);
@@ -269,7 +271,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_3->addListener (this);
 
     addAndMakeVisible (label_dec_3 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_3->setFont (Font (15.00f, Font::plain));
     label_dec_3->setJustificationType (Justification::centred);
     label_dec_3->setEditable (false, false, false);
@@ -288,7 +290,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_3->addListener (this);
 
     addAndMakeVisible (label_rel_3 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_3->setFont (Font (15.00f, Font::plain));
     label_rel_3->setJustificationType (Justification::centred);
     label_rel_3->setEditable (false, false, false);
@@ -307,7 +309,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_3->addListener (this);
 
     addAndMakeVisible (label_att_4 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_4->setFont (Font (15.00f, Font::plain));
     label_att_4->setJustificationType (Justification::centred);
     label_att_4->setEditable (false, false, false);
@@ -326,7 +328,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_4->addListener (this);
 
     addAndMakeVisible (label_dec_4 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_4->setFont (Font (15.00f, Font::plain));
     label_dec_4->setJustificationType (Justification::centred);
     label_dec_4->setEditable (false, false, false);
@@ -345,7 +347,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_4->addListener (this);
 
     addAndMakeVisible (label_rel_4 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_4->setFont (Font (15.00f, Font::plain));
     label_rel_4->setJustificationType (Justification::centred);
     label_rel_4->setEditable (false, false, false);
@@ -423,7 +425,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_4->addListener (this);
 
     addAndMakeVisible (label_sus_4 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_4->setFont (Font (15.00f, Font::plain));
     label_sus_4->setJustificationType (Justification::centred);
     label_sus_4->setEditable (false, false, false);
@@ -432,7 +434,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_1 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_1->setFont (Font (15.00f, Font::plain));
     label_sus_1->setJustificationType (Justification::centred);
     label_sus_1->setEditable (false, false, false);
@@ -441,7 +443,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_1 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_1->setFont (Font (15.00f, Font::plain));
     label_attack_1->setJustificationType (Justification::centred);
     label_attack_1->setEditable (false, false, false);
@@ -450,7 +452,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_1 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_1->setFont (Font (15.00f, Font::plain));
     label_decay_1->setJustificationType (Justification::centred);
     label_decay_1->setEditable (false, false, false);
@@ -459,7 +461,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_1 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_1->setFont (Font (15.00f, Font::plain));
     label_sustain_time_1->setJustificationType (Justification::centred);
     label_sustain_time_1->setEditable (false, false, false);
@@ -468,7 +470,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_1 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_1->setFont (Font (15.00f, Font::plain));
     label_release_1->setJustificationType (Justification::centred);
     label_release_1->setEditable (false, false, false);
@@ -477,7 +479,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_2 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_2->setFont (Font (15.00f, Font::plain));
     label_attack_2->setJustificationType (Justification::centred);
     label_attack_2->setEditable (false, false, false);
@@ -486,7 +488,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_2 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_2->setFont (Font (15.00f, Font::plain));
     label_decay_2->setJustificationType (Justification::centred);
     label_decay_2->setEditable (false, false, false);
@@ -495,7 +497,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_2 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_2->setFont (Font (15.00f, Font::plain));
     label_sustain_time_2->setJustificationType (Justification::centred);
     label_sustain_time_2->setEditable (false, false, false);
@@ -504,7 +506,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_2 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_2->setFont (Font (15.00f, Font::plain));
     label_release_2->setJustificationType (Justification::centred);
     label_release_2->setEditable (false, false, false);
@@ -513,7 +515,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_3 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_3->setFont (Font (15.00f, Font::plain));
     label_attack_3->setJustificationType (Justification::centred);
     label_attack_3->setEditable (false, false, false);
@@ -522,7 +524,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_3 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_3->setFont (Font (15.00f, Font::plain));
     label_decay_3->setJustificationType (Justification::centred);
     label_decay_3->setEditable (false, false, false);
@@ -531,7 +533,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_3 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_3->setFont (Font (15.00f, Font::plain));
     label_sustain_time_3->setJustificationType (Justification::centred);
     label_sustain_time_3->setEditable (false, false, false);
@@ -540,7 +542,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_3 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_3->setFont (Font (15.00f, Font::plain));
     label_release_3->setJustificationType (Justification::centred);
     label_release_3->setEditable (false, false, false);
@@ -549,7 +551,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_4 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_4->setFont (Font (15.00f, Font::plain));
     label_attack_4->setJustificationType (Justification::centred);
     label_attack_4->setEditable (false, false, false);
@@ -558,7 +560,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_4 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_4->setFont (Font (15.00f, Font::plain));
     label_decay_4->setJustificationType (Justification::centred);
     label_decay_4->setEditable (false, false, false);
@@ -567,7 +569,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_4 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_4->setFont (Font (15.00f, Font::plain));
     label_sustain_time_4->setJustificationType (Justification::centred);
     label_sustain_time_4->setEditable (false, false, false);
@@ -576,7 +578,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_4 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_4->setFont (Font (15.00f, Font::plain));
     label_release_4->setJustificationType (Justification::centred);
     label_release_4->setEditable (false, false, false);
@@ -595,7 +597,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+            TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -604,7 +606,7 @@ UiEditorSettings::UiEditorSettings ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_test_value = new Label (String::empty,
-                                                     TRANS("x\n")));
+            TRANS("x\n")));
     label_test_value->setFont (Font (15.00f, Font::plain));
     label_test_value->setJustificationType (Justification::centredLeft);
     label_test_value->setEditable (false, false, false);
@@ -613,7 +615,7 @@ UiEditorSettings::UiEditorSettings ()
     label_test_value->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-                                                        TRANS("123ms")));
+            TRANS("123ms")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -642,7 +644,7 @@ UiEditorSettings::UiEditorSettings ()
 
         if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) ) {
             SET_SLIDER_STYLE( slider, VALUE_SLIDER );
-	    slider->setOpaque(true);
+            slider->setOpaque(true);
         }
     }
     setOpaque(true);
@@ -669,7 +671,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_3->setOpaque(true);
     label_ui_headline_4->setOpaque(true);
 
-    slider_env_shape->setValue(DATA(synth_data).curve_shape,sendNotification);
+    slider_env_shape->setValue(GET_DATA(synth_data).curve_shape,sendNotification);
     refresh();
 
     /*
@@ -958,73 +960,73 @@ void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_attack_1)
     {
         //[UserSliderCode_slider_attack_1] -- add your slider handling code here..
-        DATA( env_preset_def ).attack_1 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->attack_1 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_attack_1]
     }
     else if (sliderThatWasMoved == slider_decay_1)
     {
         //[UserSliderCode_slider_decay_1] -- add your slider handling code here..
-        DATA( env_preset_def ).decay_1 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->decay_1 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_decay_1]
     }
     else if (sliderThatWasMoved == slider_release_1)
     {
         //[UserSliderCode_slider_release_1] -- add your slider handling code here..
-        DATA( env_preset_def ).release_1 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->release_1 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_release_1]
     }
     else if (sliderThatWasMoved == slider_attack_2)
     {
         //[UserSliderCode_slider_attack_2] -- add your slider handling code here..
-        DATA( env_preset_def ).attack_2 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->attack_2 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_attack_2]
     }
     else if (sliderThatWasMoved == slider_decay_2)
     {
         //[UserSliderCode_slider_decay_2] -- add your slider handling code here..
-        DATA( env_preset_def ).decay_2 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->decay_2 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_decay_2]
     }
     else if (sliderThatWasMoved == slider_release_2)
     {
         //[UserSliderCode_slider_release_2] -- add your slider handling code here..
-        DATA( env_preset_def ).release_2 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->release_2 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_release_2]
     }
     else if (sliderThatWasMoved == slider_attack_3)
     {
         //[UserSliderCode_slider_attack_3] -- add your slider handling code here..
-        DATA( env_preset_def ).attack_3 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->attack_3 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_attack_3]
     }
     else if (sliderThatWasMoved == slider_decay_3)
     {
         //[UserSliderCode_slider_decay_3] -- add your slider handling code here..
-        DATA( env_preset_def ).decay_3 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->decay_3 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_decay_3]
     }
     else if (sliderThatWasMoved == slider_release_3)
     {
         //[UserSliderCode_slider_release_3] -- add your slider handling code here..
-        DATA( env_preset_def ).release_3 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->release_3 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_release_3]
     }
     else if (sliderThatWasMoved == slider_attack_4)
     {
         //[UserSliderCode_slider_attack_4] -- add your slider handling code here..
-        DATA( env_preset_def ).attack_4 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->attack_4 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_attack_4]
     }
     else if (sliderThatWasMoved == slider_decay_4)
     {
         //[UserSliderCode_slider_decay_4] -- add your slider handling code here..
-        DATA( env_preset_def ).decay_4 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->decay_4 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_decay_4]
     }
     else if (sliderThatWasMoved == slider_release_4)
     {
         //[UserSliderCode_slider_release_4] -- add your slider handling code here..
-        DATA( env_preset_def ).release_4 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->release_4 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_release_4]
     }
     else if (sliderThatWasMoved == slider_test)
@@ -1036,31 +1038,31 @@ void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == slider_sustain_time_1)
     {
         //[UserSliderCode_slider_sustain_time_1] -- add your slider handling code here..
-        DATA( env_preset_def ).sustain_time_1 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->sustain_time_1 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_sustain_time_1]
     }
     else if (sliderThatWasMoved == slider_sustain_time_2)
     {
         //[UserSliderCode_slider_sustain_time_2] -- add your slider handling code here..
-        DATA( env_preset_def ).sustain_time_2 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->sustain_time_2 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_sustain_time_2]
     }
     else if (sliderThatWasMoved == slider_sustain_time_3)
     {
         //[UserSliderCode_slider_sustain_time_3] -- add your slider handling code here..
-        DATA( env_preset_def ).sustain_time_3 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->sustain_time_3 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_sustain_time_3]
     }
     else if (sliderThatWasMoved == slider_sustain_time_4)
     {
         //[UserSliderCode_slider_sustain_time_4] -- add your slider handling code here..
-        DATA( env_preset_def ).sustain_time_4 = sliderThatWasMoved->getValue()/1000;
+        env_preset_def->sustain_time_4 = sliderThatWasMoved->getValue()/1000;
         //[/UserSliderCode_slider_sustain_time_4]
     }
     else if (sliderThatWasMoved == slider_env_shape)
     {
         //[UserSliderCode_slider_env_shape] -- add your slider handling code here..
-        DATA(synth_data).curve_shape = slider_env_shape->getValue();
+        GET_DATA(synth_data).curve_shape = slider_env_shape->getValue();
         //[/UserSliderCode_slider_env_shape]
     }
 

@@ -301,7 +301,7 @@ void mono_ModulationSlider::refresh() noexcept
             {
                 if( modulation_parameter )
                 {
-                    if( DATA( synth_data ).animate_modulations )
+                    if( synth_data->animate_modulations )
                     {
                         float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
                         button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );
@@ -526,6 +526,7 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     : _config(config_),original_w(60), original_h(130)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    synth_data = GET_DATA_PTR( synth_data );
     //[/Constructor_pre]
 
     addAndMakeVisible (slider_value = new SnapSlider ("0"));

@@ -126,7 +126,7 @@ public:
     MidiBuffer incomingMidi;
     MidiMessageCollector messageCollector;
 
-    DATAINProcessor() : _synth_data(&DATA(synth_data)) { }
+    DATAINProcessor() : _synth_data(&GET_DATA(synth_data)) { }
 
     ~DATAINProcessor() {
     }
@@ -173,11 +173,11 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     std::cout << "MONIQUE: init processor" << std::endl;
 
     FloatVectorOperations::enableFlushToZeroMode(true);
-    
+
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 
-	synth = new Synthesiser();
+        synth = new Synthesiser();
         synth_data = new SynthData(MASTER);
 
 #ifdef IS_PLUGIN
@@ -353,7 +353,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 MidiBuffer::Iterator message_iter( data_in_processor->incomingMidi );
                 MidiMessage extern_midi_message;
                 int sample_position;
-                RuntimeInfo& runtime_info = DATA( runtime_info );
+                RuntimeInfo& runtime_info = GET_DATA( runtime_info );
                 runtime_info.next_step_at_sample.clearQuick();
                 runtime_info.next_step.clearQuick();
                 while( message_iter.getNextEvent( extern_midi_message, sample_position ) )
@@ -501,7 +501,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
-    DATA(data_buffer).resize_buffer_if_required(block_size_);
+    GET_DATA(data_buffer).resize_buffer_if_required(block_size_);
     data_in_processor->messageCollector.reset(sampleRate);
     synth->setCurrentPlaybackSampleRate (sampleRate);
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
@@ -654,12 +654,12 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ ) {
 bool MoniqueAudioProcessor::hasEditor() const {
     return true;
 }
-AudioProcessorEditor* MoniqueAudioProcessor::createEditor() 
+AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
 {
     return new UiEditorSynthLite();
 }
 
-AudioProcessor* JUCE_CALLTYPE createPluginFilter() 
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new MoniqueAudioProcessor();
 }

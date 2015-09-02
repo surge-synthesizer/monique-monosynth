@@ -31,12 +31,14 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void UiEditorGlobalSettings::refresh() noexcept
 {
-    slider_morph_motor_time->setValue( DATA( synth_data ).morph_motor_time.get_value(), dontSendNotification );
-    slider_glide_time->setValue( DATA( synth_data ).glide_motor_time.get_value(), dontSendNotification );
+    SynthData& synth_data( GET_DATA( synth_data ) );
 
-    toggle_animate_input_env->setToggleState( DATA( synth_data ).animate_input_env ,dontSendNotification );
-    toggle_animate_eq_env->setToggleState( DATA( synth_data ).animate_eq_env ,dontSendNotification );
-    toggle_output_cc_mute4->setToggleState( DATA( synth_data ).animate_modulations ,dontSendNotification );
+    slider_morph_motor_time->setValue( synth_data.morph_motor_time.get_value(), dontSendNotification );
+    slider_glide_time->setValue( synth_data.glide_motor_time.get_value(), dontSendNotification );
+
+    toggle_animate_input_env->setToggleState( synth_data.animate_input_env ,dontSendNotification );
+    toggle_animate_eq_env->setToggleState( synth_data.animate_eq_env ,dontSendNotification );
+    toggle_output_cc_mute4->setToggleState( synth_data.animate_modulations ,dontSendNotification );
 
     label_cpu_usage->setText
     (
@@ -76,7 +78,7 @@ void UiEditorGlobalSettings::refresh() noexcept
     }
 
     // THREADS
-    combo_multicore_cpus->setSelectedId( DATA( synth_data ).num_extra_threads+1, dontSendNotification );
+    combo_multicore_cpus->setSelectedId( synth_data.num_extra_threads+1, dontSendNotification );
 }
 
 void UiEditorGlobalSettings::open_colour_selector(Colour& colour_to_edit_)
@@ -223,7 +225,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_colour_9 = new Label (String::empty,
-                                                   TRANS("MODULATION SLIDER (BACK)")));
+            TRANS("MODULATION SLIDER (BACK)")));
     label_colour_9->setFont (Font (30.00f, Font::plain));
     label_colour_9->setJustificationType (Justification::centredLeft);
     label_colour_9->setEditable (false, false, false);
@@ -236,10 +238,10 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     button_current_editor_color->addListener (this);
 
     addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
-                                                             ,0,7));
+            ,0,7));
 
     addAndMakeVisible (label_colour_6 = new Label (String::empty,
-                                                   TRANS("LABELS")));
+            TRANS("LABELS")));
     label_colour_6->setFont (Font (30.00f, Font::plain));
     label_colour_6->setJustificationType (Justification::centredLeft);
     label_colour_6->setEditable (false, false, false);
@@ -248,7 +250,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_colour_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_4 = new Label (String::empty,
-                                                   TRANS("BUTTON ON")));
+            TRANS("BUTTON ON")));
     label_colour_4->setFont (Font (30.00f, Font::plain));
     label_colour_4->setJustificationType (Justification::centredLeft);
     label_colour_4->setEditable (false, false, false);
@@ -257,7 +259,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_colour_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_5 = new Label (String::empty,
-                                                   TRANS("BUTTON OFF")));
+            TRANS("BUTTON OFF")));
     label_colour_5->setFont (Font (30.00f, Font::plain));
     label_colour_5->setJustificationType (Justification::centredLeft);
     label_colour_5->setEditable (false, false, false);
@@ -304,7 +306,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_16 = new Label (String::empty,
-                                             TRANS("INPUT ENV\'S")));
+            TRANS("INPUT ENV\'S")));
     label_16->setFont (Font (30.00f, Font::plain));
     label_16->setJustificationType (Justification::centredLeft);
     label_16->setEditable (false, false, false);
@@ -316,7 +318,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     toggle_animate_input_env->addListener (this);
 
     addAndMakeVisible (label_18 = new Label (String::empty,
-                                             TRANS("EQ ENV")));
+            TRANS("EQ ENV")));
     label_18->setFont (Font (30.00f, Font::plain));
     label_18->setJustificationType (Justification::centredLeft);
     label_18->setEditable (false, false, false);
@@ -328,7 +330,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     toggle_animate_eq_env->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
-                                             TRANS("MODULATIONS")));
+            TRANS("MODULATIONS")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredLeft);
     label_19->setEditable (false, false, false);
@@ -340,7 +342,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     toggle_output_cc_mute4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-                                                        TRANS("GLOBAL TIMES")));
+            TRANS("GLOBAL TIMES")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -349,7 +351,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-                                                        TRANS("ANIMATIONS")));
+            TRANS("ANIMATIONS")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -367,7 +369,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_cpu_usage = new Label (String::empty,
-                                                    TRANS("20%")));
+            TRANS("20%")));
     label_cpu_usage->setFont (Font (30.00f, Font::plain));
     label_cpu_usage->setJustificationType (Justification::centredLeft);
     label_cpu_usage->setEditable (false, false, false);
@@ -392,7 +394,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     combo_multicore_cpus->addListener (this);
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-                                                        TRANS("SLIDERS")));
+            TRANS("SLIDERS")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -456,7 +458,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     toggle_animate_input_env4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-                                                        TRANS("COLOURS")));
+            TRANS("COLOURS")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -465,7 +467,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_1 = new Label (String::empty,
-                                                   TRANS("BACKGROUND")));
+            TRANS("BACKGROUND")));
     label_colour_1->setFont (Font (30.00f, Font::plain));
     label_colour_1->setJustificationType (Justification::centredLeft);
     label_colour_1->setEditable (false, false, false);
@@ -474,7 +476,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_colour_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_7 = new Label (String::empty,
-                                                   TRANS("VALUE SLIDER (FRONT)")));
+            TRANS("VALUE SLIDER (FRONT)")));
     label_colour_7->setFont (Font (30.00f, Font::plain));
     label_colour_7->setJustificationType (Justification::centredLeft);
     label_colour_7->setEditable (false, false, false);
@@ -483,7 +485,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_colour_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_8 = new Label (String::empty,
-                                                   TRANS("VALUE SLIDER 2 (BACK)")));
+            TRANS("VALUE SLIDER 2 (BACK)")));
     label_colour_8->setFont (Font (30.00f, Font::plain));
     label_colour_8->setJustificationType (Justification::centredLeft);
     label_colour_8->setEditable (false, false, false);
@@ -492,7 +494,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     label_colour_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_2 = new Label (String::empty,
-                                                   TRANS("BORDERS")));
+            TRANS("BORDERS")));
     label_colour_2->setFont (Font (30.00f, Font::plain));
     label_colour_2->setJustificationType (Justification::centredLeft);
     label_colour_2->setEditable (false, false, false);
@@ -525,7 +527,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     button_colour_slider_mod->addListener (this);
 
     addAndMakeVisible (label_colour_3 = new Label (String::empty,
-                                                   TRANS("SIGNAL LINES")));
+            TRANS("SIGNAL LINES")));
     label_colour_3->setFont (Font (30.00f, Font::plain));
     label_colour_3->setJustificationType (Justification::centredLeft);
     label_colour_3->setEditable (false, false, false);
@@ -546,7 +548,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     button_colour_labels->addListener (this);
 
     addAndMakeVisible (label_ui_headline_6 = new Label ("DL",
-                                                        TRANS("AUDIO & CPU")));
+            TRANS("AUDIO & CPU")));
     label_ui_headline_6->setFont (Font (30.00f, Font::plain));
     label_ui_headline_6->setJustificationType (Justification::centred);
     label_ui_headline_6->setEditable (false, false, false);
@@ -603,7 +605,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     combo_block_size->addListener (this);
 
     addAndMakeVisible (label_10 = new Label (String::empty,
-                                             TRANS("DRIVER:")));
+            TRANS("DRIVER:")));
     label_10->setFont (Font (30.00f, Font::plain));
     label_10->setJustificationType (Justification::centredRight);
     label_10->setEditable (false, false, false);
@@ -847,19 +849,19 @@ void UiEditorGlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == toggle_animate_input_env)
     {
         //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
-        DATA( synth_data ).animate_input_env = buttonThatWasClicked->getToggleState();
+        GET_DATA( synth_data ).animate_input_env = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_animate_input_env]
     }
     else if (buttonThatWasClicked == toggle_animate_eq_env)
     {
         //[UserButtonCode_toggle_animate_eq_env] -- add your button handler code here..
-        DATA( synth_data ).animate_eq_env = buttonThatWasClicked->getToggleState();
+        GET_DATA( synth_data ).animate_eq_env = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_animate_eq_env]
     }
     else if (buttonThatWasClicked == toggle_output_cc_mute4)
     {
         //[UserButtonCode_toggle_output_cc_mute4] -- add your button handler code here..
-        DATA( synth_data ).animate_modulations = buttonThatWasClicked->getToggleState();
+        GET_DATA( synth_data ).animate_modulations = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_output_cc_mute4]
     }
     else if (buttonThatWasClicked == toggle_animate_input_env2)
@@ -944,13 +946,13 @@ void UiEditorGlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_morph_motor_time)
     {
         //[UserSliderCode_slider_morph_motor_time] -- add your slider handling code here..
-        DATA( synth_data ).morph_motor_time = sliderThatWasMoved->getValue();
+        GET_DATA( synth_data ).morph_motor_time = sliderThatWasMoved->getValue();
         //[/UserSliderCode_slider_morph_motor_time]
     }
     else if (sliderThatWasMoved == slider_glide_time)
     {
         //[UserSliderCode_slider_glide_time] -- add your slider handling code here..
-        DATA( synth_data ).glide_motor_time = sliderThatWasMoved->getValue();
+        GET_DATA( synth_data ).glide_motor_time = sliderThatWasMoved->getValue();
         //[/UserSliderCode_slider_glide_time]
     }
     else if (sliderThatWasMoved == slider_morph_motor_time2)
@@ -971,7 +973,7 @@ void UiEditorGlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == combo_multicore_cpus)
     {
         //[UserComboBoxCode_combo_multicore_cpus] -- add your combo box handling code here..
-        DATA( synth_data ).num_extra_threads = combo_multicore_cpus->getSelectedId()-1;
+        GET_DATA( synth_data ).num_extra_threads = combo_multicore_cpus->getSelectedId()-1;
         //[/UserComboBoxCode_combo_multicore_cpus]
     }
     else if (comboBoxThatHasChanged == combo_audio_device)

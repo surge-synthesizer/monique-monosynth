@@ -18,6 +18,7 @@ enum DATA_TYPES
     CHORUS_ENV_ID_OFFSET = 300,
 };
 
+//==============================================================================
 enum WAVE_TYPES
 {
     SINE,
@@ -26,6 +27,7 @@ enum WAVE_TYPES
     NOICE
 };
 
+//==============================================================================
 enum FILTER_TYPS
 {
     LPF_2_PASS = 1,
@@ -34,10 +36,11 @@ enum FILTER_TYPS
     HIGH_2_PASS,
     PASS,
     LPF,
-    MOOG_AND_LPF, // OBSOLETE
+    MOOG_AND_LPF, // TODO OBSOLETE BUT USED IN SOME OLD PROJECTS
     UNKNOWN
 };
 
+//==============================================================================
 enum MONIQUE_SETUP
 {
     SUM_OSCS = 3,
@@ -45,7 +48,7 @@ enum MONIQUE_SETUP
     SUM_INPUTS_PER_FILTER = SUM_OSCS,
     SUM_LFOS = SUM_FILTERS,
     SUM_ENVS = SUM_FILTERS + 1,
-    MAIN_ENV = 4,
+    MAIN_ENV = 3,
 
     LEFT = 0,
     RIGHT = 1,
@@ -64,6 +67,45 @@ enum MONIQUE_SETUP
     SUM_MORPHER_GROUPS = 4,
 };
 
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
+class MoniqueAudioProcessor;
+class DataBuffer // DEFINITION IN SYNTH.CPP
+{
+    int size;
+
+public:
+    // ==============================================================================
+    // WORKERS
+    mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
+    mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
+    mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
+
+    mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
+    mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
+    mono_AudioSampleBuffer<1> osc_sync_switchs;
+    mono_AudioSampleBuffer<1> modulator_samples;
+
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
+    mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
+
+private:
+    // ==============================================================================
+    friend class MoniqueAudioProcessor;
+    NOINLINE void resize_buffer_if_required( int size_ ) noexcept;
+
+public:
+    // ==============================================================================
+    NOINLINE DataBuffer( int init_buffer_size_ ) noexcept;
+    NOINLINE ~DataBuffer() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
+};
+
+#define GET_DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
+#define GET_DATA_PTR(_X_) mono_ParameterOwnerStore::getInstance()->_X_
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -71,7 +113,7 @@ enum MONIQUE_SETUP
 //==============================================================================
 //==============================================================================
 class RuntimeNotifyer;
-class RuntimeListener 
+class RuntimeListener
 {
 protected:
     double sample_rate;
@@ -1001,35 +1043,7 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterOwnerStore)
 };
 
-struct DataBuffer { // DEFINITION IN SYNTH.CPP
-    int current_buffer_size;
 
-    // WORKERS
-    mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
-
-    // OVER MULTIBLE PROCESSORS
-    mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
-    mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
-
-    mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
-    // TODO do we need only one?
-    mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
-    mono_AudioSampleBuffer<1> osc_sync_switchs;
-    mono_AudioSampleBuffer<1> modulator_samples;
-
-    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
-    mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
-
-
-    void resize_buffer_if_required( int min_size_required_ ) noexcept;
-
-    NOINLINE DataBuffer( int init_buffer_size_ );
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
-};
-
-#define SYNTH_PARAM(_X_) &(mono_ParameterOwnerStore::getInstance()->_X_)
-#define DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
 
 #endif
 

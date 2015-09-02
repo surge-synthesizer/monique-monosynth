@@ -27,7 +27,8 @@
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
 
 class mono_ModulationSlider;
-class SnapSlider : public Slider {
+class SnapSlider : public Slider 
+{
     friend class mono_ModulationSlider;
     mono_ModulationSlider* owner;
 
@@ -212,6 +213,8 @@ protected:
 public:
     virtual ~ModulationSliderConfigBase() {}
 };
+
+class SynthData;
 //[/Headers]
 
 
@@ -244,6 +247,7 @@ public:
     const float original_h;
 private:
     ModulationSliderConfigBase*const _config;
+    SynthData* synth_data;
 
     Parameter* front_parameter;
     Parameter* modulation_parameter;
