@@ -542,7 +542,7 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     const String bottom_text;
     const String input_text;
-    
+
     SynthData*const synth_data;
 
     //==============================================================================
@@ -671,7 +671,7 @@ public:
 
         bottom_text( String("OSC ") + String(input_id_+1) ),
         input_text( String("O") + String(input_id_+1) ),
-        
+
         synth_data( GET_DATA_PTR( synth_data ) )
     {}
 
@@ -911,8 +911,13 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 public:
     FAttackSlConfig( int id_ )
         :
-        attack( &(GET_DATA(env_datas[id_]).attack) ),
-        max_attack_time( &(GET_DATA(env_datas[id_]).max_attack_time) )
+        attack( &(GET_DATA(filter_datas[id_]).env_data->attack) ),
+        max_attack_time( &(GET_DATA(filter_datas[id_]).env_data->max_attack_time) )
+    {}
+    FAttackSlConfig()
+        :
+        attack(  &(GET_DATA(synth_data).env_data->attack) ),
+        max_attack_time(  &(GET_DATA(synth_data).env_data->max_attack_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FAttackSlConfig)
@@ -1033,8 +1038,13 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 public:
     FDecaySlConfig( int id_ )
         :
-        decay( &(GET_DATA(env_datas[id_]).decay) ),
-        max_decay_time( &(GET_DATA(env_datas[id_]).max_decay_time) )
+        decay( &(GET_DATA(filter_datas[id_]).env_data->decay) ),
+        max_decay_time( &(GET_DATA(filter_datas[id_]).env_data->max_decay_time) )
+    {}
+    FDecaySlConfig()
+        :
+        decay( &(GET_DATA(synth_data).env_data->decay) ),
+        max_decay_time( &(GET_DATA(synth_data).env_data->max_decay_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FDecaySlConfig)
@@ -1152,7 +1162,8 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     }
 
 public:
-    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(env_datas[id_]).sustain) ) {}
+    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ) {}
+    FSustainSlConfig() : sustain( &(GET_DATA(synth_data).env_data->sustain) ) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1257,10 +1268,10 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain_time->get_value() * 8.0f;
+        float value = sustain_time->get_value() * 10000;
         if( value < 100 )
             return String(round01(value));
-        else if( value == 8000 )
+        else if( value == 10000 )
             return String("unltd");
         else
             return String(round0(value));
@@ -1274,10 +1285,8 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
 
 public:
-    FSustainTimeSlConfig( int id_ )
-        :
-        sustain_time( &(GET_DATA(env_datas[id_]).sustain_time) )
-    {}
+    FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ) {}
+    FSustainTimeSlConfig() : sustain_time( &(GET_DATA(synth_data).env_data->sustain_time) ) {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
@@ -1395,8 +1404,14 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 public:
     FReleaseSlConfig( int id_ )
         :
-        release( &(GET_DATA(env_datas[id_]).release) ),
-        max_release_time( &(GET_DATA(env_datas[id_]).max_release_time) )
+        release( &(GET_DATA(filter_datas[id_]).env_data->release) ),
+        max_release_time( &(GET_DATA(filter_datas[id_]).env_data->max_release_time) )
+    {}
+
+    FReleaseSlConfig()
+        :
+        release( &(GET_DATA(synth_data).env_data->release) ),
+        max_release_time( &(GET_DATA(synth_data).env_data->max_release_time) )
     {}
 
     JUCE_LEAK_DETECTOR (FReleaseSlConfig)
@@ -3530,7 +3545,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     Parameter*const modulation;
     Parameter*const state;
     BoolParameter*const hold_modulation;
-    
+
     SynthData*const synth_data;
     ChorusData*const chorus_data;
 
@@ -3646,7 +3661,7 @@ public:
         modulation( &(GET_DATA(chorus_data).modulation) ),
         state( &(GET_DATA(chorus_data).modulation_env_data->state) ),
         hold_modulation( &(GET_DATA(chorus_data).hold_modulation) ),
-        
+
         synth_data( GET_DATA_PTR( synth_data ) ),
         chorus_data( GET_DATA_PTR( chorus_data ) )
     {}
@@ -3914,7 +3929,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     Parameter*const state;
 
     String bottom_text;
-    
+
     SynthData*const synth_data;
 
     //==============================================================================
@@ -4026,7 +4041,7 @@ public:
         velocity( &(GET_DATA(eq_data).velocity[id_]) ),
         hold( &(GET_DATA(eq_data).hold[id]) ),
         state( &(GET_DATA(eq_data).env_datas[id_]->state) ),
-        
+
         synth_data( GET_DATA_PTR( synth_data ) )
     {
         const float frequency_low_pass = (62.5f/2) * pow(2,id_+1);

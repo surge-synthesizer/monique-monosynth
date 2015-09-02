@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    SynthData.cpp
-    Created: 24 Apr 2015 11:40:30am
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #include "monique_core_Datastructures.h"
 #include "Synth.h"
 
@@ -339,24 +329,26 @@ max_release_time
 NOINLINE ENVData::~ENVData() noexcept {}
 
 //==============================================================================
-static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
+static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
 {
     dest_->attack = src_->attack;
     dest_->max_attack_time = src_->max_attack_time;
     dest_->decay = src_->decay;
     dest_->max_decay_time = src_->max_decay_time;
-    dest_->sustain = src_->sustain;
+    if( include_sustain_ )
+        dest_->sustain = src_->sustain;
     dest_->sustain_time = src_->sustain_time;
     dest_->release = src_->release;
     dest_->max_release_time = src_->max_release_time;
 }
-static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_ ) noexcept
+static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_sustain_ ) noexcept
 {
     params_.add( &data_->attack );
     params_.add( &data_->max_attack_time );
     params_.add( &data_->decay );
     params_.add( &data_->max_decay_time );
-    params_.add( &data_->sustain );
+    if( include_sustain_ )
+        params_.add( &data_->sustain );
     params_.add( &data_->sustain_time );
     params_.add( &data_->release );
     params_.add( &data_->max_release_time );
@@ -501,29 +493,6 @@ release_4
     1000,
     generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_4_"),
     generate_short_human_name(ENV_PRESET_DEF_NAME,"release_4")
-),
-
-// ----
-max_attack_time
-(
-    MIN_MAX( 100, 20000 ),
-    2000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_attack_t"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"max_attack_t")
-),
-max_decay_time
-(
-    MIN_MAX( 100, 20000 ),
-    250,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_decay_t"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"max_decay_t")
-),
-max_release_time
-(
-    MIN_MAX( 100, 20000 ),
-    4000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"max_release_t"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"max_release_t")
 )
 {}
 NOINLINE ENVPresetDef::~ENVPresetDef() noexcept {}
@@ -547,9 +516,6 @@ static inline void copy( ENVPresetDef* dest_, const ENVPresetDef* src_ ) noexcep
     dest_->decay_4 = src_->decay_4;
     dest_->sustain_time_4 = src_->sustain_time_4;
     dest_->release_4 = src_->release_4;
-    dest_->max_attack_time = src_->max_attack_time;
-    dest_->max_decay_time = src_->max_decay_time;
-    dest_->max_release_time = src_->max_release_time;
 }
 static inline void collect_saveable_parameters( ENVPresetDef* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -569,9 +535,6 @@ static inline void collect_saveable_parameters( ENVPresetDef* data_, Array< Para
     params_.add( &data_->decay_4 );
     params_.add( &data_->sustain_time_4 );
     params_.add( &data_->release_4 );
-    params_.add( &data_->max_attack_time );
-    params_.add( &data_->max_decay_time );
-    params_.add( &data_->max_release_time );
 }
 
 //==============================================================================
@@ -610,19 +573,12 @@ state
     def_->release_2.register_listener( this );
     def_->release_3.register_listener( this );
     def_->release_4.register_listener( this );
-    def_->max_attack_time.register_listener( this );
-    def_->max_decay_time.register_listener( this );
-    def_->max_release_time.register_listener( this );
-
-    sustain_time = def->sustain_time_1;
-    attack = def->attack_1;
-    decay = def->decay_1;
-    release = def->release_1;
-    max_attack_time = def->max_attack_time;
-    max_decay_time = def->max_decay_time;
-    max_release_time = def->max_release_time;
-
-    update_adr_values(state);
+    
+    max_release_time = 10000;
+    max_decay_time = 10000;
+    max_release_time = 10000;
+    
+    update_adr_values();
 }
 NOINLINE ENVPresetData::~ENVPresetData() noexcept
 {
@@ -642,9 +598,6 @@ NOINLINE ENVPresetData::~ENVPresetData() noexcept
     def->release_2.remove_listener( this );
     def->release_3.remove_listener( this );
     def->release_4.remove_listener( this );
-    def->max_attack_time.remove_listener( this );
-    def->max_decay_time.remove_listener( this );
-    def->max_release_time.remove_listener( this );
 }
 
 //==============================================================================
@@ -652,7 +605,7 @@ static inline void copy( ENVPresetData* dest_, const ENVPresetData* src_ ) noexc
 {
     dest_->state = src_->state;
 
-    copy( static_cast< ENVData* >(dest_), static_cast< const ENVData* >(src_) );
+    copy( static_cast< ENVData* >(dest_), static_cast< const ENVData* >(src_), false );
 }
 static inline void collect_saveable_parameters( ENVPresetData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -736,56 +689,38 @@ float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) no
         return def_.release_3*( 1.0f-factor ) + def_.release_4 * factor;
     }
 }
-void ENVPresetData::parameter_value_changed( Parameter* param_ ) noexcept
+void ENVPresetData::parameter_value_changed( Parameter* ) noexcept
 {
-    if( param_ == state.ptr() )
-    {
-        update_adr_values(*param_);
-    }
-    else if( param_ == def->max_attack_time.ptr() )
-    {
-        max_attack_time.set_value_without_notification( def->max_attack_time.get_value() );
-    }
-    else if( param_ == def->max_decay_time.ptr() )
-    {
-        max_decay_time.set_value_without_notification( def->max_decay_time.get_value() );
-    }
-    else if( param_ == def->max_release_time.ptr() )
-    {
-        max_release_time.set_value_without_notification( def->max_release_time.get_value() );
-    }
-    else
-    {
-        update_adr_values(state);
-    }
+    update_adr_values();
 }
-void ENVPresetData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+void ENVPresetData::parameter_value_changed_always_notification( Parameter* ) noexcept
 {
-    update_adr_values(*param_);
+    update_adr_values();
 }
-void ENVPresetData::update_adr_values( float value_ ) noexcept
+void ENVPresetData::update_adr_values() noexcept
 {
-    if( value_ < 1 )
+    const float value = state;
+    if( value < 1 )
     {
-        float factor = 1.0f/1.0f * value_;
+        float factor = 1.0f/1.0f * value;
 
         attack.set_value_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
         decay.set_value_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
         sustain_time.set_value_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
         release.set_value_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
     }
-    else if( value_ < 2 )
+    else if( value < 2 )
     {
-        float factor = 1.0f/1.0f * (value_-1.0f);
+        float factor = 1.0f/1.0f * (value-1.0f);
 
         attack.set_value_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
         decay.set_value_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
         sustain_time.set_value_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
         release.set_value_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
     }
-    else if( value_ <= 3 )
+    else if( value <= 3 )
     {
-        float factor = 1.0f/1.0f * (value_-2.0f);
+        float factor = 1.0f/1.0f * (value-2.0f);
 
         attack.set_value_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
         decay.set_value_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
@@ -793,16 +728,16 @@ void ENVPresetData::update_adr_values( float value_ ) noexcept
         release.set_value_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
     }
 }
-void ENVPresetData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+void ENVPresetData::parameter_value_on_load_changed( Parameter* ) noexcept
 {
-    parameter_value_changed( param_ );
+    parameter_value_changed(nullptr);
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 #define FILTER_NAME "FLT"
-NOINLINE FilterData::FilterData( int id_,  Array<ENVData*>& input_env_datas_  ) noexcept
+NOINLINE FilterData::FilterData( int id_, Array<ENVData*>& input_env_datas_  ) noexcept
 :
 // ----
 filter_type
@@ -961,7 +896,9 @@ modulate_output
     false,
     generate_param_name(FILTER_NAME,id_,"modulate_output"),
     generate_short_human_name(FILTER_NAME,id_,"mod_volume")
-)
+),
+
+env_data( new ENVData( id_ ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         input_sustains[i].register_always_listener(this);
@@ -969,6 +906,8 @@ modulate_output
 
 NOINLINE FilterData::~FilterData() noexcept
 {
+    delete env_data;
+
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         input_sustains[i].remove_listener(this);
 }
@@ -998,8 +937,10 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_env_datas.getUnchecked(i), src_->input_env_datas.getUnchecked(i) );
+        copy( dest_->input_env_datas.getUnchecked(i), src_->input_env_datas.getUnchecked(i), false );
     }
+
+    copy( dest_->env_data, src_->env_data, true );
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -1025,8 +966,10 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
         params_.add( &data_->input_holds[i] );
         params_.add( &data_->input_sustains[i] );
 
-        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_ );
+        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_, false );
     }
+
+    collect_saveable_parameters( data_->env_data, params_, true );
 }
 
 //==============================================================================
@@ -1443,288 +1386,296 @@ void ChorusData::parameter_value_changed_always_notification( Parameter* param_ 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #define SYNTH_DATA_NAME "SD"
-NOINLINE SynthData::SynthData( DATA_TYPES data_type )
-    :
-    id( data_type ),
+NOINLINE SynthData::SynthData( DATA_TYPES data_type ) noexcept
+:
+id( data_type ),
 
-    volume
-    (
-        MIN_MAX( 0, 1 ),
-        0.9,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
-        generate_short_human_name("MAIN","volume")
-    ),
-    glide
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
-        generate_short_human_name("MAIN","glide")
-    ),
-    delay
-    (
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
-        generate_short_human_name("MAIN","delay")
-    ),
-    effect_bypass
-    (
-        MIN_MAX( 0, 1 ),
-        1,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
-        generate_short_human_name("MAIN","fx_bypass")
-    ),
-    final_compression
-    (
-        MIN_MAX( 0, 1 ),
-        0.7,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
-        generate_short_human_name("MAIN","clipping")
-    ),
-    colour
-    (
-        MIN_MAX( 0, 1 ),
-        0.9,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),
-        generate_short_human_name("MAIN","colour")
-    ),
-    resonance
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
-        generate_short_human_name("MAIN","shape")
-    ),
-    curve_shape
-    (
-        MIN_MAX( 0, 1 ),
-        0.5,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),
-        generate_short_human_name("MAIN","env_shape")
-    ),
-    octave_offset
-    (
-        MIN_MAX( -2, 2 ),
-        0,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
-        generate_short_human_name("MAIN","octave")
-    ),
+volume
+(
+    MIN_MAX( 0, 1 ),
+    0.9,
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
+    generate_short_human_name("MAIN","volume")
+),
+glide
+(
+    MIN_MAX( 0, 1 ),
+    0.05,
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
+    generate_short_human_name("MAIN","glide")
+),
+delay
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
+    generate_short_human_name("MAIN","delay")
+),
+effect_bypass
+(
+    MIN_MAX( 0, 1 ),
+    1,
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
+    generate_short_human_name("MAIN","fx_bypass")
+),
+final_compression
+(
+    MIN_MAX( 0, 1 ),
+    0.7,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
+    generate_short_human_name("MAIN","clipping")
+),
+colour
+(
+    MIN_MAX( 0, 1 ),
+    0.9,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),
+    generate_short_human_name("MAIN","colour")
+),
+resonance
+(
+    MIN_MAX( 0, 1 ),
+    0.05,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
+    generate_short_human_name("MAIN","shape")
+),
+curve_shape
+(
+    MIN_MAX( 0, 1 ),
+    0.5,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),
+    generate_short_human_name("MAIN","env_shape")
+),
+octave_offset
+(
+    MIN_MAX( -2, 2 ),
+    0,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
+    generate_short_human_name("MAIN","octave")
+),
 
-    sync
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
-        generate_short_human_name("MAIN","sync")
-    ),
-    speed
-    (
-        MIN_MAX( 20, 1000 ),
-        128,
-        980*10,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
-        generate_short_human_name("MAIN","speed")
-    ),
+sync
+(
+    true,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
+    generate_short_human_name("MAIN","sync")
+),
+speed
+(
+    MIN_MAX( 20, 1000 ),
+    128,
+    980*10,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
+    generate_short_human_name("MAIN","speed")
+),
 
-    glide_motor_time
-    (
-        MIN_MAX( 1, 20000 ),
-        500,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
-        generate_short_human_name("MAIN","glide_motor_time")
-    ),
-    velocity_glide_time
-    (
-        MIN_MAX( 1, 20000 ),
-        500,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
-        generate_short_human_name("MAIN","velocity_glide_time")
-    ),
+glide_motor_time
+(
+    MIN_MAX( 1, 20000 ),
+    500,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
+    generate_short_human_name("MAIN","glide_motor_time")
+),
+velocity_glide_time
+(
+    MIN_MAX( 1, 20000 ),
+    500,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
+    generate_short_human_name("MAIN","velocity_glide_time")
+),
 
-    ctrl
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
-        generate_short_human_name("MAIN","ctrl")
-    ),
-    midi_pickup_offset
-    (
-        MIN_MAX( 0, 1 ),
-        0.2,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
-        generate_short_human_name("MAIN","midi_pick_up")
-    ),
+ctrl
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
+    generate_short_human_name("MAIN","ctrl")
+),
+midi_pickup_offset
+(
+    MIN_MAX( 0, 1 ),
+    0.2,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
+    generate_short_human_name("MAIN","midi_pick_up")
+),
 
-    // -------------------------------------------------------------
-    osci_show_osc_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
-        generate_short_human_name("MAIN","osci_show_osc_1")
-    ),
-    osci_show_osc_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
-        generate_short_human_name("MAIN","osci_show_osc_2")
-    ),
-    osci_show_osc_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
-        generate_short_human_name("MAIN","osci_show_osc_3")
-    ),
-    osci_show_flt_env_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
-        generate_short_human_name("MAIN","osci_show_flt_env_1")
-    ),
-    osci_show_flt_env_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
-        generate_short_human_name("MAIN","osci_show_flt_env_2")
-    ),
-    osci_show_flt_env_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
-        generate_short_human_name("MAIN","osci_show_flt_env_3")
-    ),
-    osci_show_flt_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
-        generate_short_human_name("MAIN","osci_show_flt_1")
-    ),
-    osci_show_flt_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
-        generate_short_human_name("MAIN","osci_show_flt_2")
-    ),
-    osci_show_flt_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
-        generate_short_human_name("MAIN","osci_show_flt_3")
-    ),
-    osci_show_eq
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
-        generate_short_human_name("MAIN","osci_show_eq")
-    ),
-    osci_show_out
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
-        generate_short_human_name("MAIN","osci_show_out")
-    ),
-    osci_show_out_env
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
-        generate_short_human_name("MAIN","osci_show_out_env")
-    ),
-    osci_show_range
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
-        generate_short_human_name("MAIN","osci_show_range")
-    ),
+// -------------------------------------------------------------
+osci_show_osc_1
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
+    generate_short_human_name("MAIN","osci_show_osc_1")
+),
+osci_show_osc_2
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
+    generate_short_human_name("MAIN","osci_show_osc_2")
+),
+osci_show_osc_3
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
+    generate_short_human_name("MAIN","osci_show_osc_3")
+),
+osci_show_flt_env_1
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
+    generate_short_human_name("MAIN","osci_show_flt_env_1")
+),
+osci_show_flt_env_2
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
+    generate_short_human_name("MAIN","osci_show_flt_env_2")
+),
+osci_show_flt_env_3
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
+    generate_short_human_name("MAIN","osci_show_flt_env_3")
+),
+osci_show_flt_1
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
+    generate_short_human_name("MAIN","osci_show_flt_1")
+),
+osci_show_flt_2
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
+    generate_short_human_name("MAIN","osci_show_flt_2")
+),
+osci_show_flt_3
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
+    generate_short_human_name("MAIN","osci_show_flt_3")
+),
+osci_show_eq
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
+    generate_short_human_name("MAIN","osci_show_eq")
+),
+osci_show_out
+(
+    true,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
+    generate_short_human_name("MAIN","osci_show_out")
+),
+osci_show_out_env
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
+    generate_short_human_name("MAIN","osci_show_out_env")
+),
+osci_show_range
+(
+    MIN_MAX( 0, 1 ),
+    0.05,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
+    generate_short_human_name("MAIN","osci_show_range")
+),
 
-    // -------------------------------------------------------------
-    num_extra_threads
-    (
-        MIN_MAX( 0, THREAD_LIMIT ),
-        0,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-        generate_short_human_name("MAIN","cpus")
-    ),
+// -------------------------------------------------------------
+num_extra_threads
+(
+    MIN_MAX( 0, THREAD_LIMIT ),
+    0,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
+    generate_short_human_name("MAIN","cpus")
+),
 
-    // -------------------------------------------------------------
-    animate_input_env
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_input_env"),
-        generate_short_human_name("animate_input_env")
-    ),
-    animate_eq_env
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_eq_env"),
-        generate_short_human_name("animate_eq_env")
-    ),
-    animate_modulations
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),
-        generate_short_human_name("animate_modulations")
-    ),
+// -------------------------------------------------------------
+animate_input_env
+(
+    true,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_input_env"),
+    generate_short_human_name("animate_input_env")
+),
+animate_eq_env
+(
+    true,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_eq_env"),
+    generate_short_human_name("animate_eq_env")
+),
+animate_modulations
+(
+    true,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),
+    generate_short_human_name("animate_modulations")
+),
 
-    // -------------------------------------------------------------
-    morhp_states
-    (
-        SUM_MORPHER_GROUPS,
+// -------------------------------------------------------------
+morhp_states
+(
+    SUM_MORPHER_GROUPS,
 
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
 
-        SYNTH_DATA_NAME,MASTER,
-        "morph_state","morph",false
-    ),
-    morhp_switch_states
-    (
-        SUM_MORPHER_GROUPS,
+    SYNTH_DATA_NAME,MASTER,
+    "morph_state","morph",false
+),
+morhp_switch_states
+(
+    SUM_MORPHER_GROUPS,
 
-        LEFT,
+    LEFT,
 
-        SYNTH_DATA_NAME,MASTER,
-        "morph_switch_state","morph_tgl",false
-    ),
-    linear_morhp_state
-    (
-        MIN_MAX( 0, 3 ),
-        0,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
-        generate_short_human_name("morph_line")
-    ),
-    morph_motor_time
-    (
-        MIN_MAX( 1, 20000 ),
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
-        generate_short_human_name("morph_motor")
-    ),
+    SYNTH_DATA_NAME,MASTER,
+    "morph_switch_state","morph_tgl",false
+),
+linear_morhp_state
+(
+    MIN_MAX( 0, 3 ),
+    0,
+    100,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
+    generate_short_human_name("morph_line")
+),
+morph_motor_time
+(
+    MIN_MAX( 1, 20000 ),
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
+    generate_short_human_name("morph_motor")
+),
+
+env_data( new ENVData( MAIN_ENV ) ),
+
+env_preset_def(new ENVPresetDef( MASTER ) ),
+eq_data(new EQData(MASTER, env_preset_def)),
+arp_sequencer_data(new ArpSequencerData( MASTER )),
+reverb_data(new ReverbData( MASTER ) ),
+chorus_data(new ChorusData( MASTER, env_preset_def )),
 
 
-    env_preset_def(new ENVPresetDef( MASTER ) ),
-    eq_data(new EQData(MASTER, env_preset_def)),
-    arp_sequencer_data(new ArpSequencerData( MASTER )),
-    reverb_data(new ReverbData( MASTER ) ),
-    chorus_data(new ChorusData( MASTER, env_preset_def )),
-
-
-    current_program(-1),
-    current_program_abs(-1),
-    current_bank(0)
+current_program(-1),
+current_program_abs(-1),
+current_bank(0)
 {
+    // SINGLES
     if( data_type == MASTER )
     {
         mono_ParameterOwnerStore::getInstance()->env_preset_def = env_preset_def;
@@ -1735,29 +1686,41 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
         mono_ParameterOwnerStore::getInstance()->synth_data = this;
     }
 
+    // OSCS DATA
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
         OSCData* data = new OSCData(i);
         osc_datas.add( data );
-        if( data_type == MASTER )
-            mono_ParameterOwnerStore::getInstance()->osc_datas.add( data );
-    }
 
+        if( data_type == MASTER )
+        {
+            mono_ParameterOwnerStore::getInstance()->osc_datas.add( data );
+            mono_ParameterOwnerStore::getInstance()->osc_datas.minimiseStorageOverheads();
+        }
+    }
+    osc_datas.minimiseStorageOverheads();
+
+    // LFO DATA
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
         LFOData* data = new LFOData(i);
-        if( data_type == MASTER )
-            mono_ParameterOwnerStore::getInstance()->lfo_datas.add( data );
         lfo_datas.add( data );
-    }
 
-    for( int i = 0 ; i != SUM_FILTERS+1 ; ++i )
-    {
-        ENVData* data = new ENVData(i);
         if( data_type == MASTER )
-            mono_ParameterOwnerStore::getInstance()->env_datas.add( data );
-        env_datas.add( data );
+        {
+            mono_ParameterOwnerStore::getInstance()->lfo_datas.add( data );
+            mono_ParameterOwnerStore::getInstance()->lfo_datas.minimiseStorageOverheads();
+        }
     }
+    lfo_datas.minimiseStorageOverheads();
+
+
+
+
+
+
+
+
 
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
@@ -1791,7 +1754,7 @@ NOINLINE SynthData::SynthData( DATA_TYPES data_type )
     if( data_type == MASTER )
         refresh_banks_and_programms();
 }
-NOINLINE SynthData::~SynthData()
+NOINLINE SynthData::~SynthData() noexcept
 {
     eq_data = nullptr;
     arp_sequencer_data = nullptr;
@@ -1802,108 +1765,100 @@ NOINLINE SynthData::~SynthData()
     osc_datas.clear();
     filter_input_env_datas.clear();
     filter_datas.clear();
-    env_datas.clear();
 
     // AS LAST!! unregister listeners
     env_preset_def = nullptr;
 }
 
 //==============================================================================
-inline const SynthData& SynthData::operator= ( const SynthData& other_ ) noexcept {
-    COPY_FROM_OTHER( volume )
-    COPY_FROM_OTHER( glide )
-    COPY_FROM_OTHER( delay )
-    COPY_FROM_OTHER( effect_bypass )
-    COPY_FROM_OTHER( speed )
-    COPY_FROM_OTHER( glide_motor_time )
-    COPY_FROM_OTHER( velocity_glide_time )
-    COPY_FROM_OTHER( sync )
+static inline void copy( SynthData* dest_, const SynthData* src_ ) noexcept
+{
+    dest_->volume = src_->volume;
+    dest_->glide = src_->glide;
+    dest_->delay = src_->delay;
+    dest_->effect_bypass = src_->effect_bypass;
+    dest_->speed = src_->speed;
+    dest_->glide_motor_time = src_->glide_motor_time;
+    dest_->velocity_glide_time = src_->velocity_glide_time;
+    dest_->sync = src_->sync;
+    dest_->colour = src_->colour;
+    dest_->resonance = src_->resonance;
+    dest_->curve_shape = src_->curve_shape;
+    dest_->octave_offset = src_->octave_offset;
+    dest_->final_compression = src_->final_compression;
 
-    COPY_FROM_OTHER( colour )
-    COPY_FROM_OTHER( resonance )
-    COPY_FROM_OTHER( curve_shape )
-    COPY_FROM_OTHER( octave_offset )
-
-    for( int i = 0 ; i != other_.lfo_datas.size() ; ++i )
+    for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        copy( lfo_datas[i], other_.lfo_datas[i] );
+        copy( dest_->lfo_datas[i], src_->lfo_datas[i] );
     }
 
-    for( int i = 0 ; i != other_.osc_datas.size() ; ++i )
+    for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        copy( osc_datas[i], other_.osc_datas[i] );
+        copy( dest_->osc_datas[i], src_->osc_datas[i] );
     }
 
-    for( int i = 0 ; i != other_.env_datas.size() ; ++i )
+    for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        copy( env_datas[i], other_.env_datas[i] );
+        copy( dest_->filter_datas[i], src_->filter_datas[i] );
     }
 
-    for( int i = 0 ; i != other_.filter_datas.size() ; ++i )
-    {
-        copy( filter_datas[i], other_.filter_datas[i] );
-    }
-
-    copy( env_preset_def, other_.env_preset_def );
-    copy( eq_data, other_.eq_data );
-    copy( arp_sequencer_data, other_.arp_sequencer_data );
-    copy( reverb_data, other_.reverb_data );
-    copy( chorus_data, other_.chorus_data );
-
-    final_compression = other_.final_compression;
+    copy( dest_->env_data, src_->env_data, true );
+    copy( dest_->env_preset_def, src_->env_preset_def );
+    copy( dest_->eq_data, src_->eq_data );
+    copy( dest_->arp_sequencer_data, src_->arp_sequencer_data );
+    copy( dest_->reverb_data, src_->reverb_data );
+    copy( dest_->chorus_data, src_->chorus_data );
 
     // NO NEED FOR COPY
     // morhp_states
-
-    return *this;
 }
-NOINLINE void SynthData::get_saveable_params( Array< Parameter* >& params_ ) noexcept
+static inline void collect_saveable_parameters( SynthData* data_, Array< Parameter* >& params_ ) noexcept
 {
-    params_.add( &volume );
-    params_.add( &glide );
-    params_.add( &delay );
-    params_.add( &effect_bypass );
-    params_.add( &final_compression );
-    params_.add( &colour );
-    params_.add( &resonance );
-    params_.add( &curve_shape );
-    params_.add( &octave_offset );
-    params_.add( &morph_motor_time );
-    params_.add( &morph_motor_time );
-    params_.add( &speed );
-    params_.add( &glide_motor_time );
-    params_.add( &velocity_glide_time );
-    params_.add( &midi_pickup_offset );
-    params_.add( &ctrl );
-    params_.add( &animate_input_env );
-    params_.add( &animate_eq_env );
-    params_.add( &animate_modulations );
-    params_.add( &sync );
+    params_.add( &data_->volume );
+    params_.add( &data_->glide );
+    params_.add( &data_->delay );
+    params_.add( &data_->effect_bypass );
+    params_.add( &data_->final_compression );
+    params_.add( &data_->colour );
+    params_.add( &data_->resonance );
+    params_.add( &data_->curve_shape );
+    params_.add( &data_->octave_offset );
+    params_.add( &data_->morph_motor_time );
+    params_.add( &data_->morph_motor_time );
+    params_.add( &data_->speed );
+    params_.add( &data_->glide_motor_time );
+    params_.add( &data_->velocity_glide_time );
+    params_.add( &data_->midi_pickup_offset );
+    params_.add( &data_->ctrl );
+    params_.add( &data_->animate_input_env );
+    params_.add( &data_->animate_eq_env );
+    params_.add( &data_->animate_modulations );
+    params_.add( &data_->sync );
 
-    params_.add( &osci_show_osc_1 );
-    params_.add( &osci_show_osc_2 );
-    params_.add( &osci_show_osc_3 );
-    params_.add( &osci_show_flt_env_1 );
-    params_.add( &osci_show_flt_env_2 );
-    params_.add( &osci_show_flt_env_3 );
-    params_.add( &osci_show_flt_1 );
-    params_.add( &osci_show_flt_2 );
-    params_.add( &osci_show_flt_3 );
-    params_.add( &osci_show_eq );
-    params_.add( &osci_show_out );
-    params_.add( &osci_show_out_env );
-    params_.add( &osci_show_range );
+    params_.add( &data_->osci_show_osc_1 );
+    params_.add( &data_->osci_show_osc_2 );
+    params_.add( &data_->osci_show_osc_3 );
+    params_.add( &data_->osci_show_flt_env_1 );
+    params_.add( &data_->osci_show_flt_env_2 );
+    params_.add( &data_->osci_show_flt_env_3 );
+    params_.add( &data_->osci_show_flt_1 );
+    params_.add( &data_->osci_show_flt_2 );
+    params_.add( &data_->osci_show_flt_3 );
+    params_.add( &data_->osci_show_eq );
+    params_.add( &data_->osci_show_out );
+    params_.add( &data_->osci_show_out_env );
+    params_.add( &data_->osci_show_range );
 
-    params_.add( &num_extra_threads );
+    params_.add( &data_->num_extra_threads );
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
     {
-        params_.add( &morhp_states[morpher_id] );
-        params_.add( &morhp_switch_states[morpher_id] );
+        params_.add( &data_->morhp_states[morpher_id] );
+        params_.add( &data_->morhp_switch_states[morpher_id] );
     }
 }
-NOINLINE void SynthData::colect_saveable_parameters() noexcept {
-
+NOINLINE void SynthData::colect_saveable_parameters() noexcept
+{
     // on top to be the first on load and get the right update order (bit hacky, but ok ;--)
     collect_saveable_parameters( env_preset_def, saveable_parameters );
 
@@ -1922,18 +1877,18 @@ NOINLINE void SynthData::colect_saveable_parameters() noexcept {
         collect_saveable_parameters( filter_datas[flt_id], saveable_parameters );
     }
 
-    for( int i = 0 ; i != SUM_ENVS ; ++i )
-    {
-        collect_saveable_parameters( env_datas[i], saveable_parameters );
-    }
-
+    collect_saveable_parameters( env_data, saveable_parameters, true );
     collect_saveable_parameters( eq_data, saveable_parameters );
     collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
 
-    get_saveable_params( saveable_parameters );
+    collect_saveable_parameters( this, saveable_parameters );
+
+    saveable_parameters.minimiseStorageOverheads();
 }
+
+//==============================================================================
 NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
     {
@@ -1944,14 +1899,14 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
             morph_group_main.register_parameter( volume.ptr(), data_type == MASTER );
             morph_group_main.register_parameter( final_compression.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->attack.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_attack_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->decay.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_decay_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->sustain_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->release.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_datas[MAIN_ENV]->max_release_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->attack.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->decay.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->max_decay_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->sustain.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->sustain_time.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->release.ptr(), data_type == MASTER  );
+            morph_group_main.register_parameter( env_data->max_release_time.ptr(), data_type == MASTER  );
 
             morph_group_main.register_parameter( env_preset_def->attack_1.ptr(), data_type == MASTER );
             morph_group_main.register_parameter( env_preset_def->decay_1.ptr(), data_type == MASTER );
@@ -2079,14 +2034,14 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_1.register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_1.register_parameter( env_datas[0]->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->release.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( env_datas[0]->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
@@ -2129,14 +2084,14 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_2.register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_2.register_parameter( env_datas[1]->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->release.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( env_datas[1]->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
@@ -2179,14 +2134,14 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_filter_3.register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_3.register_parameter( env_datas[2]->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->release.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( env_datas[2]->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
         }
 
@@ -2416,7 +2371,7 @@ void SynthData::MorpherSelection::clean_header_selections() {
     if( ! active_morph_selections.contains( ARP_TUNE )
             || ! active_morph_selections.contains( ARP_VELOCITY )
             || ! active_morph_selections.contains( ARP_GLIDE_SHUFFLE )
-            || ! active_morph_selections.contains( ARP_SWITCHS ) ) {
+    || ! active_morph_selections.contains( ARP_SWITCHS ) ) {
         active_morph_selections.removeFirstMatchingValue( ARP );
     }
     else if( ! active_morph_selections.contains( ARP ) )
@@ -2512,11 +2467,13 @@ bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id
 
     return success;
 }
-void SynthData::update_left_morph_source( int morpher_id_ ) noexcept {
-    (*left_morph_datas.getUnchecked(morpher_id_)) = *this;
+void SynthData::update_left_morph_source( int morpher_id_ ) noexcept
+{
+    copy( left_morph_datas.getUnchecked(morpher_id_), this );
 }
-void SynthData::update_right_morph_source( int morpher_id_ ) noexcept {
-    (*right_morph_datas.getUnchecked(morpher_id_)) = *this;
+void SynthData::update_right_morph_source( int morpher_id_ ) noexcept
+{
+    copy( right_morph_datas.getUnchecked(morpher_id_), this );
 }
 void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
@@ -3408,6 +3365,10 @@ NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore() : ui_env(nullptr),
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
+
+
+
 
 
 

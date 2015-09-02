@@ -2136,9 +2136,10 @@ inline void ENV::update_stage() noexcept
     {
         float sustain_time = env_data->sustain_time;
         if( sustain_time == 1.0f )
-            sustain_time = sustain_time*1000;
+	    // TODO unlimited
+            sustain_time = sustain_time*100000;
         else
-            sustain_time = sustain_time*8;
+            sustain_time = sustain_time*10000;
 
         envelop.update( sustain_smoother.tick(), sustain_time );
         current_stage = SUSTAIN;
@@ -2905,6 +2906,11 @@ class FilterProcessor
 
     DoubleAnalogFilter double_filter[SUM_INPUTS_PER_FILTER];
     friend class mono_ParameterOwnerStore;
+
+public:
+    ScopedPointer< ENV > env;
+
+private:
     OwnedArray< ENV > input_envs;
     EnvelopeFollower env_follower;
 
@@ -2939,32 +2945,33 @@ private:
                            int num_samples ) noexcept;
 
 public:
-    NOINLINE FilterProcessor( const SynthData* synth_data_, int id_ );
-    NOINLINE ~FilterProcessor();
+    NOINLINE FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept;
+    NOINLINE ~FilterProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterProcessor)
 };
 
 // -----------------------------------------------------------------
-NOINLINE FilterProcessor::FilterProcessor( const SynthData* synth_data_, int id_ )
-    :
-    input_envs(),
-    env_follower(),
+NOINLINE FilterProcessor::FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept
+:
+env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
+     input_envs(),
+     env_follower(),
 
-    cutoff_smoother( &GET_DATA( filter_datas[id_] ).cutoff ),
-    resonance_smoother( &GET_DATA( filter_datas[id_] ).resonance ),
-    gain_smoother( &GET_DATA( filter_datas[id_] ).gain ),
-    distortion_smoother( &GET_DATA( filter_datas[id_] ).distortion ),
-    output_smoother( &GET_DATA( filter_datas[id_] ).output ),
-    mix_smoother( &GET_DATA( filter_datas[id_] ).adsr_lfo_mix ),
-    clipping_smoother( &GET_DATA( filter_datas[id_] ).output_clipping ),
-    input_sustains { &GET_DATA( filter_datas[id_] ).input_sustains[0], &GET_DATA( filter_datas[id_] ).input_sustains[1], &GET_DATA( filter_datas[id_] ).input_sustains[2] },
+     cutoff_smoother( &GET_DATA( filter_datas[id_] ).cutoff ),
+     resonance_smoother( &GET_DATA( filter_datas[id_] ).resonance ),
+     gain_smoother( &GET_DATA( filter_datas[id_] ).gain ),
+     distortion_smoother( &GET_DATA( filter_datas[id_] ).distortion ),
+     output_smoother( &GET_DATA( filter_datas[id_] ).output ),
+     mix_smoother( &GET_DATA( filter_datas[id_] ).adsr_lfo_mix ),
+     clipping_smoother( &GET_DATA( filter_datas[id_] ).output_clipping ),
+     input_sustains { &GET_DATA( filter_datas[id_] ).input_sustains[0], &GET_DATA( filter_datas[id_] ).input_sustains[1], &GET_DATA( filter_datas[id_] ).input_sustains[2] },
 
-               id(id_),
+     id(id_),
 
-               synth_data( synth_data_ ),
-               filter_data( GET_DATA_PTR( filter_datas[id_] ) ),
-               data_buffer( GET_DATA_PTR( data_buffer ) )
+     synth_data( synth_data_ ),
+     filter_data( GET_DATA_PTR( filter_datas[id_] ) ),
+     data_buffer( GET_DATA_PTR( data_buffer ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
@@ -2976,11 +2983,15 @@ NOINLINE FilterProcessor::~FilterProcessor() {}
 // -----------------------------------------------------------------
 inline void FilterProcessor::start_attack() noexcept
 {
+    env->start_attack();
+
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
         input_envs.getUnchecked(input_id)->start_attack();
 }
 inline void FilterProcessor::start_release() noexcept
 {
+    env->set_to_release();
+
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
         input_envs.getUnchecked(input_id)->set_to_release();
 }
@@ -4540,7 +4551,7 @@ NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_
     delayBuffer ( DELAY_BUFFER_SIZE ),
     delay_smoother( &synth_data_->delay ),
 
-    final_env( new ENV( synth_data_, GET_DATA_PTR( env_datas[MAIN_ENV] ) ) ),
+    final_env( new ENV( synth_data_, synth_data_->env_data ) ),
     velocity_glide( sequencer_velocity_ ),
 
     bypass_smoother( &synth_data_->effect_bypass ),
@@ -5070,11 +5081,9 @@ audio_processor( audio_processor_ ),
 
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
     filter_processors = new FilterProcessor*[SUM_FILTERS];
-    filter_envs = new ENV*[SUM_FILTERS];
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
         filter_processors[i] = new FilterProcessor( synth_data_, i );
-        filter_envs[i] = new ENV( synth_data_, GET_DATA_PTR( env_datas[i] ) );
     }
 
     mono_ParameterOwnerStore::getInstance()->voice = this;
@@ -5085,7 +5094,6 @@ NOINLINE MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 
     for( int i = SUM_FILTERS-1 ; i > -1 ; --i )
     {
-        delete filter_envs[i];
         delete filter_processors[i];
     }
     for( int i = SUM_LFOS-1 ; i > -1 ; --i )
@@ -5143,8 +5151,8 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
                 was_arp_started = false;
 
                 // STOP FILTER ENV
-                for( int i = 0 ; i != SUM_FILTERS ; ++i ) {
-                    filter_envs[i]->set_to_release();
+                for( int i = 0 ; i != SUM_FILTERS ; ++i )
+                {
                     filter_processors[i]->start_release();
                 }
                 eq_processor->start_release();
@@ -5164,7 +5172,6 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
                 // RESTART FILTERS
                 for( int i = 0 ; i != SUM_FILTERS ; ++i )
                 {
-                    filter_envs[i]->start_attack();
                     filter_processors[i]->start_attack();
                 }
                 eq_processor->start_attack();
@@ -5194,18 +5201,20 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
-        filter_envs[0]->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
+        filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
         lfos[0]->process( step_number_, num_samples );
         oscs[0]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 0
 
         // SUB THREAD
         // DEPENCIES OSC 0
-        struct Executer : public mono_Thread {
+        struct Executer : public mono_Thread
+        {
             MoniqueSynthesiserVoice*const voice;
             const int num_samples;
             const int step_number;
-            void exec() noexcept override {
-                voice->filter_envs[1]->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
+            void exec() noexcept override
+            {
+                voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
                 voice->lfos[1]->process( step_number, num_samples );
                 voice->oscs[1]->process( voice->data_buffer, num_samples );
             }
@@ -5218,7 +5227,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         Executer executer( this, num_samples, step_number_ );
         executer.try_run_paralel();
 
-        filter_envs[2]->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
+        filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
         lfos[2]->process( step_number_, num_samples );
         oscs[2]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
 
@@ -5287,7 +5296,6 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     {
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
         {
-            filter_envs[voice_id]->start_attack();
             filter_processors[voice_id]->start_attack();
         }
         eq_processor->start_attack();
@@ -5313,8 +5321,8 @@ void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
     else // STOP
     {
         if( allowTailOff ) {
-            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id ) {
-                filter_envs[voice_id]->set_to_release();
+            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id ) 
+	    {
                 filter_processors[voice_id]->start_release();
             }
             eq_processor->start_release();
@@ -5337,7 +5345,7 @@ void MoniqueSynthesiserVoice::controllerMoved (int, int ) {}
 //==============================================================================
 float MoniqueSynthesiserVoice::get_filter_env_amp( int filter_id_ ) const noexcept
 {
-    return filter_envs[filter_id_]->get_amp();
+    return filter_processors[filter_id_]->env->get_amp();
 }
 float MoniqueSynthesiserVoice::get_lfo_amp( int lfo_id_ ) const noexcept
 {

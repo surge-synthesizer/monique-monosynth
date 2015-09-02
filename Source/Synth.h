@@ -53,7 +53,6 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     OSC** oscs;
     LFO** lfos;
     FilterProcessor** filter_processors;
-    ENV** filter_envs;
 
     //==============================================================================
     bool is_stopped;

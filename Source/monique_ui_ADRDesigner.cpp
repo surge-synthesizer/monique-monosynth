@@ -28,42 +28,43 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void UiEditorSettings::refresh() noexcept
 {
+    float sample_rate = RuntimeNotifyer::getInstance()->get_sample_rate();
 
     slider_attack_1->setValue( env_preset_def->attack_1*1000, dontSendNotification );
     slider_attack_2->setValue( env_preset_def->attack_2*1000, dontSendNotification );
     slider_attack_3->setValue( env_preset_def->attack_3*1000, dontSendNotification );
     slider_attack_4->setValue( env_preset_def->attack_4*1000, dontSendNotification );
-    label_attack_1->setText(String(env_preset_def->attack_1*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_attack_2->setText(String(env_preset_def->attack_2*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_attack_3->setText(String(env_preset_def->attack_3*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_attack_4->setText(String(env_preset_def->attack_4*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_attack_1->setText(String( env_preset_def->attack_1*10000 )+String("ms"), dontSendNotification);
+    label_attack_2->setText(String( env_preset_def->attack_2*10000 )+String("ms"), dontSendNotification);
+    label_attack_3->setText(String( env_preset_def->attack_3*10000 )+String("ms"), dontSendNotification);
+    label_attack_4->setText(String( env_preset_def->attack_4*10000 )+String("ms"), dontSendNotification);
 
     slider_decay_1->setValue( env_preset_def->decay_1*1000, dontSendNotification );
     slider_decay_2->setValue( env_preset_def->decay_2*1000, dontSendNotification );
     slider_decay_3->setValue( env_preset_def->decay_3*1000, dontSendNotification );
     slider_decay_4->setValue( env_preset_def->decay_4*1000, dontSendNotification );
-    label_decay_1->setText(String(env_preset_def->decay_1*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_decay_2->setText(String(env_preset_def->decay_2*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_decay_3->setText(String(env_preset_def->decay_3*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
-    label_decay_4->setText(String(env_preset_def->decay_4*env_preset_def->max_release_time)+String("ms"), dontSendNotification);
+    label_decay_1->setText(String( env_preset_def->decay_1*10000 )+String("ms"), dontSendNotification);
+    label_decay_2->setText(String( env_preset_def->decay_2*10000 )+String("ms"), dontSendNotification);
+    label_decay_3->setText(String( env_preset_def->decay_3*10000 )+String("ms"), dontSendNotification);
+    label_decay_4->setText(String( env_preset_def->decay_4*10000 )+String("ms"), dontSendNotification);
 
-    slider_sustain_time_1->setValue( env_preset_def->sustain_time_1*1000, dontSendNotification );
-    slider_sustain_time_2->setValue( env_preset_def->sustain_time_2*1000, dontSendNotification );
-    slider_sustain_time_3->setValue( env_preset_def->sustain_time_3*1000, dontSendNotification );
-    slider_sustain_time_4->setValue( env_preset_def->sustain_time_4*1000, dontSendNotification );
-    label_sustain_time_1->setText(String(slider_sustain_time_1->getValue()), dontSendNotification);
-    label_sustain_time_2->setText(String(slider_sustain_time_2->getValue()), dontSendNotification);
-    label_sustain_time_3->setText(String(slider_sustain_time_3->getValue()), dontSendNotification);
-    label_sustain_time_4->setText(String(slider_sustain_time_4->getValue()), dontSendNotification);
+    slider_sustain_time_1->setValue( env_preset_def->sustain_time_1*10000, dontSendNotification );
+    slider_sustain_time_2->setValue( env_preset_def->sustain_time_2*10000, dontSendNotification );
+    slider_sustain_time_3->setValue( env_preset_def->sustain_time_3*10000, dontSendNotification );
+    slider_sustain_time_4->setValue( env_preset_def->sustain_time_4*10000, dontSendNotification );
+    label_sustain_time_1->setText(String( env_preset_def->sustain_time_1*10000 ), dontSendNotification);
+    label_sustain_time_2->setText(String( env_preset_def->sustain_time_2*10000 ), dontSendNotification);
+    label_sustain_time_3->setText(String( env_preset_def->sustain_time_3*10000 ), dontSendNotification);
+    label_sustain_time_4->setText(String( env_preset_def->sustain_time_4*10000 ), dontSendNotification);
 
     slider_release_1->setValue( env_preset_def->release_1*1000, dontSendNotification );
     slider_release_2->setValue( env_preset_def->release_2*1000, dontSendNotification );
     slider_release_3->setValue( env_preset_def->release_3*1000, dontSendNotification );
     slider_release_4->setValue( env_preset_def->release_4*1000, dontSendNotification );
-    label_release_1->setText(String(round01(env_preset_def->release_1*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
-    label_release_2->setText(String(round01(env_preset_def->release_2*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
-    label_release_3->setText(String(round01(env_preset_def->release_3*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
-    label_release_4->setText(String(round01(env_preset_def->release_4*env_preset_def->max_release_time))+String("ms"), dontSendNotification);
+    label_release_1->setText(String( env_preset_def->release_1*10000 )+String("ms"), dontSendNotification);
+    label_release_2->setText(String( env_preset_def->release_2*10000 )+String("ms"), dontSendNotification);
+    label_release_3->setText(String( env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
+    label_release_4->setText(String( env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
 
     if( last_repaint_counter != repaint_counter )
     {

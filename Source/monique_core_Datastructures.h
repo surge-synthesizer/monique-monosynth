@@ -306,10 +306,6 @@ struct ENVPresetDef
     Parameter sustain_time_4;
     Parameter release_4;
 
-    IntParameter max_attack_time;
-    IntParameter max_decay_time;
-    IntParameter max_release_time;
-
     //==========================================================================
     NOINLINE ENVPresetDef( int id_ ) noexcept;
     NOINLINE ~ENVPresetDef() noexcept;
@@ -332,10 +328,10 @@ struct ENVPresetData : public ENVData, ParameterListener
     static float get_release_at( const ENVPresetDef& def_, float state_ ) noexcept;
 
 private:
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
-    void update_adr_values( float value_ ) noexcept;
-    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed( Parameter* ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* ) noexcept override;
+    void update_adr_values() noexcept;
+    void parameter_value_on_load_changed( Parameter* ) noexcept override;
 
 public:
     //==========================================================================
@@ -376,6 +372,8 @@ struct FilterData : ParameterListener
     ModulatedParameter output;
     Parameter output_clipping;
     BoolParameter modulate_output;
+    
+    ENVData*const env_data;
 
 private:
     //==========================================================================
@@ -496,16 +494,14 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ChorusData )
 };
 
-
-
-
-
-
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
-// TODO LFO SNAP & SNAP DURATION
-// TODO get global saveable parameters
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 #define THREAD_LIMIT 4
 struct SynthData : ParameterListener
@@ -554,6 +550,8 @@ struct SynthData : ParameterListener
     BoolParameter animate_input_env;
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
+    
+    ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
@@ -561,29 +559,52 @@ struct SynthData : ParameterListener
     ScopedPointer< ENVPresetDef > env_preset_def;
     OwnedArray< FilterData > filter_datas;
     ScopedPointer< EQData > eq_data;
-    OwnedArray< ENVData > env_datas;
     ScopedPointer< ArpSequencerData > arp_sequencer_data;
     ScopedPointer< ReverbData > reverb_data;
     ScopedPointer< ChorusData > chorus_data;
 
-public:
-    inline const SynthData& operator= ( const SynthData& other_ ) noexcept;
-
-    // ==============================================================================
 private:
+    // ==============================================================================
     Array< Parameter* > saveable_parameters;
-    NOINLINE void get_saveable_params( Array< Parameter* >& params_ ) noexcept;
     NOINLINE void colect_saveable_parameters() noexcept;
+
 public:
-    Array< Parameter* >& get_atomateable_parameters() noexcept {
+    inline Array< Parameter* >& get_atomateable_parameters() noexcept
+    {
         return saveable_parameters;
     }
 
-public:
-    NOINLINE void save_to( XmlElement* xml ) const noexcept;
-    NOINLINE void read_from( const XmlElement* xml ) noexcept;
-    NOINLINE void save_midi() const noexcept;
-    NOINLINE void read_midi() noexcept;
+    // ==============================================================================
+    NOINLINE SynthData( DATA_TYPES data_type ) noexcept;
+    NOINLINE ~SynthData() noexcept;
+
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+    // MORPH
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // ==============================================================================
 private:
@@ -597,7 +618,8 @@ private:
 
     // CONTAINS THE IDS OF THE MORPH SOURCES
 public:
-    enum MORPH_SELCTIONS_IDS {
+    enum MORPH_SELCTIONS_IDS 
+    {
         MAIN = 0,
         OSC_1,
         OSC_2,
@@ -720,8 +742,7 @@ public:
     // ==============================================================================
 
 public:
-    NOINLINE SynthData( DATA_TYPES data_type );
-    NOINLINE ~SynthData();
+
 
 private:
     StringArray banks;
@@ -771,6 +792,24 @@ private:
     MONO_NOT_CTOR_COPYABLE( SynthData )
     MONO_NOT_MOVE_COPY_OPERATOR( SynthData )
     JUCE_LEAK_DETECTOR( SynthData )
+
+
+
+
+
+
+
+
+
+
+
+
+public:
+    // ==============================================================================
+    NOINLINE void save_to( XmlElement* xml ) const noexcept;
+    NOINLINE void read_from( const XmlElement* xml ) noexcept;
+    NOINLINE void save_midi() const noexcept;
+    NOINLINE void read_midi() noexcept;
 };
 
 // ==============================================================================
@@ -792,7 +831,6 @@ public:
     Array< FilterData* > filter_datas;
     ENVPresetDef* env_preset_def;
     EQData* eq_data;
-    Array< ENVData* > env_datas;
     ArpSequencerData* arp_data;
     ReverbData* reverb_data;
     ChorusData* chorus_data;
