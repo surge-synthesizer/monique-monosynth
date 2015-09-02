@@ -8,8 +8,16 @@
   ==============================================================================
 */
 
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 #include "Synth.h"
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float positive( float x ) noexcept
+{
+    return x < 0 ? x * -1 : x;
+}
 
 //==============================================================================
 NOINLINE RuntimeInfo::RuntimeInfo()
@@ -152,7 +160,7 @@ NOINLINE OSCData::OSCData( int id_ )
     ),
     fm_wave
     (
-        FM_WAVE_SINE,
+        true,
         generate_param_name(OSC_NAME,id,"fm_wave"),
         generate_short_human_name(OSC_NAME,id_,"fm_shot")
     ),
@@ -865,7 +873,8 @@ NOINLINE FilterData::~FilterData()
 
 void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i ) {
+    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i ) 
+    {
         if( input_sustains[i].ptr() == param_ )
         {
             // TODO copy sustain!

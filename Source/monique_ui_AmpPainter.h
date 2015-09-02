@@ -22,7 +22,8 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
-#include "SynthData.h"
+
+#include "monique_core_Datastructures.h"
 
 //==============================================================================
 //==============================================================================

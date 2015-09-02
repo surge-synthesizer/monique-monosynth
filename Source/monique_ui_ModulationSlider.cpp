@@ -20,7 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
 #include "Synth.h"
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 #include "UiEditorSynthLite.h"
 
 // BACKUP FROM MONO UI UTILS

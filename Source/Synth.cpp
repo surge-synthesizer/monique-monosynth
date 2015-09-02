@@ -1,6 +1,6 @@
 
 #include "Synth.h"
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 
 #include "monique_ui_AmpPainter.h"
 #include "PluginProcessor.h"
@@ -489,6 +489,14 @@ static inline float wave_mixer_v2( float s_, float s2_ ) noexcept
     }
 
     return s_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float positive( float x ) noexcept
+{
+    return x < 0 ? x * -1 : x;
 }
 
 //==============================================================================
@@ -4903,7 +4911,7 @@ audio_processor( audio_processor_ ),
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
     filter_processors = new FilterProcessor*[SUM_FILTERS];
     filter_envs = new ENV*[SUM_FILTERS];
-    for( int i = 0 ; i != SUM_FILTERS ; ++i ) 
+    for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
         filter_processors[i] = new FilterProcessor( i );
         filter_envs[i] = new ENV( DATA( env_datas[i] ) );

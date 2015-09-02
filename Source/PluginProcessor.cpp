@@ -1,7 +1,7 @@
 
 #include "PluginProcessor.h"
 #include "UiEditorSynthLite.h"
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 #include "Synth.h"
 
 #include "monique_ui_SegmentedMeter.h"
@@ -172,6 +172,8 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
 {
     std::cout << "MONIQUE: init processor" << std::endl;
 
+    FloatVectorOperations::enableFlushToZeroMode(true);
+    
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 

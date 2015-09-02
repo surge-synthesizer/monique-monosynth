@@ -12,6 +12,14 @@
     </GROUP>
     <GROUP id="{388FBA28-CADB-4019-1A38-AFB2EBC5FC12}" name="Source">
       <GROUP id="{AF2B749D-8206-B30F-0788-6CC655365B13}" name="Monique">
+        <FILE id="E8jlRT" name="monique_core_Parameters.cpp" compile="1" resource="0"
+              file="../Source/monique_core_Parameters.cpp"/>
+        <FILE id="oflf2H" name="monique_core_Parameters.h" compile="0" resource="0"
+              file="../Source/monique_core_Parameters.h"/>
+        <FILE id="w2DXPM" name="monique_core_Datastructures.cpp" compile="1"
+              resource="0" file="../Source/monique_core_Datastructures.cpp"/>
+        <FILE id="v0SFXG" name="monique_core_Datastructures.h" compile="0"
+              resource="0" file="../Source/monique_core_Datastructures.h"/>
         <FILE id="CX9lWP" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
         <FILE id="SZ80SS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
               file="../Source/dRowAudio_AudioUtility.h"/>
@@ -76,18 +84,12 @@
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="mGKqYB" name="mono_AudioDeviceManager.h" compile="0" resource="0"
             file="../Source/mono_AudioDeviceManager.h"/>
-      <FILE id="xlyRqx" name="mono_Parameters.cpp" compile="1" resource="0"
-            file="../Source/mono_Parameters.cpp"/>
-      <FILE id="QlWRm5" name="mono_Parameters.h" compile="0" resource="0"
-            file="../Source/mono_Parameters.h"/>
       <FILE id="ztrOO4" name="PluginProcessor.cpp" compile="1" resource="0"
             file="../Source/PluginProcessor.cpp"/>
       <FILE id="QZxhpT" name="PluginProcessor.h" compile="0" resource="0"
             file="../Source/PluginProcessor.h"/>
       <FILE id="EludWT" name="Synth.cpp" compile="1" resource="0" file="../Source/Synth.cpp"/>
       <FILE id="gOmGCe" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
-      <FILE id="WLgmrQ" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
-      <FILE id="Sy24e7" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
       <FILE id="M5rtTx" name="UiEditorSynthLite.cpp" compile="1" resource="0"
             file="../Source/UiEditorSynthLite.cpp"/>
       <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"

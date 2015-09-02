@@ -1,105 +1,68 @@
-/*
-  ==============================================================================
-
-    SynthData.h
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #ifndef MONOSYNTH_DATA_H_INCLUDED
 #define MONOSYNTH_DATA_H_INCLUDED
 
 #include "App_h_includer.h"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
-
-#include "mono_Parameters.h"
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-enum DATA_TYPES {
+enum DATA_TYPES
+{
     MORPH = 1,
     MASTER,
 
-    DATA_COPY
+    DATA_COPY,
+
+    FILTER_INPUT_ENV_ID_OFFSET = 100,
+    EQ_ENV_ID_OFFSET = 200,
+    CHORUS_ENV_ID_OFFSET = 300,
 };
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-enum WAVES {
+enum WAVE_TYPES
+{
     SINE,
     SAW,
     SQUARE,
     NOICE
 };
 
-enum FILTER_TYPS {
+enum FILTER_TYPS
+{
     LPF_2_PASS = 1,
     HPF,
     BPF,
     HIGH_2_PASS,
     PASS,
     LPF,
-    MOOG_AND_LPF,
+    MOOG_AND_LPF, // OBSOLETE
     UNKNOWN
 };
 
-
-enum SYNTHEISIS {
-    FM_GAINED = true,
-    FM_WAVE_SINE = true,
-    FM_ADD = true,
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-enum  {
+enum MONIQUE_SETUP
+{
     SUM_OSCS = 3,
-    SUM_AUDIO_CTRL_IN = 4,
     SUM_FILTERS = 3,
+    SUM_INPUTS_PER_FILTER = SUM_OSCS,
     SUM_LFOS = SUM_FILTERS,
     SUM_ENVS = SUM_FILTERS + 1,
-
-    SUM_FILTER_RETRIGGERS = 3,
-
-    SUM_INPUTS_PER_FILTER = 3,
-    FILTER_INPUT_ENV_ID_OFFSET = 100,
-    EQ_ENV_ID_OFFSET = 200,
-    CHORUS_ENV_ID_OFFSET = 300,
+    MAIN_ENV = 4,
 
     LEFT = 0,
     RIGHT = 1,
+
+    SUM_ENV_ARP_STEPS = 16,
+
+    OSC_1 = 0,
+    MASTER_OSC = OSC_1,
+    OSC_2 = 1,
+    OSC_3 = 2,
 
     FILTER_1 = 0,
     FILTER_2 = 1,
     FILTER_3 = 2,
 
-    MAIN_ENV = SUM_FILTERS,
-
-    SUM_ENV_ARP_STEPS = 16,
-
-    OSC_1 = 0,
-    OSC_2,
-    OSC_3,
-
-    MASTER_OSC = OSC_1,
-
     SUM_MORPHER_GROUPS = 4,
-
-    TRIGGER_FILTER_BY_ADSR = 0,
-    TRIGGER_FILTER_FROM_EXTERN = 1,
-    TRIGGER_FILTER_FROM_RECORD = 2,
 };
-
-static inline float positive( float x ) noexcept {
-    return x < 0 ? x * -1 : x;
-}
-
-#define MAX_MORPH_STEP 0.05f
 
 //==============================================================================
 //==============================================================================
@@ -108,7 +71,8 @@ static inline float positive( float x ) noexcept {
 //==============================================================================
 //==============================================================================
 class RuntimeNotifyer;
-class RuntimeListener {
+class RuntimeListener 
+{
 protected:
     double sample_rate;
     float sample_rate_1ths;
@@ -1066,9 +1030,6 @@ struct DataBuffer { // DEFINITION IN SYNTH.CPP
 
 #define SYNTH_PARAM(_X_) &(mono_ParameterOwnerStore::getInstance()->_X_)
 #define DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
-
-
-#pragma GCC diagnostic pop
 
 #endif
 

@@ -19,7 +19,8 @@
 
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
+
 #include "PluginProcessor.h"
 #include "UiEditorSynthLite.h"
 //[/Headers]

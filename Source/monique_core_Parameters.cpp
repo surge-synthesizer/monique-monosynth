@@ -8,8 +8,9 @@
   ==============================================================================
 */
 
-#include "mono_Parameters.h"
-#include "SynthData.h"
+#include "monique_core_Parameters.h"
+#include "monique_core_Datastructures.h"
+
 #include "PluginProcessor.h"
 
 //==============================================================================
@@ -227,7 +228,7 @@ size( num_parameters_ )
 }
 NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
 {
-    for( int i = size-1 ; i > -1 ; ++i )
+    for( int i = size-1 ; i > -1 ; --i )
     {
         delete parameters[i];
     }
@@ -265,7 +266,7 @@ size( num_parameters_ )
 }
 NOINLINE ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
 {
-    for( int i = size-1 ; i > -1 ; ++i )
+    for( int i = size-1 ; i > -1 ; --i )
     {
         delete parameters[i];
     }

@@ -8,8 +8,8 @@
 //==============================================================================
 class MoniqueSynthesiserSound : public SynthesiserSound
 {
-    bool appliesToNote (int /*midiNoteNumber*/) override;
-    bool appliesToChannel (int /*midiChannel*/) override;
+    bool appliesToNote (int) override;
+    bool appliesToChannel (int) override;
     
 public:
     NOINLINE MoniqueSynthesiserSound() noexcept;

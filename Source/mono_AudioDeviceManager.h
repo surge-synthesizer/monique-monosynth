@@ -12,7 +12,7 @@
 #define MONO_AUDIODEVICEMANAGER_H_INCLUDED
 
 #include "App_h_includer.h"
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 
 #define DISABLED_PORT "CLOSED"
 #define DAW_INPUT "RECIEVE FROM HOST"

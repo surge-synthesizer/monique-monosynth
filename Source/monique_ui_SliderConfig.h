@@ -11,7 +11,7 @@
 #ifndef UIEDITORSYNTHLITECONFIG_H_INCLUDED
 #define UIEDITORSYNTHLITECONFIG_H_INCLUDED
 
-#include "SynthData.h"
+#include "monique_core_Datastructures.h"
 #include "monique_ui_ModulationSlider.h"
 #include "monique_ui_LookAndFeel.h"
 

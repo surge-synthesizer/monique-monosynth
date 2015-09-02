@@ -22,7 +22,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
-#include "mono_Parameters.h"
 
 // TODO
 #define DONT_OVERRIDE_SLIDER_VALUE -99999

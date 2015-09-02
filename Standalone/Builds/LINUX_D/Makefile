@@ -30,6 +30,8 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/monique_core_Parameters_93b9539f.o \
+  $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
@@ -43,10 +45,8 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
-  $(OBJDIR)/mono_Parameters_6e808cd6.o \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
   $(OBJDIR)/Synth_8129adcc.o \
-  $(OBJDIR)/SynthData_df69b916.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/juce_audio_basics_49d7f937.o \
@@ -81,6 +81,16 @@ strip:
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_core_Parameters_93b9539f.o: ../../../Source/monique_core_Parameters.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_core_Parameters.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_Datastructures.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_core_Datastructures.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
@@ -148,11 +158,6 @@ $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceMa
 	@echo "Compiling mono_AudioDeviceManager.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/mono_Parameters_6e808cd6.o: ../../../Source/mono_Parameters.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling mono_Parameters.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
 $(OBJDIR)/PluginProcessor_319d19ef.o: ../../../Source/PluginProcessor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PluginProcessor.cpp"
@@ -161,11 +166,6 @@ $(OBJDIR)/PluginProcessor_319d19ef.o: ../../../Source/PluginProcessor.cpp
 $(OBJDIR)/Synth_8129adcc.o: ../../../Source/Synth.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Synth.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/SynthData_df69b916.o: ../../../Source/SynthData.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling SynthData.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/UiEditorSynthLite_e00d3d79.o: ../../../Source/UiEditorSynthLite.cpp
