@@ -2375,7 +2375,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return speed_multi_to_text( speed_multi->get_value() );
+        return ArpSequencerData::speed_multi_to_text( speed_multi->get_value() );
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override

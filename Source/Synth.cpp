@@ -631,7 +631,9 @@ size( init_buffer_size_ ),
 
       filter_output_samples( init_buffer_size_ ),
       filter_env_amps( init_buffer_size_ )
-{}
+{
+    mono_ParameterOwnerStore::getInstance()->data_buffer = this;
+}
 NOINLINE DataBuffer::~DataBuffer() noexcept {}
 
 //==============================================================================
@@ -1810,7 +1812,7 @@ inline void OSC::reset( int root_note_ ) noexcept
 {
     root_note_ += synth_data->octave_offset *12;
     const float glide = synth_data->glide;
-    if( glide != 0 and (_root_note != root_note_ || glide_time_in_samples > 0 ) ) 
+    if( glide != 0 and (_root_note != root_note_ || glide_time_in_samples > 0 ) )
     {
         const float rest_glide = glide_time_in_samples*glide_note_delta;
         const float glide_notes_diverence = _root_note - root_note_;
@@ -4532,7 +4534,7 @@ NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_
 
     chorus_smoother(),
     chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
-    chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data.get()) ),
+    chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
 
     delayPosition( 0 ),
     delayBuffer ( DELAY_BUFFER_SIZE ),
@@ -4904,7 +4906,7 @@ NOINLINE ArpSequencer::~ArpSequencer() {}
 // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
 inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept {
     double samples_per_min = sample_rate*60.0;
-    double speed_multi = speed_multi_to_value(data->speed_multi);
+    double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
     double steps_per_min = info->bpm*4.0/1.0 * speed_multi;
     double steps_per_sample = steps_per_min/samples_per_min;
     double samples_per_step = samples_per_min/steps_per_min;
@@ -5051,8 +5053,6 @@ audio_processor( audio_processor_ ),
                  current_step(0)
 {
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
-    mono_ParameterOwnerStore::getInstance()->data_buffer = data_buffer;
-    mono_ParameterOwnerStore::getInstance()->runtime_info = info;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
     oscs = new OSC*[SUM_OSCS];
