@@ -574,9 +574,9 @@ state
     def_->release_3.register_listener( this );
     def_->release_4.register_listener( this );
     
-    max_release_time = 10000;
-    max_decay_time = 10000;
-    max_release_time = 10000;
+    max_release_time.set_value_without_notification( 10000 );
+    max_decay_time.set_value_without_notification( 10000 );
+    max_release_time.set_value_without_notification( 10000 );
     
     update_adr_values();
 }
@@ -605,7 +605,8 @@ static inline void copy( ENVPresetData* dest_, const ENVPresetData* src_ ) noexc
 {
     dest_->state = src_->state;
 
-    copy( static_cast< ENVData* >(dest_), static_cast< const ENVData* >(src_), false );
+    // NO NEED TO COPY - COZ THE VALUES WILL BE UPDATED ON COPY STATE
+    //copy( static_cast< ENVData* >(dest_), static_cast< const ENVData* >(src_), false );
 }
 static inline void collect_saveable_parameters( ENVPresetData* data_, Array< Parameter* >& params_ ) noexcept
 {

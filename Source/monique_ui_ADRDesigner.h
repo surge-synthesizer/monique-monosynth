@@ -56,7 +56,7 @@ private:
 
     void refresh() noexcept override;
     Array< float > curve;
-    
+
     ENVPresetDef* env_preset_def;
     //[/UserMethods]
 
