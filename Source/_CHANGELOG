@@ -37,6 +37,7 @@ CHANGES 0.5:
 - arp arbeitet weiter, auch beim notenspiel
 - osc square and saw going out of center on higher octaves
 - ich hab da 32000 samples beim ersten run gesehen
+- the lfo note value is synced to the root frequency!
 
 TODO:
 - fix layout sub editors  (align left and right)

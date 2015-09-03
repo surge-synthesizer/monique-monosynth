@@ -2871,6 +2871,7 @@ class EnvelopeFollower
 public:
     inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
     inline void setCoefficients (float attack_, float release_) noexcept;
+    inline void reset() noexcept;
 
 public:
     //==============================================================================
@@ -2910,6 +2911,7 @@ inline void EnvelopeFollower::setCoefficients (float attack_, float release_) no
     attack = attack_;
     release = release_;
 }
+inline void EnvelopeFollower::reset() noexcept { envelope = 0; }
 
 //==============================================================================
 //==============================================================================
@@ -2969,6 +2971,7 @@ private:
 public:
     inline void start_attack() noexcept;
     inline void start_release() noexcept;
+    inline void reset() noexcept;
     inline void process( const int num_samples ) noexcept;
 
 private:
@@ -3024,14 +3027,42 @@ inline void FilterProcessor::start_attack() noexcept
     env->start_attack();
 
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+    {
         input_envs.getUnchecked(input_id)->start_attack();
+    }
 }
 inline void FilterProcessor::start_release() noexcept
 {
     env->set_to_release();
 
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+    {
         input_envs.getUnchecked(input_id)->set_to_release();
+    }
+}
+inline void FilterProcessor::reset() noexcept
+{
+    env_follower.reset();
+    env->reset();
+    for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
+    {
+        input_envs.getUnchecked(input_id)->reset();
+    }
+
+    cutoff_smoother.reset();
+    resonance_smoother.reset();
+    gain_smoother.reset();
+    distortion_smoother.reset();
+    output_smoother.reset();
+    mix_smoother.reset();
+    clipping_smoother.reset();
+    input_sustains[0].reset();
+    input_sustains[1].reset();
+    input_sustains[2].reset();
+
+    double_filter[0].reset();
+    double_filter[1].reset();
+    double_filter[2].reset();
 }
 
 // -----------------------------------------------------------------
@@ -3818,6 +3849,7 @@ public:
 public:
     inline void start_attack() noexcept;
     inline void start_release() noexcept;
+    inline void reset() noexcept;
     inline void process( int num_samples_ ) noexcept;
 
     //==============================================================================
@@ -3867,13 +3899,30 @@ NOINLINE EQProcessor::~EQProcessor() noexcept {}
 inline void EQProcessor::start_attack() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
         envs.getUnchecked(band_id)->start_attack();
+    }
 }
 inline void EQProcessor::start_release() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
         envs.getUnchecked(band_id)->set_to_release();
+    }
 }
+inline void EQProcessor::reset() noexcept
+{
+    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    {
+        amp_smoother[band_id].reset();
+        filters[band_id].reset();
+        low_pass_filters[band_id].reset();
+        high_pass_filters[band_id].reset();
+        velocity_smoothers[band_id].reset();
+        envs.getUnchecked(band_id)->reset();
+    }
+}
+
 void EQProcessor::sample_rate_changed(double) noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
@@ -4078,6 +4127,7 @@ class Chorus : public RuntimeListener
 public:
     inline void fill(float sample_) noexcept;
     inline float tick(float delay_) noexcept;
+    inline void reset() noexcept;
 
 private:
     NOINLINE void sample_rate_changed( double ) noexcept override;
@@ -4141,13 +4191,20 @@ inline float Chorus::tick(float delay_ ) noexcept
         delta = 0;
     return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
 }
+inline void Chorus::reset() noexcept
+{
+    index = 0;
+    last_delay = 210;
+    sample_rate_changed(0);
+}
 //==============================================================================
 NOINLINE void Chorus::sample_rate_changed( double ) noexcept {
     buffer_size = sample_rate/10;
     if( buffer )
         delete[] buffer;
     buffer = new float[buffer_size];
-    for( int i = 0 ; i != buffer_size ; ++i ) {
+    for( int i = 0 ; i != buffer_size ; ++i )
+    {
         buffer[i] = 0;
     }
 }
@@ -4572,10 +4629,23 @@ public:
         chorus_modulation_env->set_to_release();
         final_env->set_to_release();
     }
-
-    // TODO RESET
-    // delayBuffer.clear();
-    // reset chorus
+    void reset() noexcept
+    {
+        reverb_l.reset();
+        reverb_r.reset();
+        chorus_l.reset();
+        chorus_r.reset();
+        chorus_smoother.reset();
+        chorus_mod_smoother.reset();
+        chorus_modulation_env->reset();
+        delayPosition = 0;
+        delay_smoother.reset();
+        final_env->reset();
+        velocity_glide.reset();
+        bypass_smoother.reset();
+        volume_smoother.reset();
+        clipping_smoother.reset();
+    }
 
 public:
     //==============================================================================
@@ -4926,8 +4996,8 @@ public:
     inline int get_current_step() const noexcept;
     inline int get_step_before() const noexcept;
     inline float get_current_tune() const noexcept;
-    inline bool is_a_step() const noexcept;
-    inline bool should_start() const noexcept;
+    inline bool found_last_process_a_step() const noexcept;
+    inline bool last_found_step_is_enabled() const noexcept;
     inline void reset() noexcept;
 
     //==============================================================================
@@ -5041,23 +5111,35 @@ inline float ArpSequencer::get_current_tune() const noexcept
 {
     return data->tune[get_current_step()];
 }
-inline bool ArpSequencer::is_a_step() const noexcept
+inline bool ArpSequencer::found_last_process_a_step() const noexcept
 {
     return step_at_sample_current_buffer != -1;
 }
-inline bool ArpSequencer::should_start() const noexcept
+inline bool ArpSequencer::last_found_step_is_enabled() const noexcept
 {
-    if( is_a_step() )
+    bool success = false;
+    if( found_last_process_a_step() )
+    {
         if( data->step[get_current_step()] )
-            return true;
+        {
+            success = true;
+        }
+    }
 
-    return false;
+    return success;
 }
 inline void ArpSequencer::reset() noexcept
 {
     current_step = 0;
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -5073,14 +5155,13 @@ arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
 eq_processor( new EQProcessor( synth_data_ ) ),
 fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) ),
 
-is_stopped( true ),
-was_arp_started(false),
 current_note(-1),
 current_velocity(0),
-current_step(0)
+current_step(0),
+an_arp_note_is_already_running(false)
 {
     mono_ParameterOwnerStore::getInstance()->voice = this;
-    
+
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
@@ -5129,77 +5210,134 @@ NOINLINE MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 }
 
 //==============================================================================
-void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
+void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
 {
-    // THE LFO WE RENDER ALWAYS
-  
-    if( synth_data->arp_sequencer_data->is_on && current_note != -1 )
-        ;
-    else if( is_stopped )
+    start_internal( midi_note_number_, velocity_ );
+}
+void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_ ) noexcept
+{
+    current_note = midi_note_number_;
+    current_velocity = velocity_;
+
+    // OSCS
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on;
+    float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
+    for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        return;
+        oscs[i]->reset( midi_note_number_+arp_offset );
     }
 
-    if( start_sample_ < 0 )
-        return;
+    // PROCESSORS
+    bool start_up = true;
+    const bool arp_connect = synth_data->arp_sequencer_data->connect;
+    if( is_arp_on and arp_connect and an_arp_note_is_already_running )
+    {
+        start_up = false;
+    }
+    else if( current_note == -1 )
+    {
+        start_up = false;
+    }
 
+    if( start_up )
+    {
+        for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+        {
+            filter_processors[voice_id]->start_attack();
+        }
+        eq_processor->start_attack();
+        fx_processor->start_attack();
+    }
+}
+void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
+{
+    if( not synth_data->arp_sequencer_data->is_on )
+    {
+        if( allowTailOff )
+        {
+            stop_internal();
+        }
+        else
+        {
+            stop_internal();
+            clearCurrentNote();
+        }
+    }
+}
+void MoniqueSynthesiserVoice::stop_internal() noexcept
+{
+    for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+    {
+        filter_processors[voice_id]->start_release();
+    }
+    eq_processor->start_release();
+    fx_processor->start_release();
+}
+
+//==============================================================================
+void MoniqueSynthesiserVoice::release_if_inactive() noexcept
+{
+    if( fx_processor->final_env->get_current_stage() == END_ENV )
+    {
+        reset();
+    }
+}
+void MoniqueSynthesiserVoice::reset() noexcept
+{
+    if( current_note != -1 )
+    {
+        current_note = -1;
+
+	// TODO reset oscs to zero
+        for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+        {
+            filter_processors[voice_id]->reset();
+        }
+        eq_processor->reset();
+        fx_processor->reset();
+
+        clearCurrentNote();
+    }
+}
+
+//==============================================================================
+void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
+{
     // GET POSITION INFOS
     info->bpm = synth_data->sync ? audio_processor->current_pos_info.bpm : synth_data->speed;
     info->samples_since_start = audio_processor->current_pos_info.timeInSamples;
 
     int count_start_sample = start_sample_;
-    int num_samples = num_samples_;
+    int counted_samples = num_samples_;
     bool is_a_step = false;
-    while( num_samples != 0 )
+    const bool connect = synth_data->arp_sequencer_data->connect;
+    const bool arp_is_on = synth_data->arp_sequencer_data->is_on;
+    while( counted_samples > 0 )
     {
-        int samples_to_next_step_in_buffer = arp_sequencer->process_samples_to_next_step( count_start_sample, num_samples );
-        num_samples -= samples_to_next_step_in_buffer;
+        // SEARCH FOR STEPS (16ths) IN THE CURRENT BUFFER RANGE
+        int samples_to_next_arp_step_in_this_buffer = arp_sequencer->process_samples_to_next_step( count_start_sample, counted_samples );
+        counted_samples -= samples_to_next_arp_step_in_this_buffer;
 
-        render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_step_in_buffer );
-        count_start_sample += samples_to_next_step_in_buffer;
+        // RENDER THE NEXT BLOCK
+        if( samples_to_next_arp_step_in_this_buffer > 0 )
+            render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
 
-        const bool connect = synth_data->arp_sequencer_data->connect;
-        const bool restart = arp_sequencer->should_start() && synth_data->arp_sequencer_data->is_on;
-        is_a_step = arp_sequencer->is_a_step();
-        if( was_arp_started && arp_sequencer->is_a_step() ) {
-            if( restart && connect )
-                ;
-            else
-            {
-                was_arp_started = false;
+        count_start_sample += samples_to_next_arp_step_in_this_buffer;
 
-                // STOP FILTER ENV
-                for( int i = 0 ; i != SUM_FILTERS ; ++i )
-                {
-                    filter_processors[i]->start_release();
-                }
-                eq_processor->start_release();
-                fx_processor->start_release();
-            }
+        // HANDLE RETIGGERS
+        is_a_step = arp_sequencer->found_last_process_a_step();
+        bool is_step_enabled = arp_sequencer->last_found_step_is_enabled();
+        if ( is_a_step and an_arp_note_is_already_running and ( not connect or not arp_is_on or not is_step_enabled ) )
+        {
+            stop_internal();
+            an_arp_note_is_already_running = false;
         }
-        if( restart ) {
-            if( was_arp_started && connect )
-                ;
-            else
-            {
 
-                was_arp_started = true;
-
-                // TODO add bool for running voices or use was arp started
-
-                // RESTART FILTERS
-                for( int i = 0 ; i != SUM_FILTERS ; ++i )
-                {
-                    filter_processors[i]->start_attack();
-                }
-                eq_processor->start_attack();
-                fx_processor->start_attack();
-            }
-
-            // OSC TUNE
-            for( int i = 0 ; i != SUM_OSCS ; ++i ) {
-                oscs[i]->reset( current_note+arp_sequencer->get_current_tune() );
-            }
+        const bool is_a_new_arp_step_to_start = arp_is_on and is_a_step and is_step_enabled;
+        if( is_a_new_arp_step_to_start )
+        {
+            start_internal( current_note, current_velocity );
+            an_arp_note_is_already_running = true;
         }
     }
 
@@ -5277,82 +5415,11 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
     // UI INFORMATIONS
     for( int i = 0 ; i != SUM_OSCS ; ++i )
+    {
         synth_data->osc_datas[i]->last_modulation_value = data_buffer->lfo_amplitudes.getReadPointer(i)[num_samples-1];
-
-    // CLEAR
-    release_if_inactive();
-}
-// TODO must be done earlyer if the env is ended
-void MoniqueSynthesiserVoice::release_if_inactive() noexcept
-{
-    // TODO, reset filters here!
-    if( fx_processor->final_env->get_current_stage() == END_ENV ) {
-        clearCurrentNote();
-        is_stopped = true;
     }
 }
 
-//==============================================================================
-void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
-{
-    start_internal( midi_note_number_, velocity_ );
-    is_stopped = false;
-}
-void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_ ) noexcept
-{
-    current_note = midi_note_number_;
-    current_velocity = velocity_;
-
-    // OSCS
-    bool is_arp = synth_data->arp_sequencer_data->is_on;
-    float arp_offset = is_arp ? arp_sequencer->get_current_tune() : 0;
-    for( int i = 0 ; i != SUM_OSCS ; ++i )
-        oscs[i]->reset( current_note+arp_offset );
-
-    // LFOS
-    if( !is_arp || !current_note )
-    {
-        for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
-        {
-            filter_processors[voice_id]->start_attack();
-        }
-        eq_processor->start_attack();
-        fx_processor->start_attack();
-    }
-
-}
-void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
-{
-    //bool other_notes_active = audio_processor->synth.keys_down.size();
-    /*
-    if( other_notes_active && allowTailOff )
-    {
-        // RESTART AN OLDER NOTe
-        start_internal( audio_processor->synth.keys_down.getFirst(),
-                        audio_processor->synth.velocitys_down.getFirst() );
-    }
-    // ARPEGGIATE
-    else
-      */
-    if( synth_data->arp_sequencer_data->is_on && current_note && allowTailOff )
-        ;
-    else // STOP
-    {
-        if( allowTailOff ) {
-            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
-            {
-                filter_processors[voice_id]->start_release();
-            }
-            eq_processor->start_release();
-            fx_processor->start_release();
-        }
-        else
-        {
-            is_stopped = true;
-            clearCurrentNote();
-        }
-    }
-}
 int MoniqueSynthesiserVoice::getCurrentlyPlayingNote() const noexcept
 {
     return current_note;
@@ -5408,7 +5475,6 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 {
     return true;
 }
-
 
 //==============================================================================
 //==============================================================================
@@ -5479,3 +5545,4 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+

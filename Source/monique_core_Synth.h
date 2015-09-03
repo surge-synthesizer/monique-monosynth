@@ -55,21 +55,24 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     FilterProcessor** filter_processors;
 
     //==============================================================================
-    bool is_stopped;
-    bool was_arp_started;
     int current_note;
     float current_velocity;
     int current_step;
+    bool an_arp_note_is_already_running;
 
     //==============================================================================
-    void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
-    void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
-    void release_if_inactive() noexcept;
-
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void start_internal( int midiNoteNumber, float velocity ) noexcept;
     void stopNote(float, bool allowTailOff) override;
+    void stop_internal() noexcept;
+    void release_if_inactive() noexcept;
+    void reset() noexcept;
+    
+    void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
+    void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
+    
     int getCurrentlyPlayingNote() const noexcept override;
+    
     void pitchWheelMoved (int /*newValue*/) override;
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override;
 
