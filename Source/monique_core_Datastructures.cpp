@@ -1985,6 +1985,16 @@ animate_modulations
 ),
 
 // ----
+force_envs_to_zero
+(
+    MIN_MAX( 0, 1 ),
+    0.2,
+    1000,
+    generate_param_name(ENV_NAME,MASTER,"force_env2zero"),
+    generate_short_human_name("MAIN","force_env2zero")
+),
+
+// ----
 env_data( new ENVData( MAIN_ENV ) ),
 env_preset_def(new ENVPresetDef( MASTER ) ),
 eq_data(new EQData(MASTER, env_preset_def)),
@@ -2134,6 +2144,7 @@ static inline void copy( SynthData* dest_, const SynthData* src_ ) noexcept
     dest_->curve_shape = src_->curve_shape;
     dest_->octave_offset = src_->octave_offset;
     dest_->final_compression = src_->final_compression;
+    dest_->force_envs_to_zero = src_->force_envs_to_zero;
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -2198,6 +2209,8 @@ static inline void collect_saveable_parameters( SynthData* data_, Array< Paramet
     params_.add( &data_->osci_show_range );
 
     params_.add( &data_->num_extra_threads );
+
+    params_.add( &data_->force_envs_to_zero );
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
     {
@@ -2456,6 +2469,8 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
 
+            morph_group_3->register_parameter( force_envs_to_zero.ptr(), data_type == MASTER );
+
             //speed_multi
         }
 
@@ -2517,6 +2532,10 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 {
                     morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
                 }
+            }
+
+            {
+                morph_group_4->register_parameter( velocity_glide_time.ptr(), data_type == MASTER  );
             }
         }
     }

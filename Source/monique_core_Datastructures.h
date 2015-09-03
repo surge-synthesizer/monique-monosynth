@@ -515,7 +515,7 @@ struct SynthData : ParameterListener
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;
-
+    
     BoolParameter sync;
     Parameter speed;
 
@@ -548,6 +548,9 @@ struct SynthData : ParameterListener
     BoolParameter animate_input_env;
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
+    
+    // ENV OPTION
+    Parameter force_envs_to_zero;
 
     ScopedPointer< ENVData > env_data;
 

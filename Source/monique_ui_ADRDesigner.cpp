@@ -66,6 +66,10 @@ void UiEditorSettings::refresh() noexcept
     label_release_3->setText(String( env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
     label_release_4->setText(String( env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
 
+    SynthData* synth_data( GET_DATA_PTR( synth_data ) );
+    slider_force_to_zero->setValue( synth_data->force_envs_to_zero, dontSendNotification );
+    slider_env_shape->setValue( synth_data->curve_shape,sendNotification);
+
     if( last_repaint_counter != repaint_counter )
     {
         last_repaint_counter = repaint_counter;
@@ -83,7 +87,7 @@ UiEditorSettings::UiEditorSettings ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-                                                        TRANS("GROUP 4 (MIX: 3 to 4)")));
+            TRANS("GROUP 4 (MIX: 3 to 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -92,7 +96,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-                                                        TRANS("GROUP 3 (MIX: 2 to 4)")));
+            TRANS("GROUP 3 (MIX: 2 to 4)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -101,7 +105,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-                                                        TRANS("GROUP 2 (MIX: 1 to 3)")));
+            TRANS("GROUP 2 (MIX: 1 to 3)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -110,7 +114,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-                                                        TRANS("ADSR PRESET GROUP 1 (MIX: 1 to 2)")));
+            TRANS("ADSR PRESET GROUP 1 (MIX: 1 to 2)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -119,7 +123,7 @@ UiEditorSettings::UiEditorSettings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_3 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_3->setFont (Font (15.00f, Font::plain));
     label_sus_3->setJustificationType (Justification::centred);
     label_sus_3->setEditable (false, false, false);
@@ -128,7 +132,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_2 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_2->setFont (Font (15.00f, Font::plain));
     label_sus_2->setJustificationType (Justification::centred);
     label_sus_2->setEditable (false, false, false);
@@ -139,7 +143,7 @@ UiEditorSettings::UiEditorSettings ()
     addAndMakeVisible (plotter = new Component());
 
     addAndMakeVisible (label_att_1 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_1->setFont (Font (15.00f, Font::plain));
     label_att_1->setJustificationType (Justification::centred);
     label_att_1->setEditable (false, false, false);
@@ -158,7 +162,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_1->addListener (this);
 
     addAndMakeVisible (label_dec_1 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_1->setFont (Font (15.00f, Font::plain));
     label_dec_1->setJustificationType (Justification::centred);
     label_dec_1->setEditable (false, false, false);
@@ -177,7 +181,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_1->addListener (this);
 
     addAndMakeVisible (label_rel_1 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_1->setFont (Font (15.00f, Font::plain));
     label_rel_1->setJustificationType (Justification::centred);
     label_rel_1->setEditable (false, false, false);
@@ -196,7 +200,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_1->addListener (this);
 
     addAndMakeVisible (label_att_2 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_2->setFont (Font (15.00f, Font::plain));
     label_att_2->setJustificationType (Justification::centred);
     label_att_2->setEditable (false, false, false);
@@ -215,7 +219,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_2->addListener (this);
 
     addAndMakeVisible (label_dec_2 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_2->setFont (Font (15.00f, Font::plain));
     label_dec_2->setJustificationType (Justification::centred);
     label_dec_2->setEditable (false, false, false);
@@ -234,7 +238,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_2->addListener (this);
 
     addAndMakeVisible (label_rel_2 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_2->setFont (Font (15.00f, Font::plain));
     label_rel_2->setJustificationType (Justification::centred);
     label_rel_2->setEditable (false, false, false);
@@ -253,7 +257,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_2->addListener (this);
 
     addAndMakeVisible (label_att_3 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_3->setFont (Font (15.00f, Font::plain));
     label_att_3->setJustificationType (Justification::centred);
     label_att_3->setEditable (false, false, false);
@@ -272,7 +276,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_3->addListener (this);
 
     addAndMakeVisible (label_dec_3 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_3->setFont (Font (15.00f, Font::plain));
     label_dec_3->setJustificationType (Justification::centred);
     label_dec_3->setEditable (false, false, false);
@@ -291,7 +295,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_3->addListener (this);
 
     addAndMakeVisible (label_rel_3 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_3->setFont (Font (15.00f, Font::plain));
     label_rel_3->setJustificationType (Justification::centred);
     label_rel_3->setEditable (false, false, false);
@@ -310,7 +314,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_release_3->addListener (this);
 
     addAndMakeVisible (label_att_4 = new Label (String::empty,
-                                                TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_att_4->setFont (Font (15.00f, Font::plain));
     label_att_4->setJustificationType (Justification::centred);
     label_att_4->setEditable (false, false, false);
@@ -329,7 +333,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_attack_4->addListener (this);
 
     addAndMakeVisible (label_dec_4 = new Label (String::empty,
-                                                TRANS("DECAY")));
+            TRANS("DECAY")));
     label_dec_4->setFont (Font (15.00f, Font::plain));
     label_dec_4->setJustificationType (Justification::centred);
     label_dec_4->setEditable (false, false, false);
@@ -348,7 +352,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_decay_4->addListener (this);
 
     addAndMakeVisible (label_rel_4 = new Label (String::empty,
-                                                TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_rel_4->setFont (Font (15.00f, Font::plain));
     label_rel_4->setJustificationType (Justification::centred);
     label_rel_4->setEditable (false, false, false);
@@ -426,7 +430,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_4->addListener (this);
 
     addAndMakeVisible (label_sus_4 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_4->setFont (Font (15.00f, Font::plain));
     label_sus_4->setJustificationType (Justification::centred);
     label_sus_4->setEditable (false, false, false);
@@ -435,7 +439,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_1 = new Label (String::empty,
-                                                TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sus_1->setFont (Font (15.00f, Font::plain));
     label_sus_1->setJustificationType (Justification::centred);
     label_sus_1->setEditable (false, false, false);
@@ -444,7 +448,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sus_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_1 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_1->setFont (Font (15.00f, Font::plain));
     label_attack_1->setJustificationType (Justification::centred);
     label_attack_1->setEditable (false, false, false);
@@ -453,7 +457,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_1 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_1->setFont (Font (15.00f, Font::plain));
     label_decay_1->setJustificationType (Justification::centred);
     label_decay_1->setEditable (false, false, false);
@@ -462,7 +466,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_1 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_1->setFont (Font (15.00f, Font::plain));
     label_sustain_time_1->setJustificationType (Justification::centred);
     label_sustain_time_1->setEditable (false, false, false);
@@ -471,7 +475,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_1 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_1->setFont (Font (15.00f, Font::plain));
     label_release_1->setJustificationType (Justification::centred);
     label_release_1->setEditable (false, false, false);
@@ -480,7 +484,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_2 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_2->setFont (Font (15.00f, Font::plain));
     label_attack_2->setJustificationType (Justification::centred);
     label_attack_2->setEditable (false, false, false);
@@ -489,7 +493,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_2 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_2->setFont (Font (15.00f, Font::plain));
     label_decay_2->setJustificationType (Justification::centred);
     label_decay_2->setEditable (false, false, false);
@@ -498,7 +502,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_2 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_2->setFont (Font (15.00f, Font::plain));
     label_sustain_time_2->setJustificationType (Justification::centred);
     label_sustain_time_2->setEditable (false, false, false);
@@ -507,7 +511,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_2 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_2->setFont (Font (15.00f, Font::plain));
     label_release_2->setJustificationType (Justification::centred);
     label_release_2->setEditable (false, false, false);
@@ -516,7 +520,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_3 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_3->setFont (Font (15.00f, Font::plain));
     label_attack_3->setJustificationType (Justification::centred);
     label_attack_3->setEditable (false, false, false);
@@ -525,7 +529,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_3 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_3->setFont (Font (15.00f, Font::plain));
     label_decay_3->setJustificationType (Justification::centred);
     label_decay_3->setEditable (false, false, false);
@@ -534,7 +538,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_3 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_3->setFont (Font (15.00f, Font::plain));
     label_sustain_time_3->setJustificationType (Justification::centred);
     label_sustain_time_3->setEditable (false, false, false);
@@ -543,7 +547,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_3 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_3->setFont (Font (15.00f, Font::plain));
     label_release_3->setJustificationType (Justification::centred);
     label_release_3->setEditable (false, false, false);
@@ -552,7 +556,7 @@ UiEditorSettings::UiEditorSettings ()
     label_release_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_4 = new Label ("VL",
-                                                   TRANS("x\n")));
+            TRANS("x\n")));
     label_attack_4->setFont (Font (15.00f, Font::plain));
     label_attack_4->setJustificationType (Justification::centred);
     label_attack_4->setEditable (false, false, false);
@@ -561,7 +565,7 @@ UiEditorSettings::UiEditorSettings ()
     label_attack_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_4 = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_decay_4->setFont (Font (15.00f, Font::plain));
     label_decay_4->setJustificationType (Justification::centred);
     label_decay_4->setEditable (false, false, false);
@@ -570,7 +574,7 @@ UiEditorSettings::UiEditorSettings ()
     label_decay_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_4 = new Label ("VL",
-                                                         TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time_4->setFont (Font (15.00f, Font::plain));
     label_sustain_time_4->setJustificationType (Justification::centred);
     label_sustain_time_4->setEditable (false, false, false);
@@ -579,7 +583,7 @@ UiEditorSettings::UiEditorSettings ()
     label_sustain_time_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_4 = new Label ("VL",
-                                                    TRANS("x\n")));
+            TRANS("x\n")));
     label_release_4->setFont (Font (15.00f, Font::plain));
     label_release_4->setJustificationType (Justification::centred);
     label_release_4->setEditable (false, false, false);
@@ -598,7 +602,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+            TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -607,7 +611,7 @@ UiEditorSettings::UiEditorSettings ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_test_value = new Label (String::empty,
-                                                     TRANS("x\n")));
+            TRANS("x\n")));
     label_test_value->setFont (Font (15.00f, Font::plain));
     label_test_value->setJustificationType (Justification::centredLeft);
     label_test_value->setEditable (false, false, false);
@@ -616,7 +620,7 @@ UiEditorSettings::UiEditorSettings ()
     label_test_value->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-                                                        TRANS("123ms")));
+            TRANS("123ms")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -632,6 +636,34 @@ UiEditorSettings::UiEditorSettings ()
     label3->setColour (Label::textColourId, Colours::yellow);
     label3->setColour (TextEditor::textColourId, Colours::black);
     label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (slider_force_to_zero = new Slider ("0"));
+    slider_force_to_zero->setRange (0, 1, 0.01);
+    slider_force_to_zero->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    slider_force_to_zero->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    slider_force_to_zero->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_force_to_zero->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
+    slider_force_to_zero->setColour (Slider::textBoxTextColourId, Colours::yellow);
+    slider_force_to_zero->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
+    slider_force_to_zero->addListener (this);
+
+    addAndMakeVisible (label_zero = new Label ("new label",
+            TRANS("TO ZERO")));
+    label_zero->setFont (Font (15.00f, Font::plain));
+    label_zero->setJustificationType (Justification::centred);
+    label_zero->setEditable (false, false, false);
+    label_zero->setColour (Label::textColourId, Colours::yellow);
+    label_zero->setColour (TextEditor::textColourId, Colours::black);
+    label_zero->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label2 = new Label ("new label",
+                                           TRANS("(GLOBAL)")));
+    label2->setFont (Font (15.00f, Font::plain));
+    label2->setJustificationType (Justification::centred);
+    label2->setEditable (false, false, false);
+    label2->setColour (Label::textColourId, Colours::yellow);
+    label2->setColour (TextEditor::textColourId, Colours::black);
+    label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -751,6 +783,9 @@ UiEditorSettings::~UiEditorSettings()
     label_test_value = nullptr;
     label_ui_headline_5 = nullptr;
     label3 = nullptr;
+    slider_force_to_zero = nullptr;
+    label_zero = nullptr;
+    label2 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -894,7 +929,7 @@ void UiEditorSettings::resized()
     label_ui_headline_1->setBounds (50, -4, 180, 35);
     label_sus_3->setBounds (660, 105, 60, 33);
     label_sus_2->setBounds (400, 105, 60, 33);
-    plotter->setBounds (1160, 15, 285, 135);
+    plotter->setBounds (1160, 15, 230, 135);
     label_att_1->setBounds (20, 105, 60, 33);
     slider_attack_1->setBounds (20, 55, 60, 50);
     label_dec_1->setBounds (80, 105, 60, 33);
@@ -946,8 +981,11 @@ void UiEditorSettings::resized()
     slider_env_shape->setBounds (1140 - 60, 105 - 70, 60, 70);
     label_shape->setBounds (1080, 105, 60, 33);
     label_test_value->setBounds (80, 150, 50, 33);
-    label_ui_headline_5->setBounds (1380, 20, 60, 33);
+    label_ui_headline_5->setBounds (1330, 20, 60, 33);
     label3->setBounds (1080, 125, 60, 33);
+    slider_force_to_zero->setBounds (1395, 105 - 70, 60, 70);
+    label_zero->setBounds (1395, 105, 60, 33);
+    label2->setBounds (1395, 125, 60, 33);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
@@ -1066,6 +1104,12 @@ void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
         GET_DATA(synth_data).curve_shape = slider_env_shape->getValue();
         //[/UserSliderCode_slider_env_shape]
     }
+    else if (sliderThatWasMoved == slider_force_to_zero)
+    {
+        //[UserSliderCode_slider_force_to_zero] -- add your slider handling code here..
+        GET_DATA(synth_data).force_envs_to_zero = slider_force_to_zero->getValue();
+        //[/UserSliderCode_slider_force_to_zero]
+    }
 
     //[UsersliderValueChanged_Post]
     repaint_counter++;
@@ -1141,7 +1185,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c88b6f548bad2da7" memberName="plotter" virtualName=""
-                    explicitFocusOrder="0" pos="1160 15 285 135" class="Component"
+                    explicitFocusOrder="0" pos="1160 15 230 135" class="Component"
                     params=""/>
   <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_att_1" virtualName=""
          explicitFocusOrder="0" pos="20 105 60 33" textCol="ffffff00"
@@ -1408,12 +1452,28 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
   <LABEL name="DL" id="4b4915adb0dcf9ee" memberName="label_ui_headline_5"
-         virtualName="" explicitFocusOrder="0" pos="1380 20 60 33" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1330 20 60 33" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="123ms" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="6a35bf0fb43137d1" memberName="label3" virtualName=""
          explicitFocusOrder="0" pos="1080 125 60 33" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="(GLOBAL)" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <SLIDER name="0" id="241b05fe5f21f4d6" memberName="slider_force_to_zero"
+          virtualName="Slider" explicitFocusOrder="0" pos="1395 105r 60 70"
+          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
+          textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
+          style="RotaryHorizontalVerticalDrag" textBoxPos="TextBoxBelow"
+          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="804b5cc5ce9515c8" memberName="label_zero"
+         virtualName="" explicitFocusOrder="0" pos="1395 105 60 33" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="TO ZERO" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="new label" id="5f324f181175362d" memberName="label2" virtualName=""
+         explicitFocusOrder="0" pos="1395 125 60 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="(GLOBAL)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>

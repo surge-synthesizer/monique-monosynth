@@ -34,6 +34,11 @@ public:
     {
         is_first_call_back = false;
 
+	std::cout << std::sin( float_Pi*0.5 ) << std::endl;
+	std::cout << std::sin( float_Pi ) << std::endl;
+	std::cout << std::sin( float_Pi*1.5 ) << std::endl;
+	std::cout << std::sin( float_Pi*2 ) << std::endl;
+	
 #ifndef IS_MOBILE_APP
         startTimer(5);
 #endif

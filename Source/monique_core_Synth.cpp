@@ -1873,10 +1873,11 @@ class ValueEnvelope : public RuntimeListener
 {
     int samples_to_target_left;
     float current_value;
+    float last_value;
     float end_value;
-    float delta;
+    int force_zero_target;
     int current_force_zero_counter;
-    float force_zero_offset;
+    float force_zero_amount;
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
@@ -1885,7 +1886,7 @@ public:
                         float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
-    inline void force_zero_glide() noexcept;
+    inline void force_zero_glide( float set_to_zero_amount_ ) noexcept;
 
     inline void reset() noexcept;
 
@@ -1904,10 +1905,11 @@ NOINLINE ValueEnvelope::ValueEnvelope() noexcept
 :
 samples_to_target_left(0),
                        current_value(0),
+                       last_value(0),
                        end_value(0),
-                       delta(0),
-                       current_force_zero_counter(0),
-                       force_zero_offset(0)
+                       force_zero_target(FORCE_ZERO_SAMPLES),
+                       current_force_zero_counter(FORCE_ZERO_SAMPLES),
+                       force_zero_amount(0)
 {
 
 }
@@ -1917,88 +1919,96 @@ NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 {
-    float value;
-    if( samples_to_target_left > 0 )
+    ++current_force_zero_counter;
+    --samples_to_target_left;
+    if( current_force_zero_counter < force_zero_target && samples_to_target_left > 50 )
     {
-        --samples_to_target_left;
+        current_value = current_value - current_value * (1.0f/force_zero_target*current_force_zero_counter);
+        if( current_value <= last_value*force_zero_amount )
+            current_force_zero_counter = force_zero_target;
 
-        if( samples_to_target_left == 0 )
-            current_value = end_value;
-        else
-        {
-            if( shape_ < 0.25f )
-            {
-                float delta_ = (end_value-current_value)/samples_to_target_left;
-                if( delta_ >= 0 )
-                    current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
-                else
-                {
-                    delta_ *= -1;
-                    float shape_factor_release = shape_*4;
-
-                    current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
-                }
-            }
-            else if( shape_ < 0.5f )
-            {
-                float delta_ = (end_value-current_value)/samples_to_target_left;
-                if( delta_ >= 0 )
-                    current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
-                else
-                {
-                    delta_ *= -1;
-                    float shape_factor_release = (shape_-0.25f)*8;
-                    if( shape_factor_release >= 1.0f )
-                        shape_factor_release = 1.0f - (shape_factor_release - 1);
-
-                    current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                }
-            }
-            else if( shape_ > 0.75f )
-            {
-                float delta_ = (end_value-current_value)/samples_to_target_left;
-                if( delta_ >= 0 )
-                    current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
-                else
-                {
-                    delta_ *= -1;
-                    float shape_factor_release = (shape_-0.75f)*4;
-                    current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                }
-            }
-            else if( shape_ > 0.5f )
-            {
-                float delta_ = (end_value-current_value)/samples_to_target_left;
-                if( delta_ >= 0 )
-                    current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
-                else
-                {
-                    delta_ *= -1;
-                    float shape_factor_release = (shape_-0.5f)*8;
-                    if( shape_factor_release >= 1.0f )
-                        shape_factor_release = 1.0f - (shape_factor_release - 1);
-
-                    current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                }
-            }
-            else
-            {
-                current_value+=delta;
-            }
-        }
-
-        if( current_value > 1 )
-            current_value = 1;
         else if( current_value < 0 )
             current_value = 0;
     }
-
-    if( (current_force_zero_counter--) > 0 )
-        value = current_value+force_zero_offset*current_force_zero_counter;
     else
-        value = current_value;
+    {
+        current_force_zero_counter = force_zero_target;
+        if( samples_to_target_left > 0 )
+        {
+            if( samples_to_target_left == 0 )
+                current_value = end_value;
+            else
+            {
+                if( shape_ < 0.25f )
+                {
+                    float delta_ = (end_value-current_value)/samples_to_target_left;
+                    if( delta_ >= 0 )
+                        current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                    else
+                    {
+                        delta_ *= -1;
+                        float shape_factor_release = shape_*4;
 
-    return value;
+                        current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
+                    }
+                }
+                else if( shape_ < 0.5f )
+                {
+                    float delta_ = (end_value-current_value)/samples_to_target_left;
+                    if( delta_ >= 0 )
+                        current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                    else
+                    {
+                        delta_ *= -1;
+                        float shape_factor_release = (shape_-0.25f)*8;
+                        if( shape_factor_release >= 1.0f )
+                            shape_factor_release = 1.0f - (shape_factor_release - 1);
+
+                        current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    }
+                }
+                else if( shape_ > 0.75f )
+                {
+                    float delta_ = (end_value-current_value)/samples_to_target_left;
+                    if( delta_ >= 0 )
+                        current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    else
+                    {
+                        delta_ *= -1;
+                        float shape_factor_release = (shape_-0.75f)*4;
+                        current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    }
+                }
+                else if( shape_ > 0.5f )
+                {
+                    float delta_ = (end_value-current_value)/samples_to_target_left;
+                    if( delta_ >= 0 )
+                        current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    else
+                    {
+                        delta_ *= -1;
+                        float shape_factor_release = (shape_-0.5f)*8;
+                        if( shape_factor_release >= 1.0f )
+                            shape_factor_release = 1.0f - (shape_factor_release - 1);
+
+                        current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    }
+                }
+                else
+                {
+                    float delta_ = (end_value-current_value)/samples_to_target_left;
+                    current_value+=delta_;
+                }
+            }
+
+            if( current_value > 1 )
+                current_value = 1;
+            else if( current_value < 0 )
+                current_value = 0;
+        }
+    }
+
+    return current_value;
 }
 inline void ValueEnvelope::update( float end_value_,
                                    float time_sample_rate_factor_,
@@ -2012,17 +2022,9 @@ inline void ValueEnvelope::update( float end_value_,
     end_value = end_value_;
 
     // CALC
-    const float distance = end_value_-current_value;
     samples_to_target_left = msToSamplesFast( time_sample_rate_factor_, sample_rate );
-    if( samples_to_target_left > 0 )
-    {
-        delta = distance / samples_to_target_left;
-    }
-    else
-    {
-        delta = 0;
+    if( samples_to_target_left <= 0 )
         current_value = end_value;
-    }
 }
 
 //==============================================================================
@@ -2034,20 +2036,25 @@ inline void ValueEnvelope::replace_current_value( float value_ ) noexcept
 {
     current_value = value_;
 }
-inline void ValueEnvelope::force_zero_glide() noexcept
+inline void ValueEnvelope::force_zero_glide( float set_to_zero_amount_ ) noexcept
 {
-    current_force_zero_counter = FORCE_ZERO_SAMPLES;
-    force_zero_offset = current_value/FORCE_ZERO_SAMPLES;
-    current_value = 0;
+    // TODO must depend on the sample rate
+    last_value = current_value;
+    force_zero_amount = set_to_zero_amount_;
+    current_force_zero_counter = 0;
+    force_zero_target = msToSamplesFast( 2+8*(1.0f-set_to_zero_amount_), sample_rate );
+    if( force_zero_target > samples_to_target_left * 0.8f )
+        force_zero_target = samples_to_target_left * 0.8f;
+
+    //current_value = 0;
 }
 inline void ValueEnvelope::reset() noexcept
 {
     samples_to_target_left = 0;
     current_value = 0;
     end_value = 0;
-    delta = 0;
-    current_force_zero_counter = 0;
-    force_zero_offset = 0;
+    current_force_zero_counter = force_zero_target;
+    force_zero_amount = 0;
 }
 
 //==============================================================================
@@ -2084,7 +2091,7 @@ private:
 
 public:
     //==============================================================================
-    inline void start_attack( float set_to_zero = true ) noexcept;
+    inline void start_attack() noexcept;
     inline void set_to_release() noexcept;
     inline void reset() noexcept;
 
@@ -2203,12 +2210,10 @@ inline void ENV::update_stage() noexcept
     }
 }
 
-inline void ENV::start_attack( float set_to_zero ) noexcept
+inline void ENV::start_attack() noexcept
 {
     current_stage = TRIGGER_START;
-    if( set_to_zero )
-        envelop.force_zero_glide();
-
+    envelop.force_zero_glide( synth_data->force_envs_to_zero );
     update_stage();
 }
 inline void ENV::set_to_release() noexcept
@@ -2556,7 +2561,7 @@ NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() noexcept
 }
 
 //==============================================================================
-inline void DoubleAnalogFilter::reset() noexcept 
+inline void DoubleAnalogFilter::reset() noexcept
 {
     flt_1.reset();
     flt_2.reset();
@@ -5562,4 +5567,5 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
