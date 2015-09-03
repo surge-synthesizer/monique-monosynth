@@ -1,4 +1,5 @@
 #include "monique_core_Datastructures.h"
+#include "monique_core_Parameters.h"
 #include "Synth.h"
 
 //==============================================================================
@@ -1404,6 +1405,353 @@ void ChorusData::parameter_value_changed_always_notification( Parameter* param_ 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MorphGroup : public Timer, ParameterListener
+{
+    MorphGroup* left_morph_source;
+    MorphGroup* right_morph_source;
+
+    friend class SynthData;
+    Array< Parameter* > params;
+    float last_power_of_right;
+    Array< BoolParameter* > switch_bool_params;
+    bool current_switch;
+    Array< IntParameter* > switch_int_params;
+
+public:
+    //==========================================================================
+    inline void morph( float morph_amount_ ) noexcept;
+    inline void morph_switchs( bool left_right_ ) noexcept;
+
+private:
+    //==========================================================================
+    Array< float > sync_param_deltas;
+    Array< float > sync_modulation_deltas;
+    void run_sync_morph() noexcept;
+    int current_callbacks;
+    void timerCallback() override;
+
+private:
+    //==========================================================================
+    // WILL ONLY BE CALLED IN THE MASTER MORPH GROUP, COZ THE SUB GROUBS DOES NOT LISTEN THE PARAMS
+    // UPDATES THE LEFT AND RIGHT SOURCES
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
+
+public:
+    //==========================================================================
+    // INIT
+    NOINLINE MorphGroup() noexcept;
+    NOINLINE ~MorphGroup() noexcept;
+
+    NOINLINE void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
+    NOINLINE void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
+    NOINLINE void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
+
+    NOINLINE void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
+                               float current_morph_amount_, bool current_switch_state_ ) noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
+};
+
+//==============================================================================
+NOINLINE MorphGroup::MorphGroup() noexcept
+:
+left_morph_source( nullptr ),
+                   right_morph_source( nullptr ),
+                   last_power_of_right(0),
+                   current_switch(LEFT),
+                   current_callbacks(-1)
+{}
+
+NOINLINE MorphGroup::~MorphGroup() noexcept {}
+
+//==============================================================================
+NOINLINE void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) noexcept
+{
+    params.add( param_ );
+
+    if( is_master_ )
+        param_->register_listener(this);
+}
+NOINLINE void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept
+{
+    /*
+    switch_bool_params.add( param_ );
+
+    if( is_master_ )
+      param_->register_listener(this);
+    */
+}
+NOINLINE void MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept
+{
+    /*
+    switch_int_params.add( param_ );
+
+    if( is_master_ )
+        param_->register_listener(this);
+    */
+}
+NOINLINE void MorphGroup::set_sources( MorphGroup* left_source_, MorphGroup* right_source_, float current_morph_amount_, bool current_switch_state_ ) noexcept
+{
+    last_power_of_right = current_morph_amount_;
+    current_switch = current_switch_state_;
+
+    left_morph_source = left_source_;
+    right_morph_source = right_source_;
+}
+
+//==============================================================================
+void MorphGroup::morph( float power_of_right_ ) noexcept
+{
+    for( int i = 0 ; i != params.size() ; ++i )
+    {
+        Parameter*target_param = params.getUnchecked(i);
+        const Parameter*left_param = left_morph_source->params.getUnchecked(i);
+        const Parameter*right_param = right_morph_source->params.getUnchecked(i);
+
+        // VALUE
+        const float new_value = (left_param->get_value()*(1.0f - power_of_right_)) + (right_param->get_value() * power_of_right_);
+        target_param->set_value_without_notification( new_value );
+
+        // MODULATION VALUE
+        if( has_modulation( target_param ) )
+        {
+            target_param->set_modulation_amount_without_notification
+            (
+                (left_param->get_modulation_amount()*(1.0f - power_of_right_)) + (right_param->get_modulation_amount()*power_of_right_)
+            );
+        }
+    }
+    last_power_of_right = power_of_right_;
+}
+void MorphGroup::morph_switchs( bool left_right_ ) noexcept
+{
+    current_switch = left_right_;
+    for( int i = 0 ; i != switch_bool_params.size() ; ++i )
+    {
+        if( current_switch == RIGHT )
+            switch_bool_params[i]->set_value_without_notification( right_morph_source->switch_bool_params[i]->get_value() );
+        else
+            switch_bool_params[i]->set_value_without_notification( left_morph_source->switch_bool_params[i]->get_value() );
+    }
+    for( int i = 0 ; i != switch_int_params.size() ; ++i )
+    {
+        if( current_switch == RIGHT )
+            switch_int_params[i]->set_value_without_notification( right_morph_source->switch_int_params[i]->get_value() );
+        else
+            switch_int_params[i]->set_value_without_notification( left_morph_source->switch_int_params[i]->get_value() );
+    }
+}
+#define SYNC_MORPH_STEPS 100
+#define SYNC_MORPH_TIME 10
+void MorphGroup::run_sync_morph() noexcept
+{
+    stopTimer();
+    current_callbacks = 0;
+
+    sync_param_deltas.clearQuick();
+    sync_modulation_deltas.clearQuick();
+    for( int i = 0 ; i != params.size() ; ++i )
+    {
+        Parameter*target_param = params.getUnchecked(i);
+        const Parameter*left_param = left_morph_source->params.getUnchecked(i);
+        const Parameter*right_param = right_morph_source->params.getUnchecked(i);
+
+        // VALUE
+        {
+            const float target_value = (left_param->get_value()*(1.0f - last_power_of_right )) + (right_param->get_value()*last_power_of_right);
+            const float current_value = target_param->get_value();
+            sync_param_deltas.add( (target_value-current_value)/SYNC_MORPH_STEPS );
+        }
+
+        // MODULATION
+        if( has_modulation( target_param ) )
+        {
+            const float target_modulation = (left_param->get_modulation_amount()*(1.0f - last_power_of_right )) + (right_param->get_modulation_amount()*last_power_of_right);
+            const float current_modulation = target_param->get_modulation_amount();
+            sync_modulation_deltas.add( (target_modulation-current_modulation)/SYNC_MORPH_STEPS );
+        }
+        else
+            sync_modulation_deltas.add( -1 );
+    }
+
+    startTimer(SYNC_MORPH_TIME);
+}
+void MorphGroup::timerCallback()
+{
+    for( int i = 0 ; i != params.size() ; ++i )
+    {
+        Parameter*param = params.getUnchecked(i);
+
+        // VALUE
+        {
+            const ParameterInfo& info = param->get_info();
+            const float min = info.min_value;
+            const float max = info.max_value;
+            float new_value = param->get_value() + sync_param_deltas[i];
+            if( new_value > max )
+                new_value = max;
+            else if( new_value < min )
+                new_value = min;
+
+            param->set_value_without_notification( new_value );
+        }
+
+        // MODULATION
+        const float modulation_delta = sync_modulation_deltas[i];
+        if( modulation_delta != -1 )
+        {
+            float new_modualtation = param->get_modulation_amount() + modulation_delta;
+            if( new_modualtation > 1 )
+                new_modualtation = 1;
+            else if( new_modualtation < -1 )
+                new_modualtation = -1;
+
+            param->set_modulation_amount_without_notification( new_modualtation );
+        }
+    }
+
+    if( current_callbacks++ == SYNC_MORPH_STEPS )
+    {
+        stopTimer();
+        morph(last_power_of_right);
+    }
+}
+
+
+//==============================================================================
+void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    // SUPPORT FOR INT AND BOOL DIABLED
+    /*
+    TYPES_DEF type = type_of( param_ );
+    if( type == IS_BOOL )
+    {
+        const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
+        if( param_id != -1 )
+        {
+            if( current_switch == LEFT )
+                left_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+            else
+                right_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+        }
+    }
+    else if( type == IS_INT )
+    {
+        const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
+        if( param_id != -1 )
+        {
+            if( current_switch == LEFT )
+                left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+            else
+                right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+        }
+    }
+    else
+    */
+    {
+        const int param_id = params.indexOf( param_ );
+        if( param_id != -1 )
+        {
+            Parameter* left_source_param = left_morph_source->params[param_id];
+            Parameter* right_source_param = right_morph_source->params[param_id];
+
+            // x = l*(1-m)+r*m
+            // r = (l*(m-1.0f)+x)/m
+            // l = (m*r-x) / (m-1)
+            const float current_value = param_->get_value();
+            float right_value = right_source_param->get_value();
+            bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
+            const ParameterInfo& info = param_->get_info();
+            const float max = info.max_value;
+            const float min = info.min_value;
+            if( update_left_or_right == RIGHT )
+            {
+                const float left_value = left_source_param->get_value();
+                float new_right_value = (left_value*(last_power_of_right-1)+current_value) / last_power_of_right;
+                if( new_right_value > max )
+                {
+                    new_right_value = max;
+                    update_left_or_right = LEFT;
+                }
+                else if( new_right_value < min )
+                {
+                    new_right_value = min;
+                    update_left_or_right = LEFT;
+                }
+
+                right_source_param->set_value_without_notification( new_right_value );
+                right_value = new_right_value;
+            }
+            if( update_left_or_right == LEFT )
+            {
+                float new_left_value = (last_power_of_right*right_value-current_value) / (last_power_of_right-1);
+                if( new_left_value > max )
+                {
+                    new_left_value = max;
+                }
+                else if( new_left_value < min )
+                {
+                    new_left_value = min;
+                }
+
+                left_source_param->set_value_without_notification( new_left_value );
+            }
+        }
+    }
+}
+void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcept
+{
+    const int param_id = params.indexOf( param_ );
+    if( param_id != -1 )
+    {
+        Parameter& left_source_param = *left_morph_source->params[param_id];
+        Parameter& right_source_param = *right_morph_source->params[param_id];
+
+        const float current_modulation = param_->get_modulation_amount();
+        float right_modulation = right_source_param.get_modulation_amount();
+        bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
+        if( update_left_or_right == RIGHT )
+        {
+            const float left_modulation = left_source_param.get_modulation_amount();
+            float new_right_modulation = (left_modulation*(last_power_of_right-1)+current_modulation) / last_power_of_right;
+
+            if( new_right_modulation > 1 )
+            {
+                new_right_modulation = 1;
+                update_left_or_right = LEFT;
+            }
+            else if( new_right_modulation < -1 )
+            {
+                new_right_modulation = -1;
+                update_left_or_right = LEFT;
+            }
+
+            right_source_param.set_modulation_amount_without_notification( new_right_modulation );
+            right_modulation = new_right_modulation;
+        }
+        if( update_left_or_right == LEFT )
+        {
+            float new_left_modulation = (last_power_of_right*right_modulation-current_modulation) / (last_power_of_right-1);
+
+            if( new_left_modulation > 1 )
+            {
+                new_left_modulation = 1;
+            }
+            else if( new_left_modulation < -1 )
+            {
+                new_left_modulation = -1;
+            }
+
+            left_source_param.set_modulation_amount_without_notification( new_left_modulation );
+        }
+    }
+}
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #define SYNTH_DATA_NAME "SD"
 NOINLINE SynthData::SynthData( DATA_TYPES data_type ) noexcept
 :
@@ -1637,6 +1985,15 @@ animate_modulations
     generate_short_human_name("animate_modulations")
 ),
 
+// ----
+env_data( new ENVData( MAIN_ENV ) ),
+env_preset_def(new ENVPresetDef( MASTER ) ),
+eq_data(new EQData(MASTER, env_preset_def)),
+arp_sequencer_data(new ArpSequencerData( MASTER )),
+reverb_data(new ReverbData( MASTER ) ),
+chorus_data(new ChorusData( MASTER, env_preset_def )),
+
+// MORPH
 // -------------------------------------------------------------
 morhp_states
 (
@@ -1673,16 +2030,13 @@ morph_motor_time
     generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
     generate_short_human_name("morph_motor")
 ),
+morph_group_1( new MorphGroup() ),
+morph_group_2( new MorphGroup() ),
+morph_group_3( new MorphGroup() ),
+morph_group_4( new MorphGroup() ),
 
-env_data( new ENVData( MAIN_ENV ) ),
-
-env_preset_def(new ENVPresetDef( MASTER ) ),
-eq_data(new EQData(MASTER, env_preset_def)),
-arp_sequencer_data(new ArpSequencerData( MASTER )),
-reverb_data(new ReverbData( MASTER ) ),
-chorus_data(new ChorusData( MASTER, env_preset_def )),
-
-
+// FILES
+// ----
 current_program(-1),
 current_program_abs(-1),
 current_bank(0)
@@ -1742,12 +2096,7 @@ current_bank(0)
 
     // MORPH STUFF
     init_morph_groups( data_type );
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-    {
-        morhp_states[morpher_id].register_listener(this);
-    }
-    linear_morhp_state.register_listener(this);
-    
+
     // FILE HANDLING
     colect_saveable_parameters();
     if( data_type == MASTER )
@@ -1889,581 +2238,386 @@ NOINLINE void SynthData::colect_saveable_parameters() noexcept
 }
 
 //==============================================================================
+//==============================================================================
+//==============================================================================
 NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
     {
-        // MAIN
-        {
-            morph_groups.add( &morph_group_main );
-            morph_group_main.set_id( MAIN );
-
-            morph_group_main.register_parameter( volume.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( final_compression.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_data->attack.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->decay.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->max_decay_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->sustain.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->sustain_time.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->release.ptr(), data_type == MASTER  );
-            morph_group_main.register_parameter( env_data->max_release_time.ptr(), data_type == MASTER  );
-
-            morph_group_main.register_parameter( env_preset_def->attack_1.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_1.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_1.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_2.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_2.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_2.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_3.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_3.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_3.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->attack_4.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
-            morph_group_main.register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
-
-            //speed_multi
-        }
-
         // OSC'S
         {
             {
-                morph_groups.add( &morph_group_osc_1 );
-                morph_group_osc_1.set_id( OSC_1 );
+                morph_group_1->register_parameter( osc_datas[0]->wave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[0]->octave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_osc_1.register_parameter( osc_datas[0]->wave.ptr(), data_type == MASTER );
-                morph_group_osc_1.register_parameter( osc_datas[0]->octave.ptr(), data_type == MASTER );
-                morph_group_osc_1.register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
 
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
-
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_osc_1.register_switch_parameter( osc_datas[0]->osc_switch.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
-                morph_groups.add( &morph_group_osc_2 );
-                morph_group_osc_2.set_id( OSC_2 );
+                morph_group_1->register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[1]->octave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_osc_2.register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
-                morph_group_osc_2.register_parameter( osc_datas[1]->octave.ptr(), data_type == MASTER );
-                morph_group_osc_2.register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
 
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
-
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_osc_2.register_switch_parameter( osc_datas[1]->osc_switch.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
-                morph_groups.add( &morph_group_osc_3 );
-                morph_group_osc_3.set_id( OSC_3 );
+                morph_group_1->register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
+                morph_group_1->register_parameter( osc_datas[2]->octave.ptr(), data_type == MASTER  );
+                morph_group_1->register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
 
-                morph_group_osc_3.register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
-                morph_group_osc_3.register_parameter( osc_datas[2]->octave.ptr(), data_type == MASTER  );
-                morph_group_osc_3.register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
 
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
-
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_osc_3.register_switch_parameter( osc_datas[2]->osc_switch.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[2]->osc_switch.int_ptr(), data_type == MASTER );
             }
         }
 
         // FM
         {
-            morph_groups.add( &morph_group_fm );
-            morph_group_fm.set_id( FM );
-
-            morph_group_fm.register_parameter( osc_datas[0]->fm_multi.ptr(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[0]->fm_swing.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[0]->fm_multi.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[0]->fm_swing.ptr(), data_type == MASTER  );
             // TODO
-            //morph_group_fm.register_parameter( osc_datas[0]->osc_swing.ptr(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[1]->fm_multi.ptr(), data_type == MASTER  );
-            morph_group_fm.register_parameter( osc_datas[2]->fm_multi.ptr(), data_type == MASTER  );
+            //morph_group_1->register_parameter( osc_datas[0]->osc_swing.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[1]->fm_multi.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[2]->fm_multi.ptr(), data_type == MASTER  );
 
-            morph_group_fm.register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[0]->fm_wave.bool_ptr(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[1]->fm_wave.bool_ptr(), data_type == MASTER  );
-            morph_group_fm.register_switch_parameter( osc_datas[2]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[0]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[1]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[2]->fm_wave.bool_ptr(), data_type == MASTER  );
         }
 
         // FILTERS
         {
             {
-                morph_groups.add( &morph_group_filter_1 );
-                morph_group_filter_1.set_id( FILTER_1 );
-
                 // FLT
-                morph_group_filter_1.register_parameter( filter_datas[0]->adsr_lfo_mix.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->distortion.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->cutoff.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->width.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->distortion.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->width.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_1.register_parameter( filter_datas[0]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
-                    morph_group_filter_1.register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_width.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_1.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_1.register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_1.register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_filter_1.register_parameter( filter_datas[0]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
-                morph_groups.add( &morph_group_filter_2 );
-                morph_group_filter_2.set_id( FILTER_2 );
-
                 // FLT
-                morph_group_filter_2.register_parameter( filter_datas[1]->adsr_lfo_mix.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->distortion.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->cutoff.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->width.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->distortion.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->width.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_2.register_parameter( filter_datas[1]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
-                    morph_group_filter_2.register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_width.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_2.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_2.register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_2.register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_filter_2.register_parameter( filter_datas[1]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
 
             {
-                morph_groups.add( &morph_group_filter_3 );
-                morph_group_filter_3.set_id( FILTER_3 );
-
                 // FLT
-                morph_group_filter_3.register_parameter( filter_datas[2]->adsr_lfo_mix.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->distortion.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->cutoff.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->width.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->adsr_lfo_mix.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->distortion.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->cutoff.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->width.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_3.register_parameter( filter_datas[2]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
-                    morph_group_filter_3.register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_width.bool_ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_width.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_filter_3.register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_filter_3.register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
-                morph_group_filter_3.register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
 
                 // ENV
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_attack_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_decay_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->sustain.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_filter_3.register_parameter( filter_datas[2]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->attack.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->max_attack_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->decay.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->max_decay_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->sustain.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->release.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->max_release_time.ptr(), data_type == MASTER  );
             }
         }
 
+        // MAIN
+        {
+            morph_group_3->register_parameter( volume.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( final_compression.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_data->attack.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->decay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->max_decay_time.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->sustain.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->sustain_time.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->release.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->max_release_time.ptr(), data_type == MASTER  );
+
+            morph_group_3->register_parameter( env_preset_def->attack_1.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->decay_1.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->release_1.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->attack_2.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->decay_2.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->release_2.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->attack_3.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->decay_3.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->release_3.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->attack_4.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
+
+            //speed_multi
+        }
 
         // EQ
         {
-            morph_groups.add( &morph_group_eq );
-            morph_group_eq.set_id( EQ );
-
             for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
             {
-                morph_group_eq.register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
-                morph_group_eq.register_parameter( eq_data->env_datas[band_id]->state.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->env_datas[band_id]->state.ptr(), data_type == MASTER  );
 
-                morph_group_eq.register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
+                morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
         }
 
         // FX
         {
-            morph_groups.add( &morph_group_fx );
-            morph_group_fx.set_id( FX );
-
             // MAIN
-            morph_group_fx.register_parameter( colour.ptr(), data_type == MASTER );
-            morph_group_fx.register_parameter( resonance.ptr(), data_type == MASTER );
-            morph_group_fx.register_parameter( effect_bypass.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( colour.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( resonance.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( effect_bypass.ptr(), data_type == MASTER  );
             // REVERB
-            morph_group_fx.register_parameter( reverb_data->room.ptr(), data_type == MASTER  );
-            morph_group_fx.register_parameter( reverb_data->dry_wet_mix.ptr(), data_type == MASTER  );
-            morph_group_fx.register_parameter( reverb_data->width.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( reverb_data->room.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( reverb_data->dry_wet_mix.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( reverb_data->width.ptr(), data_type == MASTER  );
             // DELAY
-            morph_group_fx.register_parameter( delay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
-            morph_group_fx.register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
-            morph_group_fx.register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
+            morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
 
         // ARP
         {
             {
-                morph_groups.add( &morph_group_arp_tune );
-                morph_group_arp_tune.set_id( ARP_TUNE );
-
                 for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
                 {
-                    morph_group_arp_tune.register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
+                    morph_group_4->register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
                 }
             }
 
             {
-                morph_groups.add( &morph_group_arp_velocity );
-                morph_group_arp_velocity.set_id( ARP_VELOCITY );
-
                 for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
                 {
-                    morph_group_arp_velocity.register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
+                    morph_group_4->register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
                 }
             }
 
             {
-                morph_groups.add( &morph_group_arp_glide_shuffle );
-                morph_group_arp_glide_shuffle.set_id( ARP_GLIDE_SHUFFLE );
-
-                morph_group_arp_glide_shuffle.register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
-                morph_group_arp_glide_shuffle.register_parameter( glide.ptr(), data_type == MASTER  );
+                morph_group_4->register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
+                morph_group_4->register_parameter( glide.ptr(), data_type == MASTER  );
             }
 
             {
-                morph_groups.add( &morph_group_arp_switchs );
-                morph_group_arp_switchs.set_id( ARP_SWITCHS );
-
                 // is_on
                 // speed_multi
-                morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
-                //morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data.connect.ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
+                //morph_group_arp_switchs->register_switch_parameter( arp_sequencer_data.connect.ptr(), data_type == MASTER  );
                 for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
                 {
-                    morph_group_arp_switchs.register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
+                    morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
                 }
             }
         }
     }
-    morph_groups.minimiseStorageOverheads();
 
     // MAKE IT HOT
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
     if( data_type == MASTER )
     {
-        for( int morpher_group_id = 0 ; morpher_group_id != SUM_MORPHER_GROUPS ; ++morpher_group_id )
+        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+
+        // SETUP THE MORPH GROUP
+        // TODO, do not initalize the unneded morph groups
+        // TODO, only load and save the needed params
+        morph_group_1->set_sources( left_morph_sources[0]->morph_group_1, right_morph_sources[0]->morph_group_1, morhp_states[0], morhp_switch_states[0] );
+        morph_group_2->set_sources( left_morph_sources[1]->morph_group_2, right_morph_sources[1]->morph_group_2, morhp_states[1], morhp_switch_states[1] );
+        morph_group_3->set_sources( left_morph_sources[2]->morph_group_3, right_morph_sources[2]->morph_group_3, morhp_states[2], morhp_switch_states[2] );
+        morph_group_4->set_sources( left_morph_sources[3]->morph_group_4, right_morph_sources[3]->morph_group_4, morhp_states[3], morhp_switch_states[3] );
+
+        for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
         {
-            left_morph_datas.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-            right_morph_datas.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+            morhp_states[morpher_id].register_listener(this);
         }
-        {
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id ) {
-                morpher_selections.add( new MorpherSelection() );
-            }
-            activate_morph_selection( 0, OSCS );
-            activate_morph_selection( 0, FM );
-            activate_morph_selection( 1, FILTERS );
-            activate_morph_selection( 2, EQ );
-            activate_morph_selection( 2, FX );
-            activate_morph_selection( 2, MAIN );
-            activate_morph_selection( 3, ARP );
-        }
+        linear_morhp_state.register_listener(this);
     }
-    left_morph_datas.minimiseStorageOverheads();
-    right_morph_datas.minimiseStorageOverheads();
-    morpher_selections.minimiseStorageOverheads();
+    left_morph_sources.minimiseStorageOverheads();
+    right_morph_sources.minimiseStorageOverheads();
 }
-
-void SynthData::MorpherSelection::activate(SynthData::MORPH_SELCTIONS_IDS id_, OwnedArray< MorpherSelection >& peers_) {
-    // COLLECT IDS TO ENABLE AND DISABLE
-    Array< MORPH_SELCTIONS_IDS > ids;
-    if( id_ == ALL ) {
-        ids.add( ALL );
-        ids.add( MAIN );
-        ids.add( OSCS );
-        ids.add( OSC_1 );
-        ids.add( OSC_2 );
-        ids.add( OSC_3 );
-        ids.add( FILTERS );
-        ids.add( FILTER_1 );
-        ids.add( FILTER_2 );
-        ids.add( FILTER_3 );
-        ids.add( FM );
-        ids.add( FX );
-        ids.add( EQ );
-        ids.add( ARP );
-        ids.add( ARP_TUNE );
-        ids.add( ARP_VELOCITY );
-        ids.add( ARP_GLIDE_SHUFFLE );
-        ids.add( ARP_SWITCHS );
-    }
-    else if( id_ == OSCS ) {
-        ids.add( OSCS );
-        ids.add( OSC_1 );
-        ids.add( OSC_2 );
-        ids.add( OSC_3 );
-    }
-    else if( id_ == FILTERS ) {
-        ids.add( FILTERS );
-        ids.add( FILTER_1 );
-        ids.add( FILTER_2 );
-        ids.add( FILTER_3 );
-    }
-    else if( id_ == ARP ) {
-        ids.add( ARP );
-        ids.add( ARP_TUNE );
-        ids.add( ARP_VELOCITY );
-        ids.add( ARP_GLIDE_SHUFFLE );
-        ids.add( ARP_SWITCHS );
-    }
-    else
-    {
-        ids.add( id_ );
-    }
-
-    if( ! active_morph_selections.contains( id_ ) )
-    {
-        // DISABLE AND ENABLE
-        for( int i = 0 ; i != ids.size() ; ++i )
-        {
-            MORPH_SELCTIONS_IDS id = ids.getUnchecked(i);
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-            {
-                MorpherSelection* peer = peers_[morpher_id];
-                if( peer != this )
-                {
-                    peer->active_morph_selections.removeFirstMatchingValue( id );
-                }
-                else if( ! active_morph_selections.contains( id ) )
-                {
-                    active_morph_selections.add( id );
-                }
-            }
-        }
-    }
-    else
-    {
-        for( int i = 0 ; i != ids.size() ; ++i )
-        {
-            MORPH_SELCTIONS_IDS id = ids.getUnchecked(i);
-            active_morph_selections.removeFirstMatchingValue( id );
-        }
-    }
-
-    // CLEAN HEADERS
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-    {
-        MorpherSelection* peer = peers_[morpher_id];
-        peer->clean_header_selections();
-    }
-}
-void SynthData::MorpherSelection::clean_header_selections() {
-    if( active_morph_selections.size() != MORPH_SELCTIONS_IDS::SUM )
-    {
-        active_morph_selections.removeFirstMatchingValue( ALL );
-    }
-    else if( ! active_morph_selections.contains( ALL ) )
-    {
-        active_morph_selections.add(ALL);
-    }
-
-    if( ! active_morph_selections.contains( OSC_1 )
-            || ! active_morph_selections.contains( OSC_2 )
-            || ! active_morph_selections.contains( OSC_2 ) )
-    {
-        active_morph_selections.removeFirstMatchingValue( OSCS );
-    }
-    else if( ! active_morph_selections.contains( OSCS ) )
-    {
-        active_morph_selections.add(OSCS);
-    }
-
-    if( ! active_morph_selections.contains( FILTER_1 )
-            || ! active_morph_selections.contains( FILTER_2 )
-            || ! active_morph_selections.contains( FILTER_3 ) )
-    {
-        active_morph_selections.removeFirstMatchingValue( FILTERS );
-    }
-    else if( ! active_morph_selections.contains( FILTERS ) )
-    {
-        active_morph_selections.add(FILTERS);
-    }
-
-    if( ! active_morph_selections.contains( ARP_TUNE )
-            || ! active_morph_selections.contains( ARP_VELOCITY )
-            || ! active_morph_selections.contains( ARP_GLIDE_SHUFFLE )
-    || ! active_morph_selections.contains( ARP_SWITCHS ) ) {
-        active_morph_selections.removeFirstMatchingValue( ARP );
-    }
-    else if( ! active_morph_selections.contains( ARP ) )
-    {
-        active_morph_selections.add(ARP);
-    }
-}
-// MAYBE NOT THE BEST CODE BUT ON A GOOD POSITION (less used function)
-void SynthData::activate_morph_selection( int morpher_id_, MORPH_SELCTIONS_IDS id_, bool run_sync_morph_ ) {
-    // UPDATE SELECTIONS
-    morpher_selections[morpher_id_]->activate( id_, morpher_selections );
-
-    // COLLECT ALL IDS
-    Array< int > unselected_selection_ids;
-    for( int selection_id = 0 ; selection_id != MORPH_SELCTIONS_IDS::ALL ; ++selection_id )
-        unselected_selection_ids.add( selection_id );
-
-    // SET LEFT AND RIGHT SOURCES
-    morph_groups_per_morpher.clearQuick();
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-    {
-        morph_groups_per_morpher.add( Array< MorphGroup* >() );
-
-        for( int morph_group_id = 0 ; morph_group_id != ALL ; ++morph_group_id )
-        {
-            MorpherSelection* morpher_selection = morpher_selections[morpher_id];
-            if( morpher_selection->active_morph_selections.contains( morph_group_id ) )
-            {
-                MorphGroup* morph_group = morph_groups[morph_group_id];
-
-                morph_group->set_sources
-                (
-                    left_morph_datas.getUnchecked(morpher_id),
-                    right_morph_datas.getUnchecked(morpher_id),
-                    morhp_states[morpher_id],
-                    morhp_switch_states[morpher_id]
-                );
-
-                morph_groups_per_morpher.getReference(morpher_id).add(morph_group);
-
-                unselected_selection_ids.removeFirstMatchingValue( morph_group_id );
-            }
-        }
-    }
-
-    // REMOVE/DISABLE UNSELECTED LEFT AND RIGHT SOURCES
-    for( int i = 0; i != unselected_selection_ids.size() ; ++i )
-    {
-        const int id( unselected_selection_ids[i] );
-        MorphGroup* morph_group( morph_groups[id] );
-        morph_group->set_sources(nullptr,nullptr,0,LEFT);
-    }
-
-    // SYNC
-    if( run_sync_morph_ )
-        run_sync_morph();
-}
-const Array< int >& SynthData::get_active_morph_selections( int morpher_id_ ) const {
-    return morpher_selections[morpher_id_]->active_morph_selections;
-}
-
-inline const SynthData::MorphGroup& SynthData::get_morph_group( int id_ ) const noexcept {
-    return *morph_groups.getUnchecked( id_ );
-}
-inline SynthData::MorphGroup& SynthData::get_morph_group( int id_ ) noexcept {
-    return *morph_groups.getUnchecked( id_ );
-}
-inline void SynthData::run_sync_morph() noexcept {
-    for( int i = 0 ;
-    i != morph_groups.size() ;
-    ++i )
-    {
-        morph_groups[i]->run_sync_morph();
-    }
-}
-bool SynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept {
-    SynthData* synth_data = left_morph_datas.getUnchecked( morpher_id_ );
-    synth_data->set_current_bank( bank_id_ );
-    synth_data->set_current_program( index_ );
-    bool success = synth_data->load( false );
-    if( success )
-        run_sync_morph();
-
-    return success;
-}
-bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept {
-    SynthData* synth_data = right_morph_datas.getUnchecked( morpher_id_ );
-    synth_data->set_current_bank( bank_id_ );
-    synth_data->set_current_program( index_ );
-    bool success = synth_data->load( false );
-    if( success )
-        run_sync_morph();
-
-    return success;
-}
-void SynthData::update_left_morph_source( int morpher_id_ ) noexcept
+float SynthData::get_morph_state( int morpher_id_ ) const noexcept
 {
-    copy( left_morph_datas.getUnchecked(morpher_id_), this );
+    return morhp_states[morpher_id_];
 }
-void SynthData::update_right_morph_source( int morpher_id_ ) noexcept
+bool SynthData::get_morph_switch_state( int morpher_id_ ) const noexcept
 {
-    copy( right_morph_datas.getUnchecked(morpher_id_), this );
+    return morhp_switch_states[morpher_id_];
 }
+
+//==============================================================================
+void SynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
+{
+    if( force_ )
+    {
+        morhp_states[morpher_id_].get_runtime_info().stop_time_change();
+        morhp_states[morpher_id_] = morph_amount_left_to_right_;
+    }
+
+    switch( morpher_id_ )
+    {
+    case 0 :
+        morph_group_1->morph( morph_amount_left_to_right_ );
+        break;
+    case 1 :
+        morph_group_2->morph( morph_amount_left_to_right_ );
+        break;
+    case 2 :
+        morph_group_3->morph( morph_amount_left_to_right_ );
+        break;
+    case 3 :
+        morph_group_4->morph( morph_amount_left_to_right_ );
+        break;
+    }
+}
+void SynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
+{
+    if( do_switch_ )
+    {
+        morhp_switch_states[morpher_id_] ^= true;
+    }
+
+    switch( morpher_id_ )
+    {
+    case 0 :
+        morph_group_1->morph_switchs( morhp_switch_states[0] );
+        break;
+    case 1 :
+        morph_group_2->morph_switchs( morhp_switch_states[1] );
+        break;
+    case 2 :
+        morph_group_3->morph_switchs( morhp_switch_states[2] );
+        break;
+    case 3 :
+        morph_group_4->morph_switchs( morhp_switch_states[3] );
+        break;
+    }
+}
+void SynthData::run_sync_morph() noexcept
+{
+    morph_group_1->run_sync_morph();
+    morph_group_2->run_sync_morph();
+    morph_group_3->run_sync_morph();
+    morph_group_4->run_sync_morph();
+}
+
+//==============================================================================
 void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
     if( param_ == morhp_states[0].ptr() ) {
@@ -2526,39 +2680,89 @@ void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
         }
     }
 }
-void SynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
+
+//==============================================================================
+void SynthData::set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept
 {
-    if( force_ )
+    MorphGroup* morph_group_to_update;
+    MorphGroup* morph_group_source;
+    switch( morpher_id_ )
     {
-        morhp_states[morpher_id_].get_runtime_info().stop_time_change();
-        morhp_states[morpher_id_] = morph_amount_left_to_right_;
+    case 0 :
+        if( left_or_right_ == LEFT )
+            morph_group_to_update = left_morph_sources[0]->morph_group_1;
+        else
+            morph_group_to_update = right_morph_sources[0]->morph_group_1;
+
+        morph_group_source = morph_group_1;
+        break;
+    case 1 :
+        if( left_or_right_ == LEFT )
+            morph_group_to_update = left_morph_sources[1]->morph_group_2;
+        else
+            morph_group_to_update = right_morph_sources[1]->morph_group_2;
+
+        morph_group_source = morph_group_2;
+        break;
+    case 2 :
+        if( left_or_right_ == LEFT )
+            morph_group_to_update = left_morph_sources[2]->morph_group_3;
+        else
+            morph_group_to_update = right_morph_sources[2]->morph_group_3;
+
+        morph_group_source = morph_group_3;
+        break;
+    case 3 :
+        if( left_or_right_ == LEFT )
+            morph_group_to_update = left_morph_sources[3]->morph_group_4;
+        else
+            morph_group_to_update = right_morph_sources[3]->morph_group_4;
+
+        morph_group_source = morph_group_4;
+        break;
     }
 
-    Array< MorphGroup* >& morph_groups_for_morpher = morph_groups_per_morpher.getReference(morpher_id_);
-    for( int morph_group_id = 0 ; morph_group_id != morph_groups_for_morpher.size() ; ++morph_group_id )
+    for( int i = 0 ; i != morph_group_to_update->params.size() ; ++i )
     {
-        morph_groups_for_morpher[morph_group_id]->morph( morph_amount_left_to_right_ );
+        Parameter*param( morph_group_to_update->params.getUnchecked(i) );
+        param->set_value_without_notification( morph_group_source->params.getUnchecked(i)->get_value() );
     }
-}
 
-float SynthData::get_morph_state( int morpher_id_ ) const noexcept {
-    return morhp_states[morpher_id_];
+    run_sync_morph();
 }
-
-void SynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
+bool SynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept
 {
-    if( do_switch_ )
-        morhp_switch_states[morpher_id_] ^= true;
+    SynthData* synth_data = left_morph_sources.getUnchecked( morpher_id_ );
+    synth_data->set_current_bank( bank_id_ );
+    synth_data->set_current_program( index_ );
+    bool success = synth_data->load( false );
+    if( success )
+    {
+        run_sync_morph();
+    }
 
-    Array< MorphGroup* >& morph_groups_for_morpher = morph_groups_per_morpher.getReference(morpher_id_);
-    for( int morph_group_id = 0 ;
-    morph_group_id != morph_groups_for_morpher.size() ;
-    ++morph_group_id )
-        morph_groups_for_morpher[morph_group_id]->morph_switchs( morhp_switch_states[morpher_id_] );
+    return success;
 }
-bool SynthData::get_morph_switch_state( int morpher_id_ ) const noexcept {
-    return morhp_switch_states[morpher_id_];
+bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept
+{
+    SynthData* synth_data = right_morph_sources.getUnchecked( morpher_id_ );
+    synth_data->set_current_bank( bank_id_ );
+    synth_data->set_current_program( index_ );
+    bool success = synth_data->load( false );
+    if( success )
+    {
+        run_sync_morph();
+    }
+
+    return success;
 }
+
+
+
+
+
+
+
 
 NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
     if( xml_ )
@@ -2566,17 +2770,6 @@ NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
             write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
-        }
-
-        // MORPH SELECTIONS
-        if( id == MASTER )
-        {
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-            {
-                MorpherSelection& morpher_selection = *morpher_selections[morpher_id];
-                for( int morph_group_id = 0; morph_group_id != ALL ; ++morph_group_id )
-                    xml_->setAttribute( String("morph_") + String( morpher_id ) + String( morph_group_id ), String(morpher_selection.active_morph_selections.contains( morph_group_id )) );
-            }
         }
     }
 }
@@ -2594,27 +2787,11 @@ NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
         {
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
-                left_morph_datas[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
-                right_morph_datas[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
+                left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
+                right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
             }
         }
 
-        // MORPH SELECTIONS
-        if( id == MASTER )
-        {
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-            {
-                MorpherSelection& morpher_selection = *morpher_selections[morpher_id];
-                for( int morph_group_id = 0; morph_group_id != ALL ; ++morph_group_id )
-                {
-                    int is_active_stored = xml_->getIntAttribute( String("morph_") + String( morpher_id ) + String( morph_group_id ), 2 );
-                    if( morpher_selection.active_morph_selections.contains(morph_group_id) && is_active_stored == 0 )
-                        activate_morph_selection( morpher_id, static_cast< MORPH_SELCTIONS_IDS >( morph_group_id ), false );
-                    else if( !morpher_selection.active_morph_selections.contains(morph_group_id) && is_active_stored == 1 )
-                        activate_morph_selection( morpher_id, static_cast< MORPH_SELCTIONS_IDS >( morph_group_id ), false );
-                }
-            }
-        }
         // AND MORPH IT
         if( id == MASTER )
         {
@@ -2625,8 +2802,6 @@ NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
             }
         }
     }
-
-    //UiLookAndFeel::getInstance()->colours.read_from(xml_);
 }
 
 NOINLINE void SynthData::save_midi() const noexcept {
@@ -2659,313 +2834,6 @@ NOINLINE void SynthData::read_midi() noexcept {
     }
 }
 
-//==============================================================================
-NOINLINE SynthData::MorphGroup::MorphGroup()
-    :
-    id(-1),
-    left_morph_group( nullptr ), right_morph_group( nullptr ),
-    last_power_of_right(0),
-    current_switch(LEFT),
-    current_callbacks(-1)
-{}
-
-NOINLINE void SynthData::MorphGroup::set_id( int id_ ) {
-    id = id_;
-}
-
-NOINLINE void SynthData::MorphGroup::register_parameter( Parameter* param_, bool is_master_ )
-{
-    params.add( param_ );
-
-    if( is_master_ )
-        param_->register_listener(this);
-}
-NOINLINE void SynthData::MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ )
-{
-    /*
-    switch_bool_params.add( param_ );
-
-    if( is_master_ )
-      param_->register_listener(this);
-    */
-}
-NOINLINE void SynthData::MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ )
-{
-    /*
-    switch_int_params.add( param_ );
-
-    if( is_master_ )
-        param_->register_listener(this);
-    */
-}
-
-NOINLINE void SynthData::MorphGroup::set_sources( SynthData* left_source_,
-        SynthData* right_source_,
-        float current_morph_amount_,
-        bool current_switch_state_ ) noexcept
-{
-    last_power_of_right = current_morph_amount_;
-    current_switch = current_switch_state_;
-
-    if( left_source_ && right_source_ )
-    {
-        left_morph_group = &left_source_->get_morph_group( id );
-        right_morph_group = &right_source_->get_morph_group( id );
-    }
-    else
-    {
-        left_morph_group = nullptr;
-        right_morph_group = nullptr;
-    }
-}
-
-// TODO update the morphgroups earlyer to morph faster?
-#define SYNC_MORPH_STEPS 100
-#define SYNC_MORPH_TIME 10
-void SynthData::MorphGroup::morph( float power_of_right_ ) noexcept
-{
-    if( left_morph_group )
-    {
-        for( int i = 0 ; i != params.size() ; ++i )
-        {
-            // VALUE
-            float new_value = (*left_morph_group->params[i] * (1.0f - power_of_right_ )) + (*right_morph_group->params[i] * power_of_right_);
-            params[i]->set_value_without_notification( new_value );
-
-            // MODULATION VALUE
-            if( has_modulation( params[i] ) )
-            {
-                params[i]->set_modulation_amount_without_notification
-                (
-                    left_morph_group->params[i]->get_modulation_amount() * (1.0f - power_of_right_ )
-                    + right_morph_group->params[i]->get_modulation_amount() * power_of_right_
-                );
-            }
-        }
-    }
-    last_power_of_right = power_of_right_;
-}
-void SynthData::MorphGroup::run_sync_morph() noexcept {
-    stopTimer();
-    current_callbacks = 0;
-
-    sync_param_deltas.clearQuick();
-    sync_modulation_deltas.clearQuick();
-    if( left_morph_group )
-    {
-        for( int i = 0 ; i != params.size() ; ++i )
-        {
-            {
-                float target_value = (*left_morph_group->params[i] * (1.0f - last_power_of_right )) + (*right_morph_group->params[i] * last_power_of_right);
-                float current_value = *params[i];
-                sync_param_deltas.add( (target_value-current_value)/SYNC_MORPH_STEPS );
-            }
-            if( has_modulation( params[i] ) )
-            {
-                float target_modulation = (left_morph_group->params[i]->get_modulation_amount() * (1.0f - last_power_of_right )) + (right_morph_group->params[i]->get_modulation_amount() * last_power_of_right);
-                float current_modulation = params[i]->get_modulation_amount();
-                sync_modulation_deltas.add( (target_modulation-current_modulation)/SYNC_MORPH_STEPS );
-            }
-            else
-                sync_modulation_deltas.add( -1 );
-        }
-
-        startTimer(SYNC_MORPH_TIME);
-    }
-}
-
-void SynthData::MorphGroup::timerCallback() {
-    for( int i = 0 ; i != params.size() ; ++i )
-    {
-        {
-            const ParameterInfo& info = params[i]->get_info();
-            float min = info.min_value;
-            float max = info.max_value;
-            float new_value = *params[i] + sync_param_deltas[i];
-            if( new_value > max )
-                new_value = max;
-            else if( new_value < min )
-                new_value = min;
-
-            params[i]->set_value_without_notification( new_value );
-        }
-        float modulation_delta = sync_modulation_deltas[i];
-        if( modulation_delta != -1 )
-        {
-            float new_modualtation = params[i]->get_modulation_amount() + modulation_delta;
-            if( new_modualtation > 1 )
-                new_modualtation = 1;
-            else if( new_modualtation < -1 )
-                new_modualtation = -1;
-
-            params[i]->set_modulation_amount_without_notification( new_modualtation );
-        }
-    }
-
-    if( current_callbacks++ == SYNC_MORPH_STEPS )
-    {
-        stopTimer();
-        morph(last_power_of_right);
-    }
-}
-
-void SynthData::MorphGroup::morph_switchs( bool left_right_ ) noexcept
-{
-    current_switch = left_right_;
-    if( left_morph_group )
-    {
-        for( int i = 0 ; i != switch_bool_params.size() ; ++i )
-        {
-            if( current_switch == RIGHT )
-                switch_bool_params[i]->set_value_without_notification( right_morph_group->switch_bool_params[i]->get_value() );
-            else
-                switch_bool_params[i]->set_value_without_notification( left_morph_group->switch_bool_params[i]->get_value() );
-        }
-        for( int i = 0 ; i != switch_int_params.size() ; ++i )
-        {
-            if( current_switch == RIGHT )
-                switch_int_params[i]->set_value_without_notification( right_morph_group->switch_int_params[i]->get_value() );
-            else
-                switch_int_params[i]->set_value_without_notification( left_morph_group->switch_int_params[i]->get_value() );
-        }
-    }
-}
-
-void SynthData::MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
-{
-    TYPES_DEF type = type_of( param_ );
-    if( type == IS_BOOL )
-    {
-        if( left_morph_group )
-        {
-            const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
-            if( param_id != -1 )
-            {
-                if( current_switch == LEFT )
-                    left_morph_group->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
-                else
-                    right_morph_group->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
-            }
-        }
-    }
-    else if( type == IS_INT )
-    {
-        if( left_morph_group )
-        {
-            const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
-            if( param_id != -1 )
-            {
-                if( current_switch == LEFT )
-                    left_morph_group->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
-                else
-                    right_morph_group->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
-            }
-        }
-    }
-    else
-    {
-        if( left_morph_group )
-        {
-            const int param_id = params.indexOf( param_ );
-            if( param_id != -1 )
-            {
-                Parameter& left_source_param = *left_morph_group->params[param_id];
-                Parameter& right_source_param = *right_morph_group->params[param_id];
-
-                // x = l*(1-m)+r*m
-                // r = (l*(m-1.0f)+x)/m
-                // l = (m*r-x) / (m-1)
-                float current_value = *param_;
-                float right_value = right_source_param;
-                bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
-                const ParameterInfo& info = right_source_param.get_info();
-                const float max = info.max_value;
-                const float min = info.min_value;
-                if( update_left_or_right == RIGHT )
-                {
-                    float left_value = left_source_param;
-                    float new_right_value = (left_value*(last_power_of_right-1)+current_value) / last_power_of_right;
-                    if( new_right_value > max )
-                    {
-                        new_right_value = max;
-                        update_left_or_right = LEFT;
-                    }
-                    else if( new_right_value < min )
-                    {
-                        new_right_value = min;
-                        update_left_or_right = LEFT;
-                    }
-
-                    right_source_param.set_value_without_notification( new_right_value );
-                    right_value = new_right_value;
-                }
-                if( update_left_or_right == LEFT )
-                {
-                    float new_left_value = (last_power_of_right*right_value-current_value) / (last_power_of_right-1);
-                    if( new_left_value > max )
-                    {
-                        new_left_value = max;
-                    }
-                    else if( new_left_value < min )
-                    {
-                        new_left_value = min;
-                    }
-
-                    left_source_param.set_value_without_notification( new_left_value );
-                }
-            }
-        }
-    }
-}
-void SynthData::MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcept {
-    if( left_morph_group )
-    {
-        const int param_id = params.indexOf( param_ );
-        if( param_id != -1 )
-        {
-            Parameter& left_source_param = *left_morph_group->params[param_id];
-            Parameter& right_source_param = *right_morph_group->params[param_id];
-
-            float current_modulation = param_->get_modulation_amount();
-            float right_modulation = right_source_param.get_modulation_amount();
-            bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
-            if( update_left_or_right == RIGHT )
-            {
-                float left_modulation = left_source_param.get_modulation_amount();
-                float new_right_modulation = (left_modulation*(last_power_of_right-1)+current_modulation) / last_power_of_right;
-
-                if( new_right_modulation > 1 )
-                {
-                    new_right_modulation = 1;
-                    update_left_or_right = LEFT;
-                }
-                else if( new_right_modulation < -1 )
-                {
-                    new_right_modulation = -1;
-                    update_left_or_right = LEFT;
-                }
-
-                right_source_param.set_modulation_amount_without_notification( new_right_modulation );
-                right_modulation = new_right_modulation;
-            }
-            if( update_left_or_right == LEFT )
-            {
-                float new_left_modulation = (last_power_of_right*right_modulation-current_modulation) / (last_power_of_right-1);
-
-                if( new_left_modulation > 1 )
-                {
-                    new_left_modulation = 1;
-                }
-                else if( new_left_modulation < -1 )
-                {
-                    new_left_modulation = -1;
-                }
-
-                left_source_param.set_modulation_amount_without_notification( new_left_modulation );
-            }
-        }
-    }
-}
 
 static inline File get_bank_folder( const String& bank_name_ ) {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
@@ -3339,8 +3207,8 @@ NOINLINE bool SynthData::write2file( const String& bank_name_, const String& pro
 
     for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
     {
-        left_morph_datas[morpher_id]->save_to(xml.createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
-        right_morph_datas[morpher_id]->save_to(xml.createNewChildElement(String("RightMorphData_")+String(morpher_id)));
+        left_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
+        right_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("RightMorphData_")+String(morpher_id)));
     }
 
     return xml.writeToFile(program_file,"");

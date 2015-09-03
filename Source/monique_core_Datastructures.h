@@ -501,6 +501,7 @@ public:
 //==============================================================================
 //==============================================================================
 #define THREAD_LIMIT 4
+class MorphGroup;
 struct SynthData : ParameterListener
 {
     const int id;
@@ -565,6 +566,7 @@ private:
     NOINLINE void colect_saveable_parameters() noexcept;
 
 public:
+    // TODO
     inline Array< Parameter* >& get_atomateable_parameters() noexcept
     {
         return saveable_parameters;
@@ -578,169 +580,41 @@ public:
     // ==============================================================================
     // ==============================================================================
     // MORPH
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // ==============================================================================
-private:
-    // TODO, load DATA
-    // TODO, load the mixer states
-
-    // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
-    // BETTER SOLUTION IS TO CREATE A OWN CLASS FOR THE AND INIT IT WITH THE MASTER
-    OwnedArray< SynthData > left_morph_datas;
-    OwnedArray< SynthData > right_morph_datas;
-
-    // CONTAINS THE IDS OF THE MORPH SOURCES
 public:
-    enum MORPH_SELCTIONS_IDS
-    {
-        MAIN = 0,
-        OSC_1,
-        OSC_2,
-        OSC_3,
-        FM,
-        FILTER_1,
-        FILTER_2,
-        FILTER_3,
-        EQ,
-        FX,
-        ARP_TUNE,
-        ARP_VELOCITY,
-        ARP_GLIDE_SHUFFLE,
-        ARP_SWITCHS,
-
-        // TO HAVE AN INDEX FROM 0 to this line
-        ALL, // <- MAX INDEX FOR ACTIVE SELECTION IN THE SynthData::MORPH FUNCTION
-        OSCS, FILTERS, ARP,
-
-        SUM
-    };
-
-private:
-    class MorpherSelection
-    {
-    public:
-        Array< int > active_morph_selections;
-
-        void activate( MORPH_SELCTIONS_IDS id_, OwnedArray< MorpherSelection >& peers_ );
-
-    private:
-        void clean_header_selections();
-    };
-    OwnedArray< MorpherSelection > morpher_selections;
-
-public:
-    void activate_morph_selection( int morpher_id_, MORPH_SELCTIONS_IDS id_, bool run_sync_morph_ = true );
-    const Array< int >& get_active_morph_selections( int morpher_id_ ) const;
-
-private:
-    class MorphGroup : public Timer, ParameterListener
-    {
-        int id;
-
-        MorphGroup* left_morph_group;
-        MorphGroup* right_morph_group;
-
-        Array< Parameter* > params;
-        float last_power_of_right;
-        Array< BoolParameter* > switch_bool_params;
-        bool current_switch;
-        Array< IntParameter* > switch_int_params;
-    public:
-        NOINLINE void set_sources( SynthData* left_source_,
-                                   SynthData* right_source_,
-                                   float current_morph_amount_,
-                                   bool current_switch_state_ ) noexcept;
-        inline void morph( float morph_amount_ ) noexcept;
-        inline void morph_switchs( bool left_right_ ) noexcept;
-
-        Array< float > sync_param_deltas;
-        Array< float > sync_modulation_deltas;
-        void run_sync_morph() noexcept;
-        int current_callbacks;
-        void timerCallback() override;
-
-    public:
-        NOINLINE MorphGroup();
-        NOINLINE void set_id( int id_ );
-        NOINLINE void register_parameter( Parameter* param_, bool is_master_ );
-        NOINLINE void register_switch_parameter( BoolParameter* param_, bool is_master_ );
-        NOINLINE void register_switch_parameter( IntParameter* param_, bool is_master_ );
-
-    private:
-        void parameter_value_changed( Parameter* param_ ) noexcept override;
-        void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
-
-    private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
-    }
-    morph_group_osc_1,
-    morph_group_osc_2,
-    morph_group_osc_3,
-    morph_group_filter_1,
-    morph_group_filter_2,
-    morph_group_filter_3,
-    morph_group_fm,
-    morph_group_eq,
-    morph_group_fx,
-    morph_group_main,
-    morph_group_arp_tune,
-    morph_group_arp_velocity,
-    morph_group_arp_glide_shuffle,
-    morph_group_arp_switchs;
-
-    Array< MorphGroup* > morph_groups;
-    Array< Array< MorphGroup* > > morph_groups_per_morpher;
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-
-    NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
-    inline const MorphGroup& get_morph_group( int id_ ) const noexcept;
-    inline MorphGroup& get_morph_group( int id_ ) noexcept;
-    inline void run_sync_morph() noexcept;
-
-public:
-    // CHANGE THE STATE TO MORPH
     ArrayOfParameters morhp_states;
     ArrayOfBoolParameters morhp_switch_states;
     Parameter linear_morhp_state;
     IntParameter morph_motor_time;
 
-    bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
-    bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
-    void update_left_morph_source( int morpher_id_ ) noexcept;
-    void update_right_morph_source( int morpher_id_ ) noexcept;
-    void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;
-    float get_morph_state( int morpher_id_ ) const noexcept;
-    void morph_switch_buttons( int morpher_id_, bool do_switch_ = true ) noexcept;
-    bool get_morph_switch_state( int morpher_id_ ) const noexcept;
+private:
+    ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
+    OwnedArray< SynthData > left_morph_sources;
+    OwnedArray< SynthData > right_morph_sources;
 
-    // ==============================================================================
+    NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
 
 public:
+    inline float get_morph_state( int morpher_id_ ) const noexcept;
+    inline bool get_morph_switch_state( int morpher_id_ ) const noexcept;
+    inline void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;
+    inline void morph_switch_buttons( int morpher_id_, bool do_switch_ = true ) noexcept;
+    inline void run_sync_morph() noexcept;
 
+private:
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    
+public:
+    // COPY THE CURRENT STATE TO THE SOURCES
+    void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept;
+    bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
+    bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
 
+    // ==============================================================================
+    // ==============================================================================
+    // ==============================================================================
+    // FILE IO
+
+    
 private:
     StringArray banks;
     Array< StringArray > program_names;
@@ -853,5 +727,6 @@ public:
 
 
 #endif
+
 
 

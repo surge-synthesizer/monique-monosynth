@@ -610,62 +610,62 @@ void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_set_left_1)
     {
         //[UserButtonCode_button_set_left_1] -- add your button handler code here..
-        GET_DATA( synth_data ).update_left_morph_source( 0 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, LEFT );
         //[/UserButtonCode_button_set_left_1]
     }
     else if (buttonThatWasClicked == button_set_left_2)
     {
         //[UserButtonCode_button_set_left_2] -- add your button handler code here..
-        GET_DATA( synth_data ).update_left_morph_source( 1 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, LEFT );
         //[/UserButtonCode_button_set_left_2]
     }
     else if (buttonThatWasClicked == button_set_left_3)
     {
         //[UserButtonCode_button_set_left_3] -- add your button handler code here..
-        GET_DATA( synth_data ).update_left_morph_source( 2 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, LEFT );
         //[/UserButtonCode_button_set_left_3]
     }
     else if (buttonThatWasClicked == button_set_left_4)
     {
         //[UserButtonCode_button_set_left_4] -- add your button handler code here..
-        GET_DATA( synth_data ).update_left_morph_source( 3 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, LEFT );
         //[/UserButtonCode_button_set_left_4]
     }
     else if (buttonThatWasClicked == button_set_right_1)
     {
         //[UserButtonCode_button_set_right_1] -- add your button handler code here..
-        GET_DATA( synth_data ).update_right_morph_source( 0 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, RIGHT );
         //[/UserButtonCode_button_set_right_1]
     }
     else if (buttonThatWasClicked == button_set_right_2)
     {
         //[UserButtonCode_button_set_right_2] -- add your button handler code here..
-        GET_DATA( synth_data ).update_right_morph_source( 1 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, RIGHT );
         //[/UserButtonCode_button_set_right_2]
     }
     else if (buttonThatWasClicked == button_set_right_3)
     {
         //[UserButtonCode_button_set_right_3] -- add your button handler code here..
-        GET_DATA( synth_data ).update_right_morph_source( 2 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, RIGHT );
         //[/UserButtonCode_button_set_right_3]
     }
     else if (buttonThatWasClicked == button_set_right_4)
     {
         //[UserButtonCode_button_set_right_4] -- add your button handler code here..
-        GET_DATA( synth_data ).update_right_morph_source( 3 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, RIGHT );
         //[/UserButtonCode_button_set_right_4]
     }
     else if (buttonThatWasClicked == button_set_all_from_current)
     {
         //[UserButtonCode_button_set_all_from_current] -- add your button handler code here..
-        GET_DATA( synth_data ).update_left_morph_source( 0 );
-        GET_DATA( synth_data ).update_left_morph_source( 1 );
-        GET_DATA( synth_data ).update_left_morph_source( 2 );
-        GET_DATA( synth_data ).update_left_morph_source( 3 );
-        GET_DATA( synth_data ).update_right_morph_source( 0 );
-        GET_DATA( synth_data ).update_right_morph_source( 1 );
-        GET_DATA( synth_data ).update_right_morph_source( 2 );
-        GET_DATA( synth_data ).update_right_morph_source( 3 );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, LEFT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, LEFT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, LEFT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, LEFT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, RIGHT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, RIGHT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, RIGHT );
+        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, RIGHT );
         //[/UserButtonCode_button_set_all_from_current]
     }
 

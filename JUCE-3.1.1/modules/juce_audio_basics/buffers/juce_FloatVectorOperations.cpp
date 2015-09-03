@@ -998,7 +998,6 @@ void JUCE_CALLTYPE FloatVectorOperations::enableFlushToZeroMode (bool shouldEnab
     if (FloatVectorHelpers::isSSE2Available())
     {
         _MM_SET_FLUSH_ZERO_MODE (shouldEnable ? _MM_FLUSH_ZERO_ON : _MM_FLUSH_ZERO_OFF);
-	std::cout << "SUCCESS" << std::endl;
     }
 #endif
     (void) shouldEnable;
