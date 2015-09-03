@@ -558,6 +558,20 @@ static inline float positive( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+template<int min_max>
+forcedinline static float hard_clipper( float x ) noexcept
+{
+    if( x < (min_max*-1) )
+        x = (min_max*-1);
+    else if( x > min_max )
+        x = min_max;
+
+    return x;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 static float inline taylor_sin(float x) noexcept
 {
     float x2 = x*x;
@@ -1241,7 +1255,7 @@ public:
     inline void process( int step_number_, int num_samples_ ) noexcept;
 
 private:
-    NOINLINE void sync( int step_number_ ) noexcept;
+    inline void sync( int step_number_ ) noexcept;
 
 public:
     //==============================================================================
@@ -1283,7 +1297,8 @@ inline void LFO::process( int step_number_, int num_samples_ ) noexcept
         process_buffer[sid] = (sine_generator.tick() + 1) * 0.5f;
     }
 }
-NOINLINE void LFO::sync( int step_number_ ) noexcept {
+void LFO::sync( int step_number_ ) noexcept
+{
     const float speed( lfo_data->speed );
     if( speed <= 6 )
     {
@@ -1838,7 +1853,8 @@ inline void OSC::reset( int root_note_ ) noexcept
 //==============================================================================
 //==============================================================================
 #define FORCE_ZERO_SAMPLES 50
-enum STAGES {
+enum STAGES
+{
     END_ENV = false,
     ATTACK = true,
     DECAY,
@@ -1846,10 +1862,12 @@ enum STAGES {
     RELEASE,
     TRIGGER_START
 };
-enum OPTIONS {
+enum OPTIONS
+{
     WORK_FROM_CURRENT_VALUE = -1
 };
-class ValueEnvelope : public RuntimeListener {
+class ValueEnvelope : public RuntimeListener
+{
     int samples_to_target_left;
     float current_value;
     float end_value;
@@ -1868,11 +1886,15 @@ public:
 
     inline void reset() noexcept;
 
+    //==============================================================================
     // FOR UI PURPOSES
-    float get_current_amp() const noexcept;
+    NOINLINE float get_current_amp() const noexcept;
 
+    //==============================================================================
     NOINLINE ValueEnvelope() noexcept;
     NOINLINE ~ValueEnvelope() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueEnvelope)
 };
 
 NOINLINE ValueEnvelope::ValueEnvelope() noexcept
@@ -1887,8 +1909,11 @@ samples_to_target_left(0),
 
 }
 NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
+
+//==============================================================================
 // TODO if sustain only call if sustain is endless!
-inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept {
+inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
+{
     float value;
     if( samples_to_target_left > 0 )
     {
@@ -1902,20 +1927,20 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept {
             {
                 float delta_ = (end_value-current_value)/samples_to_target_left;
                 if( delta_ >= 0 )
-                    current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                    current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
                 else
                 {
                     delta_ *= -1;
                     float shape_factor_release = shape_*4;
 
-                    current_value -= (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
+                    current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
                 }
             }
             else if( shape_ < 0.5f )
             {
                 float delta_ = (end_value-current_value)/samples_to_target_left;
                 if( delta_ >= 0 )
-                    current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                    current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
                 else
                 {
                     delta_ *= -1;
@@ -1923,26 +1948,26 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept {
                     if( shape_factor_release >= 1.0f )
                         shape_factor_release = 1.0f - (shape_factor_release - 1);
 
-                    current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                 }
             }
             else if( shape_ > 0.75f )
             {
                 float delta_ = (end_value-current_value)/samples_to_target_left;
                 if( delta_ >= 0 )
-                    current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
                 else
                 {
                     delta_ *= -1;
                     float shape_factor_release = (shape_-0.75f)*4;
-                    current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                 }
             }
             else if( shape_ > 0.5f )
             {
                 float delta_ = (end_value-current_value)/samples_to_target_left;
                 if( delta_ >= 0 )
-                    current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
                 else
                 {
                     delta_ *= -1;
@@ -1950,7 +1975,7 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept {
                     if( shape_factor_release >= 1.0f )
                         shape_factor_release = 1.0f - (shape_factor_release - 1);
 
-                    current_value -= (((log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                    current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                 }
             }
             else
@@ -1972,26 +1997,6 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept {
 
     return value;
 }
-inline bool ValueEnvelope::end_reached() const noexcept {
-    return samples_to_target_left <= 0;
-}
-inline void ValueEnvelope::replace_current_value( float value_ ) noexcept {
-    current_value = value_;
-}
-inline void ValueEnvelope::force_zero_glide() noexcept {
-    current_force_zero_counter = FORCE_ZERO_SAMPLES;
-    force_zero_offset = current_value/FORCE_ZERO_SAMPLES;
-    current_value = 0;
-}
-inline void ValueEnvelope::reset() noexcept {
-    samples_to_target_left = 0;
-    current_value = 0;
-    end_value = 0;
-    delta = 0;
-    current_force_zero_counter = 0;
-    force_zero_offset = 0;
-}
-
 inline void ValueEnvelope::update( float end_value_,
                                    float time_sample_rate_factor_,
                                    float start_value_
@@ -2017,10 +2022,44 @@ inline void ValueEnvelope::update( float end_value_,
     }
 }
 
-float ValueEnvelope::get_current_amp() const noexcept {
+//==============================================================================
+inline bool ValueEnvelope::end_reached() const noexcept
+{
+    return samples_to_target_left <= 0;
+}
+inline void ValueEnvelope::replace_current_value( float value_ ) noexcept
+{
+    current_value = value_;
+}
+inline void ValueEnvelope::force_zero_glide() noexcept
+{
+    current_force_zero_counter = FORCE_ZERO_SAMPLES;
+    force_zero_offset = current_value/FORCE_ZERO_SAMPLES;
+    current_value = 0;
+}
+inline void ValueEnvelope::reset() noexcept
+{
+    samples_to_target_left = 0;
+    current_value = 0;
+    end_value = 0;
+    delta = 0;
+    current_force_zero_counter = 0;
+    force_zero_offset = 0;
+}
+
+//==============================================================================
+float ValueEnvelope::get_current_amp() const noexcept
+{
     return current_value;
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -2204,7 +2243,8 @@ NOINLINE float ENV::get_amp() const noexcept
 //==============================================================================
 //==============================================================================
 template< int smooth_samples >
-class AmpSmoother {
+class AmpSmoother
+{
     float current_value;
     float target_value;
     float delta;
@@ -2219,21 +2259,21 @@ public:
         return target_value == current_value;
     }
     inline float add_get_and_keep_current_time( float in_ ) noexcept;
-    inline void reset( float value_ = 0 ) noexcept {
+    inline void reset( float value_ = 0 ) noexcept 
+    {
         current_value = value_;
         delta = 0;
         counter = 0;
     }
-    inline float get_current_value() const noexcept {
+    inline float get_current_value() const noexcept 
+    {
         return current_value;
     }
 
     NOINLINE AmpSmoother( float start_value_ = 0 ) noexcept;
     NOINLINE ~AmpSmoother() noexcept;
 
-private:
-    MONO_NOT_CTOR_COPYABLE( AmpSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( AmpSmoother )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AmpSmoother)
 };
 
 //==============================================================================
@@ -2308,17 +2348,6 @@ inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-template<int min_max>
-forcedinline static float hard_clipper( float x ) noexcept {
-    if( x < (min_max*-1) )
-        x = (min_max*-1);
-    else if( x > min_max )
-        x = min_max;
-
-    return x;
-}
-
-//==============================================================================
 class AnalogFilter : public RuntimeListener
 {
     friend class DoubleAnalogFilter;
@@ -2330,6 +2359,7 @@ class AnalogFilter : public RuntimeListener
     float cutoff, res, res4;
 
 public:
+    //==============================================================================
     // OLD OR DEFAULT ONE
     inline void set(float r,float c, float gain_) noexcept;
     // RETURNS TRUE ON COFF CHENGED
@@ -2353,13 +2383,15 @@ private:
     NOINLINE void sample_rate_changed( double ) noexcept override;
 
 public:
-    NOINLINE AnalogFilter();
-    NOINLINE ~AnalogFilter();
+    //==============================================================================
+    NOINLINE AnalogFilter() noexcept;
+    NOINLINE ~AnalogFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogFilter)
 };
-// -----------------------------------------------------------------
-NOINLINE AnalogFilter::AnalogFilter()
+
+//==============================================================================
+NOINLINE AnalogFilter::AnalogFilter() noexcept
     :
     p(0),k(0),r(0),gain(0),
     y1(0),y2(0),y3(0),y4(0),
@@ -2369,14 +2401,14 @@ NOINLINE AnalogFilter::AnalogFilter()
 {
     sample_rate_changed(0);
 }
-NOINLINE AnalogFilter::~AnalogFilter() {}
+NOINLINE AnalogFilter::~AnalogFilter() noexcept {}
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void AnalogFilter::reset() noexcept {
     y4 = oldx = oldy1 = oldy2 = oldy3 = 0;
 }
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void AnalogFilter::set(float r, float c, float gain_) noexcept
 {
     if( r != res or c != cutoff or gain != gain_ )
@@ -2491,14 +2523,15 @@ public:
     //
     inline void reset() noexcept;
 
-    NOINLINE DoubleAnalogFilter(bool create_smooth_filter = true);
-    NOINLINE ~DoubleAnalogFilter();
+    //==============================================================================
+    NOINLINE DoubleAnalogFilter(bool create_smooth_filter = true) noexcept;
+    NOINLINE ~DoubleAnalogFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DoubleAnalogFilter)
 };
 
-// -----------------------------------------------------------------
-NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter)
+//==============================================================================
+NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter) noexcept
     :
     flt_1(),
     flt_2(),
@@ -2513,11 +2546,13 @@ NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter)
     if( create_smooth_filter )
         smooth_filter = new DoubleAnalogFilter(false);
 }
-NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() {
+NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() noexcept
+{
     if( smooth_filter )
         delete smooth_filter;
 }
 
+//==============================================================================
 inline void DoubleAnalogFilter::reset() noexcept {
     flt_1.reset();
     flt_2.reset();
@@ -2838,21 +2873,22 @@ public:
     inline void setCoefficients (float attack_, float release_) noexcept;
 
 public:
-    NOINLINE EnvelopeFollower();
-    NOINLINE ~EnvelopeFollower();
+    //==============================================================================
+    NOINLINE EnvelopeFollower() noexcept;
+    NOINLINE ~EnvelopeFollower() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeFollower)
 };
 
-// -----------------------------------------------------------------
-NOINLINE EnvelopeFollower::EnvelopeFollower()
+//==============================================================================
+NOINLINE EnvelopeFollower::EnvelopeFollower() noexcept
     : envelope (0),
       attack (1),
       release (1)
 {}
-NOINLINE EnvelopeFollower::~EnvelopeFollower() {}
+NOINLINE EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, float* output_buffer_, int num_samples_ ) noexcept
 {
     for (int i = 0; i != num_samples_; ++i)
@@ -2945,13 +2981,14 @@ private:
                            int num_samples ) noexcept;
 
 public:
+    //==============================================================================
     NOINLINE FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept;
     NOINLINE ~FilterProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterProcessor)
 };
 
-// -----------------------------------------------------------------
+//==============================================================================
 NOINLINE FilterProcessor::FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept
 :
 env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
@@ -2978,9 +3015,9 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
         input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_env_datas[i] ) );
     }
 }
-NOINLINE FilterProcessor::~FilterProcessor() {}
+NOINLINE FilterProcessor::~FilterProcessor() noexcept {}
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void FilterProcessor::start_attack() noexcept
 {
     env->start_attack();
@@ -3756,7 +3793,8 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class EQProcessor : public RuntimeListener {
+class EQProcessor : public RuntimeListener 
+{
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
 
@@ -3781,16 +3819,17 @@ public:
     inline void start_release() noexcept;
     inline void process( int num_samples_ ) noexcept;
 
-    NOINLINE EQProcessor( const SynthData* synth_data_ );
-    NOINLINE ~EQProcessor();
+    //==============================================================================
+    NOINLINE EQProcessor( const SynthData* synth_data_ ) noexcept;
+    NOINLINE ~EQProcessor() noexcept;
 
     NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessor)
 };
 
-// -----------------------------------------------------------------
-NOINLINE EQProcessor::EQProcessor( const SynthData* synth_data_ )
+//==============================================================================
+NOINLINE EQProcessor::EQProcessor( const SynthData* synth_data_ ) noexcept
     :
     velocity_smoothers
 {
@@ -3820,9 +3859,9 @@ synth_data( synth_data_ ),
 
     sample_rate_changed(0);
 }
-NOINLINE EQProcessor::~EQProcessor() {}
+NOINLINE EQProcessor::~EQProcessor() noexcept {}
 
-// -----------------------------------------------------------------
+//==============================================================================
 inline void EQProcessor::start_attack() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
@@ -4042,14 +4081,15 @@ private:
     NOINLINE void sample_rate_changed( double ) noexcept override;
 
 public:
-    NOINLINE Chorus();
-    NOINLINE ~Chorus();
+    //==============================================================================
+    NOINLINE Chorus() noexcept;
+    NOINLINE ~Chorus() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
 };
 
 //==============================================================================
-NOINLINE Chorus::Chorus() : buffer_size(0)
+NOINLINE Chorus::Chorus() noexcept : buffer_size(0)
 {
     index = 0;
     last_delay = 210;
@@ -4058,7 +4098,7 @@ NOINLINE Chorus::Chorus() : buffer_size(0)
 
     sample_rate_changed(0);
 }
-NOINLINE Chorus::~Chorus()
+NOINLINE Chorus::~Chorus() noexcept
 {
     delete [] buffer;
 }
@@ -4131,20 +4171,21 @@ public:
     NOINLINE void setSize (const int size);
     NOINLINE void clear() noexcept;
 
-    NOINLINE CombFilter();
-    NOINLINE ~CombFilter();
+    //==============================================================================
+    NOINLINE CombFilter() noexcept;
+    NOINLINE ~CombFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CombFilter)
 };
 
 //==============================================================================
-NOINLINE CombFilter::CombFilter()
+NOINLINE CombFilter::CombFilter() noexcept
     :
     last(0),
     bufferSize (0),
     bufferIndex(0)
 {}
-NOINLINE CombFilter::~CombFilter() {}
+NOINLINE CombFilter::~CombFilter() noexcept {}
 
 //==============================================================================
 inline float CombFilter::process (const float input, const float feedbackLevel) noexcept
@@ -4193,19 +4234,20 @@ public:
     NOINLINE void setSize (const int size);
     NOINLINE void clear() noexcept;
 
-    NOINLINE AllPassFilter();
-    NOINLINE ~AllPassFilter();
+    //==============================================================================
+    NOINLINE AllPassFilter() noexcept;
+    NOINLINE ~AllPassFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
 };
 
 //==============================================================================
-NOINLINE AllPassFilter::AllPassFilter()
+NOINLINE AllPassFilter::AllPassFilter() noexcept
     :
     bufferSize(0),
     bufferIndex(0)
 {}
-NOINLINE AllPassFilter::~AllPassFilter() {}
+NOINLINE AllPassFilter::~AllPassFilter() noexcept {}
 
 //==============================================================================
 inline float AllPassFilter::process (const float input) noexcept
@@ -4251,23 +4293,24 @@ public:
 
     NOINLINE void reset (float sampleRate, float fadeLengthSeconds) noexcept;
 
-    NOINLINE LinearSmoothedValue();
-    NOINLINE ~LinearSmoothedValue();
+    //==============================================================================
+    NOINLINE LinearSmoothedValue() noexcept;
+    NOINLINE ~LinearSmoothedValue() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoothedValue)
 };
 
 //==============================================================================
-NOINLINE LinearSmoothedValue::LinearSmoothedValue()
+NOINLINE LinearSmoothedValue::LinearSmoothedValue() noexcept
     :
     currentValue(0),
     target(0),
     step(0),
     countdown(0),
     stepsToTarget(0)
-{
-}
-NOINLINE LinearSmoothedValue::~LinearSmoothedValue() {}
+{}
+
+NOINLINE LinearSmoothedValue::~LinearSmoothedValue() noexcept {}
 
 //==============================================================================
 inline float LinearSmoothedValue::getNextValue() noexcept
@@ -4326,22 +4369,23 @@ struct ReverbParameters
     float width;        /**< mono_Reverb width, 0 to 1.0, where 1.0 is very wide. */
 
 private:
+    //==============================================================================
     friend class mono_Reverb;
-    NOINLINE ReverbParameters();
-    NOINLINE ~ReverbParameters();
+    NOINLINE ReverbParameters() noexcept;
+    NOINLINE ~ReverbParameters() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbParameters)
 };
 
 //==============================================================================
-NOINLINE ReverbParameters::ReverbParameters()
+NOINLINE ReverbParameters::ReverbParameters() noexcept
     :
     roomSize   (0.5f),
     wetLevel   (0.33f),
     dryLevel   (0.4f),
     width      (1.0f)
 {}
-NOINLINE ReverbParameters::~ReverbParameters() {}
+NOINLINE ReverbParameters::~ReverbParameters() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -4365,21 +4409,22 @@ public:
     inline void update_parameters() noexcept;
 
     NOINLINE void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    NOINLINE void reset();
+    NOINLINE void reset() noexcept;
 
-    NOINLINE mono_Reverb();
-    NOINLINE ~mono_Reverb();
+    //==============================================================================
+    NOINLINE mono_Reverb() noexcept;
+    NOINLINE ~mono_Reverb() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Reverb)
 };
 
 //==============================================================================
-NOINLINE mono_Reverb::mono_Reverb()
+NOINLINE mono_Reverb::mono_Reverb() noexcept
 {
     update_parameters();
     sample_rate_changed(0);
 }
-NOINLINE mono_Reverb::~mono_Reverb() {}
+NOINLINE mono_Reverb::~mono_Reverb() noexcept {}
 
 //==============================================================================
 inline float mono_Reverb::processSingleSampleRaw ( float in ) noexcept
@@ -4444,7 +4489,7 @@ NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
     wetGain1.reset (sample_rate, smoothTime);
     wetGain2.reset (sample_rate, smoothTime);
 }
-NOINLINE void mono_Reverb::reset()
+NOINLINE void mono_Reverb::reset() noexcept
 {
     for (int i = 0; i < numCombs; ++i)
         comb[i].clear();
@@ -4514,11 +4559,13 @@ private:
 public:
     inline void process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
 
-    void start_attack() noexcept {
+    void start_attack() noexcept 
+    {
         chorus_modulation_env->start_attack();
         final_env->start_attack();
     }
-    void start_release() noexcept {
+    void start_release() noexcept 
+    {
         chorus_modulation_env->set_to_release();
         final_env->set_to_release();
     }
@@ -4528,14 +4575,15 @@ public:
     // reset chorus
 
 public:
-    NOINLINE FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ );
-    NOINLINE ~FXProcessor();
+    //==============================================================================
+    NOINLINE FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept;
+    NOINLINE ~FXProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
 };
 
 // -----------------------------------------------------------------
-NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ )
+NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
     :
     reverb_l(),
     reverb_r(),
@@ -4566,7 +4614,7 @@ NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_
     std::cout << "MONIQUE: init FX" << std::endl;
 }
 
-NOINLINE FXProcessor::~FXProcessor() {}
+NOINLINE FXProcessor::~FXProcessor() noexcept {}
 
 // -----------------------------------------------------------------
 inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept
@@ -4842,21 +4890,28 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     }
 }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
-NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
 
-//==============================================================================
-bool MoniqueSynthesiserSound::appliesToNote(int)
-{
-    return true;
-}
-bool MoniqueSynthesiserSound::appliesToChannel(int)
-{
-    return true;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //==============================================================================
 class ArpSequencer : public RuntimeListener
@@ -5041,6 +5096,21 @@ inline void ArpSequencer::reset() noexcept {
 
 
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
+NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
+
+//==============================================================================
+bool MoniqueSynthesiserSound::appliesToNote(int)
+{
+    return true;
+}
+bool MoniqueSynthesiserSound::appliesToChannel(int)
+{
+    return true;
+}
 
 //==============================================================================
 //==============================================================================
