@@ -352,7 +352,7 @@ inline void ValueSmootherModulated::update( int glide_time_in_samples_ ) noexcep
     if( modulation_amount >= 0 )
         modulation_range = (max_value-current_value) * modulation_amount;
     else
-        modulation_range = (current_value-min_value) * (modulation_amount*-1);
+        modulation_range = (current_value-min_value) * modulation_amount;
 }
 
 //==============================================================================

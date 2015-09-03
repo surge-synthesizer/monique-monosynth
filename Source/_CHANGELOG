@@ -40,9 +40,12 @@ CHANGES 0.5:
 - osc square and saw going out of center on higher octaves
 - ich hab da 32000 samples beim ersten run gesehen
 - the lfo note value is synced to the root frequency!
+- lfo amp animation can'T be disabled
+- eq amp animation one eq ani of is wrong
+- can modulate in negative direction
+- file remove is buggy
 
 TODO:
-- fix layout sub editors  (align left and right)
 - need: global file (cpus, colours, slider cfg etc...)
 - add: store ui size
 - add: modulation amounts as automation params
@@ -64,6 +67,9 @@ TODO:
 - srtart stop space
 - add 3 standard colour themes
 - reset oscs to zero
+- add velo glide to the arp group
+- add an slider to the preset adr designer to set the curve to zero on retrigger amount
+- chorus effect (also dieser buffer fill block) muss von der samplerate abhängen
 
 QUESTS
 - sync lfo with note on?

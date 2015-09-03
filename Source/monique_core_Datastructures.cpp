@@ -3077,7 +3077,7 @@ NOINLINE bool SynthData::remove() noexcept
     if( success )
     {
         refresh_banks_and_programms();
-        current_program = -1;
+        current_program = 0;
     }
 
     return success;
