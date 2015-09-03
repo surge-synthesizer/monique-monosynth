@@ -2556,7 +2556,8 @@ NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() noexcept
 }
 
 //==============================================================================
-inline void DoubleAnalogFilter::reset() noexcept {
+inline void DoubleAnalogFilter::reset() noexcept 
+{
     flt_1.reset();
     flt_2.reset();
 }
@@ -4810,7 +4811,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                     const float modulation_amp = tmp_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 
-                    float tmp_sample  = processor->chorus_l.tick((modulation_amp * 220) + 0.0015f);
+                    float tmp_sample  = processor->chorus_l.tick((modulation_amp * 220) + 1.51f);
                     processor->chorus_l.fill( in_l + tmp_sample * feedback );
 
                     tmp_samples[sid] = tmp_sample;
@@ -4857,7 +4858,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                     const float modulation_amp = tmp_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 
-                    float tmp_sample = processor->chorus_r.tick((modulation_amp * 200) + 0.002f);
+                    float tmp_sample = processor->chorus_r.tick((modulation_amp * 200) + 1.56f);
                     processor->chorus_r.fill( in_r + tmp_sample * feedback );
                     tmp_samples[sid] = tmp_sample;
                 }
