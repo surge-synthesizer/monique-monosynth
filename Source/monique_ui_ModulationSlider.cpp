@@ -334,31 +334,7 @@ void mono_ModulationSlider::refresh() noexcept
     {
         if( modulation_parameter )
         {
-            // _modulator_parameter.write_modulation_to( slider_modulation, _config->is_modulation_slider_centered() );
-
-            /*
-                const float modulation_value = _base->get_modulation_amount();
-            float scaled_value = _base->get_scaled_value();
-            const float scale = _base->scale();
-            if( scale != 1000 )
-            {
-              if( scaled_value >= 0 )
-                  scaled_value /= _base->max_unscaled();
-              else
-                  scaled_value /= _base->min_unscaled();
-            }
-
-            int modulation_slider_style;
-            if( is_modulation_slider_centered_ )
-              modulation_slider_style = MODULATION_SLIDER_IS_FIXED_CENTERED;
-            else if( _base->min_unscaled() < 0 )
-              modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER;
-            else
-              modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO;
-
-            slider_->setRotaryParameters( scaled_value, modulation_slider_style, true );
-            slider_->setValue( modulation_value*MODULATION_AMOUNT_MAX ,dontSendNotification );
-            */
+	    slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
         }
         else if( back_parameter )
         {

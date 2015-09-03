@@ -1516,10 +1516,8 @@ void MorphGroup::morph( float power_of_right_ ) noexcept
         // MODULATION VALUE
         if( has_modulation( target_param ) )
         {
-            target_param->set_modulation_amount_without_notification
-            (
-                (left_param->get_modulation_amount()*(1.0f - power_of_right_)) + (right_param->get_modulation_amount()*power_of_right_)
-            );
+            const float target_modulation = (left_param->get_modulation_amount()*(1.0f - power_of_right_)) + (right_param->get_modulation_amount()*power_of_right_);
+            target_param->set_modulation_amount_without_notification( target_modulation );
         }
     }
     last_power_of_right = power_of_right_;
@@ -1709,6 +1707,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
         Parameter& right_source_param = *right_morph_source->params[param_id];
 
         const float current_modulation = param_->get_modulation_amount();
+
         float right_modulation = right_source_param.get_modulation_amount();
         bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
         if( update_left_or_right == RIGHT )
