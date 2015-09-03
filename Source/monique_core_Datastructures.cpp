@@ -2757,125 +2757,91 @@ bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id
     return success;
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE void SynthData::refresh_banks_and_programms() noexcept
+{
+    SynthData& synth_data( GET_DATA( synth_data ) );
 
+    // BANKS
+    synth_data.banks.clearQuick();
+    update_banks( synth_data.banks );
 
+    // PROGRAMMS PER BANK
+    synth_data.program_names_per_bank.clearQuick();
+    synth_data.program_names_per_bank.add( StringArray() );
+    synth_data.program_names_per_bank.add( StringArray() );
+    synth_data.program_names_per_bank.add( StringArray() );
+    synth_data.program_names_per_bank.add( StringArray() );
 
+    update_bank_programms( 0, synth_data.program_names_per_bank.getReference(0) );
+    update_bank_programms( 1, synth_data.program_names_per_bank.getReference(1) );
+    update_bank_programms( 2, synth_data.program_names_per_bank.getReference(2) );
+    update_bank_programms( 3, synth_data.program_names_per_bank.getReference(3) );
 
-
-
-
-NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept {
-    if( xml_ )
+    synth_data.calc_current_program_abs();
+}
+NOINLINE void SynthData::calc_current_program_abs() noexcept
+{
+    if( current_program == -1 )
     {
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        current_program_abs = -1;
+        return;
+    }
+
+    current_program_abs = 0;
+    for( int bank_id = 0 ; bank_id != current_bank ; ++bank_id )
+    {
+        int bank_size = GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id).size();
+        if( current_program_abs+current_program < bank_size )
         {
-            write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
+            current_program_abs += current_program;
+            break;
         }
+        else
+            current_program_abs += bank_size;
     }
 }
-
-NOINLINE void SynthData::read_from( const XmlElement* xml_ ) noexcept {
-    if( xml_ )
-    {
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-        {
-            read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
-        }
-
-        // FIRST LOAD THE MORPH SOURCES
-        if( id == MASTER )
-        {
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-            {
-                left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
-                right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
-            }
-        }
-
-        // AND MORPH IT
-        if( id == MASTER )
-        {
-            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-            {
-                morph( morpher_id, morhp_states[morpher_id] );
-                morph_switch_buttons( morpher_id, false );
-            }
-        }
-    }
+NOINLINE void SynthData::update_banks( StringArray& banks_ ) noexcept
+{
+    banks_.add("A");
+    banks_.add("B");
+    banks_.add("C");
+    banks_.add("D");
 }
-
-NOINLINE void SynthData::save_midi() const noexcept {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
-    if( folder.createDirectory() )
-    {
-        File midi_file( File( folder.getFullPathName() + String("/") + "patch.midi") );
-
-        XmlElement xml("MIDI-PATCH-1.0");
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-        {
-            write_midi_to( xml, saveable_parameters.getUnchecked(i) );
-        }
-
-        xml.writeToFile(midi_file,"");
-    }
-}
-NOINLINE void SynthData::read_midi() noexcept {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));
-    ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
-    if( xml )
-    {
-        if( xml->hasTagName("MIDI-PATCH-1.0") )
-        {
-            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-                read_midi_from( *xml, saveable_parameters.getUnchecked(i) );
-        }
-    }
-}
-
-
-static inline File get_bank_folder( const String& bank_name_ ) {
+static inline File get_bank_folder( const String& bank_name_ ) noexcept
+{
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     folder = File(folder.getFullPathName()+PROJECT_FOLDER+bank_name_);
     folder.createDirectory();
 
     return folder;
 }
-static inline File get_program_file( const String& bank_name_, const String& program_name_ ) {
-    return File( get_bank_folder( bank_name_ ).getFullPathName()
-                 + String("/")
-                 + program_name_
-                 + ".mlprog");
-}
-
-NOINLINE void SynthData::refresh_banks_and_programms()
+static inline void sort_by_name( Array< File >& file_array_ ) noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    synth_data.banks.clearQuick();
-    update_banks( synth_data.banks );
+    for( int file_to_sort_id = 0; file_to_sort_id != file_array_.size() ; ++file_to_sort_id )
+    {
+        String to_move_name = file_array_.getReference(file_to_sort_id).getFileName();
+        for( int compare_id = 0 ; compare_id != file_array_.size() ; ++compare_id )
+        {
+            if( file_to_sort_id != compare_id )
+            {
+                if( file_array_.getReference(compare_id).getFileName().compareNatural(to_move_name) > 0 )
+                {
+                    file_array_.swap( file_to_sort_id, compare_id );
 
-    synth_data.program_names.clearQuick();
-    synth_data.program_names.add( StringArray() );
-    synth_data.program_names.add( StringArray() );
-    synth_data.program_names.add( StringArray() );
-    synth_data.program_names.add( StringArray() );
-
-    update_bank_programms( 0, synth_data.program_names.getReference(0) );
-    update_bank_programms( 1, synth_data.program_names.getReference(1) );
-    update_bank_programms( 2, synth_data.program_names.getReference(2) );
-    update_bank_programms( 3, synth_data.program_names.getReference(3) );
-
-    synth_data.calc_current_program_abs();
+                    // RESET FIRST LOOP
+                    file_to_sort_id--; // -1 for ++LOOP
+                    break;
+                }
+            }
+        }
+    }
 }
-NOINLINE void SynthData::update_banks( StringArray& banks_ ) {
-    banks_.add("A");
-    banks_.add("B");
-    banks_.add("C");
-    banks_.add("D");
-}
-
-static inline void sort_by_date( Array< File >& file_array_ ) {
+/*
+static inline void sort_by_date( Array< File >& file_array_ )
+{
     for( int file_to_sort_id = 0; file_to_sort_id != file_array_.size() ; ++file_to_sort_id )
     {
         Time to_move_time = file_array_.getReference(file_to_sort_id).getLastModificationTime();
@@ -2896,111 +2862,54 @@ static inline void sort_by_date( Array< File >& file_array_ ) {
         }
     }
 }
-static inline void sort_by_name( Array< File >& file_array_ ) {
-    for( int file_to_sort_id = 0; file_to_sort_id != file_array_.size() ; ++file_to_sort_id )
-    {
-        String to_move_name = file_array_.getReference(file_to_sort_id).getFileName();
-        for( int compare_id = 0 ; compare_id != file_array_.size() ; ++compare_id )
-        {
-            if( file_to_sort_id != compare_id )
-            {
-                if( file_array_.getReference(compare_id).getFileName().compareNatural(to_move_name) > 0 )
-                {
-                    file_array_.swap( file_to_sort_id, compare_id );
-
-                    // RESET FIRST LOOP
-                    file_to_sort_id--; // -1 for ++LOOP
-                    break;
-                }
-            }
-        }
-    }
-}
-NOINLINE void SynthData::update_bank_programms( int bank_id_, StringArray& program_names_ )
+*/
+NOINLINE void SynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
 {
-    File bank_folder = get_bank_folder( GET_DATA( synth_data ).banks[bank_id_] );
+    SynthData& synth_data( GET_DATA( synth_data ) );
+
+    File bank_folder = get_bank_folder( synth_data.banks[bank_id_] );
     Array< File > program_files;
     bank_folder.findChildFiles( program_files, File::findFiles, false, "*.mlprog" );
     //sort_by_date(program_files);
     sort_by_name(program_files);
 
     for( int i = 0 ; i != program_files.size() ; ++i )
+    {
         program_names_.add( program_files.getReference(i).getFileNameWithoutExtension() );
+    }
 }
 
-NOINLINE const StringArray& SynthData::get_banks() {
+//==============================================================================
+NOINLINE const StringArray& SynthData::get_banks() noexcept
+{
     return GET_DATA( synth_data ).banks;
 }
-NOINLINE const StringArray& SynthData::get_programms( int bank_id_ ) {
-    return GET_DATA( synth_data ).program_names.getReference(bank_id_);
-}
-
-int SynthData::get_current_programm_id_abs() const
+NOINLINE const StringArray& SynthData::get_programms( int bank_id_ ) noexcept
 {
-    return current_program_abs;
+    return GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id_);
 }
-const String& SynthData::get_current_program_name_abs() const noexcept
+
+// ==============================================================================
+NOINLINE void SynthData::set_current_bank( int bank_index_ ) noexcept
 {
-    if( current_program == -1 )
-    {
-        static String error("ERROR");
-        return error;
-    }
-    return GET_DATA( synth_data ).program_names.getReference(current_bank)[current_program];
-}
-const String& SynthData::get_program_name_abs(int id_) const noexcept
-{
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
-    {
-        int bank_size = synth_data.program_names.getReference(bank_id).size();
-        if( id_ < bank_size )
-            return synth_data.program_names.getReference(bank_id)[id_];
-        else
-            id_ -= bank_size;
-    }
-
-    static String error("ERROR");
-    return error;
-}
-
-void SynthData::calc_current_program_abs() noexcept {
-    if( current_program == -1 ) {
-        current_program_abs = -1;
-        return;
-    }
-
-    current_program_abs = 0;
-    for( int bank_id = 0 ;
-    bank_id != current_bank ;
-    ++bank_id )
-    {
-        int bank_size = GET_DATA( synth_data ).program_names.getReference(bank_id).size();
-        if( current_program_abs+current_program < bank_size )
-        {
-            current_program_abs += current_program;
-            break;
-        }
-        else
-            current_program_abs += bank_size;
-    }
-}
-NOINLINE void SynthData::set_current_bank( int bank_index_ ) {
     current_bank = bank_index_;
     current_program = -1; // TODO can be an empty bank
+
     calc_current_program_abs();
 }
-NOINLINE void SynthData::set_current_program( int programm_index_ ) {
+NOINLINE void SynthData::set_current_program( int programm_index_ ) noexcept
+{
     current_program = programm_index_;
     calc_current_program_abs();
 }
-NOINLINE void SynthData::set_current_program_abs( int programm_index_ )
+NOINLINE void SynthData::set_current_program_abs( int programm_index_ ) noexcept
 {
     int sum_programms = 0;
 
     SynthData& synth_data( GET_DATA( synth_data ) );
-    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id ) {
-        int bank_size = synth_data.program_names.getReference(bank_id).size();
+    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
+    {
+        int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
         if( programm_index_ < bank_size+sum_programms )
         {
             current_bank = bank_id;
@@ -3011,23 +2920,69 @@ NOINLINE void SynthData::set_current_program_abs( int programm_index_ )
         sum_programms+=bank_size;
     }
 }
-NOINLINE int SynthData::get_current_bank() const {
+
+// ==============================================================================
+NOINLINE int SynthData::get_current_bank() const noexcept
+{
     return current_bank;
 }
-NOINLINE int SynthData::get_current_program() const {
+NOINLINE int SynthData::get_current_program() const noexcept
+{
     return current_program;
 }
-NOINLINE const StringArray& SynthData::get_current_bank_programms()
+NOINLINE const StringArray& SynthData::get_current_bank_programms() const noexcept
 {
-    return GET_DATA( synth_data ).program_names.getReference(current_bank);
+    return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank);
 }
-static inline String& generate_programm_name( const String& bank_,  String& name_ ) {
+
+// ==============================================================================
+NOINLINE int SynthData::get_current_programm_id_abs() const noexcept
+{
+    return current_program_abs;
+}
+NOINLINE const String& SynthData::get_current_program_name_abs() const noexcept
+{
+    if( current_program == -1 )
+    {
+        static String error("ERROR");
+        return error;
+    }
+    return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank)[current_program];
+}
+NOINLINE const String& SynthData::get_program_name_abs(int id_) const noexcept
+{
+    SynthData& synth_data( GET_DATA( synth_data ) );
+    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
+    {
+        const int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
+        if( id_ < bank_size )
+            return synth_data.program_names_per_bank.getReference(bank_id)[id_];
+        else
+            id_ -= bank_size;
+    }
+
+    static String error("ERROR");
+    return error;
+}
+
+// ==============================================================================
+static inline File get_program_file( const String& bank_name_, const String& program_name_ ) noexcept
+{
+    return File( get_bank_folder( bank_name_ ).getFullPathName()
+    + String("/")
+    + program_name_
+    + ".mlprog");
+}
+static inline String& generate_programm_name( const String& bank_, String& name_ ) noexcept
+{
     bool exist = false;
     int counter = 1;
     String counter_name("");
-    do {
+    do
+    {
         File program = get_program_file( bank_, name_ + counter_name );
-        if( program.exists() ) {
+        if( program.exists() )
+        {
             counter_name = String(" - ")+ String(counter);
             counter++;
             exist = true;
@@ -3041,121 +2996,7 @@ static inline String& generate_programm_name( const String& bank_,  String& name
 
     return name_;
 };
-NOINLINE bool SynthData::rename( const String& new_name_ )
-{
-    if( current_program == -1 )
-        return false;
-
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names.getReference(current_bank)[current_program] );
-
-    bool success = false;
-
-    String name = new_name_;
-    generate_programm_name( synth_data.banks[current_bank], name );
-    if( program.existsAsFile() ) {
-        success = program.moveFileTo( get_bank_folder(synth_data.banks[current_bank]).getFullPathName()
-                                      + String("/")
-                                      + name
-                                      + ".mlprog" );
-    }
-
-    if( success )
-    {
-        refresh_banks_and_programms();
-        current_program = synth_data.program_names[current_bank].indexOf(name);
-    }
-
-    return success;
-}
-NOINLINE bool SynthData::load( bool load_morph_groups ) {
-    if( current_program == -1 )
-        return false;
-
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    return load( synth_data.banks[current_bank], synth_data.program_names.getReference(current_bank)[current_program], load_morph_groups );
-}
-NOINLINE bool SynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) {
-    bool success = false;
-
-    File program = get_program_file( bank_name_, program_name_ );
-
-    ScopedPointer<XmlElement> xml = XmlDocument( program ).getDocumentElement();
-    if( xml )
-    {
-        if( xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa") )
-        {
-            // LOAD THE OWN DATA
-            read_from(xml);
-
-
-            success = true;
-        }
-        else
-            success = false;
-    }
-
-    return success;
-}
-
-NOINLINE bool SynthData::load_prev() {
-    bool success = false;
-
-    if( current_program-1 >= 0 )
-    {
-        current_program--;
-        success = load();
-    }
-    else
-    {
-        int last_index = GET_DATA( synth_data ).program_names.getReference(current_bank).size()-1;
-        if( last_index > 0 ) {
-            current_program = last_index;
-            success = load();
-        }
-    }
-
-    return success;
-}
-NOINLINE bool SynthData::load_next() {
-    bool success = false;
-
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    if( current_program+1 < synth_data.program_names.getReference(current_bank).size() )
-    {
-        current_program++;
-        success = load();
-    }
-    else
-    {
-        if( synth_data.program_names.getReference(current_bank).size() )
-        {
-            current_program = 0;
-            success = load();
-        }
-    }
-
-    return success;
-}
-
-NOINLINE bool SynthData::replace() {
-    if( current_program == -1 )
-        return false;
-
-    SynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names.getReference(current_bank)[current_program] );
-    bool success = AlertWindow::showNativeDialogBox
-                   (
-                       "REPLACE PROJECT?",
-                       String("Overwrite project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names.getReference(current_bank)[current_program],
-                       true
-                   );
-    if( success )
-        success = write2file( synth_data.banks[current_bank], synth_data.program_names.getReference(current_bank)[current_program] );
-
-    return success;
-}
-NOINLINE bool SynthData::create_new()
+NOINLINE bool SynthData::create_new() noexcept
 {
     SynthData& synth_data( GET_DATA( synth_data ) );
     String new_program_name = String("New Program");
@@ -3166,40 +3007,172 @@ NOINLINE bool SynthData::create_new()
     if( success )
     {
         refresh_banks_and_programms();
-        current_program = synth_data.program_names[current_bank].indexOf(new_program_name);
+        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_program_name);
+    }
+
+    return success;
+}
+NOINLINE bool SynthData::rename( const String& new_name_ ) noexcept
+{
+    if( current_program == -1 )
+        return false;
+
+    SynthData& synth_data( GET_DATA( synth_data ) );
+    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+
+    String name = new_name_;
+    bool success = false;
+    generate_programm_name( synth_data.banks[current_bank], name );
+    if( program.existsAsFile() )
+    {
+        success = program.moveFileTo
+        (
+            get_bank_folder(synth_data.banks[current_bank]).getFullPathName()
+            + String("/")
+            + name
+            + ".mlprog"
+        );
+    }
+
+    if( success )
+    {
+        refresh_banks_and_programms();
+        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(name);
+    }
+
+    return success;
+}
+NOINLINE bool SynthData::replace() noexcept
+{
+    if( current_program == -1 )
+        return false;
+
+    SynthData& synth_data( GET_DATA( synth_data ) );
+    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+    bool success = AlertWindow::showNativeDialogBox
+    (
+        "REPLACE PROJECT?",
+        String("Overwrite project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        true
+    );
+    if( success )
+        success = write2file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+
+    return success;
+}
+NOINLINE bool SynthData::remove() noexcept
+{
+    if( current_program == -1 )
+        return false;
+
+    SynthData& synth_data( GET_DATA( synth_data ) );
+    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+    bool success = AlertWindow::showNativeDialogBox
+    (
+        "DELETE PROJECT?",
+        String("Delete project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        true
+    );
+    if( success )
+    {
+        if( program.deleteFile() )
+        {
+            refresh_banks_and_programms();
+            current_program = -1;
+        }
     }
 
     return success;
 }
 
-NOINLINE bool SynthData::remove() {
+// ==============================================================================
+NOINLINE bool SynthData::load( bool load_morph_groups ) noexcept
+{
     if( current_program == -1 )
         return false;
 
     SynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names.getReference(current_bank)[current_program] );
-    bool success = AlertWindow::showNativeDialogBox
-                   (
-                       "DELETE PROJECT?",
-                       String("Delete project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names.getReference(current_bank)[current_program],
-                       true
-                   );
-    if( success )
-        program.deleteFile();
+    return load
+    (
+        synth_data.banks[current_bank],
+        synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        load_morph_groups
+    );
+}
+NOINLINE bool SynthData::load_prev() noexcept
+{
+    bool success = false;
 
-    refresh_banks_and_programms();
+    if( current_program-1 >= 0 )
+    {
+        current_program--;
+        success = load();
+    }
+    else
+    {
+        int last_index = GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank).size()-1;
+        if( last_index > 0 )
+        {
+            current_program = last_index;
+            success = load();
+        }
+    }
+
+    return success;
+}
+NOINLINE bool SynthData::load_next() noexcept
+{
+    bool success = false;
+
+    SynthData& synth_data( GET_DATA( synth_data ) );
+    if( current_program+1 < synth_data.program_names_per_bank.getReference(current_bank).size() )
+    {
+        current_program++;
+        success = load();
+    }
+    else
+    {
+        if( synth_data.program_names_per_bank.getReference(current_bank).size() )
+        {
+            current_program = 0;
+            success = load();
+        }
+    }
+
+    return success;
+}
+bool SynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
+{
+    bool success = false;
+    File program = get_program_file( bank_name_, program_name_ );
+    ScopedPointer<XmlElement> xml = XmlDocument( program ).getDocumentElement();
+    if( xml )
+    {
+        if( xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa") )
+        {
+            read_from(xml);
+            success = true;
+        }
+        else
+            success = false;
+    }
 
     return success;
 }
 
-NOINLINE void SynthData::save_session() {
-    write2file( "SESSION", "last" );
+// ==============================================================================
+NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept
+{
+    if( xml_ )
+    {
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
+        }
+    }
 }
-NOINLINE void SynthData::load_session() {
-    load( "SESSION", "last" );
-}
-
-NOINLINE bool SynthData::write2file( const String& bank_name_, const String& program_name_ ) {
+bool SynthData::write2file( const String& bank_name_, const String& program_name_ ) const noexcept
+{
     File program_file = get_program_file( bank_name_, program_name_ );
 
     XmlElement xml("PROJECT-1.0");
@@ -3213,27 +3186,88 @@ NOINLINE bool SynthData::write2file( const String& bank_name_, const String& pro
 
     return xml.writeToFile(program_file,"");
 }
+void SynthData::read_from( const XmlElement* xml_ ) noexcept
+{
+    if( xml_ )
+    {
+        // TODO, this is not really required. coz the morph groubs will set this values
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+        }
+
+        if( id == MASTER )
+        {
+            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+            {
+                left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
+                right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
+            }
+
+            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+            {
+                morph( morpher_id, morhp_states[morpher_id] );
+                morph_switch_buttons( morpher_id, false );
+            }
+        }
+    }
+}
+//==============================================================================
+NOINLINE void SynthData::save_session() const noexcept
+{
+    write2file( "SESSION", "last" );
+}
+NOINLINE void SynthData::load_session() noexcept
+{
+    load( "SESSION", "last" );
+}
 
 //==============================================================================
-NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore() : ui_env(nullptr), ui_env_preset_data(nullptr)
+NOINLINE void SynthData::save_midi() const noexcept
 {
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
+    if( folder.createDirectory() )
+    {
+        File midi_file( File( folder.getFullPathName() + String("/") + "patch.midi") );
+
+        XmlElement xml("MIDI-PATCH-1.0");
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            write_midi_to( xml, saveable_parameters.getUnchecked(i) );
+        }
+
+        xml.writeToFile(midi_file,"");
+    }
+}
+NOINLINE void SynthData::read_midi() noexcept
+{
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));
+    ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
+    if( xml )
+    {
+        if( xml->hasTagName("MIDI-PATCH-1.0") )
+        {
+            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+            {
+                read_midi_from( *xml, saveable_parameters.getUnchecked(i) );
+            }
+        }
+    }
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore()
+    :
+    ui_env(nullptr),
+    ui_env_preset_data(nullptr)
+{}

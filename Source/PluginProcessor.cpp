@@ -561,8 +561,12 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData ) {
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes ) {
     ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
     if ( xml )
+    {
         if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
+        {
             synth_data->read_from( xml );
+        }
+    }
 }
 
 const String MoniqueAudioProcessor::getName() const {

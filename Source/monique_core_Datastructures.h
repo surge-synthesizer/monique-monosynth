@@ -576,11 +576,13 @@ public:
     NOINLINE SynthData( DATA_TYPES data_type ) noexcept;
     NOINLINE ~SynthData() noexcept;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( SynthData )
+
+public:
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
     // MORPH
-public:
     ArrayOfParameters morhp_states;
     ArrayOfBoolParameters morhp_switch_states;
     Parameter linear_morhp_state;
@@ -602,90 +604,92 @@ public:
 
 private:
     void parameter_value_changed( Parameter* param_ ) noexcept override;
-    
+
 public:
     // COPY THE CURRENT STATE TO THE SOURCES
     void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept;
     bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
     bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
 
+private:
     // ==============================================================================
     // ==============================================================================
     // ==============================================================================
     // FILE IO
-
-    
-private:
     StringArray banks;
-    Array< StringArray > program_names;
+    Array< StringArray > program_names_per_bank;
 
     int current_program;
     int current_program_abs;
-    void calc_current_program_abs() noexcept;
     int current_bank;
 
 public:
-    NOINLINE static void refresh_banks_and_programms();
-    NOINLINE static void update_banks( StringArray& );
-    NOINLINE static void update_bank_programms( int bank_id_, StringArray& program_names_ );
-
-    NOINLINE const StringArray& get_banks();
-    NOINLINE const StringArray& get_programms( int bank_id_ );
-
-    int get_current_programm_id_abs() const;
-    const String& get_current_program_name_abs() const noexcept;
-    const String& get_program_name_abs(int id_) const noexcept;
-
-    NOINLINE void set_current_bank( int bank_index_ );
-    NOINLINE void set_current_program( int programm_index_ );
-    NOINLINE void set_current_program_abs( int programm_index_ );
-
-    NOINLINE int get_current_bank() const;
-    NOINLINE int get_current_program() const;
-    NOINLINE const StringArray& get_current_bank_programms();
-
-    NOINLINE bool rename( const String& new_name_ );
-    NOINLINE bool load( bool load_morph_groups = true );
-    NOINLINE bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true );
-    NOINLINE bool load_prev();
-    NOINLINE bool load_next();
-    NOINLINE bool replace();
-    NOINLINE bool create_new();
-    NOINLINE bool remove();
-
-    NOINLINE void save_session();
-    NOINLINE void load_session();
-
+    // ==============================================================================
+    NOINLINE static void refresh_banks_and_programms() noexcept;
 private:
-    NOINLINE bool write2file( const String& bank_name_, const String& program_name_ );
+    NOINLINE void calc_current_program_abs() noexcept;
 
-private:
-    MONO_NOT_CTOR_COPYABLE( SynthData )
-    MONO_NOT_MOVE_COPY_OPERATOR( SynthData )
-    JUCE_LEAK_DETECTOR( SynthData )
-
-
-
-
-
-
-
-
-
-
-
+    NOINLINE static void update_banks( StringArray& ) noexcept;
+    NOINLINE static void update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept;
 
 public:
     // ==============================================================================
-    NOINLINE void save_to( XmlElement* xml ) const noexcept;
-    NOINLINE void read_from( const XmlElement* xml ) noexcept;
+    NOINLINE const StringArray& get_banks() noexcept;
+    NOINLINE const StringArray& get_programms( int bank_id_ ) noexcept;
+
+    // ==============================================================================
+    NOINLINE void set_current_bank( int bank_index_ ) noexcept;
+    NOINLINE void set_current_program( int programm_index_ ) noexcept;
+    NOINLINE void set_current_program_abs( int programm_index_ ) noexcept;
+
+    NOINLINE int get_current_bank() const noexcept;
+    NOINLINE int get_current_program() const noexcept;
+    NOINLINE const StringArray& get_current_bank_programms() const noexcept;
+
+    NOINLINE int get_current_programm_id_abs() const noexcept;
+    NOINLINE const String& get_current_program_name_abs() const noexcept;
+    NOINLINE const String& get_program_name_abs(int id_) const noexcept;
+
+    // ==============================================================================
+    NOINLINE bool create_new() noexcept;
+    NOINLINE bool rename( const String& new_name_ ) noexcept;
+    NOINLINE bool replace() noexcept;
+    NOINLINE bool remove() noexcept;
+
+    NOINLINE bool load( bool load_morph_groups = true ) noexcept;
+    NOINLINE bool load_prev() noexcept;
+    NOINLINE bool load_next() noexcept;
+private:
+    bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true ) noexcept;
+
+public:
+    // ==============================================================================
+    void save_to( XmlElement* xml ) const noexcept;
+    void read_from( const XmlElement* xml ) noexcept;
+
+private:
+    bool write2file( const String& bank_name_, const String& program_name_ ) const noexcept;
+
+public:
+    NOINLINE void save_session() const noexcept;
+    NOINLINE void load_session() noexcept;
+    
+public:
+    // ==============================================================================
+    NOINLINE 
     NOINLINE void save_midi() const noexcept;
     NOINLINE void read_midi() noexcept;
 };
 
-// ==============================================================================
-// ==============================================================================
-// ==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class ENV;
 class MoniqueSynthesiserVoice;
 class DataBuffer;
