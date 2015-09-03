@@ -1,9 +1,9 @@
 
 #include "PluginProcessor.h"
-#include "UiEditorSynthLite.h"
 #include "monique_core_Datastructures.h"
-#include "Synth.h"
+#include "monique_core_Synth.h"
 
+#include "UiEditorSynthLite.h"
 #include "monique_ui_SegmentedMeter.h"
 
 // ********************************************************************************************

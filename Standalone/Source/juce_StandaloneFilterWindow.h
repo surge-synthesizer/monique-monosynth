@@ -26,7 +26,7 @@
 #define JUCE_STANDALONEFILTERWINDOW_H_INCLUDED
 
 #include "../../Source/PluginProcessor.h"
-#include "../../Source/Synth.h"
+#include "../../Source/monique_core_Synth.h"
 #include "../../Source/UiEditorSynthLite.h"
 
 extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();

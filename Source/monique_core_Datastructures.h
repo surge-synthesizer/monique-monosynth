@@ -690,47 +690,44 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// NOTE: IMPL IN SYNTH.CPP
 class ENV;
 class MoniqueSynthesiserVoice;
 class DataBuffer;
-class mono_ParameterOwnerStore : public DeletedAtShutdown {
-
+class mono_ParameterOwnerStore : public DeletedAtShutdown 
+{
 public:
     RuntimeInfo* runtime_info;
 
     DataBuffer* data_buffer;
 
+    ENVPresetDef* env_preset_def;
+    
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
     Array< FilterData* > filter_datas;
-    ENVPresetDef* env_preset_def;
     EQData* eq_data;
     ArpSequencerData* arp_data;
     ReverbData* reverb_data;
     ChorusData* chorus_data;
     SynthData* synth_data;
 
+    MoniqueSynthesiserVoice* voice;
+
+    // ==============================================================================
     ENVPresetData* ui_env_preset_data;
     ENV* ui_env;
 
-    MoniqueSynthesiserVoice* voice;
-
+    // ==============================================================================
     static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ );
-    static float get_flt_input_env_amp( int flt_id_, int input_id_ );
-    static float get_band_env_amp( int band_id_ );
-    static float get_chorus_modulation_env_amp();
 
-    NOINLINE mono_ParameterOwnerStore();
-    NOINLINE ~mono_ParameterOwnerStore();
+    // ==============================================================================
+    NOINLINE mono_ParameterOwnerStore() noexcept;
+    NOINLINE ~mono_ParameterOwnerStore() noexcept;
 
     juce_DeclareSingleton (mono_ParameterOwnerStore,false)
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterOwnerStore)
 };
 
-
-
 #endif
-
-
-

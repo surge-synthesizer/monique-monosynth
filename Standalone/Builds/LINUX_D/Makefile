@@ -30,9 +30,10 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
-  $(OBJDIR)/monique_core_Parameters_93b9539f.o \
-  $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
+  $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
+  $(OBJDIR)/monique_core_Parameters_93b9539f.o \
+  $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
@@ -46,7 +47,6 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/PluginProcessor_319d19ef.o \
-  $(OBJDIR)/Synth_8129adcc.o \
   $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/juce_audio_basics_49d7f937.o \
@@ -83,9 +83,9 @@ $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	@echo "Compiling Main.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/monique_core_Parameters_93b9539f.o: ../../../Source/monique_core_Parameters.cpp
+$(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_core_Parameters.cpp"
+	@echo "Compiling monique_AppInstanceStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_Datastructures.cpp
@@ -93,9 +93,14 @@ $(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_D
 	@echo "Compiling monique_core_Datastructures.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
+$(OBJDIR)/monique_core_Parameters_93b9539f.o: ../../../Source/monique_core_Parameters.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_AppInstanceStore.cpp"
+	@echo "Compiling monique_core_Parameters.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_core_Synth_27fdfbf1.o: ../../../Source/monique_core_Synth.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_core_Synth.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o: ../../../Source/monique_ui_ADRDesigner.cpp
@@ -161,11 +166,6 @@ $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceMa
 $(OBJDIR)/PluginProcessor_319d19ef.o: ../../../Source/PluginProcessor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling PluginProcessor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/Synth_8129adcc.o: ../../../Source/Synth.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Synth.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/UiEditorSynthLite_e00d3d79.o: ../../../Source/UiEditorSynthLite.cpp

@@ -19,7 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 #include "PluginProcessor.h"
-#include "Synth.h"
+#include "monique_core_Synth.h"
 
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_SegmentedMeter.h"

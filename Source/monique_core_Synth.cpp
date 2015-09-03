@@ -1,5 +1,5 @@
 
-#include "Synth.h"
+#include "monique_core_Synth.h"
 #include "monique_core_Datastructures.h"
 
 #include "monique_ui_AmpPainter.h"
@@ -2136,7 +2136,7 @@ inline void ENV::update_stage() noexcept
     {
         float sustain_time = env_data->sustain_time;
         if( sustain_time == 1.0f )
-	    // TODO unlimited
+            // TODO unlimited
             sustain_time = sustain_time*100000;
         else
             sustain_time = sustain_time*10000;
@@ -2909,9 +2909,9 @@ class FilterProcessor
 
 public:
     ScopedPointer< ENV > env;
+    OwnedArray< ENV > input_envs;
 
 private:
-    OwnedArray< ENV > input_envs;
     EnvelopeFollower env_follower;
 
     ValueSmootherModulated cutoff_smoother;
@@ -5321,8 +5321,8 @@ void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
     else // STOP
     {
         if( allowTailOff ) {
-            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id ) 
-	    {
+            for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+            {
                 filter_processors[voice_id]->start_release();
             }
             eq_processor->start_release();
@@ -5362,16 +5362,37 @@ float MoniqueSynthesiserVoice::get_current_frequency() const noexcept
 {
     return MidiMessage::getMidiNoteInHertz(current_note+arp_sequencer->get_current_tune());
 }
-
-
-
-
-
+float MoniqueSynthesiserVoice::get_flt_input_env_amp( int flt_id_, int input_id_ ) const noexcept
+{
+    return filter_processors[flt_id_]->input_envs[input_id_]->get_amp();
+}
+float MoniqueSynthesiserVoice::get_band_env_amp( int band_id_ ) const noexcept
+{
+    return eq_processor->envs[band_id_]->get_amp();
+}
+float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
+{
+    return fx_processor->chorus_modulation_env->get_amp();
+}
 
 
 
 //==============================================================================
-NOINLINE mono_ParameterOwnerStore::~mono_ParameterOwnerStore()
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept
+:
+ui_env(nullptr),
+ui_env_preset_data(nullptr)
+{}
+
+NOINLINE mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 {
     if( ui_env )
     {
@@ -5381,24 +5402,12 @@ NOINLINE mono_ParameterOwnerStore::~mono_ParameterOwnerStore()
 
     clearSingletonInstance();
 }
-
-float mono_ParameterOwnerStore::get_flt_input_env_amp( int flt_id_, int input_id_ )
-{
-    return mono_ParameterOwnerStore::getInstance()->voice->filter_processors[flt_id_]->input_envs[input_id_]->get_amp();
-}
-
-float mono_ParameterOwnerStore::get_band_env_amp( int band_id_ )
-{
-    return mono_ParameterOwnerStore::getInstance()->voice->eq_processor->envs[band_id_]->get_amp();
-}
-float mono_ParameterOwnerStore::get_chorus_modulation_env_amp()
-{
-    return mono_ParameterOwnerStore::getInstance()->voice->fx_processor->chorus_modulation_env->get_amp();
-}
+//==============================================================================
 void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ )
 {
     mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstance();
-    if( ! store->ui_env ) {
+    if( ! store->ui_env )
+    {
         store->ui_env_preset_data = new ENVPresetData( 999, store->env_preset_def );
         store->ui_env = new ENV( GET_DATA_PTR( synth_data ), store->ui_env_preset_data );
     }

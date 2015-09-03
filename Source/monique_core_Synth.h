@@ -10,7 +10,7 @@ class MoniqueSynthesiserSound : public SynthesiserSound
 {
     bool appliesToNote (int) override;
     bool appliesToChannel (int) override;
-    
+
 public:
     NOINLINE MoniqueSynthesiserSound() noexcept;
     NOINLINE ~MoniqueSynthesiserSound() noexcept;
@@ -39,7 +39,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     //==============================================================================
     MoniqueAudioProcessor*const audio_processor;
     SynthData*const synth_data;
-    
+
     //==============================================================================
     RuntimeInfo*const info;
     DataBuffer*const data_buffer;
@@ -48,7 +48,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     ArpSequencer*const arp_sequencer;
     EQProcessor*const eq_processor;
     FXProcessor*const fx_processor;
-    
+
     //==============================================================================
     OSC** oscs;
     LFO** lfos;
@@ -80,6 +80,9 @@ public:
     float get_lfo_amp( int lfo_id_ ) const noexcept;
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
+    float get_flt_input_env_amp( int flt_id_, int input_id_ ) const noexcept;
+    float get_band_env_amp( int band_id_ ) const noexcept;
+    float get_chorus_modulation_env_amp() const noexcept;
 
 public:
     //==============================================================================

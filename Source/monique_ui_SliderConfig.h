@@ -610,7 +610,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         if( ! synth_data->animate_input_env )
             value = NO_TOP_BUTTON_AMP;
         else if( not bool(input_hold->get_value()) )
-            value = mono_ParameterOwnerStore::getInstance()->get_flt_input_env_amp(filter_id,input_id);
+            value = mono_ParameterOwnerStore::getInstance()->voice->get_flt_input_env_amp(filter_id,input_id);
 
         return value;
     }
@@ -3612,7 +3612,7 @@ class CModSlConfig : public ModulationSliderConfigBase
             value = NO_TOP_BUTTON_AMP;
         else if( ! bool(hold_modulation->get_value())  )
         {
-            value = mono_ParameterOwnerStore::getInstance()->get_chorus_modulation_env_amp();
+            value = mono_ParameterOwnerStore::getInstance()->voice->get_chorus_modulation_env_amp();
         }
 
         return value;
@@ -3994,7 +3994,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         if( ! synth_data->animate_eq_env )
             value = NO_TOP_BUTTON_AMP;
         else if( ! bool(hold->get_value()) ) {
-            value = mono_ParameterOwnerStore::getInstance()->get_band_env_amp(id);
+            value = mono_ParameterOwnerStore::getInstance()->voice->get_band_env_amp(id);
         }
 
         return value;
