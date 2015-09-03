@@ -2259,13 +2259,13 @@ public:
         return target_value == current_value;
     }
     inline float add_get_and_keep_current_time( float in_ ) noexcept;
-    inline void reset( float value_ = 0 ) noexcept 
+    inline void reset( float value_ = 0 ) noexcept
     {
         current_value = value_;
         delta = 0;
         counter = 0;
     }
-    inline float get_current_value() const noexcept 
+    inline float get_current_value() const noexcept
     {
         return current_value;
     }
@@ -2392,12 +2392,12 @@ public:
 
 //==============================================================================
 NOINLINE AnalogFilter::AnalogFilter() noexcept
-    :
-    p(0),k(0),r(0),gain(0),
-    y1(0),y2(0),y3(0),y4(0),
-    oldx(0),oldy1(0),oldy2(0),oldy3(0),
+:
+p(0),k(0),r(0),gain(0),
+  y1(0),y2(0),y3(0),y4(0),
+  oldx(0),oldy1(0),oldy2(0),oldy3(0),
 
-    cutoff(1000), res(0), res4(0)
+  cutoff(1000), res(0), res4(0)
 {
     sample_rate_changed(0);
 }
@@ -2532,16 +2532,16 @@ public:
 
 //==============================================================================
 NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter) noexcept
-    :
-    flt_1(),
-    flt_2(),
+:
+flt_1(),
+      flt_2(),
 
-    smooth_filter( nullptr ),
+      smooth_filter( nullptr ),
 
-    last_filter_type(UNKNOWN),
-    smooth_filter_type(UNKNOWN),
+      last_filter_type(UNKNOWN),
+      smooth_filter_type(UNKNOWN),
 
-    glide_time_4_filters(0)
+      glide_time_4_filters(0)
 {
     if( create_smooth_filter )
         smooth_filter = new DoubleAnalogFilter(false);
@@ -2882,9 +2882,10 @@ public:
 
 //==============================================================================
 NOINLINE EnvelopeFollower::EnvelopeFollower() noexcept
-    : envelope (0),
-      attack (1),
-      release (1)
+:
+envelope (0),
+         attack (1),
+         release (1)
 {}
 NOINLINE EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
@@ -3793,7 +3794,7 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class EQProcessor : public RuntimeListener 
+class EQProcessor : public RuntimeListener
 {
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
@@ -3830,8 +3831,8 @@ public:
 
 //==============================================================================
 NOINLINE EQProcessor::EQProcessor( const SynthData* synth_data_ ) noexcept
-    :
-    velocity_smoothers
+:
+velocity_smoothers
 {
     &GET_DATA( eq_data ).velocity[0],
     &GET_DATA( eq_data ).velocity[1],
@@ -3853,6 +3854,7 @@ synth_data( synth_data_ ),
         envs.add( new ENV( synth_data_, eq_data->env_datas.getUnchecked( band_id ) ) );
 
         const float frequency_low_pass_tmp = (62.5f/2) * pow(2,band_id+1);
+
         frequency_low_pass[band_id] = frequency_low_pass_tmp;
         frequency_high_pass[band_id] = frequency_low_pass_tmp / 2;
     }
@@ -4089,7 +4091,8 @@ public:
 };
 
 //==============================================================================
-NOINLINE Chorus::Chorus() noexcept : buffer_size(0)
+NOINLINE Chorus::Chorus() noexcept :
+buffer_size(0)
 {
     index = 0;
     last_delay = 210;
@@ -4180,10 +4183,10 @@ public:
 
 //==============================================================================
 NOINLINE CombFilter::CombFilter() noexcept
-    :
-    last(0),
-    bufferSize (0),
-    bufferIndex(0)
+:
+last(0),
+     bufferSize (0),
+     bufferIndex(0)
 {}
 NOINLINE CombFilter::~CombFilter() noexcept {}
 
@@ -4243,9 +4246,9 @@ public:
 
 //==============================================================================
 NOINLINE AllPassFilter::AllPassFilter() noexcept
-    :
-    bufferSize(0),
-    bufferIndex(0)
+:
+bufferSize(0),
+           bufferIndex(0)
 {}
 NOINLINE AllPassFilter::~AllPassFilter() noexcept {}
 
@@ -4302,12 +4305,12 @@ public:
 
 //==============================================================================
 NOINLINE LinearSmoothedValue::LinearSmoothedValue() noexcept
-    :
-    currentValue(0),
-    target(0),
-    step(0),
-    countdown(0),
-    stepsToTarget(0)
+:
+currentValue(0),
+             target(0),
+             step(0),
+             countdown(0),
+             stepsToTarget(0)
 {}
 
 NOINLINE LinearSmoothedValue::~LinearSmoothedValue() noexcept {}
@@ -4379,11 +4382,11 @@ private:
 
 //==============================================================================
 NOINLINE ReverbParameters::ReverbParameters() noexcept
-    :
-    roomSize   (0.5f),
-    wetLevel   (0.33f),
-    dryLevel   (0.4f),
-    width      (1.0f)
+:
+roomSize   (0.5f),
+           wetLevel   (0.33f),
+           dryLevel   (0.4f),
+           width      (1.0f)
 {}
 NOINLINE ReverbParameters::~ReverbParameters() noexcept {}
 
@@ -4559,12 +4562,12 @@ private:
 public:
     inline void process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
 
-    void start_attack() noexcept 
+    void start_attack() noexcept
     {
         chorus_modulation_env->start_attack();
         final_env->start_attack();
     }
-    void start_release() noexcept 
+    void start_release() noexcept
     {
         chorus_modulation_env->set_to_release();
         final_env->set_to_release();
@@ -4584,32 +4587,32 @@ public:
 
 // -----------------------------------------------------------------
 NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
-    :
-    reverb_l(),
-    reverb_r(),
+:
+reverb_l(),
+         reverb_r(),
 
-    chorus_l(),
-    chorus_r(),
+         chorus_l(),
+         chorus_r(),
 
-    chorus_smoother(),
-    chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
-    chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
+         chorus_smoother(),
+         chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
+         chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
 
-    delayPosition( 0 ),
-    delayBuffer ( DELAY_BUFFER_SIZE ),
-    delay_smoother( &synth_data_->delay ),
+         delayPosition( 0 ),
+         delayBuffer ( DELAY_BUFFER_SIZE ),
+         delay_smoother( &synth_data_->delay ),
 
-    final_env( new ENV( synth_data_, synth_data_->env_data ) ),
-    velocity_glide( sequencer_velocity_ ),
+         final_env( new ENV( synth_data_, synth_data_->env_data ) ),
+         velocity_glide( sequencer_velocity_ ),
 
-    bypass_smoother( &synth_data_->effect_bypass ),
-    volume_smoother( &synth_data_->volume ),
-    clipping_smoother( &synth_data_->final_compression ),
+         bypass_smoother( &synth_data_->effect_bypass ),
+         volume_smoother( &synth_data_->volume ),
+         clipping_smoother( &synth_data_->final_compression ),
 
-    synth_data( synth_data_ ),
-    data_buffer( GET_DATA_PTR( data_buffer ) ),
-    reverb_data( GET_DATA_PTR( reverb_data ) ),
-    chorus_data( GET_DATA_PTR( chorus_data ) )
+         synth_data( synth_data_ ),
+         data_buffer( GET_DATA_PTR( data_buffer ) ),
+         reverb_data( GET_DATA_PTR( reverb_data ) ),
+         chorus_data( GET_DATA_PTR( chorus_data ) )
 {
     std::cout << "MONIQUE: init FX" << std::endl;
 }
@@ -4848,19 +4851,19 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         };
 
         const int delay_pos = delayPosition;
-        LeftRightExecuter left_executer( this,
+                              LeftRightExecuter left_executer( this,
 
-                                         num_samples_,
-                                         delay_pos,
+                                      num_samples_,
+                                      delay_pos,
 
-                                         input_buffer,
-                                         data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
+                                      input_buffer,
+                                      data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
 
-                                         delayBuffer.getWritePointer (LEFT),
+                                      delayBuffer.getWritePointer (LEFT),
 
-                                         &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
-                                       ) ;
-        left_executer.try_run_paralel();
+                                      &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
+                                                             ) ;
+                              left_executer.try_run_paralel();
 
         {
             LeftRightExecuter right_executer(
@@ -4890,29 +4893,15 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 class ArpSequencer : public RuntimeListener
 {
@@ -4930,6 +4919,7 @@ class ArpSequencer : public RuntimeListener
     bool found_a_step;
 
 public:
+    //==============================================================================
     // RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
     inline int process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept;
 
@@ -4940,40 +4930,48 @@ public:
     inline bool should_start() const noexcept;
     inline void reset() noexcept;
 
-    NOINLINE ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ );
-    NOINLINE ~ArpSequencer();
+    //==============================================================================
+    NOINLINE ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept;
+    NOINLINE ~ArpSequencer() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArpSequencer)
 };
-NOINLINE ArpSequencer::ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ )
-    :
-    info(info_),
-    data(data_),
 
-    current_velocity
-    (
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
-        generate_param_name("ARP_RT",0,"vc"),
-        generate_short_human_name("ARP_RT","vc")
-    ),
+//==============================================================================
+NOINLINE ArpSequencer::ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
+:
+info(info_),
+     data(data_),
 
-    current_step(0),
-    next_step_on_hold(0),
-    step_at_sample_current_buffer(-1),
+     current_velocity
+     (
+         MIN_MAX( 0, 1 ),
+         0,
+         1000,
+         generate_param_name("ARP_RT",0,"vc"),
+         generate_short_human_name("ARP_RT","vc")
+     ),
 
-    shuffle_to_back_counter(0),
-    found_a_step(false)
+     current_step(0),
+     next_step_on_hold(0),
+     step_at_sample_current_buffer(-1),
+
+     shuffle_to_back_counter(0),
+     found_a_step(false)
 {
     std::cout << "MONIQUE: init SEQUENCER" << std::endl;
 }
-NOINLINE ArpSequencer::~ArpSequencer() {}
 
+NOINLINE ArpSequencer::~ArpSequencer() noexcept {}
+
+//==============================================================================
 // RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
 // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
-inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept {
-    double samples_per_min = sample_rate*60.0;
+inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept
+{
+    double samples_per_min = sample_rate*60;
     double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
-    double steps_per_min = info->bpm*4.0/1.0 * speed_multi;
+    double steps_per_min = info->bpm*4/1.0 * speed_multi;
     double steps_per_sample = steps_per_min/samples_per_min;
     double samples_per_step = samples_per_min/steps_per_min;
     int64 sync_sample_pos = info->samples_since_start+start_sample_;
@@ -4981,16 +4979,6 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
     step_at_sample_current_buffer = -1;
     for( int i = 0 ; i < num_samples_; ++i )
     {
-        /*
-          static int profile_samples = 44100*10;
-          profile_samples--;
-          std::cout << profile_samples << std::endl;
-          if( profile_samples == 0 )
-              exit(0);
-        */
-
-
-
 #ifdef IS_STANDALONE
         if( info->is_extern_synced )
         {
@@ -5006,24 +4994,24 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
         else
 #endif
         {
-            step = std::floor(steps_per_sample*double(sync_sample_pos))+1; // +1 for future processing
+            step = mono_floor(steps_per_sample*sync_sample_pos)+1; // +1 for future processing
         }
 
         --shuffle_to_back_counter;
 
-        if ( step != next_step_on_hold )
+        if( step != next_step_on_hold )
         {
             next_step_on_hold = step;
 
             if( current_step % 2 == 0 )
-                shuffle_to_back_counter = std::floor(samples_per_step*0.8f * data->shuffle);
+                shuffle_to_back_counter = mono_floor(samples_per_step*0.8f * data->shuffle);
             else
                 shuffle_to_back_counter = 0;
 
             found_a_step = true;
         }
 
-        if( found_a_step && shuffle_to_back_counter == 0 )
+        if( found_a_step and shuffle_to_back_counter == 0 )
         {
             found_a_step = false;
             step_at_sample_current_buffer = i;
@@ -5035,81 +5023,39 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
     }
 
     return num_samples_;
-    //return num_samples_-start_sample_;
 }
-inline int ArpSequencer::get_current_step() const noexcept {
+
+//==============================================================================
+inline int ArpSequencer::get_current_step() const noexcept
+{
     return current_step % SUM_ENV_ARP_STEPS;
 }
-inline int ArpSequencer::get_step_before() const noexcept {
+inline int ArpSequencer::get_step_before() const noexcept
+{
     if( current_step > 0 )
         return (current_step-1) % SUM_ENV_ARP_STEPS;
     else
         return 0;
 }
-inline float ArpSequencer::get_current_tune() const noexcept {
+inline float ArpSequencer::get_current_tune() const noexcept
+{
     return data->tune[get_current_step()];
 }
-inline bool ArpSequencer::is_a_step() const noexcept {
+inline bool ArpSequencer::is_a_step() const noexcept
+{
     return step_at_sample_current_buffer != -1;
 }
-inline bool ArpSequencer::should_start() const noexcept {
+inline bool ArpSequencer::should_start() const noexcept
+{
     if( is_a_step() )
         if( data->step[get_current_step()] )
             return true;
 
     return false;
 }
-inline void ArpSequencer::reset() noexcept {
+inline void ArpSequencer::reset() noexcept
+{
     current_step = 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
-NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
-
-//==============================================================================
-bool MoniqueSynthesiserSound::appliesToNote(int)
-{
-    return true;
-}
-bool MoniqueSynthesiserSound::appliesToChannel(int)
-{
-    return true;
 }
 
 //==============================================================================
@@ -5118,21 +5064,23 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 NOINLINE MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, SynthData*const synth_data_ ) noexcept
 :
 audio_processor( audio_processor_ ),
-                 synth_data( synth_data_ ),
+synth_data( synth_data_ ),
 
-                 info( new RuntimeInfo() ),
-                 data_buffer( new DataBuffer(512) ),
+info( new RuntimeInfo() ),
+data_buffer( new DataBuffer(512) ),
 
-                 arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
-                 eq_processor( new EQProcessor( synth_data_ ) ),
-                 fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) ),
+arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
+eq_processor( new EQProcessor( synth_data_ ) ),
+fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) ),
 
-                 is_stopped( true ),
-                 was_arp_started(false),
-                 current_note(-1),
-                 current_velocity(0),
-                 current_step(0)
+is_stopped( true ),
+was_arp_started(false),
+current_note(-1),
+current_velocity(0),
+current_step(0)
 {
+    mono_ParameterOwnerStore::getInstance()->voice = this;
+    
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
@@ -5155,8 +5103,6 @@ audio_processor( audio_processor_ ),
     {
         filter_processors[i] = new FilterProcessor( synth_data_, i );
     }
-
-    mono_ParameterOwnerStore::getInstance()->voice = this;
 }
 NOINLINE MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 {
@@ -5185,6 +5131,8 @@ NOINLINE MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
 {
+    // THE LFO WE RENDER ALWAYS
+  
     if( synth_data->arp_sequencer_data->is_on && current_note != -1 )
         ;
     else if( is_stopped )
@@ -5445,6 +5393,21 @@ float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
     return fx_processor->chorus_modulation_env->get_amp();
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
+NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
+
+//==============================================================================
+bool MoniqueSynthesiserSound::appliesToNote(int)
+{
+    return true;
+}
+bool MoniqueSynthesiserSound::appliesToChannel(int)
+{
+    return true;
+}
 
 
 //==============================================================================
