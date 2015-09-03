@@ -21,6 +21,8 @@ CHANGES 0.5:
 - add: double click on the morph pad resets it to the center (center == all morph sliders set to zero or LEFT side)
 - fix: resize editors on main ui size change
 - chnaged the ADSR preset MAX times to 10s (10000ms) and removed the max sliders
+- release the synth if inactive
+- handle note inputs correclty (was something wrong and bundled with the arp)
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -61,6 +63,7 @@ TODO:
 - todo: check colours global, save colours
 - srtart stop space
 - add 3 standard colour themes
+- reset oscs to zero
 
 QUESTS
 - sync lfo with note on?

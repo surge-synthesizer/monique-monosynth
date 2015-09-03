@@ -216,6 +216,9 @@ protected:
 
 public:
     inline float tick() noexcept;
+    inline float get_last_tick_value() {
+        return current_value;
+    }
     inline void update( int glide_time_in_samples_ ) noexcept;
 
     inline void reset() noexcept;
@@ -4605,6 +4608,7 @@ class FXProcessor
     // TODO change to a real glide value
 public:
     ValueSmoother velocity_glide;
+    AmpSmoothBuffer last_output_smoother;
 
 private:
     ValueSmoother bypass_smoother;
@@ -4645,6 +4649,8 @@ public:
         bypass_smoother.reset();
         volume_smoother.reset();
         clipping_smoother.reset();
+
+        last_output_smoother.reset();
     }
 
 public:
@@ -4887,6 +4893,9 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
                         const float clipping = tmp_clipping[sid];
                         final_output[sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
+
+                        // FOR END ENV - RELEASE IF INACTIVE
+                        processor->last_output_smoother.add( tmp );
                     }
                 }
             }
@@ -5279,7 +5288,11 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 {
     if( fx_processor->final_env->get_current_stage() == END_ENV )
     {
-        reset();
+        const float last_out_average = fx_processor->last_output_smoother.get_average();
+        if( last_out_average < 0.0000001f and last_out_average > -0.0000001f )
+        {
+            reset();
+        }
     }
 }
 void MoniqueSynthesiserVoice::reset() noexcept
@@ -5288,7 +5301,7 @@ void MoniqueSynthesiserVoice::reset() noexcept
     {
         current_note = -1;
 
-	// TODO reset oscs to zero
+        // TODO reset oscs to zero
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
         {
             filter_processors[voice_id]->reset();
@@ -5321,7 +5334,6 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         // RENDER THE NEXT BLOCK
         if( samples_to_next_arp_step_in_this_buffer > 0 )
             render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
-
         count_start_sample += samples_to_next_arp_step_in_this_buffer;
 
         // HANDLE RETIGGERS
@@ -5341,10 +5353,14 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         }
     }
 
+    // FREE IT
     release_if_inactive();
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
+    if( current_note == -1 )
+        return;
+
     mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
 
     const int num_samples = num_samples_;
