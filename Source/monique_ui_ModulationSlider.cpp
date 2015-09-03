@@ -312,6 +312,10 @@ void mono_ModulationSlider::refresh() noexcept
                 else
                     button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );
             }
+            else
+            {
+                button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+            }
         }
         else if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_ON_OFF )
         {
@@ -334,7 +338,7 @@ void mono_ModulationSlider::refresh() noexcept
     {
         if( modulation_parameter )
         {
-	    slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
+            slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
         }
         else if( back_parameter )
         {
@@ -776,7 +780,7 @@ void mono_ModulationSlider::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            top_parameter->set_value( top_parameter->get_value() == true ? false : true );
+            top_parameter->set_value( top_parameter->get_value() == 1 ? false : true );
         }
         AppInstanceStore::getInstance()->editor->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
         //[/UserButtonCode_button_top]
