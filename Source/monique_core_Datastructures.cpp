@@ -2724,7 +2724,7 @@ void SynthData::set_morph_source_data_from_current( int morpher_id_, bool left_o
     for( int i = 0 ; i != morph_group_to_update->params.size() ; ++i )
     {
         Parameter*param( morph_group_to_update->params.getUnchecked(i) );
-	Parameter*source_param( morph_group_source->params.getUnchecked(i) );
+        Parameter*source_param( morph_group_source->params.getUnchecked(i) );
         param->set_value_without_notification( source_param->get_value() );
         param->set_modulation_amount_without_notification( source_param->get_modulation_amount() );
     }
@@ -3076,11 +3076,8 @@ NOINLINE bool SynthData::remove() noexcept
     );
     if( success )
     {
-        if( program.deleteFile() )
-        {
-            refresh_banks_and_programms();
-            current_program = -1;
-        }
+        refresh_banks_and_programms();
+        current_program = -1;
     }
 
     return success;
