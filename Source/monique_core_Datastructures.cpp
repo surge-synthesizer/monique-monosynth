@@ -263,7 +263,7 @@ id( id_ ),
 
 attack
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     0.05,
     1000,
     generate_param_name(ENV_NAME,id,"attack"),
@@ -312,7 +312,7 @@ sustain_time
 
 release
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     0.2,
     1000,
     generate_param_name(ENV_NAME,id,"release"),
@@ -364,7 +364,7 @@ NOINLINE ENVPresetDef::ENVPresetDef ( int id_ ) noexcept
 attack_1
 (
     MIN_MAX( 0, 1 ),
-    0.001,
+    0,
     1000,
     generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_1_"),
     generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_1")
@@ -388,7 +388,7 @@ sustain_time_1
 release_1
 (
     MIN_MAX( 0, 1 ),
-    0.001,
+    0,
     1000,
     generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_1_"),
     generate_short_human_name(ENV_PRESET_DEF_NAME,"release_1")
@@ -1044,7 +1044,7 @@ velocity
 (
     SUM_ENV_ARP_STEPS,
 
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     0.85,
     1000,
 

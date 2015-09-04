@@ -1881,7 +1881,7 @@ class ValueEnvelope : public RuntimeListener
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
     inline void update( float end_value_,
-                        float time_sample_rate_factor_,
+                        int time_in_samples,
                         float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
@@ -1914,6 +1914,9 @@ samples_to_target_left(0),
 NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
 
 //==============================================================================
+#define EXP_MULTI 1
+#define EXP_DIV 1.71828f 
+//6.38906f;
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 {
@@ -1960,31 +1963,28 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
                         if( shape_factor_release >= 1.0f )
                             shape_factor_release = 1.0f - (shape_factor_release - 1);
 
-                        current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                        current_value -= (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                     }
                 }
                 else if( shape_ > 0.75f )
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    {
+                        current_value += (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                    }
                     else
                     {
-                        float delta_ = (end_value-current_value)/samples_to_target_left;
-                        current_value+=delta_;
-
-                        /*
-                                  delta_ *= -1;
-                                  float shape_factor_release = (shape_-0.75f)*4;
-                                  current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                                  */
+                        delta_ *= -1;
+                        float shape_factor_release = (shape_-0.75f)*4;
+                        current_value -= (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                     }
                 }
                 else if( shape_ > 0.5f )
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                        current_value += (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_ + delta_*(1.0f-shape_factor_));
                     else
                     {
                         delta_ *= -1;
@@ -2012,7 +2012,7 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
     return current_value;
 }
 inline void ValueEnvelope::update( float end_value_,
-                                   float time_sample_rate_factor_,
+                                   int time_in_samples,
                                    float start_value_
                                  ) noexcept
 {
@@ -2023,7 +2023,7 @@ inline void ValueEnvelope::update( float end_value_,
     end_value = end_value_;
 
     // CALC
-    samples_to_target_left = msToSamplesFast( time_sample_rate_factor_, sample_rate );
+    samples_to_target_left = msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate );
     if( samples_to_target_left <= 0 )
         current_value = end_value;
 }

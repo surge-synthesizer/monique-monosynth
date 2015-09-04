@@ -897,7 +897,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = attack->get_value() * max_attack_time->get_value();
+        float value = MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value();
         if( value < 100 )
             return String(round01(value));
         else
@@ -1390,7 +1390,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = release->get_value() * max_release_time->get_value();
+        float value = MIN_ENV_TIMES + release->get_value() * max_release_time->get_value();
         if( value < 100 )
             return String(round01(value));
         else

@@ -34,10 +34,10 @@ void UiEditorSettings::refresh() noexcept
     slider_attack_2->setValue( env_preset_def->attack_2*10000, dontSendNotification );
     slider_attack_3->setValue( env_preset_def->attack_3*10000, dontSendNotification );
     slider_attack_4->setValue( env_preset_def->attack_4*10000, dontSendNotification );
-    label_attack_1->setText(String( env_preset_def->attack_1*10000 )+String("ms"), dontSendNotification);
-    label_attack_2->setText(String( env_preset_def->attack_2*10000 )+String("ms"), dontSendNotification);
-    label_attack_3->setText(String( env_preset_def->attack_3*10000 )+String("ms"), dontSendNotification);
-    label_attack_4->setText(String( env_preset_def->attack_4*10000 )+String("ms"), dontSendNotification);
+    label_attack_1->setText(String( MIN_ENV_TIMES + env_preset_def->attack_1*10000 )+String("ms"), dontSendNotification);
+    label_attack_2->setText(String( MIN_ENV_TIMES + env_preset_def->attack_2*10000 )+String("ms"), dontSendNotification);
+    label_attack_3->setText(String( MIN_ENV_TIMES + env_preset_def->attack_3*10000 )+String("ms"), dontSendNotification);
+    label_attack_4->setText(String( MIN_ENV_TIMES + env_preset_def->attack_4*10000 )+String("ms"), dontSendNotification);
 
     slider_decay_1->setValue( env_preset_def->decay_1*10000, dontSendNotification );
     slider_decay_2->setValue( env_preset_def->decay_2*10000, dontSendNotification );
@@ -61,10 +61,10 @@ void UiEditorSettings::refresh() noexcept
     slider_release_2->setValue( env_preset_def->release_2*10000, dontSendNotification );
     slider_release_3->setValue( env_preset_def->release_3*10000, dontSendNotification );
     slider_release_4->setValue( env_preset_def->release_4*10000, dontSendNotification );
-    label_release_1->setText(String( env_preset_def->release_1*10000 )+String("ms"), dontSendNotification);
-    label_release_2->setText(String( env_preset_def->release_2*10000 )+String("ms"), dontSendNotification);
-    label_release_3->setText(String( env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
-    label_release_4->setText(String( env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
+    label_release_1->setText(String( MIN_ENV_TIMES + env_preset_def->release_1*10000 )+String("ms"), dontSendNotification);
+    label_release_2->setText(String( MIN_ENV_TIMES + env_preset_def->release_2*10000 )+String("ms"), dontSendNotification);
+    label_release_3->setText(String( MIN_ENV_TIMES + env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
+    label_release_4->setText(String( MIN_ENV_TIMES + env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
 
     SynthData* synth_data( GET_DATA_PTR( synth_data ) );
     slider_force_to_zero->setValue( synth_data->force_envs_to_zero, dontSendNotification );
@@ -152,7 +152,7 @@ UiEditorSettings::UiEditorSettings ()
     label_att_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_1 = new Slider ("0"));
-    slider_attack_1->setRange (1, 10000, 1);
+    slider_attack_1->setRange (0, 10000, 1);
     slider_attack_1->setSliderStyle (Slider::LinearVertical);
     slider_attack_1->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_attack_1->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -190,7 +190,7 @@ UiEditorSettings::UiEditorSettings ()
     label_rel_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_1 = new Slider ("0"));
-    slider_release_1->setRange (1, 10000, 1);
+    slider_release_1->setRange (0, 10000, 1);
     slider_release_1->setSliderStyle (Slider::LinearVertical);
     slider_release_1->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_release_1->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -209,7 +209,7 @@ UiEditorSettings::UiEditorSettings ()
     label_att_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_2 = new Slider ("0"));
-    slider_attack_2->setRange (1, 10000, 1);
+    slider_attack_2->setRange (0, 10000, 1);
     slider_attack_2->setSliderStyle (Slider::LinearVertical);
     slider_attack_2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_attack_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -247,7 +247,7 @@ UiEditorSettings::UiEditorSettings ()
     label_rel_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_2 = new Slider ("0"));
-    slider_release_2->setRange (1, 10000, 1);
+    slider_release_2->setRange (0, 10000, 1);
     slider_release_2->setSliderStyle (Slider::LinearVertical);
     slider_release_2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_release_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -266,7 +266,7 @@ UiEditorSettings::UiEditorSettings ()
     label_att_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_3 = new Slider ("0"));
-    slider_attack_3->setRange (1, 10000, 1);
+    slider_attack_3->setRange (0, 10000, 1);
     slider_attack_3->setSliderStyle (Slider::LinearVertical);
     slider_attack_3->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_attack_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -304,7 +304,7 @@ UiEditorSettings::UiEditorSettings ()
     label_rel_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_3 = new Slider ("0"));
-    slider_release_3->setRange (1, 10000, 1);
+    slider_release_3->setRange (0, 10000, 1);
     slider_release_3->setSliderStyle (Slider::LinearVertical);
     slider_release_3->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_release_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -323,7 +323,7 @@ UiEditorSettings::UiEditorSettings ()
     label_att_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack_4 = new Slider ("0"));
-    slider_attack_4->setRange (1, 10000, 1);
+    slider_attack_4->setRange (0, 10000, 1);
     slider_attack_4->setSliderStyle (Slider::LinearVertical);
     slider_attack_4->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_attack_4->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -361,7 +361,7 @@ UiEditorSettings::UiEditorSettings ()
     label_rel_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release_4 = new Slider ("0"));
-    slider_release_4->setRange (1, 10000, 1);
+    slider_release_4->setRange (0, 10000, 1);
     slider_release_4->setSliderStyle (Slider::LinearVertical);
     slider_release_4->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_release_4->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -390,7 +390,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_test->addListener (this);
 
     addAndMakeVisible (slider_sustain_time_1 = new Slider ("0"));
-    slider_sustain_time_1->setRange (1, 10000, 1);
+    slider_sustain_time_1->setRange (0, 10000, 1);
     slider_sustain_time_1->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time_1->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_sustain_time_1->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -400,7 +400,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_1->addListener (this);
 
     addAndMakeVisible (slider_sustain_time_2 = new Slider ("0"));
-    slider_sustain_time_2->setRange (1, 10000, 1);
+    slider_sustain_time_2->setRange (0, 10000, 1);
     slider_sustain_time_2->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time_2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_sustain_time_2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -410,7 +410,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_2->addListener (this);
 
     addAndMakeVisible (slider_sustain_time_3 = new Slider ("0"));
-    slider_sustain_time_3->setRange (1, 10000, 1);
+    slider_sustain_time_3->setRange (0, 10000, 1);
     slider_sustain_time_3->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time_3->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_sustain_time_3->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -420,7 +420,7 @@ UiEditorSettings::UiEditorSettings ()
     slider_sustain_time_3->addListener (this);
 
     addAndMakeVisible (slider_sustain_time_4 = new Slider ("0"));
-    slider_sustain_time_4->setRange (1, 10000, 1);
+    slider_sustain_time_4->setRange (0, 10000, 1);
     slider_sustain_time_4->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time_4->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     slider_sustain_time_4->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -1199,7 +1199,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_attack_1" virtualName="Slider"
           explicitFocusOrder="0" pos="20 55 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="1" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
+          min="0" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="5269c763f2d5a37b" memberName="label_dec_1" virtualName=""
          explicitFocusOrder="0" pos="80 105 60 33" textCol="ffffff00"
@@ -1219,7 +1219,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="e8c91a0aabc505e" memberName="slider_release_1" virtualName="Slider"
           explicitFocusOrder="0" pos="200 55 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="1" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
+          min="0" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="652f8c698bf6e2c7" memberName="label_att_2" virtualName=""
          explicitFocusOrder="0" pos="280 105 60 33" textCol="ffffff00"
@@ -1229,7 +1229,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="d64a1c27fe0baec4" memberName="slider_attack_2" virtualName="Slider"
           explicitFocusOrder="0" pos="280 55 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="1" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
+          min="0" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="29cbca18263366d5" memberName="label_dec_2" virtualName=""
          explicitFocusOrder="0" pos="340 105 60 33" textCol="ffffff00"
@@ -1249,7 +1249,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="f4a67e7ca9df04d3" memberName="slider_release_2"
           virtualName="Slider" explicitFocusOrder="0" pos="520r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="69b28ea11658a763" memberName="label_att_3" virtualName=""
@@ -1260,7 +1260,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="e0e4215f40e7cc1b" memberName="slider_attack_3" virtualName="Slider"
           explicitFocusOrder="0" pos="600r 105r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="1" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
+          min="0" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="c285c1141eaa0118" memberName="label_dec_3" virtualName=""
          explicitFocusOrder="0" pos="600 105 60 33" textCol="ffffff00"
@@ -1280,7 +1280,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="1cc6a6994a1ac6d6" memberName="slider_release_3"
           virtualName="Slider" explicitFocusOrder="0" pos="780r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ac7391e000b56ff6" memberName="label_att_4" virtualName=""
@@ -1291,7 +1291,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="8e9f61467e1ec899" memberName="slider_attack_4" virtualName="Slider"
           explicitFocusOrder="0" pos="860r 105r 60 50" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="1" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
+          min="0" max="10000" int="1" style="LinearVertical" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="117c28f4bd17a85e" memberName="label_dec_4" virtualName=""
          explicitFocusOrder="0" pos="860 105 60 33" textCol="ffffff00"
@@ -1311,7 +1311,7 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="da498e3b67b4f708" memberName="slider_release_4"
           virtualName="Slider" explicitFocusOrder="0" pos="1040r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="c4e98860bf594960" memberName="label6" virtualName=""
@@ -1328,25 +1328,25 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time_1"
           virtualName="Slider" explicitFocusOrder="0" pos="140 55 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="17f02dd31261d734" memberName="slider_sustain_time_2"
           virtualName="Slider" explicitFocusOrder="0" pos="460r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="8d1895289bf4e022" memberName="slider_sustain_time_3"
           virtualName="Slider" explicitFocusOrder="0" pos="720r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="7ded7da4555fca64" memberName="slider_sustain_time_4"
           virtualName="Slider" explicitFocusOrder="0" pos="980r 105r 60 50"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="10000" int="1" style="LinearVertical"
+          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ebbaa43d5c1e571e" memberName="label_sus_4" virtualName=""

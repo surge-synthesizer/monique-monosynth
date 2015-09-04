@@ -169,72 +169,51 @@ public:
 public:
     // ==============================================================================
     // SETTER
-#if DEBUG
-#define DBG_CHECK_RANGE( x ) \
-    if( x > info->max_value ) { \
-      std::cout << "ERROR: value is bigger as max: " << info->short_name << "->" << x << " max:"<<  info->max_value << std::endl; \
-    } \
-    else if( x < info->min_value ) { \
-      std::cout << "ERROR: value is smaller as min: " << info->short_name << "->" << x << " max:"<<  info->min_value << std::endl; \
-    }
-#else
-#define DBG_CHECK_RANGE( x )
-#endif
-
     inline void set_value( float value_ ) noexcept
     {
-        DBG_CHECK_RANGE( value_ )
         if( value != value_ )
         {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
             value = value_;
             notify_value_listeners();
         }
     }
     inline float operator= ( float value_ ) noexcept
     {
-        DBG_CHECK_RANGE( value_ )
-        if( value != value_ )
-        {
-            value = value_;
-            notify_value_listeners();
-        }
-        return value_;
+        set_value(value_);
+        return value;
     }
     inline float operator= ( const Parameter& other_ ) noexcept
     {
-        const float value_( other_.value );
-        DBG_CHECK_RANGE( value_ )
-        if( value != value_ )
-        {
-            value = value_;
-            notify_value_listeners();
-        }
-        return value_;
+        set_value(other_.value);
+        return value;
     }
     inline void set_value_without_notification( float value_ ) noexcept
     {
-        DBG_CHECK_RANGE( value_ )
         if( value != value_ )
         {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
             value = value_;
-            notify_always_value_listeners();
         }
     }
 
 public:
     // ==============================================================================
     // MODULATOR (OPTIONAL PARAMETER)
-#if DEBUG
-#define DBG_CHECK_MODULATOR_RANGE( x ) \
-    if( x > 1 ) { \
-      std::cout << "ERROR: modulator is bigger 1: " << info->short_name << "->" << x << std::endl; \
-    } \
-    else if( x < -1 ) { \
-      std::cout << "ERROR: modulator is smaller -1: " << info->short_name << "->" << x << std::endl; \
-    }
-#else
-#define DBG_CHECK_MODULATOR_RANGE( x )
-#endif
     inline float get_modulation_amount() const noexcept
     {
         return modulation_amount;
@@ -248,17 +227,36 @@ public:
     // MODULATOR (OPTIONAL PARAMETER)
     inline void set_modulation_amount( float modulation_amount_ ) noexcept
     {
-        DBG_CHECK_MODULATOR_RANGE( modulation_amount_ )
         if( modulation_amount != modulation_amount_ )
         {
+            if( modulation_amount_ > 1 )
+            {
+                modulation_amount_ = 1;
+            }
+            else if( modulation_amount_ < -1 )
+            {
+                modulation_amount_ = -1;
+            }
+
             modulation_amount = modulation_amount_;
             notify_modulation_value_listeners();
         }
     }
     inline void set_modulation_amount_without_notification( float modulation_amount_ ) noexcept
     {
-        DBG_CHECK_MODULATOR_RANGE( modulation_amount_ )
-        modulation_amount = modulation_amount_;
+        if( modulation_amount != modulation_amount_ )
+        {
+            if( modulation_amount_ > 1 )
+            {
+                modulation_amount_ = 1;
+            }
+            else if( modulation_amount_ < -1 )
+            {
+                modulation_amount_ = -1;
+            }
+
+            modulation_amount = modulation_amount_;
+        }
     }
 
 public:
@@ -400,13 +398,11 @@ public:
     // SETTER
     inline bool operator= ( const bool value_ ) noexcept
     {
-        DBG_CHECK_RANGE( value_ )
         return bool(value = value_);
     }
     inline bool operator= ( const BoolParameter& other_ ) noexcept
     {
-        DBG_CHECK_RANGE( other_.value )
-        return bool(value = other_.value);
+        return value = other_.value;
     }
 
 private:
@@ -457,15 +453,26 @@ public:
 public:
     // ==============================================================================
     // SETTER
-    inline int operator= ( const int value_ ) noexcept
+    inline int operator= ( int value_ ) noexcept
     {
-        DBG_CHECK_RANGE( value_ )
-        return int(value = value_);
+        if( int(value) != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+            notify_modulation_value_listeners();
+        }
+        return int(value);
     }
     inline int operator= ( const IntParameter& other_ ) noexcept
     {
-        DBG_CHECK_RANGE( other_.value )
-        return int(value = other_.value);
+        return operator=(int(other_.value));
     }
 
 private:
