@@ -4,6 +4,7 @@
 
 #include "monique_ui_AmpPainter.h"
 #include "PluginProcessor.h"
+#include "../JUCE-3.1.1/modules/juce_graphics/geometry/juce_Rectangle.h"
 
 
 //==============================================================================
@@ -222,6 +223,7 @@ public:
     inline void update( int glide_time_in_samples_ ) noexcept;
 
     inline void reset() noexcept;
+    inline void replace_current_value( float value_ ) noexcept;
 
     NOINLINE ValueSmoother( Parameter*const base_ ) noexcept;
     NOINLINE ValueSmoother( const ValueSmoother& other_ ) noexcept;
@@ -289,6 +291,11 @@ inline void ValueSmoother::reset() noexcept
     current_value = target_value;
     delta = 0;
     counter = 0;
+}
+inline void ValueSmoother::replace_current_value( float value_ ) noexcept
+{
+    current_value = value_;
+    target_value = value_;
 }
 
 //==============================================================================
@@ -1915,7 +1922,7 @@ NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
 
 //==============================================================================
 #define EXP_MULTI 1
-#define EXP_DIV 1.71828f 
+#define EXP_DIV 1.71828f
 //6.38906f;
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
@@ -2103,10 +2110,7 @@ public:
     inline STAGES get_current_stage() const noexcept;
     inline void set_current_stage( STAGES current_stage_ ) noexcept;
     inline void overwrite_current_value( float amp_ ) noexcept;
-
-public:
-    //==============================================================================
-    float get_amp() const noexcept;
+    inline float get_amp() const noexcept;
 
 public:
     //==============================================================================
@@ -2133,7 +2137,6 @@ NOINLINE ENV::~ENV() {}
 //==============================================================================
 inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
 {
-    // TODO, if you came from end env, reset sustain!
     sustain_smoother.update( synth_data->glide_motor_time );
     const float shape = synth_data->curve_shape;
     float shape_factor = 1;
@@ -2219,7 +2222,7 @@ inline void ENV::update_stage() noexcept
 inline void ENV::start_attack( bool force_to_zero ) noexcept
 {
     current_stage = TRIGGER_START;
-    if( force_to_zero )
+    if( force_to_zero > 0 )
         envelop.force_zero_glide( synth_data->force_envs_to_zero );
     update_stage();
 }
@@ -2250,7 +2253,7 @@ inline void ENV::overwrite_current_value( float amp_ ) noexcept
 }
 
 //==============================================================================
-float ENV::get_amp() const noexcept
+inline float ENV::get_amp() const noexcept
 {
     return envelop.get_current_amp();
 }
@@ -3849,17 +3852,97 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class SwitchSmoother
+{
+protected:
+    float current_value;
+    float target_value;
+    float delta;
+    int counter;
+    bool state;
+
+public:
+    inline bool reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept
+    {
+        if( state != maybe_new_state_ )
+        {
+            state = maybe_new_state_;
+            counter = 500;
+            delta = 0;
+
+            return true;
+        }
+
+        return false;
+    }
+    inline float tick_to( float current_value_ ) noexcept
+    {
+        if( --counter <= 0 )
+        {
+            current_value = current_value_;
+            target_value = current_value_;
+        }
+        else
+        {
+            float tmp_old = target_value;
+            if( current_value_ != target_value )
+            {
+                target_value = current_value_;
+                delta = (target_value-current_value) / counter;
+            }
+
+            current_value+=delta;
+        }
+
+        return current_value;
+    }
+    inline float get_last_tick_value() noexcept
+    {
+        return current_value;
+    }
+
+    inline void reset() noexcept
+    {
+        current_value = target_value;
+        delta = 0;
+        counter = 0;
+    }
+
+    NOINLINE SwitchSmoother() noexcept;
+    NOINLINE ~SwitchSmoother() noexcept;
+
+private:
+    //MONO_NOT_CTOR_COPYABLE( SwitchSmoother )
+    MONO_NOT_MOVE_COPY_OPERATOR( SwitchSmoother )
+};
+
+//==============================================================================
+NOINLINE SwitchSmoother::SwitchSmoother() noexcept
+:
+current_value( 0 ),
+               target_value( 0 ),
+               delta(0),
+               counter(0),
+               state(true)
+{}
+
+NOINLINE SwitchSmoother::~SwitchSmoother() noexcept {}
+
+//==============================================================================
+
+
 class EQProcessor : public RuntimeListener
 {
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
 
-    AmpSmoothBuffer amp_smoother[SUM_EQ_BANDS];
     AnalogFilter filters[SUM_EQ_BANDS];
     IIRFilter low_pass_filters[SUM_EQ_BANDS];
     IIRFilter high_pass_filters[SUM_EQ_BANDS];
 
-    ValueSmoother velocity_smoothers[SUM_EQ_BANDS];
+    ValueSmoother velocity_smoother[SUM_EQ_BANDS];
+    ValueSmoother shape_smoother[SUM_EQ_BANDS];
+    SwitchSmoother amp2velocity_smoother[SUM_EQ_BANDS];
 
     friend class mono_ParameterOwnerStore;
 
@@ -3877,7 +3960,7 @@ public:
     inline void process( int num_samples_ ) noexcept;
 
     //==============================================================================
-    NOINLINE EQProcessor( const SynthData* synth_data_ ) noexcept;
+    NOINLINE EQProcessor( SynthData* synth_data_ ) noexcept;
     NOINLINE ~EQProcessor() noexcept;
 
     NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
@@ -3886,23 +3969,37 @@ public:
 };
 
 //==============================================================================
-NOINLINE EQProcessor::EQProcessor( const SynthData* synth_data_ ) noexcept
+NOINLINE EQProcessor::EQProcessor( SynthData* synth_data_ ) noexcept
 :
-velocity_smoothers
+velocity_smoother
 {
-    &GET_DATA( eq_data ).velocity[0],
-    &GET_DATA( eq_data ).velocity[1],
-    &GET_DATA( eq_data ).velocity[2],
-    &GET_DATA( eq_data ).velocity[3],
-    &GET_DATA( eq_data ).velocity[4],
-    &GET_DATA( eq_data ).velocity[5],
-    &GET_DATA( eq_data ).velocity[6],
-    &GET_DATA( eq_data ).velocity[7],
-    &GET_DATA( eq_data ).velocity[8]
+    GET_DATA_PTR( eq_data )->velocity[0].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[1].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[2].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[3].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[4].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[5].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[6].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[7].ptr(),
+    GET_DATA_PTR( eq_data )->velocity[8].ptr()
 },
-synth_data( synth_data_ ),
-            eq_data( GET_DATA_PTR( eq_data ) ),
-            data_buffer( GET_DATA_PTR( data_buffer ) )
+shape_smoother
+{
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr(),
+    synth_data_->resonance.ptr()
+},
+amp2velocity_smoother(),
+
+                      synth_data( synth_data_ ),
+                      eq_data( GET_DATA_PTR( eq_data ) ),
+                      data_buffer( GET_DATA_PTR( data_buffer ) )
 {
     std::cout << "MONIQUE: init EQ" << std::endl;
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
@@ -3938,11 +4035,9 @@ inline void EQProcessor::reset() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        amp_smoother[band_id].reset();
         filters[band_id].reset();
         low_pass_filters[band_id].reset();
         high_pass_filters[band_id].reset();
-        velocity_smoothers[band_id].reset();
         envs.getUnchecked(band_id)->reset();
     }
 }
@@ -3966,6 +4061,8 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 #define OUT_DIMENSION 4*band_id_ +2
 #define GAIN_DIMENSION 4*band_id_ +3
 
+#define GAIN_MULTI 5
+
         struct BandExecuter : public mono_Thread
         {
             const int num_samples_;
@@ -3973,20 +4070,21 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
             const bool hold_sustain;
             const int glide_motor_time;
-            const float resonance;
+            ValueSmoother*const velocity_smoother;
+            ValueSmoother*const shape_smoother;
+            SwitchSmoother*const amp2velocity_smoother;
 
             const float filter_frequency;
             IIRFilter& low_pass_filter;
             IIRFilter& high_pass_filter;
             AnalogFilter& filter;
-            ValueSmoother& velocity_smoother;
-            AmpSmoothBuffer& amp_smoother;
             ENV& env;
 
             const float*const direct_filter_output_samples;
             float*const tmp_band_in_buffer;
             float*const tmp_band_out_buffer;
             float*const tmp_env_buffer;
+            float*const tmp_sum_gain_buffer;
 
             inline void exec() noexcept override
             {
@@ -3998,28 +4096,48 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                 // PROCESS
                 {
-                    velocity_smoother.update( glide_motor_time );
+                    // CRACKL BLOCKER
+                    if( amp2velocity_smoother->reset_counter_on_state_switch( hold_sustain ) )
                     {
-                        // ENV OR SUSTAIN
-                        hold_sustain ? env.reset() : env.process( tmp_env_buffer, num_samples_ );
-                        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                        if( not hold_sustain )
                         {
-                            const float sustain = (1.0f + velocity_smoother.tick() )*0.5;
-                            const float amp = amp_smoother.add_and_get_average( hold_sustain ? sustain : tmp_env_buffer[sid] );
+                            env.overwrite_current_value( amp2velocity_smoother->get_last_tick_value() );
+                            env.set_current_stage( ATTACK );
+                        }
+                    }
 
-                            // UPDATE FILTER
-                            filter.set( 0.2f*resonance, filter_frequency, sustain );
+                    // PROCESS ENVELOPE
+                    if( not hold_sustain )
+                        env.process( tmp_env_buffer, num_samples_ );
 
-                            // PROCESS
-                            {
-                                //const float gain = sustain + amp * 4;
-                                const float gain = sustain * amp*5;
-                                const float output = filter.processLow( tmp_band_in_buffer[sid] );
+                    velocity_smoother->update( 250 );
+                    shape_smoother->update( 250 );
 
-                                // SHAPER
+                    // PROCESS
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        const float shape = shape_smoother->tick();
+
+                        const float sustain = (1.0f + velocity_smoother->tick() )*0.5;
+                        const float amp = amp2velocity_smoother->tick_to( hold_sustain ? sustain : tmp_env_buffer[sid] );
+
+                        tmp_env_buffer[sid ] = amp;
+
+                        // UPDATE FILTER
+                        filter.set( 0.2f*shape, filter_frequency, sustain );
+
+                        // PROCESS
+                        {
+                            //const float gain = sustain + amp * 4;
+                            const float gain = sustain * amp*GAIN_MULTI;
+			    const float input = tmp_band_in_buffer[sid];
+			    float output = filter.processLow( tmp_band_in_buffer[sid] );
+			    output = output*sustain + input*(1.0f-sustain);
+
+                            // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                                tmp_band_out_buffer[sid] = ( output*(1.0f-resonance) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*resonance))*resonance )*gain;
-                            }
+                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain;
+                            tmp_sum_gain_buffer[sid] = gain / (1+band_id);
                         }
                     }
                 }
@@ -4031,24 +4149,24 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                 num_samples_(num_samples__),
                 band_id(band_id_),
 
-                hold_sustain( processor_->eq_data->hold[band_id]),
+                hold_sustain( processor_->eq_data->hold[band_id_]),
                 glide_motor_time( processor_->synth_data->glide_motor_time ),
-                resonance( processor_->synth_data->resonance ),
+                shape_smoother( &processor_->shape_smoother[band_id_] ),
+                velocity_smoother( &processor_->velocity_smoother[band_id_] ),
+                amp2velocity_smoother( &processor_->amp2velocity_smoother[band_id_] ),
 
                 filter_frequency( processor_->frequency_low_pass[band_id_] ),
                 low_pass_filter(processor_->low_pass_filters[band_id_]),
                 high_pass_filter(processor_->high_pass_filters[band_id_]),
                 filter(processor_->filters[band_id_]),
 
-                velocity_smoother( processor_->velocity_smoothers[band_id_] ),
-                amp_smoother( processor_->amp_smoother[band_id_] ),
-
                 env( *processor_->envs[band_id_] ),
 
                 direct_filter_output_samples( processor_->data_buffer->direct_filter_output_samples.getReadPointer() ),
                 tmp_band_in_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(IN_DIMENSION) ),
                 tmp_band_out_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION) ),
-                tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) )
+                tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) ),
+                tmp_sum_gain_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION) )
             {}
         };
 
@@ -4109,16 +4227,16 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
         for( int band_id_ = 0 ; band_id_ != SUM_EQ_BANDS ; ++band_id_ )
         {
             const float*const tmp_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION);
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                tmp_all_band_out_buffer[sid] += tmp_band_out_buffer[sid];
-            }
+            const float*const tmp_band_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION);
+	    
+	    FloatVectorOperations::add( tmp_all_band_out_buffer, tmp_band_out_buffer, num_samples_ );
+	    FloatVectorOperations::add( tmp_all_band_sum_gain_buffer, tmp_band_gain_buffer, num_samples_ );
         }
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            // SEE FilterProcessor, there we multiply with  1.0f/SUM_INPUTS_PER_FILTER;
-            out_buffer[sid] = tmp_all_band_out_buffer[sid];// / 4.5;
+            out_buffer[sid] = (tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]*0.2));
         }
+
         if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             amp_painter->add_eq( out_buffer, num_samples_ );
@@ -4608,7 +4726,6 @@ class FXProcessor
 #define DELAY_BUFFER_SIZE 12000
     Chorus chorus_l;
     Chorus chorus_r;
-    AmpSmoothBuffer chorus_smoother;
     ValueSmoother chorus_mod_smoother;
     friend class mono_ParameterOwnerStore;
     ScopedPointer< ENV > chorus_modulation_env;
@@ -4655,7 +4772,6 @@ public:
         reverb_r.reset();
         chorus_l.reset();
         chorus_r.reset();
-        chorus_smoother.reset();
         chorus_mod_smoother.reset();
         chorus_modulation_env->reset();
         delayPosition = 0;
@@ -4686,7 +4802,6 @@ reverb_l(),
          chorus_l(),
          chorus_r(),
 
-         chorus_smoother(),
          chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
          chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
 
@@ -4771,14 +4886,13 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             {
-                input_buffer[sid] *= tmp_env_amp[sid]*volume_smoother.tick()*velocity_glide.tick()*SUM_FILTERS*SUM_INPUTS_PER_FILTER;
+                input_buffer[sid] *= tmp_env_amp[sid]*volume_smoother.tick()*velocity_glide.tick();
             }
 
             {
                 const float chorus_modulation = chorus_mod_smoother.tick();
                 const bool is_chorus_amp_fix = chorus_data->hold_modulation;
-                // TODO do we need the chorus smoother?
-                tmp_chorus_mod_amp[sid] = chorus_smoother.add_and_get_average( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
+                tmp_chorus_mod_amp[sid] = is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid];
             }
 
             {
@@ -4794,7 +4908,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             }
         }
     }
-
+#define VOLUME_GAIN 3
     // PROCESS
     {
         struct LeftRightExecuter : public mono_Thread
@@ -4858,7 +4972,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                     const float bypass = tmp_bypass[sid];
                     float tmp = tmp_samples[sid];
                     tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
-
+		    tmp *= VOLUME_GAIN;
+		    
                     const float clipping = tmp_clipping[sid];
                     final_output[sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
                 }
@@ -4906,7 +5021,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                         const float bypass = tmp_bypass[sid];
                         float tmp = tmp_samples[sid];
                         tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
-
+                        tmp *= VOLUME_GAIN;
                         const float clipping = tmp_clipping[sid];
                         final_output[sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
 
@@ -4977,14 +5092,25 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             right_executer.exec_right();
         }
 
+        while( left_executer.isWorking() ) {}
+
+        // FINAL MIX
+        {
+            float* left = output_buffer_.getWritePointer(LEFT);
+            float* right = output_buffer_.getWritePointer(RIGHT);
+            for( int sid = start_sample_final_out_ ; sid < start_sample_final_out_+num_samples_ ; ++sid )
+            {
+                float sum = left[sid] + right[sid];
+                left[sid] = right[sid] = sum;
+            }
+        }
+
         // VISUALIZE
         if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
-            amp_painter->add_out( &output_buffer_.getReadPointer(RIGHT)[start_sample_final_out_], num_samples_ ); // NOTE LEFT STILL IN WORK
+            amp_painter->add_out( &output_buffer_.getReadPointer(LEFT)[start_sample_final_out_], num_samples_ );
             amp_painter->add_out_env( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_ENV), num_samples_ );
         }
-
-        while( left_executer.isWorking() ) {}
     }
 }
 
@@ -5594,6 +5720,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 
 

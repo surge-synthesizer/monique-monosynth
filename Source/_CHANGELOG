@@ -23,6 +23,12 @@ CHANGES 0.5:
 - chnaged the ADSR preset MAX times to 10s (10000ms) and removed the max sliders
 - release the synth if inactive
 - handle note inputs correclty (was something wrong and bundled with the arp)
+- add minimum attack and release time to avoid cracls
+- fix shape crackls
+- fix eq crackls
+- back to mono output
+- refactoring of eq (more boost)
+- more gain
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
