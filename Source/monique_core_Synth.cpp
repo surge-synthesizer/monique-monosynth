@@ -1923,7 +1923,7 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
     --samples_to_target_left;
     if( current_force_zero_counter < force_zero_target and samples_to_target_left > 50 )
     {
-        float delta = float_Pi*( 0.5f + 1.5f*(1.0f/force_zero_target*current_force_zero_counter));
+        float delta = float_Pi*( 0.5f + 1.0f*(1.0f/force_zero_target*current_force_zero_counter));
         current_value = last_value * (1.0f + std::sin( delta ) )*0.5f;
     }
     else
@@ -1939,20 +1939,20 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                        current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
                     else
                     {
                         delta_ *= -1;
                         float shape_factor_release = shape_*4;
 
-                        current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
+                        current_value -= (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
                     }
                 }
                 else if( shape_ < 0.5f )
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((mono_log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
+                        current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
                     else
                     {
                         delta_ *= -1;
@@ -1960,26 +1960,31 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
                         if( shape_factor_release >= 1.0f )
                             shape_factor_release = 1.0f - (shape_factor_release - 1);
 
-                        current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                        current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                     }
                 }
                 else if( shape_ > 0.75f )
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                        current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
                     else
                     {
-                        delta_ *= -1;
-                        float shape_factor_release = (shape_-0.75f)*4;
-                        current_value -= (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                        float delta_ = (end_value-current_value)/samples_to_target_left;
+                        current_value+=delta_;
+
+                        /*
+                                  delta_ *= -1;
+                                  float shape_factor_release = (shape_-0.75f)*4;
+                                  current_value -= (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                                  */
                     }
                 }
                 else if( shape_ > 0.5f )
                 {
                     float delta_ = (end_value-current_value)/samples_to_target_left;
                     if( delta_ >= 0 )
-                        current_value += (((mono_exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
+                        current_value += (((exp(delta_*2)-1.0f)/6.38906f)*shape_factor_ + delta_*(1.0f-shape_factor_));
                     else
                     {
                         delta_ *= -1;
@@ -1987,7 +1992,7 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
                         if( shape_factor_release >= 1.0f )
                             shape_factor_release = 1.0f - (shape_factor_release - 1);
 
-                        current_value -= (((mono_log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
+                        current_value -= (((log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
                     }
                 }
                 else
@@ -3981,7 +3986,6 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             const float*const direct_filter_output_samples;
             float*const tmp_band_in_buffer;
             float*const tmp_band_out_buffer;
-            float*const tmp_band_sum_gain_buffer;
             float*const tmp_env_buffer;
 
             inline void exec() noexcept override
@@ -4000,16 +4004,16 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                         hold_sustain ? env.reset() : env.process( tmp_env_buffer, num_samples_ );
                         for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
-                            const float sustain = velocity_smoother.tick();
-                            const float amp( hold_sustain ? amp_smoother.add_and_get_average( positive(sustain) ) : amp_smoother.add_and_get_average( tmp_env_buffer[sid] ) );
+                            const float sustain = (1.0f + velocity_smoother.tick() )*0.5;
+                            const float amp = amp_smoother.add_and_get_average( hold_sustain ? sustain : tmp_env_buffer[sid] );
 
                             // UPDATE FILTER
-                            filter.set( 0.2f*resonance, filter_frequency, amp );
+                            filter.set( 0.2f*resonance, filter_frequency, sustain );
 
                             // PROCESS
                             {
-                                const float gain = sustain < 0 ? 1.0f-amp : 1.0f+5.0f*amp;
-                                tmp_band_sum_gain_buffer[sid] = (gain > 1 ? (amp) : 0);
+                                //const float gain = sustain + amp * 4;
+                                const float gain = sustain * amp*5;
                                 const float output = filter.processLow( tmp_band_in_buffer[sid] );
 
                                 // SHAPER
@@ -4044,7 +4048,6 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                 direct_filter_output_samples( processor_->data_buffer->direct_filter_output_samples.getReadPointer() ),
                 tmp_band_in_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(IN_DIMENSION) ),
                 tmp_band_out_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION) ),
-                tmp_band_sum_gain_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION) ),
                 tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) )
             {}
         };
@@ -4106,18 +4109,15 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
         for( int band_id_ = 0 ; band_id_ != SUM_EQ_BANDS ; ++band_id_ )
         {
             const float*const tmp_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION);
-            const float*const tmp_band_sum_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION);
-
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 tmp_all_band_out_buffer[sid] += tmp_band_out_buffer[sid];
-                tmp_all_band_sum_gain_buffer[sid] += tmp_band_sum_gain_buffer[sid];
             }
         }
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             // SEE FilterProcessor, there we multiply with  1.0f/SUM_INPUTS_PER_FILTER;
-            out_buffer[sid] = tmp_all_band_out_buffer[sid] / tmp_all_band_sum_gain_buffer[sid];
+            out_buffer[sid] = tmp_all_band_out_buffer[sid];// / 4.5;
         }
         if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {

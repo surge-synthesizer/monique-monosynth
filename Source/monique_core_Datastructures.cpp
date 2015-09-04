@@ -1275,7 +1275,7 @@ void EQData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( velocity[i].ptr() == param_ )
         {
-            env_datas[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
+            env_datas[i]->sustain.set_value_without_notification( ( 1.0f + param_->get_value() )*0.5 );
             break;
         }
     }
