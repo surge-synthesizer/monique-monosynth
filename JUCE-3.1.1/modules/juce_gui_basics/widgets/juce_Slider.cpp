@@ -1049,9 +1049,9 @@ public:
                         double newValue = value + jmax (0.1, std::abs (delta)) * (delta < 0 ? -1.0 : 1.0);
 
                         if( newValue > value )
-                            value+=1;
+                            value+=interval;
                         else if( newValue < value )
-                            value-=1;
+                            value-=interval;
 
                         DragInProgress drag (*this);
                         setValue (owner.snapValue (value, notDragging), sendNotificationSync);
