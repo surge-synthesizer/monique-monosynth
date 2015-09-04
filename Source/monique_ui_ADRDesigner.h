@@ -132,8 +132,8 @@ private:
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label3;
     ScopedPointer<Slider> slider_force_to_zero;
-    ScopedPointer<Label> label_zero;
     ScopedPointer<Label> label2;
+    ScopedPointer<Label> label_force_z;
 
 
     //==============================================================================

@@ -1877,7 +1877,6 @@ class ValueEnvelope : public RuntimeListener
     float end_value;
     int force_zero_target;
     int current_force_zero_counter;
-    float force_zero_amount;
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
@@ -1908,8 +1907,7 @@ samples_to_target_left(0),
                        last_value(0),
                        end_value(0),
                        force_zero_target(FORCE_ZERO_SAMPLES),
-                       current_force_zero_counter(FORCE_ZERO_SAMPLES),
-                       force_zero_amount(0)
+                       current_force_zero_counter(FORCE_ZERO_SAMPLES)
 {
 
 }
@@ -1919,16 +1917,14 @@ NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 {
+    //aufräumen und auch wichtig, die lfos müssenm laufen!!!!
+    //was wenn wir nur einen kurzes releasse haben, dann stopt der LFO immer
     ++current_force_zero_counter;
     --samples_to_target_left;
-    if( current_force_zero_counter < force_zero_target && samples_to_target_left > 50 )
+    if( current_force_zero_counter < force_zero_target and samples_to_target_left > 50 )
     {
-        current_value = current_value - current_value * (1.0f/force_zero_target*current_force_zero_counter);
-        if( current_value <= last_value*force_zero_amount )
-            current_force_zero_counter = force_zero_target;
-
-        else if( current_value < 0 )
-            current_value = 0;
+        float delta = float_Pi*( 0.5f + 1.5f*(1.0f/force_zero_target*current_force_zero_counter));
+        current_value = last_value * (1.0f + std::sin( delta ) )*0.5f;
     }
     else
     {
@@ -2038,15 +2034,19 @@ inline void ValueEnvelope::replace_current_value( float value_ ) noexcept
 }
 inline void ValueEnvelope::force_zero_glide( float set_to_zero_amount_ ) noexcept
 {
-    // TODO must depend on the sample rate
-    last_value = current_value;
-    force_zero_amount = set_to_zero_amount_;
-    current_force_zero_counter = 0;
-    force_zero_target = msToSamplesFast( 2+8*(1.0f-set_to_zero_amount_), sample_rate );
-    if( force_zero_target > samples_to_target_left * 0.8f )
-        force_zero_target = samples_to_target_left * 0.8f;
-
-    //current_value = 0;
+    if( set_to_zero_amount_ > 0 )
+    {
+        last_value = current_value;
+        current_force_zero_counter = 0;
+        force_zero_target = msToSamplesFast( 2+40*set_to_zero_amount_, sample_rate );
+        if( force_zero_target > samples_to_target_left * 0.8f )
+            force_zero_target = samples_to_target_left * 0.8f;
+    }
+    else
+    {
+        current_force_zero_counter = 0;
+        force_zero_target = 0;
+    }
 }
 inline void ValueEnvelope::reset() noexcept
 {
@@ -2054,7 +2054,6 @@ inline void ValueEnvelope::reset() noexcept
     current_value = 0;
     end_value = 0;
     current_force_zero_counter = force_zero_target;
-    force_zero_amount = 0;
 }
 
 //==============================================================================
@@ -2091,16 +2090,18 @@ private:
 
 public:
     //==============================================================================
-    inline void start_attack() noexcept;
+    inline void start_attack( bool force_to_zero = true ) noexcept;
     inline void set_to_release() noexcept;
     inline void reset() noexcept;
 
 public:
     inline STAGES get_current_stage() const noexcept;
+    inline void set_current_stage( STAGES current_stage_ ) noexcept;
+    inline void overwrite_current_value( float amp_ ) noexcept;
 
 public:
     //==============================================================================
-    NOINLINE float get_amp() const noexcept;
+    float get_amp() const noexcept;
 
 public:
     //==============================================================================
@@ -2210,10 +2211,11 @@ inline void ENV::update_stage() noexcept
     }
 }
 
-inline void ENV::start_attack() noexcept
+inline void ENV::start_attack( bool force_to_zero ) noexcept
 {
     current_stage = TRIGGER_START;
-    envelop.force_zero_glide( synth_data->force_envs_to_zero );
+    if( force_to_zero )
+        envelop.force_zero_glide( synth_data->force_envs_to_zero );
     update_stage();
 }
 inline void ENV::set_to_release() noexcept
@@ -2233,9 +2235,17 @@ inline STAGES ENV::get_current_stage() const noexcept
 {
     return current_stage;
 }
+inline void ENV::set_current_stage( STAGES current_stage_ ) noexcept
+{
+    current_stage = current_stage_;
+}
+inline void ENV::overwrite_current_value( float amp_ ) noexcept
+{
+    envelop.replace_current_value( amp_ );
+}
 
 //==============================================================================
-NOINLINE float ENV::get_amp() const noexcept
+float ENV::get_amp() const noexcept
 {
     return envelop.get_current_amp();
 }
@@ -2444,7 +2454,7 @@ inline void AnalogFilter::calc() noexcept
 }
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
-    input_and_worker_ = hard_clipper<3>( input_and_worker_ );
+    input_and_worker_ = hard_clipper<2>( input_and_worker_ );
 
     // process input
     input_and_worker_ -= r*y4;
@@ -5538,18 +5548,28 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     data->sustain = 0.5;
     float* one_sample_buffer = new float;
     bool count_sustain = false;
-    env->start_attack();
+    env->start_attack( false );
+    env->overwrite_current_value( 0.5 );
+    env->set_current_stage( RELEASE );
+    env->start_attack( true );
     const int suatain_samples = RuntimeNotifyer::getInstance()->get_sample_rate() / 10;
     sustain_end_ = -1;
-    while( env->get_current_stage() != END_ENV )
+    bool is_first_attack = true;
+    while( true )
     {
+        if( ! is_first_attack and ( env->get_current_stage() == SUSTAIN or env->get_current_stage() == DECAY ) )
+        {
+            break;
+        }
+
         // GET DATA
         env->process( one_sample_buffer, 1 );
         if( env->get_current_stage() != SUSTAIN )
             curve.add(*one_sample_buffer);
 
         // START COUNT SUSTAIN
-        if( env->get_current_stage() == SUSTAIN && ! count_sustain ) {
+        if( env->get_current_stage() == SUSTAIN && ! count_sustain )
+        {
             count_sustain = true;
             sustain_start_ = curve.size();
         }
@@ -5559,13 +5579,22 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
             env->set_to_release();
             sustain_end_ = sustain_start_ + suatain_samples;
         }
-        else if( sustain_end_ == -1 && count_sustain && data->sustain_time != 1 ) {
+        else if( sustain_end_ == -1 && count_sustain && data->sustain_time != 1 )
+        {
             env->set_to_release();
             sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstance()->get_sample_rate());
+        }
+
+        if( is_first_attack && env->get_current_stage() == END_ENV )
+        {
+            is_first_attack = false;
+            env->start_attack();
         }
     }
 
     delete one_sample_buffer;
 }
+
+
 
 

@@ -34,6 +34,17 @@ public:
     {
         is_first_call_back = false;
 
+	float force_zero_target = 100;
+	float current_force_zero_counter = 0;
+	
+	const float last_value = 0.5;
+	
+	for( int i = 0 ; i != 100 ; ++i )
+	{
+        float delta = float_Pi*( 0.5f + 1.5f*(1.0f/force_zero_target*i));
+        std::cout << i << ": d:" << delta << " --- " << last_value * (1.0f + std::sin( delta ) )*0.5f << std::endl;;
+	}
+	
 	std::cout << std::sin( float_Pi*0.5 ) << std::endl;
 	std::cout << std::sin( float_Pi ) << std::endl;
 	std::cout << std::sin( float_Pi*1.5 ) << std::endl;
