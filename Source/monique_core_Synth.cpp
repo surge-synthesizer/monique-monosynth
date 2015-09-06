@@ -4079,6 +4079,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                     shape_smoother->update( 250 );
 
                     // PROCESS
+		    int phase_shift = band_id == 0 ? -1 : 1;
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float shape = shape_smoother->tick();
@@ -4101,7 +4102,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                             // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain;
+                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain*phase_shift;
                             tmp_sum_gain_buffer[sid] = gain / (1+band_id);
                         }
                     }
