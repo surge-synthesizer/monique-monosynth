@@ -2046,7 +2046,9 @@ morph_group_4( new MorphGroup() ),
 // ----
 current_program(-1),
 current_program_abs(-1),
-current_bank(0)
+current_bank(0),
+
+error_string("ERROR")
 {
     // SINGLES
     if( data_type == MASTER )
@@ -2963,8 +2965,7 @@ NOINLINE const String& MoniqueSynthData::get_current_program_name_abs() const no
 {
     if( current_program == -1 )
     {
-        static String error("ERROR");
-        return error;
+        return error_string;
     }
     return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank)[current_program];
 }
@@ -2980,8 +2981,7 @@ NOINLINE const String& MoniqueSynthData::get_program_name_abs(int id_) const noe
             id_ -= bank_size;
     }
 
-    static String error("ERROR");
-    return error;
+    return error_string;
 }
 
 // ==============================================================================

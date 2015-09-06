@@ -649,6 +649,7 @@ public:
     NOINLINE int get_current_program() const noexcept;
     NOINLINE const StringArray& get_current_bank_programms() const noexcept;
 
+    const String error_string;
     NOINLINE int get_current_programm_id_abs() const noexcept;
     NOINLINE const String& get_current_program_name_abs() const noexcept;
     NOINLINE const String& get_program_name_abs(int id_) const noexcept;

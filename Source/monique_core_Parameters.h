@@ -653,7 +653,7 @@ class ChangeParamOverTime : public Timer // TODO TIME SLICED THREAD ( DONT START
 
 public:
     // ==============================================================================
-    inline static void execute( Parameter& param_, float target_value_, int time_in_ms_ ) noexcept
+    static inline void execute( Parameter& param_, float target_value_, int time_in_ms_ ) noexcept
     {
         new ChangeParamOverTime(param_,target_value_,time_in_ms_);
     }

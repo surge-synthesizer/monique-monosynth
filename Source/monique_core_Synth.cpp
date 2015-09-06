@@ -506,12 +506,13 @@ static inline float soft_clipping( float input_and_worker_ ) noexcept
 }
 
 //==============================================================================
-forcedinline static float lfo2amp( float sample_ ) noexcept {
+static inline float lfo2amp( float sample_ ) noexcept 
+{
     return (sample_ + 1.0f)*0.5f;
 }
 
 //==============================================================================
-inline static float distortion( float input_and_worker_, float distortion_power_ ) noexcept
+static inline float distortion( float input_and_worker_, float distortion_power_ ) noexcept
 {
     if( distortion_power_ != 0 )
     {
@@ -525,7 +526,7 @@ inline static float distortion( float input_and_worker_, float distortion_power_
 //==============================================================================
 //==============================================================================
 //==============================================================================
-forcedinline static float clipp_to_0_and_1( float input_and_worker_ ) noexcept
+static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 {
     if( input_and_worker_ > 1 )
         input_and_worker_ = 1;
@@ -568,7 +569,7 @@ static inline float positive( float x ) noexcept
 //==============================================================================
 //==============================================================================
 template<int min_max>
-forcedinline static float hard_clipper( float x ) noexcept
+static inline float hard_clipper( float x ) noexcept
 {
     if( x < (min_max*-1) )
         x = (min_max*-1);
@@ -578,35 +579,6 @@ forcedinline static float hard_clipper( float x ) noexcept
     return x;
 }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-static float inline taylor_sin(float x) noexcept
-{
-    float x2 = x*x;
-    float x4 = x2*x2;
-
-    // Calculate the terms
-    // As long as abs(x) < sqrt(6), which is 2.45, all terms will be positive.
-    // Values outside this range should be reduced to [-pi/2, pi/2] anyway for accuracy.
-    // Some care has to be given to the factorials.
-    // They can be pre-calculated by the compiler,
-    // but the value for the higher ones will exceed the storage capacity of int.
-    // so force the compiler to use unsigned long longs (if available) or doubles.
-    float t1 = x * (1.0f - x2 / (2*3));
-    float x5 = x * x4;
-    float t2 = x5 * (1.0f - x2 / (6*7)) / (1.0f* 2*3*4*5);
-    float x9 = x5 * x4;
-    float t3 = x9 * (1.0f - x2 / (10*11)) / (1.0f* 2*3*4*5*6*7*8*9);
-    float x13 = x9 * x4;
-    float t4 = x13 * (1.0f - x2 / (14*15)) / (1.0f* 2*3*4*5*6*7*8*9*10*11*12*13);
-    // add some more if your accuracy requires them.
-    // But remember that x is smaller than 2, and the factorial grows very fast
-    // so I doubt that 2^17 / 17! will add anything.
-    // Even t4 might already be too small to matter when compared with t1.
-
-    return t4 + t3 + t2 + t1;
-}
 #define TABLESIZE_MULTI 1000
 #define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 float*restrict SINE_LOOKUP_TABLE;
