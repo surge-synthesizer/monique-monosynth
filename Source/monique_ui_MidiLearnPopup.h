@@ -27,8 +27,6 @@ class Monique_Ui_Mainwindow;
 class MIDIControl;
 //[/Headers]
 
-
-
 //==============================================================================
 /**
                                                                     //[Comments]
@@ -67,8 +65,6 @@ private:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
-
-
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
@@ -79,7 +75,6 @@ private:
     ScopedPointer<TextButton> close;
     ScopedPointer<ComboBox> combo_midi_channel;
     Path internalPath1;
-
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MainwindowPopup)

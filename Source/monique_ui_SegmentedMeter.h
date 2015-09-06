@@ -22,8 +22,8 @@ public Monique_Ui_Refreshable
     bool needsRepaint;
 
 public:
-    Monique_Ui_SegmentedMeter();
-    ~Monique_Ui_SegmentedMeter();
+    Monique_Ui_SegmentedMeter() noexcept;
+    ~Monique_Ui_SegmentedMeter() noexcept;
 
 private:
     void resized() override;

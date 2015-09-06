@@ -9,7 +9,7 @@
 #define DB_PER_SEC 3.0f
 #define SAMPLES_TO_COUNT 2048
 
-Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter()
+Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter() noexcept
     : my_red( Colours::red.getARGB() ),
       my_yellow( UiLookAndFeel::getInstance()->colours.button_on_colour.getARGB()),
       my_green( UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB() ),
@@ -23,7 +23,7 @@ Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter()
     setOpaque (true);
 }
 
-Monique_Ui_SegmentedMeter::~Monique_Ui_SegmentedMeter() {}
+Monique_Ui_SegmentedMeter::~Monique_Ui_SegmentedMeter() noexcept {}
 
 void Monique_Ui_SegmentedMeter::refresh() noexcept
 {

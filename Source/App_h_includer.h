@@ -28,6 +28,8 @@
 #include "../../JUCE/modules/juce_gui_basics/juce_gui_basics.h"
 #include "../../JUCE/modules/juce_gui_extra/juce_gui_extra.h"
 
+#include "monique_ui_Refresher.h"
+
 #undef NOINLINE
 #define NOINLINE
 #undef restrict
