@@ -161,6 +161,8 @@ class OSCSlConfig : public ModulationSliderConfigBase
     const String top_text;
     const String bottom_text;
 
+    MoniqueSynthData*const synth_data;
+
     //==============================================================================
     // BASIC SLIDER TYPE
     /*
@@ -218,7 +220,27 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     float get_top_button_amp() const noexcept override
     {
-        return get_last_modulation_amount(octave)*(1.0f/48);
+        float value;
+        if( synth_data->animate_modulations )
+        {
+            if( bool(is_lfo_modulated->get_value()) )
+            {
+                value = get_last_modulation_amount(octave)*(1.0f/48);
+            }
+            else
+                value = NO_TOP_BUTTON_AMP;
+        }
+        else
+        {
+            if( bool(is_lfo_modulated->get_value()) )
+            {
+                value = 0.999f;
+            }
+            else
+                value = 0;
+        }
+
+        return value;
     }
 
     //==============================================================================
@@ -271,7 +293,9 @@ public:
         octave( &(GET_DATA(osc_datas[id_]).octave) ),
         is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
         top_text( String("LFO ") + String(id_+1) ),
-        bottom_text( String("OSC ") + String(id_+1) )
+        bottom_text( String("OSC ") + String(id_+1) ),
+
+        synth_data( GET_DATA_PTR( synth_data ) )
     {}
 
     JUCE_LEAK_DETECTOR (OSCSlConfig)
@@ -4381,3 +4405,4 @@ public:
         */
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+

@@ -242,7 +242,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );
                     }
                     else
-                        button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f ) );
+                        button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );
                 }
                 else
                     button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour );

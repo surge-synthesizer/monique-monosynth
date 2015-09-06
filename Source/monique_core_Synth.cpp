@@ -670,6 +670,17 @@ static inline float hard_clipper( float x ) noexcept
     return x;
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float hard_clipper_1_5( float x ) noexcept
+{
+    return x < -1.5f ? x = -1.5 : x > 1.5 ? x = 1.5 : x;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #define TABLESIZE_MULTI 1000
 #define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 float*restrict SINE_LOOKUP_TABLE;
@@ -2537,6 +2548,7 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
+    //hard_clipper_1_5( y4 );
     //y4 -= (y4*y4*y4) * (1.0f/6);
     y4 = std::atan(y4);
 
@@ -2727,6 +2739,7 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     //Clipper band limited sigmoid
     y4 = std::atan(y4);
     //y4 -= (y4*y4*y4) * (1.0f/6);
+    //hard_clipper_1_5( y4 );
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -2787,6 +2800,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     //Clipper band limited sigmoid
     //y4 -= (y4*y4*y4) * (1.0f/6);
     y4 = std::atan(y4);
+    //hard_clipper_1_5( y4 );
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -4131,12 +4145,12 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                             //const float gain = sustain + amp * 4;
                             const float gain = sustain * amp*GAIN_MULTI;
                             const float input = tmp_band_in_buffer[sid];
-                            float output = filter.processLow( input );
+                            float output = filter.processLow( input*phase_shift );
                             output = output*sustain + input*(1.0f-sustain);
 
                             // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain*phase_shift;
+                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain;
                             tmp_sum_gain_buffer[sid] = gain / (1+band_id);
                         }
                     }
@@ -5728,6 +5742,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 
 

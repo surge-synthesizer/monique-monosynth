@@ -37,17 +37,16 @@ CHANGES 0.5:
 - multi instance support should be fixed (but was no time to check it in detail yet - can anybody do this?)
 - fix crash on short morph motor time
 - shift phase of the 32.5hertz band
-- 
+- fix crackls on filter input switch from amp to fix or in the other direction
+- fix 95% of the crackls on program switches
+- fix disable lfo animation if modulation animations is disabled
+- change modulation button light (brighter) if animation modulations is turned of
 
 :!: KNOWN BUGS:
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
-- clicken beim umschalten auf fix input
-- knacken beim bewegen des compression & shape slider
 - kein background value für linear slider
-- midi sync disabled for speed multies
 - osc square and saw going out of center on higher octaves
 - the lfo note value is synced to the root frequency!
-- lfo amp animation can'T be disabled
 - eq amp animation one eq ani of is wrong
 - can modulate in negative direction
 - file remove is buggy
