@@ -117,8 +117,8 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
 };
 
-#define GET_DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
-#define GET_DATA_PTR(_X_) mono_ParameterOwnerStore::getInstance()->_X_
+#define GET_DATA(_X_) (*mono_ParameterOwnerStore::getInstanceWithoutCreating()->_X_)
+#define GET_DATA_PTR(_X_) mono_ParameterOwnerStore::getInstanceWithoutCreating()->_X_
 
 //==============================================================================
 //==============================================================================
