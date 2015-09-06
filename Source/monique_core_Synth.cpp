@@ -70,17 +70,17 @@ class mono_ExecuterThread : protected Thread
 
 private:
     //==============================================================================
-    NOINLINE mono_ExecuterThread() noexcept;
+    COLD mono_ExecuterThread() noexcept;
 
 public:
     //==============================================================================
-    NOINLINE ~mono_ExecuterThread() noexcept;
+    COLD ~mono_ExecuterThread() noexcept;
 };
 
 //==============================================================================
-NOINLINE mono_ExecuterThread::mono_ExecuterThread() noexcept :
+COLD mono_ExecuterThread::mono_ExecuterThread() noexcept :
 Thread("monique_engine_WorkerThread") {}
-NOINLINE mono_ExecuterThread::~mono_ExecuterThread() noexcept {}
+COLD mono_ExecuterThread::~mono_ExecuterThread() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -99,15 +99,15 @@ private:
 
 private:
     //==============================================================================
-    NOINLINE mono_ThreadManager() noexcept;
-    NOINLINE ~mono_ThreadManager() noexcept;
+    COLD mono_ThreadManager() noexcept;
+    COLD ~mono_ThreadManager() noexcept;
 
     juce_DeclareSingleton (mono_ThreadManager,false)
 };
 
 //==============================================================================
 juce_ImplementSingleton (mono_ThreadManager)
-NOINLINE mono_ThreadManager::mono_ThreadManager() noexcept
+COLD mono_ThreadManager::mono_ThreadManager() noexcept
 :
 synth_data( GET_DATA_PTR( synth_data ) )
 {
@@ -119,7 +119,7 @@ synth_data( GET_DATA_PTR( synth_data ) )
     }
     threads.minimiseStorageOverheads();
 }
-NOINLINE mono_ThreadManager::~mono_ThreadManager() noexcept
+COLD mono_ThreadManager::~mono_ThreadManager() noexcept
 {
     for( int i = 0 ; i < THREAD_LIMIT ; ++i )
     {
@@ -224,9 +224,9 @@ public:
     inline void reset() noexcept;
     inline void replace_current_value( float value_ ) noexcept;
 
-    NOINLINE ValueSmoother( Parameter*const base_ ) noexcept;
-    NOINLINE ValueSmoother( const ValueSmoother& other_ ) noexcept;
-    NOINLINE ~ValueSmoother() noexcept;
+    COLD ValueSmoother( Parameter*const base_ ) noexcept;
+    COLD ValueSmoother( const ValueSmoother& other_ ) noexcept;
+    COLD ~ValueSmoother() noexcept;
 
 private:
     //MONO_NOT_CTOR_COPYABLE( ValueSmoother )
@@ -234,7 +234,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmoother::ValueSmoother( Parameter*const base_ ) noexcept
+COLD ValueSmoother::ValueSmoother( Parameter*const base_ ) noexcept
 :
 base( base_ ),
       current_value( base_->get_value() ),
@@ -243,7 +243,7 @@ base( base_ ),
       counter(0)
 {}
 
-NOINLINE ValueSmoother::ValueSmoother( const ValueSmoother& other_ ) noexcept
+COLD ValueSmoother::ValueSmoother( const ValueSmoother& other_ ) noexcept
 :
 base( other_.base ),
 current_value( other_.current_value ),
@@ -252,7 +252,7 @@ delta(other_.delta),
 counter(other_.counter)
 {}
 
-NOINLINE ValueSmoother::~ValueSmoother() noexcept {}
+COLD ValueSmoother::~ValueSmoother() noexcept {}
 
 //==============================================================================
 inline float ValueSmoother::tick() noexcept
@@ -317,8 +317,8 @@ public:
 
     inline void update( int glide_time_in_samples_ ) noexcept;
 
-    NOINLINE ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
-    NOINLINE ~ValueSmootherModulated() noexcept;
+    COLD ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
+    COLD ~ValueSmootherModulated() noexcept;
 
 private:
     MONO_NOT_CTOR_COPYABLE( ValueSmootherModulated )
@@ -326,7 +326,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulated::ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept
+COLD ValueSmootherModulated::ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept
 :
 ValueSmoother( base_ ),
                modulation_amount( base->get_modulation_amount() ),
@@ -335,7 +335,7 @@ ValueSmoother( base_ ),
                max_value( base->get_info().max_value ),
                last_modulation(0)
 {}
-NOINLINE ValueSmootherModulated::~ValueSmootherModulated() noexcept {}
+COLD ValueSmootherModulated::~ValueSmootherModulated() noexcept {}
 
 //==============================================================================
 inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
@@ -373,8 +373,8 @@ public:
     inline float tick( float current_modulation_in_percent_ ) noexcept;
     inline bool is_changed_since_last_tick() const noexcept;
 
-    NOINLINE ValueSmootherModulatedTracked( ModulatedParameter*const base_ );
-    NOINLINE ~ValueSmootherModulatedTracked();
+    COLD ValueSmootherModulatedTracked( ModulatedParameter*const base_ );
+    COLD ~ValueSmootherModulatedTracked();
 
 private:
     MONO_NOT_CTOR_COPYABLE( ValueSmootherModulatedTracked )
@@ -382,13 +382,13 @@ private:
 };
 
 //==============================================================================
-NOINLINE ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( ModulatedParameter*const base_ )
+COLD ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( ModulatedParameter*const base_ )
     :
     ValueSmootherModulated( base_ ),
     is_changed(true),
     last_out(0)
 {}
-NOINLINE ValueSmootherModulatedTracked::~ValueSmootherModulatedTracked() {}
+COLD ValueSmootherModulatedTracked::~ValueSmootherModulatedTracked() {}
 
 //==============================================================================
 inline float ValueSmootherModulatedTracked::tick( float current_modulation_in_percent_ ) noexcept
@@ -456,15 +456,15 @@ private:
     };
 
 public:
-    NOINLINE AmpSmoothBuffer();
-    NOINLINE ~AmpSmoothBuffer();
+    COLD AmpSmoothBuffer();
+    COLD ~AmpSmoothBuffer();
 };
 
 //==============================================================================
-NOINLINE AmpSmoothBuffer::AmpSmoothBuffer() : pos(0), sum(0) {
+COLD AmpSmoothBuffer::AmpSmoothBuffer() : pos(0), sum(0) {
     reset();
 }
-NOINLINE AmpSmoothBuffer::~AmpSmoothBuffer() {}
+COLD AmpSmoothBuffer::~AmpSmoothBuffer() {}
 
 //==============================================================================
 inline void AmpSmoothBuffer::add( float val_ ) noexcept {
@@ -585,19 +585,19 @@ float*restrict SINE_LOOKUP_TABLE;
 struct SIN_LOOKUP
 {
     juce_DeclareSingleton (SIN_LOOKUP,false)
-    NOINLINE SIN_LOOKUP();
-    NOINLINE ~SIN_LOOKUP();
+    COLD SIN_LOOKUP();
+    COLD ~SIN_LOOKUP();
 };
 juce_ImplementSingleton (SIN_LOOKUP)
 SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
 
-NOINLINE SIN_LOOKUP::SIN_LOOKUP()
+COLD SIN_LOOKUP::SIN_LOOKUP()
 {
     SINE_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
     for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
         SINE_LOOKUP_TABLE[i] = std::sin( double(i) / TABLESIZE_MULTI );
 }
-NOINLINE SIN_LOOKUP::~SIN_LOOKUP()
+COLD SIN_LOOKUP::~SIN_LOOKUP()
 {
     delete[] SINE_LOOKUP_TABLE;
 
@@ -610,7 +610,7 @@ static float inline lookup_sine(float x) noexcept
 }
 
 //==============================================================================
-NOINLINE DataBuffer::DataBuffer( int init_buffer_size_ ) noexcept
+COLD DataBuffer::DataBuffer( int init_buffer_size_ ) noexcept
 :
 size( init_buffer_size_ ),
 
@@ -629,10 +629,10 @@ size( init_buffer_size_ ),
 {
     mono_ParameterOwnerStore::getInstance()->data_buffer = this;
 }
-NOINLINE DataBuffer::~DataBuffer() noexcept {}
+COLD DataBuffer::~DataBuffer() noexcept {}
 
 //==============================================================================
-NOINLINE void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
+COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
 {
     if( size_ > size )
     {
@@ -690,12 +690,12 @@ private:
     inline void updateHarmonics( void ) noexcept;
 
 public:
-    NOINLINE mono_BlitSaw( float frequency = 220.0f );
-    NOINLINE ~mono_BlitSaw();
+    COLD mono_BlitSaw( float frequency = 220.0f );
+    COLD ~mono_BlitSaw();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_BlitSaw::mono_BlitSaw( float frequency )
+COLD mono_BlitSaw::mono_BlitSaw( float frequency )
     :
     last_tick_value(0),
     rate_(0),
@@ -710,7 +710,7 @@ NOINLINE mono_BlitSaw::mono_BlitSaw( float frequency )
     reset();
     setFrequency( frequency );
 }
-NOINLINE mono_BlitSaw::~mono_BlitSaw() {}
+COLD mono_BlitSaw::~mono_BlitSaw() {}
 
 // -----------------------------------------------------------------
 inline float mono_BlitSaw::lastOut( void ) const noexcept {
@@ -813,12 +813,12 @@ private:
     inline void updateHarmonics( void ) noexcept;
 
 public:
-    NOINLINE mono_BlitSquare( float frequency = 220.0f );
-    NOINLINE ~mono_BlitSquare();
+    COLD mono_BlitSquare( float frequency = 220.0f );
+    COLD ~mono_BlitSquare();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_BlitSquare::mono_BlitSquare( float frequency )
+COLD mono_BlitSquare::mono_BlitSquare( float frequency )
     :
     last_tick_value(0),
     rate_(0),
@@ -833,7 +833,7 @@ NOINLINE mono_BlitSquare::mono_BlitSquare( float frequency )
     setFrequency( frequency );
     reset();
 }
-NOINLINE mono_BlitSquare::~mono_BlitSquare()
+COLD mono_BlitSquare::~mono_BlitSquare()
 {
 }
 
@@ -942,15 +942,15 @@ public:
     inline void clearNewCycleState() noexcept;
 
 private:
-    NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
+    COLD void sample_rate_changed( double old_sr_ ) noexcept override;
 
 public:
-    NOINLINE mono_SineWave();
-    NOINLINE ~mono_SineWave();
+    COLD mono_SineWave();
+    COLD ~mono_SineWave();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_SineWave::mono_SineWave()
+COLD mono_SineWave::mono_SineWave()
     :
     last_tick_value(0),
     delta(0),
@@ -962,7 +962,7 @@ NOINLINE mono_SineWave::mono_SineWave()
     setFrequency(440);
 }
 
-NOINLINE mono_SineWave::~mono_SineWave() {}
+COLD mono_SineWave::~mono_SineWave() {}
 
 // -----------------------------------------------------------------
 inline float mono_SineWave::lastOut() const noexcept {
@@ -1003,7 +1003,7 @@ inline void mono_SineWave::clearNewCycleState() noexcept {
     _isNewCylce = false;
 }
 
-NOINLINE void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept {
+COLD void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept {
     setFrequency(frequency);
 }
 
@@ -1027,13 +1027,13 @@ public:
     inline float tick() noexcept;
 
 public:
-    NOINLINE mono_Noise();
-    NOINLINE ~mono_Noise();
+    COLD mono_Noise();
+    COLD ~mono_Noise();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_Noise::mono_Noise() : last_tick_value(0) {}
-NOINLINE mono_Noise::~mono_Noise() {}
+COLD mono_Noise::mono_Noise() : last_tick_value(0) {}
+COLD mono_Noise::~mono_Noise() {}
 
 // -----------------------------------------------------------------
 inline float mono_Noise::lastOut() const noexcept
@@ -1069,8 +1069,8 @@ public:
     float tick( float input ) noexcept;
 
 public:
-    NOINLINE mono_OnePole( float thePole = 0.9 );
-    NOINLINE ~mono_OnePole();
+    COLD mono_OnePole( float thePole = 0.9 );
+    COLD ~mono_OnePole();
 
 };
 
@@ -1145,12 +1145,12 @@ public:
     inline float tick() noexcept;
 
 public:
-    NOINLINE mono_Modulate();
-    NOINLINE ~mono_Modulate();
+    COLD mono_Modulate();
+    COLD ~mono_Modulate();
 };
 
 // -----------------------------------------------------------------
-NOINLINE mono_Modulate::mono_Modulate()
+COLD mono_Modulate::mono_Modulate()
     :
     vibrato(),
     filter(),
@@ -1169,7 +1169,7 @@ NOINLINE mono_Modulate::mono_Modulate()
     filter.setPole( 0.999 );
     filter.setGain( 0.05 );
 }
-NOINLINE mono_Modulate::~mono_Modulate() {}
+COLD mono_Modulate::~mono_Modulate() {}
 
 // -----------------------------------------------------------------
 inline float mono_Modulate::lastOut() const noexcept {
@@ -1240,19 +1240,19 @@ private:
 
 public:
     //==============================================================================
-    NOINLINE float get_current_amp() const noexcept;
+    float get_current_amp() const noexcept;
 
 private:
     //==============================================================================
     friend class MoniqueSynthesiserVoice;
-    NOINLINE LFO( int id_ ) noexcept;
-    NOINLINE ~LFO() noexcept;
+    COLD LFO( int id_ ) noexcept;
+    COLD ~LFO() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
 };
 
 //==============================================================================
-NOINLINE LFO::LFO( int id_ ) noexcept
+COLD LFO::LFO( int id_ ) noexcept
 :
 sine_generator(),
 
@@ -1266,7 +1266,7 @@ sine_generator(),
                runtime_info( GET_DATA_PTR( runtime_info ) )
 {
 }
-NOINLINE LFO::~LFO() noexcept {}
+COLD LFO::~LFO() noexcept {}
 
 //==============================================================================
 inline void LFO::process( int step_number_, int num_samples_ ) noexcept
@@ -1372,7 +1372,7 @@ void LFO::sync( int step_number_ ) noexcept
 }
 
 //==============================================================================
-NOINLINE float LFO::get_current_amp() const noexcept
+float LFO::get_current_amp() const noexcept
 {
     return lfo2amp(sine_generator.lastOut());
 }
@@ -1449,14 +1449,14 @@ public:
 private:
     //==============================================================================
     friend class MoniqueSynthesiserVoice;
-    NOINLINE OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
-    NOINLINE ~OSC() noexcept;
+    COLD OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
+    COLD ~OSC() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSC)
 };
 
 //==============================================================================
-NOINLINE OSC::OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept
+COLD OSC::OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept
 :
 id( id_ ),
     last_frequency( 0 ),
@@ -1494,7 +1494,7 @@ id( id_ ),
 {
     modulator.setVibratoGain(1);
 }
-NOINLINE OSC::~OSC() noexcept {}
+COLD OSC::~OSC() noexcept {}
 
 //==============================================================================
 inline void OSC::process(DataBuffer* data_buffer_,
@@ -1869,16 +1869,16 @@ public:
 
     //==============================================================================
     // FOR UI PURPOSES
-    NOINLINE float get_current_amp() const noexcept;
+    float get_current_amp() const noexcept;
 
     //==============================================================================
-    NOINLINE ValueEnvelope() noexcept;
-    NOINLINE ~ValueEnvelope() noexcept;
+    COLD ValueEnvelope() noexcept;
+    COLD ~ValueEnvelope() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueEnvelope)
 };
 
-NOINLINE ValueEnvelope::ValueEnvelope() noexcept
+COLD ValueEnvelope::ValueEnvelope() noexcept
 :
 samples_to_target_left(0),
                        current_value(0),
@@ -1889,7 +1889,7 @@ samples_to_target_left(0),
 {
 
 }
-NOINLINE ValueEnvelope::~ValueEnvelope() noexcept {}
+COLD ValueEnvelope::~ValueEnvelope() noexcept {}
 
 //==============================================================================
 #define EXP_MULTI 1
@@ -2085,14 +2085,14 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
-    NOINLINE ~ENV();
+    COLD ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
+    COLD ~ENV();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENV)
 };
 
 //==============================================================================
-NOINLINE ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
+COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     :
     envelop(),
     sustain_smoother( &env_data_->sustain ),
@@ -2103,7 +2103,7 @@ NOINLINE ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     synth_data( synth_data_ )
 {
 }
-NOINLINE ENV::~ENV() {}
+COLD ENV::~ENV() {}
 
 //==============================================================================
 inline void ENV::process( float*restrict dest_, const int num_samples_ ) noexcept
@@ -2267,15 +2267,15 @@ public:
         return current_value;
     }
 
-    NOINLINE AmpSmoother( float start_value_ = 0 ) noexcept;
-    NOINLINE ~AmpSmoother() noexcept;
+    COLD AmpSmoother( float start_value_ = 0 ) noexcept;
+    COLD ~AmpSmoother() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AmpSmoother)
 };
 
 //==============================================================================
 template< int smooth_samples >
-NOINLINE AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
+COLD AmpSmoother<smooth_samples>::AmpSmoother( float start_value_ ) noexcept
 :
 current_value(0),
               target_value(start_value_),
@@ -2283,7 +2283,7 @@ current_value(0),
               counter(0)
 {}
 template< int smooth_samples >
-NOINLINE AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
+COLD AmpSmoother<smooth_samples>::~AmpSmoother() noexcept {}
 
 //==============================================================================
 template< int smooth_samples >
@@ -2377,18 +2377,18 @@ private:
     inline void calc_coefficient() noexcept;
     inline void calc() noexcept;
 
-    NOINLINE void sample_rate_changed( double ) noexcept override;
+    COLD void sample_rate_changed( double ) noexcept override;
 
 public:
     //==============================================================================
-    NOINLINE AnalogFilter() noexcept;
-    NOINLINE ~AnalogFilter() noexcept;
+    COLD AnalogFilter() noexcept;
+    COLD ~AnalogFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogFilter)
 };
 
 //==============================================================================
-NOINLINE AnalogFilter::AnalogFilter() noexcept
+COLD AnalogFilter::AnalogFilter() noexcept
 :
 p(0),k(0),r(0),gain(0),
   y1(0),y2(0),y3(0),y4(0),
@@ -2398,7 +2398,7 @@ p(0),k(0),r(0),gain(0),
 {
     sample_rate_changed(0);
 }
-NOINLINE AnalogFilter::~AnalogFilter() noexcept {}
+COLD AnalogFilter::~AnalogFilter() noexcept {}
 
 //==============================================================================
 inline void AnalogFilter::reset() noexcept {
@@ -2521,14 +2521,14 @@ public:
     inline void reset() noexcept;
 
     //==============================================================================
-    NOINLINE DoubleAnalogFilter(bool create_smooth_filter = true) noexcept;
-    NOINLINE ~DoubleAnalogFilter() noexcept;
+    COLD DoubleAnalogFilter(bool create_smooth_filter = true) noexcept;
+    COLD ~DoubleAnalogFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DoubleAnalogFilter)
 };
 
 //==============================================================================
-NOINLINE DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter) noexcept
+COLD DoubleAnalogFilter::DoubleAnalogFilter(bool create_smooth_filter) noexcept
 :
 flt_1(),
       flt_2(),
@@ -2543,7 +2543,7 @@ flt_1(),
     if( create_smooth_filter )
         smooth_filter = new DoubleAnalogFilter(false);
 }
-NOINLINE DoubleAnalogFilter::~DoubleAnalogFilter() noexcept
+COLD DoubleAnalogFilter::~DoubleAnalogFilter() noexcept
 {
     if( smooth_filter )
         delete smooth_filter;
@@ -2592,7 +2592,7 @@ inline void AnalogFilter::copy_state_from( const AnalogFilter& other_ ) noexcept
     y3 = other_.y3;
     y4 = other_.y4;
 }
-NOINLINE void AnalogFilter::sample_rate_changed(double) noexcept
+COLD void AnalogFilter::sample_rate_changed(double) noexcept
 {
     calc_coefficient();
     calc();
@@ -2873,20 +2873,20 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE EnvelopeFollower() noexcept;
-    NOINLINE ~EnvelopeFollower() noexcept;
+    COLD EnvelopeFollower() noexcept;
+    COLD ~EnvelopeFollower() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopeFollower)
 };
 
 //==============================================================================
-NOINLINE EnvelopeFollower::EnvelopeFollower() noexcept
+COLD EnvelopeFollower::EnvelopeFollower() noexcept
 :
 envelope (0),
          attack (1),
          release (1)
 {}
-NOINLINE EnvelopeFollower::~EnvelopeFollower() noexcept {}
+COLD EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
 //==============================================================================
 inline void EnvelopeFollower::processEnvelope ( const float*restrict input_buffer_, float*restrict output_buffer_, int num_samples_ ) noexcept
@@ -2984,14 +2984,14 @@ private:
 
 public:
     //==============================================================================
-    NOINLINE FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
-    NOINLINE ~FilterProcessor() noexcept;
+    COLD FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
+    COLD ~FilterProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterProcessor)
 };
 
 //==============================================================================
-NOINLINE FilterProcessor::FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept
+COLD FilterProcessor::FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept
 :
 env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
      input_envs(),
@@ -3017,7 +3017,7 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
         input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_env_datas[i] ) );
     }
 }
-NOINLINE FilterProcessor::~FilterProcessor() noexcept {}
+COLD FilterProcessor::~FilterProcessor() noexcept {}
 
 //==============================================================================
 inline void FilterProcessor::start_attack() noexcept
@@ -3870,8 +3870,8 @@ public:
         counter = 0;
     }
 
-    NOINLINE SwitchSmoother() noexcept;
-    NOINLINE ~SwitchSmoother() noexcept;
+    COLD SwitchSmoother() noexcept;
+    COLD ~SwitchSmoother() noexcept;
 
 private:
     //MONO_NOT_CTOR_COPYABLE( SwitchSmoother )
@@ -3879,7 +3879,7 @@ private:
 };
 
 //==============================================================================
-NOINLINE SwitchSmoother::SwitchSmoother() noexcept
+COLD SwitchSmoother::SwitchSmoother() noexcept
 :
 current_value( 0 ),
                target_value( 0 ),
@@ -3888,7 +3888,7 @@ current_value( 0 ),
                state(true)
 {}
 
-NOINLINE SwitchSmoother::~SwitchSmoother() noexcept {}
+COLD SwitchSmoother::~SwitchSmoother() noexcept {}
 
 //==============================================================================
 
@@ -3922,16 +3922,16 @@ public:
     inline void process( int num_samples_ ) noexcept;
 
     //==============================================================================
-    NOINLINE EQProcessor( MoniqueSynthData* synth_data_ ) noexcept;
-    NOINLINE ~EQProcessor() noexcept;
+    COLD EQProcessor( MoniqueSynthData* synth_data_ ) noexcept;
+    COLD ~EQProcessor() noexcept;
 
-    NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
+    COLD void sample_rate_changed( double old_sr_ ) noexcept override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessor)
 };
 
 //==============================================================================
-NOINLINE EQProcessor::EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
+COLD EQProcessor::EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
 :
 velocity_smoother
 {
@@ -3976,7 +3976,7 @@ amp2velocity_smoother(),
 
     sample_rate_changed(0);
 }
-NOINLINE EQProcessor::~EQProcessor() noexcept {}
+COLD EQProcessor::~EQProcessor() noexcept {}
 
 //==============================================================================
 inline void EQProcessor::start_attack() noexcept
@@ -4227,18 +4227,18 @@ public:
     inline void reset() noexcept;
 
 private:
-    NOINLINE void sample_rate_changed( double ) noexcept override;
+    COLD void sample_rate_changed( double ) noexcept override;
 
 public:
     //==============================================================================
-    NOINLINE Chorus() noexcept;
-    NOINLINE ~Chorus() noexcept;
+    COLD Chorus() noexcept;
+    COLD ~Chorus() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
 };
 
 //==============================================================================
-NOINLINE Chorus::Chorus() noexcept :
+COLD Chorus::Chorus() noexcept :
 buffer_size(0)
 {
     index = 0;
@@ -4248,7 +4248,7 @@ buffer_size(0)
 
     sample_rate_changed(0);
 }
-NOINLINE Chorus::~Chorus() noexcept
+COLD Chorus::~Chorus() noexcept
 {
     delete [] buffer;
 }
@@ -4295,7 +4295,7 @@ inline void Chorus::reset() noexcept
     sample_rate_changed(0);
 }
 //==============================================================================
-NOINLINE void Chorus::sample_rate_changed( double ) noexcept {
+COLD void Chorus::sample_rate_changed( double ) noexcept {
     buffer_size = sample_rate/10;
     if( buffer )
         delete[] buffer;
@@ -4325,24 +4325,24 @@ class CombFilter
 public:
     inline float process (const float input, const float feedbackLevel) noexcept;
 
-    NOINLINE void setSize (const int size);
-    NOINLINE void clear() noexcept;
+    COLD void setSize (const int size);
+    COLD void clear() noexcept;
 
     //==============================================================================
-    NOINLINE CombFilter() noexcept;
-    NOINLINE ~CombFilter() noexcept;
+    COLD CombFilter() noexcept;
+    COLD ~CombFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CombFilter)
 };
 
 //==============================================================================
-NOINLINE CombFilter::CombFilter() noexcept
+COLD CombFilter::CombFilter() noexcept
 :
 last(0),
      bufferSize (0),
      bufferIndex(0)
 {}
-NOINLINE CombFilter::~CombFilter() noexcept {}
+COLD CombFilter::~CombFilter() noexcept {}
 
 //==============================================================================
 inline float CombFilter::process (const float input, const float feedbackLevel) noexcept
@@ -4361,7 +4361,7 @@ inline float CombFilter::process (const float input, const float feedbackLevel) 
 }
 
 //==============================================================================
-NOINLINE void CombFilter::setSize (const int size)
+COLD void CombFilter::setSize (const int size)
 {
     if (size != bufferSize)
     {
@@ -4372,7 +4372,7 @@ NOINLINE void CombFilter::setSize (const int size)
 
     clear();
 }
-NOINLINE void CombFilter::clear() noexcept
+COLD void CombFilter::clear() noexcept
 {
     last = 0;
     buffer.clear ((size_t) bufferSize);
@@ -4388,23 +4388,23 @@ class AllPassFilter
 public:
     inline float process (const float input) noexcept;
 
-    NOINLINE void setSize (const int size);
-    NOINLINE void clear() noexcept;
+    COLD void setSize (const int size);
+    COLD void clear() noexcept;
 
     //==============================================================================
-    NOINLINE AllPassFilter() noexcept;
-    NOINLINE ~AllPassFilter() noexcept;
+    COLD AllPassFilter() noexcept;
+    COLD ~AllPassFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
 };
 
 //==============================================================================
-NOINLINE AllPassFilter::AllPassFilter() noexcept
+COLD AllPassFilter::AllPassFilter() noexcept
 :
 bufferSize(0),
            bufferIndex(0)
 {}
-NOINLINE AllPassFilter::~AllPassFilter() noexcept {}
+COLD AllPassFilter::~AllPassFilter() noexcept {}
 
 //==============================================================================
 inline float AllPassFilter::process (const float input) noexcept
@@ -4419,7 +4419,7 @@ inline float AllPassFilter::process (const float input) noexcept
 }
 
 //==============================================================================
-NOINLINE void AllPassFilter::setSize (const int size)
+COLD void AllPassFilter::setSize (const int size)
 {
     if (size != bufferSize)
     {
@@ -4430,7 +4430,7 @@ NOINLINE void AllPassFilter::setSize (const int size)
 
     clear();
 }
-NOINLINE void AllPassFilter::clear() noexcept
+COLD void AllPassFilter::clear() noexcept
 {
     buffer.clear ((size_t) bufferSize);
 }
@@ -4448,17 +4448,17 @@ public:
     inline float getLastValue() noexcept;
     inline void setValue (float newValue) noexcept;
 
-    NOINLINE void reset (float sampleRate, float fadeLengthSeconds) noexcept;
+    COLD void reset (float sampleRate, float fadeLengthSeconds) noexcept;
 
     //==============================================================================
-    NOINLINE LinearSmoothedValue() noexcept;
-    NOINLINE ~LinearSmoothedValue() noexcept;
+    COLD LinearSmoothedValue() noexcept;
+    COLD ~LinearSmoothedValue() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoothedValue)
 };
 
 //==============================================================================
-NOINLINE LinearSmoothedValue::LinearSmoothedValue() noexcept
+COLD LinearSmoothedValue::LinearSmoothedValue() noexcept
 :
 currentValue(0),
              target(0),
@@ -4467,7 +4467,7 @@ currentValue(0),
              stepsToTarget(0)
 {}
 
-NOINLINE LinearSmoothedValue::~LinearSmoothedValue() noexcept {}
+COLD LinearSmoothedValue::~LinearSmoothedValue() noexcept {}
 
 //==============================================================================
 inline float LinearSmoothedValue::getNextValue() noexcept
@@ -4507,7 +4507,7 @@ inline void LinearSmoothedValue::setValue (float newValue) noexcept
 }
 
 //==============================================================================
-NOINLINE void LinearSmoothedValue::reset (float sampleRate, float fadeLengthSeconds) noexcept
+COLD void LinearSmoothedValue::reset (float sampleRate, float fadeLengthSeconds) noexcept
 {
     stepsToTarget = mono_floor (fadeLengthSeconds * sampleRate);
     currentValue = target;
@@ -4528,21 +4528,21 @@ struct ReverbParameters
 private:
     //==============================================================================
     friend class mono_Reverb;
-    NOINLINE ReverbParameters() noexcept;
-    NOINLINE ~ReverbParameters() noexcept;
+    COLD ReverbParameters() noexcept;
+    COLD ~ReverbParameters() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbParameters)
 };
 
 //==============================================================================
-NOINLINE ReverbParameters::ReverbParameters() noexcept
+COLD ReverbParameters::ReverbParameters() noexcept
 :
 roomSize   (0.5f),
            wetLevel   (0.33f),
            dryLevel   (0.4f),
            width      (1.0f)
 {}
-NOINLINE ReverbParameters::~ReverbParameters() noexcept {}
+COLD ReverbParameters::~ReverbParameters() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -4565,23 +4565,23 @@ public:
     inline ReverbParameters& get_parameters() noexcept;
     inline void update_parameters() noexcept;
 
-    NOINLINE void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    NOINLINE void reset() noexcept;
+    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    COLD void reset() noexcept;
 
     //==============================================================================
-    NOINLINE mono_Reverb() noexcept;
-    NOINLINE ~mono_Reverb() noexcept;
+    COLD mono_Reverb() noexcept;
+    COLD ~mono_Reverb() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Reverb)
 };
 
 //==============================================================================
-NOINLINE mono_Reverb::mono_Reverb() noexcept
+COLD mono_Reverb::mono_Reverb() noexcept
 {
     update_parameters();
     sample_rate_changed(0);
 }
-NOINLINE mono_Reverb::~mono_Reverb() noexcept {}
+COLD mono_Reverb::~mono_Reverb() noexcept {}
 
 //==============================================================================
 inline float mono_Reverb::processSingleSampleRaw ( float in ) noexcept
@@ -4621,7 +4621,7 @@ inline void mono_Reverb::update_parameters() noexcept
 }
 
 //==============================================================================
-NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
+COLD void mono_Reverb::sample_rate_changed (double) noexcept
 {
     static const int combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
     static const int allPassTunings[] = { 556, 441, 341, 225 };
@@ -4646,7 +4646,7 @@ NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
     wetGain1.reset (sample_rate, smoothTime);
     wetGain2.reset (sample_rate, smoothTime);
 }
-NOINLINE void mono_Reverb::reset() noexcept
+COLD void mono_Reverb::reset() noexcept
 {
     for (int i = 0; i < numCombs; ++i)
         comb[i].clear();
@@ -4747,14 +4747,14 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept;
-    NOINLINE ~FXProcessor() noexcept;
+    COLD FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept;
+    COLD ~FXProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
 };
 
 // -----------------------------------------------------------------
-NOINLINE FXProcessor::FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
+COLD FXProcessor::FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
 :
 reverb_l(),
          reverb_r(),
@@ -4784,7 +4784,7 @@ reverb_l(),
     std::cout << "MONIQUE: init FX" << std::endl;
 }
 
-NOINLINE FXProcessor::~FXProcessor() noexcept {}
+COLD FXProcessor::~FXProcessor() noexcept {}
 
 // -----------------------------------------------------------------
 inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept
@@ -5112,14 +5112,14 @@ public:
     inline void reset() noexcept;
 
     //==============================================================================
-    NOINLINE ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept;
-    NOINLINE ~ArpSequencer() noexcept;
+    COLD ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept;
+    COLD ~ArpSequencer() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArpSequencer)
 };
 
 //==============================================================================
-NOINLINE ArpSequencer::ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
+COLD ArpSequencer::ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
 :
 info(info_),
      data(data_),
@@ -5143,7 +5143,7 @@ info(info_),
     std::cout << "MONIQUE: init SEQUENCER" << std::endl;
 }
 
-NOINLINE ArpSequencer::~ArpSequencer() noexcept {}
+COLD ArpSequencer::~ArpSequencer() noexcept {}
 
 //==============================================================================
 // RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
@@ -5254,7 +5254,7 @@ inline void ArpSequencer::reset() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept
+COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept
 :
 audio_processor( audio_processor_ ),
 synth_data( synth_data_ ),
@@ -5296,7 +5296,7 @@ an_arp_note_is_already_running(false)
         filter_processors[i] = new FilterProcessor( synth_data_, i );
     }
 }
-NOINLINE MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
+COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 {
     mono_ParameterOwnerStore::getInstance()->voice = nullptr;
 
@@ -5581,8 +5581,8 @@ float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
-NOINLINE MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
+COLD MoniqueSynthesiserSound::MoniqueSynthesiserSound() noexcept {}
+COLD MoniqueSynthesiserSound::~MoniqueSynthesiserSound() noexcept {}
 
 //==============================================================================
 bool MoniqueSynthesiserSound::appliesToNote(int)
@@ -5603,13 +5603,13 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept
+COLD mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept
 :
 ui_env(nullptr),
 ui_env_preset_data(nullptr)
 {}
 
-NOINLINE mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
+COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 {
     if( ui_env )
     {

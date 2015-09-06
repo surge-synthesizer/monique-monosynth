@@ -12,8 +12,8 @@ class MoniqueSynthesiserSound : public SynthesiserSound
     bool appliesToChannel (int) override;
 
 public:
-    NOINLINE MoniqueSynthesiserSound() noexcept;
-    NOINLINE ~MoniqueSynthesiserSound() noexcept;
+    COLD MoniqueSynthesiserSound() noexcept;
+    COLD ~MoniqueSynthesiserSound() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserSound)
 };
@@ -89,8 +89,8 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
-    NOINLINE ~MoniqueSynthesiserVoice() noexcept;
+    COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
+    COLD ~MoniqueSynthesiserVoice() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)
 };

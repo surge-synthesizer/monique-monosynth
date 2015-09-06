@@ -24,11 +24,11 @@ class Monique_Ui_Refresher : public Timer
 
 private:
     friend class Monique_Ui_Refreshable;
-    NOINLINE void add(Monique_Ui_Refreshable*const) noexcept;
-    NOINLINE void remove(Monique_Ui_Refreshable*const) noexcept;
+    COLD void add(Monique_Ui_Refreshable*const) noexcept;
+    COLD void remove(Monique_Ui_Refreshable*const) noexcept;
 
 public:
-    NOINLINE void remove_all() noexcept;
+    COLD void remove_all() noexcept;
 
 private:
     Monique_Ui_Refresher() noexcept;

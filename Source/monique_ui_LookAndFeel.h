@@ -57,7 +57,7 @@ struct ComponentColours {
         signal_lines( 4278251775 )
     {}
 
-    NOINLINE void read_from( XmlElement*xml_ ) {
+    COLD void read_from( XmlElement*xml_ ) {
         XmlElement* xml = xml_->getChildByName("COLOURS");
         if( xml )
         {
@@ -74,7 +74,7 @@ struct ComponentColours {
                   */
         }
     }
-    NOINLINE void save_to( XmlElement*xml_ ) {
+    COLD void save_to( XmlElement*xml_ ) {
         /*
           XmlElement* xml = xml_->createNewChildElement("COLOURS");
           xml->setAttribute( "slider_track_colour", String( slider_track_colour.getARGB() ) );

@@ -625,11 +625,11 @@ void Monique_Ui_AmpPainter::refresh_buttons()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0) {}
-NOINLINE EndlessBuffer::~EndlessBuffer() {}
+COLD EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0) {}
+COLD EndlessBuffer::~EndlessBuffer() {}
 
 //==============================================================================
-NOINLINE void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
+COLD void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
     ScopedLock locked(writer_lock);
     ScopedLock locked2(reader_lock);
@@ -637,7 +637,7 @@ NOINLINE void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcep
     current_size = sample_rate * 2 + block_size;
     sample_buffer.setSize( current_size );
 }
-NOINLINE void EndlessBuffer::block_size_changed() noexcept
+COLD void EndlessBuffer::block_size_changed() noexcept
 {
     sample_rate_changed(0);
 }
@@ -671,11 +671,11 @@ inline void EndlessBuffer::read_unlock() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {}
-NOINLINE EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
+COLD EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {}
+COLD EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
 
 //==============================================================================
-NOINLINE void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
+COLD void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
     ScopedLock locked(writer_lock);
     ScopedLock locked2(reader_lock);
@@ -684,7 +684,7 @@ NOINLINE void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) n
     sample_buffer.setSize( current_size );
     switch_buffer.setSize( current_size );
 }
-NOINLINE void EndlessSwitchBuffer::block_size_changed() noexcept
+COLD void EndlessSwitchBuffer::block_size_changed() noexcept
 {
     sample_rate_changed(0);
 }

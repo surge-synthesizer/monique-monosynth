@@ -43,13 +43,13 @@ class DragPad : public Component
     void mouseDrag(const MouseEvent& event) override;
 
 public:
-    NOINLINE DragPad( Monique_Ui_DragPad*const parent_ );
-    NOINLINE ~DragPad();
+    COLD DragPad( Monique_Ui_DragPad*const parent_ );
+    COLD ~DragPad();
 };
 
 //==============================================================================
-NOINLINE DragPad::DragPad( Monique_Ui_DragPad*const parent_ ) : parent( parent_ ) {}
-NOINLINE DragPad::~DragPad() {}
+COLD DragPad::DragPad( Monique_Ui_DragPad*const parent_ ) : parent( parent_ ) {}
+COLD DragPad::~DragPad() {}
 
 //==============================================================================
 void DragPad::mouseDoubleClick (const MouseEvent&)

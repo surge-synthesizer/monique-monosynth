@@ -17,15 +17,15 @@ void Monique_Ui_Refresher::timerCallback()
     }
 }
 
-NOINLINE void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept {
+COLD void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.add(r_);
 }
-NOINLINE void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable*const r_) noexcept {
+COLD void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.removeFirstMatchingValue(r_);
 }
-NOINLINE void Monique_Ui_Refresher::remove_all() noexcept {
+COLD void Monique_Ui_Refresher::remove_all() noexcept {
     ScopedLock locked(lock);
     refreshables.clearQuick();
 }

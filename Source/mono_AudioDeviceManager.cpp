@@ -192,7 +192,7 @@ void mono_AudioDeviceManager::open_port(const String& port_ident_name_, const St
         }
     }
 }
-NOINLINE void mono_AudioDeviceManager::save()  const noexcept
+COLD void mono_AudioDeviceManager::save()  const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
@@ -220,7 +220,7 @@ NOINLINE void mono_AudioDeviceManager::save()  const noexcept
         xml.writeToFile(midi_file,"");
     }
 }
-NOINLINE void mono_AudioDeviceManager::read() noexcept
+COLD void mono_AudioDeviceManager::read() noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
 #ifdef IS_PLUGIN

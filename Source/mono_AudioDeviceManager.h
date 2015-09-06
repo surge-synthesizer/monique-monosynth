@@ -41,7 +41,7 @@ public:
     const String port_ident_name;
     const String name;
 
-    NOINLINE MidiInputWrapper( MidiInput*const midi_output_,
+    COLD MidiInputWrapper( MidiInput*const midi_output_,
                                const String& port_ident_name_,
                                const String& device_name_ )
         : _midi_input( midi_output_ ),
@@ -168,7 +168,7 @@ public:
     const String port_ident_name;
     const String name;
 
-    NOINLINE MidiOutputWrapper( MidiOutput*const midi_output_,
+    COLD MidiOutputWrapper( MidiOutput*const midi_output_,
                                 const String& port_ident_name_,
                                 const String& device_name_ )
         : _midi_output( midi_output_ ),
@@ -356,8 +356,8 @@ protected:
     }
 
 public:
-    NOINLINE void save() const noexcept;
-    NOINLINE void read() noexcept;
+    COLD void save() const noexcept;
+    COLD void read() noexcept;
 };
 
 #endif  // MONO_AUDIODEVICEMANAGER_H_INCLUDED

@@ -13,7 +13,7 @@ static inline float positive( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE RuntimeListener::RuntimeListener() noexcept :
+COLD RuntimeListener::RuntimeListener() noexcept :
 sample_rate(RuntimeNotifyer::getInstance()->sample_rate),
             sample_rate_1ths(RuntimeNotifyer::getInstance()->sample_rate_1ths),
             block_size(RuntimeNotifyer::getInstance()->block_size)
@@ -22,40 +22,40 @@ sample_rate(RuntimeNotifyer::getInstance()->sample_rate),
     RuntimeNotifyer::getInstance()->listeners.minimiseStorageOverheads();
 }
 
-NOINLINE RuntimeListener::~RuntimeListener() noexcept
+COLD RuntimeListener::~RuntimeListener() noexcept
 {
     RuntimeNotifyer::getInstance()->listeners.removeFirstMatchingValue( this );
 }
 
 //==============================================================================
-NOINLINE void RuntimeListener::set_sample_rate( double sr_ ) noexcept
+COLD void RuntimeListener::set_sample_rate( double sr_ ) noexcept
 {
     sample_rate = sr_;
     sample_rate_1ths = 1.0f/sample_rate;
 };
-NOINLINE void RuntimeListener::set_block_size( int bs_ ) noexcept { block_size = bs_; };
-NOINLINE void RuntimeListener::sample_rate_changed( double /* old_sr_ */ ) noexcept {};
-NOINLINE void RuntimeListener::block_size_changed() noexcept {};
+COLD void RuntimeListener::set_block_size( int bs_ ) noexcept { block_size = bs_; };
+COLD void RuntimeListener::sample_rate_changed( double /* old_sr_ */ ) noexcept {};
+COLD void RuntimeListener::block_size_changed() noexcept {};
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 juce_ImplementSingleton (RuntimeNotifyer)
 
-NOINLINE RuntimeNotifyer::RuntimeNotifyer() noexcept :
+COLD RuntimeNotifyer::RuntimeNotifyer() noexcept :
 sample_rate(44100),
             sample_rate_1ths( 1.0/44100),
             block_size(256)
 {
 }
 
-NOINLINE RuntimeNotifyer::~RuntimeNotifyer() noexcept
+COLD RuntimeNotifyer::~RuntimeNotifyer() noexcept
 {
     clearSingletonInstance();
 }
 
 //==============================================================================
-NOINLINE void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
+COLD void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
 {
     double old_sr = sample_rate;
     sample_rate = sr_;
@@ -66,7 +66,7 @@ NOINLINE void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
         listeners[i]->sample_rate_changed(old_sr);
     }
 };
-NOINLINE void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
+COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 {
     block_size = bs_;
     for( int i = 0 ; i != listeners.size() ; ++i ) {
@@ -87,7 +87,7 @@ int RuntimeNotifyer::get_block_size() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE RuntimeInfo::RuntimeInfo() noexcept
+COLD RuntimeInfo::RuntimeInfo() noexcept
 :
 samples_since_start(0),
                     bpm(120)
@@ -101,13 +101,13 @@ samples_since_start(0),
 
     std::cout << "MONIQUE: init RTI" << std::endl;
 }
-NOINLINE RuntimeInfo::~RuntimeInfo() noexcept {}
+COLD RuntimeInfo::~RuntimeInfo() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 #define LFO_NAME "LFO"
-NOINLINE LFOData::LFOData( int id_ ) noexcept
+COLD LFOData::LFOData( int id_ ) noexcept
 :
 speed
 (
@@ -119,7 +119,7 @@ speed
     generate_short_human_name(LFO_NAME,id_,"speed")
 )
 {}
-NOINLINE LFOData::~LFOData() noexcept {}
+COLD LFOData::~LFOData() noexcept {}
 
 //==============================================================================
 static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
@@ -135,7 +135,7 @@ static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Param
 //==============================================================================
 //==============================================================================
 #define OSC_NAME "OSC"
-NOINLINE OSCData::OSCData( int id_ ) noexcept
+COLD OSCData::OSCData( int id_ ) noexcept
 :
 wave
 (
@@ -222,7 +222,7 @@ osc_switch
 
 last_modulation_value( 0 )
 {}
-NOINLINE OSCData::~OSCData() noexcept {}
+COLD OSCData::~OSCData() noexcept {}
 
 //==============================================================================
 static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
@@ -257,7 +257,7 @@ static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Param
 //==============================================================================
 //==============================================================================
 #define ENV_NAME "ENV"
-NOINLINE ENVData::ENVData( int id_ ) noexcept
+COLD ENVData::ENVData( int id_ ) noexcept
 :
 id( id_ ),
 
@@ -327,7 +327,7 @@ max_release_time
 )
 {
 }
-NOINLINE ENVData::~ENVData() noexcept {}
+COLD ENVData::~ENVData() noexcept {}
 
 //==============================================================================
 static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
@@ -359,7 +359,7 @@ static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter
 //==============================================================================
 //==============================================================================
 #define ENV_PRESET_DEF_NAME "ENVPD"
-NOINLINE ENVPresetDef::ENVPresetDef ( int id_ ) noexcept
+COLD ENVPresetDef::ENVPresetDef ( int id_ ) noexcept
 :
 attack_1
 (
@@ -496,7 +496,7 @@ release_4
     generate_short_human_name(ENV_PRESET_DEF_NAME,"release_4")
 )
 {}
-NOINLINE ENVPresetDef::~ENVPresetDef() noexcept {}
+COLD ENVPresetDef::~ENVPresetDef() noexcept {}
 
 //==============================================================================
 static inline void copy( ENVPresetDef* dest_, const ENVPresetDef* src_ ) noexcept
@@ -542,7 +542,7 @@ static inline void collect_saveable_parameters( ENVPresetDef* data_, Array< Para
 //==============================================================================
 //==============================================================================
 #define ENV_PRESET_NAME "ENVP"
-NOINLINE ENVPresetData::ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept
+COLD ENVPresetData::ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept
 :
 ENVData( id_ ),
 def( def_ ),
@@ -581,7 +581,7 @@ state
 
     update_adr_values();
 }
-NOINLINE ENVPresetData::~ENVPresetData() noexcept
+COLD ENVPresetData::~ENVPresetData() noexcept
 {
     def->attack_1.remove_listener( this );
     def->attack_2.remove_listener( this );
@@ -741,7 +741,7 @@ float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) no
 //==============================================================================
 //==============================================================================
 #define FILTER_NAME "FLT"
-NOINLINE FilterData::FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept
+COLD FilterData::FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept
 :
 // ----
 filter_type
@@ -915,7 +915,7 @@ env_data( new ENVData( id_ ) )
     }
 }
 
-NOINLINE FilterData::~FilterData() noexcept
+COLD FilterData::~FilterData() noexcept
 {
     delete env_data;
 
@@ -1010,7 +1010,7 @@ void FilterData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 //==============================================================================
 //==============================================================================
 #define ARP_NAME "ARP"
-NOINLINE ArpSequencerData::ArpSequencerData( int id_ ) noexcept
+COLD ArpSequencerData::ArpSequencerData( int id_ ) noexcept
 :
 is_on
 (
@@ -1078,7 +1078,7 @@ speed_multi
 )
 {}
 
-NOINLINE ArpSequencerData::~ArpSequencerData() noexcept {}
+COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 
 //==============================================================================
 static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ ) noexcept
@@ -1207,7 +1207,7 @@ double ArpSequencerData::speed_multi_to_value( int speed_multi_ ) noexcept
 //==============================================================================
 //==============================================================================
 #define EQ_NAME "EQ"
-NOINLINE EQData::EQData( int id_, ENVPresetDef*const def_ ) noexcept
+COLD EQData::EQData( int id_, ENVPresetDef*const def_ ) noexcept
 :
 velocity
 (
@@ -1238,7 +1238,7 @@ hold
         velocity[band_id].register_always_listener(this);
     }
 }
-NOINLINE EQData::~EQData() noexcept
+COLD EQData::~EQData() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
@@ -1293,7 +1293,7 @@ void EQData::parameter_value_changed_always_notification( Parameter* param_ ) no
 //==============================================================================
 //==============================================================================
 #define REVERB_NAME "VERB"
-NOINLINE ReverbData::ReverbData( int id_ ) noexcept
+COLD ReverbData::ReverbData( int id_ ) noexcept
 :
 room
 (
@@ -1321,7 +1321,7 @@ width
 )
 {}
 
-NOINLINE ReverbData::~ReverbData() noexcept {}
+COLD ReverbData::~ReverbData() noexcept {}
 
 //==============================================================================
 static inline void copy( ReverbData* dest_, const ReverbData* src_ ) noexcept
@@ -1341,7 +1341,7 @@ static inline void collect_saveable_parameters( ReverbData* data_, Array< Parame
 //==============================================================================
 //==============================================================================
 #define CHORUS_NAME "CHR"
-NOINLINE ChorusData::ChorusData( int id_, ENVPresetDef*const def_ ) noexcept
+COLD ChorusData::ChorusData( int id_, ENVPresetDef*const def_ ) noexcept
 :
 modulation
 (
@@ -1363,7 +1363,7 @@ modulation_env_data( new ENVPresetData( CHORUS_ENV_ID_OFFSET, def_ ) )
 {
     modulation.register_always_listener(this);
 }
-NOINLINE ChorusData::~ChorusData() noexcept
+COLD ChorusData::~ChorusData() noexcept
 {
     delete modulation_env_data;
 }
@@ -1438,21 +1438,21 @@ private:
 public:
     //==========================================================================
     // INIT
-    NOINLINE MorphGroup() noexcept;
-    NOINLINE ~MorphGroup() noexcept;
+    COLD MorphGroup() noexcept;
+    COLD ~MorphGroup() noexcept;
 
-    NOINLINE void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
-    NOINLINE void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
-    NOINLINE void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
+    COLD void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
+    COLD void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
+    COLD void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
 
-    NOINLINE void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
+    COLD void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
                                float current_morph_amount_, bool current_switch_state_ ) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
 };
 
 //==============================================================================
-NOINLINE MorphGroup::MorphGroup() noexcept
+COLD MorphGroup::MorphGroup() noexcept
 :
 left_morph_source( nullptr ),
                    right_morph_source( nullptr ),
@@ -1461,17 +1461,17 @@ left_morph_source( nullptr ),
                    current_callbacks(-1)
 {}
 
-NOINLINE MorphGroup::~MorphGroup() noexcept {}
+COLD MorphGroup::~MorphGroup() noexcept {}
 
 //==============================================================================
-NOINLINE void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) noexcept
+COLD void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) noexcept
 {
     params.add( param_ );
 
     if( is_master_ )
         param_->register_listener(this);
 }
-NOINLINE void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept
+COLD void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept
 {
     /*
     switch_bool_params.add( param_ );
@@ -1480,7 +1480,7 @@ NOINLINE void MorphGroup::register_switch_parameter( BoolParameter* param_, bool
       param_->register_listener(this);
     */
 }
-NOINLINE void MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept
+COLD void MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept
 {
     /*
     switch_int_params.add( param_ );
@@ -1489,7 +1489,7 @@ NOINLINE void MorphGroup::register_switch_parameter( IntParameter* param_, bool 
         param_->register_listener(this);
     */
 }
-NOINLINE void MorphGroup::set_sources( MorphGroup* left_source_, MorphGroup* right_source_, float current_morph_amount_, bool current_switch_state_ ) noexcept
+COLD void MorphGroup::set_sources( MorphGroup* left_source_, MorphGroup* right_source_, float current_morph_amount_, bool current_switch_state_ ) noexcept
 {
     last_power_of_right = current_morph_amount_;
     current_switch = current_switch_state_;
@@ -1750,7 +1750,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 //==============================================================================
 #define SYNTH_DATA_NAME "SD"
-NOINLINE MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type ) noexcept
+COLD MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type ) noexcept
 :
 id( data_type ),
 
@@ -2113,7 +2113,7 @@ error_string("ERROR")
         refresh_banks_and_programms();
     }
 }
-NOINLINE MoniqueSynthData::~MoniqueSynthData() noexcept
+COLD MoniqueSynthData::~MoniqueSynthData() noexcept
 {
     eq_data = nullptr;
     arp_sequencer_data = nullptr;
@@ -2217,7 +2217,7 @@ static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< 
         params_.add( &data_->morhp_switch_states[morpher_id] );
     }
 }
-NOINLINE void MoniqueSynthData::colect_saveable_parameters() noexcept
+COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 {
     // on top to be the first on load and get the right update order (bit hacky, but ok ;--)
     collect_saveable_parameters( env_preset_def, saveable_parameters );
@@ -2251,7 +2251,7 @@ NOINLINE void MoniqueSynthData::colect_saveable_parameters() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
+COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
     {
         // OSC'S
@@ -2785,7 +2785,7 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE void MoniqueSynthData::refresh_banks_and_programms() noexcept
+void MoniqueSynthData::refresh_banks_and_programms() noexcept
 {
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
@@ -2807,7 +2807,7 @@ NOINLINE void MoniqueSynthData::refresh_banks_and_programms() noexcept
 
     synth_data.calc_current_program_abs();
 }
-NOINLINE void MoniqueSynthData::calc_current_program_abs() noexcept
+void MoniqueSynthData::calc_current_program_abs() noexcept
 {
     if( current_program == -1 )
     {
@@ -2828,7 +2828,7 @@ NOINLINE void MoniqueSynthData::calc_current_program_abs() noexcept
             current_program_abs += bank_size;
     }
 }
-NOINLINE void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
+void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
 {
     banks_.add("A");
     banks_.add("B");
@@ -2888,7 +2888,7 @@ static inline void sort_by_date( Array< File >& file_array_ )
     }
 }
 */
-NOINLINE void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
+void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
 {
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
@@ -2905,29 +2905,29 @@ NOINLINE void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray
 }
 
 //==============================================================================
-NOINLINE const StringArray& MoniqueSynthData::get_banks() noexcept
+const StringArray& MoniqueSynthData::get_banks() noexcept
 {
     return GET_DATA( synth_data ).banks;
 }
-NOINLINE const StringArray& MoniqueSynthData::get_programms( int bank_id_ ) noexcept
+const StringArray& MoniqueSynthData::get_programms( int bank_id_ ) noexcept
 {
     return GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id_);
 }
 
 // ==============================================================================
-NOINLINE void MoniqueSynthData::set_current_bank( int bank_index_ ) noexcept
+void MoniqueSynthData::set_current_bank( int bank_index_ ) noexcept
 {
     current_bank = bank_index_;
     current_program = -1; // TODO can be an empty bank
 
     calc_current_program_abs();
 }
-NOINLINE void MoniqueSynthData::set_current_program( int programm_index_ ) noexcept
+void MoniqueSynthData::set_current_program( int programm_index_ ) noexcept
 {
     current_program = programm_index_;
     calc_current_program_abs();
 }
-NOINLINE void MoniqueSynthData::set_current_program_abs( int programm_index_ ) noexcept
+void MoniqueSynthData::set_current_program_abs( int programm_index_ ) noexcept
 {
     int sum_programms = 0;
 
@@ -2947,25 +2947,25 @@ NOINLINE void MoniqueSynthData::set_current_program_abs( int programm_index_ ) n
 }
 
 // ==============================================================================
-NOINLINE int MoniqueSynthData::get_current_bank() const noexcept
+int MoniqueSynthData::get_current_bank() const noexcept
 {
     return current_bank;
 }
-NOINLINE int MoniqueSynthData::get_current_program() const noexcept
+int MoniqueSynthData::get_current_program() const noexcept
 {
     return current_program;
 }
-NOINLINE const StringArray& MoniqueSynthData::get_current_bank_programms() const noexcept
+const StringArray& MoniqueSynthData::get_current_bank_programms() const noexcept
 {
     return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank);
 }
 
 // ==============================================================================
-NOINLINE int MoniqueSynthData::get_current_programm_id_abs() const noexcept
+int MoniqueSynthData::get_current_programm_id_abs() const noexcept
 {
     return current_program_abs;
 }
-NOINLINE const String& MoniqueSynthData::get_current_program_name_abs() const noexcept
+const String& MoniqueSynthData::get_current_program_name_abs() const noexcept
 {
     if( current_program == -1 )
     {
@@ -2973,7 +2973,7 @@ NOINLINE const String& MoniqueSynthData::get_current_program_name_abs() const no
     }
     return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank)[current_program];
 }
-NOINLINE const String& MoniqueSynthData::get_program_name_abs(int id_) const noexcept
+const String& MoniqueSynthData::get_program_name_abs(int id_) const noexcept
 {
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
@@ -3019,7 +3019,7 @@ static inline String& generate_programm_name( const String& bank_, String& name_
 
     return name_;
 };
-NOINLINE bool MoniqueSynthData::create_new() noexcept
+bool MoniqueSynthData::create_new() noexcept
 {
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     String new_program_name = String("New Program");
@@ -3035,7 +3035,7 @@ NOINLINE bool MoniqueSynthData::create_new() noexcept
 
     return success;
 }
-NOINLINE bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
+bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
 {
     if( current_program == -1 )
         return false;
@@ -3065,7 +3065,7 @@ NOINLINE bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
 
     return success;
 }
-NOINLINE bool MoniqueSynthData::replace() noexcept
+bool MoniqueSynthData::replace() noexcept
 {
     if( current_program == -1 )
         return false;
@@ -3083,7 +3083,7 @@ NOINLINE bool MoniqueSynthData::replace() noexcept
 
     return success;
 }
-NOINLINE bool MoniqueSynthData::remove() noexcept
+bool MoniqueSynthData::remove() noexcept
 {
     if( current_program == -1 )
         return false;
@@ -3106,7 +3106,7 @@ NOINLINE bool MoniqueSynthData::remove() noexcept
 }
 
 // ==============================================================================
-NOINLINE bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
+bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
 {
     if( current_program == -1 )
         return false;
@@ -3119,7 +3119,7 @@ NOINLINE bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
         load_morph_groups
     );
 }
-NOINLINE bool MoniqueSynthData::load_prev() noexcept
+bool MoniqueSynthData::load_prev() noexcept
 {
     bool success = false;
 
@@ -3140,7 +3140,7 @@ NOINLINE bool MoniqueSynthData::load_prev() noexcept
 
     return success;
 }
-NOINLINE bool MoniqueSynthData::load_next() noexcept
+bool MoniqueSynthData::load_next() noexcept
 {
     bool success = false;
 
@@ -3181,7 +3181,7 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
 }
 
 // ==============================================================================
-NOINLINE void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
+void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
 {
     if( xml_ )
     {
@@ -3233,17 +3233,17 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
     }
 }
 //==============================================================================
-NOINLINE void MoniqueSynthData::save_session() const noexcept
+void MoniqueSynthData::save_session() const noexcept
 {
     write2file( "SESSION", "last" );
 }
-NOINLINE void MoniqueSynthData::load_session() noexcept
+void MoniqueSynthData::load_session() noexcept
 {
     load( "SESSION", "last" );
 }
 
 //==============================================================================
-NOINLINE void MoniqueSynthData::save_midi() const noexcept
+void MoniqueSynthData::save_midi() const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
@@ -3260,7 +3260,7 @@ NOINLINE void MoniqueSynthData::save_midi() const noexcept
         xml.writeToFile(midi_file,"");
     }
 }
-NOINLINE void MoniqueSynthData::read_midi() noexcept
+void MoniqueSynthData::read_midi() noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));

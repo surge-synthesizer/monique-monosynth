@@ -22,13 +22,13 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-  // RESTRICT
+// RESTRICT
 #if JUCE_WINDOWS
 #define restrict __restrict
 #else
 #define restrict __restrict__
 #endif
-  
+
 // JUCE
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
@@ -43,11 +43,11 @@
 
 // INLINING
 #if JUCE_LINUX || JUCE_MAC
-#define NOINLINE __attribute__ ((noinline))
+#define COLD __attribute__ ((cold)) __attribute__ ((noinline))
 #elif JUCE_WINDOWS
-#define NOINLINE __declspec(noinline)
+#define COLD __declspec(noinline)
 #else
-#define NOINLINE todo_UNKNOWN_PLATTFORM__________
+#define COLD todo_UNKNOWN_PLATTFORM__________
 #endif
 
 // MSVC REPLACEMENTS
@@ -99,17 +99,17 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-static inline int round0( float value ) noexcept 
+static inline int round0( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value);
 }
-static inline float round01( float value ) noexcept 
+static inline float round01( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*10)/10;
 }
-static inline float round001( float value ) noexcept 
+static inline float round001( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*100)/100;
@@ -143,7 +143,7 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
   time_sum+= (Time::getMillisecondCounterHiRes()-time); \
   std::cout << time_sum/time_counter << std::endl;
 #endif
-  
+
 // TWEAKED ALGORYTHIMS
 //==============================================================================
 //==============================================================================

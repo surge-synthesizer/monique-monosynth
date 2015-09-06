@@ -49,12 +49,12 @@ public:
     inline void read_unlock() noexcept;
 
 private:
-    NOINLINE virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    NOINLINE virtual void block_size_changed() noexcept override;
+    COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    COLD virtual void block_size_changed() noexcept override;
 
 public:
-    NOINLINE EndlessBuffer();
-    NOINLINE ~EndlessBuffer();
+    COLD EndlessBuffer();
+    COLD ~EndlessBuffer();
 };
 //==============================================================================
 inline void EndlessBuffer::write_lock() noexcept
@@ -93,12 +93,12 @@ public:
     inline int get_new_reader_start_position( int samples_to_paint_ ) const noexcept;
 
 private:
-    NOINLINE void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    NOINLINE void block_size_changed() noexcept override;
+    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+    COLD void block_size_changed() noexcept override;
 
 public:
-    NOINLINE EndlessSwitchBuffer();
-    NOINLINE ~EndlessSwitchBuffer();
+    COLD EndlessSwitchBuffer();
+    COLD ~EndlessSwitchBuffer();
 };
 
 //==============================================================================

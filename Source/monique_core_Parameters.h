@@ -41,8 +41,8 @@ class ParameterListener
     virtual void parameter_modulation_value_changed( Parameter* ) noexcept {}
 
 protected:
-    NOINLINE ParameterListener() noexcept;
-    NOINLINE ~ParameterListener() noexcept;
+    COLD ParameterListener() noexcept;
+    COLD ~ParameterListener() noexcept;
 };
 
 // ==============================================================================
@@ -68,12 +68,12 @@ private:
     // ==============================================================================
     friend class Parameter;
 #define MIN_MAX(min_,max_) min_,max_ /* HELPER MACRO TO MAKE CTOR ARGUMENTS MORE READABLE */
-    NOINLINE ParameterInfo( const TYPES_DEF type_,
+    COLD ParameterInfo( const TYPES_DEF type_,
                             const float min_value_, const float max_value_, const float init_value_,
                             const float init_modulation_amount_,
                             const int num_steps_,
                             const String& name_, const String& short_name_ ) noexcept;
-    NOINLINE ~ParameterInfo() noexcept;
+    COLD ~ParameterInfo() noexcept;
 
 private:
     // ==============================================================================
@@ -101,8 +101,8 @@ private:
 private:
     // ==============================================================================
     friend class Parameter;
-    NOINLINE ParameterRuntimeInfo() noexcept;
-    NOINLINE ~ParameterRuntimeInfo() noexcept;
+    COLD ParameterRuntimeInfo() noexcept;
+    COLD ~ParameterRuntimeInfo() noexcept;
 
 private:
     // ==============================================================================
@@ -314,13 +314,13 @@ public:
 public:
     // ==============================================================================
     // NOTE: the parameter is designed to live for a long time (app start to end and ctors may need some more power as usual)
-    NOINLINE Parameter(const float min_value_, const float max_value_, const float init_value_,
+    COLD Parameter(const float min_value_, const float max_value_, const float init_value_,
                        const int num_steps_,
                        const String& name_, const String& short_name_,
                        const float init_modulation_amount_ = HAS_NO_MODULATION,
                        TYPES_DEF = IS_FLOAT
                       ) noexcept;
-    NOINLINE ~Parameter() noexcept;
+    COLD ~Parameter() noexcept;
 
 private:
     // ==============================================================================
@@ -411,9 +411,9 @@ private:
     inline operator int() const noexcept = delete;
 
 public:
-    NOINLINE BoolParameter( const bool init_value_,
+    COLD BoolParameter( const bool init_value_,
                             const String& name_, const String& short_name_ ) noexcept;
-    NOINLINE ~BoolParameter() noexcept;
+    COLD ~BoolParameter() noexcept;
 
 private:
     // ==============================================================================
@@ -481,9 +481,9 @@ private:
     //inline operator bool() const noexcept = delete;
 
 public:
-    NOINLINE IntParameter( const int min_value_, const int max_value_, const int init_value_,
+    COLD IntParameter( const int min_value_, const int max_value_, const int init_value_,
                            const String& name_, const String& short_name_ ) noexcept;
-    NOINLINE ~IntParameter() noexcept;
+    COLD ~IntParameter() noexcept;
 
 private:
     // ==============================================================================
@@ -497,11 +497,11 @@ private:
 class ModulatedParameter : public Parameter
 {
 public:
-    NOINLINE ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
+    COLD ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
                                 const int num_steps_,
                                 const String& name_, const String& short_name_,
                                 const float init_modulation_amount_ ) noexcept;
-    NOINLINE ~ModulatedParameter() noexcept;
+    COLD ~ModulatedParameter() noexcept;
 };
 
 //==============================================================================
@@ -547,7 +547,7 @@ public:
     }
 
 public:
-    NOINLINE ArrayOfParameters( const int num_parameters_,
+    COLD ArrayOfParameters( const int num_parameters_,
 
                                 const float min_value_, const float max_value_, const float init_value_,
                                 const int num_steps_,
@@ -559,7 +559,7 @@ public:
                                 const String& param_name_short_,
                                 bool create_human_id_ = true
                               ) noexcept;
-    NOINLINE ~ArrayOfParameters() noexcept;
+    COLD ~ArrayOfParameters() noexcept;
 
 private:
     // ==============================================================================
@@ -598,7 +598,7 @@ public:
     }
 
 public:
-    NOINLINE ArrayOfBoolParameters( const int num_parameters_,
+    COLD ArrayOfBoolParameters( const int num_parameters_,
 
                                     const bool init_value_,
 
@@ -609,7 +609,7 @@ public:
                                     const String& param_name_short_,
                                     bool create_human_id_ = true
                                   ) noexcept;
-    NOINLINE ~ArrayOfBoolParameters() noexcept;
+    COLD ~ArrayOfBoolParameters() noexcept;
 
 private:
     // ==============================================================================
@@ -823,31 +823,31 @@ static inline bool operator!= ( const bool value_, const BoolParameter& param_rh
 //==============================================================================
 //==============================================================================
 // BUILD NAME HELPERS
-NOINLINE static inline String generate_param_name( const String& owner_class, int owner_id_, const String& param_name_, int param_id_ ) noexcept
+COLD static inline String generate_param_name( const String& owner_class, int owner_id_, const String& param_name_, int param_id_ ) noexcept
 {
     return owner_class + String("_") + String(owner_id_) + String("_") + param_name_ + String("_") + String(param_id_);
 }
-NOINLINE static inline String generate_param_name( const String& owner_class, int owner_id_, const String& param_name_ ) noexcept
+COLD static inline String generate_param_name( const String& owner_class, int owner_id_, const String& param_name_ ) noexcept
 {
     return owner_class + String("_") + String(owner_id_) + String("_") + param_name_;
 }
-NOINLINE static inline String generate_short_human_name( const String& owner_class, int owner_id_, const String& param_name_ ) noexcept
+COLD static inline String generate_short_human_name( const String& owner_class, int owner_id_, const String& param_name_ ) noexcept
 {
     return owner_class + String("_") + String(owner_id_+1) + String("_") + param_name_;
 }
-NOINLINE static inline String generate_short_human_name( const String& owner_class, const String& param_name_ ) noexcept
+COLD static inline String generate_short_human_name( const String& owner_class, const String& param_name_ ) noexcept
 {
     return owner_class + String("_") + String("_") + param_name_;
 }
-NOINLINE static inline String generate_short_human_name( const String& param_name_ ) noexcept
+COLD static inline String generate_short_human_name( const String& param_name_ ) noexcept
 {
     return param_name_;
 }
-NOINLINE static inline String generate_short_human_name( const String& owner_class, const String& param_name_, int param_id_ ) noexcept
+COLD static inline String generate_short_human_name( const String& owner_class, const String& param_name_, int param_id_ ) noexcept
 {
     return owner_class + String("_") + param_name_ + String("_") + String(param_id_+1);
 }
-NOINLINE static inline String generate_short_human_name( const String& owner_class, int owner_id_, const String& param_name_, int param_id_ ) noexcept
+COLD static inline String generate_short_human_name( const String& owner_class, int owner_id_, const String& param_name_, int param_id_ ) noexcept
 {
     return owner_class + String("_") + String(owner_id_+1) + String("_") + param_name_ + String("_") + String(param_id_+1);
 }
@@ -1031,8 +1031,8 @@ private:
     void send_modulation_feedback() const noexcept;
 
 public:
-    NOINLINE MIDIControl( Parameter*const owner_ );
-    NOINLINE ~MIDIControl();
+    COLD MIDIControl( Parameter*const owner_ );
+    COLD ~MIDIControl();
 
     void clear();
 };

@@ -30,8 +30,8 @@
 
 #include "monique_ui_Refresher.h"
 
-#undef NOINLINE
-#define NOINLINE
+#undef COLD
+#define COLD
 #undef restrict
 #define restrict
 #endif

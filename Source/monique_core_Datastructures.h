@@ -107,12 +107,12 @@ public:
 private:
     // ==============================================================================
     friend class MoniqueAudioProcessor;
-    NOINLINE void resize_buffer_if_required( int size_ ) noexcept;
+    COLD void resize_buffer_if_required( int size_ ) noexcept;
 
 public:
     // ==============================================================================
-    NOINLINE DataBuffer( int init_buffer_size_ ) noexcept;
-    NOINLINE ~DataBuffer() noexcept;
+    COLD DataBuffer( int init_buffer_size_ ) noexcept;
+    COLD ~DataBuffer() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
 };
@@ -135,15 +135,15 @@ protected:
 private:
     //==========================================================================
     friend class RuntimeNotifyer;
-    NOINLINE virtual void set_sample_rate( double sr_ ) noexcept;
-    NOINLINE virtual void set_block_size( int bs_ ) noexcept;
-    NOINLINE virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept;
-    NOINLINE virtual void block_size_changed() noexcept;
+    COLD virtual void set_sample_rate( double sr_ ) noexcept;
+    COLD virtual void set_block_size( int bs_ ) noexcept;
+    COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept;
+    COLD virtual void block_size_changed() noexcept;
 
 protected:
     //==========================================================================
-    NOINLINE RuntimeListener() noexcept;
-    NOINLINE ~RuntimeListener() noexcept;
+    COLD RuntimeListener() noexcept;
+    COLD ~RuntimeListener() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeListener)
 };
@@ -174,8 +174,8 @@ public:
     //==========================================================================
     juce_DeclareSingleton (RuntimeNotifyer,false)
 
-    NOINLINE RuntimeNotifyer() noexcept;
-    NOINLINE ~RuntimeNotifyer() noexcept;
+    COLD RuntimeNotifyer() noexcept;
+    COLD ~RuntimeNotifyer() noexcept;
 };
 
 //==============================================================================
@@ -198,8 +198,8 @@ struct RuntimeInfo
 private:
     //==========================================================================
     friend class MoniqueSynthesiserVoice;
-    NOINLINE RuntimeInfo() noexcept;
-    NOINLINE ~RuntimeInfo() noexcept;
+    COLD RuntimeInfo() noexcept;
+    COLD ~RuntimeInfo() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeInfo)
 };
@@ -219,8 +219,8 @@ struct LFOData
     Parameter speed;
 
     //==========================================================================
-    NOINLINE LFOData( int id_ ) noexcept;
-    NOINLINE ~LFOData() noexcept;
+    COLD LFOData( int id_ ) noexcept;
+    COLD ~LFOData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
@@ -249,8 +249,8 @@ struct OSCData
     float last_modulation_value;
 
     //==========================================================================
-    NOINLINE OSCData( int id_ ) noexcept;
-    NOINLINE ~OSCData() noexcept;
+    COLD OSCData( int id_ ) noexcept;
+    COLD ~OSCData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCData)
 };
@@ -273,8 +273,8 @@ struct ENVData
     IntParameter max_release_time;
 
     //==========================================================================
-    NOINLINE ENVData( int id_ ) noexcept;
-    NOINLINE virtual ~ENVData() noexcept;
+    COLD ENVData( int id_ ) noexcept;
+    COLD virtual ~ENVData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
@@ -302,8 +302,8 @@ struct ENVPresetDef
     Parameter release_4;
 
     //==========================================================================
-    NOINLINE ENVPresetDef( int id_ ) noexcept;
-    NOINLINE ~ENVPresetDef() noexcept;
+    COLD ENVPresetDef( int id_ ) noexcept;
+    COLD ~ENVPresetDef() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVPresetDef)
 };
@@ -326,8 +326,8 @@ private:
 
 public:
     //==========================================================================
-    NOINLINE ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept;
-    NOINLINE ~ENVPresetData() noexcept;
+    COLD ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept;
+    COLD ~ENVPresetData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVPresetData)
 
@@ -381,8 +381,8 @@ private:
 
 public:
     //==========================================================================
-    NOINLINE FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept;
-    NOINLINE ~FilterData() noexcept;
+    COLD FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept;
+    COLD ~FilterData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
 };
@@ -403,8 +403,8 @@ struct ArpSequencerData
     IntParameter speed_multi;
 
     //==========================================================================
-    NOINLINE ArpSequencerData( int id_ ) noexcept;
-    NOINLINE ~ArpSequencerData() noexcept;
+    COLD ArpSequencerData( int id_ ) noexcept;
+    COLD ~ArpSequencerData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ArpSequencerData )
 
@@ -445,8 +445,8 @@ private:
 
 public:
     //==========================================================================
-    NOINLINE EQData( int id_, ENVPresetDef*const def_ ) noexcept;
-    NOINLINE ~EQData() noexcept;
+    COLD EQData( int id_, ENVPresetDef*const def_ ) noexcept;
+    COLD ~EQData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( EQData )
 };
@@ -461,8 +461,8 @@ struct ReverbData
     Parameter width;
 
     //==========================================================================
-    NOINLINE ReverbData( int id_ ) noexcept;
-    NOINLINE ~ReverbData() noexcept;
+    COLD ReverbData( int id_ ) noexcept;
+    COLD ~ReverbData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ReverbData )
 };
@@ -485,8 +485,8 @@ private:
 
 public:
     //==========================================================================
-    NOINLINE ChorusData( int id_, ENVPresetDef*const def_ ) noexcept;
-    NOINLINE ~ChorusData() noexcept;
+    COLD ChorusData( int id_, ENVPresetDef*const def_ ) noexcept;
+    COLD ~ChorusData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ChorusData )
 };
@@ -566,7 +566,7 @@ struct MoniqueSynthData : ParameterListener
 private:
     // ==============================================================================
     Array< Parameter* > saveable_parameters;
-    NOINLINE void colect_saveable_parameters() noexcept;
+    COLD void colect_saveable_parameters() noexcept;
 
 public:
     // TODO
@@ -576,8 +576,8 @@ public:
     }
 
     // ==============================================================================
-    NOINLINE MoniqueSynthData( DATA_TYPES data_type ) noexcept;
-    NOINLINE ~MoniqueSynthData() noexcept;
+    COLD MoniqueSynthData( DATA_TYPES data_type ) noexcept;
+    COLD ~MoniqueSynthData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( MoniqueSynthData )
 
@@ -596,7 +596,7 @@ private:
     OwnedArray< MoniqueSynthData > left_morph_sources;
     OwnedArray< MoniqueSynthData > right_morph_sources;
 
-    NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
+    COLD void init_morph_groups( DATA_TYPES data_type ) noexcept;
 
     CriticalSection morph_lock;
     
@@ -630,41 +630,41 @@ private:
 
 public:
     // ==============================================================================
-    NOINLINE static void refresh_banks_and_programms() noexcept;
+    static void refresh_banks_and_programms() noexcept;
 private:
-    NOINLINE void calc_current_program_abs() noexcept;
+    void calc_current_program_abs() noexcept;
 
-    NOINLINE static void update_banks( StringArray& ) noexcept;
-    NOINLINE static void update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept;
+    static void update_banks( StringArray& ) noexcept;
+    static void update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept;
 
 public:
     // ==============================================================================
-    NOINLINE const StringArray& get_banks() noexcept;
-    NOINLINE const StringArray& get_programms( int bank_id_ ) noexcept;
+    const StringArray& get_banks() noexcept;
+    const StringArray& get_programms( int bank_id_ ) noexcept;
 
     // ==============================================================================
-    NOINLINE void set_current_bank( int bank_index_ ) noexcept;
-    NOINLINE void set_current_program( int programm_index_ ) noexcept;
-    NOINLINE void set_current_program_abs( int programm_index_ ) noexcept;
+    void set_current_bank( int bank_index_ ) noexcept;
+    void set_current_program( int programm_index_ ) noexcept;
+    void set_current_program_abs( int programm_index_ ) noexcept;
 
-    NOINLINE int get_current_bank() const noexcept;
-    NOINLINE int get_current_program() const noexcept;
-    NOINLINE const StringArray& get_current_bank_programms() const noexcept;
+    int get_current_bank() const noexcept;
+    int get_current_program() const noexcept;
+    const StringArray& get_current_bank_programms() const noexcept;
 
     const String error_string;
-    NOINLINE int get_current_programm_id_abs() const noexcept;
-    NOINLINE const String& get_current_program_name_abs() const noexcept;
-    NOINLINE const String& get_program_name_abs(int id_) const noexcept;
+    int get_current_programm_id_abs() const noexcept;
+    const String& get_current_program_name_abs() const noexcept;
+    const String& get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
-    NOINLINE bool create_new() noexcept;
-    NOINLINE bool rename( const String& new_name_ ) noexcept;
-    NOINLINE bool replace() noexcept;
-    NOINLINE bool remove() noexcept;
+    bool create_new() noexcept;
+    bool rename( const String& new_name_ ) noexcept;
+    bool replace() noexcept;
+    bool remove() noexcept;
 
-    NOINLINE bool load( bool load_morph_groups = true ) noexcept;
-    NOINLINE bool load_prev() noexcept;
-    NOINLINE bool load_next() noexcept;
+    bool load( bool load_morph_groups = true ) noexcept;
+    bool load_prev() noexcept;
+    bool load_next() noexcept;
 private:
     bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true ) noexcept;
 
@@ -677,14 +677,13 @@ private:
     bool write2file( const String& bank_name_, const String& program_name_ ) const noexcept;
 
 public:
-    NOINLINE void save_session() const noexcept;
-    NOINLINE void load_session() noexcept;
+    void save_session() const noexcept;
+    void load_session() noexcept;
     
 public:
     // ==============================================================================
-    NOINLINE 
-    NOINLINE void save_midi() const noexcept;
-    NOINLINE void read_midi() noexcept;
+    void save_midi() const noexcept;
+    void read_midi() noexcept;
 };
 
 //==============================================================================
@@ -728,8 +727,8 @@ public:
     static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ );
 
     // ==============================================================================
-    NOINLINE mono_ParameterOwnerStore() noexcept;
-    NOINLINE ~mono_ParameterOwnerStore() noexcept;
+    COLD mono_ParameterOwnerStore() noexcept;
+    COLD ~mono_ParameterOwnerStore() noexcept;
 
     juce_DeclareSingleton (mono_ParameterOwnerStore,false)
 

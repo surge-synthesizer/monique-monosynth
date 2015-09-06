@@ -23,13 +23,13 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ParameterListener::ParameterListener() noexcept {};
-NOINLINE ParameterListener::~ParameterListener() noexcept {};
+COLD ParameterListener::ParameterListener() noexcept {};
+COLD ParameterListener::~ParameterListener() noexcept {};
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ParameterInfo::ParameterInfo
+COLD ParameterInfo::ParameterInfo
 (
     TYPES_DEF type_,
 
@@ -53,18 +53,18 @@ type( type_ ),
       short_name(short_name_)
 {}
 
-NOINLINE ParameterInfo::~ParameterInfo() noexcept {}
+COLD ParameterInfo::~ParameterInfo() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
+COLD ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
 :
 current_modulation_amount(0),
 timeChanger(nullptr)
 {}
 
-NOINLINE ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
+COLD ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
 {
     if( timeChanger )
     {
@@ -76,7 +76,7 @@ NOINLINE ParameterRuntimeInfo::~ParameterRuntimeInfo() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE Parameter::Parameter
+COLD Parameter::Parameter
 (
     const float min_value_, const float max_value_, const float init_value_,
     const int num_steps_,
@@ -96,7 +96,7 @@ midi_control(new MIDIControl( this ))
     value_listeners.minimiseStorageOverheads();
 }
 
-NOINLINE Parameter::~Parameter() noexcept
+COLD Parameter::~Parameter() noexcept
 {
     delete midi_control;
     delete runtime_info;
@@ -136,7 +136,7 @@ void Parameter::remove_listener( const ParameterListener* listener_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE BoolParameter::BoolParameter( const bool init_value_,
+COLD BoolParameter::BoolParameter( const bool init_value_,
                                        const String& name_, const String& short_name_ ) noexcept
 :
 Parameter
@@ -151,12 +151,12 @@ Parameter
 )
 {}
 
-NOINLINE BoolParameter::~BoolParameter() noexcept {}
+COLD BoolParameter::~BoolParameter() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE IntParameter::IntParameter( const int min_value_, const int max_value_, const int init_value_,
+COLD IntParameter::IntParameter( const int min_value_, const int max_value_, const int init_value_,
                                      const String& name_, const String& short_name_ ) noexcept
 :
 Parameter
@@ -170,12 +170,12 @@ Parameter
     IS_INT
 )
 {}
-NOINLINE IntParameter::~IntParameter() noexcept {}
+COLD IntParameter::~IntParameter() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ModulatedParameter::ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
+COLD ModulatedParameter::ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
         const int num_steps_,
         const String& name_, const String& short_name_,
         const float init_modulation_amount_ ) noexcept
@@ -190,12 +190,12 @@ Parameter
 )
 {}
 
-NOINLINE ModulatedParameter::~ModulatedParameter() noexcept {}
+COLD ModulatedParameter::~ModulatedParameter() noexcept {}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ArrayOfParameters::ArrayOfParameters
+COLD ArrayOfParameters::ArrayOfParameters
 (
     const int num_parameters_,
 
@@ -226,7 +226,7 @@ size( num_parameters_ )
         );
     }
 }
-NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
+COLD ArrayOfParameters::~ArrayOfParameters() noexcept
 {
     for( int i = size-1 ; i > -1 ; --i )
     {
@@ -236,7 +236,7 @@ NOINLINE ArrayOfParameters::~ArrayOfParameters() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE ArrayOfBoolParameters::ArrayOfBoolParameters
+COLD ArrayOfBoolParameters::ArrayOfBoolParameters
 (
     const int num_parameters_,
 
@@ -264,7 +264,7 @@ size( num_parameters_ )
         );
     }
 }
-NOINLINE ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
+COLD ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
 {
     for( int i = size-1 ; i > -1 ; --i )
     {
