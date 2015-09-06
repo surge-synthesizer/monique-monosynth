@@ -2583,6 +2583,8 @@ bool MoniqueSynthData::get_morph_switch_state( int morpher_id_ ) const noexcept
 //==============================================================================
 void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
 {
+    ScopedLock locked( morph_lock );
+  
     if( force_ )
     {
         morhp_states[morpher_id_].get_runtime_info().stop_time_change();
@@ -2607,6 +2609,8 @@ void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_
 }
 void MoniqueSynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
 {
+    ScopedLock locked( morph_lock );
+  
     if( do_switch_ )
     {
         morhp_switch_states[morpher_id_] ^= true;

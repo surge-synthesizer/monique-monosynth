@@ -128,7 +128,7 @@
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-fno-inline-functions&#10;-pg"
+    <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-fno-inline-functions&#10;-fno-inline&#10;-fno-inline-small-functions&#10;-fno-indirect-inlining&#10;-pg"
                 extraLinkerFlags="-pg" extraDefs="NDEBUG&#10;PROFILE" userNotes=""
                 externalLibraries="">
       <CONFIGURATIONS>

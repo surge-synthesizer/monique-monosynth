@@ -598,6 +598,8 @@ private:
 
     NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
 
+    CriticalSection morph_lock;
+    
 public:
     inline float get_morph_state( int morpher_id_ ) const noexcept;
     inline bool get_morph_switch_state( int morpher_id_ ) const noexcept;

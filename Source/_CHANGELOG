@@ -34,21 +34,17 @@ CHANGES 0.5:
 - fix/add some missing morph parameters
 - set min morph motor time to 20ms
 - fix can crash on short attack time (coz we have a min value of 30ms)
+- multi instance support should be fixed (but was no time to check it in detail yet - can anybody do this?)
+- fix crash on short morph motor time
 
 :!: KNOWN BUGS:
-- bug: can crash on to short morph motor time
-- check/test/bug: multi instance support
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
-- crackls: on eq if you switch from > 0 to < 0 or in the other direction
-- multi instance support is not working
 - lfo's are not processed if the synth is silent
 - clicken beim umschalten auf fix input
 - knacken beim bewegen des compression & shape slider
 - kein background value für linear slider
 - midi sync disabled for speed multies
-- arp arbeitet weiter, auch beim notenspiel
 - osc square and saw going out of center on higher octaves
-- ich hab da 32000 samples beim ersten run gesehen
 - the lfo note value is synced to the root frequency!
 - lfo amp animation can'T be disabled
 - eq amp animation one eq ani of is wrong
