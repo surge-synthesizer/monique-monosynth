@@ -1,7 +1,7 @@
 #include "monique_ui_Refresher.h"
 
 //==============================================================================
-juce_ImplementSingleton (Monique_Ui_Refresher)
+juce_ImplementSingleton_SingleThreaded (Monique_Ui_Refresher)
 COLD Monique_Ui_Refresher::Monique_Ui_Refresher() noexcept {}
 COLD Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept 
 {

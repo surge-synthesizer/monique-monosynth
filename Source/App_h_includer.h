@@ -1,15 +1,5 @@
 
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#pragma GCC diagnostic ignored "-Wextra"
-#pragma GCC diagnostic ignored "-Weffc++"
-#pragma GCC diagnostic ignored "-Wall"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-
 #include "App.h"
-
-#pragma GCC diagnostic pop
 
 #if !( defined IS_PLUGIN || defined IS_STANDALONE)
 // JUST A HACK TO BROWSE FILES IN KDEV - KDEV HAD A PROBLEM WITH... - ANYWAY - THE COMPILER WILL NEVER SEE THIS!

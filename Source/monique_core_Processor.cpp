@@ -152,6 +152,11 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     peak_meter(nullptr),
     repaint_peak_meter(false)
 {
+    // CREATE SINGLETONS
+    RuntimeNotifyer::getInstance();
+    mono_ParameterOwnerStore::getInstance();
+  
+  
     std::cout << "MONIQUE: init processor" << std::endl;
 
     FloatVectorOperations::enableFlushToZeroMode(true);

@@ -137,7 +137,7 @@ void Parameter::remove_listener( const ParameterListener* listener_ ) noexcept
 //==============================================================================
 //==============================================================================
 COLD BoolParameter::BoolParameter( const bool init_value_,
-                                       const String& name_, const String& short_name_ ) noexcept
+                                   const String& name_, const String& short_name_ ) noexcept
 :
 Parameter
 (
@@ -157,7 +157,7 @@ COLD BoolParameter::~BoolParameter() noexcept {}
 //==============================================================================
 //==============================================================================
 COLD IntParameter::IntParameter( const int min_value_, const int max_value_, const int init_value_,
-                                     const String& name_, const String& short_name_ ) noexcept
+                                 const String& name_, const String& short_name_ ) noexcept
 :
 Parameter
 (
@@ -659,11 +659,13 @@ juce_ImplementSingleton (MIDIControlHandler)
 
 MIDIControlHandler::MIDIControlHandler() noexcept
 {
+}
+
+MIDIControlHandler::~MIDIControlHandler() noexcept
+{
     clear();
     clearSingletonInstance();
 }
-
-MIDIControlHandler::~MIDIControlHandler() noexcept {}
 
 // ==============================================================================
 void MIDIControlHandler::toggle_midi_learn() noexcept
@@ -742,6 +744,8 @@ void MIDIControlHandler::clear() noexcept
     is_activated_and_waiting_for_param = false;
 
     for( int i = 0 ; i != learning_comps.size() ; ++i )
+    {
         UNSET_COMPONENT_MIDI_LEARN( learning_comps[i] )
-        learning_comps.clearQuick();
+    }
+    learning_comps.clearQuick();
 }

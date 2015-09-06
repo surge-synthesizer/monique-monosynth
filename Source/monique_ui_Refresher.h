@@ -11,7 +11,7 @@ public:
 
 protected:
     COLD Monique_Ui_Refreshable() noexcept;
-    COLD virtual ~Monique_Ui_Refreshable() noexcept;
+    COLD ~Monique_Ui_Refreshable() noexcept;
 };
 
 //==============================================================================
@@ -35,7 +35,7 @@ private:
     COLD ~Monique_Ui_Refresher() noexcept;
 
 public:
-    juce_DeclareSingleton (Monique_Ui_Refresher,false)
+    juce_DeclareSingleton_SingleThreaded_Minimal (Monique_Ui_Refresher)
 };
 
 #endif

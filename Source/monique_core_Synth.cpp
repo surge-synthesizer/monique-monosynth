@@ -179,7 +179,7 @@ struct mono_Thread : public mono_MultiThreaded
     // IT CHECKS FOR FREE THREADS, OTHERWISE IT RUNS FROM THE CALLER THREAD
     inline void try_run_paralel() noexcept
     {
-        mono_ThreadManager::getInstance()->execute_me(this);
+        mono_ThreadManager::getInstanceWithoutCreating()->execute_me(this);
     }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Thread)
@@ -3901,7 +3901,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     }
 
     // VISUALIZE
-    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
     {
         amp_painter->add_filter_env( id, amp_mix, num_samples );
         amp_painter->add_filter( id, this_filter_output_buffer, num_samples );
@@ -4269,7 +4269,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             out_buffer[sid] = (tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]*0.2));
         }
 
-        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
         {
             amp_painter->add_eq( out_buffer, num_samples_ );
         }
@@ -5139,7 +5139,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         }
 
         // VISUALIZE
-        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
         {
             amp_painter->add_out( &output_buffer_.getReadPointer(LEFT)[start_sample_final_out_], num_samples_ );
             amp_painter->add_out_env( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_ENV), num_samples_ );
@@ -5344,6 +5344,7 @@ current_velocity(0),
 current_step(0),
 an_arp_note_is_already_running(false)
 {
+    mono_ThreadManager::getInstance();
     mono_ParameterOwnerStore::getInstance()->voice = this;
 
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
@@ -5539,7 +5540,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 {
     bool only_process_lfo = current_note == -1;
 
-    Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
+    Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave();
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )
@@ -5708,7 +5709,7 @@ COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 //==============================================================================
 void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ )
 {
-    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstance();
+    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
     if( ! store->ui_env )
     {
         store->ui_env_preset_data = new ENVPresetData( 999, store->env_preset_def );
@@ -5724,7 +5725,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     env->overwrite_current_value( 0.5 );
     env->set_current_stage( RELEASE );
     env->start_attack( true );
-    const int suatain_samples = RuntimeNotifyer::getInstance()->get_sample_rate() / 10;
+    const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() / 10;
     sustain_end_ = -1;
     bool is_first_attack = true;
     while( true )
@@ -5754,7 +5755,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
         else if( sustain_end_ == -1 && count_sustain && data->sustain_time != 1 )
         {
             env->set_to_release();
-            sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstance()->get_sample_rate());
+            sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate());
         }
 
         if( is_first_attack && env->get_current_stage() == END_ENV )
@@ -5766,14 +5767,4 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
-
-
-
-
-
-
-
-
-
-
 
