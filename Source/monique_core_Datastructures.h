@@ -476,7 +476,6 @@ struct ChorusData : ParameterListener
     BoolParameter hold_modulation;
 
     ENVPresetData*const modulation_env_data;
-    ENVPresetData*const shine_env_data;
 
 private:
     //==========================================================================
