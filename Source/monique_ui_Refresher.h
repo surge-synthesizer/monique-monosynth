@@ -4,37 +4,38 @@
 #include "App_h_includer.h"
 
 //==============================================================================
-class mono_UiRefreshable 
+class Monique_Ui_Refreshable
 {
 public:
     virtual void refresh() noexcept = 0;
 
 protected:
-    mono_UiRefreshable() noexcept;
-    virtual ~mono_UiRefreshable() noexcept;
+    Monique_Ui_Refreshable() noexcept;
+    virtual ~Monique_Ui_Refreshable() noexcept;
 };
 
 //==============================================================================
-class mono_UiRefresher : public Timer {
+class Monique_Ui_Refresher : public Timer 
+{
     CriticalSection lock;
-    Array<mono_UiRefreshable*> refreshables;
+    Array<Monique_Ui_Refreshable*> refreshables;
 
     void timerCallback() override;
 
 private:
-    friend class mono_UiRefreshable;
-    NOINLINE void add(mono_UiRefreshable*const) noexcept;
-    NOINLINE void remove(mono_UiRefreshable*const) noexcept;
+    friend class Monique_Ui_Refreshable;
+    NOINLINE void add(Monique_Ui_Refreshable*const) noexcept;
+    NOINLINE void remove(Monique_Ui_Refreshable*const) noexcept;
 
 public:
     NOINLINE void remove_all() noexcept;
 
 private:
-    mono_UiRefresher() noexcept;
-    ~mono_UiRefresher() noexcept;
+    Monique_Ui_Refresher() noexcept;
+    ~Monique_Ui_Refresher() noexcept;
 
 public:
-    juce_DeclareSingleton (mono_UiRefresher,false)
+    juce_DeclareSingleton (Monique_Ui_Refresher,false)
 };
 
 #endif

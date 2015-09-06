@@ -36,12 +36,12 @@ class DragPad;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiDragPad  : public Component
+class Monique_Ui_DragPad  : public Component
 {
 public:
     //==============================================================================
-    UiDragPad ();
-    ~UiDragPad();
+    Monique_Ui_DragPad ();
+    ~Monique_Ui_DragPad();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -70,7 +70,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiDragPad)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_DragPad)
 };
 
 //[EndFile] You can add extra defines here...

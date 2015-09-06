@@ -9,7 +9,7 @@
 #define DB_PER_SEC 3.0f
 #define SAMPLES_TO_COUNT 2048
 
-SegmentedMeter::SegmentedMeter()
+Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter()
     : my_red( Colours::red.getARGB() ),
       my_yellow( UiLookAndFeel::getInstance()->colours.button_on_colour.getARGB()),
       my_green( UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB() ),
@@ -23,9 +23,9 @@ SegmentedMeter::SegmentedMeter()
     setOpaque (true);
 }
 
-SegmentedMeter::~SegmentedMeter() {}
+Monique_Ui_SegmentedMeter::~Monique_Ui_SegmentedMeter() {}
 
-void SegmentedMeter::refresh() noexcept
+void Monique_Ui_SegmentedMeter::refresh() noexcept
 {
     // map decibels to numSegs
     numSegs = jmax (0, roundToInt ((toDecibels_fast(level) / DB_PER_SEC) + (TOTAL_NUM_SEG - NUM_RED_SEG)));
@@ -37,7 +37,7 @@ void SegmentedMeter::refresh() noexcept
     }
 }
 
-void SegmentedMeter::resized()
+void Monique_Ui_SegmentedMeter::resized()
 {
     const float w = getWidth();
     const float h = getHeight();
@@ -92,12 +92,12 @@ void SegmentedMeter::resized()
     needsRepaint = true;
 }
 
-void SegmentedMeter::moved()
+void Monique_Ui_SegmentedMeter::moved()
 {
     needsRepaint = true;
 }
 
-void SegmentedMeter::paint (Graphics &g)
+void Monique_Ui_SegmentedMeter::paint (Graphics &g)
 {
     needsRepaint = false;
 

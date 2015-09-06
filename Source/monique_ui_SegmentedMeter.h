@@ -1,16 +1,16 @@
-#ifndef __SEGMENTEDMETER_H__
-#define __SEGMENTEDMETER_H__
+#ifndef __Monique_Ui_SegmentedMeter_H__
+#define __Monique_Ui_SegmentedMeter_H__
 
 #include "App_h_includer.h"
 
 // SIMPLYFYED DROW AUDIO SEGMENT METER
-class SegmentedMeter
+class Monique_Ui_SegmentedMeter
     :
 public Component,
-public mono_UiRefreshable
+public Monique_Ui_Refreshable
 {
     Image onImage, offImage;
-    
+
     float sampleMax;
     float level;
 
@@ -22,8 +22,8 @@ public mono_UiRefreshable
     bool needsRepaint;
 
 public:
-    SegmentedMeter();
-    ~SegmentedMeter();
+    Monique_Ui_SegmentedMeter();
+    ~Monique_Ui_SegmentedMeter();
 
 private:
     void resized() override;
@@ -34,10 +34,10 @@ private:
 public:
     inline void process( const float* values, int numSamples ) noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SegmentedMeter);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_SegmentedMeter);
 };
 
-inline void SegmentedMeter::process( const float* values, int num_samples_ ) noexcept
+inline void Monique_Ui_SegmentedMeter::process( const float* values, int num_samples_ ) noexcept
 {
     for (int sid = 0; sid < num_samples_; ++sid)
     {
@@ -58,4 +58,4 @@ inline void SegmentedMeter::process( const float* values, int num_samples_ ) noe
     }
 }
 
-#endif //__DROWAUDIO_SEGMENTEDMETER_H__
+#endif //__DROWAUDIO_Monique_Ui_SegmentedMeter_H__

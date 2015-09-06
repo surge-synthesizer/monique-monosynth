@@ -20,10 +20,9 @@
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_DragPad.h"
+#include "monique_ui_MainWindow.h"
 
 #include "monique_core_Datastructures.h"
-#include "UiEditorSynthLite.h"
-
 //[/Headers]
 
 #include "monique_ui_Morph.h"
@@ -33,7 +32,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorMorph::UiEditorMorph ()
+Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -329,7 +328,7 @@ UiEditorMorph::UiEditorMorph ()
     label_35->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_35->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (drag_pad = new UiDragPad());
+    addAndMakeVisible (drag_pad = new Monique_Ui_DragPad());
 
 
     //[UserPreSize]
@@ -397,7 +396,7 @@ UiEditorMorph::UiEditorMorph ()
     //[/Constructor]
 }
 
-UiEditorMorph::~UiEditorMorph()
+Monique_Ui_MorphConfig::~Monique_Ui_MorphConfig()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -446,7 +445,7 @@ UiEditorMorph::~UiEditorMorph()
 }
 
 //==============================================================================
-void UiEditorMorph::paint (Graphics& g)
+void Monique_Ui_MorphConfig::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -488,7 +487,7 @@ void UiEditorMorph::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorMorph::resized()
+void Monique_Ui_MorphConfig::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -535,7 +534,7 @@ void UiEditorMorph::resized()
     //[/UserResized]
 }
 
-void UiEditorMorph::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_MorphConfig::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     int bank;
@@ -602,7 +601,7 @@ void UiEditorMorph::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_MorphConfig::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -688,7 +687,7 @@ void UiEditorMorph::buttonClicked (Button* buttonThatWasClicked)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorMorph" componentName=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MorphConfig" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="720">
@@ -861,7 +860,7 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="(DOUBLE CLICK)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="UiDragPad"
+  <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="Monique_Ui_DragPad"
                     explicitFocusOrder="0" pos="1050 10 405 150" class="Component"
                     params=""/>
 </JUCER_COMPONENT>

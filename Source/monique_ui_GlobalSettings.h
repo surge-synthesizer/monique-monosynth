@@ -34,16 +34,16 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorGlobalSettings  : public Component,
-                                public mono_UiRefreshable,
-                                public ButtonListener,
-                                public SliderListener,
-                                public ComboBoxListener
+class Monique_Ui_GlobalSettings  : public Component,
+    public Monique_Ui_Refreshable,
+    public ButtonListener,
+    public SliderListener,
+    public ComboBoxListener
 {
 public:
     //==============================================================================
-    UiEditorGlobalSettings ();
-    ~UiEditorGlobalSettings();
+    Monique_Ui_GlobalSettings ();
+    ~Monique_Ui_GlobalSettings();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -78,7 +78,7 @@ private:
         }
         inline int add_and_get_average(float val_) noexcept
         {
-	    add( val_ );
+            add( val_ );
             return round0(sum / BUFFER_SIZE);
         }
 
@@ -168,7 +168,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorGlobalSettings)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_GlobalSettings)
 };
 
 //[EndFile] You can add extra defines here...

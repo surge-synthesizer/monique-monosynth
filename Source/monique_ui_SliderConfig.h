@@ -1,15 +1,15 @@
 /*
   ==============================================================================
 
-    UiEditorSynthLiteConfig.h
+    Monique_Ui_MainwindowConfig.h
     Created: 6 May 2015 9:03:35am
     Author:  monotomy
 
   ==============================================================================
 */
 
-#ifndef UIEDITORSYNTHLITECONFIG_H_INCLUDED
-#define UIEDITORSYNTHLITECONFIG_H_INCLUDED
+#ifndef Monique_Ui_MainwindowCONFIG_H_INCLUDED
+#define Monique_Ui_MainwindowCONFIG_H_INCLUDED
 
 #include "monique_core_Datastructures.h"
 #include "monique_ui_ModulationSlider.h"
@@ -543,7 +543,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     const String bottom_text;
     const String input_text;
 
-    SynthData*const synth_data;
+    MoniqueSynthData*const synth_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3546,7 +3546,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     Parameter*const state;
     BoolParameter*const hold_modulation;
 
-    SynthData*const synth_data;
+    MoniqueSynthData*const synth_data;
     ChorusData*const chorus_data;
 
     //==============================================================================
@@ -3930,7 +3930,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     String bottom_text;
 
-    SynthData*const synth_data;
+    MoniqueSynthData*const synth_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4380,4 +4380,4 @@ public:
     }
         */
 
-#endif  // UIEDITORSYNTHLITECONFIG_H_INCLUDED
+#endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED

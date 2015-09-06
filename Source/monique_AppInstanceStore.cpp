@@ -37,12 +37,12 @@ void AppInstanceStore::lock_amp_painter() noexcept
       ampPainter->lock_for_writing();
 }
 
-mono_AmpPainter* AppInstanceStore::get_create_amp_painter() noexcept
+Monique_Ui_AmpPainter* AppInstanceStore::get_create_amp_painter() noexcept
 {
     if( ! ampPainter )
     {
         ScopedLock locked(amp_painter_lock);
-        ampPainter = new mono_AmpPainter();
+        ampPainter = new Monique_Ui_AmpPainter();
     }
     
     return ampPainter;

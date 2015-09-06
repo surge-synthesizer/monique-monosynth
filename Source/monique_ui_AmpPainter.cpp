@@ -28,7 +28,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-mono_AmpPainter::mono_AmpPainter ()
+Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -141,7 +141,7 @@ mono_AmpPainter::mono_AmpPainter ()
     //[/Constructor]
 }
 
-mono_AmpPainter::~mono_AmpPainter()
+Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -167,7 +167,7 @@ mono_AmpPainter::~mono_AmpPainter()
 }
 
 //==============================================================================
-void mono_AmpPainter::paint (Graphics& g)
+void Monique_Ui_AmpPainter::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 
@@ -200,7 +200,7 @@ void mono_AmpPainter::paint (Graphics& g)
             g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
         }
 
-        struct mono_AmpPainter
+        struct Monique_Ui_AmpPainter
         {
             static void exec
             (
@@ -280,7 +280,7 @@ void mono_AmpPainter::paint (Graphics& g)
             }
         };
 
-        SynthData& synth_data = GET_DATA( synth_data );
+        MoniqueSynthData& synth_data = GET_DATA( synth_data );
         const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
         const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
         const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
@@ -302,7 +302,7 @@ void mono_AmpPainter::paint (Graphics& g)
                 else
                     col = Colours::violet;
 
-                mono_AmpPainter::exec
+                Monique_Ui_AmpPainter::exec
                 (
                     g,
 
@@ -326,7 +326,7 @@ void mono_AmpPainter::paint (Graphics& g)
         {
             Colour col = Colours::green;
 
-            mono_AmpPainter::exec
+            Monique_Ui_AmpPainter::exec
             (
                 g,
 
@@ -358,7 +358,7 @@ void mono_AmpPainter::paint (Graphics& g)
             EndlessBuffer& values = *filter_values[filter_id];
             if( show_flt[filter_id] )
             {
-                mono_AmpPainter::exec
+                Monique_Ui_AmpPainter::exec
                 (
                     g,
 
@@ -380,7 +380,7 @@ void mono_AmpPainter::paint (Graphics& g)
             EndlessBuffer& values_env = *filter_env_values[filter_id];
             if( show_flt_env[filter_id] )
             {
-                mono_AmpPainter::exec
+                Monique_Ui_AmpPainter::exec
                 (
                     g,
 
@@ -404,7 +404,7 @@ void mono_AmpPainter::paint (Graphics& g)
         // FINAL OUTPUT
         if( show_out )
         {
-            mono_AmpPainter::exec
+            Monique_Ui_AmpPainter::exec
             (
                 g,
 
@@ -426,7 +426,7 @@ void mono_AmpPainter::paint (Graphics& g)
         // MAIN ENV
         if( show_out_env )
         {
-            mono_AmpPainter::exec
+            Monique_Ui_AmpPainter::exec
             (
                 g,
 
@@ -458,7 +458,7 @@ void mono_AmpPainter::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void mono_AmpPainter::resized()
+void Monique_Ui_AmpPainter::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -484,7 +484,7 @@ void mono_AmpPainter::resized()
     //[/UserResized]
 }
 
-void mono_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -500,7 +500,7 @@ void mono_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -588,19 +588,19 @@ void mono_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void mono_AmpPainter::timerCallback()
+void Monique_Ui_AmpPainter::timerCallback()
 {
     repaint( drawing_area->getBounds() );
     refresh_buttons();
 }
 
-void mono_AmpPainter::refresh_buttons()
+void Monique_Ui_AmpPainter::refresh_buttons()
 {
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
-    SynthData& synth_data = GET_DATA( synth_data );
+    MoniqueSynthData& synth_data = GET_DATA( synth_data );
 
     sl_show_range->setValue(synth_data.osci_show_range, dontSendNotification );
 
@@ -643,7 +643,7 @@ NOINLINE void EndlessBuffer::block_size_changed() noexcept
 }
 
 //==============================================================================
-inline void mono_AmpPainter::lock_for_reading() noexcept {
+inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept {
     for( int i = 0 ; i != buffers.size() ; ++i )
         buffers.getUnchecked(i)->read_lock();
 }
@@ -659,7 +659,7 @@ inline float EndlessBuffer::get_next_and_count( int& pos_ ) const noexcept
 
     return sample_buffer.getReadPointer()[pos_];
 }
-inline void mono_AmpPainter::unlock_for_reading() noexcept {
+inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept {
     for( int i = 0 ; i != buffers.size() ; ++i )
         buffers.getUnchecked(i)->read_unlock();
 }
@@ -728,7 +728,7 @@ int EndlessSwitchBuffer::get_new_reader_start_position( int samples_to_paint_ ) 
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="mono_AmpPainter" componentName=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_AmpPainter" componentName=""
                  parentClasses="public Component, public Timer" constructorParams=""
                  variableInitialisers="original_w(1465), original_h(180)" snapPixels="5"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"

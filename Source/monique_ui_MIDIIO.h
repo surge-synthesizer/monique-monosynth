@@ -36,15 +36,15 @@ class mono_AudioDeviceManager;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorMIDIIO  : public Component,
-                        public ComboBoxListener,
-                        public ButtonListener,
-                        public SliderListener
+class Monique_Ui_MidiIO  : public Component,
+    public ComboBoxListener,
+    public ButtonListener,
+    public SliderListener
 {
 public:
     //==============================================================================
-    UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manager_);
-    ~UiEditorMIDIIO();
+    Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device_manager_);
+    ~Monique_Ui_MidiIO();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -90,7 +90,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorMIDIIO)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MidiIO)
 };
 
 //[EndFile] You can add extra defines here...

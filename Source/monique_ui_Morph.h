@@ -23,7 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
 
-class UiDragPad;
+class Monique_Ui_DragPad;
 //[/Headers]
 
 
@@ -36,14 +36,14 @@ class UiDragPad;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorMorph  : public Component,
-                       public ComboBoxListener,
-                       public ButtonListener
+class Monique_Ui_MorphConfig  : public Component,
+    public ComboBoxListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
-    UiEditorMorph ();
-    ~UiEditorMorph();
+    Monique_Ui_MorphConfig ();
+    ~Monique_Ui_MorphConfig();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -102,11 +102,11 @@ private:
     ScopedPointer<Label> label_29;
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label_35;
-    ScopedPointer<UiDragPad> drag_pad;
+    ScopedPointer<Monique_Ui_DragPad> drag_pad;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorMorph)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MorphConfig)
 };
 
 //[EndFile] You can add extra defines here...

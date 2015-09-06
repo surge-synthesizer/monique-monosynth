@@ -26,11 +26,11 @@
 // TODO
 #define DONT_OVERRIDE_SLIDER_VALUE -99999
 
-class mono_ModulationSlider;
-class SnapSlider : public Slider 
+class Monique_Ui_DualSlider;
+class SnapSlider : public Slider
 {
-    friend class mono_ModulationSlider;
-    mono_ModulationSlider* owner;
+    friend class Monique_Ui_DualSlider;
+    Monique_Ui_DualSlider* owner;
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
@@ -43,8 +43,8 @@ class Left2MiddleSlider : public Slider
 {
     Slider*_peer_behind;
 
-    friend class mono_ModulationSlider;
-    mono_ModulationSlider* owner;
+    friend class Monique_Ui_DualSlider;
+    Monique_Ui_DualSlider* owner;
 
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
@@ -214,7 +214,7 @@ public:
     virtual ~ModulationSliderConfigBase() {}
 };
 
-class SynthData;
+class MoniqueSynthData;
 //[/Headers]
 
 
@@ -227,15 +227,15 @@ class SynthData;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class mono_ModulationSlider  : public Component,
-                               public mono_UiRefreshable,
-                               public SliderListener,
-                               public ButtonListener
+class Monique_Ui_DualSlider  : public Component,
+    public Monique_Ui_Refreshable,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
-    mono_ModulationSlider (ModulationSliderConfigBase* config_);
-    ~mono_ModulationSlider();
+    Monique_Ui_DualSlider (ModulationSliderConfigBase* config_);
+    ~Monique_Ui_DualSlider();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -247,7 +247,7 @@ public:
     const float original_h;
 private:
     ModulationSliderConfigBase*const _config;
-    SynthData* synth_data;
+    MoniqueSynthData* synth_data;
 
     Parameter* front_parameter;
     Parameter* modulation_parameter;
@@ -294,7 +294,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ModulationSlider)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_DualSlider)
 };
 
 //[EndFile] You can add extra defines here...

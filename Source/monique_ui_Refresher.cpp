@@ -1,14 +1,14 @@
 #include "monique_ui_Refresher.h"
 
 //==============================================================================
-mono_UiRefresher::mono_UiRefresher() noexcept {}
-mono_UiRefresher::~mono_UiRefresher() noexcept {
+Monique_Ui_Refresher::Monique_Ui_Refresher() noexcept {}
+Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept {
     clearSingletonInstance();
 }
 //==============================================================================
-juce_ImplementSingleton (mono_UiRefresher)
+juce_ImplementSingleton (Monique_Ui_Refresher)
 
-void mono_UiRefresher::timerCallback() 
+void Monique_Ui_Refresher::timerCallback() 
 {
     //Thread::setCurrentThreadPriority(1);
     for( int i = 0 ; i != refreshables.size() ; ++i )
@@ -17,23 +17,23 @@ void mono_UiRefresher::timerCallback()
     }
 }
 
-NOINLINE void mono_UiRefresher::add(mono_UiRefreshable*const r_) noexcept {
+NOINLINE void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.add(r_);
 }
-NOINLINE void mono_UiRefresher::remove(mono_UiRefreshable*const r_) noexcept {
+NOINLINE void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable*const r_) noexcept {
     ScopedLock locked(lock);
     refreshables.removeFirstMatchingValue(r_);
 }
-NOINLINE void mono_UiRefresher::remove_all() noexcept {
+NOINLINE void Monique_Ui_Refresher::remove_all() noexcept {
     ScopedLock locked(lock);
     refreshables.clearQuick();
 }
 
 //==============================================================================
-mono_UiRefreshable::mono_UiRefreshable() noexcept {
-    mono_UiRefresher::getInstance()->add(this);
+Monique_Ui_Refreshable::Monique_Ui_Refreshable() noexcept {
+    Monique_Ui_Refresher::getInstance()->add(this);
 }
-mono_UiRefreshable::~mono_UiRefreshable() noexcept {
-    mono_UiRefresher::getInstance()->remove( this );
+Monique_Ui_Refreshable::~Monique_Ui_Refreshable() noexcept {
+    Monique_Ui_Refresher::getInstance()->remove( this );
 }

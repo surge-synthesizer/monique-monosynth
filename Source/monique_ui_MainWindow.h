@@ -24,16 +24,19 @@
 #include "App_h_includer.h"
 
 class AppInstanceStore;
-class UiEditorSynthLitePopup;
-class UiEditorMIDIIO;
-class UiEditorMorph;
-class UiEditorSettings;
-class UiEditorGlobalSettings;
+
+class Monique_Ui_MainwindowPopup;
+class Monique_Ui_MidiIO;
+class Monique_Ui_MorphConfig;
+class Monique_Ui_Settings;
+class Monique_Ui_GlobalSettings;
+
 class MoniqueSynthesiserVoice;
-class SynthData;
-class SegmentedMeter;
+class MoniqueSynthData;
+
+class Monique_Ui_SegmentedMeter;
 class MIDIControl;
-class mono_ModulationSlider;
+class Monique_Ui_DualSlider;
 //[/Headers]
 
 
@@ -46,30 +49,30 @@ class mono_ModulationSlider;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorSynthLite  : public AudioProcessorEditor,
-                           public mono_UiRefreshable,
-                           public ButtonListener,
-                           public ComboBoxListener,
-                           public SliderListener
+class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
+    public Monique_Ui_Refreshable,
+    public ButtonListener,
+    public ComboBoxListener,
+    public SliderListener
 {
 public:
     //==============================================================================
-    UiEditorSynthLite ();
-    ~UiEditorSynthLite();
+    Monique_Ui_Mainwindow ();
+    ~Monique_Ui_Mainwindow();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     AppInstanceStore*const _app_instance_store;
     MoniqueSynthesiserVoice*voice;
-    SynthData* synth_data;
+    MoniqueSynthData* synth_data;
 
-    ScopedPointer<UiEditorSynthLitePopup> popup;
+    ScopedPointer<Monique_Ui_MainwindowPopup> popup;
     bool last_ctrl_mode;
     bool is_in_help_mode;
-    ScopedPointer<UiEditorMIDIIO> editor_midiio;
-    ScopedPointer<UiEditorMorph> editor_morph;
-    ScopedPointer<UiEditorSettings> editor_settings;
-    ScopedPointer<UiEditorGlobalSettings> editor_global_settings;
+    ScopedPointer<Monique_Ui_MidiIO> editor_midiio;
+    ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
+    ScopedPointer<Monique_Ui_Settings> editor_settings;
+    ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
 
     void refresh() noexcept override;
     void show_current_voice_data();
@@ -110,63 +113,63 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<mono_ModulationSlider> speed_multi;
-    ScopedPointer<mono_ModulationSlider> morpher_4;
-    ScopedPointer<mono_ModulationSlider> morpher_3;
-    ScopedPointer<mono_ModulationSlider> morpher_2;
-    ScopedPointer<mono_ModulationSlider> morpher_1;
+    ScopedPointer<Monique_Ui_DualSlider> speed_multi;
+    ScopedPointer<Monique_Ui_DualSlider> morpher_4;
+    ScopedPointer<Monique_Ui_DualSlider> morpher_3;
+    ScopedPointer<Monique_Ui_DualSlider> morpher_2;
+    ScopedPointer<Monique_Ui_DualSlider> morpher_1;
     ScopedPointer<Label> label_effect_hider;
-    ScopedPointer<mono_ModulationSlider> eq_9;
-    ScopedPointer<mono_ModulationSlider> eq_8;
-    ScopedPointer<mono_ModulationSlider> eq_7;
-    ScopedPointer<mono_ModulationSlider> eq_6;
-    ScopedPointer<mono_ModulationSlider> eq_5;
-    ScopedPointer<mono_ModulationSlider> eq_4;
-    ScopedPointer<mono_ModulationSlider> eq_3;
-    ScopedPointer<mono_ModulationSlider> eq_2;
-    ScopedPointer<mono_ModulationSlider> eq_1;
-    ScopedPointer<mono_ModulationSlider> bypass;
-    ScopedPointer<mono_ModulationSlider> chorus_modulation;
-    ScopedPointer<mono_ModulationSlider> reverb_dry;
-    ScopedPointer<mono_ModulationSlider> reverb_room;
-    ScopedPointer<mono_ModulationSlider> osc_wave_3;
+    ScopedPointer<Monique_Ui_DualSlider> eq_9;
+    ScopedPointer<Monique_Ui_DualSlider> eq_8;
+    ScopedPointer<Monique_Ui_DualSlider> eq_7;
+    ScopedPointer<Monique_Ui_DualSlider> eq_6;
+    ScopedPointer<Monique_Ui_DualSlider> eq_5;
+    ScopedPointer<Monique_Ui_DualSlider> eq_4;
+    ScopedPointer<Monique_Ui_DualSlider> eq_3;
+    ScopedPointer<Monique_Ui_DualSlider> eq_2;
+    ScopedPointer<Monique_Ui_DualSlider> eq_1;
+    ScopedPointer<Monique_Ui_DualSlider> bypass;
+    ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_room;
+    ScopedPointer<Monique_Ui_DualSlider> osc_wave_3;
     ScopedPointer<MidiKeyboardComponent> keyboard;
-    ScopedPointer<mono_ModulationSlider> glide2;
-    ScopedPointer<mono_ModulationSlider> arp_step_16;
-    ScopedPointer<mono_ModulationSlider> arp_step_15;
-    ScopedPointer<mono_ModulationSlider> arp_step_14;
-    ScopedPointer<mono_ModulationSlider> arp_step_13;
-    ScopedPointer<mono_ModulationSlider> arp_step_12;
-    ScopedPointer<mono_ModulationSlider> arp_step_11;
-    ScopedPointer<mono_ModulationSlider> arp_step_10;
-    ScopedPointer<mono_ModulationSlider> arp_step_9;
-    ScopedPointer<mono_ModulationSlider> arp_step_8;
-    ScopedPointer<mono_ModulationSlider> arp_step_7;
-    ScopedPointer<mono_ModulationSlider> arp_step_6;
-    ScopedPointer<mono_ModulationSlider> arp_step_5;
-    ScopedPointer<mono_ModulationSlider> arp_step_4;
-    ScopedPointer<mono_ModulationSlider> arp_step_3;
-    ScopedPointer<mono_ModulationSlider> arp_step_2;
-    ScopedPointer<mono_ModulationSlider> arp_step_1;
-    ScopedPointer<mono_ModulationSlider> shuffle;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_4;
-    ScopedPointer<mono_ModulationSlider> flt_decay_4;
-    ScopedPointer<mono_ModulationSlider> flt_attack_4;
-    ScopedPointer<mono_ModulationSlider> flt_release_3;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_time_3;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_3;
-    ScopedPointer<mono_ModulationSlider> flt_decay_3;
-    ScopedPointer<mono_ModulationSlider> flt_attack_3;
-    ScopedPointer<mono_ModulationSlider> flt_release_2;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_time_2;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_2;
-    ScopedPointer<mono_ModulationSlider> flt_decay_2;
-    ScopedPointer<mono_ModulationSlider> flt_attack_2;
-    ScopedPointer<mono_ModulationSlider> flt_release_1;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_time_1;
-    ScopedPointer<mono_ModulationSlider> flt_sustain_1;
-    ScopedPointer<mono_ModulationSlider> flt_decay_1;
-    ScopedPointer<mono_ModulationSlider> flt_attack_1;
+    ScopedPointer<Monique_Ui_DualSlider> glide2;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_16;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_15;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_14;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_13;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_12;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_11;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_10;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_9;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_8;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_7;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_6;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_5;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_4;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_3;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_2;
+    ScopedPointer<Monique_Ui_DualSlider> arp_step_1;
+    ScopedPointer<Monique_Ui_DualSlider> shuffle;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_4;
+    ScopedPointer<Monique_Ui_DualSlider> flt_decay_4;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_4;
+    ScopedPointer<Monique_Ui_DualSlider> flt_release_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_time_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_decay_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_release_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_time_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_decay_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_release_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_time_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_sustain_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_decay_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_1;
     ScopedPointer<Label> label_monolisa;
     ScopedPointer<TextButton> filter_type_1_1;
     ScopedPointer<TextButton> filter_type_2_1;
@@ -204,51 +207,51 @@ private:
     ScopedPointer<TextButton> button_open_midi_io_settings;
     ScopedPointer<ComboBox> combo_bank;
     ScopedPointer<TextButton> button_programm_load;
-    ScopedPointer<mono_ModulationSlider> osc_1;
-    ScopedPointer<mono_ModulationSlider> osc_2;
-    ScopedPointer<mono_ModulationSlider> osc_3;
-    ScopedPointer<mono_ModulationSlider> lfo_1;
-    ScopedPointer<mono_ModulationSlider> flt_cutoff_1;
-    ScopedPointer<mono_ModulationSlider> lfo_2;
-    ScopedPointer<mono_ModulationSlider> lfo_3;
-    ScopedPointer<mono_ModulationSlider> flt_cutoff_2;
-    ScopedPointer<mono_ModulationSlider> flt_cutoff_3;
-    ScopedPointer<mono_ModulationSlider> flt_input_1;
-    ScopedPointer<mono_ModulationSlider> flt_input_2;
-    ScopedPointer<mono_ModulationSlider> flt_input_3;
-    ScopedPointer<mono_ModulationSlider> flt_compressor_1;
-    ScopedPointer<mono_ModulationSlider> flt_distortion_1;
-    ScopedPointer<mono_ModulationSlider> flt_input_6;
-    ScopedPointer<mono_ModulationSlider> flt_input_7;
-    ScopedPointer<mono_ModulationSlider> flt_input_8;
-    ScopedPointer<mono_ModulationSlider> flt_compressor_2;
-    ScopedPointer<mono_ModulationSlider> flt_input_11;
-    ScopedPointer<mono_ModulationSlider> flt_input_12;
-    ScopedPointer<mono_ModulationSlider> flt_input_13;
-    ScopedPointer<mono_ModulationSlider> flt_compressor_3;
-    ScopedPointer<mono_ModulationSlider> flt_resonance_1;
-    ScopedPointer<mono_ModulationSlider> flt_gain_1;
-    ScopedPointer<mono_ModulationSlider> flt_resonance_2;
-    ScopedPointer<mono_ModulationSlider> flt_gain_2;
-    ScopedPointer<mono_ModulationSlider> flt_resonance_3;
-    ScopedPointer<mono_ModulationSlider> flt_gain_3;
-    ScopedPointer<mono_ModulationSlider> flt_volume_1;
-    ScopedPointer<mono_ModulationSlider> flt_volume_2;
-    ScopedPointer<mono_ModulationSlider> flt_volume_3;
-    ScopedPointer<mono_ModulationSlider> adsr_lfo_mix;
-    ScopedPointer<mono_ModulationSlider> lfo_opt_2;
-    ScopedPointer<mono_ModulationSlider> lfo_opt_3;
+    ScopedPointer<Monique_Ui_DualSlider> osc_1;
+    ScopedPointer<Monique_Ui_DualSlider> osc_2;
+    ScopedPointer<Monique_Ui_DualSlider> osc_3;
+    ScopedPointer<Monique_Ui_DualSlider> lfo_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_cutoff_1;
+    ScopedPointer<Monique_Ui_DualSlider> lfo_2;
+    ScopedPointer<Monique_Ui_DualSlider> lfo_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_cutoff_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_cutoff_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_distortion_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_6;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_7;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_8;
+    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_11;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_12;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_13;
+    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_resonance_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_gain_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_resonance_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_gain_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_resonance_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_gain_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_volume_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_volume_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_volume_3;
+    ScopedPointer<Monique_Ui_DualSlider> adsr_lfo_mix;
+    ScopedPointer<Monique_Ui_DualSlider> lfo_opt_2;
+    ScopedPointer<Monique_Ui_DualSlider> lfo_opt_3;
     ScopedPointer<TextButton> button_sequence_1;
-    ScopedPointer<mono_ModulationSlider> flt_release_4;
-    ScopedPointer<mono_ModulationSlider> delay2;
-    ScopedPointer<mono_ModulationSlider> volume;
-    ScopedPointer<mono_ModulationSlider> flt_distortion_2;
-    ScopedPointer<mono_ModulationSlider> flt_distortion_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_release_4;
+    ScopedPointer<Monique_Ui_DualSlider> delay2;
+    ScopedPointer<Monique_Ui_DualSlider> volume;
+    ScopedPointer<Monique_Ui_DualSlider> flt_distortion_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_distortion_3;
     ScopedPointer<TextButton> button_arp_speed_XNORM;
-    ScopedPointer<mono_ModulationSlider> flt_attack_5;
-    ScopedPointer<mono_ModulationSlider> flt_attack_6;
-    ScopedPointer<mono_ModulationSlider> osc_wave_1;
-    ScopedPointer<mono_ModulationSlider> osc_wave_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_5;
+    ScopedPointer<Monique_Ui_DualSlider> flt_attack_6;
+    ScopedPointer<Monique_Ui_DualSlider> osc_wave_1;
+    ScopedPointer<Monique_Ui_DualSlider> osc_wave_2;
     ScopedPointer<Slider> sl_morhp_mix;
     ScopedPointer<TextButton> button_programm_delete;
     ScopedPointer<TextButton> button_open_config;
@@ -257,8 +260,8 @@ private:
     ScopedPointer<TextButton> filter_type_6_3;
     ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<TextButton> button_ctrl_toggle;
-    ScopedPointer<mono_ModulationSlider> colour;
-    ScopedPointer<mono_ModulationSlider> speed;
+    ScopedPointer<Monique_Ui_DualSlider> colour;
+    ScopedPointer<Monique_Ui_DualSlider> speed;
     ScopedPointer<TextButton> button_open_morph;
     ScopedPointer<TextButton> effect_finalizer_switch;
     ScopedPointer<Label> label_ui_headline2;
@@ -266,8 +269,8 @@ private:
     ScopedPointer<Label> label_ui_headline5;
     ScopedPointer<Label> label_ui_headline6;
     ScopedPointer<TextButton> button_values_toggle;
-    ScopedPointer<mono_ModulationSlider> reverb_width;
-    ScopedPointer<mono_ModulationSlider> octave_offset;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
+    ScopedPointer<Monique_Ui_DualSlider> octave_offset;
     ScopedPointer<Label> label_ui_headline4;
     ScopedPointer<Label> label_ui_headline7;
     ScopedPointer<Label> label_ui_headline8;
@@ -288,13 +291,13 @@ private:
     ScopedPointer<Label> label_ui_headline23;
     ScopedPointer<Label> label_ui_headline24;
     ScopedPointer<Label> label_ui_headline25;
-    ScopedPointer<SegmentedMeter> volume_master_meter;
+    ScopedPointer<Monique_Ui_SegmentedMeter> volume_master_meter;
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorSynthLite)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Mainwindow)
 };
 
 //[EndFile] You can add extra defines here...

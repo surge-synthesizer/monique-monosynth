@@ -38,23 +38,23 @@
 //==============================================================================
 class DragPad : public Component
 {
-    UiDragPad*const parent;
+    Monique_Ui_DragPad*const parent;
     void mouseDoubleClick (const MouseEvent&) override;
     void mouseDrag(const MouseEvent& event) override;
 
 public:
-    NOINLINE DragPad( UiDragPad*const parent_ );
+    NOINLINE DragPad( Monique_Ui_DragPad*const parent_ );
     NOINLINE ~DragPad();
 };
 
 //==============================================================================
-NOINLINE DragPad::DragPad( UiDragPad*const parent_ ) : parent( parent_ ) {}
+NOINLINE DragPad::DragPad( Monique_Ui_DragPad*const parent_ ) : parent( parent_ ) {}
 NOINLINE DragPad::~DragPad() {}
 
 //==============================================================================
 void DragPad::mouseDoubleClick (const MouseEvent&)
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
     const int morph_motor_time( synth_data.morph_motor_time );
     ChangeParamOverTime::execute( synth_data.morhp_states[0], 0, morph_motor_time );
@@ -101,7 +101,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
     }
 
     {
-        SynthData& synth_data( GET_DATA( synth_data ) );
+        MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
         const int morph_motor_time( synth_data.morph_motor_time );
 
         float morph_top_left = 1.0f-left2right_state-top2bottom_state;
@@ -146,7 +146,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
 //[/MiscUserDefs]
 
 //==============================================================================
-UiDragPad::UiDragPad ()
+Monique_Ui_DragPad::Monique_Ui_DragPad ()
     : left2right_state(0.5),
       top2bottom_state(0.5),
       current_position(0,0),
@@ -182,7 +182,7 @@ UiDragPad::UiDragPad ()
     //[/Constructor]
 }
 
-UiDragPad::~UiDragPad()
+Monique_Ui_DragPad::~Monique_Ui_DragPad()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -195,7 +195,7 @@ UiDragPad::~UiDragPad()
 }
 
 //==============================================================================
-void UiDragPad::paint (Graphics& g)
+void Monique_Ui_DragPad::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     ComponentColours colours_ = UiLookAndFeel::getInstance()->colours;
@@ -229,7 +229,7 @@ void UiDragPad::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiDragPad::resized()
+void Monique_Ui_DragPad::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -243,7 +243,7 @@ void UiDragPad::resized()
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void UiDragPad::set_left_to_right_states( float left2right_state_, float top2bottom_state_ ) {
+void Monique_Ui_DragPad::set_left_to_right_states( float left2right_state_, float top2bottom_state_ ) {
     left2right_state = left2right_state_;
     top2bottom_state = top2bottom_state_;
 
@@ -261,7 +261,7 @@ void UiDragPad::set_left_to_right_states( float left2right_state_, float top2bot
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiDragPad" componentName=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_DragPad" componentName=""
                  parentClasses="public Component" constructorParams="" variableInitialisers="left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="130">

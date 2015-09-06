@@ -23,7 +23,7 @@ public:
 //==============================================================================
 class MoniqueAudioProcessor;
 
-class SynthData;
+class MoniqueSynthData;
 class RuntimeInfo;
 class LFO;
 class OSC;
@@ -38,7 +38,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 {
     //==============================================================================
     MoniqueAudioProcessor*const audio_processor;
-    SynthData*const synth_data;
+    MoniqueSynthData*const synth_data;
 
     //==============================================================================
     RuntimeInfo*const info;
@@ -89,7 +89,7 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, SynthData*const synth_data_ ) noexcept;
+    NOINLINE MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
     NOINLINE ~MoniqueSynthesiserVoice() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)

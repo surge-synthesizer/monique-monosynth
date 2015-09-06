@@ -3,8 +3,7 @@
 #include "monique_core_Datastructures.h"
 
 #include "monique_ui_AmpPainter.h"
-#include "PluginProcessor.h"
-#include "../JUCE-3.1.1/modules/juce_graphics/geometry/juce_Rectangle.h"
+#include "monique_core_Processor.h"
 
 
 //==============================================================================
@@ -91,7 +90,7 @@ class mono_ThreadManager
 {
     Array< mono_ExecuterThread* > threads;
     CriticalSection cs;
-    SynthData*const synth_data;
+    MoniqueSynthData*const synth_data;
 
 private:
     //==============================================================================
@@ -1458,7 +1457,7 @@ class OSC : public RuntimeListener
 
     // DATA SOURCE
     //==============================================================================
-    const SynthData*const synth_data;
+    const MoniqueSynthData*const synth_data;
     const OSCData* osc_data;
     const OSCData* master_osc_data;
 
@@ -1478,14 +1477,14 @@ public:
 private:
     //==============================================================================
     friend class MoniqueSynthesiserVoice;
-    NOINLINE OSC( const SynthData* synth_data_, int id_ ) noexcept;
+    NOINLINE OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
     NOINLINE ~OSC() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSC)
 };
 
 //==============================================================================
-NOINLINE OSC::OSC( const SynthData* synth_data_, int id_ ) noexcept
+NOINLINE OSC::OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept
 :
 id( id_ ),
     last_frequency( 0 ),
@@ -2091,7 +2090,7 @@ class ENV
 
     STAGES current_stage;
 
-    const SynthData*const synth_data;
+    const MoniqueSynthData*const synth_data;
     const ENVData*const env_data;
 
 public:
@@ -2114,14 +2113,14 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE ENV( const SynthData* synth_data_, ENVData* env_data_ );
+    NOINLINE ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
     NOINLINE ~ENV();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENV)
 };
 
 //==============================================================================
-NOINLINE ENV::ENV( const SynthData* synth_data_, ENVData* env_data_ )
+NOINLINE ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     :
     envelop(),
     sustain_smoother( &env_data_->sustain ),
@@ -2991,7 +2990,7 @@ private:
 
     const int id;
 
-    const SynthData*const synth_data;
+    const MoniqueSynthData*const synth_data;
     const FilterData*const filter_data;
     DataBuffer*const data_buffer;
 
@@ -3013,14 +3012,14 @@ private:
 
 public:
     //==============================================================================
-    NOINLINE FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept;
+    NOINLINE FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
     NOINLINE ~FilterProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterProcessor)
 };
 
 //==============================================================================
-NOINLINE FilterProcessor::FilterProcessor( const SynthData* synth_data_, int id_ ) noexcept
+NOINLINE FilterProcessor::FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept
 :
 env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
      input_envs(),
@@ -3781,7 +3780,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     }
 
     // VISUALIZE
-    if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         amp_painter->add_filter_env( id, amp_mix, num_samples );
         amp_painter->add_filter( id, this_filter_output_buffer, num_samples );
@@ -3937,7 +3936,7 @@ class EQProcessor : public RuntimeListener
 
     friend class mono_ParameterOwnerStore;
 
-    const SynthData*const synth_data;
+    const MoniqueSynthData*const synth_data;
     const EQData*const eq_data;
     DataBuffer*const data_buffer;
 
@@ -3951,7 +3950,7 @@ public:
     inline void process( int num_samples_ ) noexcept;
 
     //==============================================================================
-    NOINLINE EQProcessor( SynthData* synth_data_ ) noexcept;
+    NOINLINE EQProcessor( MoniqueSynthData* synth_data_ ) noexcept;
     NOINLINE ~EQProcessor() noexcept;
 
     NOINLINE void sample_rate_changed( double old_sr_ ) noexcept override;
@@ -3960,7 +3959,7 @@ public:
 };
 
 //==============================================================================
-NOINLINE EQProcessor::EQProcessor( SynthData* synth_data_ ) noexcept
+NOINLINE EQProcessor::EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
 :
 velocity_smoother
 {
@@ -4226,7 +4225,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             out_buffer[sid] = (tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]*0.2));
         }
 
-        if( mono_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             amp_painter->add_eq( out_buffer, num_samples_ );
         }
@@ -4737,7 +4736,7 @@ private:
     ValueSmoother volume_smoother;
     ValueSmoother clipping_smoother;
 
-    const SynthData*const synth_data;
+    const MoniqueSynthData*const synth_data;
     DataBuffer*const data_buffer;
     const ReverbData*const reverb_data;
     const ChorusData*const chorus_data;
@@ -4776,14 +4775,14 @@ public:
 
 public:
     //==============================================================================
-    NOINLINE FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept;
+    NOINLINE FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept;
     NOINLINE ~FXProcessor() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
 };
 
 // -----------------------------------------------------------------
-NOINLINE FXProcessor::FXProcessor( SynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
+NOINLINE FXProcessor::FXProcessor( MoniqueSynthData* synth_data_, Parameter* sequencer_velocity_ ) noexcept
 :
 reverb_l(),
          reverb_r(),
@@ -5095,7 +5094,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         }
 
         // VISUALIZE
-        if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             amp_painter->add_out( &output_buffer_.getReadPointer(LEFT)[start_sample_final_out_], num_samples_ );
             amp_painter->add_out_env( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_ENV), num_samples_ );
@@ -5283,7 +5282,7 @@ inline void ArpSequencer::reset() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, SynthData*const synth_data_ ) noexcept
+NOINLINE MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept
 :
 audio_processor( audio_processor_ ),
 synth_data( synth_data_ ),
@@ -5492,7 +5491,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     if( current_note == -1 )
         return;
 
-    mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
+    Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )

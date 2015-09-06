@@ -23,7 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
 
-class UiEditorSynthLite;
+class Monique_Ui_Mainwindow;
 class MIDIControl;
 //[/Headers]
 
@@ -37,15 +37,15 @@ class MIDIControl;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorSynthLitePopup  : public Component,
-                                public mono_UiRefreshable,
-                                public ComboBoxListener,
-                                public ButtonListener
+class Monique_Ui_MainwindowPopup  : public Component,
+    public Monique_Ui_Refreshable,
+    public ComboBoxListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
-    UiEditorSynthLitePopup (UiEditorSynthLite*const parent_, MIDIControl* midi_control_);
-    ~UiEditorSynthLitePopup();
+    Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_);
+    ~Monique_Ui_MainwindowPopup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -58,7 +58,7 @@ public:
     const float original_h;
 
 private:
-    UiEditorSynthLite*const parent;
+    Monique_Ui_Mainwindow*const parent;
     MIDIControl* _midi_control;
     //[/UserMethods]
 
@@ -82,7 +82,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorSynthLitePopup)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MainwindowPopup)
 };
 
 //[EndFile] You can add extra defines here...

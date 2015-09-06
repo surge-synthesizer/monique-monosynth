@@ -1410,7 +1410,7 @@ class MorphGroup : public Timer, ParameterListener
     MorphGroup* left_morph_source;
     MorphGroup* right_morph_source;
 
-    friend class SynthData;
+    friend class MoniqueSynthData;
     Array< Parameter* > params;
     float last_power_of_right;
     Array< BoolParameter* > switch_bool_params;
@@ -1752,7 +1752,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 //==============================================================================
 #define SYNTH_DATA_NAME "SD"
-NOINLINE SynthData::SynthData( DATA_TYPES data_type ) noexcept
+NOINLINE MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type ) noexcept
 :
 id( data_type ),
 
@@ -2113,7 +2113,7 @@ current_bank(0)
         refresh_banks_and_programms();
     }
 }
-NOINLINE SynthData::~SynthData() noexcept
+NOINLINE MoniqueSynthData::~MoniqueSynthData() noexcept
 {
     eq_data = nullptr;
     arp_sequencer_data = nullptr;
@@ -2129,7 +2129,7 @@ NOINLINE SynthData::~SynthData() noexcept
 }
 
 //==============================================================================
-static inline void copy( SynthData* dest_, const SynthData* src_ ) noexcept
+static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ ) noexcept
 {
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
@@ -2171,7 +2171,7 @@ static inline void copy( SynthData* dest_, const SynthData* src_ ) noexcept
     // NO NEED FOR COPY
     // morhp_states
 }
-static inline void collect_saveable_parameters( SynthData* data_, Array< Parameter* >& params_ ) noexcept
+static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->volume );
     params_.add( &data_->glide );
@@ -2218,7 +2218,7 @@ static inline void collect_saveable_parameters( SynthData* data_, Array< Paramet
         params_.add( &data_->morhp_switch_states[morpher_id] );
     }
 }
-NOINLINE void SynthData::colect_saveable_parameters() noexcept
+NOINLINE void MoniqueSynthData::colect_saveable_parameters() noexcept
 {
     // on top to be the first on load and get the right update order (bit hacky, but ok ;--)
     collect_saveable_parameters( env_preset_def, saveable_parameters );
@@ -2252,7 +2252,7 @@ NOINLINE void SynthData::colect_saveable_parameters() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
+NOINLINE void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
     {
         // OSC'S
@@ -2544,14 +2544,14 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
     if( data_type == MASTER )
     {
-        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new SynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
 
         // SETUP THE MORPH GROUP
         // TODO, do not initalize the unneded morph groups
@@ -2570,17 +2570,17 @@ NOINLINE void SynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     left_morph_sources.minimiseStorageOverheads();
     right_morph_sources.minimiseStorageOverheads();
 }
-float SynthData::get_morph_state( int morpher_id_ ) const noexcept
+float MoniqueSynthData::get_morph_state( int morpher_id_ ) const noexcept
 {
     return morhp_states[morpher_id_];
 }
-bool SynthData::get_morph_switch_state( int morpher_id_ ) const noexcept
+bool MoniqueSynthData::get_morph_switch_state( int morpher_id_ ) const noexcept
 {
     return morhp_switch_states[morpher_id_];
 }
 
 //==============================================================================
-void SynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
+void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
 {
     if( force_ )
     {
@@ -2604,7 +2604,7 @@ void SynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool 
         break;
     }
 }
-void SynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
+void MoniqueSynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
 {
     if( do_switch_ )
     {
@@ -2627,7 +2627,7 @@ void SynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcep
         break;
     }
 }
-void SynthData::run_sync_morph() noexcept
+void MoniqueSynthData::run_sync_morph() noexcept
 {
     morph_group_1->run_sync_morph();
     morph_group_2->run_sync_morph();
@@ -2636,7 +2636,7 @@ void SynthData::run_sync_morph() noexcept
 }
 
 //==============================================================================
-void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
+void MoniqueSynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
     if( param_ == morhp_states[0].ptr() ) {
         morph( 0, *param_ );
@@ -2700,7 +2700,7 @@ void SynthData::parameter_value_changed( Parameter* param_ ) noexcept
 }
 
 //==============================================================================
-void SynthData::set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept
+void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept
 {
     MorphGroup* morph_group_to_update;
     MorphGroup* morph_group_source;
@@ -2750,9 +2750,9 @@ void SynthData::set_morph_source_data_from_current( int morpher_id_, bool left_o
 
     run_sync_morph();
 }
-bool SynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept
+bool MoniqueSynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept
 {
-    SynthData* synth_data = left_morph_sources.getUnchecked( morpher_id_ );
+    MoniqueSynthData* synth_data = left_morph_sources.getUnchecked( morpher_id_ );
     synth_data->set_current_bank( bank_id_ );
     synth_data->set_current_program( index_ );
     bool success = synth_data->load( false );
@@ -2763,9 +2763,9 @@ bool SynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_
 
     return success;
 }
-bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept
+bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept
 {
-    SynthData* synth_data = right_morph_sources.getUnchecked( morpher_id_ );
+    MoniqueSynthData* synth_data = right_morph_sources.getUnchecked( morpher_id_ );
     synth_data->set_current_bank( bank_id_ );
     synth_data->set_current_program( index_ );
     bool success = synth_data->load( false );
@@ -2780,9 +2780,9 @@ bool SynthData::try_to_load_programm_to_right_side( int morpher_id_, int bank_id
 //==============================================================================
 //==============================================================================
 //==============================================================================
-NOINLINE void SynthData::refresh_banks_and_programms() noexcept
+NOINLINE void MoniqueSynthData::refresh_banks_and_programms() noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
     // BANKS
     synth_data.banks.clearQuick();
@@ -2802,7 +2802,7 @@ NOINLINE void SynthData::refresh_banks_and_programms() noexcept
 
     synth_data.calc_current_program_abs();
 }
-NOINLINE void SynthData::calc_current_program_abs() noexcept
+NOINLINE void MoniqueSynthData::calc_current_program_abs() noexcept
 {
     if( current_program == -1 )
     {
@@ -2823,7 +2823,7 @@ NOINLINE void SynthData::calc_current_program_abs() noexcept
             current_program_abs += bank_size;
     }
 }
-NOINLINE void SynthData::update_banks( StringArray& banks_ ) noexcept
+NOINLINE void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
 {
     banks_.add("A");
     banks_.add("B");
@@ -2883,9 +2883,9 @@ static inline void sort_by_date( Array< File >& file_array_ )
     }
 }
 */
-NOINLINE void SynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
+NOINLINE void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
     File bank_folder = get_bank_folder( synth_data.banks[bank_id_] );
     Array< File > program_files;
@@ -2900,33 +2900,33 @@ NOINLINE void SynthData::update_bank_programms( int bank_id_, StringArray& progr
 }
 
 //==============================================================================
-NOINLINE const StringArray& SynthData::get_banks() noexcept
+NOINLINE const StringArray& MoniqueSynthData::get_banks() noexcept
 {
     return GET_DATA( synth_data ).banks;
 }
-NOINLINE const StringArray& SynthData::get_programms( int bank_id_ ) noexcept
+NOINLINE const StringArray& MoniqueSynthData::get_programms( int bank_id_ ) noexcept
 {
     return GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id_);
 }
 
 // ==============================================================================
-NOINLINE void SynthData::set_current_bank( int bank_index_ ) noexcept
+NOINLINE void MoniqueSynthData::set_current_bank( int bank_index_ ) noexcept
 {
     current_bank = bank_index_;
     current_program = -1; // TODO can be an empty bank
 
     calc_current_program_abs();
 }
-NOINLINE void SynthData::set_current_program( int programm_index_ ) noexcept
+NOINLINE void MoniqueSynthData::set_current_program( int programm_index_ ) noexcept
 {
     current_program = programm_index_;
     calc_current_program_abs();
 }
-NOINLINE void SynthData::set_current_program_abs( int programm_index_ ) noexcept
+NOINLINE void MoniqueSynthData::set_current_program_abs( int programm_index_ ) noexcept
 {
     int sum_programms = 0;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
     {
         int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
@@ -2942,25 +2942,25 @@ NOINLINE void SynthData::set_current_program_abs( int programm_index_ ) noexcept
 }
 
 // ==============================================================================
-NOINLINE int SynthData::get_current_bank() const noexcept
+NOINLINE int MoniqueSynthData::get_current_bank() const noexcept
 {
     return current_bank;
 }
-NOINLINE int SynthData::get_current_program() const noexcept
+NOINLINE int MoniqueSynthData::get_current_program() const noexcept
 {
     return current_program;
 }
-NOINLINE const StringArray& SynthData::get_current_bank_programms() const noexcept
+NOINLINE const StringArray& MoniqueSynthData::get_current_bank_programms() const noexcept
 {
     return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank);
 }
 
 // ==============================================================================
-NOINLINE int SynthData::get_current_programm_id_abs() const noexcept
+NOINLINE int MoniqueSynthData::get_current_programm_id_abs() const noexcept
 {
     return current_program_abs;
 }
-NOINLINE const String& SynthData::get_current_program_name_abs() const noexcept
+NOINLINE const String& MoniqueSynthData::get_current_program_name_abs() const noexcept
 {
     if( current_program == -1 )
     {
@@ -2969,9 +2969,9 @@ NOINLINE const String& SynthData::get_current_program_name_abs() const noexcept
     }
     return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank)[current_program];
 }
-NOINLINE const String& SynthData::get_program_name_abs(int id_) const noexcept
+NOINLINE const String& MoniqueSynthData::get_program_name_abs(int id_) const noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
     {
         const int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
@@ -3016,9 +3016,9 @@ static inline String& generate_programm_name( const String& bank_, String& name_
 
     return name_;
 };
-NOINLINE bool SynthData::create_new() noexcept
+NOINLINE bool MoniqueSynthData::create_new() noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     String new_program_name = String("New Program");
     generate_programm_name( synth_data.banks[current_bank], new_program_name );
 
@@ -3032,12 +3032,12 @@ NOINLINE bool SynthData::create_new() noexcept
 
     return success;
 }
-NOINLINE bool SynthData::rename( const String& new_name_ ) noexcept
+NOINLINE bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
 {
     if( current_program == -1 )
         return false;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
 
     String name = new_name_;
@@ -3062,12 +3062,12 @@ NOINLINE bool SynthData::rename( const String& new_name_ ) noexcept
 
     return success;
 }
-NOINLINE bool SynthData::replace() noexcept
+NOINLINE bool MoniqueSynthData::replace() noexcept
 {
     if( current_program == -1 )
         return false;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
     bool success = AlertWindow::showNativeDialogBox
     (
@@ -3080,12 +3080,12 @@ NOINLINE bool SynthData::replace() noexcept
 
     return success;
 }
-NOINLINE bool SynthData::remove() noexcept
+NOINLINE bool MoniqueSynthData::remove() noexcept
 {
     if( current_program == -1 )
         return false;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
     bool success = AlertWindow::showNativeDialogBox
     (
@@ -3103,12 +3103,12 @@ NOINLINE bool SynthData::remove() noexcept
 }
 
 // ==============================================================================
-NOINLINE bool SynthData::load( bool load_morph_groups ) noexcept
+NOINLINE bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
 {
     if( current_program == -1 )
         return false;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     return load
     (
         synth_data.banks[current_bank],
@@ -3116,7 +3116,7 @@ NOINLINE bool SynthData::load( bool load_morph_groups ) noexcept
         load_morph_groups
     );
 }
-NOINLINE bool SynthData::load_prev() noexcept
+NOINLINE bool MoniqueSynthData::load_prev() noexcept
 {
     bool success = false;
 
@@ -3137,11 +3137,11 @@ NOINLINE bool SynthData::load_prev() noexcept
 
     return success;
 }
-NOINLINE bool SynthData::load_next() noexcept
+NOINLINE bool MoniqueSynthData::load_next() noexcept
 {
     bool success = false;
 
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     if( current_program+1 < synth_data.program_names_per_bank.getReference(current_bank).size() )
     {
         current_program++;
@@ -3158,7 +3158,7 @@ NOINLINE bool SynthData::load_next() noexcept
 
     return success;
 }
-bool SynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
+bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
 {
     bool success = false;
     File program = get_program_file( bank_name_, program_name_ );
@@ -3178,7 +3178,7 @@ bool SynthData::load( const String& bank_name_, const String& program_name_, boo
 }
 
 // ==============================================================================
-NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept
+NOINLINE void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
 {
     if( xml_ )
     {
@@ -3188,7 +3188,7 @@ NOINLINE void SynthData::save_to( XmlElement* xml_ ) const noexcept
         }
     }
 }
-bool SynthData::write2file( const String& bank_name_, const String& program_name_ ) const noexcept
+bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) const noexcept
 {
     File program_file = get_program_file( bank_name_, program_name_ );
 
@@ -3203,7 +3203,7 @@ bool SynthData::write2file( const String& bank_name_, const String& program_name
 
     return xml.writeToFile(program_file,"");
 }
-void SynthData::read_from( const XmlElement* xml_ ) noexcept
+void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 {
     if( xml_ )
     {
@@ -3230,17 +3230,17 @@ void SynthData::read_from( const XmlElement* xml_ ) noexcept
     }
 }
 //==============================================================================
-NOINLINE void SynthData::save_session() const noexcept
+NOINLINE void MoniqueSynthData::save_session() const noexcept
 {
     write2file( "SESSION", "last" );
 }
-NOINLINE void SynthData::load_session() noexcept
+NOINLINE void MoniqueSynthData::load_session() noexcept
 {
     load( "SESSION", "last" );
 }
 
 //==============================================================================
-NOINLINE void SynthData::save_midi() const noexcept
+NOINLINE void MoniqueSynthData::save_midi() const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
@@ -3257,7 +3257,7 @@ NOINLINE void SynthData::save_midi() const noexcept
         xml.writeToFile(midi_file,"");
     }
 }
-NOINLINE void SynthData::read_midi() noexcept
+NOINLINE void MoniqueSynthData::read_midi() noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("patch.midi"));

@@ -503,7 +503,7 @@ public:
 //==============================================================================
 #define THREAD_LIMIT 4
 class MorphGroup;
-struct SynthData : ParameterListener
+struct MoniqueSynthData : ParameterListener
 {
     const int id;
 
@@ -577,10 +577,10 @@ public:
     }
 
     // ==============================================================================
-    NOINLINE SynthData( DATA_TYPES data_type ) noexcept;
-    NOINLINE ~SynthData() noexcept;
+    NOINLINE MoniqueSynthData( DATA_TYPES data_type ) noexcept;
+    NOINLINE ~MoniqueSynthData() noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( SynthData )
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( MoniqueSynthData )
 
 public:
     // ==============================================================================
@@ -594,8 +594,8 @@ public:
 
 private:
     ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
-    OwnedArray< SynthData > left_morph_sources;
-    OwnedArray< SynthData > right_morph_sources;
+    OwnedArray< MoniqueSynthData > left_morph_sources;
+    OwnedArray< MoniqueSynthData > right_morph_sources;
 
     NOINLINE void init_morph_groups( DATA_TYPES data_type ) noexcept;
 
@@ -714,7 +714,7 @@ public:
     ArpSequencerData* arp_data;
     ReverbData* reverb_data;
     ChorusData* chorus_data;
-    SynthData* synth_data;
+    MoniqueSynthData* synth_data;
 
     MoniqueSynthesiserVoice* voice;
 

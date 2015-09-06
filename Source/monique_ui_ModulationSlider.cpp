@@ -19,75 +19,10 @@
 
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
+#include "monique_ui_MainWindow.h"
+
 #include "monique_core_Synth.h"
 #include "monique_core_Datastructures.h"
-#include "UiEditorSynthLite.h"
-
-// BACKUP FROM MONO UI UTILS
-/*
-// ==============================================================================
-ParameterReference::ParameterReference( mono_ParameterCompatibilityBase*const param_compatibility_base_ ) : _base( param_compatibility_base_ ) {}
-
-ParameterReference::operator bool() const {
-    return _base;
-}
-
-void ParameterReference::write_value_to( Slider*const slider_ ) const {
-    slider_->setValue( _base->get_scaled_value()*_base->scale() ,dontSendNotification );
-}
-void ParameterReference::read_value_from( const Slider*const slider_ ) {
-    _base->set_scaled_value( slider_->getValue()/_base->scale() );
-}
-float ParameterReference::get_value() const {
-    return _base->get_scaled_value()/_base->scale();
-}
-void ParameterReference::invert () {
-    _base->set_scaled_value( !_base->get_scaled_value() );
-}
-void ParameterReference::init_modulation_slider( Slider*const slider_, bool is_modulation_slider_centered_ ) const {
-    slider_->setRange( -100, MODULATION_AMOUNT_MAX, 0.1 );
-    slider_->setDoubleClickReturnValue( true, 0 );
-    slider_->setPopupMenuEnabled( true );
-    write_modulation_to( slider_, is_modulation_slider_centered_ );
-}
-void ParameterReference::write_modulation_to( Slider*const slider_, bool is_modulation_slider_centered_ ) const {
-    const float modulation_value = _base->get_modulation_amount();
-    float scaled_value = _base->get_scaled_value();
-    const float scale = _base->scale();
-    if( scale != 1000 )
-    {
-        if( scaled_value >= 0 )
-            scaled_value /= _base->max_unscaled();
-        else
-            scaled_value /= _base->min_unscaled();
-    }
-
-    int modulation_slider_style;
-    if( is_modulation_slider_centered_ )
-        modulation_slider_style = MODULATION_SLIDER_IS_FIXED_CENTERED;
-    else if( _base->min_unscaled() < 0 )
-        modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER;
-    else
-        modulation_slider_style = MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO;
-
-    slider_->setRotaryParameters( scaled_value, modulation_slider_style, true );
-    slider_->setValue( modulation_value*MODULATION_AMOUNT_MAX ,dontSendNotification );
-}
-void ParameterReference::read_modulation_from ( const Slider*const slider_ ) {
-    _base->set_modulation_amount( slider_->getValue() / MODULATION_AMOUNT_MAX );
-}
-
-float ParameterReference::get_modulation() const {
-    return _base->get_modulation_amount();
-}
-float ParameterReference::get_last_modulation() const {
-    return _base->get_last_modulation_amount();
-}
-bool ParameterReference::has_modulation() const {
-    return _base->has_modulation();
-}
-*/
-
 //[/Headers]
 
 #include "monique_ui_ModulationSlider.h"
@@ -240,12 +175,12 @@ noexcept
     }
 }
 
-bool mono_ModulationSlider::is_in_ctrl_view() const
+bool Monique_Ui_DualSlider::is_in_ctrl_view() const
 {
     return front_parameter->midi_control->get_ctrl_mode();
 }
 
-void mono_ModulationSlider::show_view_mode()
+void Monique_Ui_DualSlider::show_view_mode()
 {
     const bool is_in_ctrl_mode = front_parameter->midi_control->get_ctrl_mode();
     if( slider_modulation )
@@ -271,7 +206,7 @@ void mono_ModulationSlider::show_view_mode()
     }
 }
 
-void mono_ModulationSlider::refresh() noexcept
+void Monique_Ui_DualSlider::refresh() noexcept
 {
     //==============================================================================
     // UPDATE TOP BUTTON
@@ -487,14 +422,14 @@ void mono_ModulationSlider::refresh() noexcept
     }
 }
 
-void mono_ModulationSlider::set_ctrl_view_mode( bool mode_ ) const
+void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ ) const
 {
     front_parameter->midi_control->set_ctrl_mode( mode_ );
     if( back_parameter )
         back_parameter->midi_control->set_ctrl_mode( mode_ );
 }
 
-void mono_ModulationSlider::sliderClicked (Slider*s_)
+void Monique_Ui_DualSlider::sliderClicked (Slider*s_)
 {
     if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
         sliderValueChanged(s_);
@@ -502,7 +437,7 @@ void mono_ModulationSlider::sliderClicked (Slider*s_)
 //[/MiscUserDefs]
 
 //==============================================================================
-mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config_)
+Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config_)
     : _config(config_),original_w(60), original_h(130)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -636,7 +571,7 @@ mono_ModulationSlider::mono_ModulationSlider (ModulationSliderConfigBase* config
     //[/Constructor]
 }
 
-mono_ModulationSlider::~mono_ModulationSlider()
+Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -655,7 +590,7 @@ mono_ModulationSlider::~mono_ModulationSlider()
 }
 
 //==============================================================================
-void mono_ModulationSlider::paint (Graphics& g)
+void Monique_Ui_DualSlider::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     g.fillAll (UiLookAndFeel::getInstance()->colours.bg);
@@ -670,7 +605,7 @@ void mono_ModulationSlider::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void mono_ModulationSlider::resized()
+void Monique_Ui_DualSlider::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     if( slider_value )
@@ -700,7 +635,7 @@ void mono_ModulationSlider::resized()
     //[/UserResized]
 }
 
-void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_DualSlider::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -759,7 +694,7 @@ void mono_ModulationSlider::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void mono_ModulationSlider::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -810,19 +745,19 @@ void Left2MiddleSlider::mouseExit(const MouseEvent& event)
     owner->sliderModExit(this);
 
 }
-void mono_ModulationSlider::sliderValueEnter (Slider*s_)
+void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
 };
-void mono_ModulationSlider::sliderValueExit (Slider*s_)
+void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 {
     runtime_show_value_popup = false;
 };
-void mono_ModulationSlider::sliderModEnter (Slider*s_)
+void Monique_Ui_DualSlider::sliderModEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
 };
-void mono_ModulationSlider::sliderModExit (Slider*s_)
+void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 {
     runtime_show_value_popup = false;
 };
@@ -838,8 +773,8 @@ void mono_ModulationSlider::sliderModExit (Slider*s_)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="mono_ModulationSlider" componentName=""
-                 parentClasses="public Component, public mono_UiRefreshable" constructorParams="ModulationSliderConfigBase* config_"
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_DualSlider" componentName=""
+                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams="ModulationSliderConfigBase* config_"
                  variableInitialisers="_config(config_),original_w(60), original_h(130)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="60" initialHeight="130">

@@ -131,15 +131,15 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class mono_AmpPainter  : public Component,
-                         public Timer,
-                         public SliderListener,
-                         public ButtonListener
+class Monique_Ui_AmpPainter  : public Component,
+    public Timer,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
-    mono_AmpPainter ();
-    ~mono_AmpPainter();
+    Monique_Ui_AmpPainter ();
+    ~Monique_Ui_AmpPainter();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -210,11 +210,11 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_AmpPainter)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_AmpPainter)
 };
 
 //[EndFile] You can add extra defines here...
-inline void mono_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
+inline void Monique_Ui_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
 {
     //if( show_filter_env[id_] )
     {
@@ -222,7 +222,7 @@ inline void mono_AmpPainter::add_filter_env(int id_, const float* values_, int n
         values->write( values_, num_samples_ );
     }
 }
-inline void mono_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
+inline void Monique_Ui_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
 {
     //if( show_filter[id_] )
     {
@@ -230,28 +230,28 @@ inline void mono_AmpPainter::add_filter(int id_, const float* values_, int num_s
         values->write( values_, num_samples_ );
     }
 }
-inline void mono_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
 {
     //if( show_eq )
     {
         eq_values.write( values_, num_samples_ );
     }
 }
-inline void mono_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
 {
     //if( show_out_env )
     {
         values_env.write( values_, num_samples_ );
     }
 }
-inline void mono_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
 {
     //if( show_out )
     {
         values.write( values_, num_samples_ );
     }
 }
-inline void mono_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
 {
     //if( id_ == 0 || show_osc[id_] )
     {

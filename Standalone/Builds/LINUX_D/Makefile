@@ -33,12 +33,14 @@ OBJECTS := \
   $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
+  $(OBJDIR)/monique_core_Processor_aa317247.o \
   $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
   $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
   $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o \
+  $(OBJDIR)/monique_ui_MainWindow_f360d1a9.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
@@ -46,8 +48,6 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
-  $(OBJDIR)/PluginProcessor_319d19ef.o \
-  $(OBJDIR)/UiEditorSynthLite_e00d3d79.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
   $(OBJDIR)/juce_audio_basics_49d7f937.o \
   $(OBJDIR)/juce_audio_devices_b969dc35.o \
@@ -98,6 +98,11 @@ $(OBJDIR)/monique_core_Parameters_93b9539f.o: ../../../Source/monique_core_Param
 	@echo "Compiling monique_core_Parameters.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_core_Processor_aa317247.o: ../../../Source/monique_core_Processor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_core_Processor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_core_Synth_27fdfbf1.o: ../../../Source/monique_core_Synth.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_core_Synth.cpp"
@@ -126,6 +131,11 @@ $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_Globa
 $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o: ../../../Source/monique_ui_LookAndFeel.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_LookAndFeel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_MainWindow_f360d1a9.o: ../../../Source/monique_ui_MainWindow.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_MainWindow.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp
@@ -161,16 +171,6 @@ $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o: ../../../Source/monique_ui_Segme
 $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceManager.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling mono_AudioDeviceManager.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/PluginProcessor_319d19ef.o: ../../../Source/PluginProcessor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling PluginProcessor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/UiEditorSynthLite_e00d3d79.o: ../../../Source/UiEditorSynthLite.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling UiEditorSynthLite.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp

@@ -1,9 +1,9 @@
 #ifndef JUCE_STANDALONEFILTERWINDOW_H_INCLUDED
 #define JUCE_STANDALONEFILTERWINDOW_H_INCLUDED
 
-#include "../../Source/PluginProcessor.h"
+#include "../../Source/monique_core_Processor.h"
 #include "../../Source/monique_core_Synth.h"
-#include "../../Source/UiEditorSynthLite.h"
+#include "../../Source/monique_ui_MainWindow.h"
 
 extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
@@ -24,7 +24,7 @@ public:
         }
 
 #ifndef PROFILE
-        setContentOwned(reinterpret_cast<UiEditorSynthLite*>( filter->createEditorIfNeeded()), true );
+        setContentOwned(reinterpret_cast<Monique_Ui_Mainwindow*>( filter->createEditorIfNeeded()), true );
 #endif
     }
 
@@ -84,11 +84,11 @@ public:
 
     void suspended() noexcept
     {
-        mono_UiRefresher::getInstance()->stopTimer();
+        Monique_Ui_Refresher::getInstance()->stopTimer();
     }
     void resumed() noexcept
     {
-        mono_UiRefresher::getInstance()->startTimer( UI_REFRESH_RATE );
+        Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
     }
 
     void visibilityChanged() override

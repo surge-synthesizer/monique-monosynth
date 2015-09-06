@@ -18,16 +18,17 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#include "UiEditorSynthLite.h"
-#include "mono_AudioDeviceManager.h"
+#include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"
+
+#include "mono_AudioDeviceManager.h"
 //[/Headers]
 
 #include "monique_ui_MIDIIO.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorMIDIIO::refresh()
+void Monique_Ui_MidiIO::refresh()
 {
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
@@ -60,7 +61,7 @@ void UiEditorMIDIIO::refresh()
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manager_)
+Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device_manager_)
     : _audio_device_manager(audio_device_manager_), original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -217,7 +218,7 @@ UiEditorMIDIIO::UiEditorMIDIIO (mono_AudioDeviceManager*const audio_device_manag
     //[/Constructor]
 }
 
-UiEditorMIDIIO::~UiEditorMIDIIO()
+Monique_Ui_MidiIO::~Monique_Ui_MidiIO()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -246,7 +247,7 @@ UiEditorMIDIIO::~UiEditorMIDIIO()
 }
 
 //==============================================================================
-void UiEditorMIDIIO::paint (Graphics& g)
+void Monique_Ui_MidiIO::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -279,7 +280,7 @@ void UiEditorMIDIIO::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorMIDIIO::resized()
+void Monique_Ui_MidiIO::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -312,7 +313,7 @@ void UiEditorMIDIIO::resized()
     //[/UserResized]
 }
 
-void UiEditorMIDIIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_MidiIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -352,7 +353,7 @@ void UiEditorMIDIIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void UiEditorMIDIIO::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -379,7 +380,7 @@ void UiEditorMIDIIO::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void UiEditorMIDIIO::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_MidiIO::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -410,7 +411,7 @@ void UiEditorMIDIIO::sliderValueChanged (Slider* sliderThatWasMoved)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorMIDIIO" componentName=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MidiIO" componentName=""
                  parentClasses="public Component" constructorParams="mono_AudioDeviceManager*const audio_device_manager_"
                  variableInitialisers="_audio_device_manager(audio_device_manager_), original_w(1465), original_h(180)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"

@@ -29,6 +29,10 @@
               file="../Source/monique_core_Parameters.cpp"/>
         <FILE id="oflf2H" name="monique_core_Parameters.h" compile="0" resource="0"
               file="../Source/monique_core_Parameters.h"/>
+        <FILE id="znlXq1" name="monique_core_Processor.cpp" compile="1" resource="0"
+              file="../Source/monique_core_Processor.cpp"/>
+        <FILE id="OMWYeb" name="monique_core_Processor.h" compile="0" resource="0"
+              file="../Source/monique_core_Processor.h"/>
         <FILE id="q57C0C" name="monique_core_Synth.cpp" compile="1" resource="0"
               file="../Source/monique_core_Synth.cpp"/>
         <FILE id="nFZH6Y" name="monique_core_Synth.h" compile="0" resource="0"
@@ -53,6 +57,10 @@
               file="../Source/monique_ui_LookAndFeel.cpp"/>
         <FILE id="hg4CuD" name="monique_ui_LookAndFeel.h" compile="0" resource="0"
               file="../Source/monique_ui_LookAndFeel.h"/>
+        <FILE id="tpEnLQ" name="monique_ui_MainWindow.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MainWindow.cpp"/>
+        <FILE id="Fz4Xvp" name="monique_ui_MainWindow.h" compile="0" resource="0"
+              file="../Source/monique_ui_MainWindow.h"/>
         <FILE id="oZrMWF" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="zLSzVA" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -88,14 +96,6 @@
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="mGKqYB" name="mono_AudioDeviceManager.h" compile="0" resource="0"
             file="../Source/mono_AudioDeviceManager.h"/>
-      <FILE id="ztrOO4" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="../Source/PluginProcessor.cpp"/>
-      <FILE id="QZxhpT" name="PluginProcessor.h" compile="0" resource="0"
-            file="../Source/PluginProcessor.h"/>
-      <FILE id="M5rtTx" name="UiEditorSynthLite.cpp" compile="1" resource="0"
-            file="../Source/UiEditorSynthLite.cpp"/>
-      <FILE id="fyqWA8" name="UiEditorSynthLite.h" compile="0" resource="0"
-            file="../Source/UiEditorSynthLite.h"/>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">

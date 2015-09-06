@@ -36,14 +36,14 @@ class ENVPresetDef;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class UiEditorSettings  : public Component,
-                          public mono_UiRefreshable,
-                          public SliderListener
+class Monique_Ui_Settings  : public Component,
+    public Monique_Ui_Refreshable,
+    public SliderListener
 {
 public:
     //==============================================================================
-    UiEditorSettings ();
-    ~UiEditorSettings();
+    Monique_Ui_Settings ();
+    ~Monique_Ui_Settings();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -137,7 +137,7 @@ private:
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UiEditorSettings)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Settings)
 };
 
 //[EndFile] You can add extra defines here...

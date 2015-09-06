@@ -18,7 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#include "PluginProcessor.h"
+#include "monique_core_Processor.h"
 #include "monique_core_Synth.h"
 
 #include "monique_ui_LookAndFeel.h"
@@ -33,7 +33,7 @@
 #include "monique_ui_MidiLearnPopup.h"
 //[/Headers]
 
-#include "UiEditorSynthLite.h"
+#include "monique_ui_MainWindow.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
@@ -42,13 +42,13 @@
 //==============================================================================
 //==============================================================================
 
-void UiEditorSynthLite::refresh() noexcept {
+void Monique_Ui_Mainwindow::refresh() noexcept {
     show_current_voice_data();
     resize_sequence_buttons();
     show_programs_and_select();
     show_ctrl_state();
 }
-void UiEditorSynthLite::show_programs_and_select() {
+void Monique_Ui_Mainwindow::show_programs_and_select() {
     const int current_bank = synth_data->get_current_bank();
     const int current_programm = synth_data->get_current_program();
     if( current_bank != last_bank || current_programm != last_programm )
@@ -65,13 +65,13 @@ void UiEditorSynthLite::show_programs_and_select() {
         combo_programm->setSelectedItemIndex(synth_data->get_current_program(),dontSendNotification);
     }
 }
-void UiEditorSynthLite::show_ctrl_state() {
+void Monique_Ui_Mainwindow::show_ctrl_state() {
     if( last_ctrl_mode != synth_data->ctrl )
     {
         last_ctrl_mode = synth_data->ctrl;
         for( int i = 0 ; i < getNumChildComponents() ; ++i )
         {
-            if( mono_ModulationSlider* mod_slider = dynamic_cast< mono_ModulationSlider* >( getChildComponent(i) ) )
+            if( Monique_Ui_DualSlider* mod_slider = dynamic_cast< Monique_Ui_DualSlider* >( getChildComponent(i) ) )
             {
                 if( mod_slider->is_in_ctrl_view() != synth_data->ctrl )
                 {
@@ -82,17 +82,17 @@ void UiEditorSynthLite::show_ctrl_state() {
         }
     }
 }
-void UiEditorSynthLite::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ ) {
+void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ ) {
     popup = nullptr;
     if( MIDIControlHandler::getInstance()->is_learning() && midi_conrtrol_ )
     {
-        addAndMakeVisible( popup = new UiEditorSynthLitePopup(this,midi_conrtrol_) );
+        addAndMakeVisible( popup = new Monique_Ui_MainwindowPopup(this,midi_conrtrol_) );
         popup->set_element_to_show( comp_ );
     }
 }
 
 #define STANDARD_MULT 1000.0f
-void UiEditorSynthLite::show_current_voice_data() {
+void Monique_Ui_Mainwindow::show_current_voice_data() {
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
@@ -160,7 +160,7 @@ void UiEditorSynthLite::show_current_voice_data() {
     button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
 }
 
-void UiEditorSynthLite::resize_sequence_buttons() {
+void Monique_Ui_Mainwindow::resize_sequence_buttons() {
     const float width_factor = 1.0f/original_w*getWidth();
     const float height_factor = 1.0f/original_h*getHeight();
     float shuffle = synth_data->arp_sequencer_data->shuffle * 0.8f * 60.0f * width_factor;
@@ -186,7 +186,7 @@ void UiEditorSynthLite::resize_sequence_buttons() {
     }
 }
 
-void UiEditorSynthLite::switch_finalizer_tab() {
+void Monique_Ui_Mainwindow::switch_finalizer_tab() {
     //reverb
     bool state_switch = eq_1->isVisible();
     reverb_room->setVisible( state_switch );
@@ -217,7 +217,7 @@ void UiEditorSynthLite::switch_finalizer_tab() {
 
     !state_switch ? effect_finalizer_switch->setButtonText ("E Q") : effect_finalizer_switch->setButtonText ("F X");
 }
-void UiEditorSynthLite::sliderClicked (Slider*s_)
+void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
     if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
         sliderValueChanged(s_);
@@ -225,21 +225,21 @@ void UiEditorSynthLite::sliderClicked (Slider*s_)
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorSynthLite::UiEditorSynthLite ()
+Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     : AudioProcessorEditor(AppInstanceStore::getInstance()->audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (speed_multi = new mono_ModulationSlider (new SpeedMultiSlConfig()));
+    addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (new SpeedMultiSlConfig()));
 
-    addAndMakeVisible (morpher_4 = new mono_ModulationSlider (new MorphSLConfig(3)));
+    addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (new MorphSLConfig(3)));
 
-    addAndMakeVisible (morpher_3 = new mono_ModulationSlider (new MorphSLConfig(2)));
+    addAndMakeVisible (morpher_3 = new Monique_Ui_DualSlider (new MorphSLConfig(2)));
 
-    addAndMakeVisible (morpher_2 = new mono_ModulationSlider (new MorphSLConfig(1)));
+    addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (new MorphSLConfig(1)));
 
-    addAndMakeVisible (morpher_1 = new mono_ModulationSlider (new MorphSLConfig(0)));
+    addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
 
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
                                                        String::empty));
@@ -250,108 +250,108 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_effect_hider->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_effect_hider->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (eq_9 = new mono_ModulationSlider (new EQSlConfig(8)));
+    addAndMakeVisible (eq_9 = new Monique_Ui_DualSlider (new EQSlConfig(8)));
 
-    addAndMakeVisible (eq_8 = new mono_ModulationSlider (new EQSlConfig(7)));
+    addAndMakeVisible (eq_8 = new Monique_Ui_DualSlider (new EQSlConfig(7)));
 
-    addAndMakeVisible (eq_7 = new mono_ModulationSlider (new EQSlConfig(6)));
+    addAndMakeVisible (eq_7 = new Monique_Ui_DualSlider (new EQSlConfig(6)));
 
-    addAndMakeVisible (eq_6 = new mono_ModulationSlider (new EQSlConfig(5)));
+    addAndMakeVisible (eq_6 = new Monique_Ui_DualSlider (new EQSlConfig(5)));
 
-    addAndMakeVisible (eq_5 = new mono_ModulationSlider (new EQSlConfig(4)));
+    addAndMakeVisible (eq_5 = new Monique_Ui_DualSlider (new EQSlConfig(4)));
 
-    addAndMakeVisible (eq_4 = new mono_ModulationSlider (new EQSlConfig(3)));
+    addAndMakeVisible (eq_4 = new Monique_Ui_DualSlider (new EQSlConfig(3)));
 
-    addAndMakeVisible (eq_3 = new mono_ModulationSlider (new EQSlConfig(2)));
+    addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (new EQSlConfig(2)));
 
-    addAndMakeVisible (eq_2 = new mono_ModulationSlider (new EQSlConfig(1)));
+    addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (new EQSlConfig(1)));
 
-    addAndMakeVisible (eq_1 = new mono_ModulationSlider (new EQSlConfig(0)));
+    addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (new EQSlConfig(0)));
 
-    addAndMakeVisible (bypass = new mono_ModulationSlider (new BypassConfig()));
+    addAndMakeVisible (bypass = new Monique_Ui_DualSlider (new BypassConfig()));
 
-    addAndMakeVisible (chorus_modulation = new mono_ModulationSlider (new CModSlConfig()));
+    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
 
-    addAndMakeVisible (reverb_dry = new mono_ModulationSlider (new RDrySlConfig()));
+    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
 
-    addAndMakeVisible (reverb_room = new mono_ModulationSlider (new RRoomSlConfig()));
+    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
 
-    addAndMakeVisible (osc_wave_3 = new mono_ModulationSlider (new WAVESlConfig(2)));
+    addAndMakeVisible (osc_wave_3 = new Monique_Ui_DualSlider (new WAVESlConfig(2)));
 
     addAndMakeVisible (keyboard = new MidiKeyboardComponent (*_app_instance_store->audio_processor, MidiKeyboardComponent::horizontalKeyboard));
 
-    addAndMakeVisible (glide2 = new mono_ModulationSlider (new GlideConfig()));
+    addAndMakeVisible (glide2 = new Monique_Ui_DualSlider (new GlideConfig()));
 
-    addAndMakeVisible (arp_step_16 = new mono_ModulationSlider (new ArpStepSlConfig(15)));
+    addAndMakeVisible (arp_step_16 = new Monique_Ui_DualSlider (new ArpStepSlConfig(15)));
 
-    addAndMakeVisible (arp_step_15 = new mono_ModulationSlider (new ArpStepSlConfig(14)));
+    addAndMakeVisible (arp_step_15 = new Monique_Ui_DualSlider (new ArpStepSlConfig(14)));
 
-    addAndMakeVisible (arp_step_14 = new mono_ModulationSlider (new ArpStepSlConfig(13)));
+    addAndMakeVisible (arp_step_14 = new Monique_Ui_DualSlider (new ArpStepSlConfig(13)));
 
-    addAndMakeVisible (arp_step_13 = new mono_ModulationSlider (new ArpStepSlConfig(12)));
+    addAndMakeVisible (arp_step_13 = new Monique_Ui_DualSlider (new ArpStepSlConfig(12)));
 
-    addAndMakeVisible (arp_step_12 = new mono_ModulationSlider (new ArpStepSlConfig(11)));
+    addAndMakeVisible (arp_step_12 = new Monique_Ui_DualSlider (new ArpStepSlConfig(11)));
 
-    addAndMakeVisible (arp_step_11 = new mono_ModulationSlider (new ArpStepSlConfig(10)));
+    addAndMakeVisible (arp_step_11 = new Monique_Ui_DualSlider (new ArpStepSlConfig(10)));
 
-    addAndMakeVisible (arp_step_10 = new mono_ModulationSlider (new ArpStepSlConfig(9)));
+    addAndMakeVisible (arp_step_10 = new Monique_Ui_DualSlider (new ArpStepSlConfig(9)));
 
-    addAndMakeVisible (arp_step_9 = new mono_ModulationSlider (new ArpStepSlConfig(8)));
+    addAndMakeVisible (arp_step_9 = new Monique_Ui_DualSlider (new ArpStepSlConfig(8)));
 
-    addAndMakeVisible (arp_step_8 = new mono_ModulationSlider (new ArpStepSlConfig(7)));
+    addAndMakeVisible (arp_step_8 = new Monique_Ui_DualSlider (new ArpStepSlConfig(7)));
 
-    addAndMakeVisible (arp_step_7 = new mono_ModulationSlider (new ArpStepSlConfig(6)));
+    addAndMakeVisible (arp_step_7 = new Monique_Ui_DualSlider (new ArpStepSlConfig(6)));
 
-    addAndMakeVisible (arp_step_6 = new mono_ModulationSlider (new ArpStepSlConfig(5)));
+    addAndMakeVisible (arp_step_6 = new Monique_Ui_DualSlider (new ArpStepSlConfig(5)));
 
-    addAndMakeVisible (arp_step_5 = new mono_ModulationSlider (new ArpStepSlConfig(4)));
+    addAndMakeVisible (arp_step_5 = new Monique_Ui_DualSlider (new ArpStepSlConfig(4)));
 
-    addAndMakeVisible (arp_step_4 = new mono_ModulationSlider (new ArpStepSlConfig(3)));
+    addAndMakeVisible (arp_step_4 = new Monique_Ui_DualSlider (new ArpStepSlConfig(3)));
 
-    addAndMakeVisible (arp_step_3 = new mono_ModulationSlider (new ArpStepSlConfig(2)));
+    addAndMakeVisible (arp_step_3 = new Monique_Ui_DualSlider (new ArpStepSlConfig(2)));
 
-    addAndMakeVisible (arp_step_2 = new mono_ModulationSlider (new ArpStepSlConfig(1)));
+    addAndMakeVisible (arp_step_2 = new Monique_Ui_DualSlider (new ArpStepSlConfig(1)));
 
-    addAndMakeVisible (arp_step_1 = new mono_ModulationSlider (new ArpStepSlConfig(0)));
+    addAndMakeVisible (arp_step_1 = new Monique_Ui_DualSlider (new ArpStepSlConfig(0)));
 
-    addAndMakeVisible (shuffle = new mono_ModulationSlider (new ShuffleConfig()));
+    addAndMakeVisible (shuffle = new Monique_Ui_DualSlider (new ShuffleConfig()));
 
-    addAndMakeVisible (flt_sustain_4 = new mono_ModulationSlider (new FSustainSlConfig()));
+    addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (new FSustainSlConfig()));
 
-    addAndMakeVisible (flt_decay_4 = new mono_ModulationSlider (new FDecaySlConfig()
+    addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (new FDecaySlConfig()
                                                                 ));
 
-    addAndMakeVisible (flt_attack_4 = new mono_ModulationSlider (new FAttackSlConfig()));
+    addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (new FAttackSlConfig()));
 
-    addAndMakeVisible (flt_release_3 = new mono_ModulationSlider (new FReleaseSlConfig(2)));
+    addAndMakeVisible (flt_release_3 = new Monique_Ui_DualSlider (new FReleaseSlConfig(2)));
 
-    addAndMakeVisible (flt_sustain_time_3 = new mono_ModulationSlider (new FSustainTimeSlConfig(2)));
+    addAndMakeVisible (flt_sustain_time_3 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(2)));
 
-    addAndMakeVisible (flt_sustain_3 = new mono_ModulationSlider (new FSustainSlConfig(2)));
+    addAndMakeVisible (flt_sustain_3 = new Monique_Ui_DualSlider (new FSustainSlConfig(2)));
 
-    addAndMakeVisible (flt_decay_3 = new mono_ModulationSlider (new FDecaySlConfig(2)));
+    addAndMakeVisible (flt_decay_3 = new Monique_Ui_DualSlider (new FDecaySlConfig(2)));
 
-    addAndMakeVisible (flt_attack_3 = new mono_ModulationSlider (new FAttackSlConfig(2)));
+    addAndMakeVisible (flt_attack_3 = new Monique_Ui_DualSlider (new FAttackSlConfig(2)));
 
-    addAndMakeVisible (flt_release_2 = new mono_ModulationSlider (new FReleaseSlConfig(1)));
+    addAndMakeVisible (flt_release_2 = new Monique_Ui_DualSlider (new FReleaseSlConfig(1)));
 
-    addAndMakeVisible (flt_sustain_time_2 = new mono_ModulationSlider (new FSustainTimeSlConfig(1)));
+    addAndMakeVisible (flt_sustain_time_2 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(1)));
 
-    addAndMakeVisible (flt_sustain_2 = new mono_ModulationSlider (new FSustainSlConfig(1)));
+    addAndMakeVisible (flt_sustain_2 = new Monique_Ui_DualSlider (new FSustainSlConfig(1)));
 
-    addAndMakeVisible (flt_decay_2 = new mono_ModulationSlider (new FDecaySlConfig(1)));
+    addAndMakeVisible (flt_decay_2 = new Monique_Ui_DualSlider (new FDecaySlConfig(1)));
 
-    addAndMakeVisible (flt_attack_2 = new mono_ModulationSlider (new FAttackSlConfig(1)));
+    addAndMakeVisible (flt_attack_2 = new Monique_Ui_DualSlider (new FAttackSlConfig(1)));
 
-    addAndMakeVisible (flt_release_1 = new mono_ModulationSlider (new FReleaseSlConfig(0)));
+    addAndMakeVisible (flt_release_1 = new Monique_Ui_DualSlider (new FReleaseSlConfig(0)));
 
-    addAndMakeVisible (flt_sustain_time_1 = new mono_ModulationSlider (new FSustainTimeSlConfig(0)));
+    addAndMakeVisible (flt_sustain_time_1 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(0)));
 
-    addAndMakeVisible (flt_sustain_1 = new mono_ModulationSlider (new FSustainSlConfig(0)));
+    addAndMakeVisible (flt_sustain_1 = new Monique_Ui_DualSlider (new FSustainSlConfig(0)));
 
-    addAndMakeVisible (flt_decay_1 = new mono_ModulationSlider (new FDecaySlConfig(0)));
+    addAndMakeVisible (flt_decay_1 = new Monique_Ui_DualSlider (new FDecaySlConfig(0)));
 
-    addAndMakeVisible (flt_attack_1 = new mono_ModulationSlider (new FAttackSlConfig(0)));
+    addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (new FAttackSlConfig(0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
                                                    TRANS("M O N I Q U E")));
@@ -599,73 +599,73 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_programm_load->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_programm_load->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (osc_1 = new mono_ModulationSlider (new OSCSlConfig(0)));
+    addAndMakeVisible (osc_1 = new Monique_Ui_DualSlider (new OSCSlConfig(0)));
 
-    addAndMakeVisible (osc_2 = new mono_ModulationSlider (new OSCSlConfig(1)));
+    addAndMakeVisible (osc_2 = new Monique_Ui_DualSlider (new OSCSlConfig(1)));
 
-    addAndMakeVisible (osc_3 = new mono_ModulationSlider (new OSCSlConfig(2)));
+    addAndMakeVisible (osc_3 = new Monique_Ui_DualSlider (new OSCSlConfig(2)));
 
-    addAndMakeVisible (lfo_1 = new mono_ModulationSlider (new LFOSlConfig(0)));
+    addAndMakeVisible (lfo_1 = new Monique_Ui_DualSlider (new LFOSlConfig(0)));
 
-    addAndMakeVisible (flt_cutoff_1 = new mono_ModulationSlider (new FCutoffSLConfig(0)));
+    addAndMakeVisible (flt_cutoff_1 = new Monique_Ui_DualSlider (new FCutoffSLConfig(0)));
 
-    addAndMakeVisible (lfo_2 = new mono_ModulationSlider (new LFOSlConfig(1)));
+    addAndMakeVisible (lfo_2 = new Monique_Ui_DualSlider (new LFOSlConfig(1)));
 
-    addAndMakeVisible (lfo_3 = new mono_ModulationSlider (new LFOSlConfig(2)));
+    addAndMakeVisible (lfo_3 = new Monique_Ui_DualSlider (new LFOSlConfig(2)));
 
-    addAndMakeVisible (flt_cutoff_2 = new mono_ModulationSlider (new FCutoffSLConfig(1)));
+    addAndMakeVisible (flt_cutoff_2 = new Monique_Ui_DualSlider (new FCutoffSLConfig(1)));
 
-    addAndMakeVisible (flt_cutoff_3 = new mono_ModulationSlider (new FCutoffSLConfig(2)));
+    addAndMakeVisible (flt_cutoff_3 = new Monique_Ui_DualSlider (new FCutoffSLConfig(2)));
 
-    addAndMakeVisible (flt_input_1 = new mono_ModulationSlider (new InputSlConfig(0,0)));
+    addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (new InputSlConfig(0,0)));
 
-    addAndMakeVisible (flt_input_2 = new mono_ModulationSlider (new InputSlConfig(0,1)));
+    addAndMakeVisible (flt_input_2 = new Monique_Ui_DualSlider (new InputSlConfig(0,1)));
 
-    addAndMakeVisible (flt_input_3 = new mono_ModulationSlider (new InputSlConfig(0,2)));
+    addAndMakeVisible (flt_input_3 = new Monique_Ui_DualSlider (new InputSlConfig(0,2)));
 
-    addAndMakeVisible (flt_compressor_1 = new mono_ModulationSlider (new FCompressorSlConfig(0)));
+    addAndMakeVisible (flt_compressor_1 = new Monique_Ui_DualSlider (new FCompressorSlConfig(0)));
 
-    addAndMakeVisible (flt_distortion_1 = new mono_ModulationSlider (new GForceSlConfig(0)));
+    addAndMakeVisible (flt_distortion_1 = new Monique_Ui_DualSlider (new GForceSlConfig(0)));
 
-    addAndMakeVisible (flt_input_6 = new mono_ModulationSlider (new InputSlConfig(1,0)));
+    addAndMakeVisible (flt_input_6 = new Monique_Ui_DualSlider (new InputSlConfig(1,0)));
 
-    addAndMakeVisible (flt_input_7 = new mono_ModulationSlider (new InputSlConfig(1,1)));
+    addAndMakeVisible (flt_input_7 = new Monique_Ui_DualSlider (new InputSlConfig(1,1)));
 
-    addAndMakeVisible (flt_input_8 = new mono_ModulationSlider (new InputSlConfig(1,2)));
+    addAndMakeVisible (flt_input_8 = new Monique_Ui_DualSlider (new InputSlConfig(1,2)));
 
-    addAndMakeVisible (flt_compressor_2 = new mono_ModulationSlider (new FCompressorSlConfig(1)));
+    addAndMakeVisible (flt_compressor_2 = new Monique_Ui_DualSlider (new FCompressorSlConfig(1)));
 
-    addAndMakeVisible (flt_input_11 = new mono_ModulationSlider (new InputSlConfig(2,0)));
+    addAndMakeVisible (flt_input_11 = new Monique_Ui_DualSlider (new InputSlConfig(2,0)));
 
-    addAndMakeVisible (flt_input_12 = new mono_ModulationSlider (new InputSlConfig(2,1)));
+    addAndMakeVisible (flt_input_12 = new Monique_Ui_DualSlider (new InputSlConfig(2,1)));
 
-    addAndMakeVisible (flt_input_13 = new mono_ModulationSlider (new InputSlConfig(2,2)));
+    addAndMakeVisible (flt_input_13 = new Monique_Ui_DualSlider (new InputSlConfig(2,2)));
 
-    addAndMakeVisible (flt_compressor_3 = new mono_ModulationSlider (new FCompressorSlConfig(2)));
+    addAndMakeVisible (flt_compressor_3 = new Monique_Ui_DualSlider (new FCompressorSlConfig(2)));
 
-    addAndMakeVisible (flt_resonance_1 = new mono_ModulationSlider (new FResonanceSLConfig(0)));
+    addAndMakeVisible (flt_resonance_1 = new Monique_Ui_DualSlider (new FResonanceSLConfig(0)));
 
-    addAndMakeVisible (flt_gain_1 = new mono_ModulationSlider (new FGainSLConfig(0)));
+    addAndMakeVisible (flt_gain_1 = new Monique_Ui_DualSlider (new FGainSLConfig(0)));
 
-    addAndMakeVisible (flt_resonance_2 = new mono_ModulationSlider (new FResonanceSLConfig(1)));
+    addAndMakeVisible (flt_resonance_2 = new Monique_Ui_DualSlider (new FResonanceSLConfig(1)));
 
-    addAndMakeVisible (flt_gain_2 = new mono_ModulationSlider (new FGainSLConfig(1)));
+    addAndMakeVisible (flt_gain_2 = new Monique_Ui_DualSlider (new FGainSLConfig(1)));
 
-    addAndMakeVisible (flt_resonance_3 = new mono_ModulationSlider (new FResonanceSLConfig(2)));
+    addAndMakeVisible (flt_resonance_3 = new Monique_Ui_DualSlider (new FResonanceSLConfig(2)));
 
-    addAndMakeVisible (flt_gain_3 = new mono_ModulationSlider (new FGainSLConfig(2)));
+    addAndMakeVisible (flt_gain_3 = new Monique_Ui_DualSlider (new FGainSLConfig(2)));
 
-    addAndMakeVisible (flt_volume_1 = new mono_ModulationSlider (new FVolumeSlConfig(0)));
+    addAndMakeVisible (flt_volume_1 = new Monique_Ui_DualSlider (new FVolumeSlConfig(0)));
 
-    addAndMakeVisible (flt_volume_2 = new mono_ModulationSlider (new FVolumeSlConfig(1)));
+    addAndMakeVisible (flt_volume_2 = new Monique_Ui_DualSlider (new FVolumeSlConfig(1)));
 
-    addAndMakeVisible (flt_volume_3 = new mono_ModulationSlider (new FVolumeSlConfig(2)));
+    addAndMakeVisible (flt_volume_3 = new Monique_Ui_DualSlider (new FVolumeSlConfig(2)));
 
-    addAndMakeVisible (adsr_lfo_mix = new mono_ModulationSlider (new EnvLfoSlConfig(0)));
+    addAndMakeVisible (adsr_lfo_mix = new Monique_Ui_DualSlider (new EnvLfoSlConfig(0)));
 
-    addAndMakeVisible (lfo_opt_2 = new mono_ModulationSlider (new EnvLfoSlConfig(1)));
+    addAndMakeVisible (lfo_opt_2 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(1)));
 
-    addAndMakeVisible (lfo_opt_3 = new mono_ModulationSlider (new EnvLfoSlConfig(2)));
+    addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(2)));
 
     addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
     button_sequence_1->addListener (this);
@@ -673,15 +673,15 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_release_4 = new mono_ModulationSlider (new FReleaseSlConfig()));
+    addAndMakeVisible (flt_release_4 = new Monique_Ui_DualSlider (new FReleaseSlConfig()));
 
-    addAndMakeVisible (delay2 = new mono_ModulationSlider (new DelaySlConfig()));
+    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
 
-    addAndMakeVisible (volume = new mono_ModulationSlider (new VolumeConfig()));
+    addAndMakeVisible (volume = new Monique_Ui_DualSlider (new VolumeConfig()));
 
-    addAndMakeVisible (flt_distortion_2 = new mono_ModulationSlider (new GForceSlConfig(1)));
+    addAndMakeVisible (flt_distortion_2 = new Monique_Ui_DualSlider (new GForceSlConfig(1)));
 
-    addAndMakeVisible (flt_distortion_3 = new mono_ModulationSlider (new GForceSlConfig(2)));
+    addAndMakeVisible (flt_distortion_3 = new Monique_Ui_DualSlider (new GForceSlConfig(2)));
 
     addAndMakeVisible (button_arp_speed_XNORM = new TextButton (String::empty));
     button_arp_speed_XNORM->setButtonText (TRANS("x1"));
@@ -690,13 +690,13 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_arp_speed_XNORM->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_arp_speed_XNORM->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_attack_5 = new mono_ModulationSlider (new FMFreqSlConfig()));
+    addAndMakeVisible (flt_attack_5 = new Monique_Ui_DualSlider (new FMFreqSlConfig()));
 
-    addAndMakeVisible (flt_attack_6 = new mono_ModulationSlider (new FMAmountSlConfig()));
+    addAndMakeVisible (flt_attack_6 = new Monique_Ui_DualSlider (new FMAmountSlConfig()));
 
-    addAndMakeVisible (osc_wave_1 = new mono_ModulationSlider (new WAVESlConfig(0)));
+    addAndMakeVisible (osc_wave_1 = new Monique_Ui_DualSlider (new WAVESlConfig(0)));
 
-    addAndMakeVisible (osc_wave_2 = new mono_ModulationSlider (new WAVESlConfig(1)));
+    addAndMakeVisible (osc_wave_2 = new Monique_Ui_DualSlider (new WAVESlConfig(1)));
 
     addAndMakeVisible (sl_morhp_mix = new Slider ("new slider"));
     sl_morhp_mix->setRange (0, 3000, 0.01);
@@ -753,9 +753,9 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_ctrl_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_ctrl_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (colour = new mono_ModulationSlider (new FColourSlConfig()));
+    addAndMakeVisible (colour = new Monique_Ui_DualSlider (new FColourSlConfig()));
 
-    addAndMakeVisible (speed = new mono_ModulationSlider (new BPMSlConfig()));
+    addAndMakeVisible (speed = new Monique_Ui_DualSlider (new BPMSlConfig()));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
     button_open_morph->setButtonText (TRANS("EDIT"));
@@ -814,9 +814,9 @@ UiEditorSynthLite::UiEditorSynthLite ()
     button_values_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_values_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (reverb_width = new mono_ModulationSlider (new RWidthSlConfig()));
+    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
 
-    addAndMakeVisible (octave_offset = new mono_ModulationSlider (new OctaveOffsetSlConfig()));
+    addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
 
     addAndMakeVisible (label_ui_headline4 = new Label ("DL",
                                                        TRANS("FILTER INPUTS")));
@@ -998,7 +998,7 @@ UiEditorSynthLite::UiEditorSynthLite ()
     label_ui_headline25->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (volume_master_meter = new SegmentedMeter());
+    addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter());
 
     addAndMakeVisible (label_eq = new Label ("DL",
                                              TRANS("EQUALIZER")));
@@ -1107,23 +1107,23 @@ UiEditorSynthLite::UiEditorSynthLite ()
 
     //setVisible(true);
     AppInstanceStore::getInstance()->editor = this;
-    mono_UiRefresher::getInstance()->startTimer( UI_REFRESH_RATE );
+    Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
 
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
 
-UiEditorSynthLite::~UiEditorSynthLite()
+Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
-    mono_UiRefresher::getInstance()->stopTimer();
-    mono_UiRefresher::getInstance()->remove_all();
+    Monique_Ui_Refresher::getInstance()->stopTimer();
+    Monique_Ui_Refresher::getInstance()->remove_all();
     Thread::sleep(100);
 
     AppInstanceStore::getInstance()->editor = nullptr;
     Thread::sleep(500); // to be sure we are no more in a update run
 
-    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         removeChildComponent( amp_painter );
         AppInstanceStore::getInstance()->kill_amp_painter();
@@ -1320,7 +1320,7 @@ UiEditorSynthLite::~UiEditorSynthLite()
 }
 
 //==============================================================================
-void UiEditorSynthLite::paint (Graphics& g)
+void Monique_Ui_Mainwindow::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     g.fillAll (Colour (0xff161616));
@@ -1804,7 +1804,7 @@ void UiEditorSynthLite::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorSynthLite::resized()
+void Monique_Ui_Mainwindow::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -2000,7 +2000,7 @@ void UiEditorSynthLite::resized()
     //[/UserResized]
 }
 
-void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -2526,12 +2526,12 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_open_oszi)
     {
         //[UserButtonCode_button_open_oszi] -- add your button handler code here..
-        if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
         {
             removeChildComponent( amp_painter );
             AppInstanceStore::getInstance()->kill_amp_painter();
         }
-        else if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_create_amp_painter() )
+        else if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_create_amp_painter() )
         {
             editor_midiio = nullptr;
             editor_morph = nullptr;
@@ -2553,7 +2553,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_midiio = new UiEditorMIDIIO( _app_instance_store->audio_processor ) );
+            addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( _app_instance_store->audio_processor ) );
             resize_subeditors();
         }
         //[/UserButtonCode_button_open_midi_io_settings]
@@ -2613,7 +2613,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_settings = new UiEditorSettings() );
+            addAndMakeVisible( editor_settings = new Monique_Ui_Settings() );
             resize_subeditors();
         }
         else
@@ -2713,7 +2713,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_morph = new UiEditorMorph() );
+            addAndMakeVisible( editor_morph = new Monique_Ui_MorphConfig() );
             resize_subeditors();
         }
         else
@@ -2739,7 +2739,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_global_settings = new UiEditorGlobalSettings() );
+            addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings() );
             resize_subeditors();
         }
         else
@@ -2751,7 +2751,7 @@ void UiEditorSynthLite::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void UiEditorSynthLite::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -2788,7 +2788,7 @@ void UiEditorSynthLite::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void UiEditorSynthLite::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_Mainwindow::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -2813,7 +2813,7 @@ void UiEditorSynthLite::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-bool UiEditorSynthLite::keyPressed (const KeyPress& key)
+bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
     bool success = false;
@@ -2830,7 +2830,7 @@ bool UiEditorSynthLite::keyPressed (const KeyPress& key)
     //[/UserCode_keyPressed]
 }
 
-void UiEditorSynthLite::modifierKeysChanged (const ModifierKeys& modifiers)
+void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
     if( ! combo_programm->isTextEditable() ) {
@@ -2845,21 +2845,21 @@ void UiEditorSynthLite::modifierKeysChanged (const ModifierKeys& modifiers)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void UiEditorSynthLite::close_all_subeditors() {
+void Monique_Ui_Mainwindow::close_all_subeditors() {
     editor_midiio = nullptr;
     editor_morph = nullptr;
     editor_settings = nullptr;
     editor_global_settings = nullptr;
     popup = nullptr;
 
-    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         removeChildComponent( amp_painter );
         AppInstanceStore::getInstance()->kill_amp_painter();
     }
 }
 
-void UiEditorSynthLite::resize_subeditors()
+void Monique_Ui_Mainwindow::resize_subeditors()
 {
     if( editor_midiio )
     {
@@ -2882,7 +2882,7 @@ void UiEditorSynthLite::resize_subeditors()
         popup->update_positions();
     }
 
-    if( mono_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
@@ -2899,8 +2899,8 @@ void UiEditorSynthLite::resize_subeditors()
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorSynthLite" componentName=""
-                 parentClasses="public AudioProcessorEditor, public mono_UiRefreshable"
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
+                 parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
                  constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
                  snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
@@ -3068,19 +3068,19 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
-                    explicitFocusOrder="0" pos="1355r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1355r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new SpeedMultiSlConfig()"/>
   <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 620 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(3)"/>
   <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 620 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
-                    explicitFocusOrder="0" pos="1225r 620 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1225r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
-                    explicitFocusOrder="0" pos="1165r 620 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1165r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(0)"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
          virtualName="" explicitFocusOrder="0" pos="1065r 758r 540 15"
@@ -3088,157 +3088,157 @@ BEGIN_JUCER_METADATA
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="" id="6250362aea841eea" memberName="eq_9" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(8)"/>
   <GENERICCOMPONENT name="" id="26ebe414133b55e7" memberName="eq_8" virtualName=""
-                    explicitFocusOrder="0" pos="1005r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1005r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="945r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="945r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="885r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="885r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="825r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="825r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="765r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="765r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="705r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="705r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="645r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="645r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new BypassConfig()"/>
   <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
                     virtualName="" explicitFocusOrder="0" pos="975r 750r 60 130"
-                    class="mono_ModulationSlider" params="new CModSlConfig()"/>
+                    class="Monique_Ui_DualSlider" params="new CModSlConfig()"/>
   <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="795r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="795r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new RDrySlConfig()"/>
   <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="675r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="675r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new RRoomSlConfig()"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
-                    explicitFocusOrder="0" pos="90r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a8343a0b5df2dc06" memberName="keyboard" virtualName="MidiKeyboardComponent"
                     explicitFocusOrder="0" pos="0 1055 1465 180" class="Component"
                     params="*_app_instance_store-&gt;audio_processor, MidiKeyboardComponent::horizontalKeyboard"/>
   <GENERICCOMPONENT name="" id="35003b6b21577713" memberName="glide2" virtualName=""
-                    explicitFocusOrder="0" pos="100 820 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="100 820 60 130" class="Monique_Ui_DualSlider"
                     params="new GlideConfig()"/>
   <GENERICCOMPONENT name="" id="d8ef93ac038fadca" memberName="arp_step_16" virtualName=""
-                    explicitFocusOrder="0" pos="1205r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1205r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(15)"/>
   <GENERICCOMPONENT name="" id="7761deb0276debbd" memberName="arp_step_15" virtualName=""
-                    explicitFocusOrder="0" pos="1145r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1145r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(14)"/>
   <GENERICCOMPONENT name="" id="20a9ed6504a039e2" memberName="arp_step_14" virtualName=""
-                    explicitFocusOrder="0" pos="1085r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1085r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(13)"/>
   <GENERICCOMPONENT name="" id="791739ade4aee5df" memberName="arp_step_13" virtualName=""
-                    explicitFocusOrder="0" pos="965 820 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="965 820 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(12)"/>
   <GENERICCOMPONENT name="" id="1e3ef8bba1be4b28" memberName="arp_step_12" virtualName=""
-                    explicitFocusOrder="0" pos="955r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="955r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(11)"/>
   <GENERICCOMPONENT name="" id="fe823ea88a7a2471" memberName="arp_step_11" virtualName=""
-                    explicitFocusOrder="0" pos="895r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="895r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(10)"/>
   <GENERICCOMPONENT name="" id="ee7d6057133dde55" memberName="arp_step_10" virtualName=""
-                    explicitFocusOrder="0" pos="835r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="835r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(9)"/>
   <GENERICCOMPONENT name="" id="b4852f8bf0385747" memberName="arp_step_9" virtualName=""
-                    explicitFocusOrder="0" pos="775r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="775r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(8)"/>
   <GENERICCOMPONENT name="" id="fd84ed45f47ab8b9" memberName="arp_step_8" virtualName=""
-                    explicitFocusOrder="0" pos="705r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="705r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="cf5a0e63bd7f558a" memberName="arp_step_7" virtualName=""
-                    explicitFocusOrder="0" pos="645r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="645r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="31712e752afeb9b5" memberName="arp_step_6" virtualName=""
-                    explicitFocusOrder="0" pos="585r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="a729cce2b51e5737" memberName="arp_step_5" virtualName=""
-                    explicitFocusOrder="0" pos="525r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="525r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="4ea4b03b58657c40" memberName="arp_step_4" virtualName=""
-                    explicitFocusOrder="0" pos="455r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="455r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="b45b0bde6cb27e9d" memberName="arp_step_3" virtualName=""
-                    explicitFocusOrder="0" pos="395r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="be72c3cee3e34864" memberName="arp_step_2" virtualName=""
-                    explicitFocusOrder="0" pos="335r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="6665063ca7bdff41" memberName="arp_step_1" virtualName=""
-                    explicitFocusOrder="0" pos="275r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="bb9c66366ce375c" memberName="shuffle" virtualName=""
-                    explicitFocusOrder="0" pos="30 820 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="30 820 60 130" class="Monique_Ui_DualSlider"
                     params="new ShuffleConfig()"/>
   <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
-                    explicitFocusOrder="0" pos="395r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig()"/>
   <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
-                    explicitFocusOrder="0" pos="335r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig()&#10;"/>
   <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
-                    explicitFocusOrder="0" pos="275r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig()"/>
   <GENERICCOMPONENT name="" id="ca4537ccb809ca96" memberName="flt_release_3" virtualName=""
-                    explicitFocusOrder="0" pos="725r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a60fcd747c533a26" memberName="flt_sustain_time_3"
                     virtualName="" explicitFocusOrder="0" pos="665r 550r 60 130"
-                    class="mono_ModulationSlider" params="new FSustainTimeSlConfig(2)"/>
+                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="78d4de9e0ffe3029" memberName="flt_sustain_3" virtualName=""
-                    explicitFocusOrder="0" pos="605r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="e8b49d00205726e6" memberName="flt_decay_3" virtualName=""
-                    explicitFocusOrder="0" pos="545r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(2)"/>
   <GENERICCOMPONENT name="" id="638e13e96c94deb1" memberName="flt_attack_3" virtualName=""
-                    explicitFocusOrder="0" pos="485r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="485r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="4e206df1142d5f1d" memberName="flt_release_2" virtualName=""
-                    explicitFocusOrder="0" pos="725r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b2e468ddbdcb0be8" memberName="flt_sustain_time_2"
                     virtualName="" explicitFocusOrder="0" pos="665r 370r 60 130"
-                    class="mono_ModulationSlider" params="new FSustainTimeSlConfig(1)"/>
+                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa6aa381eebdd61" memberName="flt_sustain_2" virtualName=""
-                    explicitFocusOrder="0" pos="605r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="140fc1e77383e0f9" memberName="flt_decay_2" virtualName=""
-                    explicitFocusOrder="0" pos="545r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(1)"/>
   <GENERICCOMPONENT name="" id="8a6f21a1f4a86dd" memberName="flt_attack_2" virtualName=""
-                    explicitFocusOrder="0" pos="485r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="485r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b17b21322ed6df73" memberName="flt_release_1" virtualName=""
-                    explicitFocusOrder="0" pos="725r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="725r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1460533da718423d" memberName="flt_sustain_time_1"
                     virtualName="" explicitFocusOrder="0" pos="665r 190r 60 130"
-                    class="mono_ModulationSlider" params="new FSustainTimeSlConfig(0)"/>
+                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16f83a5a025850d0" memberName="flt_sustain_1" virtualName=""
-                    explicitFocusOrder="0" pos="605r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="605r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="dc67a284425c81d9" memberName="flt_decay_1" virtualName=""
-                    explicitFocusOrder="0" pos="545r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="545r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1a64935d9407f5bb" memberName="flt_attack_1" virtualName=""
-                    explicitFocusOrder="0" pos="425 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="425 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(0)"/>
   <LABEL name="" id="39e8fb50cf1d668d" memberName="label_monolisa" virtualName=""
          explicitFocusOrder="0" pos="1440r 1055r 205 85" textCol="ffff3b00"
@@ -3388,141 +3388,141 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
-                    explicitFocusOrder="0" pos="160r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="308060a72bcb3066" memberName="osc_2" virtualName=""
-                    explicitFocusOrder="0" pos="160r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
-                    explicitFocusOrder="0" pos="160r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="905r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="905r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="905r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="905r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1075r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
-                    explicitFocusOrder="0" pos="215 60 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="215 60 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,0)"/>
   <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
-                    explicitFocusOrder="0" pos="335r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,1)"/>
   <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
-                    explicitFocusOrder="0" pos="395r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,2)"/>
   <GENERICCOMPONENT name="" id="2bcfc71597ef5fbd" memberName="flt_compressor_1" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
-                    explicitFocusOrder="0" pos="275r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,0)"/>
   <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
-                    explicitFocusOrder="0" pos="335r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,1)"/>
   <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
-                    explicitFocusOrder="0" pos="395r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,2)"/>
   <GENERICCOMPONENT name="" id="f8269875dd70ecfa" memberName="flt_compressor_2" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
-                    explicitFocusOrder="0" pos="275r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="275r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,0)"/>
   <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
-                    explicitFocusOrder="0" pos="335r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="335r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,1)"/>
   <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
-                    explicitFocusOrder="0" pos="395r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="395r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,2)"/>
   <GENERICCOMPONENT name="" id="3dab756c3e18a7de" memberName="flt_compressor_3" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1345r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="8e9c871f56bec21b" memberName="flt_gain_1" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="577a04755f6e3eca" memberName="flt_gain_2" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1135r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="5d7a48dcb59f2814" memberName="flt_gain_3" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1195r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
-                    explicitFocusOrder="0" pos="815r 190r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
-                    explicitFocusOrder="0" pos="815r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
-                    explicitFocusOrder="0" pos="815r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="815r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
               virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
-                    explicitFocusOrder="0" pos="455r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="455r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig()"/>
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="885r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="885r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new DelaySlConfig()"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new VolumeConfig()"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 550r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
               virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="x1" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
-                    explicitFocusOrder="0" pos="90r 755r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 755r 60 130" class="Monique_Ui_DualSlider"
                     params="new FMFreqSlConfig()"/>
   <GENERICCOMPONENT name="" id="53fd0bab31e1ce" memberName="flt_attack_6" virtualName=""
-                    explicitFocusOrder="0" pos="160r 755r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="160r 755r 60 130" class="Monique_Ui_DualSlider"
                     params="new FMAmountSlConfig()"/>
   <GENERICCOMPONENT name="" id="7abd69d58b16456c" memberName="osc_wave_1" virtualName=""
-                    explicitFocusOrder="0" pos="30 60 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="30 60 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(0)"/>
   <GENERICCOMPONENT name="" id="289652ee3553683c" memberName="osc_wave_2" virtualName=""
-                    explicitFocusOrder="0" pos="90r 370r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="90r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(1)"/>
   <SLIDER name="new slider" id="20de89a2be986cc1" memberName="sl_morhp_mix"
           virtualName="" explicitFocusOrder="0" pos="1165 715 180 33" min="0"
@@ -3558,10 +3558,10 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FColourSlConfig()"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1285r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
               virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" bgColOff="ff000000"
@@ -3596,10 +3596,10 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="VAL" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="735r 750r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="735r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new RWidthSlConfig()"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 950r 60 130" class="mono_ModulationSlider"
+                    explicitFocusOrder="0" pos="1435r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new OctaveOffsetSlConfig()"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline4"
          virtualName="" explicitFocusOrder="0" pos="245 5 120 35" textCol="ff1111ff"
@@ -3702,7 +3702,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
-                    virtualName="SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
+                    virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
                     class="Component" params=""/>
   <LABEL name="DL" id="ad887653d405d154" memberName="label_eq" virtualName=""
          explicitFocusOrder="0" pos="740 580 90 35" textCol="ff1111ff"

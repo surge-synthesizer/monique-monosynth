@@ -26,7 +26,7 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorSettings::refresh() noexcept
+void Monique_Ui_Settings::refresh() noexcept
 {
     float sample_rate = RuntimeNotifyer::getInstance()->get_sample_rate();
 
@@ -66,7 +66,7 @@ void UiEditorSettings::refresh() noexcept
     label_release_3->setText(String( MIN_ENV_TIMES + env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
     label_release_4->setText(String( MIN_ENV_TIMES + env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
 
-    SynthData* synth_data( GET_DATA_PTR( synth_data ) );
+    MoniqueSynthData* synth_data( GET_DATA_PTR( synth_data ) );
     slider_force_to_zero->setValue( synth_data->force_envs_to_zero, dontSendNotification );
     slider_env_shape->setValue( synth_data->curve_shape,sendNotification);
 
@@ -79,7 +79,7 @@ void UiEditorSettings::refresh() noexcept
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorSettings::UiEditorSettings ()
+Monique_Ui_Settings::Monique_Ui_Settings ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -718,7 +718,7 @@ UiEditorSettings::UiEditorSettings ()
     //[/Constructor]
 }
 
-UiEditorSettings::~UiEditorSettings()
+Monique_Ui_Settings::~Monique_Ui_Settings()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -793,7 +793,7 @@ UiEditorSettings::~UiEditorSettings()
 }
 
 //==============================================================================
-void UiEditorSettings::paint (Graphics& g)
+void Monique_Ui_Settings::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -920,7 +920,7 @@ void UiEditorSettings::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorSettings::resized()
+void Monique_Ui_Settings::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -994,7 +994,7 @@ void UiEditorSettings::resized()
     //[/UserResized]
 }
 
-void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_Settings::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -1134,8 +1134,8 @@ void UiEditorSettings::sliderValueChanged (Slider* sliderThatWasMoved)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorSettings" componentName=""
-                 parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_Settings" componentName=""
+                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams=""
                  variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="1465" initialHeight="180">

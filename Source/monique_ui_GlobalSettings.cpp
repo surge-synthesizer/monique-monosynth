@@ -19,19 +19,19 @@
 
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
-#include "monique_core_Datastructures.h"
+#include "monique_ui_MainWindow.h"
 
-#include "PluginProcessor.h"
-#include "UiEditorSynthLite.h"
+#include "monique_core_Datastructures.h"
+#include "monique_core_Processor.h"
 //[/Headers]
 
 #include "monique_ui_GlobalSettings.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorGlobalSettings::refresh() noexcept
+void Monique_Ui_GlobalSettings::refresh() noexcept
 {
-    SynthData& synth_data( GET_DATA( synth_data ) );
+    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
 
     slider_morph_motor_time->setValue( synth_data.morph_motor_time.get_value(), dontSendNotification );
     slider_glide_time->setValue( synth_data.glide_motor_time.get_value(), dontSendNotification );
@@ -81,7 +81,7 @@ void UiEditorGlobalSettings::refresh() noexcept
     combo_multicore_cpus->setSelectedId( synth_data.num_extra_threads+1, dontSendNotification );
 }
 
-void UiEditorGlobalSettings::open_colour_selector(Colour& colour_to_edit_)
+void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
 {
     last_repainted_colour = colour_to_edit_;
 
@@ -111,7 +111,7 @@ void UiEditorGlobalSettings::open_colour_selector(Colour& colour_to_edit_)
     button_colour_labels->setVisible(false);
 }
 
-void UiEditorGlobalSettings::update_audio_devices()
+void Monique_Ui_GlobalSettings::update_audio_devices()
 {
     combo_audio_device->clear(dontSendNotification);
     combo_sample_rate->clear(dontSendNotification);
@@ -218,7 +218,7 @@ void UiEditorGlobalSettings::update_audio_devices()
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorGlobalSettings::UiEditorGlobalSettings ()
+Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -654,7 +654,7 @@ UiEditorGlobalSettings::UiEditorGlobalSettings ()
     //[/Constructor]
 }
 
-UiEditorGlobalSettings::~UiEditorGlobalSettings()
+Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -721,7 +721,7 @@ UiEditorGlobalSettings::~UiEditorGlobalSettings()
 }
 
 //==============================================================================
-void UiEditorGlobalSettings::paint (Graphics& g)
+void Monique_Ui_GlobalSettings::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -748,7 +748,7 @@ void UiEditorGlobalSettings::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorGlobalSettings::resized()
+void Monique_Ui_GlobalSettings::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -813,7 +813,7 @@ void UiEditorGlobalSettings::resized()
     //[/UserResized]
 }
 
-void UiEditorGlobalSettings::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -938,7 +938,7 @@ void UiEditorGlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
-void UiEditorGlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
+void Monique_Ui_GlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
@@ -965,7 +965,7 @@ void UiEditorGlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void UiEditorGlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -1111,8 +1111,8 @@ void UiEditorGlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorGlobalSettings" componentName=""
-                 parentClasses="public Component, public mono_UiRefreshable" constructorParams=""
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_GlobalSettings" componentName=""
+                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams=""
                  variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
                  snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
                  initialWidth="1465" initialHeight="180">

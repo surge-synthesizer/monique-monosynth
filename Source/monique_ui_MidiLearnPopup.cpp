@@ -18,16 +18,17 @@
 */
 
 //[Headers] You can add your own extra header files here...
-#include "UiEditorSynthLite.h"
+#include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"
-#include "PluginProcessor.h"
+
+#include "monique_core_Processor.h"
 //[/Headers]
 
 #include "monique_ui_MidiLearnPopup.h"
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-void UiEditorSynthLitePopup::refresh() noexcept
+void Monique_Ui_MainwindowPopup::refresh() noexcept
 {
     if( _midi_control )
     {
@@ -47,7 +48,7 @@ void UiEditorSynthLitePopup::refresh() noexcept
     }
 }
 
-void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ )
+void Monique_Ui_MainwindowPopup::set_element_to_show( Component*const comp_ )
 {
     related_to_comp = comp_;
     Component* parent = comp_->getParentComponent();
@@ -64,7 +65,7 @@ void UiEditorSynthLitePopup::set_element_to_show( Component*const comp_ )
     }
     setBounds( x-10, y, comp_->getWidth()+20, original_h );
 }
-void UiEditorSynthLitePopup::update_positions( )
+void Monique_Ui_MainwindowPopup::update_positions( )
 {
     if( related_to_comp )
         set_element_to_show( related_to_comp );
@@ -72,7 +73,7 @@ void UiEditorSynthLitePopup::update_positions( )
 //[/MiscUserDefs]
 
 //==============================================================================
-UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_, MIDIControl* midi_control_)
+Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
     : parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -136,7 +137,7 @@ UiEditorSynthLitePopup::UiEditorSynthLitePopup (UiEditorSynthLite*const parent_,
     //[/Constructor]
 }
 
-UiEditorSynthLitePopup::~UiEditorSynthLitePopup()
+Monique_Ui_MainwindowPopup::~Monique_Ui_MainwindowPopup()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
@@ -152,7 +153,7 @@ UiEditorSynthLitePopup::~UiEditorSynthLitePopup()
 }
 
 //==============================================================================
-void UiEditorSynthLitePopup::paint (Graphics& g)
+void Monique_Ui_MainwindowPopup::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
@@ -171,7 +172,7 @@ void UiEditorSynthLitePopup::paint (Graphics& g)
     //[/UserPaint]
 }
 
-void UiEditorSynthLitePopup::resized()
+void Monique_Ui_MainwindowPopup::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
@@ -191,7 +192,7 @@ void UiEditorSynthLitePopup::resized()
     //[/UserResized]
 }
 
-void UiEditorSynthLitePopup::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
@@ -228,7 +229,7 @@ void UiEditorSynthLitePopup::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     //[/UsercomboBoxChanged_Post]
 }
 
-void UiEditorSynthLitePopup::buttonClicked (Button* buttonThatWasClicked)
+void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
@@ -261,8 +262,8 @@ void UiEditorSynthLitePopup::buttonClicked (Button* buttonThatWasClicked)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="UiEditorSynthLitePopup" componentName=""
-                 parentClasses="public Component, public mono_UiRefreshable" constructorParams="UiEditorSynthLite*const parent_, MIDIControl* midi_control_"
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MainwindowPopup" componentName=""
+                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams="Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
                  variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="140">

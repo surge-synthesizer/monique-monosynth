@@ -14,8 +14,8 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class SynthData;
-class SegmentedMeter;
+class MoniqueSynthData;
+class Monique_Ui_SegmentedMeter;
 class MoniqueSynthesiserVoice;
 class DATAINProcessor;
 
@@ -123,11 +123,11 @@ public:
     AudioPlayHead::CurrentPositionInfo current_pos_info;
 
     // SYNTH
-    SynthData* synth_data;
+    MoniqueSynthData* synth_data;
     MoniqueSynthesiserVoice* voice;
     Synthesiser* synth;
 
-    SegmentedMeter* peak_meter;
+    Monique_Ui_SegmentedMeter* peak_meter;
     bool repaint_peak_meter;
 
     //==============================================================================

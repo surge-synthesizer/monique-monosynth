@@ -1,9 +1,9 @@
 
-#include "PluginProcessor.h"
+#include "monique_core_Processor.h"
 #include "monique_core_Datastructures.h"
 #include "monique_core_Synth.h"
 
-#include "UiEditorSynthLite.h"
+#include "monique_ui_MainWindow.h"
 #include "monique_ui_SegmentedMeter.h"
 
 // ********************************************************************************************
@@ -38,7 +38,7 @@ public:
 #define NO_NEW_EVENTS -1
 class DATAINProcessor
 {
-    SynthData*const _synth_data;
+    MoniqueSynthData*const _synth_data;
 
     CriticalSection lock;
 
@@ -159,7 +159,7 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
         AppInstanceStore::getInstance()->audio_processor = this;
 
         synth = new Synthesiser();
-        synth_data = new SynthData(MASTER);
+        synth_data = new MoniqueSynthData(MASTER);
 
 #ifdef IS_PLUGIN
         voice = new MONOVoice(this,synth_data);
@@ -456,8 +456,10 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                         midi_messages_.addEvent( note_on, 0 );
                     }
 
-                    if( current_pos_info.timeInSamples > 44100 * 100 )
+                    if( current_pos_info.timeInSamples > 44100 * 10 )
                         exit(0);
+		    else
+		        std::cout << "PROCESS NUM SAMPLES:" << current_pos_info.timeInSamples << " LEFT:" << 44100 * 10 - current_pos_info.timeInSamples << std::endl;
                 }
 #endif
                 // MIDI IN
@@ -670,7 +672,7 @@ bool MoniqueAudioProcessor::hasEditor() const
 }
 AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
 {
-    return new UiEditorSynthLite();
+    return new Monique_Ui_Mainwindow();
 }
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
