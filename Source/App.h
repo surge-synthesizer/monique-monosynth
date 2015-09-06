@@ -32,6 +32,13 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
+  // RESTRICT
+#if JUCE_WINDOWS
+#define restrict __restrict
+#else
+#define restrict __restrict__
+#endif
+  
 // JUCE
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
@@ -63,6 +70,8 @@
 #define and &&
 #define not !
 #endif
+  
+
 
 // MOVE SUPPORT
 #if JUCE_MAC

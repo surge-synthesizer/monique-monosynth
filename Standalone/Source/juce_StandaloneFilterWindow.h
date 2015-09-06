@@ -32,65 +32,34 @@
 extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
 //==============================================================================
-/**
-    A class that can be used to run a simple standalone application containing your filter.
-
-    Just create one of these objects in your JUCEApplicationBase::initialise() method, and
-    let it do its work. It will create your filter object using the same createFilter() function
-    that the other plugin wrappers use.
-*/
-
 class StandaloneFilterWindow : public DocumentWindow
 {
 public:
-    //==============================================================================
-    /** Creates a window with a given title and colour.
-    	The settings object can be a PropertySet that the class should use to
-    	store its settings - the object that is passed-in will be owned by this
-    	class and deleted automatically when no longer needed. (It can also be null)
-    	*/
-
     StandaloneFilterWindow(const String& title)
         :
-        DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false ),
-        editor(nullptr)
+        DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
     {
         setOpaque(true);
         createFilter();
 
         if (filter == nullptr)
         {
-            //jassertfalse    // Your filter didn't create correctly! In a standalone app that's not too great.
             JUCEApplicationBase::quit();
         }
 
-#ifdef IS_MOBILE_APP
-        addToDesktop();
-        setUsingNativeTitleBar(true);
-        setResizable(false,false);
-        setTitleBarHeight(0);
-        setFullScreen(true);
-#endif
-
-        editor = dynamic_cast<UiEditorSynthLite*>(filter->createEditorIfNeeded());
-        store = editor->_app_instance_store;
-        setContentOwned(editor, true);
-	
-#if IS_MOBILE_APP
-        Desktop::getInstance().setKioskModeComponent(this);
-        editor->timerCallback();
-        editor->startTimer(UI_REFRESH_RATE);
+#ifndef PROFILE
+        setContentOwned(reinterpret_cast<UiEditorSynthLite*>( filter->createEditorIfNeeded()), true );
 #endif
     }
 
-    ~StandaloneFilterWindow() {
+    ~StandaloneFilterWindow()
+    {
         deleteFilter();
     }
 
-    //
-
     //==============================================================================
-    AudioProcessor* getAudioProcessor() const noexcept      {
+    AudioProcessor* getAudioProcessor() const noexcept
+    {
         return filter;
     }
 
@@ -98,26 +67,21 @@ public:
     {
         AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Standalone);
         filter = reinterpret_cast<MoniqueAudioProcessor*>( createPluginFilter() );
-
-#ifdef USE_PLUGIN_PROCESS_BLOCK
-        AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Undefined);
-#endif
     }
 
-    /** Deletes and re-creates the filter and its UI. */
     void resetFilter()
     {
         deleteFilter();
         createFilter();
 
-        if (filter != nullptr) {
+        if (filter != nullptr)
+        {
             setContentOwned (filter->createEditorIfNeeded(), true);
         }
     }
 
 
     //==============================================================================
-    /** @internal */
     void closeButtonPressed() override
     {
         JUCEApplicationBase::quit();
@@ -136,7 +100,7 @@ public:
             DocumentWindow::maximiseButtonPressed();
         }
     }
-    /** @internal */
+
     void resized() override
     {
         DocumentWindow::resized();
@@ -144,38 +108,41 @@ public:
 
     void suspended()
     {
-        //sutdown_audio();
-        //editor->stopTimer();
+        mono_UiRefresher::getInstance()->stopTimer();
     }
     void resumed()
     {
-        //editor->startTimer(1000.0f/30);
+        mono_UiRefresher::getInstance()->startTimer( UI_REFRESH_RATE );
     }
 
     void visibilityChanged() override
     {
         if( isVisible() )
+        {
             resumed();
+        }
         else
+        {
             suspended();
+        }
     }
 
     void minimisationStateChanged( bool isNowMinimised) override
     {
-        if( ! isNowMinimised )
-            resumed();
-        else
+        if( isNowMinimised )
+        {
             suspended();
+        }
+        else
+        {
+            resumed();
+        }
     }
 
 private:
     //==============================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
 
-public:
-    UiEditorSynthLite* editor;
-    AppInstanceStore*store;
-private:
     void deleteFilter()
     {
         if (filter != nullptr && getContentComponent() != nullptr)

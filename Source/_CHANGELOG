@@ -81,6 +81,10 @@ QUESTS
 - sync lfo with note on?
 - how to set return value?
 
+SPEED
+- TODO do not render filters with zero input and disabled amp!
+- TODO do not render filters in eq band with zero input and disabled amp!
+
 -------------------------------------------------------------------
 
 mic rechner

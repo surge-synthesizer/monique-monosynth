@@ -30,4 +30,6 @@
 
 #undef NOINLINE
 #define NOINLINE
+#undef restrict
+#define restrict
 #endif

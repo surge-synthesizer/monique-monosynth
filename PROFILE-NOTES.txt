@@ -1,4 +1,4 @@
- kcachegrind
+ 
  
  -pg
  
@@ -8,3 +8,8 @@
 -fno-inline-small-functions
 -fno-inline
 -fno-inline-functions
+
+valgrind --tool=callgrind ./Monique_64
+kcachegrind
+
+gprof test_gprof gmon.out > analysis.txt
