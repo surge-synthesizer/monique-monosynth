@@ -36,6 +36,8 @@ CHANGES 0.5:
 - fix can crash on short attack time (coz we have a min value of 30ms)
 - multi instance support should be fixed (but was no time to check it in detail yet - can anybody do this?)
 - fix crash on short morph motor time
+- shift phase of the 32.5hertz band
+- 
 
 :!: KNOWN BUGS:
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one

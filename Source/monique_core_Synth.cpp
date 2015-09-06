@@ -500,6 +500,97 @@ inline void AmpSmoothBuffer::reset( float value_ ) noexcept {
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+class SwitchSmoother
+{
+protected:
+    float current_value;
+    float target_value;
+    float delta;
+    int counter;
+    bool state;
+
+public:
+    inline bool reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept;
+    inline float tick_to( float current_value_ ) noexcept;
+    inline float get_last_tick_value() noexcept;
+    inline void reset() noexcept;
+
+    COLD SwitchSmoother() noexcept;
+    COLD ~SwitchSmoother() noexcept;
+
+private:
+    //MONO_NOT_CTOR_COPYABLE( SwitchSmoother )
+    MONO_NOT_MOVE_COPY_OPERATOR( SwitchSmoother )
+};
+
+//==============================================================================
+COLD SwitchSmoother::SwitchSmoother() noexcept
+:
+current_value( 0 ),
+               target_value( 0 ),
+               delta(0),
+               counter(0),
+               state(true)
+{}
+
+COLD SwitchSmoother::~SwitchSmoother() noexcept {}
+
+//==============================================================================
+inline bool SwitchSmoother::reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept
+{
+    if( state != maybe_new_state_ )
+    {
+        state = maybe_new_state_;
+        counter = 500;
+        delta = 0;
+
+        return true;
+    }
+
+    return false;
+}
+inline float SwitchSmoother::tick_to( float current_value_ ) noexcept
+{
+    if( --counter <= 0 )
+    {
+        current_value = current_value_;
+        target_value = current_value_;
+    }
+    else
+    {
+        float tmp_old = target_value;
+        if( current_value_ != target_value )
+        {
+            target_value = current_value_;
+            delta = (target_value-current_value) / counter;
+        }
+
+        current_value+=delta;
+    }
+
+    return current_value;
+}
+inline float SwitchSmoother::get_last_tick_value() noexcept
+{
+    return current_value;
+}
+inline void SwitchSmoother::reset() noexcept
+{
+    current_value = target_value;
+    delta = 0;
+    counter = 0;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 static inline float soft_clipping( float input_and_worker_ ) noexcept
 {
     return (std::atan(input_and_worker_)*(1.0f/float_Pi))*2;
@@ -2960,6 +3051,7 @@ private:
     ValueSmoother mix_smoother;
     ValueSmoother clipping_smoother;
     ValueSmoother input_sustains[SUM_INPUTS_PER_FILTER];
+    SwitchSmoother amp2sustain_smoother[SUM_INPUTS_PER_FILTER];
 
     const int id;
 
@@ -3006,6 +3098,7 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
      mix_smoother( &GET_DATA( filter_datas[id_] ).adsr_lfo_mix ),
      clipping_smoother( &GET_DATA( filter_datas[id_] ).output_clipping ),
      input_sustains { &GET_DATA( filter_datas[id_] ).input_sustains[0], &GET_DATA( filter_datas[id_] ).input_sustains[1], &GET_DATA( filter_datas[id_] ).input_sustains[2] },
+     amp2sustain_smoother(),
 
      id(id_),
 
@@ -3077,15 +3170,27 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
         ValueSmoother& input_sustain_smoother = input_sustains[input_id];
         input_sustain_smoother.update( glide_motor_time );
         const float*restrict const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
-        if( filter_data->input_holds[input_id] )
-        {
-            input_envs.getUnchecked(input_id)->reset();
 
+        // SWITCH FROM AMP TO INPUT CRACKL REMOVER
+        const bool input_hold( filter_data->input_holds[input_id] );
+        SwitchSmoother*const amp2s_smoother( &amp2sustain_smoother[input_id] );
+        ENV*const input_env( input_envs.getUnchecked(input_id) );
+        if( amp2s_smoother->reset_counter_on_state_switch( input_hold ) )
+        {
+            if( not input_hold )
+            {
+                input_env->overwrite_current_value( amp2s_smoother->get_last_tick_value() );
+                input_env->set_current_stage( ATTACK );
+            }
+        }
+
+        if( input_hold )
+        {
             if( id == FILTER_1 )
             {
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    tmp_input_ar_amp[sid] = input_sustain_smoother.tick();
+                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( input_sustain_smoother.tick() );
                     tmp_input_buffer[sid] = osc_input_buffer[sid];
                 }
             }
@@ -3097,12 +3202,12 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
                     const float sustain = input_sustain_smoother.tick();
                     if( sustain < 0 )
                     {
-                        tmp_input_ar_amp[sid] = sustain*-1;
+                        tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( sustain*-1 );
                         tmp_input_buffer[sid] = osc_input_buffer[sid];
                     }
                     else
                     {
-                        tmp_input_ar_amp[sid] = sustain;
+                        tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( sustain );
                         tmp_input_buffer[sid] = filter_before_buffer[sid];
                     }
                 }
@@ -3111,12 +3216,17 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
         }
         else // USING ADR
         {
-            input_envs.getUnchecked(input_id)->process( tmp_input_ar_amp, num_samples );
+            input_env->process( tmp_input_ar_amp, num_samples );
 
             if( id == FILTER_1 )
             {
                 input_sustain_smoother.reset();
                 FloatVectorOperations::copy( tmp_input_buffer, osc_input_buffer, num_samples );
+
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( tmp_input_ar_amp[sid] );
+                }
             }
             else
             {
@@ -3128,6 +3238,8 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
                         tmp_input_buffer[sid] = osc_input_buffer[sid];
                     else
                         tmp_input_buffer[sid] = filter_before_buffer[sid];
+
+                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( tmp_input_ar_amp[sid] );
                 }
             }
         }
@@ -3817,85 +3929,6 @@ inline void FilterProcessor::compress( float*restrict io_buffer_, float*restrict
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class SwitchSmoother
-{
-protected:
-    float current_value;
-    float target_value;
-    float delta;
-    int counter;
-    bool state;
-
-public:
-    inline bool reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept
-    {
-        if( state != maybe_new_state_ )
-        {
-            state = maybe_new_state_;
-            counter = 500;
-            delta = 0;
-
-            return true;
-        }
-
-        return false;
-    }
-    inline float tick_to( float current_value_ ) noexcept
-    {
-        if( --counter <= 0 )
-        {
-            current_value = current_value_;
-            target_value = current_value_;
-        }
-        else
-        {
-            float tmp_old = target_value;
-            if( current_value_ != target_value )
-            {
-                target_value = current_value_;
-                delta = (target_value-current_value) / counter;
-            }
-
-            current_value+=delta;
-        }
-
-        return current_value;
-    }
-    inline float get_last_tick_value() noexcept
-    {
-        return current_value;
-    }
-
-    inline void reset() noexcept
-    {
-        current_value = target_value;
-        delta = 0;
-        counter = 0;
-    }
-
-    COLD SwitchSmoother() noexcept;
-    COLD ~SwitchSmoother() noexcept;
-
-private:
-    //MONO_NOT_CTOR_COPYABLE( SwitchSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( SwitchSmoother )
-};
-
-//==============================================================================
-COLD SwitchSmoother::SwitchSmoother() noexcept
-:
-current_value( 0 ),
-               target_value( 0 ),
-               delta(0),
-               counter(0),
-               state(true)
-{}
-
-COLD SwitchSmoother::~SwitchSmoother() noexcept {}
-
-//==============================================================================
-
-
 class EQProcessor : public RuntimeListener
 {
     float frequency_low_pass[SUM_EQ_BANDS];
@@ -3948,6 +3981,7 @@ velocity_smoother
     GET_DATA_PTR( eq_data )->velocity[7].ptr(),
     GET_DATA_PTR( eq_data )->velocity[8].ptr()
 },
+// TODO only one is needed
 shape_smoother
 {
     synth_data_->resonance.ptr(),
@@ -4079,7 +4113,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                     shape_smoother->update( 250 );
 
                     // PROCESS
-		    int phase_shift = band_id == 0 ? -1 : 1;
+                    int phase_shift = band_id == 0 ? -1 : 1;
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float shape = shape_smoother->tick();
@@ -5482,10 +5516,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         lfos[0]->process( step_number_, num_samples_ );
         lfos[1]->process( step_number_, num_samples_ );
         lfos[2]->process( step_number_, num_samples_ );
-	
-	return;
+
+        return;
     }
-    
+
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
