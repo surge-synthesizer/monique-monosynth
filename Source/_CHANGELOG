@@ -31,6 +31,8 @@ CHANGES 0.5:
 - more gain
 - move window buttons on mac to the left side
 - add force amp to zero option (can be force some kicking effects)
+- fix/add some missing morph parameters
+- set min morph motor time to 20ms
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -61,14 +63,13 @@ TODO:
 - add: midi bank select
 - add: midi mod wheel; pitch wheel support
 - add: panic
-- add/fix: morph for some values are not supported now (e.g. pulse)
 - add-back: morph toggles
 - shuffle: snap to note durations
 - improve/fix style of some background sliders: e.g modulation of the OSC tune
+- fix colour styles for some sub editors
 - add: modwheel to ui
 - store last programm as filename in last session file (not as sepperate project)
 - bg für second ADSR slider
-- close editors if you open a new one+
 - auto resize ui if screen is to small
 - todo no repaint on mouse activity!
 - todo set fixed max times in adr editor
@@ -76,7 +77,6 @@ TODO:
 - srtart stop space
 - add 3 standard colour themes
 - reset oscs to zero
-- add velo glide to the arp group
 - chorus effect (also dieser buffer fill block) muss von der samplerate abhängen
 
 QUESTS

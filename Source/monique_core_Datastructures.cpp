@@ -2032,7 +2032,7 @@ linear_morhp_state
 ),
 morph_motor_time
 (
-    MIN_MAX( 1, 20000 ),
+    MIN_MAX( 20, 20000 ),
     1000,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
     generate_short_human_name("morph_motor")
@@ -2180,7 +2180,6 @@ static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< 
     params_.add( &data_->resonance );
     params_.add( &data_->curve_shape );
     params_.add( &data_->octave_offset );
-    params_.add( &data_->morph_motor_time );
     params_.add( &data_->morph_motor_time );
     params_.add( &data_->speed );
     params_.add( &data_->glide_motor_time );
