@@ -217,7 +217,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
                 EndlessBuffer& source_buffer_,
                 int num_samples_
-            )
+            ) noexcept
             {
                 const Colour col_fill(col_.withAlpha(0.1f));
                 int last_x = -9999;

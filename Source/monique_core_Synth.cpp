@@ -2557,7 +2557,7 @@ inline void DoubleAnalogFilter::reset() noexcept
 }
 
 // -----------------------------------------------------------------
-forcedinline static float resonance_clipping( float sample_ ) noexcept
+static inline float resonance_clipping( float sample_ ) noexcept
 {
     return (std::atan(sample_) * (1.0f/float_Pi))*2;
 }
@@ -4623,8 +4623,8 @@ inline void mono_Reverb::update_parameters() noexcept
 //==============================================================================
 NOINLINE void mono_Reverb::sample_rate_changed (double) noexcept
 {
-    static const short combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
-    static const short allPassTunings[] = { 556, 441, 341, 225 };
+    static const int combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
+    static const int allPassTunings[] = { 556, 441, 341, 225 };
     const int stereoSpread = 23;
     const int intSampleRate = (int) sample_rate;
 
