@@ -70,17 +70,6 @@
 #define and &&
 #define not !
 #endif
-  
-
-
-// MOVE SUPPORT
-#if JUCE_MAC
-#define MOVE(x) x
-#elif JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-#define MOVE(x) std::move(x)
-#else
-#define MOVE(x) x
-#endif
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -165,45 +154,11 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
 //==============================================================================
 //==============================================================================
 //==============================================================================
-inline static float mono_exp(float x) noexcept
-{
-    x = 1.0f + x * (1.0f/256);
-    x *= x;
-    x *= x;
-    x *= x;
-    x *= x;
-    x *= x;
-    x *= x;
-    x *= x;
-    x *= x;
-    return x;
-}
-
-inline static float mono_log2 (float val) noexcept
-{
-    int * const    exp_ptr = reinterpret_cast <int *> (&val);
-    int            x = *exp_ptr;
-    const int      log_2 = ((x >> 23) & 255) - 128;
-    x &= ~(255 << 23);
-    x += 127 << 23;
-    *exp_ptr = x;
-
-    val = ((-1.0f/3) * val + 2) * val - 2.0f/3;   // (1)
-
-    return (val + log_2);
-}
-
-inline static float mono_log(float x) noexcept
-{
-    return (mono_log2 (x) * 0.69314718f);
-}
-
 inline static int mono_floor(float x) noexcept
 {
     const int i = int(x);
     return i - ( i > x );
 }
-
 
 #endif  // APP_H_INCLUDED
 

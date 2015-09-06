@@ -3816,7 +3816,7 @@ inline void FilterProcessor::compress( float*restrict io_buffer_, float*restrict
 
     for( int sid = 0 ; sid != num_samples ; ++sid )
     {
-        float compression = mono_exp(tmp_buffer_[sid])-1;
+        float compression = exp(tmp_buffer_[sid])-1;
         if( is_negative )
             compression = 1.0f-compression;
 
