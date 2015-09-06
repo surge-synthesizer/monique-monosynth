@@ -41,14 +41,64 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-// INLINING //   
+// INLINING //
 #if JUCE_LINUX || JUCE_MAC
 #define COLD __attribute__ ((noinline,cold))
 #elif JUCE_WINDOWS
 #define COLD __declspec(noinline)
 #else
-#define COLD todo_UNKNOWN_PLATTFORM__________
+#define COLD inline
 #endif
+
+// HACK
+//==============================================================================
+//==============================================================================
+//==============================================================================
+template<int num_channels>
+class mono_AudioSampleBuffer : public AudioSampleBuffer
+{
+    AudioSampleBuffer*const buffer;
+
+public:
+    inline const float*restrict getReadPointer (int channelNumber = 0) const noexcept;
+    inline float*restrict getWritePointer (int channelNumber = 0) noexcept;
+
+    //==========================================================================
+    COLD void setSize (int newNumSamples ) noexcept;
+
+    //==========================================================================
+    COLD mono_AudioSampleBuffer(int numSamples) noexcept;
+    COLD ~mono_AudioSampleBuffer() noexcept;
+};
+
+//==============================================================================
+template<int num_channels>
+COLD mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
+:
+buffer( new AudioSampleBuffer( num_channels, numSamples ) )
+{}
+template<int num_channels>
+COLD mono_AudioSampleBuffer<num_channels>::~mono_AudioSampleBuffer() noexcept
+{
+    delete buffer;
+}
+
+//==============================================================================
+template<int num_channels>
+inline const float*restrict mono_AudioSampleBuffer<num_channels>::getReadPointer (int channelNumber) const noexcept
+{
+    return buffer->getReadPointer( channelNumber );
+}
+template<int num_channels>
+inline float*restrict mono_AudioSampleBuffer<num_channels>::getWritePointer (int channelNumber) noexcept
+{
+    return buffer->getWritePointer( channelNumber );
+}
+template<int num_channels>
+COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples ) noexcept
+{
+    buffer->setSize( num_channels, newNumSamples );
+}
 
 // MSVC REPLACEMENTS
 #define CONSTEXPR_SUPPORT

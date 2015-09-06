@@ -123,6 +123,8 @@ COLD mono_ThreadManager::~mono_ThreadManager() noexcept
 {
     for( int i = 0 ; i < THREAD_LIMIT ; ++i )
     {
+        threads[i]->signalThreadShouldExit();
+        threads[i]->waitForThreadToExit(200);
         delete threads[i];
     }
     clearSingletonInstance();
@@ -140,7 +142,7 @@ inline void mono_ThreadManager::execute_me( mono_MultiThreaded*const executer_ )
             for( int i = 0 ; i < num_threads ; ++i )
             {
                 mono_ExecuterThread*thread( threads[i] );
-                if( ! thread->isThreadRunning() )
+                if( not thread->isThreadRunning() )
                 {
                     thread->executeable = executer_;
                     executer_->thread = thread;
@@ -439,7 +441,8 @@ inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept
 //==============================================================================
 //==============================================================================
 #define AMP_SMOOTH_SIZE 10 // TODO as option and based to sample rate
-class AmpSmoothBuffer : RuntimeListener {
+class AmpSmoothBuffer : RuntimeListener
+{
     int pos;
     float buffer[AMP_SMOOTH_SIZE];
     float sum;
@@ -1329,7 +1332,9 @@ class LFO
     int last_factor;
     int step_to_wait_for_sync;
 
-    float*restrict const process_buffer;
+    const int id;
+
+    DataBuffer*const data_buffer;
     const LFOData*const lfo_data;
     const RuntimeInfo*const runtime_info;
 
@@ -1363,7 +1368,9 @@ sine_generator(),
                last_factor(0),
                step_to_wait_for_sync(false),
 
-               process_buffer( GET_DATA(data_buffer).lfo_amplitudes.getWritePointer(id_) ),
+               id( id_ ),
+
+               data_buffer( GET_DATA_PTR(data_buffer) ),
                lfo_data( GET_DATA_PTR( lfo_datas[id_] ) ),
                runtime_info( GET_DATA_PTR( runtime_info ) )
 {
@@ -1373,6 +1380,7 @@ COLD LFO::~LFO() noexcept {}
 //==============================================================================
 inline void LFO::process( int step_number_, int num_samples_ ) noexcept
 {
+    float*restrict process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
     sync( step_number_ );
 
     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -1531,17 +1539,10 @@ class OSC : public RuntimeListener
 
     // DATA SOURCE
     //==============================================================================
+    DataBuffer*const data_buffer;
     const MoniqueSynthData*const synth_data;
     const OSCData* osc_data;
     const OSCData* master_osc_data;
-
-    // BUFFERS
-    //==============================================================================
-    float*restrict const output_buffer;
-    float*restrict const switch_buffer;
-    float*restrict const osc_sync_switch_buffer;
-    float*restrict const osc_modulator_buffer;
-    const float*restrict const lfo_amps;
 
 public:
     //==============================================================================
@@ -1584,15 +1585,10 @@ id( id_ ),
     octave_smoother( &GET_DATA( osc_datas[id_] ).octave ),
     fm_amount_smoother( &GET_DATA( osc_datas[id_] ).fm_amount ),
 
+    data_buffer( GET_DATA_PTR(data_buffer) ),
     synth_data( synth_data_ ),
     osc_data( GET_DATA_PTR( osc_datas[id_] ) ),
-    master_osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) ),
-
-    output_buffer( GET_DATA( data_buffer ).osc_samples.getWritePointer(id_) ),
-    switch_buffer( GET_DATA( data_buffer ).osc_switchs.getWritePointer(id_) ),
-    osc_sync_switch_buffer( GET_DATA( data_buffer ).osc_sync_switchs.getWritePointer(MASTER_OSC) ),
-    osc_modulator_buffer( GET_DATA( data_buffer ).modulator_samples.getWritePointer(MASTER_OSC) ),
-    lfo_amps( ( GET_DATA( data_buffer ).lfo_amplitudes.getReadPointer(id_) ) )
+    master_osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
 {
     modulator.setVibratoGain(1);
 }
@@ -1602,6 +1598,12 @@ COLD OSC::~OSC() noexcept {}
 inline void OSC::process(DataBuffer* data_buffer_,
                          const int num_samples_) noexcept
 {
+    float*restrict const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
+    float*restrict const switch_buffer( data_buffer->osc_switchs.getWritePointer(id) );
+    float*restrict const osc_sync_switch_buffer( data_buffer->osc_sync_switchs.getWritePointer(MASTER_OSC) );
+    float*restrict const osc_modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
+    const float*restrict const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
+
     // FM SWING
     const float master_fm_swing = master_osc_data->fm_swing;
     const bool master_osc_modulation_is_off = id == MASTER_OSC ? master_osc_data->mod_off : false;
@@ -2354,20 +2356,10 @@ private:
 
 public:
     inline float add_get( float in_ ) noexcept;
-    bool is_up_to_date() const noexcept {
-        return target_value == current_value;
-    }
+    bool is_up_to_date() const noexcept;
     inline float add_get_and_keep_current_time( float in_ ) noexcept;
-    inline void reset( float value_ = 0 ) noexcept
-    {
-        current_value = value_;
-        delta = 0;
-        counter = 0;
-    }
-    inline float get_current_value() const noexcept
-    {
-        return current_value;
-    }
+    inline void reset( float value_ = 0 ) noexcept;
+    inline float get_current_value() const noexcept;
 
     COLD AmpSmoother( float start_value_ = 0 ) noexcept;
     COLD ~AmpSmoother() noexcept;
@@ -2406,6 +2398,18 @@ inline float AmpSmoother<smooth_samples>::add_get( float in_ ) noexcept {
     return current_value;
 }
 template< int smooth_samples >
+bool AmpSmoother<smooth_samples>::is_up_to_date() const noexcept
+{
+    return target_value == current_value;
+}
+template< int smooth_samples >
+inline void AmpSmoother<smooth_samples>::reset( float value_ ) noexcept
+{
+    current_value = value_;
+    delta = 0;
+    counter = 0;
+}
+template< int smooth_samples >
 inline float AmpSmoother<smooth_samples>::add_get_and_keep_current_time( float in_ ) noexcept {
     if( current_value != in_ || target_value != in_ )
     {
@@ -2435,6 +2439,11 @@ inline void AmpSmoother<smooth_samples>::glide_tick() noexcept
             counter = 0;
         }
     }
+}
+template< int smooth_samples >
+inline float AmpSmoother<smooth_samples>::get_current_value() const noexcept
+{
+    return current_value;
 }
 
 //==============================================================================
@@ -5313,7 +5322,7 @@ audio_processor( audio_processor_ ),
 synth_data( synth_data_ ),
 
 info( new RuntimeInfo() ),
-data_buffer( new DataBuffer(512) ),
+data_buffer( new DataBuffer(1024) ),
 
 arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
 eq_processor( new EQProcessor( synth_data_ ) ),
@@ -5488,7 +5497,9 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 
         // RENDER THE NEXT BLOCK
         if( samples_to_next_arp_step_in_this_buffer > 0 )
+        {
             render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
+        }
         count_start_sample += samples_to_next_arp_step_in_this_buffer;
 
         // HANDLE RETIGGERS
@@ -5742,6 +5753,8 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
+
 
 
 

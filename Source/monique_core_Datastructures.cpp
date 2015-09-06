@@ -45,7 +45,7 @@ juce_ImplementSingleton (RuntimeNotifyer)
 COLD RuntimeNotifyer::RuntimeNotifyer() noexcept :
 sample_rate(44100),
             sample_rate_1ths( 1.0/44100),
-            block_size(256)
+            block_size(512)
 {
 }
 
@@ -1446,7 +1446,7 @@ public:
     COLD void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
 
     COLD void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
-                               float current_morph_amount_, bool current_switch_state_ ) noexcept;
+                           float current_morph_amount_, bool current_switch_state_ ) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
 };
@@ -2108,6 +2108,7 @@ error_string("ERROR")
 
     // FILE HANDLING
     colect_saveable_parameters();
+    colect_global_parameters();
     if( data_type == MASTER )
     {
         refresh_banks_and_programms();
@@ -2186,28 +2187,7 @@ static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< 
     params_.add( &data_->speed );
     params_.add( &data_->glide_motor_time );
     params_.add( &data_->velocity_glide_time );
-    params_.add( &data_->midi_pickup_offset );
-    params_.add( &data_->ctrl );
-    params_.add( &data_->animate_input_env );
-    params_.add( &data_->animate_eq_env );
-    params_.add( &data_->animate_modulations );
     params_.add( &data_->sync );
-
-    params_.add( &data_->osci_show_osc_1 );
-    params_.add( &data_->osci_show_osc_2 );
-    params_.add( &data_->osci_show_osc_3 );
-    params_.add( &data_->osci_show_flt_env_1 );
-    params_.add( &data_->osci_show_flt_env_2 );
-    params_.add( &data_->osci_show_flt_env_3 );
-    params_.add( &data_->osci_show_flt_1 );
-    params_.add( &data_->osci_show_flt_2 );
-    params_.add( &data_->osci_show_flt_3 );
-    params_.add( &data_->osci_show_eq );
-    params_.add( &data_->osci_show_out );
-    params_.add( &data_->osci_show_out_env );
-    params_.add( &data_->osci_show_range );
-
-    params_.add( &data_->num_extra_threads );
 
     params_.add( &data_->force_envs_to_zero );
 
@@ -2246,6 +2226,34 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters( this, saveable_parameters );
 
     saveable_parameters.minimiseStorageOverheads();
+}
+
+#include "../../JUCE/modules/juce_core/containers/juce_Array.h"
+COLD void MoniqueSynthData::colect_global_parameters() noexcept
+{
+    global_parameters.add( &osci_show_osc_1 );
+    global_parameters.add( &osci_show_osc_2 );
+    global_parameters.add( &osci_show_osc_3 );
+    global_parameters.add( &osci_show_flt_env_1 );
+    global_parameters.add( &osci_show_flt_env_2 );
+    global_parameters.add( &osci_show_flt_env_3 );
+    global_parameters.add( &osci_show_flt_1 );
+    global_parameters.add( &osci_show_flt_2 );
+    global_parameters.add( &osci_show_flt_3 );
+    global_parameters.add( &osci_show_eq );
+    global_parameters.add( &osci_show_out );
+    global_parameters.add( &osci_show_out_env );
+    global_parameters.add( &osci_show_range );
+    global_parameters.add( &num_extra_threads );
+
+    global_parameters.add( &animate_input_env );
+    global_parameters.add( &animate_eq_env );
+    global_parameters.add( &animate_modulations );
+
+    global_parameters.add( &midi_pickup_offset );
+    global_parameters.add( &ctrl );
+
+    global_parameters.minimiseStorageOverheads();
 }
 
 //==============================================================================
@@ -2498,7 +2506,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
-	    
+
             morph_group_3->register_parameter( chorus_data->modulation_env_data->state.ptr(), data_type == MASTER  );
             morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
@@ -2584,7 +2592,7 @@ bool MoniqueSynthData::get_morph_switch_state( int morpher_id_ ) const noexcept
 void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ ) noexcept
 {
     ScopedLock locked( morph_lock );
-  
+
     if( force_ )
     {
         morhp_states[morpher_id_].get_runtime_info().stop_time_change();
@@ -2610,7 +2618,7 @@ void MoniqueSynthData::morph( int morpher_id_, float morph_amount_left_to_right_
 void MoniqueSynthData::morph_switch_buttons( int morpher_id_, bool do_switch_ ) noexcept
 {
     ScopedLock locked( morph_lock );
-  
+
     if( do_switch_ )
     {
         morhp_switch_states[morpher_id_] ^= true;
@@ -3240,6 +3248,39 @@ void MoniqueSynthData::save_session() const noexcept
 void MoniqueSynthData::load_session() noexcept
 {
     load( "SESSION", "last" );
+}
+void MoniqueSynthData::save_settings() const noexcept
+{
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    folder = File(folder.getFullPathName()+PROJECT_FOLDER);
+    if( folder.createDirectory() )
+    {
+        File settings_session_file( File( folder.getFullPathName() + String("/") + "session.mcfg") );
+
+        XmlElement xml("SETTINGS-1.0");
+        for( int i = 0 ; i != global_parameters.size() ; ++i )
+        {
+            write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
+        }
+
+        xml.writeToFile(settings_session_file,"");
+    }
+}
+void MoniqueSynthData::load_settings() noexcept
+{
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File settings_session_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("session.mcfg"));
+    ScopedPointer<XmlElement> xml = XmlDocument( settings_session_file ).getDocumentElement();
+    if( xml )
+    {
+        if( xml->hasTagName("SETTINGS-1.0") )
+        {
+            for( int i = 0 ; i != global_parameters.size() ; ++i )
+            {
+                read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
+            }
+        }
+    }
 }
 
 //==============================================================================

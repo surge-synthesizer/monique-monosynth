@@ -9,7 +9,8 @@
 // ********************************************************************************************
 // ********************************************************************************************
 // ********************************************************************************************
-enum {
+enum
+{
     IO_IS_MIDI = true,
     IO_IS_AUDIO = false,
 };
@@ -178,6 +179,7 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     std::cout << "MONIQUE: init midi" << std::endl;
     {
         mono_AudioDeviceManager::read();
+        synth_data->load_settings();
         synth_data->read_midi();
     }
 }
@@ -197,6 +199,7 @@ MoniqueAudioProcessor::~MoniqueAudioProcessor()
 #endif
     mono_AudioDeviceManager::save();
     synth_data->save_midi();
+    synth_data->save_settings();
 
     delete data_in_processor;
 
@@ -252,17 +255,17 @@ void MoniqueAudioProcessor::init_audio()
 
 //==============================================================================
 #ifdef IS_STANDALONE
-void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept 
+void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept
 {
     data_in_processor->messageCollector.addMessageToQueue( message );
 }
-void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept 
+void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept
 {
 
     data_in_processor->messageCollector.addMessageToQueue( message );
 
 }
-void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept 
+void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept
 {
 
 }
@@ -280,7 +283,7 @@ void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept 
+void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept
 {
     //MidiKeyboardState::processNextMidiEvent( message );
     //MidiBuffer buffer( message );
@@ -289,7 +292,7 @@ void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message
     // TODO, TR SENDS NOTES
     data_in_processor->messageCollector.addMessageToQueue( message );
 }
-void MoniqueAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ ) noexcept 
+void MoniqueAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ ) noexcept
 {
     MidiBuffer buffer( message_ );
     data_in_processor->handle_cc_input( buffer );
@@ -300,7 +303,7 @@ void MoniqueAudioProcessor::trigger_send_feedback() noexcept
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_feedback_only();
 }
-void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept 
+void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
 {
     Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
@@ -310,10 +313,14 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+int callbacksss = 0;
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
+
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
+    {
         prepareToPlay(getSampleRate(),getBlockSize());
+    }
 
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
@@ -458,8 +465,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 
                     if( current_pos_info.timeInSamples > 44100 * 10 )
                         exit(0);
-		    else
-		        std::cout << "PROCESS NUM SAMPLES:" << current_pos_info.timeInSamples << " LEFT:" << 44100 * 10 - current_pos_info.timeInSamples << std::endl;
+                    else
+                        std::cout << "PROCESS NUM SAMPLES:" << current_pos_info.timeInSamples << " LEFT:" << 44100 * 10 - current_pos_info.timeInSamples << std::endl;
                 }
 #endif
                 // MIDI IN
@@ -480,12 +487,16 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
             }
         }
     }
+
+    if( callbacksss == 2 )
+        std::cout << "end " << getBlockSize() << " buffer:" << buffer_.getNumSamples() << std::endl;
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ ) {
+void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
+{
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
     GET_DATA(data_buffer).resize_buffer_if_required(block_size_);
@@ -494,11 +505,11 @@ void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
 }
-void MoniqueAudioProcessor::releaseResources() 
+void MoniqueAudioProcessor::releaseResources()
 {
     // TODO reset all
 }
-void MoniqueAudioProcessor::reset() 
+void MoniqueAudioProcessor::reset()
 {
 }
 

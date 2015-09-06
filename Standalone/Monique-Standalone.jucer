@@ -105,8 +105,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;"
-                userNotes="-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;&#10;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;&#10;&#10;DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;-std=c++11&#10;-Wall&#10;&#10;-mavx&#10;-ffunction-sections &#10;-fdata-sections&#10;-ffast-math&#10;-fomit-frame-pointer&#10;-ftree-vectorize&#10;-flto&#10;&#10;&#10;"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
+                userNotes="_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>
         <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"

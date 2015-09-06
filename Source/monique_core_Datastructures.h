@@ -515,7 +515,7 @@ struct MoniqueSynthData : ParameterListener
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;
-    
+
     BoolParameter sync;
     Parameter speed;
 
@@ -548,7 +548,7 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter animate_input_env;
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
-    
+
     // ENV OPTION
     Parameter force_envs_to_zero;
 
@@ -566,7 +566,9 @@ struct MoniqueSynthData : ParameterListener
 private:
     // ==============================================================================
     Array< Parameter* > saveable_parameters;
+    Array< Parameter* > global_parameters;
     COLD void colect_saveable_parameters() noexcept;
+    COLD void colect_global_parameters() noexcept;
 
 public:
     // TODO
@@ -599,7 +601,7 @@ private:
     COLD void init_morph_groups( DATA_TYPES data_type ) noexcept;
 
     CriticalSection morph_lock;
-    
+
 public:
     inline float get_morph_state( int morpher_id_ ) const noexcept;
     inline bool get_morph_switch_state( int morpher_id_ ) const noexcept;
@@ -679,6 +681,8 @@ private:
 public:
     void save_session() const noexcept;
     void load_session() noexcept;
+    void save_settings() const noexcept;
+    void load_settings() noexcept;
     
 public:
     // ==============================================================================
@@ -699,7 +703,7 @@ public:
 class ENV;
 class MoniqueSynthesiserVoice;
 class DataBuffer;
-class mono_ParameterOwnerStore : public DeletedAtShutdown 
+class mono_ParameterOwnerStore : public DeletedAtShutdown
 {
 public:
     RuntimeInfo* runtime_info;
@@ -707,7 +711,7 @@ public:
     DataBuffer* data_buffer;
 
     ENVPresetDef* env_preset_def;
-    
+
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
     Array< FilterData* > filter_datas;
