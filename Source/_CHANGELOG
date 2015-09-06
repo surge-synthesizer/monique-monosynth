@@ -30,6 +30,7 @@ CHANGES 0.5:
 - refactoring of eq (more boost)
 - more gain
 - move window buttons on mac to the left side
+- add force amp to zero option (can be force some kicking effects)
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
@@ -53,6 +54,7 @@ CHANGES 0.5:
 - file remove is buggy
 
 TODO:
+- add arrow up/down, left/right to control slider values
 - need: global file (cpus, colours, slider cfg etc...)
 - add: store ui size
 - add: modulation amounts as automation params
@@ -75,7 +77,6 @@ TODO:
 - add 3 standard colour themes
 - reset oscs to zero
 - add velo glide to the arp group
-- add an slider to the preset adr designer to set the curve to zero on retrigger amount
 - chorus effect (also dieser buffer fill block) muss von der samplerate abhängen
 
 QUESTS

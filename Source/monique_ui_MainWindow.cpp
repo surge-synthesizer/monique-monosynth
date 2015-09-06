@@ -42,13 +42,15 @@
 //==============================================================================
 //==============================================================================
 
-void Monique_Ui_Mainwindow::refresh() noexcept {
+void Monique_Ui_Mainwindow::refresh() noexcept 
+{
     show_current_voice_data();
     resize_sequence_buttons();
     show_programs_and_select();
     show_ctrl_state();
 }
-void Monique_Ui_Mainwindow::show_programs_and_select() {
+void Monique_Ui_Mainwindow::show_programs_and_select() 
+{
     const int current_bank = synth_data->get_current_bank();
     const int current_programm = synth_data->get_current_program();
     if( current_bank != last_bank || current_programm != last_programm )
@@ -65,7 +67,8 @@ void Monique_Ui_Mainwindow::show_programs_and_select() {
         combo_programm->setSelectedItemIndex(synth_data->get_current_program(),dontSendNotification);
     }
 }
-void Monique_Ui_Mainwindow::show_ctrl_state() {
+void Monique_Ui_Mainwindow::show_ctrl_state() 
+{
     if( last_ctrl_mode != synth_data->ctrl )
     {
         last_ctrl_mode = synth_data->ctrl;
@@ -82,7 +85,8 @@ void Monique_Ui_Mainwindow::show_ctrl_state() {
         }
     }
 }
-void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ ) {
+void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ ) 
+{
     popup = nullptr;
     if( MIDIControlHandler::getInstance()->is_learning() && midi_conrtrol_ )
     {
@@ -90,9 +94,8 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
         popup->set_element_to_show( comp_ );
     }
 }
-
-#define STANDARD_MULT 1000.0f
-void Monique_Ui_Mainwindow::show_current_voice_data() {
+void Monique_Ui_Mainwindow::show_current_voice_data() 
+{
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
@@ -160,7 +163,8 @@ void Monique_Ui_Mainwindow::show_current_voice_data() {
     button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
 }
 
-void Monique_Ui_Mainwindow::resize_sequence_buttons() {
+void Monique_Ui_Mainwindow::resize_sequence_buttons() 
+{
     const float width_factor = 1.0f/original_w*getWidth();
     const float height_factor = 1.0f/original_h*getHeight();
     float shuffle = synth_data->arp_sequencer_data->shuffle * 0.8f * 60.0f * width_factor;
@@ -185,8 +189,8 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons() {
         }
     }
 }
-
-void Monique_Ui_Mainwindow::switch_finalizer_tab() {
+void Monique_Ui_Mainwindow::switch_finalizer_tab() 
+{
     //reverb
     bool state_switch = eq_1->isVisible();
     reverb_room->setVisible( state_switch );

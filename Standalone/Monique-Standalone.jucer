@@ -128,8 +128,9 @@
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-pg" extraLinkerFlags="-pg"
-                extraDefs="NDEBUG&#10;PROFILE" userNotes="" externalLibraries="">
+    <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-fno-inline-functions&#10;-pg"
+                extraLinkerFlags="-pg" extraDefs="NDEBUG&#10;PROFILE" userNotes=""
+                externalLibraries="">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
                        targetName="Monique_32" binaryPath="Builds/LINUX" linuxArchitecture="-m32"

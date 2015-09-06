@@ -2499,6 +2499,7 @@ NOINLINE void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexce
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->shine_env_data->state.ptr(), data_type == MASTER  );
             morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
 

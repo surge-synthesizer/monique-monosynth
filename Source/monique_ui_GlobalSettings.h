@@ -64,7 +64,8 @@ private:
         float sum;
 
     public:
-        inline void add( float val_ ) noexcept {
+        inline void add( float val_ ) noexcept 
+        {
             sum-=buffer[pos];
             buffer[pos] = val_;
             sum+=val_;
@@ -73,7 +74,8 @@ private:
             if( pos == BUFFER_SIZE )
                 pos = 0;
         }
-        inline int get_average() const noexcept {
+        inline int get_average() const noexcept 
+        {
             return round0(sum / BUFFER_SIZE);
         }
         inline int add_and_get_average(float val_) noexcept

@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    App.h
-    Created: 28 May 2014 10:30:02am
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
@@ -109,15 +99,18 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-static inline int round0( float value ) noexcept {
+static inline int round0( float value ) noexcept 
+{
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value);
 }
-static inline float round01( float value ) noexcept {
+static inline float round01( float value ) noexcept 
+{
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*10)/10;
 }
-static inline float round001( float value ) noexcept {
+static inline float round001( float value ) noexcept 
+{
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*100)/100;
 }
@@ -126,7 +119,6 @@ static inline float round001( float value ) noexcept {
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
-
 
 #include <iomanip>
 static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )

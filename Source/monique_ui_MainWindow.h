@@ -104,8 +104,6 @@ public:
     bool keyPressed (const KeyPress& key);
     void modifierKeysChanged (const ModifierKeys& modifiers);
 
-
-
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     ScopedPointer<ResizableCornerComponent> resizer;

@@ -743,7 +743,6 @@ void Left2MiddleSlider::mouseEnter(const MouseEvent& event)
 void Left2MiddleSlider::mouseExit(const MouseEvent& event)
 {
     owner->sliderModExit(this);
-
 }
 void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
 {
