@@ -1,16 +1,16 @@
 #include "monique_ui_Refresher.h"
 
 //==============================================================================
-Monique_Ui_Refresher::Monique_Ui_Refresher() noexcept {}
-Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept {
+juce_ImplementSingleton (Monique_Ui_Refresher)
+COLD Monique_Ui_Refresher::Monique_Ui_Refresher() noexcept {}
+COLD Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept 
+{
     clearSingletonInstance();
 }
-//==============================================================================
-juce_ImplementSingleton (Monique_Ui_Refresher)
 
+//==============================================================================
 void Monique_Ui_Refresher::timerCallback() 
 {
-    //Thread::setCurrentThreadPriority(1);
     for( int i = 0 ; i != refreshables.size() ; ++i )
     {
         refreshables.getUnchecked(i)->refresh();

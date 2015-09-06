@@ -36,6 +36,8 @@ private:
 public:
     //==============================================================================
     inline bool isWorking() const noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_MultiThreaded)
 };
 
 //==============================================================================
@@ -75,6 +77,8 @@ private:
 public:
     //==============================================================================
     COLD ~mono_ExecuterThread() noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ExecuterThread)
 };
 
 //==============================================================================
@@ -102,7 +106,10 @@ private:
     COLD mono_ThreadManager() noexcept;
     COLD ~mono_ThreadManager() noexcept;
 
+public:
     juce_DeclareSingleton (mono_ThreadManager,false)
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ThreadManager)
 };
 
 //==============================================================================
@@ -174,6 +181,8 @@ struct mono_Thread : public mono_MultiThreaded
     {
         mono_ThreadManager::getInstance()->execute_me(this);
     }
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Thread)
 };
 
 //==============================================================================
@@ -687,11 +696,13 @@ static inline float hard_clipper_1_5( float x ) noexcept
 #define TABLESIZE_MULTI 1000
 #define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 float*restrict SINE_LOOKUP_TABLE;
-struct SIN_LOOKUP
+class SIN_LOOKUP
 {
-    juce_DeclareSingleton (SIN_LOOKUP,false)
     COLD SIN_LOOKUP();
     COLD ~SIN_LOOKUP();
+    
+public:
+    juce_DeclareSingleton (SIN_LOOKUP,false)
 };
 juce_ImplementSingleton (SIN_LOOKUP)
 SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
@@ -5380,6 +5391,8 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     delete fx_processor;
     delete data_buffer;
     delete info;
+
+    mono_ThreadManager::deleteInstance();
 }
 
 //==============================================================================

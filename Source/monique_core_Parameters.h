@@ -1055,9 +1055,11 @@ public:
     bool handle_incoming_message( const MidiMessage& input_message_ ) noexcept;
     void clear() noexcept;
 
+private:
     MIDIControlHandler() noexcept;
     ~MIDIControlHandler() noexcept;
 
+public:
     juce_DeclareSingleton (MIDIControlHandler,false)
 };
 

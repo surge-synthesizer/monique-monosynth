@@ -134,9 +134,11 @@ public:
 
     Font defaultFont;
 
+private:
     UiLookAndFeel();
     ~UiLookAndFeel();
 
+public:
     juce_DeclareSingleton (UiLookAndFeel,false)
     //==============================================================================
     void drawButtonBackground (Graphics&, Button& button, const Colour& backgroundColour,

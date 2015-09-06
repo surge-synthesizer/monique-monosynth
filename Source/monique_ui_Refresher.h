@@ -10,8 +10,8 @@ public:
     virtual void refresh() noexcept = 0;
 
 protected:
-    Monique_Ui_Refreshable() noexcept;
-    virtual ~Monique_Ui_Refreshable() noexcept;
+    COLD Monique_Ui_Refreshable() noexcept;
+    COLD virtual ~Monique_Ui_Refreshable() noexcept;
 };
 
 //==============================================================================
@@ -31,8 +31,8 @@ public:
     COLD void remove_all() noexcept;
 
 private:
-    Monique_Ui_Refresher() noexcept;
-    ~Monique_Ui_Refresher() noexcept;
+    COLD Monique_Ui_Refresher() noexcept;
+    COLD ~Monique_Ui_Refresher() noexcept;
 
 public:
     juce_DeclareSingleton (Monique_Ui_Refresher,false)
