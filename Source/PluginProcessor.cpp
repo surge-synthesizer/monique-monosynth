@@ -252,15 +252,18 @@ void MoniqueAudioProcessor::init_audio()
 
 //==============================================================================
 #ifdef IS_STANDALONE
-void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept 
+{
     data_in_processor->messageCollector.addMessageToQueue( message );
 }
-void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept 
+{
 
     data_in_processor->messageCollector.addMessageToQueue( message );
 
 }
-void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept {
+void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept 
+{
 
 }
 void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message ) noexcept
@@ -273,6 +276,10 @@ void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message
     }
 }
 #endif
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept 
 {
     //MidiKeyboardState::processNextMidiEvent( message );
@@ -665,11 +672,8 @@ AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
 {
     return new UiEditorSynthLite();
 }
-
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new MoniqueAudioProcessor();
 }
-
-
 

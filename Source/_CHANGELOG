@@ -29,6 +29,7 @@ CHANGES 0.5:
 - back to mono output
 - refactoring of eq (more boost)
 - more gain
+- move window buttons on mac to the left side
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time

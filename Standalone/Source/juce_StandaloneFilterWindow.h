@@ -1,27 +1,3 @@
-/*
-  ==============================================================================
-
-   This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
-
-   Permission is granted to use this software under the terms of either:
-   a) the GPL v2 (or any later version)
-   b) the Affero GPL v3
-
-   Details of these licenses can be found at: www.gnu.org/licenses
-
-   JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-   ------------------------------------------------------------------------------
-
-   To release a closed-source product which uses JUCE, commercial licenses are
-   available: visit www.juce.com for more information.
-
-  ==============================================================================
-*/
-
 #ifndef JUCE_STANDALONEFILTERWINDOW_H_INCLUDED
 #define JUCE_STANDALONEFILTERWINDOW_H_INCLUDED
 
@@ -35,9 +11,9 @@ extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 class StandaloneFilterWindow : public DocumentWindow
 {
 public:
-    StandaloneFilterWindow(const String& title)
-        :
-        DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
+    StandaloneFilterWindow(const String& title) noexcept
+:
+    DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
     {
         setOpaque(true);
         createFilter();
@@ -52,7 +28,7 @@ public:
 #endif
     }
 
-    ~StandaloneFilterWindow()
+    ~StandaloneFilterWindow() noexcept
     {
         deleteFilter();
     }
@@ -63,13 +39,13 @@ public:
         return filter;
     }
 
-    void createFilter()
+    void createFilter() noexcept
     {
         AudioProcessor::setTypeOfNextNewPlugin (AudioProcessor::wrapperType_Standalone);
         filter = reinterpret_cast<MoniqueAudioProcessor*>( createPluginFilter() );
     }
 
-    void resetFilter()
+    void resetFilter() noexcept
     {
         deleteFilter();
         createFilter();
@@ -106,11 +82,11 @@ public:
         DocumentWindow::resized();
     }
 
-    void suspended()
+    void suspended() noexcept
     {
         mono_UiRefresher::getInstance()->stopTimer();
     }
-    void resumed()
+    void resumed() noexcept
     {
         mono_UiRefresher::getInstance()->startTimer( UI_REFRESH_RATE );
     }
@@ -127,7 +103,7 @@ public:
         }
     }
 
-    void minimisationStateChanged( bool isNowMinimised) override
+    void minimisationStateChanged( bool isNowMinimised ) override
     {
         if( isNowMinimised )
         {
@@ -143,7 +119,7 @@ private:
     //==============================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
 
-    void deleteFilter()
+    void deleteFilter() noexcept
     {
         if (filter != nullptr && getContentComponent() != nullptr)
         {
