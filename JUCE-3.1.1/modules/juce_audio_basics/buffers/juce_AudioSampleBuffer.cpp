@@ -1,38 +1,33 @@
 /*
   ==============================================================================
-
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
-
+   Copyright (c) 2015 - ROLI Ltd.
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
    b) the Affero GPL v3
-
    Details of these licenses can be found at: www.gnu.org/licenses
-
    JUCE is distributed in the hope that it will be useful, but WITHOUT ANY
    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
    A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
    ------------------------------------------------------------------------------
-
    To release a closed-source product which uses JUCE, commercial licenses are
    available: visit www.juce.com for more information.
-
   ==============================================================================
 */
 
 AudioSampleBuffer::AudioSampleBuffer() noexcept
-  : numChannels (0), size (0), allocatedBytes (0),
-    channels (static_cast<float**> (preallocatedChannelSpace)),
-    isClear (false)
+:
+numChannels (0), size (0), allocatedBytes (0),
+            channels (static_cast<float**> (preallocatedChannelSpace)),
+            isClear (false)
 {
 }
 
 AudioSampleBuffer::AudioSampleBuffer (const int numChans,
                                       const int numSamples) noexcept
-  : numChannels (numChans),
-    size (numSamples)
+:
+numChannels (numChans),
+size (numSamples)
 {
     jassert (numSamples >= 0);
     jassert (numChans >= 0);
@@ -41,9 +36,10 @@ AudioSampleBuffer::AudioSampleBuffer (const int numChans,
 }
 
 AudioSampleBuffer::AudioSampleBuffer (const AudioSampleBuffer& other) noexcept
-  : numChannels (other.numChannels),
-    size (other.size),
-    allocatedBytes (other.allocatedBytes)
+:
+numChannels (other.numChannels),
+size (other.size),
+allocatedBytes (other.allocatedBytes)
 {
     if (allocatedBytes == 0)
     {
@@ -86,9 +82,10 @@ void AudioSampleBuffer::allocateData()
 AudioSampleBuffer::AudioSampleBuffer (float* const* dataToReferTo,
                                       const int numChans,
                                       const int numSamples) noexcept
-    : numChannels (numChans),
-      size (numSamples),
-      allocatedBytes (0)
+:
+numChannels (numChans),
+size (numSamples),
+allocatedBytes (0)
 {
     jassert (dataToReferTo != nullptr);
     jassert (numChans >= 0 && numSamples >= 0);
@@ -99,10 +96,11 @@ AudioSampleBuffer::AudioSampleBuffer (float* const* dataToReferTo,
                                       const int numChans,
                                       const int startSample,
                                       const int numSamples) noexcept
-    : numChannels (numChans),
-      size (numSamples),
-      allocatedBytes (0),
-      isClear (false)
+:
+numChannels (numChans),
+size (numSamples),
+allocatedBytes (0),
+isClear (false)
 {
     jassert (dataToReferTo != nullptr);
     jassert (numChans >= 0 && startSample >= 0 && numSamples >= 0);
@@ -110,14 +108,17 @@ AudioSampleBuffer::AudioSampleBuffer (float* const* dataToReferTo,
 }
 
 void AudioSampleBuffer::setDataToReferTo (float** dataToReferTo,
-                                          const int newNumChannels,
-                                          const int newNumSamples) noexcept
+        const int newNumChannels,
+        const int newNumSamples) noexcept
 {
     jassert (dataToReferTo != nullptr);
     jassert (newNumChannels >= 0 && newNumSamples >= 0);
 
-    allocatedBytes = 0;
-    allocatedData.free();
+    if (allocatedBytes != 0)
+    {
+        allocatedBytes = 0;
+        allocatedData.free();
+    }
 
     numChannels = newNumChannels;
     size = newNumSamples;
@@ -193,7 +194,7 @@ void AudioSampleBuffer::setSize (const int newNumChannels,
         const size_t allocatedSamplesPerChannel = ((size_t) newNumSamples + 3) & ~3u;
         const size_t channelListSize = ((sizeof (float*) * (size_t) (newNumChannels + 1)) + 15) & ~15u;
         const size_t newTotalBytes = ((size_t) newNumChannels * (size_t) allocatedSamplesPerChannel * sizeof (float))
-                                        + channelListSize + 32;
+        + channelListSize + 32;
 
         if (keepExistingContent)
         {
@@ -448,11 +449,11 @@ void AudioSampleBuffer::addFrom (const int destChannel,
 }
 
 void AudioSampleBuffer::addFromWithRamp (const int destChannel,
-                                         const int destStartSample,
-                                         const float* source,
-                                         int numSamples,
-                                         float startGain,
-                                         const float endGain) noexcept
+        const int destStartSample,
+        const float* source,
+        int numSamples,
+        float startGain,
+        const float endGain) noexcept
 {
     jassert (isPositiveAndBelow (destChannel, numChannels));
     jassert (destStartSample >= 0 && destStartSample + numSamples <= size);
@@ -561,11 +562,11 @@ void AudioSampleBuffer::copyFrom (const int destChannel,
 }
 
 void AudioSampleBuffer::copyFromWithRamp (const int destChannel,
-                                          const int destStartSample,
-                                          const float* source,
-                                          int numSamples,
-                                          float startGain,
-                                          float endGain) noexcept
+        const int destStartSample,
+        const float* source,
+        int numSamples,
+        float startGain,
+        float endGain) noexcept
 {
     jassert (isPositiveAndBelow (destChannel, numChannels));
     jassert (destStartSample >= 0 && destStartSample + numSamples <= size);
@@ -609,8 +610,8 @@ void AudioSampleBuffer::reverse (int startSample, int numSamples) const noexcept
 }
 
 Range<float> AudioSampleBuffer::findMinMax (const int channel,
-                                            const int startSample,
-                                            int numSamples) const noexcept
+        const int startSample,
+        int numSamples) const noexcept
 {
     jassert (isPositiveAndBelow (channel, numChannels));
     jassert (startSample >= 0 && startSample + numSamples <= size);
