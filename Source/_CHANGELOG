@@ -39,7 +39,6 @@ CHANGES 0.5:
 
 :!: KNOWN BUGS:
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
-- lfo's are not processed if the synth is silent
 - clicken beim umschalten auf fix input
 - knacken beim bewegen des compression & shape slider
 - kein background value für linear slider

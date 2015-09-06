@@ -506,7 +506,7 @@ static inline float soft_clipping( float input_and_worker_ ) noexcept
 }
 
 //==============================================================================
-static inline float lfo2amp( float sample_ ) noexcept 
+static inline float lfo2amp( float sample_ ) noexcept
 {
     return (sample_ + 1.0f)*0.5f;
 }
@@ -728,7 +728,7 @@ inline float mono_BlitSaw::tick() noexcept
     }
     else
     {
-        tmp = std::sin( float(m_ * phase_) ) / (p_ * denominator);
+        tmp = std::sin( phase_*m_ ) / (p_ * denominator);
     }
 
     tmp +=( state_ - C2_ );
@@ -2401,7 +2401,8 @@ p(0),k(0),r(0),gain(0),
 COLD AnalogFilter::~AnalogFilter() noexcept {}
 
 //==============================================================================
-inline void AnalogFilter::reset() noexcept {
+inline void AnalogFilter::reset() noexcept
+{
     y4 = oldx = oldy1 = oldy2 = oldy3 = 0;
 }
 
@@ -3227,18 +3228,19 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     }
                 }
                 LP2PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
-                    : processor( processor_ ),
-                      filter( processor_->double_filter[input_id_] ),
-                      input_id( input_id_ ),
-                      num_samples_( num_samples__ ),
+:
+                processor( processor_ ),
+                           filter( processor_->double_filter[input_id_] ),
+                           input_id( input_id_ ),
+                           num_samples_( num_samples__ ),
 
-                      tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
-                      tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
-                      tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                      tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
+                           tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
+                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
+                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
 
-                      input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
-                      out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                           input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
+                           out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                 {}
             };
 
@@ -3313,18 +3315,19 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 }
 
                 LPExecuter( FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
-                    : processor( processor_ ),
-                      filter( processor_->double_filter[input_id_] ),
-                      input_id(input_id_),
-                      num_samples_(num_samples__),
+:
+                processor( processor_ ),
+                           filter( processor_->double_filter[input_id_] ),
+                           input_id(input_id_),
+                           num_samples_(num_samples__),
 
-                      tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
-                      tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
-                      tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                      tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
+                           tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
+                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
+                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
 
-                      input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
-                      out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                           input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
+                           out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                 {}
             };
 
@@ -3372,7 +3375,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             }
 
             // PROCESSOR
-            struct HP2PassExecuter : public mono_Thread 
+            struct HP2PassExecuter : public mono_Thread
             {
                 FilterProcessor*const processor;
                 DoubleAnalogFilter& filter;
@@ -4105,28 +4108,28 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                 }
             }
             BandExecuter(EQProcessor*const processor_, int num_samples__, int band_id_) noexcept
-                :
-                num_samples_(num_samples__),
-                band_id(band_id_),
+:
+            num_samples_(num_samples__),
+                         band_id(band_id_),
 
-                hold_sustain( processor_->eq_data->hold[band_id_]),
-                glide_motor_time( processor_->synth_data->glide_motor_time ),
-                shape_smoother( &processor_->shape_smoother[band_id_] ),
-                velocity_smoother( &processor_->velocity_smoother[band_id_] ),
-                amp2velocity_smoother( &processor_->amp2velocity_smoother[band_id_] ),
+                         hold_sustain( processor_->eq_data->hold[band_id_]),
+                         glide_motor_time( processor_->synth_data->glide_motor_time ),
+                         shape_smoother( &processor_->shape_smoother[band_id_] ),
+                         velocity_smoother( &processor_->velocity_smoother[band_id_] ),
+                         amp2velocity_smoother( &processor_->amp2velocity_smoother[band_id_] ),
 
-                filter_frequency( processor_->frequency_low_pass[band_id_] ),
-                low_pass_filter(processor_->low_pass_filters[band_id_]),
-                high_pass_filter(processor_->high_pass_filters[band_id_]),
-                filter(processor_->filters[band_id_]),
+                         filter_frequency( processor_->frequency_low_pass[band_id_] ),
+                         low_pass_filter(processor_->low_pass_filters[band_id_]),
+                         high_pass_filter(processor_->high_pass_filters[band_id_]),
+                         filter(processor_->filters[band_id_]),
 
-                env( *processor_->envs[band_id_] ),
+                         env( *processor_->envs[band_id_] ),
 
-                direct_filter_output_samples( processor_->data_buffer->direct_filter_output_samples.getReadPointer() ),
-                tmp_band_in_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(IN_DIMENSION) ),
-                tmp_band_out_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION) ),
-                tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) ),
-                tmp_sum_gain_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION) )
+                         direct_filter_output_samples( processor_->data_buffer->direct_filter_output_samples.getReadPointer() ),
+                         tmp_band_in_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(IN_DIMENSION) ),
+                         tmp_band_out_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION) ),
+                         tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) ),
+                         tmp_sum_gain_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION) )
             {}
         };
 
@@ -4156,7 +4159,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
         }
 
         bool all_done = running_threads.size() == 0;
-                        while( not all_done )
+        while( not all_done )
         {
             Array<BandExecuter*> copy_of_running_thereads = running_threads;
             for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
@@ -5002,38 +5005,39 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                                float*restrict delay_data_,
                                float*restrict final_output_
                              ) noexcept
-                : processor( fx_processor_ ),
+:
+            processor( fx_processor_ ),
 
-                  num_samples( num_samples_ ),
-                  delay_pos( delay_pos_ ),
+                       num_samples( num_samples_ ),
+                       delay_pos( delay_pos_ ),
 
-                  input_buffer(input_buffer_),
-                  delay_data(delay_data_),
-                  final_output(final_output_),
+                       input_buffer(input_buffer_),
+                       delay_data(delay_data_),
+                       final_output(final_output_),
 
-                  tmp_chorus_mod_amp( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CHORUS_MOD_AMP) ),
-                  tmp_delay( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DELAY) ),
-                  tmp_bypass( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_BYPASS) ),
-                  tmp_clipping( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CLIPPING) ),
+                       tmp_chorus_mod_amp( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CHORUS_MOD_AMP) ),
+                       tmp_delay( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DELAY) ),
+                       tmp_bypass( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_BYPASS) ),
+                       tmp_clipping( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CLIPPING) ),
 
-                  tmp_samples( tmp_samples_ )
+                       tmp_samples( tmp_samples_ )
             {}
         };
 
         const int delay_pos = delayPosition;
-                              LeftRightExecuter left_executer( this,
+        LeftRightExecuter left_executer( this,
 
-                                      num_samples_,
-                                      delay_pos,
+                                         num_samples_,
+                                         delay_pos,
 
-                                      input_buffer,
-                                      data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
+                                         input_buffer,
+                                         data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
 
-                                      delayBuffer.getWritePointer (LEFT),
+                                         delayBuffer.getWritePointer (LEFT),
 
-                                      &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
-                                                             ) ;
-                              left_executer.try_run_paralel();
+                                         &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
+                                       ) ;
+        left_executer.try_run_paralel();
 
         {
             LeftRightExecuter right_executer(
@@ -5460,8 +5464,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
-    if( current_note == -1 )
-        return;
+    bool only_process_lfo = current_note == -1;
 
     Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave();
 
@@ -5472,12 +5475,22 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     if( step_number_ != -1 )
         current_step = step_number_;
 
+    // LFO WILL ALWAYS PEROCESSED
+    if( only_process_lfo )
+    {
+        lfos[0]->process( step_number_, num_samples_ );
+        lfos[1]->process( step_number_, num_samples_ );
+        lfos[2]->process( step_number_, num_samples_ );
+	
+	return;
+    }
+    
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
-        filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
         lfos[0]->process( step_number_, num_samples );
-        oscs[0]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 0
+        filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
+        oscs[0]->process( data_buffer, num_samples ); // NEED LFO 0
 
         // SUB THREAD
         // DEPENCIES OSC 0
@@ -5501,8 +5514,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         Executer executer( this, num_samples, step_number_ );
         executer.try_run_paralel();
 
-        filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
         lfos[2]->process( step_number_, num_samples );
+        filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
         oscs[2]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
 
         while( executer.isWorking() ) {}
@@ -5680,6 +5693,9 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
+
+
 
 
 

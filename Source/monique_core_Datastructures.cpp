@@ -3276,3 +3276,4 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+

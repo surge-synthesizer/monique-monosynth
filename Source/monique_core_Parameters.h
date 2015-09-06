@@ -157,7 +157,7 @@ public:
     {
         return value == float(value_);
     }
-    inline const Parameter* ptr() const noexcept
+    inline const Parameter*restrict ptr() const noexcept
     {
         return this;
     }
@@ -190,7 +190,7 @@ public:
         set_value(value_);
         return value;
     }
-    inline float operator= ( const Parameter& other_ ) noexcept
+    inline float operator= ( const Parameter&restrict other_ ) noexcept
     {
         set_value(other_.value);
         return value;
@@ -262,7 +262,7 @@ public:
 public:
     // ==============================================================================
     // INFO
-    inline const ParameterInfo& get_info() const noexcept
+    inline const ParameterInfo&restrict get_info() const noexcept
     {
         return *info;
     }
@@ -272,11 +272,11 @@ protected:
 public:
     // ==============================================================================
     // RUNTIME INFO
-    inline const ParameterRuntimeInfo& get_runtime_info() const noexcept
+    inline const ParameterRuntimeInfo&restrict get_runtime_info() const noexcept
     {
         return *runtime_info;
     }
-    inline ParameterRuntimeInfo& get_runtime_info() noexcept
+    inline ParameterRuntimeInfo&restrict get_runtime_info() noexcept
     {
         return *runtime_info;
     }
@@ -384,11 +384,11 @@ public:
     {
         return bool(value) == value_;
     }
-    inline const BoolParameter* bool_ptr() const noexcept
+    inline const BoolParameter*restrict bool_ptr() const noexcept
     {
         return this;
     }
-    inline BoolParameter* bool_ptr() noexcept
+    inline BoolParameter*restrict bool_ptr() noexcept
     {
         return this;
     }
@@ -400,7 +400,7 @@ public:
     {
         return bool(value = value_);
     }
-    inline bool operator= ( const BoolParameter& other_ ) noexcept
+    inline bool operator= ( const BoolParameter&restrict other_ ) noexcept
     {
         return value = other_.value;
     }
@@ -441,11 +441,11 @@ public:
     {
         return int(value) == value_;
     }
-    inline const IntParameter* int_ptr() const noexcept
+    inline const IntParameter*restrict int_ptr() const noexcept
     {
         return this;
     }
-    inline IntParameter* int_ptr() noexcept
+    inline IntParameter*restrict int_ptr() noexcept
     {
         return this;
     }
@@ -470,7 +470,7 @@ public:
         }
         return int(value);
     }
-    inline int operator= ( const IntParameter& other_ ) noexcept
+    inline int operator= ( const IntParameter&restrict other_ ) noexcept
     {
         return operator=(int(other_.value));
     }
@@ -525,22 +525,22 @@ public:
 #else
 #define DEBUG_CHECK_ARRAY_RANGE( x )
 #endif
-    inline Parameter& operator[]( int index_ ) noexcept
+    inline Parameter&restrict operator[]( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline Parameter& get( int index_ ) const noexcept
+    inline Parameter&restrict get( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline const Parameter& operator[]( int index_ ) const noexcept
+    inline const Parameter&restrict operator[]( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline const Parameter& get( int index_ ) noexcept
+    inline const Parameter&restrict get( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
@@ -576,22 +576,22 @@ class ArrayOfBoolParameters
     BoolParameter** parameters;
 
 public:
-    inline BoolParameter& operator[]( int index_ ) noexcept
+    inline BoolParameter&restrict operator[]( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline BoolParameter& get( int index_ ) const noexcept
+    inline BoolParameter&restrict get( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline const BoolParameter& operator[]( int index_ ) const noexcept
+    inline const BoolParameter&restrict operator[]( int index_ ) const noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];
     }
-    inline const BoolParameter& get( int index_ ) noexcept
+    inline const BoolParameter&restrict get( int index_ ) noexcept
     {
         DEBUG_CHECK_ARRAY_RANGE( index_ );
         return *parameters[ index_ ];

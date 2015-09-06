@@ -18,10 +18,10 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PROFILE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -fno-inline-functions -fno-inline -fno-inline-small-functions -fno-indirect-inlining -pg
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -funsafe-loop-optimizations -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt -pg
+  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
   TARGET := Monique_32
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
@@ -38,10 +38,10 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "PROFILE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -fno-inline-functions -fno-inline -fno-inline-small-functions -fno-indirect-inlining -pg
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -funsafe-loop-optimizations -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
-  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt -pg
+  LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 
   TARGET := Monique_64
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)

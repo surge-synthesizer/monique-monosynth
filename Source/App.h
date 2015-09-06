@@ -41,9 +41,9 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-// INLINING
+// INLINING //   
 #if JUCE_LINUX || JUCE_MAC
-#define COLD __attribute__ ((cold)) __attribute__ ((noinline))
+#define COLD __attribute__ ((noinline,cold))
 #elif JUCE_WINDOWS
 #define COLD __declspec(noinline)
 #else
