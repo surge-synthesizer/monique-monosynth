@@ -33,10 +33,10 @@ CHANGES 0.5:
 - add force amp to zero option (can be force some kicking effects)
 - fix/add some missing morph parameters
 - set min morph motor time to 20ms
+- fix can crash on short attack time (coz we have a min value of 30ms)
 
 :!: KNOWN BUGS:
 - bug: can crash on to short morph motor time
-- bug: can crash on to short attack time
 - check/test/bug: multi instance support
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
 - crackls: on eq if you switch from > 0 to < 0 or in the other direction

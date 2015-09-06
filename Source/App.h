@@ -120,6 +120,7 @@ static inline float round001( float value ) noexcept
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
+#ifdef DEBUG
 #include <iomanip>
 static inline void debug_sample_print( float in_, int samples_to_print = 1024, const String& info_ = "" )
 {
@@ -141,7 +142,8 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
   \
   time_sum+= (Time::getMillisecondCounterHiRes()-time); \
   std::cout << time_sum/time_counter << std::endl;
-
+#endif
+  
 // TWEAKED ALGORYTHIMS
 //==============================================================================
 //==============================================================================
