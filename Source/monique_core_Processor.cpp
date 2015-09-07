@@ -153,9 +153,7 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     repaint_peak_meter(false)
 {
     // CREATE SINGLETONS
-    RuntimeNotifyer::getInstance();
-    mono_ParameterOwnerStore::getInstance();
-  
+  RuntimeNotifyer::getInstance();
   
     std::cout << "MONIQUE: init processor" << std::endl;
 
@@ -318,7 +316,6 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-int callbacksss = 0;
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
 
@@ -492,9 +489,6 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
             }
         }
     }
-
-    if( callbacksss == 2 )
-        std::cout << "end " << getBlockSize() << " buffer:" << buffer_.getNumSamples() << std::endl;
 }
 
 //==============================================================================
@@ -509,6 +503,7 @@ void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
     synth->setCurrentPlaybackSampleRate (sampleRate);
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
+    voice->reset_internal();
 }
 void MoniqueAudioProcessor::releaseResources()
 {

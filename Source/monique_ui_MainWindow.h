@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_C931A4A92150166E__
-#define __JUCE_HEADER_C931A4A92150166E__
+#ifndef __JUCE_HEADER_5A0D36FB903763FA__
+#define __JUCE_HEADER_5A0D36FB903763FA__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -50,10 +50,10 @@ class Monique_Ui_DualSlider;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-    public Monique_Ui_Refreshable,
-    public ButtonListener,
-    public ComboBoxListener,
-    public SliderListener
+                               public Monique_Ui_Refreshable,
+                               public ButtonListener,
+                               public ComboBoxListener,
+                               public SliderListener
 {
 public:
     //==============================================================================
@@ -103,6 +103,8 @@ public:
     void sliderValueChanged (Slider* sliderThatWasMoved);
     bool keyPressed (const KeyPress& key);
     void modifierKeysChanged (const ModifierKeys& modifiers);
+
+
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
@@ -169,13 +171,10 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_decay_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_attack_1;
     ScopedPointer<Label> label_monolisa;
-    ScopedPointer<TextButton> filter_type_1_1;
     ScopedPointer<TextButton> filter_type_2_1;
     ScopedPointer<TextButton> filter_type_3_1;
-    ScopedPointer<TextButton> filter_type_1_2;
     ScopedPointer<TextButton> filter_type_2_2;
     ScopedPointer<TextButton> filter_type_3_2;
-    ScopedPointer<TextButton> filter_type_1_3;
     ScopedPointer<TextButton> filter_type_2_3;
     ScopedPointer<TextButton> filter_type_3_3;
     ScopedPointer<TextButton> filter_type_5_1;
@@ -301,4 +300,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_C931A4A92150166E__
+#endif   // __JUCE_HEADER_5A0D36FB903763FA__

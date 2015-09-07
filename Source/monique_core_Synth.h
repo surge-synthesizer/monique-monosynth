@@ -66,7 +66,6 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     void stopNote(float, bool allowTailOff) override;
     void stop_internal() noexcept;
     void release_if_inactive() noexcept;
-    void reset() noexcept;
     
     void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
     void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
@@ -76,6 +75,11 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     void pitchWheelMoved (int /*newValue*/) override;
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override;
 
+public:
+    //==============================================================================
+    void reset() noexcept;
+    void reset_internal() noexcept;
+    
 public:
     //==============================================================================
     // UI INFOS

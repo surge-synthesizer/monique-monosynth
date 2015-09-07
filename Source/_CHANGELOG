@@ -42,16 +42,16 @@ CHANGES 0.5:
 - fix disable lfo animation if modulation animations is disabled
 - change modulation button light (brighter) if animation modulations is turned of
 - global settings will be stored to an own file. It will be read on app start and stored on shutdown
+- fix problem that the synth not each time sonds like last time :D
+- remove 2pass filter (it's all 2pass not, play around with the gain, this there is the 1 pass hidden behind.
+- improved high pass filter and rasonance of all filters
 
 :!: KNOWN BUGS:
 - filter out volume crackls!! ---> also the filter modulation buttons!
-
-
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
 - kein background value für linear slider
 - osc square and saw going out of center on higher octaves
 - file remove is buggy
-- crash on change buffer size, seems something with the audio sample buffer
 
 TODO:
 - test performance HeapBlock on the stack vs array of floats

@@ -659,6 +659,7 @@ juce_ImplementSingleton (MIDIControlHandler)
 
 MIDIControlHandler::MIDIControlHandler() noexcept
 {
+    clear();
 }
 
 MIDIControlHandler::~MIDIControlHandler() noexcept

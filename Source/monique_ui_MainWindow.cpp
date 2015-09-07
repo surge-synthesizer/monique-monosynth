@@ -42,14 +42,14 @@
 //==============================================================================
 //==============================================================================
 
-void Monique_Ui_Mainwindow::refresh() noexcept 
+void Monique_Ui_Mainwindow::refresh() noexcept
 {
     show_current_voice_data();
     resize_sequence_buttons();
     show_programs_and_select();
     show_ctrl_state();
 }
-void Monique_Ui_Mainwindow::show_programs_and_select() 
+void Monique_Ui_Mainwindow::show_programs_and_select()
 {
     const int current_bank = synth_data->get_current_bank();
     const int current_programm = synth_data->get_current_program();
@@ -67,7 +67,7 @@ void Monique_Ui_Mainwindow::show_programs_and_select()
         combo_programm->setSelectedItemIndex(synth_data->get_current_program(),dontSendNotification);
     }
 }
-void Monique_Ui_Mainwindow::show_ctrl_state() 
+void Monique_Ui_Mainwindow::show_ctrl_state()
 {
     if( last_ctrl_mode != synth_data->ctrl )
     {
@@ -85,7 +85,7 @@ void Monique_Ui_Mainwindow::show_ctrl_state()
         }
     }
 }
-void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ ) 
+void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ )
 {
     popup = nullptr;
     if( MIDIControlHandler::getInstance()->is_learning() && midi_conrtrol_ )
@@ -94,7 +94,7 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
         popup->set_element_to_show( comp_ );
     }
 }
-void Monique_Ui_Mainwindow::show_current_voice_data() 
+void Monique_Ui_Mainwindow::show_current_voice_data()
 {
     ComponentColours colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
@@ -104,7 +104,6 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     int f_type = synth_data->filter_datas[0]->filter_type;
     filter_type_6_1->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
     filter_type_2_1->setColour( TextButton::buttonColourId, f_type == HPF || f_type == HIGH_2_PASS ? button_on : button_off );
-    filter_type_1_1->setColour( TextButton::buttonColourId, f_type == LPF_2_PASS || f_type == HIGH_2_PASS || f_type == MOOG_AND_LPF ? button_on : button_off );
     filter_type_3_1->setColour( TextButton::buttonColourId, f_type == BPF ? button_on : button_off );
     filter_type_5_1->setColour( TextButton::buttonColourId, f_type == PASS ? button_on : button_off );
 
@@ -112,7 +111,6 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     f_type = synth_data->filter_datas[1]->filter_type;
     filter_type_6_2->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
     filter_type_2_2->setColour( TextButton::buttonColourId, f_type == HPF || f_type == HIGH_2_PASS ? button_on : button_off );
-    filter_type_1_2->setColour( TextButton::buttonColourId, f_type == LPF_2_PASS || f_type == HIGH_2_PASS || f_type == MOOG_AND_LPF ? button_on : button_off );
     filter_type_3_2->setColour( TextButton::buttonColourId, f_type == BPF ? button_on : button_off );
     filter_type_5_2->setColour( TextButton::buttonColourId, f_type == PASS ? button_on : button_off );
 
@@ -120,7 +118,6 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     f_type = synth_data->filter_datas[2]->filter_type;
     filter_type_6_3->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
     filter_type_2_3->setColour( TextButton::buttonColourId, f_type == HPF || f_type == HIGH_2_PASS ? button_on : button_off );
-    filter_type_1_3->setColour( TextButton::buttonColourId, f_type == LPF_2_PASS || f_type == HIGH_2_PASS || f_type == MOOG_AND_LPF ? button_on : button_off );
     filter_type_3_3->setColour( TextButton::buttonColourId, f_type == BPF ? button_on : button_off );
     filter_type_5_3->setColour( TextButton::buttonColourId, f_type == PASS ? button_on : button_off );
 
@@ -163,7 +160,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
 }
 
-void Monique_Ui_Mainwindow::resize_sequence_buttons() 
+void Monique_Ui_Mainwindow::resize_sequence_buttons()
 {
     const float width_factor = 1.0f/original_w*getWidth();
     const float height_factor = 1.0f/original_h*getHeight();
@@ -189,7 +186,7 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons()
         }
     }
 }
-void Monique_Ui_Mainwindow::switch_finalizer_tab() 
+void Monique_Ui_Mainwindow::switch_finalizer_tab()
 {
     //reverb
     bool state_switch = eq_1->isVisible();
@@ -366,13 +363,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_monolisa->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_monolisa->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (filter_type_1_1 = new TextButton ("VOICE 1"));
-    filter_type_1_1->setButtonText (TRANS("- 2PASS"));
-    filter_type_1_1->addListener (this);
-    filter_type_1_1->setColour (TextButton::buttonColourId, Colours::black);
-    filter_type_1_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    filter_type_1_1->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (filter_type_2_1 = new TextButton ("VOICE 1"));
     filter_type_2_1->setButtonText (TRANS("HP"));
     filter_type_2_1->addListener (this);
@@ -387,13 +377,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (filter_type_1_2 = new TextButton ("VOICE 1"));
-    filter_type_1_2->setButtonText (TRANS("- 2PASS"));
-    filter_type_1_2->addListener (this);
-    filter_type_1_2->setColour (TextButton::buttonColourId, Colours::black);
-    filter_type_1_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    filter_type_1_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (filter_type_2_2 = new TextButton ("VOICE 1"));
     filter_type_2_2->setButtonText (TRANS("HP"));
     filter_type_2_2->addListener (this);
@@ -407,13 +390,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_3_2->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_3_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (filter_type_1_3 = new TextButton ("VOICE 1"));
-    filter_type_1_3->setButtonText (TRANS("- 2PASS"));
-    filter_type_1_3->addListener (this);
-    filter_type_1_3->setColour (TextButton::buttonColourId, Colours::black);
-    filter_type_1_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    filter_type_1_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_2_3 = new TextButton ("VOICE 1"));
     filter_type_2_3->setButtonText (TRANS("HP"));
@@ -1194,13 +1170,10 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     flt_decay_1 = nullptr;
     flt_attack_1 = nullptr;
     label_monolisa = nullptr;
-    filter_type_1_1 = nullptr;
     filter_type_2_1 = nullptr;
     filter_type_3_1 = nullptr;
-    filter_type_1_2 = nullptr;
     filter_type_2_2 = nullptr;
     filter_type_3_2 = nullptr;
-    filter_type_1_3 = nullptr;
     filter_type_2_3 = nullptr;
     filter_type_3_3 = nullptr;
     filter_type_5_1 = nullptr;
@@ -1523,18 +1496,6 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (20.0f, 545.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 125.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 75.0f, 1.0f, 51.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 100.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 75.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (40.0f, 55.0f, 110.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
@@ -1678,18 +1639,6 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1315.0f, 380.0f, 91.0f, 1.0f, 1.000f);
 
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 305.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 255.0f, 1.0f, 51.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 280.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 255.0f, 5.0f, 1.0f, 1.000f);
-
     g.setColour (Colour (0xff050505));
     g.fillRect (1314, 205, 3, 30);
 
@@ -1740,18 +1689,6 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1255.0f, 405.0f, 1.0f, 10.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 485.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 435.0f, 1.0f, 51.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 460.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (940.0f, 435.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
     g.fillRect (1314, 385, 3, 30);
@@ -1871,15 +1808,12 @@ void Monique_Ui_Mainwindow::resized()
     flt_decay_1->setBounds (545 - 60, 190 - 130, 60, 130);
     flt_attack_1->setBounds (425, 190 - 130, 60, 130);
     label_monolisa->setBounds (1440 - 205, 1055 - 85, 205, 85);
-    filter_type_1_1->setBounds (1005 - 60, 112, 60, 24);
-    filter_type_2_1->setBounds (1005 - 60, 87, 60, 25);
-    filter_type_3_1->setBounds (1005 - 60, 136, 60, 25);
-    filter_type_1_2->setBounds (1005 - 60, 292, 60, 24);
-    filter_type_2_2->setBounds (1005 - 60, 267, 60, 25);
-    filter_type_3_2->setBounds (1005 - 60, 341 - 25, 60, 25);
-    filter_type_1_3->setBounds (1005 - 60, 496 - 24, 60, 24);
-    filter_type_2_3->setBounds (1005 - 60, 447, 60, 25);
-    filter_type_3_3->setBounds (1005 - 60, 496, 60, 25);
+    filter_type_2_1->setBounds (1005 - 60, 90, 60, 27);
+    filter_type_3_1->setBounds (1005 - 60, 120, 60, 27);
+    filter_type_2_2->setBounds (1005 - 60, 270, 60, 27);
+    filter_type_3_2->setBounds (1005 - 60, 327 - 27, 60, 27);
+    filter_type_2_3->setBounds (1005 - 60, 450, 60, 27);
+    filter_type_3_3->setBounds (1005 - 60, 480, 60, 27);
     filter_type_5_1->setBounds (1005 - 60, 161, 60, 27);
     filter_type_5_2->setBounds (1005 - 60, 341, 60, 27);
     filter_type_5_3->setBounds (1005 - 60, 520, 60, 27);
@@ -2009,44 +1943,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == filter_type_1_1)
-    {
-        //[UserButtonCode_filter_type_1_1] -- add your button handler code here..
-        int flt_id = 0;
-        Array< Component* > buttons;
-        buttons.add( filter_type_1_1 );
-        buttons.add( filter_type_2_1 );
-        buttons.add( filter_type_3_1 );
-        //buttons.add( filter_bypass_1 );
-        buttons.add( filter_type_5_1 );
-        buttons.add( filter_type_6_1 );
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->filter_datas[flt_id]->filter_type,
-            buttons
-        )
-        else
-        {
-            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
-            if( current_filter_type == LPF_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF;
-            }
-            else if( current_filter_type == HIGH_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = HPF;
-            }
-            else if( current_filter_type == LPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-            }
-            else if( current_filter_type == HPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
-            }
-            else
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->filter_datas[flt_id]->filter_type.midi_control );
-        //[/UserButtonCode_filter_type_1_1]
-    }
-    else if (buttonThatWasClicked == filter_type_2_1)
+    if (buttonThatWasClicked == filter_type_2_1)
     {
         //[UserButtonCode_filter_type_2_1] -- add your button handler code here..
         int flt_id = 0;
@@ -2081,36 +1978,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         }
         show_info_popup( buttonThatWasClicked, synth_data->filter_datas[0]->filter_type.midi_control );
         //[/UserButtonCode_filter_type_3_1]
-    }
-    else if (buttonThatWasClicked == filter_type_1_2)
-    {
-        //[UserButtonCode_filter_type_1_2] -- add your button handler code here..
-        int flt_id = 1;
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->filter_datas[flt_id]->filter_type,
-            buttonThatWasClicked
-        )
-        else
-        {
-            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
-            if( current_filter_type == LPF_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF;
-            }
-            else if( current_filter_type == HIGH_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = HPF;
-            }
-            else if( current_filter_type == LPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-            }
-            else if( current_filter_type == HPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
-            }
-            else
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->filter_datas[flt_id]->filter_type.midi_control );
-        //[/UserButtonCode_filter_type_1_2]
     }
     else if (buttonThatWasClicked == filter_type_2_2)
     {
@@ -2147,36 +2014,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         }
         show_info_popup( buttonThatWasClicked, synth_data->filter_datas[1]->filter_type.midi_control );
         //[/UserButtonCode_filter_type_3_2]
-    }
-    else if (buttonThatWasClicked == filter_type_1_3)
-    {
-        //[UserButtonCode_filter_type_1_3] -- add your button handler code here..
-        int flt_id = 2;
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            &synth_data->filter_datas[flt_id]->filter_type,
-            buttonThatWasClicked
-        )
-        else
-        {
-            int current_filter_type = synth_data->filter_datas[flt_id]->filter_type;
-            if( current_filter_type == LPF_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF;
-            }
-            else if( current_filter_type == HIGH_2_PASS ) {
-                synth_data->filter_datas[flt_id]->filter_type = HPF;
-            }
-            else if( current_filter_type == LPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-            }
-            else if( current_filter_type == HPF ) {
-                synth_data->filter_datas[flt_id]->filter_type = HIGH_2_PASS;
-            }
-            else
-                synth_data->filter_datas[flt_id]->filter_type = LPF_2_PASS;
-        }
-        show_info_popup( buttonThatWasClicked, synth_data->filter_datas[flt_id]->filter_type.midi_control );
-        //[/UserButtonCode_filter_type_1_3]
     }
     else if (buttonThatWasClicked == filter_type_2_3)
     {
@@ -2976,10 +2813,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 365 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="20 420 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="20 545 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 125 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 75 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 100 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 75 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="40 55 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 40 1 16" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="165 45 1 185" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3028,10 +2861,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1385 375 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 375 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1315 380 91 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 305 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 255 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 280 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 255 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <RECT pos="1314 205 3 30" fill="solid: ff050505" hasStroke="0"/>
     <ROUNDRECT pos="1315 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 410 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3049,10 +2878,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1165 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1255 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 485 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 435 1 51" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 460 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="940 435 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <RECT pos="1314 385 3 30" fill="solid: ff050505" hasStroke="0"/>
     <ROUNDRECT pos="1315 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="300 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3249,40 +3074,28 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="M O N I Q U E" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
-  <TEXTBUTTON name="VOICE 1" id="77e66f63bda9d507" memberName="filter_type_1_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 112 60 24" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 87 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 136 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="c1383d06f6f9a2a4" memberName="filter_type_1_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 292 60 24" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 267 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 341r 60 25"
+              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 27"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="8ff86dc73f1f9885" memberName="filter_type_1_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 496r 60 24"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="- 2PASS"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 447 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 496 60 25" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 27" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
@@ -3706,8 +3519,8 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
-                    virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0" pos="1375 620 60 27"
-                    class="Component" params=""/>
+                    virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0"
+                    pos="1375 620 60 27" class="Component" params=""/>
   <LABEL name="DL" id="ad887653d405d154" memberName="label_eq" virtualName=""
          explicitFocusOrder="0" pos="740 580 90 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="EQUALIZER" editableSingleClick="0"
