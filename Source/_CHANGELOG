@@ -48,6 +48,7 @@ CHANGES 0.5:
 
 :!: KNOWN BUGS:
 - filter out volume crackls!! ---> also the filter modulation buttons!
+- turn chorus amp on off crackls
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
 - kein background value für linear slider
 - osc square and saw going out of center on higher octaves

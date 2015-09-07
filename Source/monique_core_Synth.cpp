@@ -354,11 +354,11 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
     last_modulation = modulation_range*current_modulation_in_percent_;
     float value = ValueSmoother::tick() + last_modulation;
     if( value < 0 )
-      value = 0;
+        value = 0;
     /*
     if( modulation_range < 0 )
     {
-	std::cout << ValueSmoother::tick() << last_modulation << value << std::endl;
+    std::cout << ValueSmoother::tick() << last_modulation << value << std::endl;
     }
     */
     return value;
@@ -655,27 +655,6 @@ static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float wave_mixer_v2( float s_, float s2_ ) noexcept
-{
-    if ((s_ > 0) && (s2_ > 0))
-    {
-        s_ += (s2_ - (s_ * s2_));
-    }
-    else if ((s_ < 0) && (s2_ < 0))
-    {
-        s_ += (s2_ + (s_ * s2_));
-    }
-    else
-    {
-        s_ += s2_;
-    }
-
-    return s_;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 static inline float positive( float x ) noexcept
 {
     return x < 0 ? x * -1 : x;
@@ -684,23 +663,9 @@ static inline float positive( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-template<int min_max>
-static inline float hard_clipper( float x ) noexcept
+static inline float filter_hard_clipper( float x ) noexcept
 {
-    if( x < (min_max*-1) )
-        x = (min_max*-1);
-    else if( x > min_max )
-        x = min_max;
-
-    return x;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-static inline float hard_clipper_1_5( float x ) noexcept
-{
-    return x < -1.5f ? x = -1.5 : x > 1.5 ? x = 1.5 : x;
+    return x < -1.2f ? x = -1.2 : x > 1.2 ? x = 1.2 : x;
 }
 
 //==============================================================================
@@ -2571,7 +2536,7 @@ inline void AnalogFilter::copy_state_from( const AnalogFilter& other_ ) noexcept
 //==============================================================================
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
-    input_and_worker_ = hard_clipper<1>( input_and_worker_ );
+    input_and_worker_ = filter_hard_clipper( input_and_worker_ );
 
     // process input
     input_and_worker_ -= r*y4;
@@ -2592,11 +2557,11 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
     oldy2 = y2;
     oldy3 = y3;
 
-    return hard_clipper<1>((y4 + distortion(y3*res+y4*(1.0f-res),gain)*gain)/(1.0f+gain));
+    return filter_hard_clipper((y4 + distortion(y3*res+y4*(1.0f-res),gain)*gain)/(1.0f+gain));
 }
 inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 {
-    input_and_worker_ = hard_clipper<1>( input_and_worker_ );
+    input_and_worker_ = filter_hard_clipper( input_and_worker_ );
 
     // process input
     input_and_worker_ -= r*y4;
@@ -2618,11 +2583,11 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     oldy3 = y3;
 
     // Add resonance
-    return hard_clipper<1>(y4 + std::atan( y3 * res4 ));
+    return filter_hard_clipper(y4 + std::atan( y3 * res4 ));
 }
 inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
 {
-    input_and_worker_ = hard_clipper<1>( input_and_worker_ );
+    input_and_worker_ = filter_hard_clipper( input_and_worker_ );
 
     // process input
     input_and_worker_ -= r*y4;
@@ -2644,7 +2609,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     oldy3 = y3;
 
     // RESONANCE
-    return hard_clipper<1>((input_and_worker_-y4) + (std::atan( y2 * res )));
+    return filter_hard_clipper((input_and_worker_-y4) + (std::atan( y2 * res )));
 }
 
 //==============================================================================
@@ -3539,7 +3504,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             }
         }
         break;
-        default:  /* PASS */
+        default : //  PASS
         {
             // PREPARE
             {
@@ -3581,7 +3546,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
-                        out_buffer[sid] = filter.processPass( DISTORTION_OUT( DISTORTION_IN( input_buffer[sid] ) ) * 2 *tmp_gain_buffer[sid] );
+                        out_buffer[sid] = filter.processPass( DISTORTION_OUT( DISTORTION_IN( input_buffer[sid] ) ) );
                     }
                 }
                 PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
@@ -3642,25 +3607,21 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 {
                     const float amp = output_smoother.tick( modulate_output ? amp_mix[sid] : 0 );
                     const float clipping = clipping_smoother.tick();
-		    //const float result_sample = amp * wave_mixer_v2( out_buffer_3[sid]*input_ar_amp_3[sid], wave_mixer_v2( out_buffer_1[sid]*input_ar_amp_1[sid], out_buffer_2[sid]*input_ar_amp_2[sid] ) );
                     const float result_sample = amp * ( out_buffer_1[sid] * input_ar_amp_1[sid] + out_buffer_2[sid] * input_ar_amp_2[sid] + out_buffer_3[sid] * input_ar_amp_3[sid]);
                     this_filter_output_buffer[sid] = ( result_sample*(1.0f-clipping) + soft_clipping(result_sample)*clipping );
+
+                    if( id != FILTER_3 ) // NO NEED TO STORE THE THIRD BUFFER
+                    {
+                        float sample_1 = out_buffer_1[sid] * SUM_INPUTS_PER_FILTER;
+                        float sample_2 = out_buffer_2[sid] * SUM_INPUTS_PER_FILTER;
+                        float sample_3 = out_buffer_3[sid] * SUM_INPUTS_PER_FILTER;
+                        out_buffer_1[sid] = (sample_1)*(1.0f-clipping) + sample_1*clipping;
+                        out_buffer_2[sid] = (sample_2)*(1.0f-clipping) + sample_2*clipping;
+                        out_buffer_3[sid] = (sample_3)*(1.0f-clipping) + sample_3*clipping;
+                    }
                 }
             }
         }
-
-        /*
-        // OUT FOR USE AS INPUT IN FLT 2 & 3
-        if( id != FILTER_3 ) // NO NEED TO STORE THE THIRD BUFFER
-        {
-            for( int sid = 0 ; sid != num_samples ; ++sid )
-            {
-                out_buffer_1[sid] = soft_clipping(out_buffer_1[sid]);
-                out_buffer_2[sid] = soft_clipping(out_buffer_2[sid]);
-                out_buffer_3[sid] = soft_clipping(out_buffer_3[sid]);
-            }
-        }
-        */
     }
 
     // COMPRESS
@@ -3694,8 +3655,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
             final_filters_output_buffer[sid] += direct_output_buffer_flt_2[sid] + this_filter_output_buffer[sid];
-            final_filters_output_buffer[sid] *= (1.0f/SUM_FILTERS);
-	    final_filters_output_buffer[sid] = hard_clipper_1_5( final_filters_output_buffer[sid] );
         }
     }
 }
@@ -3931,26 +3890,29 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                     {
                         const float shape = shape_smoother->tick();
 
-                        const float sustain = (1.0f + velocity_smoother->tick() )*0.5;
-                        const float amp = amp2velocity_smoother->tick_to( hold_sustain ? sustain : tmp_env_buffer[sid] );
+			const float raw_sustain = velocity_smoother->tick(); // from -1 to 1
+                        const float normalized_sustain = (1.0f+raw_sustain)*0.5f;
+                        const float amp = amp2velocity_smoother->tick_to( hold_sustain ? normalized_sustain : tmp_env_buffer[sid] );
 
                         tmp_env_buffer[sid ] = amp;
 
                         // UPDATE FILTER
-                        filter.update( 0.2f*shape, filter_frequency, sustain );
+                        filter.update( 0.2f*shape, filter_frequency, normalized_sustain );
 
                         // PROCESS
                         {
                             //const float gain = sustain + amp * 4;
-                            const float gain = sustain * amp*GAIN_MULTI;
+                            const float gain = normalized_sustain * amp*GAIN_MULTI;
                             const float input = tmp_band_in_buffer[sid];
+			    const float unfiltered_amount = raw_sustain >= 0 ? 1.0f-raw_sustain : 1.0f+raw_sustain;
+			    const float fildered_amount = raw_sustain >= 0 ? raw_sustain : 0;
                             float output = filter.processLow( input );
-                            output = output*sustain + input*(1.0f-sustain);
+                            output = output*fildered_amount + input*unfiltered_amount;
 
                             // SHAPER
 #define FIXED_K 2.0f*0.7f/(1.0f-0.7f)
-                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape )*gain;
-                            tmp_sum_gain_buffer[sid] = gain / (1+band_id);
+                            tmp_band_out_buffer[sid] = ( output*(1.0f-shape) + ( (1.0f+FIXED_K)*output/(1.0f+FIXED_K*std::abs(output)) * (0.5f - 0.1f*shape))*shape ) *gain;
+                            tmp_sum_gain_buffer[sid] = 1+fildered_amount;
                         }
                     }
                 }
