@@ -77,6 +77,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 
 public:
     //==============================================================================
+    int get_current_note() const noexcept { return current_note; }
     void reset() noexcept;
     void reset_internal() noexcept;
     

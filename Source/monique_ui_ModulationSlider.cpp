@@ -555,7 +555,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        getChildComponent(i)->setRepaintsOnMouseActivity(false);
+        //getChildComponent(i)->setRepaintsOnMouseActivity(false);
     }
 
     show_view_mode();

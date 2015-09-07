@@ -1459,8 +1459,9 @@ void LFO::sync( int step_number_ ) noexcept
     }
     else
     {
-        const float frequency = midiToFrequency(33+speed-18);
-        if( frequency != last_frequency ) {
+        float frequency = midiToFrequency(33+speed-18);
+        if( frequency != last_frequency )
+        {
             last_frequency = frequency;
             sine_generator.setFrequency( frequency );
         }
@@ -3890,7 +3891,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                     {
                         const float shape = shape_smoother->tick();
 
-			const float raw_sustain = velocity_smoother->tick(); // from -1 to 1
+                        const float raw_sustain = velocity_smoother->tick(); // from -1 to 1
                         const float normalized_sustain = (1.0f+raw_sustain)*0.5f;
                         const float amp = amp2velocity_smoother->tick_to( hold_sustain ? normalized_sustain : tmp_env_buffer[sid] );
 
@@ -3904,8 +3905,8 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                             //const float gain = sustain + amp * 4;
                             const float gain = normalized_sustain * amp*GAIN_MULTI;
                             const float input = tmp_band_in_buffer[sid];
-			    const float unfiltered_amount = raw_sustain >= 0 ? 1.0f-raw_sustain : 1.0f+raw_sustain;
-			    const float fildered_amount = raw_sustain >= 0 ? raw_sustain : 0;
+                            const float unfiltered_amount = raw_sustain >= 0 ? 1.0f-raw_sustain : 1.0f+raw_sustain;
+                            const float fildered_amount = raw_sustain >= 0 ? raw_sustain : 0;
                             float output = filter.processLow( input );
                             output = output*fildered_amount + input*unfiltered_amount;
 

@@ -49,6 +49,8 @@ CHANGES 0.5:
 :!: KNOWN BUGS:
 - filter out volume crackls!! ---> also the filter modulation buttons!
 - turn chorus amp on off crackls
+- do not process the unused bands
+set from current updated the morph group
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
 - kein background value für linear slider
 - osc square and saw going out of center on higher octaves
@@ -56,7 +58,6 @@ CHANGES 0.5:
 
 TODO:
 - test performance HeapBlock on the stack vs array of floats
-
 - add arrow up/down, left/right to control slider values
 - add: store ui size
 - add: modulation amounts as automation params

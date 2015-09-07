@@ -1573,6 +1573,7 @@ public:
 class LFOSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const speed;
+
     String bottom_text;
 
     //==============================================================================
@@ -1624,15 +1625,15 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+        return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+        return sync;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+        return "IN-SYNC";
     }
     float get_top_button_amp() const noexcept override
     {
@@ -1708,7 +1709,8 @@ class LFOSlConfig : public ModulationSliderConfigBase
                 return "1/128";
         else
         {
-            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
+            float frequency = midiToFrequency(33+speed_-18);
+            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(frequency)),true,true,0);
         }
     }
     StringRef get_center_suffix() const noexcept override
@@ -1723,6 +1725,7 @@ public:
     LFOSlConfig( int id_ )
         :
         speed( &(GET_DATA(lfo_datas[id_]).speed) ),
+        
         bottom_text( "LFO " + String(id_+1) )
     {}
 
