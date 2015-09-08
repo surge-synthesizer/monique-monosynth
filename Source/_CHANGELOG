@@ -1,3 +1,7 @@
+CHANGES 0.6
+- add ctrl to show the all the values in detail (note: if you press ctrl you can ctrl sliders in velocity(mouse velocity) mode)
+- fix bug shutdown if the adsr editor was open 
+
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
 - osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
