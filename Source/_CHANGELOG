@@ -12,6 +12,7 @@ MY TODO
 - test performance HeapBlock on the stack vs array of floats
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
+- grey out first value sliders on ctrl mode
 
 TODO:
 - store colour themes to settings file
