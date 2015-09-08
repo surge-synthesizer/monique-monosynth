@@ -603,8 +603,11 @@ public:
 };
 
 //==============================================================================
-COLD SwitchAndValueSmootherModulated::SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept :
-value_smoother( base_ ),add_modulation(false) {}
+COLD SwitchAndValueSmootherModulated::SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept
+:
+value_smoother( base_ ),
+                add_modulation(false)
+{}
 COLD SwitchAndValueSmootherModulated::~SwitchAndValueSmootherModulated() noexcept {}
 
 //==============================================================================
@@ -1412,8 +1415,7 @@ sine_generator(),
                data_buffer( GET_DATA_PTR(data_buffer) ),
                lfo_data( GET_DATA_PTR( lfo_datas[id_] ) ),
                runtime_info( GET_DATA_PTR( runtime_info ) )
-{
-}
+{}
 COLD LFO::~LFO() noexcept {}
 
 //==============================================================================
@@ -1452,7 +1454,8 @@ void LFO::sync( int step_number_ ) noexcept
             float frequency = whole_notes_per_sec / factor;
 
             step_to_wait_for_sync--;
-            if( last_factor != factor ) {
+            if( last_factor != factor ) 
+	    {
                 step_to_wait_for_sync = 0;
                 last_factor = factor;
             }
@@ -1544,6 +1547,7 @@ class OSC : public RuntimeListener
     float last_frequency;
     int glide_time_in_samples;
     float glide_note_delta;
+    SwitchSmoother lfo2fix_octave_smoother;
 
     bool waiting_for_sync;
 
@@ -1605,6 +1609,7 @@ id( id_ ),
     last_frequency( 0 ),
     glide_time_in_samples(0),
     glide_note_delta(0),
+    lfo2fix_octave_smoother(),
     waiting_for_sync(false),
     _root_note( 60 ),
     _last_root_note( -1 ),
@@ -1662,6 +1667,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
     const float wave = osc_data->wave;
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
+    lfo2fix_octave_smoother.reset_counter_on_state_switch( is_lfo_modulated );
     const bool sync = osc_data->sync;
     const float master_fm_multi = master_osc_data->fm_multi;
     const int master_pulse_width = master_osc_data->puls_width;
@@ -1672,7 +1678,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
     {
         // UPDATE FREQUENCY - TODO after ticks
         {
-            const float octave_mod = octave_smoother.tick( is_lfo_modulated ? lfo_amps[sid] : 0 );
+            const float octave_mod = octave_smoother.tick( lfo2fix_octave_smoother.tick_to( is_lfo_modulated ? lfo_amps[sid] : 0 ) );
             bool change_modulator_frequency = false;
 
             // GLIDE
@@ -1959,7 +1965,8 @@ inline void OSC::reset( int root_note_ ) noexcept
         glide_time_in_samples = (sample_rate/2) * glide;
         glide_note_delta = (glide_notes_diverence+rest_glide) / glide_time_in_samples;
     }
-    else {
+    else
+    {
         glide_note_delta = 0;
         glide_time_in_samples = 0;
     }
@@ -4710,7 +4717,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             {
                 const float chorus_modulation = chorus_mod_smoother.tick();
                 const bool is_chorus_amp_fix = chorus_data->hold_modulation;
-		amp2chorus_smoother.reset_counter_on_state_switch(chorus_data->hold_modulation);
+                amp2chorus_smoother.reset_counter_on_state_switch(chorus_data->hold_modulation);
                 tmp_chorus_mod_amp[sid] = amp2chorus_smoother.tick_to( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
             }
 
