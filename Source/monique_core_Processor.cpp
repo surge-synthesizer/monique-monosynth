@@ -166,9 +166,9 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
         synth_data = new MoniqueSynthData(MASTER);
 
 #ifdef IS_PLUGIN
-        voice = new MONOVoice(this,synth_data);
+        voice = new MoniqueSynthesiserVoice(this,synth_data);
         synth->addVoice (voice);
-        synth->addSound (new MonoSynthSound());
+        synth->addSound (new MoniqueSynthesiserSound());
         data_in_processor = new DATAINProcessor();
 #endif
 

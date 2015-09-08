@@ -54,13 +54,14 @@ CHANGES 0.5:
 :!: KNOWN BUGS:
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
-set from current updated the morph group
+- set from current updated the morph group
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
 - osc square and saw going out of center on higher octaves
-- file remove is buggy
 
 
 TODO:
+- store colour themes
+- store/edit slider settings
 - test performance HeapBlock on the stack vs array of floats
 - add arrow up/down, left/right to control slider values
 - add: store ui size

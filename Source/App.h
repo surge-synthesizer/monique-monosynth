@@ -28,7 +28,8 @@
 #else
 #define restrict __restrict__
 #endif
-
+#undef restrict
+#define restrict
 // JUCE
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"

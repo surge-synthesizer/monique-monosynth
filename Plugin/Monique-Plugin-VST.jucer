@@ -17,6 +17,8 @@
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
         <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
+        <FILE id="Rx262E" name="App_h_includer.h" compile="0" resource="0"
+              file="../Source/App_h_includer.h"/>
         <FILE id="uq73hS" name="dRowAudio_AudioUtility.h" compile="0" resource="0"
               file="../Source/dRowAudio_AudioUtility.h"/>
         <FILE id="aW5xil" name="dRowAudio_Constants.h" compile="0" resource="0"
@@ -25,6 +27,22 @@
               file="../Source/monique_AppInstanceStore.cpp"/>
         <FILE id="XK3W5Q" name="monique_AppInstanceStore.h" compile="0" resource="0"
               file="../Source/monique_AppInstanceStore.h"/>
+        <FILE id="ikTcXX" name="monique_core_Datastructures.cpp" compile="1"
+              resource="0" file="../Source/monique_core_Datastructures.cpp"/>
+        <FILE id="DuQgIn" name="monique_core_Datastructures.h" compile="0"
+              resource="0" file="../Source/monique_core_Datastructures.h"/>
+        <FILE id="uGYyWE" name="monique_core_Parameters.cpp" compile="1" resource="0"
+              file="../Source/monique_core_Parameters.cpp"/>
+        <FILE id="CInIW0" name="monique_core_Parameters.h" compile="0" resource="0"
+              file="../Source/monique_core_Parameters.h"/>
+        <FILE id="AUzmR8" name="monique_core_Processor.cpp" compile="1" resource="0"
+              file="../Source/monique_core_Processor.cpp"/>
+        <FILE id="r71TF4" name="monique_core_Processor.h" compile="0" resource="0"
+              file="../Source/monique_core_Processor.h"/>
+        <FILE id="K0h646" name="monique_core_Synth.cpp" compile="1" resource="0"
+              file="../Source/monique_core_Synth.cpp"/>
+        <FILE id="InPxka" name="monique_core_Synth.h" compile="0" resource="0"
+              file="../Source/monique_core_Synth.h"/>
         <FILE id="wWqYhP" name="monique_ui_ADRDesigner.cpp" compile="1" resource="0"
               file="../Source/monique_ui_ADRDesigner.cpp"/>
         <FILE id="ga0juf" name="monique_ui_ADRDesigner.h" compile="0" resource="0"
@@ -45,6 +63,10 @@
               file="../Source/monique_ui_LookAndFeel.cpp"/>
         <FILE id="X6a3oA" name="monique_ui_LookAndFeel.h" compile="0" resource="0"
               file="../Source/monique_ui_LookAndFeel.h"/>
+        <FILE id="xB2o1q" name="monique_ui_MainWindow.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MainWindow.cpp"/>
+        <FILE id="KuDZ4f" name="monique_ui_MainWindow.h" compile="0" resource="0"
+              file="../Source/monique_ui_MainWindow.h"/>
         <FILE id="cNv2QT" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -80,25 +102,6 @@
             file="../Source/mono_AudioDeviceManager.cpp"/>
       <FILE id="zuO4aC" name="mono_AudioDeviceManager.h" compile="0" resource="0"
             file="../Source/mono_AudioDeviceManager.h"/>
-      <FILE id="cletLI" name="mono_Parameters.cpp" compile="1" resource="0"
-            file="../Source/mono_Parameters.cpp"/>
-      <FILE id="faB2bl" name="mono_Parameters.h" compile="0" resource="0"
-            file="../Source/mono_Parameters.h"/>
-      <FILE id="fNOmoO" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="../Source/PluginProcessor.cpp"/>
-      <FILE id="DRNZAz" name="PluginProcessor.h" compile="0" resource="0"
-            file="../Source/PluginProcessor.h"/>
-      <FILE id="GxnvYq" name="Synth.cpp" compile="1" resource="0" file="../Source/Synth.cpp"/>
-      <FILE id="aJbsC0" name="Synth.h" compile="0" resource="0" file="../Source/Synth.h"/>
-      <FILE id="OKoiqV" name="SynthData.cpp" compile="1" resource="0" file="../Source/SynthData.cpp"/>
-      <FILE id="h55lZl" name="SynthData.h" compile="0" resource="0" file="../Source/SynthData.h"/>
-      <FILE id="Sc12uW" name="UiEditorSynthLite.cpp" compile="1" resource="0"
-            file="../Source/UiEditorSynthLite.cpp"/>
-      <FILE id="ngYxWI" name="UiEditorSynthLite.h" compile="0" resource="0"
-            file="../Source/UiEditorSynthLite.h"/>
-      <FILE id="VZ5LPp" name="UiLookAndFeel.cpp" compile="1" resource="0"
-            file="../Source/UiLookAndFeel.cpp"/>
-      <FILE id="SAmtBl" name="UiLookAndFeel.h" compile="0" resource="0" file="../Source/UiLookAndFeel.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
       <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"

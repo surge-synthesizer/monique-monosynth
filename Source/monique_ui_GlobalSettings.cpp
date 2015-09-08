@@ -641,7 +641,26 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
         combo_multicore_cpus->addItem(String(i+1),i+1);
 
     // AUDIO DEVICE
+#ifdef IS_PLUGIN
+    //label_10->setVisible(false);
+    label_10->setEnabled(false);
+    //combo_audio_driver->setVisible(false);
+    combo_audio_driver->setEnabled(false);
+    //label_7->setVisible(false);
+    label_7->setEnabled(false);
+    //combo_audio_device->setVisible(false);
+    combo_audio_device->setEnabled(false);
+    //combo_sample_rate->setVisible(false);
+    combo_sample_rate->setEnabled(false);
+    //label_8->setVisible(false);
+    label_8->setEnabled(false);
+    //combo_block_size->setVisible(false);
+    combo_block_size->setEnabled(false);
+    //label_9->setVisible(false);
+    label_9->setEnabled(false);
+#else
     update_audio_devices();
+#endif
 
     /*
     //[/UserPreSize]
@@ -979,6 +998,7 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
     else if (comboBoxThatHasChanged == combo_audio_device)
     {
         //[UserComboBoxCode_combo_audio_device] -- add your combo box handling code here..
+#ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = AppInstanceStore::getInstance()->audio_processor;
 
         // GET CURRENT SETTINGS
@@ -1027,11 +1047,13 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
         }
 
         update_audio_devices();
+#endif
         //[/UserComboBoxCode_combo_audio_device]
     }
     else if (comboBoxThatHasChanged == combo_sample_rate)
     {
         //[UserComboBoxCode_combo_sample_rate] -- add your combo box handling code here..
+#ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = AppInstanceStore::getInstance()->audio_processor;
         AudioDeviceManager::AudioDeviceSetup current_device_setup;
         audio_processor->getAudioDeviceSetup( current_device_setup );
@@ -1047,11 +1069,13 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
             );
 
         update_audio_devices();
+#endif
         //[/UserComboBoxCode_combo_sample_rate]
     }
     else if (comboBoxThatHasChanged == combo_block_size)
     {
         //[UserComboBoxCode_combo_block_size] -- add your combo box handling code here..
+#ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = AppInstanceStore::getInstance()->audio_processor;
         AudioDeviceManager::AudioDeviceSetup current_device_setup;
         audio_processor->getAudioDeviceSetup( current_device_setup );
@@ -1067,11 +1091,13 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
             );
 
         update_audio_devices();
+#endif
         //[/UserComboBoxCode_combo_block_size]
     }
     else if (comboBoxThatHasChanged == combo_audio_driver)
     {
         //[UserComboBoxCode_combo_audio_driver] -- add your combo box handling code here..
+#ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = AppInstanceStore::getInstance()->audio_processor;
         audio_processor->setCurrentAudioDeviceType(combo_audio_driver->getText(),true);
         if( not audio_processor->audio_is_successful_initalized )
@@ -1089,6 +1115,7 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
         }
 
         update_audio_devices();
+#endif
         //[/UserComboBoxCode_combo_audio_driver]
     }
 

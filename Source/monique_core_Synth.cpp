@@ -420,8 +420,8 @@ private:
 COLD ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( ModulatedParameter*const base_ )
     :
     ValueSmootherModulated( base_ ),
-    is_changed(true),
-    last_out(0)
+    last_out(0),
+    is_changed(true)
 {}
 COLD ValueSmootherModulatedTracked::~ValueSmootherModulatedTracked() {}
 
@@ -567,7 +567,7 @@ inline float SwitchSmoother::tick_to( float current_value_ ) noexcept
     {
         current_value = current_value_;
         target_value = current_value_;
-	delta = 0;
+        delta = 0;
     }
     else
     {
@@ -2532,6 +2532,7 @@ public:
     //==============================================================================
     // RETURNS TRUE ON COFF CHANGED
     inline bool update(float resonance_, float cutoff_, float gain_ ) noexcept;
+    inline void update_with_resoance(float resonance_, float cutoff_, float gain_ ) noexcept;
     inline void copy_coefficient_from( const AnalogFilter& other_ ) noexcept;
     inline void copy_state_from( const AnalogFilter& other_ ) noexcept;
 
@@ -2542,7 +2543,7 @@ public:
     inline void reset() noexcept;
 
 private:
-    inline void calc_coefficients() noexcept;
+    inline void calc_coefficients( bool with_resonance_ ) noexcept;
 
     COLD void sample_rate_changed( double ) noexcept override;
 
@@ -2580,6 +2581,17 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
         success = true;
     }
     return success;
+}
+inline void AnalogFilter::update_with_resoance(float resonance_, float cutoff_, float gain_) noexcept
+{
+    if( cutoff != cutoff_ || gain != gain_ || res != resonance_ )
+    {
+        gain = gain_;
+        cutoff = cutoff_;
+        res = resonance_;
+        res4 = resonance_*4;
+	calc_coefficients( true );
+    }
 }
 
 //==============================================================================
@@ -2692,7 +2704,7 @@ inline void AnalogFilter::reset() noexcept
 }
 
 //==============================================================================
-inline void AnalogFilter::calc_coefficients() noexcept
+inline void AnalogFilter::calc_coefficients( bool with_resonance_ ) noexcept
 {
     {
         float f = (cutoff+cutoff) * sample_rate_1ths;
@@ -2700,11 +2712,14 @@ inline void AnalogFilter::calc_coefficients() noexcept
         p=f*((1.5f+agressive)-((0.5f+agressive)*f));
         k=p*2-1;
     }
+    if( with_resonance_ )
     {
         const float t=(1.0f-p)*1.386249f;
         const float t2=12.0f+t*t;
-        res*(t2+6.0f*t)/(t2-6.0f*t);
+        r = res*(t2+6.0f*t)/(t2-6.0f*t);
     }
+    else
+      r = 1;
 }
 
 //==============================================================================
@@ -2816,7 +2831,7 @@ inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, 
 {
     if( flt_2.update( resonance_, cutoff_, gain_ ) )
     {
-        flt_2.calc_coefficients();
+        flt_2.calc_coefficients( false );
         flt_1.copy_coefficient_from( flt_2 );
     }
 }
@@ -2839,7 +2854,7 @@ inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_,
 {
     if( flt_2.update( resonance_, cutoff_, gain_ ) )
     {
-        flt_2.calc_coefficients();
+        flt_2.calc_coefficients( false );
         flt_1.copy_coefficient_from( flt_2 );
     }
 }
@@ -2861,9 +2876,9 @@ inline void DoubleAnalogFilter::updateBand(float resonance_, float cutoff_, floa
 {
     if( flt_1.update( resonance_, cutoff_+10, gain_ ) )
     {
-        flt_1.calc_coefficients();
+        flt_1.calc_coefficients( false );
         flt_2.update( resonance_, cutoff_, gain_ );
-        flt_2.calc_coefficients();
+        flt_2.calc_coefficients( false );
     }
 }
 inline float DoubleAnalogFilter::processBand(float in_) noexcept
@@ -3962,7 +3977,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                         tmp_env_buffer[sid ] = amp;
 
                         // UPDATE FILTER
-                        filter.update( 0.2f*shape, filter_frequency, normalized_sustain );
+                        filter.update_with_resoance( 0.2f*shape, filter_frequency, normalized_sustain );
 
                         // PROCESS
                         {
@@ -5395,16 +5410,20 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     eq_processor->process( num_samples );
 
     if( synth_data->arp_sequencer_data->is_on )
+    {
         arp_sequencer->current_velocity = current_velocity * synth_data->arp_sequencer_data->velocity[current_step];
-                                      else
-                                          arp_sequencer->current_velocity = current_velocity;
-                                      fx_processor->velocity_glide.update( synth_data->velocity_glide_time );
+    }
+    else
+    {
+        arp_sequencer->current_velocity = current_velocity;
+    }
+    fx_processor->velocity_glide.update( synth_data->velocity_glide_time );
 
-                                      fx_processor->process( output_buffer_, start_sample_, num_samples_ );
-                                      // OSCs - THREAD 1 ?
+    fx_processor->process( output_buffer_, start_sample_, num_samples_ );
+    // OSCs - THREAD 1 ?
 
-                                      // VISUALIZE
-                                      if( amp_painter )
+    // VISUALIZE
+    if( amp_painter )
     {
         amp_painter->add_osc( 0, data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), data_buffer->osc_switchs.getReadPointer(1), num_samples_ );
