@@ -22,14 +22,6 @@
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 
-// RESTRICT
-  #if JUCE_WINDOWS
-#define restrict __restrict
-#else
-#define restrict __restrict__
-#endif
-#undef restrict
-#define restrict
 // JUCE
 #ifdef IS_PLUGIN // MOST OF THE TIME WE DEVEL IN STANDALONE MODE
 #include "../Plugin/JuceLibraryCode/JuceHeader.h"
@@ -61,8 +53,8 @@ class mono_AudioSampleBuffer
     AudioSampleBuffer*const buffer;
 
 public:
-    inline const float*restrict getReadPointer (int channelNumber = 0) const noexcept;
-    inline float*restrict getWritePointer (int channelNumber = 0) noexcept;
+    inline const float* getReadPointer (int channelNumber = 0) const noexcept;
+    inline float* getWritePointer (int channelNumber = 0) noexcept;
 
     //==========================================================================
     COLD void setSize (int newNumSamples ) noexcept;
@@ -78,7 +70,7 @@ COLD mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples
 :
 buffer( new AudioSampleBuffer( num_channels, numSamples ) )
 {
-  buffer->clear();
+    buffer->clear();
 }
 template<int num_channels>
 COLD mono_AudioSampleBuffer<num_channels>::~mono_AudioSampleBuffer() noexcept
@@ -88,12 +80,12 @@ COLD mono_AudioSampleBuffer<num_channels>::~mono_AudioSampleBuffer() noexcept
 
 //==============================================================================
 template<int num_channels>
-inline const float*restrict mono_AudioSampleBuffer<num_channels>::getReadPointer (int channelNumber) const noexcept
+inline const float* mono_AudioSampleBuffer<num_channels>::getReadPointer (int channelNumber) const noexcept
 {
     return buffer->getReadPointer( channelNumber );
 }
 template<int num_channels>
-inline float*restrict mono_AudioSampleBuffer<num_channels>::getWritePointer (int channelNumber) noexcept
+inline float* mono_AudioSampleBuffer<num_channels>::getWritePointer (int channelNumber) noexcept
 {
     return buffer->getWritePointer( channelNumber );
 }

@@ -741,7 +741,7 @@ static inline float filter_hard_clipper( float x ) noexcept
 //==============================================================================
 #define TABLESIZE_MULTI 1000
 #define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
-float*restrict SINE_LOOKUP_TABLE;
+float* SINE_LOOKUP_TABLE;
 class SIN_LOOKUP
 {
     COLD SIN_LOOKUP();
@@ -1436,7 +1436,7 @@ COLD LFO::~LFO() noexcept {}
 //==============================================================================
 inline void LFO::process( int step_number_, int num_samples_ ) noexcept
 {
-    float*restrict process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
+    float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
     sync( step_number_ );
 
     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -1658,11 +1658,11 @@ COLD OSC::~OSC() noexcept {}
 inline void OSC::process(DataBuffer* data_buffer_,
                          const int num_samples_) noexcept
 {
-    float*restrict const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
-    float*restrict const switch_buffer( data_buffer->osc_switchs.getWritePointer(id) );
-    float*restrict const osc_sync_switch_buffer( data_buffer->osc_sync_switchs.getWritePointer(MASTER_OSC) );
-    float*restrict const osc_modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
-    const float*restrict const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
+    float* const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
+    float* const switch_buffer( data_buffer->osc_switchs.getWritePointer(id) );
+    float* const osc_sync_switch_buffer( data_buffer->osc_sync_switchs.getWritePointer(MASTER_OSC) );
+    float* const osc_modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
+    const float* const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
 
     // FM SWING
     const float master_fm_swing = master_osc_data->fm_swing;
@@ -2233,7 +2233,7 @@ class ENV
 
 public:
     //==============================================================================
-    inline void process( float*restrict dest_, const int num_samples_ ) noexcept;
+    inline void process( float* dest_, const int num_samples_ ) noexcept;
 private:
     inline void update_stage() noexcept;
 
@@ -2272,7 +2272,7 @@ COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
 COLD ENV::~ENV() {}
 
 //==============================================================================
-inline void ENV::process( float*restrict dest_, const int num_samples_ ) noexcept
+inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
 {
     sustain_smoother.update( synth_data->glide_motor_time );
     const float shape = synth_data->curve_shape;
@@ -2998,7 +2998,7 @@ class EnvelopeFollower
     float release;
 
 public:
-    inline void processEnvelope (const float*restrict input_buffer_, float*restrict output_buffer_, int num_samples_) noexcept;
+    inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
     inline void setCoefficients (float attack_, float release_) noexcept;
     inline void reset() noexcept;
 
@@ -3020,7 +3020,7 @@ envelope (0),
 COLD EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
 //==============================================================================
-inline void EnvelopeFollower::processEnvelope ( const float*restrict input_buffer_, float*restrict output_buffer_, int num_samples_ ) noexcept
+inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, float* output_buffer_, int num_samples_ ) noexcept
 {
     for (int i = 0; i != num_samples_; ++i)
     {
@@ -3110,7 +3110,7 @@ private:
     inline void process_amp_mix( const int num_samples ) noexcept;
 
 private:
-    inline void compress ( float*restrict io_buffer_, float*restrict tmp_buffer_, const float*restrict compressor_signal,
+    inline void compress ( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal,
                            float power,
                            int num_samples ) noexcept;
 
@@ -3200,8 +3200,8 @@ inline void FilterProcessor::reset() noexcept
 // -----------------------------------------------------------------
 inline void FilterProcessor::pre_process( const int input_id, const int num_samples ) noexcept
 {
-    float*restrict tmp_input_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer( DIMENSION_INPUT + input_id );
-    float*restrict tmp_input_ar_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer( DIMENSION_INPUT_AMP + input_id );
+    float* tmp_input_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer( DIMENSION_INPUT + input_id );
+    float* tmp_input_ar_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer( DIMENSION_INPUT_AMP + input_id );
 
     const int glide_motor_time = synth_data->glide_motor_time;
 
@@ -3209,7 +3209,7 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
     {
         ValueSmoother& input_sustain_smoother = input_sustains[input_id];
         input_sustain_smoother.update( glide_motor_time );
-        const float*restrict const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
+        const float* const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
 
         // SWITCH FROM AMP TO INPUT CRACKL REMOVER
         const bool input_hold( filter_data->input_holds[input_id] );
@@ -3236,7 +3236,7 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
             }
             else
             {
-                const float*restrict filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
+                const float* filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float sustain = input_sustain_smoother.tick();
@@ -3270,7 +3270,7 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
             }
             else
             {
-                const float*restrict filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
+                const float* filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float sustain = input_sustain_smoother.tick();
@@ -3289,11 +3289,11 @@ inline void FilterProcessor::process_amp_mix( const int num_samples ) noexcept
 {
 // ADSTR - LFO MIX
     const int glide_motor_time = synth_data->glide_motor_time;
-    float*restrict amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
+    float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
     mix_smoother.update(glide_motor_time);
     {
-        const float*restrict env_amps = data_buffer->filter_env_amps.getReadPointer(id);
-        const float*restrict lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
+        const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
+        const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
             // LFO ADSR MIX - HERE TO SAVE ONE LOOP
@@ -3306,7 +3306,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 {
     const int glide_motor_time = synth_data->glide_motor_time;
 
-    float*restrict amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
+    float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
     // PROCESS FILTER
     {
 #define DISTORTION_IN(x) distortion(x,filter_distortion)*(1.0f/SUM_INPUTS_PER_FILTER)
@@ -3329,10 +3329,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 process_amp_mix(num_samples);
 
-                float*restrict const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float*restrict const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float*restrict const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float*restrict const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
+                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
+                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
+                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
+                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
@@ -3351,13 +3351,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const int input_id;
                 const int num_samples_;
 
-                const float*restrict const tmp_resonance_buffer;
-                const float*restrict const tmp_cuttof_buffer;
-                const float*restrict const tmp_gain_buffer;
-                const float*restrict const tmp_distortion_buffer;
+                const float* const tmp_resonance_buffer;
+                const float* const tmp_cuttof_buffer;
+                const float* const tmp_gain_buffer;
+                const float* const tmp_distortion_buffer;
 
-                const float*restrict const input_buffer;
-                float*restrict const out_buffer;
+                const float* const input_buffer;
+                float* const out_buffer;
 
                 inline void exec() noexcept override
                 {
@@ -3417,10 +3417,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 process_amp_mix(num_samples);
 
-                float*restrict const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float*restrict const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float*restrict const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float*restrict const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
+                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
+                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
+                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
+                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
@@ -3440,13 +3440,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const int input_id;
                 const int num_samples_;
 
-                const float*restrict const tmp_resonance_buffer;
-                const float*restrict const tmp_cuttof_buffer;
-                const float*restrict const tmp_gain_buffer;
-                const float*restrict const tmp_distortion_buffer;
+                const float* const tmp_resonance_buffer;
+                const float* const tmp_cuttof_buffer;
+                const float* const tmp_gain_buffer;
+                const float* const tmp_distortion_buffer;
 
-                const float*restrict const input_buffer;
-                float*restrict const out_buffer;
+                const float* const input_buffer;
+                float* const out_buffer;
 
                 inline void exec() noexcept override
                 {
@@ -3505,10 +3505,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 process_amp_mix(num_samples);
 
-                float*restrict const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float*restrict const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float*restrict const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float*restrict const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
+                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
+                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
+                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
+                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
@@ -3528,13 +3528,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const int input_id;
                 const int num_samples_;
 
-                const float*restrict const tmp_resonance_buffer;
-                const float*restrict const tmp_cuttof_buffer;
-                const float*restrict const tmp_gain_buffer;
-                const float*restrict const tmp_distortion_buffer;
+                const float* const tmp_resonance_buffer;
+                const float* const tmp_cuttof_buffer;
+                const float* const tmp_gain_buffer;
+                const float* const tmp_distortion_buffer;
 
-                const float*restrict const input_buffer;
-                float*restrict const out_buffer;
+                const float* const input_buffer;
+                float* const out_buffer;
 
                 inline void exec() noexcept override
                 {
@@ -3593,8 +3593,8 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             {
                 process_amp_mix(num_samples);
 
-                float*restrict const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float*restrict const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
+                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
+                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
 
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
@@ -3614,11 +3614,11 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 const int input_id;
                 const int num_samples_;
 
-                const float*restrict const tmp_gain_buffer;
-                const float*restrict const tmp_distortion_buffer;
+                const float* const tmp_gain_buffer;
+                const float* const tmp_distortion_buffer;
 
-                const float*restrict const input_buffer;
-                float*restrict const out_buffer;
+                const float* const input_buffer;
+                float* const out_buffer;
 
                 inline void exec() noexcept override
                 {
@@ -3672,14 +3672,14 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     }
 
     // COLLECT RESULTS
-    float*restrict const this_filter_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(id);
+    float* const this_filter_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(id);
     {
-        float*restrict out_buffer_1( data_buffer->filter_output_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * id ) );
-        float*restrict out_buffer_2( data_buffer->filter_output_samples.getWritePointer( 1 + SUM_INPUTS_PER_FILTER * id ) );
-        float*restrict out_buffer_3( data_buffer->filter_output_samples.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * id ) );
-        const float*restrict input_ar_amp_1( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_1 ) );
-        const float*restrict input_ar_amp_2( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_2 ) );
-        const float*restrict input_ar_amp_3( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_3 ) );
+        float* out_buffer_1( data_buffer->filter_output_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * id ) );
+        float* out_buffer_2( data_buffer->filter_output_samples.getWritePointer( 1 + SUM_INPUTS_PER_FILTER * id ) );
+        float* out_buffer_3( data_buffer->filter_output_samples.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * id ) );
+        const float* input_ar_amp_1( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_1 ) );
+        const float* input_ar_amp_2( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_2 ) );
+        const float* input_ar_amp_3( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_3 ) );
         clipping_smoother.update( glide_motor_time );
         {
             ValueSmootherModulatedUpdater u_output( &output_smoother, glide_motor_time, filter_data->modulate_output );
@@ -3732,8 +3732,8 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
     // COLLECT THE FINAL OUTPUT
     if( id == FILTER_3 )
     {
-        float*restrict const final_filters_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
-        const float*restrict direct_output_buffer_flt_2 = data_buffer->direct_filter_output_samples.getReadPointer(1);
+        float* const final_filters_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
+        const float* direct_output_buffer_flt_2 = data_buffer->direct_filter_output_samples.getReadPointer(1);
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
             final_filters_output_buffer[sid] += direct_output_buffer_flt_2[sid] + this_filter_output_buffer[sid];
@@ -3742,7 +3742,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 }
 
 // -----------------------------------------------------------------
-inline void FilterProcessor::compress( float*restrict io_buffer_, float*restrict tmp_buffer_, const float*restrict compressor_signal_,
+inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal_,
                                        float power,
                                        int num_samples ) noexcept
 {
@@ -3924,9 +3924,9 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
             const bool hold_sustain;
             const int glide_motor_time;
-            ValueSmoother*restrict const velocity_smoother;
-            ValueSmoother*restrict const shape_smoother;
-            SwitchSmoother*restrict const amp2velocity_smoother;
+            ValueSmoother* const velocity_smoother;
+            ValueSmoother* const shape_smoother;
+            SwitchSmoother* const amp2velocity_smoother;
 
             const float filter_frequency;
             IIRFilter& low_pass_filter;
@@ -3934,11 +3934,11 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             AnalogFilter& filter;
             ENV& env;
 
-            const float*restrict const direct_filter_output_samples;
-            float*restrict const tmp_band_in_buffer;
-            float*restrict const tmp_band_out_buffer;
-            float*restrict const tmp_env_buffer;
-            float*restrict const tmp_sum_gain_buffer;
+            const float* const direct_filter_output_samples;
+            float* const tmp_band_in_buffer;
+            float* const tmp_band_out_buffer;
+            float* const tmp_env_buffer;
+            float* const tmp_sum_gain_buffer;
 
             inline void exec() noexcept override
             {
@@ -4032,7 +4032,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
             Array<BandExecuter*> copy_of_running_thereads = running_threads;
             for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
             {
-                BandExecuter*restrict executer( copy_of_running_thereads[i] );
+                BandExecuter* executer( copy_of_running_thereads[i] );
                 if( not executer->isWorking() )
                 {
                     running_threads.removeFirstMatchingValue(executer);
@@ -4074,15 +4074,15 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 #define DIMENSION_TMP 0
 #define DIMENSION_TMP_2 1
 
-        float*restrict const out_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
-        float*restrict const tmp_all_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP);
-        float*restrict const tmp_all_band_sum_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_2);
+        float* const out_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
+        float* const tmp_all_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP);
+        float* const tmp_all_band_sum_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_2);
         FloatVectorOperations::clear(tmp_all_band_out_buffer,num_samples_);
         FloatVectorOperations::fill(tmp_all_band_sum_gain_buffer,1,num_samples_);
         for( int band_id_ = 0 ; band_id_ != SUM_EQ_BANDS ; ++band_id_ )
         {
-            const float*restrict const tmp_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION);
-            const float*restrict const tmp_band_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION);
+            const float* const tmp_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION);
+            const float* const tmp_band_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(GAIN_DIMENSION);
 
             FloatVectorOperations::add( tmp_all_band_out_buffer, tmp_band_out_buffer, num_samples_ );
             FloatVectorOperations::add( tmp_all_band_sum_gain_buffer, tmp_band_gain_buffer, num_samples_ );
@@ -4114,7 +4114,7 @@ class Chorus : public RuntimeListener
     int buffer_size;
     int index;
     float last_delay;
-    float*restrict buffer;
+    float* buffer;
 
 public:
     inline void fill(float sample_) noexcept;
@@ -4692,7 +4692,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     const int glide_motor_time = synth_data->glide_motor_time;
 
     // COLLECT BUFFERS
-    float*restrict input_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
+    float* input_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
 
     // PREPARE REVERB
     const float reverb_room = reverb_data->room;
@@ -4726,15 +4726,15 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
     // PREPARE
     {
-        float*restrict const tmp_env_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_ENV);
+        float* const tmp_env_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_ENV);
         final_env->process( tmp_env_amp, num_samples_ );
 
-        float*restrict const tmp_chorus_mod_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP);
-        float*restrict const tmp_delay = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DELAY);
-        float*restrict const tmp_bypass = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS);
-        float*restrict const tmp_clipping = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING);
+        float* const tmp_chorus_mod_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP);
+        float* const tmp_delay = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DELAY);
+        float* const tmp_bypass = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS);
+        float* const tmp_clipping = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING);
 
-        float*restrict const tmp_chorus_amp_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_CHORUS);
+        float* const tmp_chorus_amp_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_CHORUS);
         chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
 
         bypass_smoother.update( glide_motor_time );
@@ -4779,16 +4779,16 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
             int delay_pos;
 
-            const float*restrict const input_buffer;
-            float*restrict const delay_data;
-            float*restrict const final_output;
+            const float* const input_buffer;
+            float* const delay_data;
+            float* const final_output;
 
-            const float*restrict const tmp_chorus_mod_amp;
-            const float*restrict const tmp_delay;
-            const float*restrict const tmp_bypass;
-            const float*restrict const tmp_clipping;
+            const float* const tmp_chorus_mod_amp;
+            const float* const tmp_delay;
+            const float* const tmp_bypass;
+            const float* const tmp_clipping;
 
-            float*restrict const tmp_samples;
+            float* const tmp_samples;
 
             // LEFT SIDE
             inline void exec() noexcept override
@@ -4897,11 +4897,11 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                                const int num_samples_,
                                const int delay_pos_,
 
-                               const float*restrict input_buffer_,
-                               float*restrict tmp_samples_,
+                               const float* input_buffer_,
+                               float* tmp_samples_,
 
-                               float*restrict delay_data_,
-                               float*restrict final_output_
+                               float* delay_data_,
+                               float* final_output_
                              ) noexcept
 :
             processor( fx_processor_ ),
@@ -4958,8 +4958,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
         // FINAL MIX
         {
-            float*restrict left = output_buffer_.getWritePointer(LEFT);
-            float*restrict right = output_buffer_.getWritePointer(RIGHT);
+            float* left = output_buffer_.getWritePointer(LEFT);
+            float* right = output_buffer_.getWritePointer(RIGHT);
             for( int sid = start_sample_final_out_ ; sid < start_sample_final_out_+num_samples_ ; ++sid )
             {
                 float sum = left[sid] + right[sid];
@@ -5558,7 +5558,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     ENVPresetData* data = store->ui_env_preset_data;
     data->state = state_;
     data->sustain = 0.5;
-    float*restrict one_sample_buffer = new float;
+    float* one_sample_buffer = new float;
     bool count_sustain = false;
     env->start_attack( false );
     env->overwrite_current_value( 0.5 );
