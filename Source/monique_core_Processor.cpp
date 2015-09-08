@@ -496,6 +496,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 //==============================================================================
 void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
 {
+    std::cout << sampleRate << " " <<block_size_ << std::endl;
+  
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
     GET_DATA(data_buffer).resize_buffer_if_required(block_size_);

@@ -237,8 +237,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     button_current_editor_color->setButtonText (TRANS("OK"));
     button_current_editor_color->addListener (this);
 
-    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
-            ,0,7));
+    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace,0,7));
 
     addAndMakeVisible (label_colour_6 = new Label (String::empty,
             TRANS("LABELS")));

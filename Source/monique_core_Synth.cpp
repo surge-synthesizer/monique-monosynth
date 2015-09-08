@@ -2719,7 +2719,9 @@ inline void AnalogFilter::calc_coefficients( bool with_resonance_ ) noexcept
         r = res*(t2+6.0f*t)/(t2-6.0f*t);
     }
     else
+    {
       r = 1;
+    }
 }
 
 //==============================================================================
@@ -4676,6 +4678,8 @@ reverb_l(),
          reverb_data( GET_DATA_PTR( reverb_data ) ),
          chorus_data( GET_DATA_PTR( chorus_data ) )
 {
+    //delayBuffer.clear();
+  
     std::cout << "MONIQUE: init FX" << std::endl;
 }
 
@@ -4841,6 +4845,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float in_r = input_buffer[sid];
+			
                     const float modulation_amp = tmp_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 

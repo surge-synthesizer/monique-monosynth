@@ -56,7 +56,7 @@
 //==============================================================================
 //==============================================================================
 template<int num_channels>
-class mono_AudioSampleBuffer : public AudioSampleBuffer
+class mono_AudioSampleBuffer
 {
     AudioSampleBuffer*const buffer;
 
@@ -77,7 +77,9 @@ template<int num_channels>
 COLD mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
 :
 buffer( new AudioSampleBuffer( num_channels, numSamples ) )
-{}
+{
+  buffer->clear();
+}
 template<int num_channels>
 COLD mono_AudioSampleBuffer<num_channels>::~mono_AudioSampleBuffer() noexcept
 {
