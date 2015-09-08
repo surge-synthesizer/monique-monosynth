@@ -567,22 +567,20 @@ inline float SwitchSmoother::tick_to( float current_value_ ) noexcept
     {
         current_value = current_value_;
         target_value = current_value_;
+	delta = 0;
     }
     else
     {
-        float tmp_old = target_value;
+        //float tmp_old = target_value;
         if( current_value_ != target_value )
         {
             target_value = current_value_;
             delta = (target_value-current_value) / counter;
         }
-
-        current_value+=delta;
-
-        std::cout << counter << " ::: " << "tmp_old:" << tmp_old << " target_value:" << target_value << " delta:" << delta << " delta:" << current_value << std::endl;
+        //std::cout << counter << " ::: " << "tmp_old:" << tmp_old << " target_value:" << target_value << " delta:" << delta << " delta:" << current_value << std::endl;
     }
 
-    return current_value;
+    return current_value+=delta;
 }
 inline float SwitchSmoother::get_last_tick_value() noexcept
 {

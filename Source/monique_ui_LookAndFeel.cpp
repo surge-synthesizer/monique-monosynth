@@ -970,9 +970,7 @@ void UiLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int 
     else
     {
         drawLinearSliderBackground (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
-
-        if( ! slider.isOpaque() || slider.GET_SLIDER_STYLE() == VALUE_SLIDER )
-            drawLinearSliderThumb (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
+        drawLinearSliderThumb (g, x, y, width, height, sliderPos, minSliderPos, maxSliderPos, style, slider);
     }
 }
 
