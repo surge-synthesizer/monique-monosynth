@@ -355,12 +355,9 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
     float value = ValueSmoother::tick() + last_modulation;
     if( value < 0 )
         value = 0;
-    /*
-    if( modulation_range < 0 )
-    {
-    std::cout << ValueSmoother::tick() << last_modulation << value << std::endl;
-    }
-    */
+    else if( value > 1 )
+        value = 1;
+
     return value;
 }
 inline float ValueSmootherModulated::tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept
@@ -425,31 +422,6 @@ inline float ValueSmootherModulatedTracked::tick( float current_modulation_in_pe
 inline bool ValueSmootherModulatedTracked::is_changed_since_last_tick() const noexcept
 {
     return is_changed;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// UPDATAES THE MODULATION AMOUNT ON KILL
-class ValueSmootherModulatedUpdater
-{
-    ValueSmootherModulated*const smoother;
-
-public:
-    inline ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ )  noexcept;
-    inline ~ValueSmootherModulatedUpdater() noexcept;
-};
-
-//==============================================================================
-inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ ) noexcept
-:
-smoother( smoother_ )
-{
-    smoother_->update(glide_time_in_samples_);
-}
-inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept
-{
-    smoother->base->get_runtime_info().set_last_modulation_amount( smoother->last_modulation );
 }
 
 //==============================================================================
@@ -605,6 +577,84 @@ inline void SwitchSmoother::reset() noexcept
     current_value = target_value;
     delta = 0;
     counter = 0;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class SwitchAndValueSmootherModulated
+{
+    friend class ValueSmootherModulatedUpdater;
+    SwitchSmoother switch_smoother;
+    ValueSmootherModulated value_smoother;
+
+    bool add_modulation;
+
+public:
+    //==========================================================================
+    inline float tick( float current_modulation_in_percent_ ) noexcept;
+    inline void update( int glide_time_in_samples_, bool add_modulation_ ) noexcept;
+
+    inline void reset() noexcept;
+
+    //==========================================================================
+    COLD SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept;
+    COLD ~SwitchAndValueSmootherModulated() noexcept;
+};
+
+//==============================================================================
+COLD SwitchAndValueSmootherModulated::SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept :
+value_smoother( base_ ),add_modulation(false) {}
+COLD SwitchAndValueSmootherModulated::~SwitchAndValueSmootherModulated() noexcept {}
+
+//==============================================================================
+inline float SwitchAndValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
+{
+    return value_smoother.tick( switch_smoother.tick_to( add_modulation ? current_modulation_in_percent_ : 0 ), add_modulation );
+}
+inline void SwitchAndValueSmootherModulated::update( int glide_time_in_samples_, bool add_modulation_ ) noexcept
+{
+    add_modulation = add_modulation_;
+    value_smoother.update( glide_time_in_samples_ );
+    switch_smoother.reset_counter_on_state_switch(add_modulation_);
+}
+
+inline void SwitchAndValueSmootherModulated::reset() noexcept
+{
+    switch_smoother.reset();
+    value_smoother.reset();
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+// UPDATAES THE MODULATION AMOUNT ON KILL
+class ValueSmootherModulatedUpdater
+{
+    ValueSmootherModulated*const smoother;
+
+public:
+    inline ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ )  noexcept;
+    inline ValueSmootherModulatedUpdater( SwitchAndValueSmootherModulated* smoother_, int glide_time_in_samples_, bool add_modulation_ )  noexcept;
+    inline ~ValueSmootherModulatedUpdater() noexcept;
+};
+
+//==============================================================================
+inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ ) noexcept
+:
+smoother( smoother_ )
+{
+    smoother_->update(glide_time_in_samples_);
+}
+inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( SwitchAndValueSmootherModulated* switch_smoother_, int glide_time_in_samples_, bool add_modulation_ ) noexcept
+:
+smoother( &switch_smoother_->value_smoother )
+{
+    switch_smoother_->update(glide_time_in_samples_,add_modulation_);
+}
+inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept
+{
+    smoother->base->get_runtime_info().set_last_modulation_amount( smoother->last_modulation );
 }
 
 //==============================================================================
@@ -2993,11 +3043,11 @@ public:
 private:
     EnvelopeFollower env_follower;
 
-    ValueSmootherModulated cutoff_smoother;
-    ValueSmootherModulated resonance_smoother;
-    ValueSmootherModulated gain_smoother;
-    ValueSmootherModulated distortion_smoother;
-    ValueSmootherModulated output_smoother;
+    SwitchAndValueSmootherModulated cutoff_smoother;
+    SwitchAndValueSmootherModulated resonance_smoother;
+    SwitchAndValueSmootherModulated gain_smoother;
+    SwitchAndValueSmootherModulated distortion_smoother;
+    SwitchAndValueSmootherModulated output_smoother;
     ValueSmoother mix_smoother;
     ValueSmoother clipping_smoother;
     ValueSmoother input_sustains[SUM_INPUTS_PER_FILTER];
@@ -3226,17 +3276,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 #define MAX_CUTOFF 8000.0f
 #define MIN_CUTOFF 40.0f
 
-
-
-        const bool modulate_cutoff = filter_data->modulate_cutoff;
-        const bool modulate_resonance = filter_data->modulate_resonance;
-        const bool modulate_gain = filter_data->modulate_gain;
-        const bool modulate_distortion = filter_data->modulate_distortion;
-        ValueSmootherModulatedUpdater u_cutoof( &cutoff_smoother, glide_motor_time );
-        ValueSmootherModulatedUpdater u_resonance( &resonance_smoother, glide_motor_time );
-        ValueSmootherModulatedUpdater u_gain( &gain_smoother, glide_motor_time );
-        ValueSmootherModulatedUpdater u_distortion( &distortion_smoother, glide_motor_time );
-
+        ValueSmootherModulatedUpdater u_cutoof( &cutoff_smoother, glide_motor_time, filter_data->modulate_cutoff );
+        ValueSmootherModulatedUpdater u_resonance( &resonance_smoother, glide_motor_time, filter_data->modulate_resonance );
+        ValueSmootherModulatedUpdater u_gain( &gain_smoother, glide_motor_time, filter_data->modulate_gain );
+        ValueSmootherModulatedUpdater u_distortion( &distortion_smoother, glide_motor_time, filter_data->modulate_distortion );
         switch( filter_data->filter_type )
         {
         case LPF :
@@ -3255,10 +3298,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp, modulate_resonance );
-                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF * cutoff_smoother.tick( amp, modulate_cutoff ) + MIN_CUTOFF) * (1.0f/8);
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp, modulate_gain );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( modulate_distortion ? amp : 0 );
+                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
+                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF) * (1.0f/8);
+                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
+                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
             }
 
@@ -3343,10 +3386,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp, modulate_resonance );
-                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF*2.0f) * cutoff_smoother.tick( amp, modulate_cutoff ) + MIN_CUTOFF;
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp, modulate_gain );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( modulate_distortion ? amp : 0 );
+                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
+                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF*2.0f) * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
+                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
+                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
             }
 
@@ -3431,10 +3474,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp, modulate_resonance );
-                    tmp_cuttof_buffer[sid] = MAX_CUTOFF * cutoff_smoother.tick( amp, modulate_cutoff ) + MIN_CUTOFF;
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp, modulate_gain );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( modulate_distortion ? amp : 0 );
+                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
+                    tmp_cuttof_buffer[sid] = MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
+                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
+                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
             }
 
@@ -3517,10 +3560,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float amp = amp_mix[sid];
-                    resonance_smoother.tick( amp, modulate_resonance );
-                    cutoff_smoother.tick( amp, modulate_cutoff );
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp, modulate_gain );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( modulate_distortion ? amp : 0 );
+                    resonance_smoother.tick( amp );
+                    cutoff_smoother.tick( amp );
+                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
+                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
             }
 
@@ -3600,13 +3643,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         const float*restrict input_ar_amp_3( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_3 ) );
         clipping_smoother.update( glide_motor_time );
         {
-            ValueSmootherModulatedUpdater u_output( &output_smoother, glide_motor_time );
-            const bool modulate_output = filter_data->modulate_output;
+            ValueSmootherModulatedUpdater u_output( &output_smoother, glide_motor_time, filter_data->modulate_output );
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 // OUTPUT MIX AND DISTORTION
                 {
-                    const float amp = output_smoother.tick( modulate_output ? amp_mix[sid] : 0 );
+                    const float amp = output_smoother.tick( amp_mix[sid] );
                     const float clipping = clipping_smoother.tick();
                     const float result_sample = amp * ( out_buffer_1[sid] * input_ar_amp_1[sid] + out_buffer_2[sid] * input_ar_amp_2[sid] + out_buffer_3[sid] * input_ar_amp_3[sid]);
                     this_filter_output_buffer[sid] = ( result_sample*(1.0f-clipping) + soft_clipping(result_sample)*clipping );
@@ -5515,5 +5557,6 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 

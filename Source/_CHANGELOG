@@ -46,8 +46,11 @@ CHANGES 0.5:
 - remove 2pass filter (it's all 2pass not, play around with the gain, this there is the 1 pass hidden behind.
 - improved high pass filter and rasonance of all filters
 - labels for adsr slider are editable now
+- ADSR labels show now the real range value and the caption is changed to range
+- fix cracksl on switch cutoff, gain, resonance, filter volume, distortion to modulated or modulated off
 
 :!: KNOWN BUGS:
+- buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - filter out volume crackls!! ---> also the filter modulation buttons!
 - turn chorus amp on off crackls
 - do not process the unused bands
