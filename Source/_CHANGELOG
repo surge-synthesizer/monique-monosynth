@@ -48,13 +48,14 @@ CHANGES 0.5:
 - labels for adsr slider are editable now
 - ADSR labels show now the real range value and the caption is changed to range
 - fix cracksl on switch cutoff, gain, resonance, filter volume, distortion to modulated or modulated off
+- fix draw backgrund slider thumb (ADSR sliders)
+- add values for all sliders
 
 :!: KNOWN BUGS:
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
 set from current updated the morph group
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
-- kein background value für linear slider
 - osc square and saw going out of center on higher octaves
 - file remove is buggy
 
