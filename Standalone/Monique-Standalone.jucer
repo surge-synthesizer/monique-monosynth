@@ -156,9 +156,9 @@
                extraLinkerFlags="">
       <CONFIGURATIONS>
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
-                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
+                       osxArchitecture="64BitUniversal" isDebug="1" optimisation="1"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
-                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+                       headerPath="" fastMath="1" linkTimeOptimisation="0" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>

@@ -2228,7 +2228,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.minimiseStorageOverheads();
 }
 
-#include "../../JUCE/modules/juce_core/containers/juce_Array.h"
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
 {
     global_parameters.add( &osci_show_osc_1 );
