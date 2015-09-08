@@ -156,9 +156,9 @@
                extraLinkerFlags="">
       <CONFIGURATIONS>
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
-                       osxArchitecture="64BitUniversal" isDebug="1" optimisation="1"
+                       osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
-                       headerPath="" fastMath="1" linkTimeOptimisation="0" binaryPath="Builds/MAC"/>
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
@@ -181,8 +181,8 @@
                        isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
                        useRuntimeLibDLL="0" fastMath="1"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1"/>
+                       isDebug="1" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
@@ -215,7 +215,7 @@
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"
                JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
-               JUCE_ASIO="disabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="disabled"
+               JUCE_ASIO="disabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="enabled"
                JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_PLUGINHOST_VST="disabled"
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"

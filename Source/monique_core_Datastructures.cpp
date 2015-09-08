@@ -3105,7 +3105,7 @@ bool MoniqueSynthData::remove() noexcept
     );
     if( success )
     {
-        program.deleteFile();
+        program.moveToTrash();
         current_program = -1;
         refresh_banks_and_programms();
     }
