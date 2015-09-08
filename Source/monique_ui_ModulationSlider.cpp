@@ -58,7 +58,7 @@ noexcept
     bottom_button_->setEnabled(false);
     bottom_button_->setOpaque(true);
     top_label_->setVisible(false);
-    top_label_->setEnabled(false);
+    top_label_->setEnabled(true);
     top_label_->setOpaque(true);
     top_label_->setEditable(true);
     bottom_label_->setVisible(has_bottom_label);
@@ -201,8 +201,11 @@ void Monique_Ui_DualSlider::show_view_mode()
 
     if( label_top )
     {
-        label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
-        label_top->repaint();
+        if( not label_top->isBeingEdited() )
+        {
+            label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
+            label_top->repaint();
+        }
     }
 }
 
@@ -288,8 +291,13 @@ void Monique_Ui_DualSlider::refresh() noexcept
         const bool show_popup = runtime_show_value_popup || UiLookAndFeel::getInstance()->show_values_always;
         if( slider_value->isVertical() )
         {
-            label_top->setVisible(true);
-            label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+            if( not label_top->isBeingEdited() )
+            {
+                label_top->setVisible(true);
+		label_top->setEnabled(slider_value->isEnabled());
+		label_top->setEditable(slider_value->isEnabled());
+                label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+            }
         }
         else if( show_popup )
         {
@@ -353,8 +361,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 // NON ROTARY
                 if( slider_value->isVertical() )
                 {
-                    label_top->setVisible(true);
-                    label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+                    // label_top->setVisible(true);
+                    // label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
                 }
                 else if( slider_value->isHorizontal() )
                 {
@@ -498,10 +506,11 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
             String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
-    label_top->setEditable (false, false, false);
+    label_top->setEditable (true, true, false);
     label_top->setColour (Label::textColourId, Colours::yellow);
     label_top->setColour (TextEditor::textColourId, Colours::black);
     label_top->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_top->addListener (this);
 
 
     //[UserPreSize]
@@ -728,6 +737,28 @@ void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
     //[/UserbuttonClicked_Post]
 }
 
+void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == label_top)
+    {
+        //[UserLabelCode_label_top] -- add your label text handling code here..
+        if( slider_value->isEnabled() )
+            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue() ), sendNotification );
+        else if( slider_modulation )
+        {
+            if( slider_modulation->isEnabled() )
+                slider_modulation->setValue( label_top->getText().getFloatValue()/1000, sendNotification );
+        }
+        //[/UserLabelCode_label_top]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -776,8 +807,8 @@ void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_DualSlider" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams="ModulationSliderConfigBase* config_"
-                 variableInitialisers="_config(config_),original_w(60), original_h(130)"
+                 parentClasses="public Component, public Monique_Ui_Refreshable"
+                 constructorParams="ModulationSliderConfigBase* config_" variableInitialisers="_config(config_),original_w(60), original_h(130)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="60" initialHeight="130">
   <BACKGROUND backgroundColour="ff000000"/>
@@ -809,7 +840,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <LABEL name="" id="91e2ef3f217d2a8f" memberName="label_top" virtualName=""
          explicitFocusOrder="0" pos="0 -4 60 35" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="" editableSingleClick="0" editableDoubleClick="0"
+         edBkgCol="0" labelText="" editableSingleClick="1" editableDoubleClick="1"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>

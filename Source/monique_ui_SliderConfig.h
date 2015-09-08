@@ -931,6 +931,10 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         return "ms";
     }
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return (entered_value_-MIN_ENV_TIMES)/max_attack_time->get_value();
+    }
 
 public:
     FAttackSlConfig( int id_ )
@@ -1058,6 +1062,10 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         return "ms";
     }
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return (entered_value_)/max_decay_time->get_value();
+    }
 
 public:
     FDecaySlConfig( int id_ )
@@ -1184,6 +1192,10 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return "%";
     }
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return entered_value_/100;
+    }
 
 public:
     FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ) {}
@@ -1307,6 +1319,10 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         else
             return "ms";
     }
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return entered_value_/10000;
+    }
 
 public:
     FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ) {}
@@ -1423,6 +1439,10 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
+    }
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return (entered_value_-MIN_ENV_TIMES)/max_release_time->get_value();
     }
 
 public:

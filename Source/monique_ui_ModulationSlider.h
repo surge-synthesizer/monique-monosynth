@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_15C74EBBA17175D0__
-#define __JUCE_HEADER_15C74EBBA17175D0__
+#ifndef __JUCE_HEADER_CB44C34F016734A4__
+#define __JUCE_HEADER_CB44C34F016734A4__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -206,6 +206,10 @@ struct ModulationSliderConfigBase
     {
         return "";
     }
+    virtual float get_label_edit_value( float entered_value_ ) const noexcept
+    {
+        return entered_value_;
+    }
 
 protected:
     ModulationSliderConfigBase() {}
@@ -228,9 +232,10 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-    public Monique_Ui_Refreshable,
-    public SliderListener,
-    public ButtonListener
+                               public Monique_Ui_Refreshable,
+                               public SliderListener,
+                               public ButtonListener,
+                               public LabelListener
 {
 public:
     //==============================================================================
@@ -277,6 +282,7 @@ public:
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
+    void labelTextChanged (Label* labelThatHasChanged);
 
 
 
@@ -300,4 +306,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_15C74EBBA17175D0__
+#endif   // __JUCE_HEADER_CB44C34F016734A4__

@@ -670,14 +670,12 @@ void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, T
     {
         if (textEditor.hasKeyboardFocus (true) && ! textEditor.isReadOnly())
         {
-            const int border = 2;
-
             g.setColour (textEditor.findColour (TextEditor::focusedOutlineColourId));
-            g.drawRect (0, 0, width, height, border);
+            g.drawRect (0, 4, width, height-8, 1);
 
             g.setOpacity (1.0f);
             const Colour shadowColour (textEditor.findColour (TextEditor::shadowColourId).withMultipliedAlpha (0.75f));
-            drawBevel (g, 0, 0, width, height + 2, border + 2, shadowColour, shadowColour);
+            drawBevel (g, 0, 0, width, height + 2, 3, shadowColour, shadowColour);
         }
         else
         {

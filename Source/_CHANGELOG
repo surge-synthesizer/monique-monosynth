@@ -47,7 +47,6 @@ CHANGES 0.5:
 - improved high pass filter and rasonance of all filters
 
 :!: KNOWN BUGS:
-
 - filter out volume crackls!! ---> also the filter modulation buttons!
 - turn chorus amp on off crackls
 - do not process the unused bands
