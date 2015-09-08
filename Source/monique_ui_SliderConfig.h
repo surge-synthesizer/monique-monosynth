@@ -904,7 +904,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MAX T(ms)";
+        return "RANGE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -921,11 +921,18 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value();
-        if( value < 100 )
-            return String(round01(value));
+        if( not attack->midi_control->get_ctrl_mode() )
+        {
+            float value = MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value();
+            if( value < 100 )
+                return String(round01(value));
+            else
+                return String(round0(value));
+        }
         else
-            return String(round0(value));
+        {
+            return String(max_attack_time->get_value());
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1033,7 +1040,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MAX T(ms)";
+        return "RANGE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -1050,13 +1057,20 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = decay->get_value() * max_decay_time->get_value();
-        if( value < 0 )
-            return "OFF";
-        else if( value < 100 )
-            return String(round01(value));
+        if( not decay->midi_control->get_ctrl_mode() )
+        {
+            float value = decay->get_value() * max_decay_time->get_value();
+            if( value < 0 )
+                return "OFF";
+            else if( value < 100 )
+                return String(round01(value));
+            else
+                return String(round0(value));
+        }
         else
-            return String(round0(value));
+        {
+            return String(max_decay_time->get_value());
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1163,11 +1177,11 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return "SUSTAIN";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MAX T(ms)";
+        return "RANGE";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
         return false;
@@ -1285,11 +1299,11 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     {
         return "SUS TIME";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "MAX T(ms)";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
         return false;
@@ -1413,7 +1427,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MAX T(ms)";
+        return "RANGE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -1430,11 +1444,18 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = MIN_ENV_TIMES + release->get_value() * max_release_time->get_value();
-        if( value < 100 )
-            return String(round01(value));
+        if( not release->midi_control->get_ctrl_mode() )
+        {
+            float value = MIN_ENV_TIMES + release->get_value() * max_release_time->get_value();
+            if( value < 100 )
+                return String(round01(value));
+            else
+                return String(round0(value));
+        }
         else
-            return String(round0(value));
+        {
+            return String(max_release_time->get_value());
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1705,7 +1726,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
                 return "1/1";
         }
         else if( speed_ <= 17 )
-	{
+        {
             if( speed_ == 7 )
                 return "3/4";
             else if( speed_ == 8 )
@@ -1728,7 +1749,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
                 return "1/64";
             else
                 return "1/128";
-	}
+        }
         else
         {
             return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
@@ -1746,7 +1767,7 @@ public:
     LFOSlConfig( int id_ )
         :
         speed( &(GET_DATA(lfo_datas[id_]).speed) ),
-        
+
         bottom_text( "LFO " + String(id_+1) )
     {}
 

@@ -45,6 +45,7 @@ CHANGES 0.5:
 - fix problem that the synth not each time sonds like last time :D
 - remove 2pass filter (it's all 2pass not, play around with the gain, this there is the 1 pass hidden behind.
 - improved high pass filter and rasonance of all filters
+- labels for adsr slider are editable now
 
 :!: KNOWN BUGS:
 - filter out volume crackls!! ---> also the filter modulation buttons!
