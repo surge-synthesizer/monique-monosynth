@@ -38,7 +38,7 @@ CHANGES 0.5:
 - fix crash on short morph motor time
 - shift phase of the 32.5hertz band
 - fix crackls on filter input switch from amp to fix or in the other direction
-- fix 95% of the crackls on program switches
+- fix 99% of the crackls on program switches (did not found any more)
 - fix disable lfo animation if modulation animations is disabled
 - change modulation button light (brighter) if animation modulations is turned of
 - global settings will be stored to an own file. It will be read on app start and stored on shutdown
@@ -51,7 +51,6 @@ CHANGES 0.5:
 
 :!: KNOWN BUGS:
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
-- turn chorus amp on off crackls
 - do not process the unused bands
 set from current updated the morph group
 - bug: osc 2 and 3 sync problem if they run on the same frequency like the first one

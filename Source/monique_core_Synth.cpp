@@ -227,9 +227,7 @@ protected:
 
 public:
     inline float tick() noexcept;
-    inline float get_last_tick_value() {
-        return current_value;
-    }
+    inline float get_last_tick_value() const noexcept;
     inline void update( int glide_time_in_samples_ ) noexcept;
 
     inline void reset() noexcept;
@@ -285,6 +283,10 @@ inline float ValueSmoother::tick() noexcept
 
     return current_value;
 }
+inline float ValueSmoother::get_last_tick_value() const noexcept
+{
+    return current_value;
+}
 inline void ValueSmoother::update( int glide_time_in_samples_ ) noexcept
 {
     float target = base->get_value();
@@ -323,9 +325,10 @@ class ValueSmootherModulated : public ValueSmoother
     float last_modulation;
 
 public:
-    inline float tick( float current_modulation_in_percent_ ) noexcept ;
     inline float tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept;
-
+private:
+    inline float tick( float current_modulation_in_percent_ ) noexcept;
+public:
     inline void update( int glide_time_in_samples_ ) noexcept;
 
     COLD ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
@@ -353,19 +356,30 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
 {
     last_modulation = modulation_range*current_modulation_in_percent_;
     float value = ValueSmoother::tick() + last_modulation;
-    if( value < 0 )
-        value = 0;
-    else if( value > 1 )
-        value = 1;
-
     return value;
 }
 inline float ValueSmootherModulated::tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept
 {
+    float value;
     if( add_modulation_ )
-        return ValueSmootherModulated::tick(current_modulation_in_percent_);
+    {
+        value = ValueSmootherModulated::tick(current_modulation_in_percent_);
+    }
     else
-        return ValueSmoother::tick();
+    {
+        value = ValueSmoother::tick();
+    }
+
+    if( value < min_value )
+    {
+        value = min_value;
+    }
+    else if( value > max_value )
+    {
+        value = max_value;
+    }
+
+    return value;
 }
 inline void ValueSmootherModulated::update( int glide_time_in_samples_ ) noexcept
 {
@@ -564,6 +578,8 @@ inline float SwitchSmoother::tick_to( float current_value_ ) noexcept
         }
 
         current_value+=delta;
+
+        std::cout << counter << " ::: " << "tmp_old:" << tmp_old << " target_value:" << target_value << " delta:" << delta << " delta:" << current_value << std::endl;
     }
 
     return current_value;
@@ -613,7 +629,8 @@ COLD SwitchAndValueSmootherModulated::~SwitchAndValueSmootherModulated() noexcep
 //==============================================================================
 inline float SwitchAndValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
 {
-    return value_smoother.tick( switch_smoother.tick_to( add_modulation ? current_modulation_in_percent_ : 0 ), add_modulation );
+    const float value = switch_smoother.tick_to( add_modulation ? current_modulation_in_percent_ : 0 );
+    return value_smoother.tick( value, value > 0 );
 }
 inline void SwitchAndValueSmootherModulated::update( int glide_time_in_samples_, bool add_modulation_ ) noexcept
 {
@@ -1454,8 +1471,8 @@ void LFO::sync( int step_number_ ) noexcept
             float frequency = whole_notes_per_sec / factor;
 
             step_to_wait_for_sync--;
-            if( last_factor != factor ) 
-	    {
+            if( last_factor != factor )
+            {
                 step_to_wait_for_sync = 0;
                 last_factor = factor;
             }
