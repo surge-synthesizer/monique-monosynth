@@ -4543,6 +4543,7 @@ class FXProcessor
     Chorus chorus_l;
     Chorus chorus_r;
     ValueSmoother chorus_mod_smoother;
+    SwitchSmoother amp2chorus_smoother;
     friend class mono_ParameterOwnerStore;
     ScopedPointer< ENV > chorus_modulation_env;
 
@@ -4619,6 +4620,7 @@ reverb_l(),
          chorus_r(),
 
          chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
+         amp2chorus_smoother(),
          chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
 
          delayPosition( 0 ),
@@ -4708,7 +4710,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             {
                 const float chorus_modulation = chorus_mod_smoother.tick();
                 const bool is_chorus_amp_fix = chorus_data->hold_modulation;
-                tmp_chorus_mod_amp[sid] = is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid];
+		amp2chorus_smoother.reset_counter_on_state_switch(chorus_data->hold_modulation);
+                tmp_chorus_mod_amp[sid] = amp2chorus_smoother.tick_to( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
             }
 
             {

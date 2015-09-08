@@ -51,7 +51,6 @@ CHANGES 0.5:
 
 :!: KNOWN BUGS:
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
-- filter out volume crackls!! ---> also the filter modulation buttons!
 - turn chorus amp on off crackls
 - do not process the unused bands
 set from current updated the morph group
