@@ -243,7 +243,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
 
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
-            String::empty));
+                                                       String::empty));
     label_effect_hider->setFont (Font (30.00f, Font::plain));
     label_effect_hider->setJustificationType (Justification::centredLeft);
     label_effect_hider->setEditable (false, false, false);
@@ -320,7 +320,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (new FSustainSlConfig()));
 
     addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (new FDecaySlConfig()
-                                                               ));
+                                                                ));
 
     addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (new FAttackSlConfig()));
 
@@ -355,7 +355,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (new FAttackSlConfig(0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
-            TRANS("M O N I Q U E")));
+                                                   TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
     label_monolisa->setJustificationType (Justification::centredRight);
     label_monolisa->setEditable (false, false, false);
@@ -752,7 +752,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-            TRANS("OSC")));
+                                                       TRANS("OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -761,7 +761,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-            TRANS("FLT")));
+                                                       TRANS("FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -770,7 +770,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-            TRANS("FX")));
+                                                       TRANS("FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -779,7 +779,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-            TRANS("ARP")));
+                                                       TRANS("ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -799,7 +799,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
 
     addAndMakeVisible (label_ui_headline4 = new Label ("DL",
-            TRANS("FILTER INPUTS")));
+                                                       TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
@@ -808,7 +808,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline7 = new Label ("DL",
-            TRANS("OSCILLATORS")));
+                                                       TRANS("OSCILLATORS")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
@@ -817,7 +817,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline8 = new Label ("DL",
-            TRANS("FILTER ENVELOPE")));
+                                                       TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
@@ -826,7 +826,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline9 = new Label ("DL",
-            TRANS("LFO")));
+                                                       TRANS("LFO")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
@@ -835,7 +835,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline10 = new Label ("DL",
-            TRANS("FILTER CONFIGURATION")));
+                                                        TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
@@ -844,7 +844,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline11 = new Label ("DL",
-            TRANS("FILTER FX")));
+                                                        TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
@@ -853,7 +853,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline12 = new Label ("DL",
-            TRANS("OUTPUT")));
+                                                        TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
@@ -862,7 +862,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label ("DL",
-            TRANS("MAIN ENVELOPE")));
+                                                        TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -871,7 +871,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("DL",
-            TRANS("SHAPE")));
+                                                TRANS("SHAPE")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -880,7 +880,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_reverb = new Label ("DL",
-            TRANS("REVERB")));
+                                                 TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
     label_reverb->setEditable (false, false, false);
@@ -889,7 +889,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_delay = new Label ("DL",
-            TRANS("DELAY")));
+                                                TRANS("DELAY")));
     label_delay->setFont (Font (30.00f, Font::plain));
     label_delay->setJustificationType (Justification::centred);
     label_delay->setEditable (false, false, false);
@@ -898,7 +898,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_chorus = new Label ("DL",
-            TRANS("CHORUS")));
+                                                 TRANS("CHORUS")));
     label_chorus->setFont (Font (30.00f, Font::plain));
     label_chorus->setJustificationType (Justification::centred);
     label_chorus->setEditable (false, false, false);
@@ -907,7 +907,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_fx_mix = new Label ("DL",
-            TRANS("FX MIX")));
+                                                 TRANS("FX MIX")));
     label_fx_mix->setFont (Font (30.00f, Font::plain));
     label_fx_mix->setJustificationType (Justification::centred);
     label_fx_mix->setEditable (false, false, false);
@@ -916,7 +916,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline19 = new Label ("DL",
-            TRANS("MORPH SECTION")));
+                                                        TRANS("MORPH SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
@@ -925,7 +925,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline20 = new Label ("DL",
-            TRANS("ARPEGGIATOR")));
+                                                        TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
@@ -934,7 +934,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline21 = new Label ("DL",
-            TRANS("GLIDE")));
+                                                        TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
@@ -943,7 +943,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline22 = new Label ("DL",
-            TRANS("SPEED")));
+                                                        TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
@@ -952,7 +952,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline23 = new Label ("DL",
-            TRANS("MASTER")));
+                                                        TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
@@ -961,7 +961,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline24 = new Label ("DL",
-            TRANS("OCTAVE")));
+                                                        TRANS("OCTAVE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
@@ -970,7 +970,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline25 = new Label ("DL",
-            TRANS("FM")));
+                                                        TRANS("FM")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
@@ -981,7 +981,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter());
 
     addAndMakeVisible (label_eq = new Label ("DL",
-            TRANS("EQUALIZER")));
+                                             TRANS("EQUALIZER")));
     label_eq->setFont (Font (30.00f, Font::plain));
     label_eq->setJustificationType (Justification::centred);
     label_eq->setEditable (false, false, false);
@@ -1058,12 +1058,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     if( false )
     {
-        //[/UserPreSize]
+    //[/UserPreSize]
 
-        setSize (1465, 1235);
+    setSize (1465, 1235);
 
 
-        //[Constructor] You can add your own custom stuff here..
+    //[Constructor] You can add your own custom stuff here..
     }
     addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
 #ifdef IS_PLUGIN
@@ -1755,7 +1755,7 @@ void Monique_Ui_Mainwindow::resized()
     morpher_3->setBounds (1285 - 60, 620, 60, 130);
     morpher_2->setBounds (1225 - 60, 620, 60, 130);
     morpher_1->setBounds (1165 - 60, 620, 60, 130);
-    label_effect_hider->setBounds (1065 - 540, 758 - 15, 540, 15);
+    label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
     eq_9->setBounds (1065 - 60, 750 - 130, 60, 130);
     eq_8->setBounds (1005 - 60, 750 - 130, 60, 130);
     eq_7->setBounds (945 - 60, 750 - 130, 60, 130);
@@ -1808,15 +1808,15 @@ void Monique_Ui_Mainwindow::resized()
     flt_decay_1->setBounds (545 - 60, 190 - 130, 60, 130);
     flt_attack_1->setBounds (425, 190 - 130, 60, 130);
     label_monolisa->setBounds (1440 - 205, 1055 - 85, 205, 85);
-    filter_type_2_1->setBounds (1005 - 60, 90, 60, 27);
-    filter_type_3_1->setBounds (1005 - 60, 120, 60, 27);
-    filter_type_2_2->setBounds (1005 - 60, 270, 60, 27);
-    filter_type_3_2->setBounds (1005 - 60, 327 - 27, 60, 27);
-    filter_type_2_3->setBounds (1005 - 60, 450, 60, 27);
-    filter_type_3_3->setBounds (1005 - 60, 480, 60, 27);
-    filter_type_5_1->setBounds (1005 - 60, 161, 60, 27);
-    filter_type_5_2->setBounds (1005 - 60, 341, 60, 27);
-    filter_type_5_3->setBounds (1005 - 60, 520, 60, 27);
+    filter_type_2_1->setBounds (1005 - 60, 90, 60, 30);
+    filter_type_3_1->setBounds (1005 - 60, 120, 60, 30);
+    filter_type_2_2->setBounds (1005 - 60, 270, 60, 30);
+    filter_type_3_2->setBounds (1005 - 60, 327 - 30, 60, 30);
+    filter_type_2_3->setBounds (1005 - 60, 450, 60, 30);
+    filter_type_3_3->setBounds (1005 - 60, 480, 60, 30);
+    filter_type_5_1->setBounds (1005 - 60, 155, 60, 33);
+    filter_type_5_2->setBounds (1005 - 60, 335, 60, 33);
+    filter_type_5_3->setBounds (1005 - 60, 515, 60, 33);
     button_sequence_2->setBounds (335 - 60, 840 - 20, 60, 20);
     button_sequence_3->setBounds (395 - 60, 840 - 20, 60, 20);
     button_sequence_4->setBounds (455 - 60, 840 - 20, 60, 20);
@@ -1889,9 +1889,9 @@ void Monique_Ui_Mainwindow::resized()
     sl_morhp_mix->setBounds (1165, 715, 180, 33);
     button_programm_delete->setBounds (895 - 60, 1030 - 30, 60, 30);
     button_open_config->setBounds (1085 - 60, 1030 - 30, 60, 30);
-    filter_type_6_1->setBounds (1005 - 60, 60, 60, 27);
-    filter_type_6_2->setBounds (1005 - 60, 240, 60, 27);
-    filter_type_6_3->setBounds (1005 - 60, 420, 60, 27);
+    filter_type_6_1->setBounds (1005 - 60, 60, 60, 30);
+    filter_type_6_2->setBounds (1005 - 60, 240, 60, 30);
+    filter_type_6_3->setBounds (1005 - 60, 420, 60, 30);
     button_midi_learn->setBounds (1205 - 60, 1000 - 30, 60, 30);
     button_ctrl_toggle->setBounds (100, 1000, 60, 30);
     colour->setBounds (585 - 60, 750 - 130, 60, 130);
@@ -2882,7 +2882,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1165r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(0)"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
-         virtualName="" explicitFocusOrder="0" pos="1065r 758r 540 15"
+         virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
@@ -3045,39 +3045,39 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 27"
+              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 30"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 161 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 155 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 341 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 335 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 520 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 515 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
@@ -3325,15 +3325,15 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="ADR"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 27" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"

@@ -1685,6 +1685,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
                 return "1/1";
         }
         else if( speed_ <= 17 )
+	{
             if( speed_ == 7 )
                 return "3/4";
             else if( speed_ == 8 )
@@ -1707,10 +1708,10 @@ class LFOSlConfig : public ModulationSliderConfigBase
                 return "1/64";
             else
                 return "1/128";
+	}
         else
         {
-            float frequency = midiToFrequency(33+speed_-18);
-            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(frequency)),true,true,0);
+            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
         }
     }
     StringRef get_center_suffix() const noexcept override

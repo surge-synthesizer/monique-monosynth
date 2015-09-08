@@ -60,6 +60,7 @@ noexcept
     top_label_->setVisible(false);
     top_label_->setEnabled(false);
     top_label_->setOpaque(true);
+    top_label_->setEditable(true);
     bottom_label_->setVisible(has_bottom_label);
     bottom_label_->setEnabled(has_bottom_label);
     bottom_label_->setOpaque(true);
@@ -158,7 +159,6 @@ noexcept
         bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
     }
 
-
     if( top_parameter )
     {
         top_button_->setVisible(true);
@@ -192,17 +192,17 @@ void Monique_Ui_DualSlider::show_view_mode()
         slider_value->setEnabled( not is_in_ctrl_mode );
 
         is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
-
-        if( label_top )
-        {
-            label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
-            label_top->repaint();
-        }
     }
     if( button_bottom )
     {
         button_bottom->setButtonText( not is_in_ctrl_mode ? _config->get_bottom_button_text().text : _config->get_bottom_button_switch_text().text );
         button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
+    }
+
+    if( label_top )
+    {
+        label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
+        label_top->repaint();
     }
 }
 
@@ -286,7 +286,12 @@ void Monique_Ui_DualSlider::refresh() noexcept
     {
         bool is_repaint_required = false;
         const bool show_popup = runtime_show_value_popup || UiLookAndFeel::getInstance()->show_values_always;
-        if( show_popup )
+        if( slider_value->isVertical() )
+        {
+            label_top->setVisible(true);
+            label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+        }
+        else if( show_popup )
         {
             const bool show_value_popup_type = _config->show_slider_value_on_top_on_change();
             const bool is_in_ctrl_mode = is_in_ctrl_view();
@@ -297,15 +302,13 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 // NON ROTARY
                 if( slider_value->isVertical() )
                 {
-                    if( slider_modulation )
-                        SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                    //if( slider_modulation )
+                    //    SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
                 }
                 else if( slider_value->isHorizontal() )
                 {
                     if( slider_modulation )
                         SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
-                    SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
                 }
                 // ROTARY
                 else
@@ -555,7 +558,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        //getChildComponent(i)->setRepaintsOnMouseActivity(false);
+        getChildComponent(i)->setRepaintsOnMouseActivity(false);
     }
 
     show_view_mode();
