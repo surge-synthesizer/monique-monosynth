@@ -181,8 +181,8 @@
                        isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
                        useRuntimeLibDLL="0" fastMath="1"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="1"/>
+                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>

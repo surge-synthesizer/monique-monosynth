@@ -2125,7 +2125,16 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     osc_datas.clear();
     filter_datas.clear();
 
+
     // AS LAST!! unregister listeners
+    if( mono_ParameterOwnerStore::getInstance()->ui_env )
+    {
+        delete mono_ParameterOwnerStore::getInstance()->ui_env;
+        mono_ParameterOwnerStore::getInstance()->ui_env = nullptr;
+        delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_data;
+        mono_ParameterOwnerStore::getInstance()->ui_env_preset_data = nullptr;
+    }
+    
     env_preset_def = nullptr;
 }
 

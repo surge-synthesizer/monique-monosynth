@@ -1,69 +1,19 @@
-CHANGES 0.5:
-- add: more speed multies (1,2,3,4,5,7,8,9,12,16)
-- replace: speed multi buttons with a slider
-- add: multi core support
-- improve: performance (reduce cpu usage, reduce memory usage)
-- add: crackl free filter switch (if you switch e.g. from LP to HP there are working for a short time a LP and a HP filter in a mix)
-- fix: engine crashs (mostly on switch programs)
-- fix: peak meter crashs
-- add: octave offset
-- improve: ui sliders, clean it up (and resize)
-- change path to monique (please rename your folder)
-- fix: oscilloscope repaint lag/bug
-- add: store oscilloscope settings withg program
-- fix: slider bg was not correct for some slider
-- change: modulation slider from -100% to 100 are now fixed in the center (maybe we loos a bit of self explaining, but it is more clear if the front slider is on min or max)
-- clean and move the subeditors to the bottom (like the osci)
-- remove: max attack, decay, sus, release times in ADR preset editor (to simplify)
-- change: ADR preset setting are now in the new editor "ADR"
-- add cpu usage and multicore options to "CFG" editor
-- add select audio card and driver (standalone)
-- add: double click on the morph pad resets it to the center (center == all morph sliders set to zero or LEFT side)
-- fix: resize editors on main ui size change
-- chnaged the ADSR preset MAX times to 10s (10000ms) and removed the max sliders
-- release the synth if inactive
-- handle note inputs correclty (was something wrong and bundled with the arp)
-- add minimum attack and release time to avoid cracls
-- fix shape crackls
-- fix eq crackls
-- back to mono output
-- refactoring of eq (more boost)
-- more gain
-- move window buttons on mac to the left side
-- add force amp to zero option (can be force some kicking effects)
-- fix/add some missing morph parameters
-- set min morph motor time to 20ms
-- fix can crash on short attack time (coz we have a min value of 30ms)
-- multi instance support should be fixed (but was no time to check it in detail yet - can anybody do this?)
-- fix crash on short morph motor time
-- shift phase of the 32.5hertz band
-- fix crackls on filter input switch from amp to fix or in the other direction
-- fix 99% of the crackls on program switches (did not found any more)
-- fix disable lfo animation if modulation animations is disabled
-- change modulation button light (brighter) if animation modulations is turned of
-- global settings will be stored to an own file. It will be read on app start and stored on shutdown
-- fix problem that the synth not each time sonds like last time :D
-- remove 2pass filter (it's all 2pass not, play around with the gain, this there is the 1 pass hidden behind.
-- improved high pass filter and rasonance of all filters
-- labels for adsr slider are editable now
-- ADSR labels show now the real range value and the caption is changed to range
-- fix cracksl on switch cutoff, gain, resonance, filter volume, distortion to modulated or modulated off
-- fix draw backgrund slider thumb (ADSR sliders)
-- add values for all sliders
-
 :!: KNOWN BUGS:
+- set from current updated the morph group a bit... this is uncorrect
+- osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
+- osc square and saw going out of center on higher octaves
+- midi sync is brocken
+
+MY TODO
+- test performance HeapBlock on the stack vs array of floats
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
-- set from current updated the morph group
-- bug: osc 2 and 3 sync problem if they run on the same frequency like the first one
-- osc square and saw going out of center on higher octaves
-
 
 TODO:
-- store colour themes
+- store colour themes to settings file
+- fix: colour styles for some sub editors
 - store/edit slider settings
-- test performance HeapBlock on the stack vs array of floats
-- add arrow up/down, left/right to control slider values
+- add: keyboard arrow up/down, left/right to control slider values
 - add: store ui size
 - add: modulation amounts as automation params
 - add: midi bank select
@@ -71,16 +21,11 @@ TODO:
 - add: panic
 - add-back: morph toggles
 - shuffle: snap to note durations
-- improve/fix style of some background sliders: e.g modulation of the OSC tune
-- fix colour styles for some sub editors
 - add: modwheel to ui
-- store last programm as filename in last session file (not as sepperate project)
-- bg für second ADSR slider
-- auto resize ui if screen is to small
-- todo: check colours global, save colours
-- add 3 standard colour themes
-- reset oscs to zero
-- chorus effect (also dieser buffer fill block) muss von der samplerate abhängen
+- store last program as filename in last session file (not as separate project)
+- resize ui by +/-
+- add: 3 standard colour themes
+- reset: oscs to zero on sleep
 
 QUESTS
 - sync lfo with note on?

@@ -5537,12 +5537,6 @@ ui_env_preset_data(nullptr)
 
 COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 {
-    if( ui_env )
-    {
-        delete ui_env;
-        delete ui_env_preset_data;
-    }
-
     clearSingletonInstance();
 }
 //==============================================================================
