@@ -2762,7 +2762,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
 //==============================================================================
 inline void AnalogFilter::reset() noexcept
 {
-    cutoff=res=res4=p=k=r=gain=y1=y2=y3=y4=oldx=oldy1=oldy2=oldy3=1;
+    cutoff=res=res4=p=k=r=gain=y1=y2=y3=y4=oldx=oldy1=oldy2=oldy3=0;
 }
 
 //==============================================================================
@@ -2960,8 +2960,8 @@ inline float DoubleAnalogFilter::processPass(float in_) noexcept
 {
     return process_filter_change
     (
-        in_,
-        in_
+        filter_hard_clipper( in_ ),
+        filter_hard_clipper( in_ )
     );
 }
 
@@ -2973,25 +2973,15 @@ inline void DoubleAnalogFilter::update_filter_to( FILTER_TYPS type_ ) noexcept {
         if( smooth_filter )
         {
             // SET THE SECOND FILTER TO THE OLD COMPLETE STATE
-            smooth_filter->flt_1.copy_coefficient_from(flt_1);
-            smooth_filter->flt_1.copy_state_from(flt_1);
-            smooth_filter->flt_2.copy_coefficient_from(flt_2);
-            smooth_filter->flt_2.copy_state_from(flt_2);
-
-            switch( last_filter_type )
+            if( last_filter_type != PASS )
             {
-            case LPF :
-            case HIGH_2_PASS :
-            case LPF_2_PASS :
-            case PASS :
-            case HPF :
-                flt_2.copy_state_from(flt_1);
-                //flt_1.reset();
-                //flt_2.reset();
-                break;
-            case BPF :
-                break;
-            default /*UNKNOWN*/ :
+                smooth_filter->flt_1.copy_coefficient_from(flt_1);
+                smooth_filter->flt_1.copy_state_from(flt_1);
+                smooth_filter->flt_2.copy_coefficient_from(flt_2);
+                smooth_filter->flt_2.copy_state_from(flt_2);
+            }
+            else
+            {
                 flt_1.reset();
                 flt_2.reset();
             }
@@ -3021,8 +3011,8 @@ inline float DoubleAnalogFilter::process_filter_change( float original_in_, floa
 
     return result_in_;
 }
-inline float DoubleAnalogFilter::processByType(float io_, FILTER_TYPS type_ ) noexcept {
-
+inline float DoubleAnalogFilter::processByType(float io_, FILTER_TYPS type_ ) noexcept
+{
     switch( type_ )
     {
     case LPF :
@@ -3060,7 +3050,7 @@ class EnvelopeFollower
     float release;
 
 public:
-    inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
+    //inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
     inline float process_single_sample (const float in_) noexcept;
     inline void setCoefficients (float attack_, float release_) noexcept;
     inline void reset() noexcept;
@@ -3083,6 +3073,7 @@ envelope (0),
 COLD EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
 //==============================================================================
+/*
 inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, float* output_buffer_, int num_samples_ ) noexcept
 {
     for (int i = 0; i != num_samples_; ++i)
@@ -3098,6 +3089,7 @@ inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, floa
         output_buffer_[i] = envelope;
     }
 }
+*/
 inline float EnvelopeFollower::process_single_sample ( const float in_ ) noexcept
 {
     using namespace std;
@@ -3706,7 +3698,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
-                        out_buffer[sid] = filter.processPass( DISTORTION_OUT( DISTORTION_IN( input_buffer[sid] ) ) );
+                        out_buffer[sid] = DISTORTION_OUT( filter.processPass( DISTORTION_IN( input_buffer[sid] ) ) );
                     }
                 }
                 PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
