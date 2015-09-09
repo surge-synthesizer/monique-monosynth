@@ -3061,6 +3061,7 @@ class EnvelopeFollower
 
 public:
     inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
+    inline float process_single_sample (const float in_) noexcept;
     inline void setCoefficients (float attack_, float release_) noexcept;
     inline void reset() noexcept;
 
@@ -3096,6 +3097,18 @@ inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, floa
 
         output_buffer_[i] = envelope;
     }
+}
+inline float EnvelopeFollower::process_single_sample ( const float in_ ) noexcept
+{
+    using namespace std;
+    float envIn = fabsf (in_);
+
+    if (envelope < envIn)
+        envelope += attack * (envIn - envelope);
+    else if (envelope > envIn)
+        envelope -= release * (envelope - envIn);
+
+    return envelope;
 }
 inline void EnvelopeFollower::setCoefficients (float attack_, float release_) noexcept
 {
@@ -3812,10 +3825,6 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
                                        int num_samples ) noexcept
 {
     boost_smoother.update( glide_motor_time_ );
-    float last_value = boost_smoother.get_last_tick_value();
-    env_follower.setCoefficients( 0.008f * last_value + 0.0001f, 0.005f * last_value + 0.0001f );
-    env_follower.processEnvelope( compressor_signal_, tmp_buffer_, num_samples );
-
     for( int sid = 0 ; sid != num_samples ; ++sid )
     {
         float use_power = boost_smoother.tick();
@@ -3826,7 +3835,8 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
             is_negative = true;
         }
 
-        float compression = exp(tmp_buffer_[sid])-1;
+        env_follower.setCoefficients( 0.008f * use_power + 0.0001f, 0.005f * use_power + 0.0001f );
+        float compression = exp( env_follower.process_single_sample(compressor_signal_[sid]) )-1;
         if( is_negative )
             compression = 1.0f-compression;
 
@@ -5668,6 +5678,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 
 
