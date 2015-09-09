@@ -2696,8 +2696,9 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 
     //Clipper band limited sigmoid
     //hard_clipper_1_5( y4 );
-    //y4 -= (y4*y4*y4) * (1.0f/6);
-    y4 = std::atan(y4);
+    y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = filter_hard_clipper( y4 );
+    //y4 = std::atan(y4);
 
     oldx = input_and_worker_;
     oldy1 = y1;
@@ -2720,8 +2721,9 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    y4 = std::atan(y4);
-    //y4 -= (y4*y4*y4) * (1.0f/6);
+    //y4 = std::atan(y4);
+    y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = filter_hard_clipper( y4 );
     //hard_clipper_1_5( y4 );
 
     oldx = input_and_worker_;
@@ -2746,8 +2748,9 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     y4=y3*p + oldy3*p - k*y4;
 
     //Clipper band limited sigmoid
-    //y4 -= (y4*y4*y4) * (1.0f/6);
-    y4 = std::atan(y4);
+    y4 -= (y4*y4*y4) * (1.0f/6);
+    y4 = filter_hard_clipper( y4 );
+    //y4 = std::atan(y4);
     //hard_clipper_1_5( y4 );
 
     oldx = input_and_worker_;
