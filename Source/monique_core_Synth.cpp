@@ -3027,7 +3027,7 @@ inline float DoubleAnalogFilter::processByType(float io_, FILTER_TYPS type_ ) no
         io_ = processBand(io_);
         break;
     default /* PASS & UNKNOWN */ :
-        break;
+        io_ = filter_hard_clipper(io_);
     }
 
     return io_;
