@@ -3,6 +3,30 @@ CHANGES 0.6
 - fix bug shutdown if the adsr editor was open 
 
 :!: KNOWN BUGS:
+*** Leaked objects detected: 1 instance(s) of class ENV
+JUCE Assertion failure in juce_LeakedObjectDetector.h:95
+*** Program received signal SIGTRAP (Trace/breakpoint trap) ***
+*** Program received signal SIGTRAP (Trace/breakpoint trap) ***
+*** Leaked objects detected: 1 instance(s) of class ValueEnvelope
+JUCE Assertion failure in juce_LeakedObjectDetector.h:95
+*** Program received signal SIGTRAP (Trace/breakpoint trap) ***
+*** Leaked objects detected: 1 instance(s) of class RuntimeListener
+JUCE Assertion failure in juce_LeakedObjectDetector.h:95
+
+../../../Source/monique_core_Datastructures.cpp: In destructor ‘MoniqueSynthData::~MoniqueSynthData()’:
+../../../Source/monique_core_Datastructures.cpp:2131:57: warning: possible problem detected in invocation of delete operator: [-Wdelete-incomplete]
+         delete mono_ParameterOwnerStore::getInstance()->ui_env;
+                                                         ^
+../../../Source/monique_core_Datastructures.cpp:2131:57: warning: invalid use of incomplete type ‘class ENV’
+In file included from ../../../Source/monique_core_Datastructures.cpp:1:0:
+../../../Source/monique_core_Datastructures.h:703:7: warning: forward declaration of ‘class ENV’
+ class ENV;
+       ^
+../../../Source/monique_core_Datastructures.cpp:2131:57: note: neither the destructor nor the class-specific operator delete will be called, even if they are declared when the class is defined
+         delete mono_ParameterOwnerStore::getInstance()->ui_env;
+
+
+
 - set from current updated the morph group a bit... this is uncorrect
 - osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
 - osc square and saw going out of center on higher octaves
@@ -15,6 +39,7 @@ MY TODO
 - grey out first value sliders on ctrl mode
 
 TODO:
+- lfo programm switch glide
 - store colour themes to settings file
 - fix: colour styles for some sub editors
 - store/edit slider settings

@@ -220,6 +220,9 @@ protected:
     friend class ValueSmootherModulatedUpdater;
     Parameter*const base;
 
+    const float min_value;
+    const float max_value;
+
     float current_value;
     float target_value;
     float delta;
@@ -246,6 +249,10 @@ private:
 COLD ValueSmoother::ValueSmoother( Parameter*const base_ ) noexcept
 :
 base( base_ ),
+
+      min_value( base_->get_info().min_value ),
+      max_value( base_->get_info().max_value ),
+
       current_value( base_->get_value() ),
       target_value( current_value ),
       delta(0),
@@ -255,6 +262,10 @@ base( base_ ),
 COLD ValueSmoother::ValueSmoother( const ValueSmoother& other_ ) noexcept
 :
 base( other_.base ),
+
+min_value( other_.base->get_info().min_value ),
+max_value( other_.base->get_info().max_value ),
+
 current_value( other_.current_value ),
 target_value( other_.target_value ),
 delta(other_.delta),
@@ -267,18 +278,21 @@ COLD ValueSmoother::~ValueSmoother() noexcept {}
 inline float ValueSmoother::tick() noexcept
 {
     if( --counter <= 0 )
+    {
         current_value = target_value;
+    }
     else
     {
         current_value+=delta;
-        //TODO
-        /*
-            if( current_value > 1 || current_value < 1 )
-            {
-                current_value = target_value;
-                counter = 0;
-            }
-            */
+    }
+
+    if( current_value < min_value )
+    {
+        current_value = min_value;
+    }
+    else if( current_value > max_value )
+    {
+        current_value = max_value;
     }
 
     return current_value;
@@ -313,10 +327,16 @@ inline void ValueSmoother::replace_current_value( float value_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class ValueSmootherModulated : public ValueSmoother
+class ValueSmootherModulated
 {
-    float modulation_amount;
-    float modulation_range;
+    ValueSmoother value_smoother;
+
+    Parameter*const base;
+
+    float current_modulation_amount;
+    float target_modulation_amount;
+    float delta_modulation_amount;
+    int modulation_counter;
 
     const float min_value;
     const float max_value;
@@ -330,6 +350,7 @@ private:
     inline float tick( float current_modulation_in_percent_ ) noexcept;
 public:
     inline void update( int glide_time_in_samples_ ) noexcept;
+    inline void reset() noexcept;
 
     COLD ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
     COLD ~ValueSmootherModulated() noexcept;
@@ -342,32 +363,66 @@ private:
 //==============================================================================
 COLD ValueSmootherModulated::ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept
 :
-ValueSmoother( base_ ),
-               modulation_amount( base->get_modulation_amount() ),
-               modulation_range(0),
-               min_value( base->get_info().min_value ),
-               max_value( base->get_info().max_value ),
-               last_modulation(0)
+value_smoother( base_ ),
+
+                base( base_ ),
+
+                current_modulation_amount( base_->get_modulation_amount() ),
+                target_modulation_amount( base_->get_modulation_amount() ),
+                delta_modulation_amount( 0 ),
+                modulation_counter( 0 ),
+
+                min_value( base_->get_info().min_value ),
+                max_value( base_->get_info().max_value ),
+
+                last_modulation(0)
 {}
 COLD ValueSmootherModulated::~ValueSmootherModulated() noexcept {}
 
 //==============================================================================
 inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
 {
-    last_modulation = modulation_range*current_modulation_in_percent_;
-    float value = ValueSmoother::tick() + last_modulation;
-    return value;
+    if( --modulation_counter <= 0 )
+    {
+        current_modulation_amount = target_modulation_amount;
+    }
+    else
+    {
+        current_modulation_amount+=delta_modulation_amount;
+    }
+
+    if( current_modulation_amount < 1 )
+    {
+        current_modulation_amount = 1;
+    }
+    else if( current_modulation_amount > 1 )
+    {
+        current_modulation_amount = 1;
+    }
+    last_modulation = current_modulation_in_percent_;
+
+    float smoothed_value = value_smoother.tick();
+    if( current_modulation_amount >= 0 )
+    {
+        smoothed_value += ((max_value-smoothed_value)*current_modulation_amount)*current_modulation_in_percent_;
+    }
+    else
+    {
+        smoothed_value += ((smoothed_value-min_value)*current_modulation_amount)*current_modulation_in_percent_;
+    }
+
+    return smoothed_value;
 }
 inline float ValueSmootherModulated::tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept
 {
     float value;
     if( add_modulation_ )
     {
-        value = ValueSmootherModulated::tick(current_modulation_in_percent_);
+        value = this->tick(current_modulation_in_percent_);
     }
     else
     {
-        value = ValueSmoother::tick();
+        value = value_smoother.tick();
     }
 
     if( value < min_value )
@@ -383,17 +438,24 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_,
 }
 inline void ValueSmootherModulated::update( int glide_time_in_samples_ ) noexcept
 {
-    //TODO MODULATION AMOUNT SMOOTHER
-    ValueSmoother::update( glide_time_in_samples_ );
-    modulation_amount = base->get_modulation_amount();
-    if( modulation_amount >= 0 )
+    value_smoother.update( glide_time_in_samples_ );
+
+    const float target_modulation = base->get_modulation_amount();
+    if( target_modulation_amount != target_modulation )
     {
-        modulation_range = (max_value-current_value) * modulation_amount;
+        modulation_counter = glide_time_in_samples_;
+        delta_modulation_amount = (target_modulation-current_modulation_amount) / glide_time_in_samples_;
+        target_modulation_amount = target_modulation;
     }
-    else
-    {
-        modulation_range = (current_value-min_value) * modulation_amount;
-    }
+}
+inline void ValueSmootherModulated::reset() noexcept
+{
+    value_smoother.reset();
+
+    target_modulation_amount = base->get_modulation_amount();
+    current_modulation_amount = target_modulation_amount;
+    delta_modulation_amount = 0;
+    modulation_counter = 0;
 }
 
 //==============================================================================
@@ -2590,7 +2652,7 @@ inline void AnalogFilter::update_with_resoance(float resonance_, float cutoff_, 
         cutoff = cutoff_;
         res = resonance_;
         res4 = resonance_*4;
-	calc_coefficients( true );
+        calc_coefficients( true );
     }
 }
 
@@ -2720,7 +2782,7 @@ inline void AnalogFilter::calc_coefficients( bool with_resonance_ ) noexcept
     }
     else
     {
-      r = 1;
+        r = 1;
     }
 }
 
@@ -3683,6 +3745,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         clipping_smoother.update( glide_motor_time );
         {
             ValueSmootherModulatedUpdater u_output( &output_smoother, glide_motor_time, filter_data->modulate_output );
+
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 // OUTPUT MIX AND DISTORTION
@@ -4679,7 +4742,7 @@ reverb_l(),
          chorus_data( GET_DATA_PTR( chorus_data ) )
 {
     //delayBuffer.clear();
-  
+
     std::cout << "MONIQUE: init FX" << std::endl;
 }
 
@@ -4845,7 +4908,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float in_r = input_buffer[sid];
-			
+
                     const float modulation_amp = tmp_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 

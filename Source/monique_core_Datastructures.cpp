@@ -2125,7 +2125,6 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     osc_datas.clear();
     filter_datas.clear();
 
-
     // AS LAST!! unregister listeners
     if( mono_ParameterOwnerStore::getInstance()->ui_env )
     {
