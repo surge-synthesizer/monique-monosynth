@@ -1,6 +1,7 @@
 CHANGES 0.6
 - add ctrl to show the all the values in detail (note: if you press ctrl you can ctrl sliders in velocity(mouse velocity) mode)
 - fix bug shutdown if the adsr editor was open 
+- fix crackls boost, filter volume, filter distortion
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV

@@ -3151,6 +3151,7 @@ private:
     SwitchAndValueSmootherModulated output_smoother;
     ValueSmoother mix_smoother;
     ValueSmoother clipping_smoother;
+    ValueSmoother boost_smoother;
     ValueSmoother input_sustains[SUM_INPUTS_PER_FILTER];
     SwitchSmoother amp2sustain_smoother[SUM_INPUTS_PER_FILTER];
 
@@ -3173,7 +3174,7 @@ private:
 
 private:
     inline void compress ( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal,
-                           float power,
+                           int glide_motor_time,
                            int num_samples ) noexcept;
 
 public:
@@ -3198,6 +3199,7 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
      output_smoother( &GET_DATA( filter_datas[id_] ).output ),
      mix_smoother( &GET_DATA( filter_datas[id_] ).adsr_lfo_mix ),
      clipping_smoother( &GET_DATA( filter_datas[id_] ).output_clipping ),
+     boost_smoother( &GET_DATA( filter_datas[id_] ).compressor ),
      input_sustains { &GET_DATA( filter_datas[id_] ).input_sustains[0], &GET_DATA( filter_datas[id_] ).input_sustains[1], &GET_DATA( filter_datas[id_] ).input_sustains[2] },
      amp2sustain_smoother(),
 
@@ -3774,13 +3776,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         if( id == FILTER_1 )
         {
             compress( this_filter_output_buffer, data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP), this_filter_output_buffer,
-            filter_data->compressor,
+            glide_motor_time,
             num_samples );
         }
         else
         {
             compress( this_filter_output_buffer, data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP), data_buffer->direct_filter_output_samples.getReadPointer(id-1),
-            filter_data->compressor,
+            glide_motor_time,
             num_samples );
         }
     }
@@ -3806,21 +3808,24 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 
 // -----------------------------------------------------------------
 inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, const float* compressor_signal_,
-                                       float power,
+                                       int glide_motor_time_,
                                        int num_samples ) noexcept
 {
-    float use_power = power;
-    bool is_negative = false;
-    if( use_power < 0 ) {
-        use_power*=-1;
-        is_negative = true;
-    }
-
-    env_follower.setCoefficients( 0.008f * use_power + 0.0001f, 0.005f * use_power + 0.0001f );
+    boost_smoother.update( glide_motor_time_ );
+    float last_value = boost_smoother.get_last_tick_value();
+    env_follower.setCoefficients( 0.008f * last_value + 0.0001f, 0.005f * last_value + 0.0001f );
     env_follower.processEnvelope( compressor_signal_, tmp_buffer_, num_samples );
 
     for( int sid = 0 ; sid != num_samples ; ++sid )
     {
+        float use_power = boost_smoother.tick();
+        bool is_negative = false;
+        if( use_power < 0 )
+        {
+            use_power*=-1;
+            is_negative = true;
+        }
+
         float compression = exp(tmp_buffer_[sid])-1;
         if( is_negative )
             compression = 1.0f-compression;
