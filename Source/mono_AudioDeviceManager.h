@@ -12,12 +12,6 @@
 #define VIRTUAL_PORT_ID -9
 #define UNKNOWN_PORT_ID -1
 
-enum SEND_TYPES
-{
-    SEND_CC,
-    SEND_NOTE,
-    SEND_BYTE
-};
 
 //==============================================================================
 //==============================================================================
@@ -135,7 +129,7 @@ public:
 
 public:
     // SEND
-    inline void send_feedback_message( const MidiMessage& message ) noexcept
+    inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept
     {
         //   if( cc_output )
         //       cc_output->send_message_now( message, 0 );

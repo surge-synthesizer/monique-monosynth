@@ -104,36 +104,6 @@ COLD Parameter::~Parameter() noexcept
 }
 
 //==============================================================================
-void Parameter::register_listener( ParameterListener* listener_ ) noexcept
-{
-    if( ! value_listeners.contains( listener_ ) )
-    {
-        value_listeners.add( listener_ );
-
-        value_listeners.minimiseStorageOverheads();
-    }
-}
-void Parameter::register_always_listener( ParameterListener* listener_ ) noexcept
-{
-    if( ! always_value_listeners.contains( listener_ ) )
-    {
-        always_value_listeners.add( listener_ );
-        value_listeners.add( listener_ );
-
-        always_value_listeners.minimiseStorageOverheads();
-        value_listeners.minimiseStorageOverheads();
-    }
-}
-void Parameter::remove_listener( const ParameterListener* listener_ ) noexcept
-{
-    always_value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
-    value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
-
-    always_value_listeners.minimiseStorageOverheads();
-    value_listeners.minimiseStorageOverheads();
-}
-
-//==============================================================================
 //==============================================================================
 //==============================================================================
 COLD BoolParameter::BoolParameter( const bool init_value_,
@@ -417,7 +387,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                 {
                     if( is_ctrl_version_of_name == "" )
                     {
-		      
+
                         float current_value = get_percent_value( owner );
                         // PICKUP
                         if( current_value + pickup >= value && current_value - pickup <= value )
@@ -433,7 +403,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 
     return success;
 }
-bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
+inline bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
 {
     send_clear_feedback_only();
 
@@ -464,7 +434,7 @@ bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version
 
     return success;
 }
-bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
+inline bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
 {
     send_clear_feedback_only();
 
@@ -483,11 +453,11 @@ bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_
     return true;
 }
 
-void MIDIControl::start_listen_for_feedback() noexcept
+inline void MIDIControl::start_listen_for_feedback() noexcept
 {
     owner->register_listener( this );
 }
-void MIDIControl::stop_listen_for_feedback() noexcept
+inline void MIDIControl::stop_listen_for_feedback() noexcept
 {
     owner->remove_listener( this );
 }
@@ -521,15 +491,7 @@ void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexce
         send_modulation_feedback();
 }
 
-void MIDIControl::generate_feedback_message( MidiMessage& message_ ) const noexcept
-{
-    message_ = MidiMessage::controllerEvent( 1, midi_number, mono_floor(127.0f*get_percent_value( owner )) );
-}
-void MIDIControl::generate_modulation_feedback_message( MidiMessage& message_ ) const noexcept
-{
-    message_ = MidiMessage::controllerEvent( 1, midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
-}
-void MIDIControl::send_feedback_only() const noexcept
+inline void MIDIControl::send_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
@@ -548,28 +510,26 @@ void MIDIControl::send_feedback_only() const noexcept
         }
     }
 }
-void MIDIControl::send_clear_feedback_only() const noexcept {
+inline void MIDIControl::send_clear_feedback_only() const noexcept {
     if( is_valid_trained() )
     {
-        AppInstanceStore::getInstance()->audio_processor->send_feedback_message( MidiMessage::controllerEvent( 1, midi_number, 0 ) );
+        AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, 0 );
     }
 }
 
-void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept {
+inline void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept {
     is_in_ctrl_mode = mode_;
 
     send_feedback_only();
 }
 
-void MIDIControl::send_standard_feedback() const noexcept {
-    MidiMessage fb_message;
-    generate_feedback_message( fb_message );
-    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( fb_message );
+inline void MIDIControl::send_standard_feedback() const noexcept
+{
+    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
 }
-void MIDIControl::send_modulation_feedback() const noexcept {
-    MidiMessage fb_message;
-    generate_modulation_feedback_message( fb_message );
-    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( fb_message );
+inline void MIDIControl::send_modulation_feedback() const noexcept
+{
+    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
 }
 // ==============================================================================
 // ==============================================================================
@@ -577,12 +537,12 @@ void MIDIControl::send_modulation_feedback() const noexcept {
 // ==============================================================================
 juce_ImplementSingleton (MIDIControlHandler)
 
-MIDIControlHandler::MIDIControlHandler() noexcept
+COLD MIDIControlHandler::MIDIControlHandler() noexcept
 {
     clear();
 }
 
-MIDIControlHandler::~MIDIControlHandler() noexcept
+COLD MIDIControlHandler::~MIDIControlHandler() noexcept
 {
     clear();
     clearSingletonInstance();
@@ -596,14 +556,11 @@ void MIDIControlHandler::toggle_midi_learn() noexcept
     clear();
     is_activated_and_waiting_for_param = !(tmp_activated || tmp_learning);
 }
-bool MIDIControlHandler::is_waiting_for_param() const noexcept
-{
-    return is_activated_and_waiting_for_param;
-}
+
 void MIDIControlHandler::set_learn_param( Parameter* param_ ) noexcept
 {
     clear();
-
+    
     learning_param = param_;
 }
 void MIDIControlHandler::set_learn_width_ctrl_param( Parameter* param_, Parameter* ctrl_param_, Component* comp_ ) noexcept

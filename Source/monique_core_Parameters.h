@@ -292,10 +292,10 @@ protected:
 
 public:
     // REGISTRATIONS
-    void register_listener( ParameterListener* listener_ ) noexcept;
-    void register_always_listener( ParameterListener* listener_ ) noexcept;
-    void remove_listener( const ParameterListener* listener_ ) noexcept;
-
+    inline void register_listener( ParameterListener* listener_ ) noexcept;
+    inline void register_always_listener( ParameterListener* listener_ ) noexcept;
+    inline void remove_listener( const ParameterListener* listener_ ) noexcept;
+    
 protected:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
     // NOTIFICATIONS
@@ -327,6 +327,36 @@ private:
     MONO_NOT_CTOR_COPYABLE( Parameter )
     MONO_NOT_MOVE_COPY_OPERATOR( Parameter )
 };
+
+// ==============================================================================
+inline void Parameter::register_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! value_listeners.contains( listener_ ) )
+    {
+        value_listeners.add( listener_ );
+
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+inline void Parameter::register_always_listener( ParameterListener* listener_ ) noexcept
+{
+    if( ! always_value_listeners.contains( listener_ ) )
+    {
+        always_value_listeners.add( listener_ );
+        value_listeners.add( listener_ );
+
+        always_value_listeners.minimiseStorageOverheads();
+        value_listeners.minimiseStorageOverheads();
+    }
+}
+inline void Parameter::remove_listener( const ParameterListener* listener_ ) noexcept
+{
+    always_value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+    value_listeners.removeFirstMatchingValue( const_cast< ParameterListener* >( listener_ ) );
+
+    always_value_listeners.minimiseStorageOverheads();
+    value_listeners.minimiseStorageOverheads();
+}
 
 // ==============================================================================
 inline void Parameter::notify_value_listeners() noexcept
@@ -975,6 +1005,7 @@ class MIDIControl : ParameterListener
 {
 public:
     // TODO use from mono_audiodevicemanager
+    // TODO only register listener if is trained!
     enum TYPES
     {
         NOT_SET = -1,
@@ -1025,9 +1056,6 @@ private:
     void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
     void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
 
-
-    void generate_feedback_message( MidiMessage& ) const noexcept;
-    void generate_modulation_feedback_message( MidiMessage& ) const noexcept;
     void send_standard_feedback() const noexcept;
     void send_modulation_feedback() const noexcept;
 
@@ -1058,12 +1086,17 @@ public:
     void clear() noexcept;
 
 private:
-    MIDIControlHandler() noexcept;
-    ~MIDIControlHandler() noexcept;
+    COLD MIDIControlHandler() noexcept;
+    COLD ~MIDIControlHandler() noexcept;
 
 public:
     juce_DeclareSingleton (MIDIControlHandler,false)
 };
+
+inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
+{
+    return is_activated_and_waiting_for_param;
+}
 
 #include "monique_ui_LookAndFeel.h"
 #define IF_MIDI_LEARN__HANDLE( param ) \

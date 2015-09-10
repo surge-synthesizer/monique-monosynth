@@ -1,5 +1,7 @@
 CHANGES 0.6
 - add 3 basic colour presets ( need to be optimized - if anybody like to create a theme -> send it to me :-) )
+- add support for load save audio and midi devices
+- simplifyed CC : only CC (no notes) are supported and receive on each MIDI channel
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
@@ -65,3 +67,20 @@ bücher
 - leben als haustier von ausserirdischen, wird jedem sein lebensraum gestallted (artgerecht)
 
 -------------------------------
+
+
+
+
+
+
+
+
+PRRRRRROOOOOOOOOOOOOOO
+
+- midi option (channel, note support)
+- advanced settings: osci, adsr presets
+- advanced settings: morph
+- advanced outputs: curves
+- digital analog filter selection
+- sequencer
+-

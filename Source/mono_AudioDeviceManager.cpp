@@ -355,11 +355,9 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
 {
     // CLOSE
     close_out_port( output_id_ );
-  
-    MidiOutput* output = get_output_device( output_id_ );
 
     // OPEN
-    output = MidiOutput::openDevice( get_available_out_ports().indexOf( device_name_ ) );
+    MidiOutput* output = MidiOutput::openDevice( get_available_out_ports().indexOf( device_name_ ) );
     if( output )
     {
         switch( output_id_ )
