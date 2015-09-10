@@ -1,5 +1,6 @@
 CHANGES 0.6
-- add "project is changed, do you like to save before load a new one" question 
+- add: "project is changed, do you like to save before load a new one" question 
+- add: support to open last program (standalone)
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV
@@ -37,7 +38,6 @@ MY TODO
 - do not process the unused bands
 
 TODO:
-- store last program as filename in last session file (not as separate project)
 - add: 3 standard colour themes
 - reset: oscs to zero on sleep
 - add: keyboard arrow up/down, left/right to control slider values

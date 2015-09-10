@@ -3206,26 +3206,7 @@ bool MoniqueSynthData::load_next() noexcept
 }
 bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
 {
-    // CHECK FOR CHANGES FIRST
-    for( int i = 0 ; i != saveable_backups.size() ; ++i )
-    {
-        if( saveable_backups.getUnchecked(i) != saveable_parameters.getUnchecked(i)->get_value() )
-        {
-            bool success = AlertWindow::showNativeDialogBox
-            (
-                "CURRENT PROJECT CHANGED!",
-                String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
-                true
-            );
-
-            if( success )
-            {
-                write2file( last_bank, last_program );
-            }
-            
-            break;
-        }
-    }
+    ask_and_save_if_changed();
 
     bool success = false;
     File program_file = get_program_file( bank_name_, program_name_ );
@@ -3323,10 +3304,33 @@ void MoniqueSynthData::save_settings() const noexcept
         }
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
-        
+
         UiLookAndFeel::getInstance()->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
+    }
+}
+void MoniqueSynthData::ask_and_save_if_changed() const noexcept
+{
+    // CHECK FOR CHANGES FIRST
+    for( int i = 0 ; i != saveable_backups.size() ; ++i )
+    {
+        if( saveable_backups.getUnchecked(i) != saveable_parameters.getUnchecked(i)->get_value() )
+        {
+            bool success = AlertWindow::showNativeDialogBox
+                           (
+                               "CURRENT PROJECT CHANGED!",
+                               String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
+                               true
+                           );
+
+            if( success )
+            {
+                write2file( last_bank, last_program );
+            }
+
+            break;
+        }
     }
 }
 void MoniqueSynthData::load_settings() noexcept

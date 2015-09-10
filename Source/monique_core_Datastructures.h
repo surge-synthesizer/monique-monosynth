@@ -686,6 +686,7 @@ private:
 
 public:
     void save_settings() const noexcept;
+    void ask_and_save_if_changed() const noexcept;
     void load_settings() noexcept;
     
 public:

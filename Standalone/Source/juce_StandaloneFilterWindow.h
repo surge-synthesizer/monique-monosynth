@@ -60,6 +60,7 @@ public:
     //==============================================================================
     void closeButtonPressed() override
     {
+        GET_DATA( synth_data ).ask_and_save_if_changed();
         JUCEApplicationBase::quit();
     }
 
