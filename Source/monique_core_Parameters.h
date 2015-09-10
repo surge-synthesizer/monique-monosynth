@@ -69,10 +69,10 @@ private:
     friend class Parameter;
 #define MIN_MAX(min_,max_) min_,max_ /* HELPER MACRO TO MAKE CTOR ARGUMENTS MORE READABLE */
     COLD ParameterInfo( const TYPES_DEF type_,
-                            const float min_value_, const float max_value_, const float init_value_,
-                            const float init_modulation_amount_,
-                            const int num_steps_,
-                            const String& name_, const String& short_name_ ) noexcept;
+                        const float min_value_, const float max_value_, const float init_value_,
+                        const float init_modulation_amount_,
+                        const int num_steps_,
+                        const String& name_, const String& short_name_ ) noexcept;
     COLD ~ParameterInfo() noexcept;
 
 private:
@@ -315,11 +315,11 @@ public:
     // ==============================================================================
     // NOTE: the parameter is designed to live for a long time (app start to end and ctors may need some more power as usual)
     COLD Parameter(const float min_value_, const float max_value_, const float init_value_,
-                       const int num_steps_,
-                       const String& name_, const String& short_name_,
-                       const float init_modulation_amount_ = HAS_NO_MODULATION,
-                       TYPES_DEF = IS_FLOAT
-                      ) noexcept;
+                   const int num_steps_,
+                   const String& name_, const String& short_name_,
+                   const float init_modulation_amount_ = HAS_NO_MODULATION,
+                   TYPES_DEF = IS_FLOAT
+                  ) noexcept;
     COLD ~Parameter() noexcept;
 
 private:
@@ -414,7 +414,7 @@ private:
 
 public:
     COLD BoolParameter( const bool init_value_,
-                            const String& name_, const String& short_name_ ) noexcept;
+                        const String& name_, const String& short_name_ ) noexcept;
     COLD ~BoolParameter() noexcept;
 
 private:
@@ -484,7 +484,7 @@ private:
 
 public:
     COLD IntParameter( const int min_value_, const int max_value_, const int init_value_,
-                           const String& name_, const String& short_name_ ) noexcept;
+                       const String& name_, const String& short_name_ ) noexcept;
     COLD ~IntParameter() noexcept;
 
 private:
@@ -500,9 +500,9 @@ class ModulatedParameter : public Parameter
 {
 public:
     COLD ModulatedParameter(const float min_value_, const float max_value_, const float init_value_,
-                                const int num_steps_,
-                                const String& name_, const String& short_name_,
-                                const float init_modulation_amount_ ) noexcept;
+                            const int num_steps_,
+                            const String& name_, const String& short_name_,
+                            const float init_modulation_amount_ ) noexcept;
     COLD ~ModulatedParameter() noexcept;
 };
 
@@ -551,16 +551,16 @@ public:
 public:
     COLD ArrayOfParameters( const int num_parameters_,
 
-                                const float min_value_, const float max_value_, const float init_value_,
-                                const int num_steps_,
+                            const float min_value_, const float max_value_, const float init_value_,
+                            const int num_steps_,
 
-                                const String& owner_class_name_,
-                                const int owner_id_,
+                            const String& owner_class_name_,
+                            const int owner_id_,
 
-                                const String& param_name_,
-                                const String& param_name_short_,
-                                bool create_human_id_ = true
-                              ) noexcept;
+                            const String& param_name_,
+                            const String& param_name_short_,
+                            bool create_human_id_ = true
+                          ) noexcept;
     COLD ~ArrayOfParameters() noexcept;
 
 private:
@@ -602,15 +602,15 @@ public:
 public:
     COLD ArrayOfBoolParameters( const int num_parameters_,
 
-                                    const bool init_value_,
+                                const bool init_value_,
 
-                                    const String& owner_class_name_,
-                                    const int owner_id_,
+                                const String& owner_class_name_,
+                                const int owner_id_,
 
-                                    const String& param_name_,
-                                    const String& param_name_short_,
-                                    bool create_human_id_ = true
-                                  ) noexcept;
+                                const String& param_name_,
+                                const String& param_name_short_,
+                                bool create_human_id_ = true
+                              ) noexcept;
     COLD ~ArrayOfBoolParameters() noexcept;
 
 private:
@@ -984,32 +984,31 @@ public:
 
 private:
     friend class Parameter;
-    int listen_type;
-    int channel;
     int8 midi_number; // NOTES OR CC
     String is_ctrl_version_of_name;
     bool is_in_ctrl_mode;
     Parameter*const owner;
 
 public:
-    int get_listen_type() const noexcept {
-        return listen_type;
-    }
-    int8 get_midi_number() const noexcept {
+    int8 get_midi_number() const noexcept
+    {
         return midi_number;
     }
-    int get_chnanel() const noexcept {
-        return channel;
-    }
-    const String& get_is_ctrl_version_of_name() const noexcept {
+    const String& get_is_ctrl_version_of_name() const noexcept
+    {
         return is_ctrl_version_of_name;
     }
-
-    bool is_listen_to( MidiMessage& input_message_ ) const noexcept;
-    bool read_from_if_you_listen( const MidiMessage& input_message_ ) noexcept;
-    bool train( const MidiMessage& input_message_, Parameter*const is_ctrl_version_of_ ) noexcept;
-    bool train( int listen_type_, int8 midi_number, int channel_, String is_ctrl_version_of_name_ ) noexcept;
-    bool is_valid_trained() const noexcept;
+    bool is_listen_to( int controller_number_ ) const noexcept
+    {
+        return controller_number_ == midi_number;
+    }
+    bool read_from_if_you_listen( int controller_number_, int controller_value_ ) noexcept;
+    bool train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept;
+    bool train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept;
+    bool is_valid_trained() const noexcept
+    {
+        return midi_number != -1;
+    }
     void send_feedback_only() const noexcept;
     void send_clear_feedback_only() const noexcept;
 
@@ -1054,7 +1053,8 @@ public:
     void set_learn_param( Parameter* param_, Component* comp_ ) noexcept;
     void set_learn_param( Parameter* param_, Array< Component* > comps_ ) noexcept;
     Parameter* is_learning() const noexcept;
-    bool handle_incoming_message( const MidiMessage& input_message_ ) noexcept;
+
+    bool handle_incoming_message( int controller_number_ ) noexcept;
     void clear() noexcept;
 
 private:
@@ -1099,23 +1099,21 @@ public:
 static inline void write_midi_to( XmlElement& xml_, const Parameter* param_ ) noexcept
 {
     const ParameterInfo& info = param_->get_info();
-    if( param_->midi_control->get_listen_type() != MIDIControl::NOT_SET )
-        xml_.setAttribute( info.name + "_MIDI_T", param_->midi_control->get_listen_type() );
     if( param_->midi_control->get_midi_number() != -1 )
+    {
         xml_.setAttribute( info.name + "_MIDI_NR", param_->midi_control->get_midi_number() );
-    if( param_->midi_control->get_chnanel() != -1 )
-        xml_.setAttribute( info.name + "_MIDI_CH", param_->midi_control->get_chnanel() );
+    }
     if( param_->midi_control->get_is_ctrl_version_of_name() != "" )
+    {
         xml_.setAttribute( info.name + "_MIDI_CTRL", param_->midi_control->get_is_ctrl_version_of_name() );
+    }
 }
 static inline void read_midi_from( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
     const ParameterInfo& info = param_->get_info();
     param_->midi_control->train
     (
-        xml_.getIntAttribute( info.name + "_MIDI_T", MIDIControl::NOT_SET ),
         xml_.getIntAttribute( info.name + "_MIDI_NR", -1 ),
-        xml_.getIntAttribute( info.name + "_MIDI_CH", -1 ),
         xml_.getStringAttribute( info.name + "_MIDI_CTRL", "" )
     );
 }

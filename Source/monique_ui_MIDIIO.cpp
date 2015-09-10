@@ -30,31 +30,57 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MidiIO::refresh()
 {
-    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    // INPUT
     {
-        if( ComboBox*combo_box = dynamic_cast< ComboBox*>( getChildComponent(i) ) )
+        StringArray input_devices = _audio_device_manager->get_available_in_ports();
+
+        // NOTE INPUT
         {
-            // PORTS
-            if( combo_box->getTextWhenNoChoicesAvailable() == "NO DEVICE CONNECTED" )
-            {
-                combo_box->clear( dontSendNotification );
-                combo_box->addItemList( _audio_device_manager->get_available_ports( combo_box->getName() ), 2 );
-                combo_box->setText( _audio_device_manager->get_selected_device_name( combo_box->getName() ), dontSendNotification );
-                if( _audio_device_manager->is_port_open( combo_box->getName() ) ) {
-                    // TODO change colour
-                }
-            }
+            String selected_item_text = combo_input_main->getText();
+            combo_input_main->clear( dontSendNotification );
+            combo_input_main->addItemList( input_devices, 1 );
 
-            // CHANNELS
-            else if( combo_box->getTextWhenNoChoicesAvailable() == "OMNI" )
-            {
-                combo_box->clear( dontSendNotification );
-                for( int i = 0+1 ; i != 16+1 ; ++i ) {
-                    combo_box->addItem( String( i ) , i );
-                }
-            }
+            // SELECT THE CURRENT ONE
+            String selected_note_in_device( _audio_device_manager->get_selected_in_device( mono_AudioDeviceManager::INPUT_ID::NOTES ) );
+            combo_input_main->setSelectedItemIndex( input_devices.indexOf( selected_note_in_device ), dontSendNotification );
+        }
 
-            // TYPES
+        // CC INPUT
+        {
+            String selected_item_text = combo_input_cc->getText();
+            combo_input_cc->clear( dontSendNotification );
+            combo_input_cc->addItemList( input_devices, 1 );
+
+            // SELECT THE CURRENT ONE
+            String selected_cc_in_device( _audio_device_manager->get_selected_in_device( mono_AudioDeviceManager::INPUT_ID::CC ) );
+            combo_input_cc->setSelectedItemIndex( input_devices.indexOf( selected_cc_in_device ), dontSendNotification );
+        }
+    }
+
+    // OUTPUT
+    {
+        StringArray output_devices = _audio_device_manager->get_available_out_ports();
+
+        // CC OUTPUT
+        {
+            String selected_item_text = combo_output_cc->getText();
+            combo_output_cc->clear( dontSendNotification );
+            combo_output_cc->addItemList( output_devices, 1 );
+
+            // SELECT THE CURRENT ONE
+            String selected_cc_out_device( _audio_device_manager->get_selected_out_device( mono_AudioDeviceManager::OUTPUT_ID::FEEDBACK ) );
+            combo_output_cc->setSelectedItemIndex( output_devices.indexOf( selected_cc_out_device ), dontSendNotification );
+        }
+
+        // THRU OUTPUT
+        {
+            String selected_item_text = combo_output_thru->getText();
+            combo_output_thru->clear( dontSendNotification );
+            combo_output_thru->addItemList( output_devices, 1 );
+
+            // SELECT THE CURRENT ONE
+            String selected_thru_out_device( _audio_device_manager->get_selected_out_device( mono_AudioDeviceManager::OUTPUT_ID::THRU ) );
+            combo_output_thru->setSelectedItemIndex( output_devices.indexOf( selected_thru_out_device ), dontSendNotification );
         }
     }
 }
@@ -166,8 +192,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
     slider_midi_pickup->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_midi_pickup->addListener (this);
 
-    addAndMakeVisible (label_2 = new Label (String::empty,
-                                            TRANS("CC PICKUP OFFSET:")));
+    addAndMakeVisible (label_2 = new Label (String::empty, TRANS("CC PICKUP OFFSET:")));
     label_2->setFont (Font (30.00f, Font::plain));
     label_2->setJustificationType (Justification::centredRight);
     label_2->setEditable (false, false, false);
@@ -321,30 +346,31 @@ void Monique_Ui_MidiIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == combo_input_main)
     {
         //[UserComboBoxCode_combo_input_main] -- add your combo box handling code here..
-        _audio_device_manager->open_port( comboBoxThatHasChanged->getName(), comboBoxThatHasChanged->getText() );
+        _audio_device_manager->open_in_port( mono_AudioDeviceManager::INPUT_ID::NOTES, comboBoxThatHasChanged->getText() );
         //[/UserComboBoxCode_combo_input_main]
     }
     else if (comboBoxThatHasChanged == combo_input_main_channel)
     {
         //[UserComboBoxCode_combo_input_main_channel] -- add your combo box handling code here..
+      // TODO
         //[/UserComboBoxCode_combo_input_main_channel]
     }
     else if (comboBoxThatHasChanged == combo_output_thru)
     {
         //[UserComboBoxCode_combo_output_thru] -- add your combo box handling code here..
-        _audio_device_manager->open_port( comboBoxThatHasChanged->getName(), comboBoxThatHasChanged->getText() );
+        _audio_device_manager->open_out_port( mono_AudioDeviceManager::OUTPUT_ID::THRU, comboBoxThatHasChanged->getText() );
         //[/UserComboBoxCode_combo_output_thru]
     }
     else if (comboBoxThatHasChanged == combo_input_cc)
     {
         //[UserComboBoxCode_combo_input_cc] -- add your combo box handling code here..
-        _audio_device_manager->open_port( comboBoxThatHasChanged->getName(), comboBoxThatHasChanged->getText() );
+        _audio_device_manager->open_in_port( mono_AudioDeviceManager::INPUT_ID::CC, comboBoxThatHasChanged->getText() );
         //[/UserComboBoxCode_combo_input_cc]
     }
     else if (comboBoxThatHasChanged == combo_output_cc)
     {
         //[UserComboBoxCode_combo_output_cc] -- add your combo box handling code here..
-        _audio_device_manager->open_port( comboBoxThatHasChanged->getName(), comboBoxThatHasChanged->getText() );
+        _audio_device_manager->open_out_port( mono_AudioDeviceManager::OUTPUT_ID::FEEDBACK, comboBoxThatHasChanged->getText() );
         //[/UserComboBoxCode_combo_output_cc]
     }
 

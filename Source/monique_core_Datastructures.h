@@ -678,15 +678,15 @@ private:
 
 public:
     // ==============================================================================
-    void save_to( XmlElement* xml ) const noexcept;
+    void save_to( XmlElement* xml ) noexcept;
     void read_from( const XmlElement* xml ) noexcept;
 
 private:
-    bool write2file( const String& bank_name_, const String& program_name_ ) const noexcept;
+    bool write2file( const String& bank_name_, const String& program_name_ ) noexcept;
 
 public:
     void save_settings() const noexcept;
-    void ask_and_save_if_changed() const noexcept;
+    void ask_and_save_if_changed() noexcept;
     void load_settings() noexcept;
     
 public:

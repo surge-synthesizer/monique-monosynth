@@ -6,119 +6,13 @@
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_SegmentedMeter.h"
 
-// ********************************************************************************************
-// ********************************************************************************************
-// ********************************************************************************************
-enum
-{
-    IO_IS_MIDI = true,
-    IO_IS_AUDIO = false,
-};
-struct IOData {
-    // BY FILTER ID
-    StringArray filter_curve_record_midi_devices;
-    StringArray filter_curve_record_audio_devices;
-    Array<int> filter_curve_record_cc_number;
-    Array<int> filter_curve_record_audio_port;
-    Array<bool> filter_curve_record_is_midi_else_audio;
 
-public:
-    IOData() {
-        for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
-        {
-            filter_curve_record_midi_devices.add( "UNKNOWN" );
-            filter_curve_record_audio_devices.add( "UNKNOWN" );
-            filter_curve_record_cc_number.add( flt_id*3+82 );
-            filter_curve_record_audio_port.add( 2 );
-            filter_curve_record_is_midi_else_audio.add( IO_IS_MIDI );
-        }
-    }
-};
-// ********************************************************************************************
-#define SINGLE_EVENT_INPUT -1
-#define NO_NEW_EVENTS -1
-class DATAINProcessor
-{
-    MoniqueSynthData*const _synth_data;
-
-    CriticalSection lock;
-
-public:
-    void processBlock ( MidiBuffer& input_messages_ )
-    {
-        // todo check for channels
-    }
-    void handle_note_input ( MidiBuffer& input_messages_ )
-    {
-    }
-    // this can be notes to!
-    void handle_cc_input ( MidiBuffer& input_messages_ )
-    {
-        handle_midi_controller( input_messages_ );
-    }
-    void handle_midi_clock() {
-
-    }
-
-    void handle_midi_controller( MidiBuffer& input_messages_ )
-    {
-        const ScopedLock locked(lock);
-        Array< Parameter* >& parameters = _synth_data->get_atomateable_parameters();
-        MidiBuffer::Iterator message_iter( input_messages_ );
-        MidiMessage in_message;
-        int sample_position;
-        while( message_iter.getNextEvent( in_message, sample_position ) )
-        {
-            MIDIControlHandler*const midi_learn_handler = MIDIControlHandler::getInstance();
-            Parameter* learing_param = midi_learn_handler->is_learning();
-            if( learing_param )
-            {
-                if( midi_learn_handler->handle_incoming_message( in_message ) )
-                {
-                    // CLEAR SIBLINGS
-                    for( int i = 0 ; i != parameters.size() ; ++ i )
-                    {
-                        Parameter* param = parameters.getUnchecked(i);
-                        //bool clear_ctrl_version = !param->midi_control.is_ctrl_version;
-                        if( param != learing_param && param->midi_control->get_is_ctrl_version_of_name() != learing_param->get_info().name )
-                        {
-                            if( param->midi_control->is_listen_to( in_message ) )
-                            {
-                                param->midi_control->clear();
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for( int i = 0 ; i != parameters.size() ; ++ i )
-                {
-                    Parameter* param = parameters.getUnchecked(i);
-                    bool success = param->midi_control->read_from_if_you_listen( in_message );
-                    // TODO max tow listeners per CC
-                    //if( success ) // SYSEX is the default empty midi message
-                    //    break;
-                }
-            }
-        }
-    }
-
-    // TODO reset samplerate!
-    MidiBuffer incomingMidi;
-    MidiMessageCollector messageCollector;
-
-    DATAINProcessor() : _synth_data(&GET_DATA(synth_data)) { }
-
-    ~DATAINProcessor() {
-    }
-};
-
-// ********************************************************************************************
-// ********************************************************************************************
-// ********************************************************************************************
+//==============================================================================
+//==============================================================================
+//==============================================================================
 template<typename T, int size>
-class CircularBuffer {
+class CircularBuffer 
+{
     int pos;
     T buffer[size];
     T sum;
@@ -142,26 +36,28 @@ public:
             buffer[i] = 0;
     }
 };
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 MoniqueAudioProcessor::MoniqueAudioProcessor()
     :
 #ifdef IS_STANDALONE
     clock_smoth_buffer( new type_CLOCK_SMOTH_BUFFER ),
 #endif
-    data_in_processor(nullptr),
 
     peak_meter(nullptr),
     repaint_peak_meter(false)
 {
     // CREATE SINGLETONS
-  RuntimeNotifyer::getInstance();
-  
+    RuntimeNotifyer::getInstance();
+
     std::cout << "MONIQUE: init processor" << std::endl;
-
     FloatVectorOperations::enableFlushToZeroMode(true);
-
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 
+        std::cout << "MONIQUE: init core" << std::endl;
         synth = new Synthesiser();
         synth_data = new MoniqueSynthData(MASTER);
 
@@ -169,43 +65,47 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
         voice = new MoniqueSynthesiserVoice(this,synth_data);
         synth->addVoice (voice);
         synth->addSound (new MoniqueSynthesiserSound());
-        data_in_processor = new DATAINProcessor();
-#endif
+#else // IS_STANDALONE
+        {
+            voice = new MoniqueSynthesiserVoice(this,synth_data);
+            synth->addVoice (voice);
+            synth->addSound (new MoniqueSynthesiserSound());
+        }
 
-        MidiKeyboardState::addListener(this);
-
-#ifdef IS_STANDALONE
-        init_audio();
+        audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
+        if( audio_is_successful_initalized )
+        {
+            setPlayConfigDetails ( 0, 2, 0, 0);
+            addAudioCallback (&player);
+            player.setProcessor (this);
+        }
 #endif
     }
 
     std::cout << "MONIQUE: init midi" << std::endl;
     {
-        mono_AudioDeviceManager::read();
         synth_data->load_settings();
         synth_data->read_midi();
 #ifdef IS_STANDALONE
         synth_data->load();
 #endif
+        MidiKeyboardState::addListener(this);
     }
 }
 
 // ----------------------------------------------------
 MoniqueAudioProcessor::~MoniqueAudioProcessor()
 {
-    trigger_send_clear_feedback();
-    stop_midi_devices();
-
+    // trigger_send_clear_feedback();
+    // stop_midi_devices();
 #ifdef IS_STANDALONE
+    mono_AudioDeviceManager::save();
     closeAudioDevice();
     removeAudioCallback (&player);
     player.setProcessor(nullptr);
 #endif
-    mono_AudioDeviceManager::save();
     synth_data->save_midi();
     synth_data->save_settings();
-
-    delete data_in_processor;
 
     AppInstanceStore::getInstance()->audio_processor = nullptr;
 
@@ -213,50 +113,8 @@ MoniqueAudioProcessor::~MoniqueAudioProcessor()
     delete synth_data;
 }
 
-#ifdef IS_STANDALONE
-void MoniqueAudioProcessor::init_audio()
-{
-    std::cout << "MONIQUE: init core" << std::endl;
-    {
-        voice = new MoniqueSynthesiserVoice(this,synth_data);
-        synth->addVoice (voice);
-        synth->addSound (new MoniqueSynthesiserSound());
-        data_in_processor = new DATAINProcessor();
-    }
-
-    std::cout << "MONIQUE: init audio" << std::endl;
-    {
-        const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
-#if JUCE_LINUX
-        bool is_jack_available = false;
-        for( int i = 0 ; i != types.size() ; ++i )
-        {
-            AudioIODeviceType* type = types[i];
-            if( type->getTypeName() == "JACK" )
-                is_jack_available = true;
-        }
-        if( is_jack_available )
-            setCurrentAudioDeviceType("JACK",false);
-#endif
-        setPlayConfigDetails ( 0, 2, 0, 0);
-
-        String error = initialise(0,2, nullptr, false );
-        if( error == "" )
-        {
-            addAudioCallback (&player);
-            player.setProcessor (this);
-            audio_is_successful_initalized = true;
-        }
-        else
-        {
-            std::cout << error << std::endl;
-            audio_is_successful_initalized = false;
-        }
-    }
-}
-#endif
-
 //==============================================================================
+/*
 #ifdef IS_STANDALONE
 void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept
 {
@@ -282,10 +140,12 @@ void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message
     }
 }
 #endif
+*/
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+/*
 void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept
 {
     //MidiKeyboardState::processNextMidiEvent( message );
@@ -312,7 +172,7 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
     for( int i = 0 ; i != parameters.size() ; ++ i )
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
 }
-
+*/
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -350,9 +210,9 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 #endif
             if( current_pos_info.timeInSamples + num_samples >= 0 && current_pos_info.isPlaying )
             {
-                data_in_processor->incomingMidi.clear();
-                data_in_processor->messageCollector.removeNextBlockOfMessages (data_in_processor->incomingMidi, num_samples);
-#ifdef IS_STANDALONE
+                //data_in_processor->incomingMidi.clear();
+                //data_in_processor->messageCollector.removeNextBlockOfMessages (data_in_processor->incomingMidi, num_samples);
+#ifndef IS_STANDALONE
                 MidiBuffer::Iterator message_iter( data_in_processor->incomingMidi );
                 MidiMessage extern_midi_message;
                 int sample_position;
@@ -472,12 +332,11 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 }
 #endif
                 // MIDI IN
-                data_in_processor->processBlock( midi_messages_ );
-                data_in_processor->handle_cc_input( midi_messages_ );
-
                 AppInstanceStore::getInstance()->lock_amp_painter();
                 {
                     // RENDER SYNTH
+                    get_cc_input_messages( midi_messages_, num_samples );
+                    get_note_input_messages( midi_messages_, num_samples );
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
 
@@ -496,12 +355,9 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 //==============================================================================
 void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
 {
-    std::cout << sampleRate << " " <<block_size_ << std::endl;
-  
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
     GET_DATA(data_buffer).resize_buffer_if_required(block_size_);
-    data_in_processor->messageCollector.reset(sampleRate);
     synth->setCurrentPlaybackSampleRate (sampleRate);
     RuntimeNotifyer::getInstance()->set_sample_rate( sampleRate );
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
@@ -561,6 +417,7 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
     XmlElement xml("PROJECT-1.0");
     synth_data->save_to( &xml );
+    mono_AudioDeviceManager::save_to( &xml );
     copyXmlToBinary ( xml, destData );
 }
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
@@ -571,6 +428,7 @@ void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBy
         if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
         {
             synth_data->read_from( xml );
+            mono_AudioDeviceManager::read_from( xml );
         }
     }
 }

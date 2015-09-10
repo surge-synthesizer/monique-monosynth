@@ -353,8 +353,6 @@ inline void ChangeParamOverTime::change() noexcept
 // ==============================================================================
 MIDIControl::MIDIControl(Parameter*const owner_): is_in_ctrl_mode(false), owner(owner_) {
     midi_number = -1;
-    listen_type = NOT_SET;
-    channel = -1;
     is_ctrl_version_of_name = "";
 }
 MIDIControl::~MIDIControl() {}
@@ -365,114 +363,66 @@ void MIDIControl::clear()
     send_clear_feedback_only();
 
     midi_number = -1;
-    listen_type = NOT_SET;
-    channel = -1;
     is_ctrl_version_of_name = "";
 }
 
-bool MIDIControl::is_listen_to( MidiMessage& message_ ) const noexcept {
-    bool is = false;
-    if( message_.isController() && listen_type == CC ) {
-        if( message_.getControllerNumber() == midi_number ) {
-            is = true;
-        }
-    }
-    else if( message_.isNoteOn() && listen_type == NOTE ) {
-        if( message_.getNoteNumber() == midi_number ) {
-            is = true;
-        }
-    }
-
-    return is;
-}
-bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) noexcept {
+bool MIDIControl::read_from_if_you_listen( int controller_number_, int controller_value_ ) noexcept
+{
     bool success = false;
     const float pickup = GET_DATA( synth_data ).midi_pickup_offset;
-    if( input_message_.isController() && listen_type == CC ) {
-        if( midi_number == input_message_.getControllerNumber() ) {
-            if( input_message_.getChannel() == channel ) {
-                float value = 1.0f/127.0f*input_message_.getControllerValue();
-                if( type_of( owner ) == IS_BOOL )
-                {
-                    if( value > 0.5 )
-                        owner->set_value(true);
-                    else
-                        owner->set_value(false);
-                    success = true;
-                }
-                else
-                {
-                    if( is_in_ctrl_mode )
-                    {
-                        if( is_ctrl_version_of_name != "" )
-                        {
-                            float current_value = get_percent_value( owner );
-                            // PICKUP
-                            if( current_value + pickup > value && current_value - pickup < value ) {
-                                set_percent_value( owner, value );
-                                success = true;
-                            }
-                        }
-                        else if( has_modulation( owner ) )
-                        {
-                            float current_modulation = owner->get_modulation_amount();
-                            float new_modulation = value*2.0f - 1.0f;
-                            // PICKUP
-                            if( current_modulation + pickup > new_modulation && current_modulation - pickup < new_modulation ) {
-                                owner->set_modulation_amount( new_modulation );
-                                success = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if( is_ctrl_version_of_name == "" ) {
-                            float current_value = get_percent_value( owner );
-                            // PICKUP
-                            if( current_value + pickup > value && current_value - pickup < value ) {
-                                set_percent_value( owner, value );
-                                success = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if( input_message_.isNoteOn() && listen_type == NOTE ) {
-        if( midi_number == input_message_.getNoteNumber() ) {
-            if( input_message_.getChannel() == channel )
+    {
+        if( midi_number == controller_number_ )
+        {
+            float value = 1.0f/127.0f*controller_value_;
+            if( type_of( owner ) == IS_BOOL )
             {
-                if( type_of( owner ) == IS_BOOL )
+                if( value > 0.5 )
                 {
-                    toggle( owner );
-                    success = true;
+                    owner->set_value(true);
                 }
                 else
                 {
-                    if( is_in_ctrl_mode )
-                    {
-                        if( is_ctrl_version_of_name != "" )
-                        {
-                            min_max_switch( owner );
-                            success = true;
-                        }
-                        else if( has_modulation( owner ) )
-                        {
-                            float current_modulation = owner->get_modulation_amount();
-                            if( current_modulation == -1 )
-                                owner->set_modulation_amount( 1 );
-                            else
-                                owner->set_modulation_amount( -1 );
+                    owner->set_value(false);
+                }
 
+                success = true;
+            }
+            else
+            {
+                if( is_in_ctrl_mode )
+                {
+                    if( is_ctrl_version_of_name != "" )
+                    {
+                        float current_value = get_percent_value( owner );
+                        // PICKUP
+                        if( current_value + pickup >= value && current_value - pickup <= value )
+                        {
+                            set_percent_value( owner, value );
                             success = true;
                         }
                     }
-                    else
+                    else if( has_modulation( owner ) )
                     {
-                        if( is_ctrl_version_of_name == "" )
+                        float current_modulation = owner->get_modulation_amount();
+                        float new_modulation = value*2.0f - 1.0f;
+                        // PICKUP
+                        if( current_modulation + pickup > new_modulation && current_modulation - pickup < new_modulation )
                         {
-                            min_max_switch( owner );
+                            owner->set_modulation_amount( new_modulation );
+                            success = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if( is_ctrl_version_of_name == "" )
+                    {
+		      
+                        float current_value = get_percent_value( owner );
+                        // PICKUP
+                        if( current_value + pickup >= value && current_value - pickup <= value )
+                        {
+                            set_percent_value( owner, value );
                             success = true;
                         }
                     }
@@ -483,32 +433,21 @@ bool MIDIControl::read_from_if_you_listen( const MidiMessage& input_message_ ) n
 
     return success;
 }
-bool MIDIControl::train( const MidiMessage& input_message_, Parameter*const is_ctrl_version_of_ ) noexcept
+bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
 {
     send_clear_feedback_only();
 
     bool success = false;
-    if( input_message_.isController() )
     {
-        listen_type = CC;
-        channel = input_message_.getChannel();
-        midi_number = input_message_.getControllerNumber();
+        midi_number = controller_number_;
         if( is_ctrl_version_of_ )
+        {
             is_ctrl_version_of_name = is_ctrl_version_of_->get_info().name;
+        }
         else
+        {
             is_ctrl_version_of_name = "";
-
-        success = true;
-    }
-    else if( input_message_.isNoteOn() )
-    {
-        listen_type = NOTE;
-        channel = input_message_.getChannel();
-        midi_number = input_message_.getNoteNumber();
-        if( is_ctrl_version_of_ )
-            is_ctrl_version_of_name = is_ctrl_version_of_->get_info().name;
-        else
-            is_ctrl_version_of_name = "";
+        }
 
         success = true;
     }
@@ -525,13 +464,11 @@ bool MIDIControl::train( const MidiMessage& input_message_, Parameter*const is_c
 
     return success;
 }
-bool MIDIControl::train( int listen_type_, int8 midi_number_, int channel_, String is_ctrl_version_of_name_ ) noexcept
+bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
 {
     send_clear_feedback_only();
 
-    listen_type = listen_type_;
-    midi_number = midi_number_;
-    channel = channel_;
+    midi_number = controller_number_;
     is_ctrl_version_of_name = is_ctrl_version_of_name_;
 
     if( is_valid_trained() )
@@ -544,18 +481,6 @@ bool MIDIControl::train( int listen_type_, int8 midi_number_, int channel_, Stri
         stop_listen_for_feedback();
     }
     return true;
-}
-
-bool MIDIControl::is_valid_trained() const noexcept {
-    bool success = true;
-    if( listen_type == NOT_SET )
-        success = false;
-    else if( midi_number == -1 )
-        success = false;
-    else if( channel < 1 )
-        success = false;
-
-    return success;
 }
 
 void MIDIControl::start_listen_for_feedback() noexcept
@@ -574,12 +499,16 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
     {
         bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || &(GET_DATA( synth_data ).ctrl) == param_ );
         if( do_send )
+        {
             send_standard_feedback();
+        }
     }
     {
         bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( is_ctrl_version_of && is_in_ctrl_mode );
         if( do_send )
+        {
             send_standard_feedback();
+        }
     }
 }
 void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
@@ -592,19 +521,16 @@ void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexce
         send_modulation_feedback();
 }
 
-void MIDIControl::generate_feedback_message( MidiMessage& message_ ) const noexcept {
-    if( listen_type == CC )
-        message_ = MidiMessage::controllerEvent( channel, midi_number, mono_floor(127.0f*get_percent_value( owner )) );
-    else
-        message_ = MidiMessage::noteOn( channel, midi_number, get_percent_value( owner ) );
+void MIDIControl::generate_feedback_message( MidiMessage& message_ ) const noexcept
+{
+    message_ = MidiMessage::controllerEvent( 1, midi_number, mono_floor(127.0f*get_percent_value( owner )) );
 }
-void MIDIControl::generate_modulation_feedback_message( MidiMessage& message_ ) const noexcept {
-    if( listen_type == CC )
-        message_ = MidiMessage::controllerEvent( channel, midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
-    else
-        message_ = MidiMessage::noteOn( channel, midi_number, (owner->get_modulation_amount()*0.5f + 1.0f) );
+void MIDIControl::generate_modulation_feedback_message( MidiMessage& message_ ) const noexcept
+{
+    message_ = MidiMessage::controllerEvent( 1, midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
 }
-void MIDIControl::send_feedback_only() const noexcept {
+void MIDIControl::send_feedback_only() const noexcept
+{
     if( is_valid_trained() )
     {
         bool is_ctrl_version_of = is_ctrl_version_of_name != "";
@@ -625,13 +551,7 @@ void MIDIControl::send_feedback_only() const noexcept {
 void MIDIControl::send_clear_feedback_only() const noexcept {
     if( is_valid_trained() )
     {
-        MidiMessage fb_message;
-        if( listen_type == CC )
-            fb_message = MidiMessage::controllerEvent( channel, midi_number, 0 );
-        else
-            fb_message = MidiMessage::noteOn( channel, midi_number, 0.0f );
-
-        AppInstanceStore::getInstance()->audio_processor->send_feedback_message( fb_message );
+        AppInstanceStore::getInstance()->audio_processor->send_feedback_message( MidiMessage::controllerEvent( 1, midi_number, 0 ) );
     }
 }
 
@@ -721,16 +641,19 @@ Parameter* MIDIControlHandler::is_learning() const noexcept
 {
     return learning_param;
 }
-bool MIDIControlHandler::handle_incoming_message( const MidiMessage& input_message_ ) noexcept
+bool MIDIControlHandler::handle_incoming_message( int controller_number_ ) noexcept
 {
     bool success = false;
     if( learning_param )
     {
-        if( learning_param->midi_control->train(input_message_,nullptr) )
+        if( learning_param->midi_control->train( controller_number_, nullptr ) )
+        {
             success = true;
-
+        }
         if( learning_ctrl_param )
-            learning_ctrl_param->midi_control->train(input_message_,learning_param);
+        {
+            learning_ctrl_param->midi_control->train( controller_number_, learning_param );
+        }
 
         clear();
         is_activated_and_waiting_for_param = true;

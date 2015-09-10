@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    mono_AudioDeviceManager.h
-    Created: 21 May 2015 12:20:29pm
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #ifndef MONO_AUDIODEVICEMANAGER_H_INCLUDED
 #define MONO_AUDIODEVICEMANAGER_H_INCLUDED
 
@@ -22,342 +12,146 @@
 #define VIRTUAL_PORT_ID -9
 #define UNKNOWN_PORT_ID -1
 
-// TODO, update block size from processblock
-// TODO dummy, to store old ports
-
-class MidiInputWrapper {
-    ScopedPointer<MidiInput> _midi_input;
-    const bool is_daw_port;
-
-public:
-    inline bool is_same( MidiInput* other_input_ ) const noexcept {
-        return !( _midi_input != other_input_ );
-    }
-    void stop() {
-        if( _midi_input )
-            _midi_input->stop();
-    }
-
-    const String port_ident_name;
-    const String name;
-
-    COLD MidiInputWrapper( MidiInput*const midi_output_,
-                               const String& port_ident_name_,
-                               const String& device_name_ )
-        : _midi_input( midi_output_ ),
-          is_daw_port( device_name_ == DAW_INPUT ),
-          port_ident_name( port_ident_name_ ),
-          name( device_name_ )
-    {
-    }
-
-    ~MidiInputWrapper() {
-        stop();
-    }
-
-    static MidiInputWrapper* open( int device_index_,
-                                   const String& port_ident_name_,
-                                   const String& device_name_,
-                                   MidiInputCallback* listener_
-                                 )
-    {
-        MidiInput* device = nullptr;
-#ifdef IS_PLUGIN
-        if( device_name_ == DAW_INPUT )
-            ;
-        else
-#endif
-#ifndef JUCE_WINDOWS
-            if( device_index_ == VIRTUAL_PORT_ID )
-                device = MidiInput::createNewDevice( device_name_, listener_ );
-            else
-#endif
-                device = MidiInput::openDevice( device_index_, listener_ );
-
-        if( device ) {
-            device->start();
-            return new MidiInputWrapper( device,
-                                         port_ident_name_,
-                                         device_name_ );
-        }
-#ifdef IS_PLUGIN
-        else if( device_name_ == DAW_INPUT )
-        {
-            return new MidiInputWrapper( device,
-                                         port_ident_name_,
-                                         device_name_ );
-        }
-#endif
-        else
-            return nullptr;
-    };
-};
-
-class MidiOutputWrapper : public RuntimeListener
+enum SEND_TYPES
 {
-    ScopedPointer<MidiOutput> _midi_output;
-    const bool is_daw_port;
-    int pos_in_buffer;
-
-    CriticalSection daw_lock;
-    MidiBuffer _daw_mesages;
-
-public:
-    inline void send_message_now( const MidiMessage& message_, int pos_in_buffer_ )
-    {
-        if( _midi_output )
-        {
-            _midi_output->sendMessageNow( message_ );
-        }
-        else if( is_daw_port )
-        {
-            ScopedLock locked( daw_lock );
-            _daw_mesages.addEvent( message_, pos_in_buffer_ );
-        }
-    }
-    /////////////////////////////////////////
-    void start() {
-        if( _midi_output ) _midi_output->startBackgroundThread();
-    }
-    void stop() {
-        if( _midi_output ) _midi_output->stopBackgroundThread();
-    }
-
-    // PLEASE LOCK MANUAL TO USE THIS METHODE - SHOULD BE SAVE, BUT HOW KNOWS
-    inline void lock() {
-        daw_lock.enter();
-    }
-    inline void add_message( const MidiMessage& message_, int pos_in_buffer_ )
-    {
-        if( _midi_output || is_daw_port )
-            _daw_mesages.addEvent( message_, pos_in_buffer_ );
-    }
-    inline void add_message_fifo( const MidiMessage& message_ )
-    {
-        if( _midi_output || is_daw_port )
-        {
-            _daw_mesages.addEvent( message_, pos_in_buffer );
-            pos_in_buffer++;
-        }
-    }
-    inline bool send_and_clear_block_if_phys_port() {
-        if( _midi_output )
-        {
-            _midi_output->sendBlockOfMessages( _daw_mesages, Time::getMillisecondCounter()+2, sample_rate );
-            _daw_mesages.clear();
-            pos_in_buffer = 0;
-        }
-
-        return true;
-    }
-    inline void unlock() {
-        daw_lock.exit();
-    }
-    /////////////////////////////////////////
-
-    inline void send_messages_to_daw_and_clear( MidiBuffer& midi_messages_ )
-    {
-        ScopedLock locked( daw_lock );
-
-        if( is_daw_port )
-            midi_messages_.addEvents( _daw_mesages, _daw_mesages.getFirstEventTime(), _daw_mesages.getLastEventTime(), 0 );
-
-        _daw_mesages.clear();
-    }
-
-    const String port_ident_name;
-    const String name;
-
-    COLD MidiOutputWrapper( MidiOutput*const midi_output_,
-                                const String& port_ident_name_,
-                                const String& device_name_ )
-        : _midi_output( midi_output_ ),
-          is_daw_port( device_name_ == DAW_OUTPUT ),
-          pos_in_buffer(0),
-          port_ident_name( port_ident_name_ ),
-          name( device_name_ )
-    {
-        _daw_mesages.ensureSize( 512 );
-    }
-    ~MidiOutputWrapper() {
-        if( _midi_output )
-            _midi_output->stopBackgroundThread();
-    }
-
-    static MidiOutputWrapper* open( int device_index_,
-                                    const String& port_ident_name_,
-                                    const String& device_name_ )
-    {
-        MidiOutput* device = nullptr;
-#ifdef IS_PLUGIN
-        if( device_name_ == DAW_OUTPUT )
-            ;
-        else
-#endif
-#ifndef JUCE_WINDOWS
-            if( device_index_ == VIRTUAL_PORT_ID )
-                device = MidiOutput::createNewDevice( device_name_ );
-            else
-#endif
-                device = MidiOutput::openDevice( device_index_ );
-
-        if( device )
-            return new MidiOutputWrapper( device,
-                                          port_ident_name_,
-                                          device_name_ );
-#ifdef IS_PLUGIN
-        else if( device_name_ == DAW_OUTPUT )
-        {
-            return new MidiOutputWrapper( device,
-                                          port_ident_name_,
-                                          device_name_ );
-        }
-#endif
-        else
-            return nullptr;
-    };
-
-    // TODO send pending messages before close the port!
-};
-
-enum SEND_TYPES {
     SEND_CC,
     SEND_NOTE,
     SEND_BYTE
 };
 
-enum PORT_IDENT {
-    SEND_MIDI_CC_FEEDBACK,
-    SEND_MIDI_THRU,
-    SEND_MIDI_CLOCK,
-
-    RECIEVE_MIDI_MAIN,
-    RECIEVE_CC
-};
-
-class mono_AudioDeviceManager :
-    public AudioDeviceManager,
-    public MidiInputCallback
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
 {
 public:
     bool main_input_thru;
+    bool cc_input_thru;
     bool use_main_input_as_cc;
 
+    //==========================================================================
+    enum INPUT_ID
+    {
+        CC,
+        NOTES
+    };
+    //==========================================================================
+    enum OUTPUT_ID
+    {
+        THRU,
+        FEEDBACK
+    };
+
 private:
-    ScopedPointer<MidiInputWrapper> main_input;
-
-    ScopedPointer<MidiInputWrapper> cc_input;
-    bool cc_input_thru;
-    ScopedPointer<MidiOutputWrapper> cc_output;
-
-    ScopedPointer<MidiOutputWrapper> thru_output;
-    ScopedPointer<MidiOutputWrapper> clock_output;
-
-    StringArray output_ident_names;
-    StringArray input_ident_names;
-
+    //==========================================================================
+    //==========================================================================
+    //==========================================================================
     // INPUT
-    // call this block at the beginning of your processblock and
-    // override the virtual functions to handle it!
-    void handle_incoming_midi_messages ( MidiBuffer& midi_messages_ )
+    class AdvancedMidiInputCallback : public MidiInputCallback
     {
+        String device_name;
+    protected:
+        mono_AudioDeviceManager*const manager;
+    public:
+        void set_device_name( const String& name_ ) noexcept;
+        const String& get_device_name() const noexcept;
+    protected:
+        COLD AdvancedMidiInputCallback( mono_AudioDeviceManager*manager_ ) : manager( manager_ ) {}
+    };
 
-    }
-
-    // TODO, send feedback for option
-    // TODO, this handles the processor!
-    void handleIncomingMidiMessage ( MidiInput* source, const MidiMessage& message ) override
+    //==========================================================================
+    class MidiInputCallback_CC : public AdvancedMidiInputCallback
     {
-        bool success = false;
-        if( main_input )
-        {
-            if( main_input->is_same( source ) )
-            {
-#ifdef IS_STANDALONE
-                if( message.isMidiClock() )
-                    handle_extern_midi_clock(message);
-                else if( message.isMidiStart() )
-                    handle_extern_midi_start(message);
-                else if( message.isMidiStop() )
-                    handle_extern_midi_stop(message);
-                else if( message.isMidiContinue() )
-                    handle_extern_midi_continue(message);
-
-
-                else
-#endif
-                    // NOTe ON OFF
-                    if( message.isNoteOnOrOff() )
-                        handle_extern_note_input( message );
-
-                // CC
-                    else if( use_main_input_as_cc && message.isController() )
-                    {
-                        handle_extern_cc_input( message );
-                    }
-                // THRU
-                if( main_input_thru )
-                    if( thru_output )
-                        // TODO, dont send clock here.
-                        thru_output->send_message_now( message, 0 );
-
-                success = true;
-            }
-        }
-        if( ! success && cc_input )
-        {
-            if( cc_input->is_same( source ) )
-            {
-                if( message.isController() || message.isNoteOn() )
-                {
-                    handle_extern_cc_input( message );
-
-                    success = true;
-                }
-            }
-        }
+        void handleIncomingMidiMessage (MidiInput*, const MidiMessage& message) override;
+    public:
+        COLD MidiInputCallback_CC( mono_AudioDeviceManager*manager_ ) : AdvancedMidiInputCallback( manager_ ) {}
     }
-#ifdef IS_STANDALONE
-    virtual void handle_extern_midi_start( const MidiMessage& message ) noexcept = 0;
-    virtual void handle_extern_midi_stop( const MidiMessage& message ) noexcept = 0;
-    virtual void handle_extern_midi_continue( const MidiMessage& message ) noexcept = 0;
-    virtual void handle_extern_midi_clock( const MidiMessage& message ) noexcept = 0;
-#endif
-    virtual void handle_extern_note_input( const MidiMessage& message ) noexcept = 0;
-    virtual void handle_extern_cc_input( const MidiMessage& message ) noexcept = 0;
-    virtual void trigger_send_feedback() noexcept = 0;
-    virtual void trigger_send_clear_feedback() noexcept = 0;
+    *const cc_input_callback;
+
+    //==========================================================================
+    class MidiInputCallback_NOTES : public AdvancedMidiInputCallback
+    {
+        void handleIncomingMidiMessage (MidiInput*, const MidiMessage& message) override;
+    public:
+        COLD MidiInputCallback_NOTES( mono_AudioDeviceManager*manager_ ) : AdvancedMidiInputCallback( manager_ ) {}
+    }
+    *const note_input_callback;
+
+    //==========================================================================
+    //==========================================================================
+    //==========================================================================
+    MidiMessageCollector cc_input_collector;
+    MidiMessageCollector note_input_collector;
+    void collect_incoming_midi_messages ( INPUT_ID input_id_, const MidiMessage& midi_message_ ) noexcept;
 
 protected:
+    //==========================================================================
+    //==========================================================================
+    //==========================================================================
+    void get_cc_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
+    {
+        cc_input_collector.removeNextBlockOfMessages( midi_messages_, num_samples_ );
+    }
+    void get_note_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
+    {
+        note_input_collector.removeNextBlockOfMessages( midi_messages_, num_samples_ );
+    }
+
+private:
+    AdvancedMidiInputCallback* get_input_device_callback( INPUT_ID input_id_ ) const noexcept;
+public:
+    COLD StringArray get_available_in_ports() const noexcept;
+    COLD void open_in_port( INPUT_ID input_id_, const String& device_name_ ) noexcept;
+    COLD void close_in_port( INPUT_ID input_id_ ) noexcept;
+    COLD String get_selected_in_device( INPUT_ID input_id_ ) const noexcept;
+
+    //==========================================================================
     // OUTPUT
-    void get_messages_to_send_to_daw( MidiBuffer& midi_messages_ );
+private:
+    MidiMessageCollector cc_feedback_collector;
+    MidiMessageCollector thru_collector;
+    MidiOutput * midi_thru_output, *midi_feedback_output;
+    String midi_thru_name, midi_feedback_name;
 
 public:
-    // UNIVERSAL FOR IN AND OUTPUTS
-    StringArray get_available_ports( const String& port_ident_name_ );
-    void open_port( const String& port_ident_name_, const String& device_name_ );
-    String get_selected_device_name( const String& port_ident_name_ ) const;
-    bool is_port_open( const String& port_ident_name_ ) const;
+    void send_thru_messages( MidiBuffer& midi_messages_, int pos_ ) noexcept;
+    void send_feedback_messages( MidiBuffer& midi_messages_, int pos_ ) noexcept;
+
+private:
+    //==========================================================================
+    MidiOutput* get_output_device( OUTPUT_ID output_id_ ) const noexcept;
+
+public:
+    COLD StringArray get_available_out_ports() const noexcept;
+    COLD bool open_out_port( OUTPUT_ID output_id_, const String& device_name_ ) noexcept;
+    COLD void close_out_port( OUTPUT_ID output_id_ ) noexcept;
+    COLD String get_selected_out_device( OUTPUT_ID output_id_ ) const noexcept;
 
 public:
     // SEND
-    inline void send_feedback_message( const MidiMessage& message ) noexcept {
-        if( cc_output )
-            cc_output->send_message_now( message, 0 );
+    inline void send_feedback_message( const MidiMessage& message ) noexcept
+    {
+        //   if( cc_output )
+        //       cc_output->send_message_now( message, 0 );
     }
+
+private:
+    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
 
 protected:
-    mono_AudioDeviceManager();
-    void init();
+    COLD mono_AudioDeviceManager() noexcept;
+    COLD ~mono_AudioDeviceManager() noexcept;
 
-    void stop_midi_devices() {
-        if( main_input ) main_input->stop();
-        if( cc_input ) cc_input->stop();
-    }
-
-public:
+    COLD bool save_to( XmlElement* xml ) const noexcept;
+    COLD String read_from( const XmlElement* xml ) noexcept;
     COLD void save() const noexcept;
-    COLD void read() noexcept;
+    COLD String read() noexcept;
 };
 
 #endif  // MONO_AUDIODEVICEMANAGER_H_INCLUDED

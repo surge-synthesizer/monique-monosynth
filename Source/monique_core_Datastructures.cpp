@@ -3229,7 +3229,7 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
 }
 
 // ==============================================================================
-void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
+void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 {
     if( xml_ )
     {
@@ -3238,10 +3238,13 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
             write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
         }
 
-        for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+        if( id == MASTER )
         {
-            left_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
-            right_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("RightMorphData_")+String(morpher_id)));
+            for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+            {
+                left_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
+                right_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("RightMorphData_")+String(morpher_id)));
+            }
         }
 
         // BACKUP
@@ -3252,7 +3255,7 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
         }
     }
 }
-bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) const noexcept
+bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) noexcept
 {
     File program_file = get_program_file( bank_name_, program_name_ );
 
@@ -3318,7 +3321,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.writeToFile(settings_session_file,"");
     }
 }
-void MoniqueSynthData::ask_and_save_if_changed() const noexcept
+void MoniqueSynthData::ask_and_save_if_changed() noexcept
 {
     // CHECK FOR CHANGES FIRST
     for( int i = 0 ; i != saveable_backups.size() ; ++i )
@@ -3326,11 +3329,11 @@ void MoniqueSynthData::ask_and_save_if_changed() const noexcept
         if( saveable_backups.getUnchecked(i) != saveable_parameters.getUnchecked(i)->get_value() )
         {
             bool success = AlertWindow::showNativeDialogBox
-                           (
-                               "CURRENT PROJECT CHANGED!",
-                               String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
-                               true
-                           );
+            (
+                "CURRENT PROJECT CHANGED!",
+                String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
+                true
+            );
 
             if( success )
             {

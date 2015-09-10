@@ -32,19 +32,14 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
 {
     if( _midi_control )
     {
-        if( ! combo_midi_listen_type->isMouseOverOrDragging() )
-            combo_midi_listen_type->setSelectedItemIndex( _midi_control->get_listen_type()+1, dontSendNotification );
-        if( ! combo_midi_number->isMouseOverOrDragging() )
+        if( not combo_midi_number->isMouseOverOrDragging() )
+        {
             combo_midi_number->setSelectedItemIndex( _midi_control->get_midi_number(), dontSendNotification );
-        if( ! combo_midi_channel->isMouseOverOrDragging() )
-            combo_midi_channel->setSelectedItemIndex( _midi_control->get_chnanel()-1, dontSendNotification );
+        }
     }
     else
     {
-        combo_midi_listen_type->setSelectedItemIndex( 0, dontSendNotification );
-        combo_midi_listen_type->setEnabled(false);
         combo_midi_number->setEnabled(false);
-        combo_midi_channel->setEnabled(false);
     }
 }
 
@@ -74,17 +69,10 @@ void Monique_Ui_MainwindowPopup::update_positions( )
 
 //==============================================================================
 Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
-    : parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)
+    : parent(parent_),_midi_control(midi_control_), original_w(80), original_h(95)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
-
-    addAndMakeVisible (combo_midi_listen_type = new ComboBox (String::empty));
-    combo_midi_listen_type->setEditableText (false);
-    combo_midi_listen_type->setJustificationType (Justification::centredLeft);
-    combo_midi_listen_type->setTextWhenNothingSelected (TRANS("TYPE"));
-    combo_midi_listen_type->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_midi_listen_type->addListener (this);
 
     addAndMakeVisible (combo_midi_number = new ComboBox (String::empty));
     combo_midi_number->setEditableText (false);
@@ -101,35 +89,19 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*co
     close->setColour (TextButton::textColourOnId, Colours::black);
     close->setColour (TextButton::textColourOffId, Colours::black);
 
-    addAndMakeVisible (combo_midi_channel = new ComboBox (String::empty));
-    combo_midi_channel->setEditableText (false);
-    combo_midi_channel->setJustificationType (Justification::centredLeft);
-    combo_midi_channel->setTextWhenNothingSelected (TRANS("CH"));
-    combo_midi_channel->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    combo_midi_channel->addListener (this);
-
 
     //[UserPreSize]
     related_to_comp = nullptr;
-
-    combo_midi_listen_type->addItem( "N/A", 1 );
-    combo_midi_listen_type->addItem( "CC", 2 );
-    combo_midi_listen_type->addItem( "NOTE", 3 );
 
     for( int i = 1 ; i != 129 ; ++i )
     {
         combo_midi_number->addItem( String(i), i );
     }
 
-    for( int i = 1 ; i != 17 ; ++i )
-    {
-        combo_midi_channel->addItem( String(i), i );
-    }
-
     /*
     //[/UserPreSize]
 
-    setSize (80, 140);
+    setSize (80, 95);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -142,10 +114,8 @@ Monique_Ui_MainwindowPopup::~Monique_Ui_MainwindowPopup()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    combo_midi_listen_type = nullptr;
     combo_midi_number = nullptr;
     close = nullptr;
-    combo_midi_channel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -160,10 +130,10 @@ void Monique_Ui_MainwindowPopup::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.setColour (Colour (0xbaffffff));
-    g.fillRoundedRectangle (1.0f, 10.0f, 78.0f, 129.0f, 10.000f);
+    g.fillRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f);
 
     g.setColour (Colours::red);
-    g.drawRoundedRectangle (1.0f, 10.0f, 78.0f, 129.0f, 10.000f, 1.000f);
+    g.drawRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f, 1.000f);
 
     g.setColour (Colours::red);
     g.fillPath (internalPath1);
@@ -177,10 +147,8 @@ void Monique_Ui_MainwindowPopup::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    combo_midi_listen_type->setBounds (10, 20, 60, 30);
-    combo_midi_number->setBounds (10, 80, 60, 30);
-    close->setBounds (10, 113, 60, 20);
-    combo_midi_channel->setBounds (10, 50, 60, 30);
+    combo_midi_number->setBounds (10, 20, 60, 30);
+    close->setBounds (10, 55, 60, 30);
     internalPath1.clear();
     internalPath1.startNewSubPath (40.0f, 0.0f);
     internalPath1.lineTo (50.0f, 10.0f);
@@ -197,32 +165,14 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChang
     //[UsercomboBoxChanged_Pre]
     //[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == combo_midi_listen_type)
-    {
-        //[UserComboBoxCode_combo_midi_listen_type] -- add your combo box handling code here..
-        if( _midi_control )
-        {
-            _midi_control->train( comboBoxThatHasChanged->getSelectedItemIndex()-1, _midi_control->get_midi_number(), _midi_control->get_chnanel(), _midi_control->get_is_ctrl_version_of_name() );
-        }
-        //[/UserComboBoxCode_combo_midi_listen_type]
-    }
-    else if (comboBoxThatHasChanged == combo_midi_number)
+    if (comboBoxThatHasChanged == combo_midi_number)
     {
         //[UserComboBoxCode_combo_midi_number] -- add your combo box handling code here..
         if( _midi_control )
         {
-            _midi_control->train( _midi_control->get_listen_type(), comboBoxThatHasChanged->getSelectedItemIndex(), _midi_control->get_chnanel(), _midi_control->get_is_ctrl_version_of_name() );
+            _midi_control->train( comboBoxThatHasChanged->getSelectedItemIndex(), _midi_control->get_is_ctrl_version_of_name() );
         }
         //[/UserComboBoxCode_combo_midi_number]
-    }
-    else if (comboBoxThatHasChanged == combo_midi_channel)
-    {
-        //[UserComboBoxCode_combo_midi_channel] -- add your combo box handling code here..
-        if( _midi_control )
-        {
-            _midi_control->train( _midi_control->get_listen_type(), _midi_control->get_midi_number(), comboBoxThatHasChanged->getSelectedItemIndex()+1, _midi_control->get_is_ctrl_version_of_name() );
-        }
-        //[/UserComboBoxCode_combo_midi_channel]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -262,29 +212,24 @@ void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MainwindowPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams="Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
-                 variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(140)"
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_MainwindowPopup"
+                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
+                 constructorParams="Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
+                 variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(95)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="80" initialHeight="140">
+                 fixedSize="1" initialWidth="80" initialHeight="95">
   <BACKGROUND backgroundColour="ffffff">
-    <ROUNDRECT pos="1 10 78 129" cornerSize="10" fill="solid: baffffff" hasStroke="1"
+    <ROUNDRECT pos="1 10 78 84" cornerSize="10" fill="solid: baffffff" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff0000"/>
     <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
   </BACKGROUND>
-  <COMBOBOX name="" id="c07cef797cf3a611" memberName="combo_midi_listen_type"
-            virtualName="" explicitFocusOrder="0" pos="10 20 60 30" editable="0"
-            layout="33" items="" textWhenNonSelected="TYPE" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="" id="eaa2024654148814" memberName="combo_midi_number"
-            virtualName="" explicitFocusOrder="0" pos="10 80 60 30" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="10 20 60 30" editable="0"
             layout="33" items="" textWhenNonSelected="NR" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
-              explicitFocusOrder="0" pos="10 113 60 20" bgColOff="ffff0000"
+              explicitFocusOrder="0" pos="10 55 60 30" bgColOff="ffff0000"
               bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000" buttonText="ESC X"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <COMBOBOX name="" id="10b3f623cea9c053" memberName="combo_midi_channel"
-            virtualName="" explicitFocusOrder="0" pos="10 50 60 30" editable="0"
-            layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

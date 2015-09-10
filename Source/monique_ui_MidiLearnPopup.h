@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_679129E1BACE7D54__
-#define __JUCE_HEADER_679129E1BACE7D54__
+#ifndef __JUCE_HEADER_4AEB729D0E305906__
+#define __JUCE_HEADER_4AEB729D0E305906__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -26,6 +26,8 @@
 class Monique_Ui_Mainwindow;
 class MIDIControl;
 //[/Headers]
+
+
 
 //==============================================================================
 /**
@@ -36,9 +38,9 @@ class MIDIControl;
                                                                     //[/Comments]
 */
 class Monique_Ui_MainwindowPopup  : public Component,
-    public Monique_Ui_Refreshable,
-    public ComboBoxListener,
-    public ButtonListener
+                                    public Monique_Ui_Refreshable,
+                                    public ComboBoxListener,
+                                    public ButtonListener
 {
 public:
     //==============================================================================
@@ -65,16 +67,17 @@ private:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
+
+
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ComboBox> combo_midi_listen_type;
     ScopedPointer<ComboBox> combo_midi_number;
     ScopedPointer<TextButton> close;
-    ScopedPointer<ComboBox> combo_midi_channel;
     Path internalPath1;
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_MainwindowPopup)
@@ -83,4 +86,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_679129E1BACE7D54__
+#endif   // __JUCE_HEADER_4AEB729D0E305906__

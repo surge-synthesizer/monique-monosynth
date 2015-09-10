@@ -1,249 +1,394 @@
-/*
-  ==============================================================================
-
-    mono_AudioDeviceManager.cpp
-    Created: 21 May 2015 12:20:29pm
-    Author:  monotomy
-
-  ==============================================================================
-*/
-
 #include "mono_AudioDeviceManager.h"
 
-mono_AudioDeviceManager::mono_AudioDeviceManager()
-    :
-    main_input_thru( false ),
-    use_main_input_as_cc( false ),
-    cc_input_thru( false )
+//==============================================================================
+//==============================================================================
+//==============================================================================
+COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
+:
+main_input_thru( false ),
+                 cc_input_thru( false ),
+                 use_main_input_as_cc( false ),
+
+                 cc_input_callback( new MidiInputCallback_CC(this) ),
+                 note_input_callback( new MidiInputCallback_NOTES(this) ),
+
+                 midi_thru_output(nullptr),
+                 midi_feedback_output(nullptr)
 {
-    output_ident_names.add("SEND_MIDI_CC_FEEDBACK");
-    output_ident_names.add("SEND_MIDI_THRU");
-    output_ident_names.add("SEND_MIDI_CLOCK");
-
-    input_ident_names.add("RECIEVE_MIDI_MAIN");
-    input_ident_names.add("RECIEVE_CC");
+    sample_rate_changed(0);
 }
-void mono_AudioDeviceManager::init()
+
+COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
 {
-#ifdef IS_PLUGIN
-    open_port( "SEND_MIDI_CC_FEEDBACK", DAW_OUTPUT );
-
-    for( int i = 0; i != input_ident_names.size() ; ++i ) {
-        open_port( input_ident_names[i], DAW_INPUT );
-    }
-#endif
-}
-
-StringArray mono_AudioDeviceManager::get_available_ports(const String& port_ident_name_) {
-    StringArray devices;
-
-    if( output_ident_names.contains( port_ident_name_ ) ) {
-        devices.addArray( MidiOutput::getDevices() );
-#ifndef JUCE_WINDOWS
-        devices.add( VIRTUAL_PORT );
-#endif
-#ifdef IS_PLUGIN
-        devices.add( DAW_OUTPUT );
-#endif
-        devices.add( DISABLED_PORT );
-    }
-    else if( input_ident_names.contains( port_ident_name_ ) ) {
-        devices.addArray( MidiInput::getDevices() );
-
-#ifndef JUCE_WINDOWS
-        devices.add( VIRTUAL_PORT );
-#endif
-#ifdef IS_PLUGIN
-        devices.add( DAW_INPUT );
-#endif
-        devices.add( DISABLED_PORT );
-    }
-
-    return devices;
-}
-
-String mono_AudioDeviceManager::get_selected_device_name( const String& port_ident_name_ ) const {
-    // OUTPUTS
-    if( port_ident_name_ == "SEND_MIDI_CC_FEEDBACK" ) {
-        if( cc_output )
-            return cc_output->name;
-    }
-    else if( port_ident_name_ == "SEND_MIDI_THRU" ) {
-        if( thru_output )
-            return thru_output->name;
-    }
-    else if( port_ident_name_ == "SEND_MIDI_CLOCK" ) {
-        if( clock_output )
-            return clock_output->name;
-    }
-
-    // INPUTS
-    else if( port_ident_name_ == "RECIEVE_MIDI_MAIN" ) {
-        if( main_input )
-            return main_input->name;
-    }
-    else if( port_ident_name_ == "RECIEVE_CC" ) {
-        if( cc_input )
-            return cc_input->name;
-    }
-
-    return "CLOSED";
-}
-
-bool mono_AudioDeviceManager::is_port_open( const String& port_ident_name_ ) const {
-    // OUTPUTS
-    if( port_ident_name_ == "SEND_MIDI_CC_FEEDBACK" ) {
-        return cc_output;
-    }
-    else if( port_ident_name_ == "SEND_MIDI_THRU" ) {
-        return thru_output;
-    }
-    else if( port_ident_name_ == "SEND_MIDI_CLOCK" ) {
-        return clock_output;
-    }
-
-    // INPUTS
-    else if( port_ident_name_ == "RECIEVE_MIDI_MAIN" ) {
-        return main_input;
-    }
-    else if( port_ident_name_ == "RECIEVE_CC" ) {
-        return cc_input;
-    }
-
-    return false;
-}
-
-void mono_AudioDeviceManager::get_messages_to_send_to_daw(MidiBuffer& midi_messages_)
-{
-    if( cc_output )
-        cc_output->send_messages_to_daw_and_clear( midi_messages_ );
-
-    if( thru_output )
-        thru_output->send_messages_to_daw_and_clear( midi_messages_ );
-
-    // clock_output <- we don't need this in the DAW
-}
-
-void mono_AudioDeviceManager::open_port(const String& port_ident_name_, const String& device_name_)
-{
-    // OUTPUT
-    if( output_ident_names.contains( port_ident_name_ ) )
+    StringArray devices = get_available_in_ports();
+    for( int i = 0 ; i != devices.size() ; ++i )
     {
-        const StringArray port_names = get_available_ports(port_ident_name_);
-        int device_index( device_name_ == VIRTUAL_PORT ? VIRTUAL_PORT_ID : UNKNOWN_PORT_ID );
-        if( device_index == UNKNOWN_PORT_ID )
-            device_index = port_names.indexOf( device_name_ );
+        removeMidiInputCallback( devices[i], cc_input_callback );
+        removeMidiInputCallback( devices[i], note_input_callback );
+    }
 
-        bool do_open = false;
-        if( device_index != UNKNOWN_PORT_ID && device_name_ != DISABLED_PORT )
-            do_open = true;
+    delete cc_input_callback;
+    delete note_input_callback;
 
-        if( port_ident_name_ == "SEND_MIDI_CC_FEEDBACK" )
+    if( midi_thru_output )
+    {
+        delete midi_thru_output;
+        midi_thru_output = nullptr;
+    }
+    if( midi_feedback_output )
+    {
+        delete midi_feedback_output;
+        midi_feedback_output = nullptr;
+    }
+}
+
+//==============================================================================
+COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) noexcept
+{
+    cc_feedback_collector.reset(sample_rate);
+    thru_collector.reset(sample_rate);
+    cc_input_collector.reset(sample_rate);
+    note_input_collector.reset(sample_rate);
+}
+
+//==============================================================================
+COLD bool mono_AudioDeviceManager::save_to( XmlElement* xml_ ) const noexcept
+{
+    XmlElement* audio_device_setup( AudioDeviceManager::createStateXml() );
+
+    bool success = false;
+    if( audio_device_setup and xml_  )
+    {
+        // AUDIO
+        xml_->addChildElement( audio_device_setup );
+
+        // INPUT
+        xml_->setAttribute( "noteInputDeviceName", note_input_callback->get_device_name() );
+        xml_->setAttribute( "ccInputDeviceName", cc_input_callback->get_device_name() );
+
+        // OUTPU
+        xml_->setAttribute( "thruOutputDeviceName", midi_thru_name );
+        xml_->setAttribute( "feedbackOutputDeviceName", midi_feedback_name );
+
+        success = true;
+    }
+    return success;
+}
+COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcept
+{
+    String error;
+    if( xml_ )
+    {
+#ifdef IS_STANDALONE
+        // AUDIO
         {
-            if( cc_output )
-                trigger_send_clear_feedback();
-
-            cc_output = nullptr;
-            if( do_open ) {
-                cc_output = MidiOutputWrapper::open( device_index, port_ident_name_, device_name_ );
-                if( cc_output ) {
-                    cc_output->start();
-
-                    trigger_send_feedback();
-                }
+            const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
+            error = AudioDeviceManager::initialise
+            (
+                0,2,
+                xml_->getChildByName("DEVICESETUP"),
+                true
+            );
+        }
+#endif
+        // INPUT
+        {
+            String note_device = xml_->getStringAttribute( "noteInputDeviceName", "" );
+            if( note_device != "" )
+            {
+                open_in_port( INPUT_ID::NOTES, note_device );
             }
         }
-        else if( port_ident_name_ == "SEND_MIDI_THRU" )
         {
-            thru_output = nullptr;
-            if( do_open )
-                thru_output = MidiOutputWrapper::open( device_index, port_ident_name_, device_name_ );
+            String cc_device = xml_->getStringAttribute( "ccInputDeviceName", "" );
+            if( cc_device != "" )
+            {
+                open_in_port( INPUT_ID::CC, cc_device );
+            }
         }
-        else if( port_ident_name_ == "SEND_MIDI_CLOCK" )
+
+        // OUTPU
         {
-            clock_output = nullptr;
-            if( do_open )
-                clock_output = MidiOutputWrapper::open( device_index, port_ident_name_, device_name_ );
+            String thru_device = xml_->getStringAttribute( "thruOutputDeviceName", "" );
+            if( thru_device != "" )
+            {
+                open_out_port( OUTPUT_ID::THRU, thru_device );
+            }
+        }
+        {
+            String feedback_device = xml_->getStringAttribute( "feedbackOutputDeviceName", "" );
+            if( feedback_device != "" )
+            {
+                open_out_port( OUTPUT_ID::FEEDBACK, feedback_device );
+            }
         }
     }
-    // INPUT
-    else if( input_ident_names.contains( port_ident_name_ ) )
+    else
     {
-        const StringArray port_names = get_available_ports(port_ident_name_);
-        int device_index( device_name_ == VIRTUAL_PORT ? VIRTUAL_PORT_ID : UNKNOWN_PORT_ID );
-        if( device_index == UNKNOWN_PORT_ID )
-            device_index = port_names.indexOf( device_name_ );
-
-        bool do_open = false;
-        if( device_index != UNKNOWN_PORT_ID && device_name_ != DISABLED_PORT )
-            do_open = true;
-
-        if( port_ident_name_ == "RECIEVE_MIDI_MAIN" )
-        {
-            main_input = nullptr;
-            if( do_open )
-                main_input = MidiInputWrapper::open( device_index, port_ident_name_, device_name_, this );
-        }
-        else if( port_ident_name_ == "RECIEVE_CC" )
-        {
-            cc_input = nullptr;
-            if( do_open )
-                cc_input = MidiInputWrapper::open( device_index, port_ident_name_, device_name_, this );;
-        }
+        error = "DEVICE XML INVALID";
     }
+
+    return error;
 }
-COLD void mono_AudioDeviceManager::save()  const noexcept
+COLD void mono_AudioDeviceManager::save() const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
     folder = File(folder.getFullPathName()+PROJECT_FOLDER);
     if( folder.createDirectory() )
     {
-#ifdef IS_PLUGIN
-        File midi_file( File( folder.getFullPathName() + String("/") + "config.pmidi") );
-#else
-        File midi_file( File( folder.getFullPathName() + String("/") + "config.midi") );
-#endif
+        File device_file( File( folder.getFullPathName() + String("/") + "devices.mcfg") );
 
-        XmlElement xml("MIDI-IO-CONFIG-1.0");
-        if( main_input )
-            xml.setAttribute( "RECIEVE_MIDI_MAIN", main_input->name );
-        if( cc_input )
-            xml.setAttribute( "RECIEVE_CC", cc_input->name );
-
-        if( cc_output )
-            xml.setAttribute( "SEND_MIDI_CC_FEEDBACK", cc_output->name );
-        if( thru_output )
-            xml.setAttribute( "SEND_MIDI_THRU", thru_output->name );
-        if( clock_output )
-            xml.setAttribute( "SEND_MIDI_CLOCK", clock_output->name );
-
-        xml.writeToFile(midi_file,"");
+        XmlElement xml("DEVICES-1.0");
+        if( save_to( &xml ) )
+        {
+            xml.writeToFile(device_file,"");
+        }
     }
 }
-COLD void mono_AudioDeviceManager::read() noexcept
+COLD String mono_AudioDeviceManager::read() noexcept
 {
-    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
-#ifdef IS_PLUGIN
-    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("config.pmidi"));
-#else
-    File midi_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("config.midi"));
-#endif
-    ScopedPointer<XmlElement> xml = XmlDocument( midi_file ).getDocumentElement();
-    if( xml )
-    {
-        if( xml->hasTagName("MIDI-IO-CONFIG-1.0") )
-        {
-            open_port( "RECIEVE_MIDI_MAIN", xml->getStringAttribute( "RECIEVE_MIDI_MAIN", DISABLED_PORT ) );
-            open_port( "RECIEVE_CC", xml->getStringAttribute( "RECIEVE_CC", DISABLED_PORT ) );
+    std::cout << "MONIQUE: init audio" << std::endl;
 
-            open_port( "SEND_MIDI_CC_FEEDBACK", xml->getStringAttribute( "SEND_MIDI_CC_FEEDBACK", DISABLED_PORT ) );
-            open_port( "SEND_MIDI_THRU", xml->getStringAttribute( "SEND_MIDI_THRU", DISABLED_PORT ) );
-            open_port( "SEND_MIDI_CLOCK", xml->getStringAttribute( "SEND_MIDI_CLOCK", DISABLED_PORT ) );
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    File device_file = File(folder.getFullPathName()+PROJECT_FOLDER+String("devices.mcfg"));
+
+    String error;
+    if( ScopedPointer<XmlElement> xml = XmlDocument( device_file ).getDocumentElement() )
+    {
+        if( xml->hasTagName("DEVICES-1.0") )
+        {
+            error = read_from( xml );
+        }
+        else
+        {
+            error = "WRONG DEVICE FILE VERSION";
         }
     }
     else
     {
-        init();
+        error = "CAN'T READ DEVICE FILE";
+    }
+
+    return error;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+void mono_AudioDeviceManager::AdvancedMidiInputCallback::set_device_name(const String& name_) noexcept
+{
+    device_name = name_;
+}
+const String& mono_AudioDeviceManager::AdvancedMidiInputCallback::get_device_name() const noexcept
+{
+    return device_name;
+}
+
+//==============================================================================
+void mono_AudioDeviceManager::MidiInputCallback_CC::handleIncomingMidiMessage(MidiInput*, const MidiMessage& message)
+{
+    manager->collect_incoming_midi_messages( INPUT_ID::CC, message );
+}
+
+//==============================================================================
+void mono_AudioDeviceManager::MidiInputCallback_NOTES::handleIncomingMidiMessage(MidiInput*, const MidiMessage& message)
+{
+    manager->collect_incoming_midi_messages( INPUT_ID::NOTES, message );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceManager::INPUT_ID input_id_, const MidiMessage& midi_message_) noexcept
+{
+    switch( input_id_ )
+    {
+    case INPUT_ID::CC :
+    {
+        if( midi_message_.isController() )
+        {
+            cc_input_collector.addMessageToQueue( midi_message_ );
+        }
+    }
+    break;
+    case INPUT_ID::NOTES :
+    {
+#ifdef IS_STANDALONE
+        if( midi_message_.isMidiClock() )
+        {
+            note_input_collector.addMessageToQueue( midi_message_ );
+        }
+        else if( midi_message_.isMidiStart() )
+        {
+            note_input_collector.addMessageToQueue( midi_message_ );
+        }
+        else if( midi_message_.isMidiStop() )
+        {
+            note_input_collector.addMessageToQueue( midi_message_ );
+        }
+        else if( midi_message_.isMidiContinue() )
+        {
+            note_input_collector.addMessageToQueue( midi_message_ );
+        }
+        else // IF
+#endif
+            // ELSE IF!!!!
+            if( midi_message_.isNoteOnOrOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
+            }
+            else if( use_main_input_as_cc and midi_message_.isController() )
+            {
+                cc_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
+            }
+    }
+    break;
+    }
+}
+
+//==============================================================================
+mono_AudioDeviceManager::AdvancedMidiInputCallback* mono_AudioDeviceManager::get_input_device_callback(mono_AudioDeviceManager::INPUT_ID input_id_) const noexcept
+{
+    switch( input_id_ )
+    {
+    case INPUT_ID::CC :
+        return cc_input_callback;
+    case INPUT_ID::NOTES :
+        return note_input_callback;
+    }
+}
+
+//==============================================================================
+StringArray mono_AudioDeviceManager::get_available_in_ports() const noexcept
+{
+    return MidiInput::getDevices();
+}
+void mono_AudioDeviceManager::open_in_port(mono_AudioDeviceManager::INPUT_ID input_id_, const String& device_name_) noexcept
+{
+    close_in_port( input_id_ );
+
+    setMidiInputEnabled( device_name_, true );
+
+    AdvancedMidiInputCallback*midi_callback( get_input_device_callback( input_id_ ) );
+    addMidiInputCallback( device_name_, midi_callback );
+    midi_callback->set_device_name( device_name_ );
+}
+void mono_AudioDeviceManager::close_in_port(mono_AudioDeviceManager::INPUT_ID input_id_) noexcept
+{
+    AdvancedMidiInputCallback*const midi_callback( get_input_device_callback( input_id_ ) );
+    StringArray devices = get_available_in_ports();
+    for( int i = 0 ; i != devices.size() ; ++i )
+    {
+        removeMidiInputCallback( devices[i], midi_callback );
+    }
+    midi_callback->set_device_name( "" );
+}
+String mono_AudioDeviceManager::get_selected_in_device(mono_AudioDeviceManager::INPUT_ID input_id_) const noexcept
+{
+    return get_input_device_callback( input_id_ )->get_device_name();
+}
+
+//==============================================================================
+void mono_AudioDeviceManager::send_thru_messages(MidiBuffer& midi_messages_, int pos_) noexcept
+{
+    if( midi_thru_output )
+    {
+        midi_thru_output->sendBlockOfMessages( midi_messages_, 1, sample_rate );
+    }
+}
+void mono_AudioDeviceManager::send_feedback_messages(MidiBuffer& midi_messages_, int pos_) noexcept
+{
+    if( midi_feedback_output )
+    {
+        midi_feedback_output->sendBlockOfMessages( midi_messages_, 1, sample_rate );
+    }
+}
+
+//==============================================================================
+MidiOutput* mono_AudioDeviceManager::get_output_device(mono_AudioDeviceManager::OUTPUT_ID output_id_) const noexcept
+{
+    switch( output_id_ )
+    {
+    case OUTPUT_ID::THRU :
+        return midi_thru_output;
+    case OUTPUT_ID::FEEDBACK :
+        return midi_feedback_output;
+    }
+}
+StringArray mono_AudioDeviceManager::get_available_out_ports() const noexcept
+{
+    return MidiOutput::getDevices();
+}
+void mono_AudioDeviceManager::close_out_port( OUTPUT_ID output_id_ ) noexcept
+{
+    switch( output_id_ )
+    {
+    case OUTPUT_ID::FEEDBACK :
+        if( midi_feedback_output )
+        {
+            midi_feedback_output->startBackgroundThread();
+            delete midi_feedback_output;
+            midi_feedback_output = nullptr;
+        }
+        midi_feedback_name = "";
+        break;
+    case OUTPUT_ID::THRU :
+        if( midi_thru_output )
+        {
+            midi_thru_output->startBackgroundThread();
+            delete midi_thru_output;
+            midi_thru_output = nullptr;
+        }
+        midi_thru_name = "";
+        break;
+    }
+}
+bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID output_id_, const String& device_name_) noexcept
+{
+    // CLOSE
+    close_out_port( output_id_ );
+  
+    MidiOutput* output = get_output_device( output_id_ );
+
+    // OPEN
+    output = MidiOutput::openDevice( get_available_out_ports().indexOf( device_name_ ) );
+    if( output )
+    {
+        switch( output_id_ )
+        {
+        case OUTPUT_ID::FEEDBACK :
+            midi_feedback_output = output;
+            midi_feedback_name = device_name_;
+            break;
+        case OUTPUT_ID::THRU :
+            midi_thru_output = output;
+            midi_thru_name = device_name_;
+            break;
+        }
+
+        output->startBackgroundThread();
+    }
+
+    return output;
+}
+String mono_AudioDeviceManager::get_selected_out_device(mono_AudioDeviceManager::OUTPUT_ID output_id_) const noexcept
+{
+    switch( output_id_ )
+    {
+    case OUTPUT_ID::FEEDBACK :
+        return midi_feedback_name;
+        break;
+    case OUTPUT_ID::THRU :
+        return midi_thru_name;
+        break;
     }
 }
 

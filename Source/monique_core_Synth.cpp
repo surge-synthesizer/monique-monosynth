@@ -5524,7 +5524,46 @@ int MoniqueSynthesiserVoice::getCurrentlyPlayingNote() const noexcept
     return current_note;
 }
 void MoniqueSynthesiserVoice::pitchWheelMoved (int) {}
-void MoniqueSynthesiserVoice::controllerMoved (int, int ) {}
+void MoniqueSynthesiserVoice::controllerMoved (int cc_number_, int cc_value_ )
+{
+    MIDIControlHandler*const midi_learn_handler = MIDIControlHandler::getInstance();
+    Parameter*const learing_param = midi_learn_handler->is_learning();
+    Array< Parameter* >& automateable_paramters = synth_data->get_atomateable_parameters();
+
+    // CONTROLL
+    if( not learing_param )
+    {
+        for( int i = 0 ; i != automateable_paramters.size() ; ++ i )
+        {
+            Parameter*const param = automateable_paramters.getUnchecked(i);
+            if( param->midi_control->read_from_if_you_listen( cc_number_, cc_value_ ) )
+                break;
+        }
+    }
+    // TRAIN
+    else
+    {
+        if( midi_learn_handler->handle_incoming_message( cc_number_ ) )
+        {
+            // CLEAR SIBLINGS IF WE HAVE SOMETHING SUCCESSFUL TRAINED
+            String learning_param_name = learing_param->get_info().name;
+            for( int i = 0 ; i != automateable_paramters.size() ; ++ i )
+            {
+                Parameter*const param = automateable_paramters.getUnchecked(i);
+                if( param != learing_param )
+                {
+                    if( param->midi_control->get_is_ctrl_version_of_name() != learning_param_name )
+                    {
+                        if( param->midi_control->is_listen_to( cc_number_ ) )
+                        {
+                            param->midi_control->clear();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 //==============================================================================
 void MoniqueSynthesiserVoice::reset() noexcept

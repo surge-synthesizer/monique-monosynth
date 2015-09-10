@@ -17,7 +17,6 @@
 class MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class MoniqueSynthesiserVoice;
-class DATAINProcessor;
 
 template<typename,int> class CircularBuffer;
 #define type_CLOCK_SMOTH_BUFFER CircularBuffer< double, 12 >
@@ -25,32 +24,17 @@ class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
     public MidiKeyboardStateListener,
-    public mono_AudioDeviceManager,
-    public RuntimeListener
+    public mono_AudioDeviceManager
 {
-    /// MIDI IO
-    // TODO not need for plugin
 #ifdef IS_STANDALONE
     double last_clock_sample;
     double last_start_sample;
     ScopedPointer<type_CLOCK_SMOTH_BUFFER> clock_smoth_buffer;
 #endif
 public:
-#ifdef IS_STANDALONE
-    void handle_extern_midi_start( const MidiMessage& message ) noexcept override;
-    void handle_extern_midi_stop( const MidiMessage& message ) noexcept override;
-    void handle_extern_midi_continue( const MidiMessage& message ) noexcept override;
-    void handle_extern_midi_clock( const MidiMessage& message ) noexcept override;
-#endif
-    void handle_extern_note_input( const MidiMessage& message ) noexcept override;
-    void handle_extern_cc_input( const MidiMessage& message ) noexcept override;
-    void trigger_send_feedback() noexcept override;
-    void trigger_send_clear_feedback() noexcept override;
-
     /// PROCESS
     // ==============================================================================
 private:
-    DATAINProcessor* data_in_processor;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
     void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
     void releaseResources() override;
@@ -104,7 +88,6 @@ public:
 #ifdef IS_STANDALONE
     AudioProcessorPlayer player;
     bool audio_is_successful_initalized;
-    void init_audio();
 #endif
 
     ~MoniqueAudioProcessor();
