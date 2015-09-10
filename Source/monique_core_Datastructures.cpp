@@ -3237,6 +3237,19 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) const noexcept
         {
             write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
         }
+
+        for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+        {
+            left_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
+            right_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("RightMorphData_")+String(morpher_id)));
+        }
+
+        // BACKUP
+        saveable_backups.clearQuick();
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
+        }
     }
 }
 bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) const noexcept
@@ -3245,12 +3258,6 @@ bool MoniqueSynthData::write2file( const String& bank_name_, const String& progr
 
     XmlElement xml("PROJECT-1.0");
     save_to( &xml );
-
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-    {
-        left_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
-        right_morph_sources[morpher_id]->save_to(xml.createNewChildElement(String("RightMorphData_")+String(morpher_id)));
-    }
 
     return xml.writeToFile(program_file,"");
 }
