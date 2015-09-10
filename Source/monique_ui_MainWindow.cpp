@@ -1968,6 +1968,8 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
 #include "mono_ui_includeHacks_END.h"
+    
+    synth_data->ui_scale_factor = getHeight()/original_h;
     //[/UserResized]
 }
 
@@ -2681,17 +2683,20 @@ bool Monique_Ui_Mainwindow::keyStateChanged (const bool isKeyDown)
     bool success = false;
     if( isKeyDown )
     {
-        if( KeyPress::isKeyCurrentlyDown( '+' ) and is_ctrl_down )
+        if( is_ctrl_down )
         {
-            synth_data->ui_scale_factor = synth_data->ui_scale_factor + 0.1;
-            update_size();
-            success = true;
-        }
-        else if ( KeyPress::isKeyCurrentlyDown( '-' ) and is_ctrl_down )
-        {
-            synth_data->ui_scale_factor = synth_data->ui_scale_factor - 0.1;
-            update_size();
-            success = true;
+            if( (KeyPress::isKeyCurrentlyDown( '+' ) or KeyPress::isKeyCurrentlyDown( KeyPress::numberPadAdd ) ) )
+            {
+                synth_data->ui_scale_factor = synth_data->ui_scale_factor + 0.1;
+                update_size();
+                success = true;
+            }
+            else if ( (KeyPress::isKeyCurrentlyDown( '-' ) or KeyPress::isKeyCurrentlyDown( KeyPress::numberPadSubtract ) ) )
+            {
+                synth_data->ui_scale_factor = synth_data->ui_scale_factor - 0.1;
+                update_size();
+                success = true;
+            }
         }
     }
     return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
