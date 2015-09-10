@@ -1,16 +1,5 @@
 CHANGES 0.6
-- add ctrl to show the all the values in detail (note: if you press ctrl you can ctrl sliders in velocity(mouse velocity) mode)
-- fix bug shutdown if the adsr editor was open 
-- fix crackls boost, filter volume, filter distortion
-- fix explosions on switch from pass filter
-- fix grey out first value sliders on ctrl mode also if there is no second slider behind
-- add: load save colour themes from/to settings file
-- fix: oscilloscope bg colour
-- fix adsr preset designer bg colour
-- fix morph editor bg colour
-- invert dry|wet (reverb) - please invert the slider state for your projects
-- add: store/edit slider settings
-- add: +/- plus ctrl to resize ui / also store the size
+- add "project is changed, do you like to save before load a new one" question 
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV

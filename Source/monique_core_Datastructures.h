@@ -569,6 +569,7 @@ struct MoniqueSynthData : ParameterListener
 private:
     // ==============================================================================
     Array< Parameter* > saveable_parameters;
+    Array< float > saveable_backups;
     Array< Parameter* > global_parameters;
     COLD void colect_saveable_parameters() noexcept;
     COLD void colect_global_parameters() noexcept;
@@ -628,6 +629,8 @@ private:
     // FILE IO
     StringArray banks;
     Array< StringArray > program_names_per_bank;
+    String last_program;
+    String last_bank;
 
     int current_program;
     int current_program_abs;

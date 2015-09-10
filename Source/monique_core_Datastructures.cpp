@@ -1,6 +1,7 @@
 #include "monique_core_Datastructures.h"
 #include "monique_core_Parameters.h"
 #include "monique_core_Synth.h"
+#include <unistd.h>
 
 //==============================================================================
 //==============================================================================
@@ -3205,9 +3206,32 @@ bool MoniqueSynthData::load_next() noexcept
 }
 bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
 {
+    // CHECK FOR CHANGES FIRST
+    for( int i = 0 ; i != saveable_backups.size() ; ++i )
+    {
+        if( saveable_backups.getUnchecked(i) != saveable_parameters.getUnchecked(i)->get_value() )
+        {
+            bool success = AlertWindow::showNativeDialogBox
+            (
+                "CURRENT PROJECT CHANGED!",
+                String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
+                true
+            );
+
+            if( success )
+            {
+                write2file( last_bank, last_program );
+            }
+            
+            break;
+        }
+    }
+
     bool success = false;
-    File program = get_program_file( bank_name_, program_name_ );
-    ScopedPointer<XmlElement> xml = XmlDocument( program ).getDocumentElement();
+    File program_file = get_program_file( bank_name_, program_name_ );
+    last_bank = bank_name_;
+    last_program = program_name_;
+    ScopedPointer<XmlElement> xml = XmlDocument( program_file ).getDocumentElement();
     if( xml )
     {
         if( xml->hasTagName("PROJECT-1.0") || xml->hasTagName("MONOLisa") )
@@ -3252,12 +3276,14 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 {
     if( xml_ )
     {
+        // PARAMS
         // TODO, this is not really required. coz the morph groubs will set this values
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
             read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
         }
 
+        // MORPH STUFF
         if( id == MASTER )
         {
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
@@ -3272,14 +3298,21 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
                 morph_switch_buttons( morpher_id, false );
             }
         }
+
+        // BACKUP
+        saveable_backups.clearQuick();
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
+        }
     }
 }
 //==============================================================================
 void MoniqueSynthData::save_session() const noexcept
 {
     write2file( "SESSION", "last" );
-    
-    // store last programm settings to a file 
+
+    // store last programm settings to a file
 }
 void MoniqueSynthData::load_session() noexcept
 {
