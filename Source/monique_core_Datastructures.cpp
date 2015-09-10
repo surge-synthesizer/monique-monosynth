@@ -3278,6 +3278,8 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 void MoniqueSynthData::save_session() const noexcept
 {
     write2file( "SESSION", "last" );
+    
+    // store last programm settings to a file 
 }
 void MoniqueSynthData::load_session() noexcept
 {

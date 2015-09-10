@@ -207,8 +207,8 @@ UiLookAndFeel::UiLookAndFeel()
         //DocumentWindow::textColourId,               0xff000000, // (this is deliberately not set)
 
         AlertWindow::backgroundColourId,            0xff161616,
-        AlertWindow::textColourId,                  0xfff0f8ff,
-        AlertWindow::outlineColourId,               0xff11ffff,
+        AlertWindow::textColourId,                  0xffffffff,
+        AlertWindow::outlineColourId,               0xffffffff,
 
         ProgressBar::backgroundColourId,            0xffeeeeee,
         ProgressBar::foregroundColourId,            0xffaaaaee,
@@ -474,6 +474,13 @@ AlertWindow* UiLookAndFeel::createAlertWindow (const String& title, const String
             aw->addButton (button1, 1, button1ShortCut);
             aw->addButton (button2, 2, button2ShortCut);
             aw->addButton (button3, 0, KeyPress (KeyPress::escapeKey));
+        }
+    }
+    for( int i = 0 ; i != aw->getNumChildComponents() ; ++i )
+    {
+        if( Button* button = dynamic_cast<Button*>( aw->getChildComponent(i) ) )
+        {
+            button->setColour( TextButton::buttonColourId, Colours::white );
         }
     }
 

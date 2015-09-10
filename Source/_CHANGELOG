@@ -48,19 +48,18 @@ MY TODO
 - do not process the unused bands
 
 TODO:
-- add: modulation amounts as automation params
-- add: midi bank select
+- programm changed on switch -> ask do you like to store it?
+- store last program as filename in last session file (not as separate project)
+- add: 3 standard colour themes
+- reset: oscs to zero on sleep
+- add: keyboard arrow up/down, left/right to control slider values
+- lfo programm switch glide
+- add: modulation amounts as automation params- add: midi bank select
 - add: midi mod wheel; pitch wheel support
 - add: panic
 - add-back: morph toggles
 - shuffle: snap to note durations
 - add: modwheel to ui
-- store last program as filename in last session file (not as separate project)
-- resize ui by +/-
-- add: 3 standard colour themes
-- reset: oscs to zero on sleep
-- add: keyboard arrow up/down, left/right to control slider values
-- lfo programm switch glide
 
 QUESTS
 - sync lfo with note on?
