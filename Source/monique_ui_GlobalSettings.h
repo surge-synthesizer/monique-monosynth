@@ -135,14 +135,12 @@ private:
     ScopedPointer<Label> label_4;
     ScopedPointer<ComboBox> combo_multicore_cpus;
     ScopedPointer<Label> label_ui_headline_4;
-    ScopedPointer<Slider> slider_morph_motor_time2;
+    ScopedPointer<Slider> slider_sensitivity;
     ScopedPointer<Label> label2;
     ScopedPointer<Label> label_3;
     ScopedPointer<Label> label_5;
-    ScopedPointer<Label> label_6;
     ScopedPointer<ToggleButton> toggle_slider_linear;
     ScopedPointer<ToggleButton> toggle_slider_rotary;
-    ScopedPointer<ToggleButton> toggle_animate_input_env4;
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label_colour_1;
     ScopedPointer<Label> label_colour_7;

@@ -9,6 +9,8 @@ CHANGES 0.6
 - fix adsr preset designer bg colour
 - fix morph editor bg colour
 - invert dry|wet (reverb) - please invert the slider state for your projects
+- add: store/edit slider settings
+- add: +/- plus ctrl to resize ui / also store the size
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV
@@ -46,9 +48,6 @@ MY TODO
 - do not process the unused bands
 
 TODO:
-- store/edit slider settings
-- add: keyboard arrow up/down, left/right to control slider values
-- add: store ui size
 - add: modulation amounts as automation params
 - add: midi bank select
 - add: midi mod wheel; pitch wheel support
@@ -60,6 +59,7 @@ TODO:
 - resize ui by +/-
 - add: 3 standard colour themes
 - reset: oscs to zero on sleep
+- add: keyboard arrow up/down, left/right to control slider values
 - lfo programm switch glide
 
 QUESTS

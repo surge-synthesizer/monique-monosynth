@@ -398,11 +398,13 @@ public:
     // SETTER
     inline bool operator= ( const bool value_ ) noexcept
     {
-        return bool(value = value_);
+        value = value_;
+        return bool(value);
     }
     inline bool operator= ( const BoolParameter& other_ ) noexcept
     {
-        return value = other_.value;
+        value = other_.value;
+        return bool(value);
     }
 
 private:

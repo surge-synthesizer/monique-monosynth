@@ -87,6 +87,7 @@ public:
     void resize_sequence_buttons();
     void switch_finalizer_tab();
     void update_slider_handling();
+    void update_size();
 
     Array<int> last_morpher_index;
 
@@ -95,6 +96,8 @@ public:
     int last_bank;
     int last_programm;
     void sliderClicked (Slider*s_) override;
+
+    bool is_ctrl_down;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -103,6 +106,7 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void sliderValueChanged (Slider* sliderThatWasMoved);
     bool keyPressed (const KeyPress& key);
+    bool keyStateChanged (const bool isKeyDown);
     void modifierKeysChanged (const ModifierKeys& modifiers);
 
 

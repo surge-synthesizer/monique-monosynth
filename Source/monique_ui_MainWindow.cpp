@@ -220,23 +220,28 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
 }
 static inline void update_slider_handling_( Component*parent_ )
 {
-   const bool is_in_rotary_mode = GET_DATA( synth_data ).sliders_in_rotary_mode;
+    const bool is_in_rotary_mode = GET_DATA( synth_data ).sliders_in_rotary_mode;
+    const int sensitivity = GET_DATA( synth_data ).sliders_sensitivity;
     for( int i = 0 ; i != parent_->getNumChildComponents() ; ++i )
     {
         if( Slider*const slider = dynamic_cast< Slider* >( parent_->getChildComponent(i) ) )
         {
-            if( is_in_rotary_mode )
+            if( slider->getSliderStyle() == Slider::Rotary or slider->getSliderStyle() == Slider::RotaryHorizontalVerticalDrag)
             {
-                slider->setSliderStyle (Slider::Rotary);
-            }
-            else
-            {
-                slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+                if( is_in_rotary_mode )
+                {
+                    slider->setSliderStyle (Slider::Rotary);
+                }
+                else
+                {
+                    slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+                }
+                slider->setMouseDragSensitivity( sensitivity );
             }
         }
         else
         {
-	    // RECURSIVE
+            // RECURSIVE
             update_slider_handling_(parent_->getChildComponent(i));
         }
     }
@@ -245,6 +250,11 @@ static inline void update_slider_handling_( Component*parent_ )
 void Monique_Ui_Mainwindow::update_slider_handling()
 {
     update_slider_handling_(this);
+}
+void Monique_Ui_Mainwindow::update_size()
+{
+    float ui_scale_factor = synth_data->ui_scale_factor;
+    setBounds(getX(),getY(),original_w*ui_scale_factor, original_h*ui_scale_factor);
 }
 void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
@@ -258,6 +268,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     : AudioProcessorEditor(AppInstanceStore::getInstance()->audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    is_ctrl_down = false;
     //[/Constructor_pre]
 
     addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (new SpeedMultiSlConfig()));
@@ -1101,14 +1112,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 #else
     resizer->setVisible(false);
 #endif
-    //setSize (1440.0f*0.8f, 1080.0f*0.8f);
-    //setSize (1440.0f*0.95f, 1080.0f*0.95f);
-    //setSize (1280, 900);
-    //setBounds(0,0,1430.0f, 1080.0f);
-    //setSize (1430.0f, 1080.0f); // INTROJUCER SIZE
-
-    setSize(original_w*0.8f, original_h*0.8f);
-    //setSize (1430.0f, 1080.0f); // INTROJUCER SIZE
+    update_size();
 
     keyboard->setLowestVisibleKey(50);
     keyboard->setAvailableRange( 0, 127 );
@@ -2666,18 +2670,46 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         close_all_subeditors();
         success = true;
     }
+
     return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
+}
+
+bool Monique_Ui_Mainwindow::keyStateChanged (const bool isKeyDown)
+{
+    //[UserCode_keyStateChanged] -- Add your code here...
+    bool success = false;
+    if( isKeyDown )
+    {
+        if( KeyPress::isKeyCurrentlyDown( '+' ) and is_ctrl_down )
+        {
+            synth_data->ui_scale_factor = synth_data->ui_scale_factor + 0.1;
+            update_size();
+            success = true;
+        }
+        else if ( KeyPress::isKeyCurrentlyDown( '-' ) and is_ctrl_down )
+        {
+            synth_data->ui_scale_factor = synth_data->ui_scale_factor - 0.1;
+            update_size();
+            success = true;
+        }
+    }
+    return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    //[/UserCode_keyStateChanged]
 }
 
 void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
-    if( ! combo_programm->isTextEditable() ) {
-        synth_data->ctrl = modifiers.isShiftDown();
+    is_ctrl_down = modifiers.isCtrlDown();
+    if( ! combo_programm->isTextEditable() )
+    {
+        const bool is_shift_down = modifiers.isShiftDown();
+
+        synth_data->ctrl = is_shift_down;
         show_ctrl_state();
 
-        UiLookAndFeel::getInstance()->show_values_always = modifiers.isCtrlDown();
+        UiLookAndFeel::getInstance()->show_values_always = is_ctrl_down;
     }
 
     //else
@@ -2750,6 +2782,7 @@ BEGIN_JUCER_METADATA
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
     <METHOD name="keyPressed (const KeyPress&amp; key)"/>
+    <METHOD name="keyStateChanged (const bool isKeyDown)"/>
   </METHODS>
   <BACKGROUND backgroundColour="ff050505">
     <ROUNDRECT pos="480 595 605 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"

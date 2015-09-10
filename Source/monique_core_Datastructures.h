@@ -549,6 +549,8 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter animate_eq_env;
     BoolParameter animate_modulations;
     BoolParameter sliders_in_rotary_mode;
+    IntParameter sliders_sensitivity;
+    Parameter ui_scale_factor;
 
     // ENV OPTION
     Parameter force_envs_to_zero;

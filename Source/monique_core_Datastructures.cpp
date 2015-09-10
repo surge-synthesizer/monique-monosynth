@@ -1987,6 +1987,21 @@ sliders_in_rotary_mode
     generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
     generate_short_human_name("slider_rotary")
 ),
+sliders_sensitivity
+(
+    MIN_MAX( 100, 2000 ),
+    500,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
+    generate_short_human_name("slider_sensitivity")
+),
+ui_scale_factor
+(
+    MIN_MAX( 0.6, 10 ),
+    0.7,
+    1000,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
+    generate_short_human_name("ui_scale_factor")
+),
 
 // ----
 force_envs_to_zero
@@ -2262,8 +2277,12 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &animate_input_env );
     global_parameters.add( &animate_eq_env );
     global_parameters.add( &animate_modulations );
+
     global_parameters.add( &sliders_in_rotary_mode );
-    
+    global_parameters.add( &sliders_sensitivity );
+
+    global_parameters.add( &ui_scale_factor );
+
     global_parameters.add( &midi_pickup_offset );
     global_parameters.add( &ctrl );
 

@@ -79,10 +79,11 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
 
     // THREADS
     combo_multicore_cpus->setSelectedId( synth_data.num_extra_threads+1, dontSendNotification );
-    
+
     // SLIDERS
     toggle_slider_rotary->setToggleState( synth_data.sliders_in_rotary_mode, dontSendNotification );
     toggle_slider_linear->setToggleState( not synth_data.sliders_in_rotary_mode, dontSendNotification );
+    slider_sensitivity->setEnabled( not synth_data.sliders_in_rotary_mode );
 }
 
 void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
@@ -406,15 +407,15 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_ui_headline_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (slider_morph_motor_time2 = new Slider ("0"));
-    slider_morph_motor_time2->setRange (1, 1000, 1);
-    slider_morph_motor_time2->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_morph_motor_time2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_morph_motor_time2->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_morph_motor_time2->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_morph_motor_time2->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_morph_motor_time2->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_morph_motor_time2->addListener (this);
+    addAndMakeVisible (slider_sensitivity = new Slider ("0"));
+    slider_sensitivity->setRange (100, 2000, 1);
+    slider_sensitivity->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    slider_sensitivity->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    slider_sensitivity->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
+    slider_sensitivity->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
+    slider_sensitivity->setColour (Slider::textBoxTextColourId, Colours::yellow);
+    slider_sensitivity->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
+    slider_sensitivity->addListener (this);
 
     addAndMakeVisible (label2 = new Label ("new label",
                                            TRANS("SENSITIVITY")));
@@ -443,23 +444,11 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_6 = new Label (String::empty,
-                                            TRANS("WHEEL DRAG")));
-    label_6->setFont (Font (30.00f, Font::plain));
-    label_6->setJustificationType (Justification::centredLeft);
-    label_6->setEditable (false, false, false);
-    label_6->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (toggle_slider_linear = new ToggleButton (String::empty));
     toggle_slider_linear->addListener (this);
 
     addAndMakeVisible (toggle_slider_rotary = new ToggleButton (String::empty));
     toggle_slider_rotary->addListener (this);
-
-    addAndMakeVisible (toggle_animate_input_env4 = new ToggleButton (String::empty));
-    toggle_animate_input_env4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
                                                         TRANS("COLOURS")));
@@ -705,14 +694,12 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_4 = nullptr;
     combo_multicore_cpus = nullptr;
     label_ui_headline_4 = nullptr;
-    slider_morph_motor_time2 = nullptr;
+    slider_sensitivity = nullptr;
     label2 = nullptr;
     label_3 = nullptr;
     label_5 = nullptr;
-    label_6 = nullptr;
     toggle_slider_linear = nullptr;
     toggle_slider_rotary = nullptr;
-    toggle_animate_input_env4 = nullptr;
     label_ui_headline_5 = nullptr;
     label_colour_1 = nullptr;
     label_colour_7 = nullptr;
@@ -799,14 +786,12 @@ void Monique_Ui_GlobalSettings::resized()
     label_4->setBounds (540, 110, 60, 33);
     combo_multicore_cpus->setBounds (610, 110, 80, 30);
     label_ui_headline_4->setBounds (760, -4, 170, 35);
-    slider_morph_motor_time2->setBounds (740, 40, 60, 70);
+    slider_sensitivity->setBounds (740, 40, 60, 70);
     label2->setBounds (720, 110, 100, 33);
-    label_3->setBounds (860, 30, 100, 33);
-    label_5->setBounds (860, 70, 100, 33);
-    label_6->setBounds (860, 110, 100, 33);
-    toggle_slider_linear->setBounds (830, 30, 33, 33);
-    toggle_slider_rotary->setBounds (830, 70, 33, 33);
-    toggle_animate_input_env4->setBounds (830, 110, 33, 33);
+    label_3->setBounds (860, 50, 100, 33);
+    label_5->setBounds (860, 90, 100, 33);
+    toggle_slider_linear->setBounds (830, 50, 33, 33);
+    toggle_slider_rotary->setBounds (830, 90, 33, 33);
     label_ui_headline_5->setBounds (1120, -4, 182, 35);
     label_colour_1->setBounds (1020, 30, 110, 33);
     label_colour_7->setBounds (1320, 30, 120, 33);
@@ -901,11 +886,6 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
 	AppInstanceStore::getInstance()->editor->update_slider_handling();
         //[/UserButtonCode_toggle_slider_rotary]
     }
-    else if (buttonThatWasClicked == toggle_animate_input_env4)
-    {
-        //[UserButtonCode_toggle_animate_input_env4] -- add your button handler code here..
-        //[/UserButtonCode_toggle_animate_input_env4]
-    }
     else if (buttonThatWasClicked == button_colour_bg)
     {
         //[UserButtonCode_button_colour_bg] -- add your button handler code here..
@@ -982,10 +962,12 @@ void Monique_Ui_GlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
         GET_DATA( synth_data ).glide_motor_time = sliderThatWasMoved->getValue();
         //[/UserSliderCode_slider_glide_time]
     }
-    else if (sliderThatWasMoved == slider_morph_motor_time2)
+    else if (sliderThatWasMoved == slider_sensitivity)
     {
-        //[UserSliderCode_slider_morph_motor_time2] -- add your slider handling code here..
-        //[/UserSliderCode_slider_morph_motor_time2]
+        //[UserSliderCode_slider_sensitivity] -- add your slider handling code here..
+        GET_DATA( synth_data ).sliders_sensitivity = sliderThatWasMoved->getValue();
+	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        //[/UserSliderCode_slider_sensitivity]
     }
 
     //[UsersliderValueChanged_Post]
@@ -1268,10 +1250,10 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="SLIDERS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <SLIDER name="0" id="ada70618221d405" memberName="slider_morph_motor_time2"
+  <SLIDER name="0" id="ada70618221d405" memberName="slider_sensitivity"
           virtualName="Slider" explicitFocusOrder="0" pos="740 40 60 70"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="1000" int="1" style="RotaryHorizontalVerticalDrag"
+          textboxbkgd="ff161616" min="100" max="2000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="e594adc8a1c69523" memberName="label2" virtualName=""
@@ -1280,28 +1262,20 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="308a6ce808eddf2e" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="860 30 100 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="860 50 100 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LINEAR DRAG" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="70949c3310a2e558" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="860 70 100 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="860 90 100 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ROTARY DRAG" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="c89a79c1406a0ae0" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="860 110 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="WHEEL DRAG" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="992c96a954884e8b" memberName="toggle_slider_linear"
-                virtualName="" explicitFocusOrder="0" pos="830 30 33 33" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="830 50 33 33" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="" id="83332647a3954a0b" memberName="toggle_slider_rotary"
-                virtualName="" explicitFocusOrder="0" pos="830 70 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="" id="3a61c0b11e0af4ba" memberName="toggle_animate_input_env4"
-                virtualName="" explicitFocusOrder="0" pos="830 110 33 33" buttonText=""
+                virtualName="" explicitFocusOrder="0" pos="830 90 33 33" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="DL" id="9eb0361b7a0444ac" memberName="label_ui_headline_5"
          virtualName="" explicitFocusOrder="0" pos="1120 -4 182 35" textCol="ff1111ff"
