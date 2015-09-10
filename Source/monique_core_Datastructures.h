@@ -685,8 +685,6 @@ private:
     bool write2file( const String& bank_name_, const String& program_name_ ) const noexcept;
 
 public:
-    void save_session() const noexcept;
-    void load_session() noexcept;
     void save_settings() const noexcept;
     void load_settings() noexcept;
     

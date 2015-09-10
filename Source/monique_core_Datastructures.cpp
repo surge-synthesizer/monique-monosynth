@@ -3308,16 +3308,6 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
     }
 }
 //==============================================================================
-void MoniqueSynthData::save_session() const noexcept
-{
-    write2file( "SESSION", "last" );
-
-    // store last programm settings to a file
-}
-void MoniqueSynthData::load_session() noexcept
-{
-    load( "SESSION", "last" );
-}
 void MoniqueSynthData::save_settings() const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
@@ -3331,6 +3321,9 @@ void MoniqueSynthData::save_settings() const noexcept
         {
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
+        xml.setAttribute( "BANK", current_bank );
+        xml.setAttribute( "PROG", current_program );
+        
         UiLookAndFeel::getInstance()->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
@@ -3350,6 +3343,8 @@ void MoniqueSynthData::load_settings() noexcept
                 read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
             }
         }
+        current_bank = xml->getIntAttribute( "BANK", 0 );
+        current_program = xml->getIntAttribute( "PROG", -1 );
 
         UiLookAndFeel::getInstance()->colours.read_from( xml );
     }

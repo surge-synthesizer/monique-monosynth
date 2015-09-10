@@ -37,7 +37,6 @@ MY TODO
 - do not process the unused bands
 
 TODO:
-- programm changed on switch -> ask do you like to store it?
 - store last program as filename in last session file (not as separate project)
 - add: 3 standard colour themes
 - reset: oscs to zero on sleep

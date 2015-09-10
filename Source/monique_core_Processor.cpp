@@ -184,6 +184,9 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
         mono_AudioDeviceManager::read();
         synth_data->load_settings();
         synth_data->read_midi();
+#ifdef IS_STANDALONE
+        synth_data->load();
+#endif
     }
 }
 
@@ -197,8 +200,6 @@ MoniqueAudioProcessor::~MoniqueAudioProcessor()
     closeAudioDevice();
     removeAudioCallback (&player);
     player.setProcessor(nullptr);
-
-    synth_data->save_session();
 #endif
     mono_AudioDeviceManager::save();
     synth_data->save_midi();
@@ -221,7 +222,6 @@ void MoniqueAudioProcessor::init_audio()
         synth->addVoice (voice);
         synth->addSound (new MoniqueSynthesiserSound());
         data_in_processor = new DATAINProcessor();
-        synth_data->load_session ();
     }
 
     std::cout << "MONIQUE: init audio" << std::endl;
