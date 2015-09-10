@@ -2765,7 +2765,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
 //==============================================================================
 inline void AnalogFilter::reset() noexcept
 {
-    cutoff=res=res4=p=k=r=gain=y1=y2=y3=y4=oldx=oldy1=oldy2=oldy3=0;
+    cutoff=res=res4=p=k=r=gain=y1=y2=y3=y4=oldx=oldy1=oldy2=oldy3=1;
 }
 
 //==============================================================================

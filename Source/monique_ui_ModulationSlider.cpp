@@ -186,13 +186,15 @@ void Monique_Ui_DualSlider::show_view_mode()
     if( slider_modulation )
     {
         slider_modulation->setOpaque( not is_in_ctrl_mode );
-        slider_value->setOpaque( is_in_ctrl_mode );
-
         slider_modulation->setEnabled( is_in_ctrl_mode );
-        slider_value->setEnabled( not is_in_ctrl_mode );
-
-        is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
+	
+	is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
     }
+    {
+        slider_value->setOpaque( is_in_ctrl_mode or not slider_modulation );
+        slider_value->setEnabled( not is_in_ctrl_mode );
+    }
+
     if( button_bottom )
     {
         button_bottom->setButtonText( not is_in_ctrl_mode ? _config->get_bottom_button_text().text : _config->get_bottom_button_switch_text().text );
@@ -294,8 +296,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
             if( not label_top->isBeingEdited() )
             {
                 label_top->setVisible(true);
-		label_top->setEnabled(slider_value->isEnabled());
-		label_top->setEditable(slider_value->isEnabled());
+                label_top->setEnabled(slider_value->isEnabled());
+                label_top->setEditable(slider_value->isEnabled());
                 label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
             }
         }

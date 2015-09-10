@@ -3270,6 +3270,7 @@ void MoniqueSynthData::save_settings() const noexcept
         {
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
+	UiLookAndFeel::getInstance()->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
     }
@@ -3288,6 +3289,8 @@ void MoniqueSynthData::load_settings() noexcept
                 read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
             }
         }
+        
+	UiLookAndFeel::getInstance()->colours.read_from( xml );
     }
 }
 

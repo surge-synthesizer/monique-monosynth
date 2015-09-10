@@ -3,6 +3,11 @@ CHANGES 0.6
 - fix bug shutdown if the adsr editor was open 
 - fix crackls boost, filter volume, filter distortion
 - fix explosions on switch from pass filter
+- fix grey out first value sliders on ctrl mode also if there is no second slider behind
+- add: load save colour themes from/to settings file
+- fix: oscilloscope bg colour
+- fix adsr preset designer bg colour
+- fix morph editor bg colour
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV
@@ -38,10 +43,9 @@ MY TODO
 - test performance HeapBlock on the stack vs array of floats
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
-- grey out first value sliders on ctrl mode
 
 TODO:
-- lfo programm switch glide
+- wet/dry
 - store colour themes to settings file
 - fix: colour styles for some sub editors
 - store/edit slider settings
@@ -58,6 +62,7 @@ TODO:
 - resize ui by +/-
 - add: 3 standard colour themes
 - reset: oscs to zero on sleep
+- lfo programm switch glide
 
 QUESTS
 - sync lfo with note on?

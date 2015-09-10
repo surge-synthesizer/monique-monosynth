@@ -801,26 +801,14 @@ void Monique_Ui_Settings::paint (Graphics& g)
 
     g.fillAll (Colour (0xff050505));
 
-    g.setColour (Colour (0x66000000));
-    g.fillRoundedRectangle (10.0f, 10.0f, 260.0f, 135.0f, 6.000f);
-
     g.setColour (Colour (0xffff3b00));
     g.drawRoundedRectangle (10.0f, 10.0f, 260.0f, 135.0f, 6.000f, 1.000f);
-
-    g.setColour (Colour (0x66000000));
-    g.fillRoundedRectangle (270.0f, 10.0f, 260.0f, 135.0f, 6.000f);
 
     g.setColour (Colour (0xffff3b00));
     g.drawRoundedRectangle (270.0f, 10.0f, 260.0f, 135.0f, 6.000f, 1.000f);
 
-    g.setColour (Colour (0x66000000));
-    g.fillRoundedRectangle (530.0f, 10.0f, 260.0f, 135.0f, 6.000f);
-
     g.setColour (Colour (0xffff3b00));
     g.drawRoundedRectangle (530.0f, 10.0f, 260.0f, 135.0f, 6.000f, 1.000f);
-
-    g.setColour (Colour (0x66000000));
-    g.fillRoundedRectangle (790.0f, 10.0f, 260.0f, 135.0f, 6.000f);
 
     g.setColour (Colour (0xffff3b00));
     g.drawRoundedRectangle (790.0f, 10.0f, 260.0f, 135.0f, 6.000f, 1.000f);
@@ -1135,18 +1123,18 @@ void Monique_Ui_Settings::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Settings" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams=""
-                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="1465" initialHeight="180">
+                 parentClasses="public Component, public Monique_Ui_Refreshable"
+                 constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="10 10 260 135" cornerSize="6" fill="solid: 66000000" hasStroke="1"
+    <ROUNDRECT pos="10 10 260 135" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="270 10 260 135" cornerSize="6" fill="solid: 66000000" hasStroke="1"
+    <ROUNDRECT pos="270 10 260 135" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="530 10 260 135" cornerSize="6" fill="solid: 66000000" hasStroke="1"
+    <ROUNDRECT pos="530 10 260 135" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="790 10 260 135" cornerSize="6" fill="solid: 66000000" hasStroke="1"
+    <ROUNDRECT pos="790 10 260 135" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
     <RECT pos="140 145 1 11" fill="solid: ffff3b00" hasStroke="0"/>
     <RECT pos="400 145 1 11" fill="solid: ffff3b00" hasStroke="0"/>

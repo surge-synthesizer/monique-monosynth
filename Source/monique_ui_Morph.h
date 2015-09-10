@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_65BEB9C97C372EA3__
-#define __JUCE_HEADER_65BEB9C97C372EA3__
+#ifndef __JUCE_HEADER_1C60A0F90B7BBE4E__
+#define __JUCE_HEADER_1C60A0F90B7BBE4E__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -37,8 +37,8 @@ class Monique_Ui_DragPad;
                                                                     //[/Comments]
 */
 class Monique_Ui_MorphConfig  : public Component,
-    public ComboBoxListener,
-    public ButtonListener
+                                public ComboBoxListener,
+                                public ButtonListener
 {
 public:
     //==============================================================================
@@ -112,4 +112,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_65BEB9C97C372EA3__
+#endif   // __JUCE_HEADER_1C60A0F90B7BBE4E__

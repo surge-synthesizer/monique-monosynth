@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_8EB35BC3F04D7C4__
-#define __JUCE_HEADER_8EB35BC3F04D7C4__
+#ifndef __JUCE_HEADER_2751DF7F2846A55__
+#define __JUCE_HEADER_2751DF7F2846A55__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -37,8 +37,8 @@ class ENVPresetDef;
                                                                     //[/Comments]
 */
 class Monique_Ui_Settings  : public Component,
-    public Monique_Ui_Refreshable,
-    public SliderListener
+                             public Monique_Ui_Refreshable,
+                             public SliderListener
 {
 public:
     //==============================================================================
@@ -143,4 +143,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_8EB35BC3F04D7C4__
+#endif   // __JUCE_HEADER_2751DF7F2846A55__

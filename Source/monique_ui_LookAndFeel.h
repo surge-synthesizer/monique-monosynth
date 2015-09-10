@@ -31,7 +31,11 @@
 /**
     @see LookAndFeel_V2
 */
-struct ComponentColours {
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct ComponentColours 
+{
     Colour slider_track_colour;
     Colour slider_track_colour_2;
     Colour slider_track_colour_modulation;
@@ -43,61 +47,24 @@ struct ComponentColours {
     Colour bg_lines;
     Colour signal_lines;
 
-    ComponentColours() :
-        slider_track_colour( 4278251775 ),
-        slider_track_colour_2( Colour(0xffff6600) ),
-        slider_track_colour_modulation( 4294942532 ),
-        button_on_colour( 4294942532 ),
-        button_off_colour( 4279308561 ),
-        label_text_colour( 4294942532 ),
-        midi_learn( Colours::red ),
+    COLD ComponentColours() noexcept;
+    COLD ~ComponentColours() noexcept;
 
-        bg( 0xff050505 ),
-        bg_lines( 0xffff3b00 ),
-        signal_lines( 4278251775 )
-    {}
-
-    COLD void read_from( XmlElement*xml_ ) {
-        XmlElement* xml = xml_->getChildByName("COLOURS");
-        if( xml )
-        {
-            /*
-                  slider_track_colour = Colour( xml->getIntAttribute( "slider_track_colour", Colours::yellow.getARGB() ) );
-                  slider_line_colour = Colour( xml->getIntAttribute( "slider_line_colour", 0xff333333 ) );
-                  slider_text_colour = Colour( xml->getIntAttribute( "slider_text_colour", Colours::yellow.getARGB() ) );
-                  button_on_colour = Colour( xml->getIntAttribute( "button_on_colour", Colours::red.getARGB() ) );
-                  button_off_colour = Colour( xml->getIntAttribute( "button_off_colour", Colours::black.getARGB() ) );
-                  button_text_colour = Colour( xml->getIntAttribute( "button_text_colour", Colours::yellow.getARGB() ) );
-                  label_text_colour = Colour( xml->getIntAttribute( "label_text_colour", Colours::yellow.getARGB() ) );
-                  bg = Colour( xml->getIntAttribute( "bg", 0xff161616 ) );
-                  bg_lines = Colour( xml->getIntAttribute( "bg_lines", 0xffff3b00 ) );
-                  */
-        }
-    }
-    COLD void save_to( XmlElement*xml_ ) {
-        /*
-          XmlElement* xml = xml_->createNewChildElement("COLOURS");
-          xml->setAttribute( "slider_track_colour", String( slider_track_colour.getARGB() ) );
-          xml->setAttribute( "slider_line_colour",  String( slider_line_colour.getARGB() ) );
-          xml->setAttribute( "slider_text_colour",  String( slider_text_colour.getARGB() ) );
-          xml->setAttribute( "button_on_colour",  String( button_on_colour.getARGB() ) );
-          xml->setAttribute( "button_off_colour",  String( button_off_colour.getARGB() ) );
-          xml->setAttribute( "button_text_colour",  String( button_text_colour.getARGB() ) );
-          xml->setAttribute( "label_text_colour",  String( label_text_colour.getARGB() ) );
-          xml->setAttribute( "bg",  String( bg.getARGB() ) );
-          xml->setAttribute( "bg_lines",  String( bg_lines.getARGB() ) );
-          */
-    }
+    COLD void read_from( XmlElement*xml_ ) noexcept;
+    COLD void save_to( XmlElement*xml_ ) noexcept;
 };
 
+//==============================================================================
 // HACK 's
-enum MODULATION_SLIDER_STYLE {
+enum MODULATION_SLIDER_STYLE 
+{
     MODULATION_SLIDER_IS_FIXED_CENTERED,
     MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO,
     MODULATION_SLIDER_MOVES_WITH_MASTER,
 };
 
-enum SLIDER_STYLES {
+enum SLIDER_STYLES 
+{
     VALUE_SLIDER,
     MODULATION_SLIDER,
     FIRST_MODULATION_BUT_HAS_SECOND_MODULATION,
@@ -105,7 +72,8 @@ enum SLIDER_STYLES {
 
     UNDEFINED_SLIDER_STYLE
 };
-enum SLIDER_LABEL_STYLES {
+enum SLIDER_LABEL_STYLES 
+{
     DONT_SHOW_TEXT = 0,
     SHOW_MIDDLE_TEXT_BOX = 1,
     JUST_HIDE_CENTER
@@ -125,6 +93,9 @@ enum SLIDER_LABEL_STYLES {
 #define GET_LABEL_STYLE getName
 #define SET_LABEL_STYLE setName
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class UiLookAndFeel  : public LookAndFeel_V2, public DeletedAtShutdown
 {
 public:

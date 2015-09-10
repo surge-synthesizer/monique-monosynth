@@ -27,6 +27,9 @@
 
 juce_ImplementSingleton (UiLookAndFeel)
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
 namespace LookAndFeelHelpers
 {
 static Colour createBaseColour (Colour buttonColour,
@@ -58,6 +61,67 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 }
 }
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+ComponentColours::ComponentColours() noexcept :
+slider_track_colour( 4278251775 ),
+                     slider_track_colour_2( Colour(0xffff6600) ),
+                     slider_track_colour_modulation( 4294942532 ),
+                     button_on_colour( 4294942532 ),
+                     button_off_colour( 4279308561 ),
+                     label_text_colour( 4294942532 ),
+                     midi_learn( Colours::red ),
+                     bg( 0xff050505 ),
+                     bg_lines( 0xffff3b00 ),
+                     signal_lines( 4278251775 )
+{}
+ComponentColours::~ComponentColours() noexcept {}
+
+//==============================================================================
+void ComponentColours::read_from(XmlElement* xml_) noexcept
+{
+    XmlElement* xml = xml_->getChildByName("COLOURS");
+    if( xml )
+    {
+        slider_track_colour = Colour( xml->getIntAttribute( "st_col", 4278251775 ) );
+        slider_track_colour_2 = Colour( xml->getIntAttribute( "st2_col", Colour(0xffff6600).getARGB() ) );
+        slider_track_colour_modulation = Colour( xml->getIntAttribute( "stmod_col", 4294942532 ) );
+
+        button_on_colour = Colour( xml->getIntAttribute( "bon_col", 4294942532 ) );
+        button_off_colour = Colour( xml->getIntAttribute( "boff_col", 4279308561 ) );
+        label_text_colour = Colour( xml->getIntAttribute( "ltx_col", 4294942532 ) );
+
+        midi_learn = Colour( xml->getIntAttribute( "ml_col", Colours::red.getARGB() ) );
+
+        bg = Colour( xml->getIntAttribute( "bg_col", 0xff050505 ) );
+        bg_lines = Colour( xml->getIntAttribute( "bgl_col", 0xffff3b00 ) );
+        signal_lines = Colour( xml->getIntAttribute( "sigl_col", 4278251775 ) );
+    }
+}
+void ComponentColours::save_to(XmlElement* xml_) noexcept
+{
+    XmlElement* xml = xml_->createNewChildElement("COLOURS");
+    if( xml )
+    {
+        xml->setAttribute( "st_col", String( slider_track_colour.getARGB() ) );
+        xml->setAttribute( "st2_col", String( slider_track_colour_2.getARGB() ) );
+        xml->setAttribute( "stmod_col", String( slider_track_colour_modulation.getARGB() ) );
+
+        xml->setAttribute( "bon_col", String( button_on_colour.getARGB() ) );
+        xml->setAttribute( "boff_col", String( button_off_colour.getARGB() ) );
+        xml->setAttribute( "ltx_col", String( label_text_colour.getARGB() ) );
+
+        xml->setAttribute( "ml_col", String( midi_learn.getARGB() ) );
+
+        xml->setAttribute( "bg_col", String( bg.getARGB() ) );
+        xml->setAttribute( "bgl_col", String( bg_lines.getARGB() ) );
+        xml->setAttribute( "sigl_col", String( signal_lines.getARGB() ) );
+    }
+}
+
+//==============================================================================
+//==============================================================================
 //==============================================================================
 UiLookAndFeel::UiLookAndFeel()
 {
@@ -1645,3 +1709,4 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
+

@@ -175,7 +175,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     {
         lock_for_reading();
 	
-        g.fillAll (Colour(0xff050505));
+	ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+	
+        g.fillAll (colours.bg);
 
         // TODO MAKE INTS!
         const int samples_to_paint = sl_show_range->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
@@ -196,7 +198,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             g.setColour (colour.darker (0.6f));
             g.drawRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3, 1);
 
-            g.setColour (UiLookAndFeel::getInstance()->colours.label_text_colour.withAlpha(0.3f));
+            g.setColour (colours.label_text_colour.withAlpha(0.3f));
             g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
         }
 
@@ -415,7 +417,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                UiLookAndFeel::getInstance()->colours.slider_track_colour,
+                colours.slider_track_colour,
 
                 values,
 
@@ -437,7 +439,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                UiLookAndFeel::getInstance()->colours.slider_track_colour.darker(),
+                colours.slider_track_colour.darker(),
 
                 values_env,
 
