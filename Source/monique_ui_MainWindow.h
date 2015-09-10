@@ -86,6 +86,7 @@ public:
     Array< TextButton* > sequence_buttons;
     void resize_sequence_buttons();
     void switch_finalizer_tab();
+    void update_slider_handling();
 
     Array<int> last_morpher_index;
 

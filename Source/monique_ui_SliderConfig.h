@@ -3202,7 +3202,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "WET|DRY";
+        return "DRY|WET";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override

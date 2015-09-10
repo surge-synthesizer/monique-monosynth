@@ -4769,7 +4769,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
     // PREPARE REVERB
     const float reverb_room = reverb_data->room;
-    const float reverb_dry_wet_mix = reverb_data->dry_wet_mix;
+    const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
     const float reverb_width = reverb_data->width;
     ReverbParameters& rever_params_l = reverb_l.get_parameters();
     if(

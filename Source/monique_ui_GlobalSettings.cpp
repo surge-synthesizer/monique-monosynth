@@ -79,6 +79,10 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
 
     // THREADS
     combo_multicore_cpus->setSelectedId( synth_data.num_extra_threads+1, dontSendNotification );
+    
+    // SLIDERS
+    toggle_slider_rotary->setToggleState( synth_data.sliders_in_rotary_mode, dontSendNotification );
+    toggle_slider_linear->setToggleState( not synth_data.sliders_in_rotary_mode, dontSendNotification );
 }
 
 void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
@@ -225,7 +229,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_colour_9 = new Label (String::empty,
-            TRANS("MODULATION SLIDER (BACK)")));
+                                                   TRANS("MODULATION SLIDER (BACK)")));
     label_colour_9->setFont (Font (30.00f, Font::plain));
     label_colour_9->setJustificationType (Justification::centredLeft);
     label_colour_9->setEditable (false, false, false);
@@ -237,10 +241,11 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     button_current_editor_color->setButtonText (TRANS("OK"));
     button_current_editor_color->addListener (this);
 
-    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace,0,7));
+    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
+                                                             ,0,7));
 
     addAndMakeVisible (label_colour_6 = new Label (String::empty,
-            TRANS("LABELS")));
+                                                   TRANS("LABELS")));
     label_colour_6->setFont (Font (30.00f, Font::plain));
     label_colour_6->setJustificationType (Justification::centredLeft);
     label_colour_6->setEditable (false, false, false);
@@ -249,7 +254,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_4 = new Label (String::empty,
-            TRANS("BUTTON ON")));
+                                                   TRANS("BUTTON ON")));
     label_colour_4->setFont (Font (30.00f, Font::plain));
     label_colour_4->setJustificationType (Justification::centredLeft);
     label_colour_4->setEditable (false, false, false);
@@ -258,7 +263,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_5 = new Label (String::empty,
-            TRANS("BUTTON OFF")));
+                                                   TRANS("BUTTON OFF")));
     label_colour_5->setFont (Font (30.00f, Font::plain));
     label_colour_5->setJustificationType (Justification::centredLeft);
     label_colour_5->setEditable (false, false, false);
@@ -305,7 +310,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_16 = new Label (String::empty,
-            TRANS("INPUT ENV\'S")));
+                                             TRANS("INPUT ENV\'S")));
     label_16->setFont (Font (30.00f, Font::plain));
     label_16->setJustificationType (Justification::centredLeft);
     label_16->setEditable (false, false, false);
@@ -317,7 +322,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     toggle_animate_input_env->addListener (this);
 
     addAndMakeVisible (label_18 = new Label (String::empty,
-            TRANS("EQ ENV")));
+                                             TRANS("EQ ENV")));
     label_18->setFont (Font (30.00f, Font::plain));
     label_18->setJustificationType (Justification::centredLeft);
     label_18->setEditable (false, false, false);
@@ -329,7 +334,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     toggle_animate_eq_env->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
-            TRANS("MODULATIONS")));
+                                             TRANS("MODULATIONS")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredLeft);
     label_19->setEditable (false, false, false);
@@ -341,7 +346,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     toggle_output_cc_mute4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-            TRANS("GLOBAL TIMES")));
+                                                        TRANS("GLOBAL TIMES")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -350,7 +355,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-            TRANS("ANIMATIONS")));
+                                                        TRANS("ANIMATIONS")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -368,7 +373,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_cpu_usage = new Label (String::empty,
-            TRANS("20%")));
+                                                    TRANS("20%")));
     label_cpu_usage->setFont (Font (30.00f, Font::plain));
     label_cpu_usage->setJustificationType (Justification::centredLeft);
     label_cpu_usage->setEditable (false, false, false);
@@ -393,7 +398,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     combo_multicore_cpus->addListener (this);
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-            TRANS("SLIDERS")));
+                                                        TRANS("SLIDERS")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -447,17 +452,17 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_animate_input_env2 = new ToggleButton (String::empty));
-    toggle_animate_input_env2->addListener (this);
+    addAndMakeVisible (toggle_slider_linear = new ToggleButton (String::empty));
+    toggle_slider_linear->addListener (this);
 
-    addAndMakeVisible (toggle_animate_input_env3 = new ToggleButton (String::empty));
-    toggle_animate_input_env3->addListener (this);
+    addAndMakeVisible (toggle_slider_rotary = new ToggleButton (String::empty));
+    toggle_slider_rotary->addListener (this);
 
     addAndMakeVisible (toggle_animate_input_env4 = new ToggleButton (String::empty));
     toggle_animate_input_env4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-            TRANS("COLOURS")));
+                                                        TRANS("COLOURS")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -466,7 +471,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_1 = new Label (String::empty,
-            TRANS("BACKGROUND")));
+                                                   TRANS("BACKGROUND")));
     label_colour_1->setFont (Font (30.00f, Font::plain));
     label_colour_1->setJustificationType (Justification::centredLeft);
     label_colour_1->setEditable (false, false, false);
@@ -475,7 +480,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_7 = new Label (String::empty,
-            TRANS("VALUE SLIDER (FRONT)")));
+                                                   TRANS("VALUE SLIDER (FRONT)")));
     label_colour_7->setFont (Font (30.00f, Font::plain));
     label_colour_7->setJustificationType (Justification::centredLeft);
     label_colour_7->setEditable (false, false, false);
@@ -484,7 +489,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_8 = new Label (String::empty,
-            TRANS("VALUE SLIDER 2 (BACK)")));
+                                                   TRANS("VALUE SLIDER 2 (BACK)")));
     label_colour_8->setFont (Font (30.00f, Font::plain));
     label_colour_8->setJustificationType (Justification::centredLeft);
     label_colour_8->setEditable (false, false, false);
@@ -493,7 +498,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_2 = new Label (String::empty,
-            TRANS("BORDERS")));
+                                                   TRANS("BORDERS")));
     label_colour_2->setFont (Font (30.00f, Font::plain));
     label_colour_2->setJustificationType (Justification::centredLeft);
     label_colour_2->setEditable (false, false, false);
@@ -526,7 +531,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     button_colour_slider_mod->addListener (this);
 
     addAndMakeVisible (label_colour_3 = new Label (String::empty,
-            TRANS("SIGNAL LINES")));
+                                                   TRANS("SIGNAL LINES")));
     label_colour_3->setFont (Font (30.00f, Font::plain));
     label_colour_3->setJustificationType (Justification::centredLeft);
     label_colour_3->setEditable (false, false, false);
@@ -547,7 +552,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     button_colour_labels->addListener (this);
 
     addAndMakeVisible (label_ui_headline_6 = new Label ("DL",
-            TRANS("AUDIO & CPU")));
+                                                        TRANS("AUDIO & CPU")));
     label_ui_headline_6->setFont (Font (30.00f, Font::plain));
     label_ui_headline_6->setJustificationType (Justification::centred);
     label_ui_headline_6->setEditable (false, false, false);
@@ -604,7 +609,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     combo_block_size->addListener (this);
 
     addAndMakeVisible (label_10 = new Label (String::empty,
-            TRANS("DRIVER:")));
+                                             TRANS("DRIVER:")));
     label_10->setFont (Font (30.00f, Font::plain));
     label_10->setJustificationType (Justification::centredRight);
     label_10->setEditable (false, false, false);
@@ -705,8 +710,8 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_3 = nullptr;
     label_5 = nullptr;
     label_6 = nullptr;
-    toggle_animate_input_env2 = nullptr;
-    toggle_animate_input_env3 = nullptr;
+    toggle_slider_linear = nullptr;
+    toggle_slider_rotary = nullptr;
     toggle_animate_input_env4 = nullptr;
     label_ui_headline_5 = nullptr;
     label_colour_1 = nullptr;
@@ -799,8 +804,8 @@ void Monique_Ui_GlobalSettings::resized()
     label_3->setBounds (860, 30, 100, 33);
     label_5->setBounds (860, 70, 100, 33);
     label_6->setBounds (860, 110, 100, 33);
-    toggle_animate_input_env2->setBounds (830, 30, 33, 33);
-    toggle_animate_input_env3->setBounds (830, 70, 33, 33);
+    toggle_slider_linear->setBounds (830, 30, 33, 33);
+    toggle_slider_rotary->setBounds (830, 70, 33, 33);
     toggle_animate_input_env4->setBounds (830, 110, 33, 33);
     label_ui_headline_5->setBounds (1120, -4, 182, 35);
     label_colour_1->setBounds (1020, 30, 110, 33);
@@ -882,15 +887,19 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         GET_DATA( synth_data ).animate_modulations = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_output_cc_mute4]
     }
-    else if (buttonThatWasClicked == toggle_animate_input_env2)
+    else if (buttonThatWasClicked == toggle_slider_linear)
     {
-        //[UserButtonCode_toggle_animate_input_env2] -- add your button handler code here..
-        //[/UserButtonCode_toggle_animate_input_env2]
+        //[UserButtonCode_toggle_slider_linear] -- add your button handler code here..
+        GET_DATA( synth_data ).sliders_in_rotary_mode = false;
+	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        //[/UserButtonCode_toggle_slider_linear]
     }
-    else if (buttonThatWasClicked == toggle_animate_input_env3)
+    else if (buttonThatWasClicked == toggle_slider_rotary)
     {
-        //[UserButtonCode_toggle_animate_input_env3] -- add your button handler code here..
-        //[/UserButtonCode_toggle_animate_input_env3]
+        //[UserButtonCode_toggle_slider_rotary] -- add your button handler code here..
+        GET_DATA( synth_data ).sliders_in_rotary_mode = true;
+	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        //[/UserButtonCode_toggle_slider_rotary]
     }
     else if (buttonThatWasClicked == toggle_animate_input_env4)
     {
@@ -1137,11 +1146,11 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
 
 BEGIN_JUCER_METADATA
 
-<JUCER_COMPONENT documentType="Component" className="Monique_Ui_GlobalSettings" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable" constructorParams=""
-                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="10"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="1465" initialHeight="180">
+<JUCER_COMPONENT documentType="Component" className="Monique_Ui_GlobalSettings"
+                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
+                 constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505">
     <ROUNDRECT pos="10 10 190 150" cornerSize="6" fill="solid: 50505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
@@ -1285,10 +1294,10 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="WHEEL DRAG" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="992c96a954884e8b" memberName="toggle_animate_input_env2"
+  <TOGGLEBUTTON name="" id="992c96a954884e8b" memberName="toggle_slider_linear"
                 virtualName="" explicitFocusOrder="0" pos="830 30 33 33" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
-  <TOGGLEBUTTON name="" id="83332647a3954a0b" memberName="toggle_animate_input_env3"
+  <TOGGLEBUTTON name="" id="83332647a3954a0b" memberName="toggle_slider_rotary"
                 virtualName="" explicitFocusOrder="0" pos="830 70 33 33" buttonText=""
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <TOGGLEBUTTON name="" id="3a61c0b11e0af4ba" memberName="toggle_animate_input_env4"

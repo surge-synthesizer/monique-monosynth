@@ -8,6 +8,7 @@ CHANGES 0.6
 - fix: oscilloscope bg colour
 - fix adsr preset designer bg colour
 - fix morph editor bg colour
+- invert dry|wet (reverb) - please invert the slider state for your projects
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV
@@ -45,9 +46,6 @@ MY TODO
 - do not process the unused bands
 
 TODO:
-- wet/dry
-- store colour themes to settings file
-- fix: colour styles for some sub editors
 - store/edit slider settings
 - add: keyboard arrow up/down, left/right to control slider values
 - add: store ui size

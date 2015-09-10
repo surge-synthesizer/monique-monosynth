@@ -1981,6 +1981,12 @@ animate_modulations
     generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),
     generate_short_human_name("animate_modulations")
 ),
+sliders_in_rotary_mode
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
+    generate_short_human_name("slider_rotary")
+),
 
 // ----
 force_envs_to_zero
@@ -2133,7 +2139,7 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
         delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_data;
         mono_ParameterOwnerStore::getInstance()->ui_env_preset_data = nullptr;
     }
-    
+
     env_preset_def = nullptr;
 }
 
@@ -2256,7 +2262,8 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &animate_input_env );
     global_parameters.add( &animate_eq_env );
     global_parameters.add( &animate_modulations );
-
+    global_parameters.add( &sliders_in_rotary_mode );
+    
     global_parameters.add( &midi_pickup_offset );
     global_parameters.add( &ctrl );
 
@@ -3270,7 +3277,7 @@ void MoniqueSynthData::save_settings() const noexcept
         {
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
-	UiLookAndFeel::getInstance()->colours.save_to( &xml );
+        UiLookAndFeel::getInstance()->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
     }
@@ -3289,8 +3296,8 @@ void MoniqueSynthData::load_settings() noexcept
                 read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
             }
         }
-        
-	UiLookAndFeel::getInstance()->colours.read_from( xml );
+
+        UiLookAndFeel::getInstance()->colours.read_from( xml );
     }
 }
 

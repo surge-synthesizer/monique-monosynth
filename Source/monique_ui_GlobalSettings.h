@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_17CCEBF6399BC65B__
-#define __JUCE_HEADER_17CCEBF6399BC65B__
+#ifndef __JUCE_HEADER_896740BF6EEE43F0__
+#define __JUCE_HEADER_896740BF6EEE43F0__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -35,10 +35,10 @@
                                                                     //[/Comments]
 */
 class Monique_Ui_GlobalSettings  : public Component,
-    public Monique_Ui_Refreshable,
-    public ButtonListener,
-    public SliderListener,
-    public ComboBoxListener
+                                   public Monique_Ui_Refreshable,
+                                   public ButtonListener,
+                                   public SliderListener,
+                                   public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -64,7 +64,7 @@ private:
         float sum;
 
     public:
-        inline void add( float val_ ) noexcept 
+        inline void add( float val_ ) noexcept
         {
             sum-=buffer[pos];
             buffer[pos] = val_;
@@ -74,7 +74,7 @@ private:
             if( pos == BUFFER_SIZE )
                 pos = 0;
         }
-        inline int get_average() const noexcept 
+        inline int get_average() const noexcept
         {
             return round0(sum / BUFFER_SIZE);
         }
@@ -140,8 +140,8 @@ private:
     ScopedPointer<Label> label_3;
     ScopedPointer<Label> label_5;
     ScopedPointer<Label> label_6;
-    ScopedPointer<ToggleButton> toggle_animate_input_env2;
-    ScopedPointer<ToggleButton> toggle_animate_input_env3;
+    ScopedPointer<ToggleButton> toggle_slider_linear;
+    ScopedPointer<ToggleButton> toggle_slider_rotary;
     ScopedPointer<ToggleButton> toggle_animate_input_env4;
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label_colour_1;
@@ -176,4 +176,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_17CCEBF6399BC65B__
+#endif   // __JUCE_HEADER_896740BF6EEE43F0__

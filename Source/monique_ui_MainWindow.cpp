@@ -218,6 +218,34 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
 
     !state_switch ? effect_finalizer_switch->setButtonText ("E Q") : effect_finalizer_switch->setButtonText ("F X");
 }
+static inline void update_slider_handling_( Component*parent_ )
+{
+   const bool is_in_rotary_mode = GET_DATA( synth_data ).sliders_in_rotary_mode;
+    for( int i = 0 ; i != parent_->getNumChildComponents() ; ++i )
+    {
+        if( Slider*const slider = dynamic_cast< Slider* >( parent_->getChildComponent(i) ) )
+        {
+            if( is_in_rotary_mode )
+            {
+                slider->setSliderStyle (Slider::Rotary);
+            }
+            else
+            {
+                slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+            }
+        }
+        else
+        {
+	    // RECURSIVE
+            update_slider_handling_(parent_->getChildComponent(i));
+        }
+    }
+}
+
+void Monique_Ui_Mainwindow::update_slider_handling()
+{
+    update_slider_handling_(this);
+}
 void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
     if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
@@ -1055,6 +1083,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     setOpaque(true);
 
     combo_programm->setEditableText(false);
+    update_slider_handling();
 
     if( false )
     {
@@ -2647,7 +2676,7 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
     if( ! combo_programm->isTextEditable() ) {
         synth_data->ctrl = modifiers.isShiftDown();
         show_ctrl_state();
-	
+
         UiLookAndFeel::getInstance()->show_values_always = modifiers.isCtrlDown();
     }
 
