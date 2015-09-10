@@ -2136,6 +2136,7 @@ error_string("ERROR")
         refresh_banks_and_programms();
     }
 }
+#include "monique_core_Synth.h"
 COLD MoniqueSynthData::~MoniqueSynthData() noexcept
 {
     eq_data = nullptr;
@@ -2150,7 +2151,7 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     // AS LAST!! unregister listeners
     if( mono_ParameterOwnerStore::getInstance()->ui_env )
     {
-        delete mono_ParameterOwnerStore::getInstance()->ui_env;
+        mono_ParameterOwnerStore::getInstance()->voice->kill( mono_ParameterOwnerStore::getInstance()->ui_env );
         mono_ParameterOwnerStore::getInstance()->ui_env = nullptr;
         delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_data;
         mono_ParameterOwnerStore::getInstance()->ui_env_preset_data = nullptr;

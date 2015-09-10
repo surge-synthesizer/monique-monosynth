@@ -96,6 +96,8 @@ public:
     //==============================================================================
     COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
     COLD ~MoniqueSynthesiserVoice() noexcept;
+    
+    static void kill(ENV* env_) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)
 };

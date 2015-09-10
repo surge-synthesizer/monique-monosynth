@@ -5298,6 +5298,10 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 
     mono_ThreadManager::deleteInstance();
 }
+void MoniqueSynthesiserVoice::kill( ENV* env_ ) noexcept
+{
+    delete env_;
+}
 
 //==============================================================================
 void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )

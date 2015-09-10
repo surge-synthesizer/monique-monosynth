@@ -1,6 +1,5 @@
 CHANGES 0.6
-- add: "project is changed, do you like to save before load a new one" question 
-- add: support to open last program (standalone)
+
 
 :!: KNOWN BUGS:
 *** Leaked objects detected: 1 instance(s) of class ENV
