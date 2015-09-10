@@ -198,7 +198,7 @@ Monique_Ui_DragPad::~Monique_Ui_DragPad()
 void Monique_Ui_DragPad::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    ComponentColours colours_ = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours_ = UiLookAndFeel::getInstance()->colours;
 
     const float w_h = 15;
     const float x = track_area->getX()+1;

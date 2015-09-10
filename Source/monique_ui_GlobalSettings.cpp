@@ -229,30 +229,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
-    addAndMakeVisible (label_colour_9 = new Label (String::empty,
-                                                   TRANS("MODULATION SLIDER (BACK)")));
-    label_colour_9->setFont (Font (30.00f, Font::plain));
-    label_colour_9->setJustificationType (Justification::centredLeft);
-    label_colour_9->setEditable (false, false, false);
-    label_colour_9->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (button_current_editor_color = new TextButton (String::empty));
-    button_current_editor_color->setButtonText (TRANS("OK"));
-    button_current_editor_color->addListener (this);
-
     addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
                                                              ,0,7));
-
-    addAndMakeVisible (label_colour_6 = new Label (String::empty,
-                                                   TRANS("LABELS")));
-    label_colour_6->setFont (Font (30.00f, Font::plain));
-    label_colour_6->setJustificationType (Justification::centredLeft);
-    label_colour_6->setEditable (false, false, false);
-    label_colour_6->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_4 = new Label (String::empty,
                                                    TRANS("BUTTON ON")));
@@ -262,6 +240,37 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_4->setColour (Label::textColourId, Colour (0xffff3b00));
     label_colour_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_colour_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (button_current_editor_color = new TextButton (String::empty));
+    button_current_editor_color->setButtonText (TRANS("OK"));
+    button_current_editor_color->addListener (this);
+
+    addAndMakeVisible (label_colour_7 = new Label (String::empty,
+                                                   TRANS("VALUE SLIDER (FRONT)")));
+    label_colour_7->setFont (Font (30.00f, Font::plain));
+    label_colour_7->setJustificationType (Justification::centredLeft);
+    label_colour_7->setEditable (false, false, false);
+    label_colour_7->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_colour_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_colour_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_colour_9 = new Label (String::empty,
+                                                   TRANS("MODULATION SLIDER (BACK)")));
+    label_colour_9->setFont (Font (30.00f, Font::plain));
+    label_colour_9->setJustificationType (Justification::centredLeft);
+    label_colour_9->setEditable (false, false, false);
+    label_colour_9->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_colour_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_colour_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_colour_6 = new Label (String::empty,
+                                                   TRANS("LABELS")));
+    label_colour_6->setFont (Font (30.00f, Font::plain));
+    label_colour_6->setJustificationType (Justification::centredLeft);
+    label_colour_6->setEditable (false, false, false);
+    label_colour_6->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_colour_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_colour_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_colour_5 = new Label (String::empty,
                                                    TRANS("BUTTON OFF")));
@@ -468,15 +477,6 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_colour_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_colour_7 = new Label (String::empty,
-                                                   TRANS("VALUE SLIDER (FRONT)")));
-    label_colour_7->setFont (Font (30.00f, Font::plain));
-    label_colour_7->setJustificationType (Justification::centredLeft);
-    label_colour_7->setEditable (false, false, false);
-    label_colour_7->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label_colour_8 = new Label (String::empty,
                                                    TRANS("VALUE SLIDER 2 (BACK)")));
     label_colour_8->setFont (Font (30.00f, Font::plain));
@@ -613,6 +613,18 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     combo_audio_driver->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_audio_driver->addListener (this);
 
+    addAndMakeVisible (button_preset_1 = new TextButton ("new button"));
+    button_preset_1->setButtonText (TRANS("PRE1"));
+    button_preset_1->addListener (this);
+
+    addAndMakeVisible (button_preset_2 = new TextButton ("new button"));
+    button_preset_2->setButtonText (TRANS("PRE2"));
+    button_preset_2->addListener (this);
+
+    addAndMakeVisible (button_preset_3 = new TextButton ("new button"));
+    button_preset_3->setButtonText (TRANS("PRE3"));
+    button_preset_3->addListener (this);
+
 
     //[UserPreSize]
     setOpaque(true);
@@ -629,6 +641,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
         }
     }
 
+    button_preset_1->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+    button_preset_2->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+    button_preset_3->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
+    
     // CPU
     for( int i = 0 ; i != THREAD_LIMIT ; ++i )
         combo_multicore_cpus->addItem(String(i+1),i+1);
@@ -671,11 +687,12 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    label_colour_9 = nullptr;
-    button_current_editor_color = nullptr;
     colour_selector = nullptr;
-    label_colour_6 = nullptr;
     label_colour_4 = nullptr;
+    button_current_editor_color = nullptr;
+    label_colour_7 = nullptr;
+    label_colour_9 = nullptr;
+    label_colour_6 = nullptr;
     label_colour_5 = nullptr;
     slider_morph_motor_time = nullptr;
     slider_glide_time = nullptr;
@@ -702,7 +719,6 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     toggle_slider_rotary = nullptr;
     label_ui_headline_5 = nullptr;
     label_colour_1 = nullptr;
-    label_colour_7 = nullptr;
     label_colour_8 = nullptr;
     label_colour_2 = nullptr;
     button_colour_bg = nullptr;
@@ -724,6 +740,9 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     combo_block_size = nullptr;
     label_10 = nullptr;
     combo_audio_driver = nullptr;
+    button_preset_1 = nullptr;
+    button_preset_2 = nullptr;
+    button_preset_3 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -763,12 +782,13 @@ void Monique_Ui_GlobalSettings::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label_colour_9->setBounds (1320, 110, 120, 33);
-    button_current_editor_color->setBounds (1330, 40, 90, 90);
-    colour_selector->setBounds (990, 30, 330, 110);
-    label_colour_6->setBounds (1170, 110, 110, 33);
-    label_colour_4->setBounds (1170, 30, 110, 33);
-    label_colour_5->setBounds (1170, 70, 110, 33);
+    colour_selector->setBounds (990, 30, 270, 110);
+    label_colour_4->setBounds (1140, 30, 90, 33);
+    button_current_editor_color->setBounds (1270, 40, 90, 90);
+    label_colour_7->setBounds (1260, 30, 120, 33);
+    label_colour_9->setBounds (1260, 110, 120, 33);
+    label_colour_6->setBounds (1140, 110, 90, 33);
+    label_colour_5->setBounds (1140, 70, 90, 33);
     slider_morph_motor_time->setBounds (30, 40, 60, 70);
     slider_glide_time->setBounds (120, 40, 60, 70);
     label13->setBounds (12, 110, 96, 33);
@@ -793,20 +813,19 @@ void Monique_Ui_GlobalSettings::resized()
     toggle_slider_linear->setBounds (830, 50, 33, 33);
     toggle_slider_rotary->setBounds (830, 90, 33, 33);
     label_ui_headline_5->setBounds (1120, -4, 182, 35);
-    label_colour_1->setBounds (1020, 30, 110, 33);
-    label_colour_7->setBounds (1320, 30, 120, 33);
-    label_colour_8->setBounds (1320, 70, 120, 33);
-    label_colour_2->setBounds (1020, 70, 110, 33);
+    label_colour_1->setBounds (1020, 30, 90, 33);
+    label_colour_8->setBounds (1260, 70, 120, 33);
+    label_colour_2->setBounds (1020, 70, 90, 33);
     button_colour_bg->setBounds (990, 30, 33, 30);
     button_colour_border->setBounds (990, 70, 33, 30);
-    button_colour_buttons_on->setBounds (1140, 30, 33, 30);
-    button_colour_slider_1->setBounds (1290, 30, 33, 30);
-    button_colour_slider_2->setBounds (1290, 70, 33, 30);
-    button_colour_slider_mod->setBounds (1290, 110, 33, 30);
-    label_colour_3->setBounds (1020, 110, 110, 33);
+    button_colour_buttons_on->setBounds (1110, 30, 33, 30);
+    button_colour_slider_1->setBounds (1230, 30, 33, 30);
+    button_colour_slider_2->setBounds (1230, 70, 33, 30);
+    button_colour_slider_mod->setBounds (1230, 110, 33, 30);
+    label_colour_3->setBounds (1020, 110, 90, 33);
     button_colour_signal_lines->setBounds (990, 110, 33, 30);
-    button_colour_buttons_off->setBounds (1140, 70, 33, 30);
-    button_colour_labels->setBounds (1140, 110, 33, 30);
+    button_colour_buttons_off->setBounds (1110, 70, 33, 30);
+    button_colour_labels->setBounds (1110, 110, 33, 30);
     label_ui_headline_6->setBounds (460, -4, 170, 35);
     label_7->setBounds (390, 70, 60, 33);
     combo_audio_device->setBounds (460, 70, 80, 30);
@@ -816,6 +835,9 @@ void Monique_Ui_GlobalSettings::resized()
     combo_block_size->setBounds (610, 30, 80, 30);
     label_10->setBounds (390, 30, 60, 33);
     combo_audio_driver->setBounds (460, 30, 80, 30);
+    button_preset_1->setBounds (1400, 30, 43, 30);
+    button_preset_2->setBounds (1400, 70, 43, 30);
+    button_preset_3->setBounds (1400, 110, 43, 30);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
@@ -876,14 +898,14 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_toggle_slider_linear] -- add your button handler code here..
         GET_DATA( synth_data ).sliders_in_rotary_mode = false;
-	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        AppInstanceStore::getInstance()->editor->update_slider_handling();
         //[/UserButtonCode_toggle_slider_linear]
     }
     else if (buttonThatWasClicked == toggle_slider_rotary)
     {
         //[UserButtonCode_toggle_slider_rotary] -- add your button handler code here..
         GET_DATA( synth_data ).sliders_in_rotary_mode = true;
-	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        AppInstanceStore::getInstance()->editor->update_slider_handling();
         //[/UserButtonCode_toggle_slider_rotary]
     }
     else if (buttonThatWasClicked == button_colour_bg)
@@ -940,6 +962,60 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         open_colour_selector( UiLookAndFeel::getInstance()->colours.label_text_colour );
         //[/UserButtonCode_button_colour_labels]
     }
+    else if (buttonThatWasClicked == button_preset_1)
+    {
+        //[UserButtonCode_button_preset_1] -- add your button handler code here..
+        ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+        colours.slider_track_colour = Colour(4278251775);
+        colours.slider_track_colour_2 = Colour(0xffff6600);
+        colours.slider_track_colour_modulation = Colour(4294942532);
+        colours.button_on_colour = Colour(4294942532);
+        colours.button_off_colour = Colour(4279308561);
+        colours.label_text_colour = Colour(4294942532);
+        colours.midi_learn = Colours::red;
+        colours.bg = Colour(0xff050505);
+        colours.bg_lines = Colour(0xffff3b00);
+        colours.signal_lines = Colour(4278251775);
+
+        AppInstanceStore::getInstance()->editor->repaint();
+        //[/UserButtonCode_button_preset_1]
+    }
+    else if (buttonThatWasClicked == button_preset_2)
+    {
+        //[UserButtonCode_button_preset_2] -- add your button handler code here..
+        ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+        colours.slider_track_colour = Colour(4281270271);
+        colours.slider_track_colour_2 = Colour(4294966409);
+        colours.slider_track_colour_modulation = Colour(4294901760);
+        colours.button_on_colour = Colour(4282580976);
+        colours.button_off_colour = Colour(4279308561);
+        colours.label_text_colour = Colour(4294966408);
+        colours.midi_learn = Colours::red;
+        colours.bg = Colour(4278190080);
+        colours.bg_lines = Colour(4278245119);
+        colours.signal_lines = Colour(4289724416);
+
+        AppInstanceStore::getInstance()->editor->repaint();
+        //[/UserButtonCode_button_preset_2]
+    }
+    else if (buttonThatWasClicked == button_preset_3)
+    {
+        //[UserButtonCode_button_preset_3] -- add your button handler code here..
+        ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+        colours.slider_track_colour = Colour(4294932480);
+        colours.slider_track_colour_2 = Colour(4294956800);
+        colours.slider_track_colour_modulation = Colour(4278255615);
+        colours.button_on_colour = Colour(4278249471);
+        colours.button_off_colour = Colour(4279308561);
+        colours.label_text_colour = Colour(4294941764);
+        colours.midi_learn = Colours::red;
+        colours.bg = Colour(4278519045);
+        colours.bg_lines = Colour(4278255591);
+        colours.signal_lines = Colour(4294901760);
+
+        AppInstanceStore::getInstance()->editor->repaint();
+        //[/UserButtonCode_button_preset_3]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -966,7 +1042,7 @@ void Monique_Ui_GlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_slider_sensitivity] -- add your slider handling code here..
         GET_DATA( synth_data ).sliders_sensitivity = sliderThatWasMoved->getValue();
-	AppInstanceStore::getInstance()->editor->update_slider_handling();
+        AppInstanceStore::getInstance()->editor->update_slider_handling();
         //[/UserSliderCode_slider_sensitivity]
     }
 
@@ -1145,29 +1221,34 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="380 10 330 150" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
   </BACKGROUND>
-  <LABEL name="" id="f570869fba483c15" memberName="label_colour_9" virtualName=""
-         explicitFocusOrder="0" pos="1320 110 120 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATION SLIDER (BACK)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="" id="63428e6e6c1ae9c4" memberName="button_current_editor_color"
-              virtualName="" explicitFocusOrder="0" pos="1330 40 90 90" buttonText="OK"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="f80f96857b452ce6" memberName="colour_selector" virtualName="ColourSelector"
-                    explicitFocusOrder="0" pos="990 30 330 110" class="ColourSelector"
+                    explicitFocusOrder="0" pos="990 30 270 110" class="ColourSelector"
                     params="ColourSelector::showColourspace&#10;,0,7"/>
-  <LABEL name="" id="62a873940890f9fe" memberName="label_colour_6" virtualName=""
-         explicitFocusOrder="0" pos="1170 110 110 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LABELS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="4164e3b93fd006e0" memberName="label_colour_4" virtualName=""
-         explicitFocusOrder="0" pos="1170 30 110 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1140 30 90 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON ON" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
+  <TEXTBUTTON name="" id="63428e6e6c1ae9c4" memberName="button_current_editor_color"
+              virtualName="" explicitFocusOrder="0" pos="1270 40 90 90" buttonText="OK"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="" id="bb43131d9973a62b" memberName="label_colour_7" virtualName=""
+         explicitFocusOrder="0" pos="1260 30 120 33" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER (FRONT)"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <LABEL name="" id="f570869fba483c15" memberName="label_colour_9" virtualName=""
+         explicitFocusOrder="0" pos="1260 110 120 33" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATION SLIDER (BACK)"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <LABEL name="" id="62a873940890f9fe" memberName="label_colour_6" virtualName=""
+         explicitFocusOrder="0" pos="1140 110 90 33" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="LABELS" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="d6b2a5702bcb546f" memberName="label_colour_5" virtualName=""
-         explicitFocusOrder="0" pos="1170 70 110 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1140 70 90 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON OFF" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
@@ -1283,22 +1364,17 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="55a3217ef78a3c61" memberName="label_colour_1" virtualName=""
-         explicitFocusOrder="0" pos="1020 30 110 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1020 30 90 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BACKGROUND" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="bb43131d9973a62b" memberName="label_colour_7" virtualName=""
-         explicitFocusOrder="0" pos="1320 30 120 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER (FRONT)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="414941fefbe1a3cf" memberName="label_colour_8" virtualName=""
-         explicitFocusOrder="0" pos="1320 70 120 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1260 70 120 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER 2 (BACK)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="2efba9c3ce22653b" memberName="label_colour_2" virtualName=""
-         explicitFocusOrder="0" pos="1020 70 110 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1020 70 90 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BORDERS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
@@ -1309,19 +1385,19 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="990 70 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3891f5f1ede2a913" memberName="button_colour_buttons_on"
-              virtualName="" explicitFocusOrder="0" pos="1140 30 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1110 30 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2bde73aa342c2457" memberName="button_colour_slider_1"
-              virtualName="" explicitFocusOrder="0" pos="1290 30 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1230 30 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="8ddcc2620647afb5" memberName="button_colour_slider_2"
-              virtualName="" explicitFocusOrder="0" pos="1290 70 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1230 70 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="27311d6a38d6510d" memberName="button_colour_slider_mod"
-              virtualName="" explicitFocusOrder="0" pos="1290 110 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1230 110 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af67a383712e7be7" memberName="label_colour_3" virtualName=""
-         explicitFocusOrder="0" pos="1020 110 110 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1020 110 90 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SIGNAL LINES" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
@@ -1329,10 +1405,10 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="990 110 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="aa8131218b1a4e24" memberName="button_colour_buttons_off"
-              virtualName="" explicitFocusOrder="0" pos="1140 70 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1110 70 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="16cb69a9f61a0c7f" memberName="button_colour_labels"
-              virtualName="" explicitFocusOrder="0" pos="1140 110 33 30" buttonText=""
+              virtualName="" explicitFocusOrder="0" pos="1110 110 33 30" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="DL" id="668d26bcc5860c72" memberName="label_ui_headline_6"
          virtualName="" explicitFocusOrder="0" pos="460 -4 170 35" textCol="ff1111ff"
@@ -1371,6 +1447,15 @@ BEGIN_JUCER_METADATA
   <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
             virtualName="" explicitFocusOrder="0" pos="460 30 80 30" editable="0"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+  <TEXTBUTTON name="new button" id="bd0d585ced4d3b09" memberName="button_preset_1"
+              virtualName="" explicitFocusOrder="0" pos="1400 30 43 30" buttonText="PRE1"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="7a187799895dfa50" memberName="button_preset_2"
+              virtualName="" explicitFocusOrder="0" pos="1400 70 43 30" buttonText="PRE2"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="202c6d241354941d" memberName="button_preset_3"
+              virtualName="" explicitFocusOrder="0" pos="1400 110 43 30" buttonText="PRE3"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

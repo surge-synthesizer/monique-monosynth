@@ -52,6 +52,8 @@ struct ComponentColours
 
     COLD void read_from( XmlElement*xml_ ) noexcept;
     COLD void save_to( XmlElement*xml_ ) noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ComponentColours )
 };
 
 //==============================================================================

@@ -112,11 +112,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Label> label_colour_9;
-    ScopedPointer<TextButton> button_current_editor_color;
     ScopedPointer<ColourSelector> colour_selector;
-    ScopedPointer<Label> label_colour_6;
     ScopedPointer<Label> label_colour_4;
+    ScopedPointer<TextButton> button_current_editor_color;
+    ScopedPointer<Label> label_colour_7;
+    ScopedPointer<Label> label_colour_9;
+    ScopedPointer<Label> label_colour_6;
     ScopedPointer<Label> label_colour_5;
     ScopedPointer<Slider> slider_morph_motor_time;
     ScopedPointer<Slider> slider_glide_time;
@@ -143,7 +144,6 @@ private:
     ScopedPointer<ToggleButton> toggle_slider_rotary;
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label_colour_1;
-    ScopedPointer<Label> label_colour_7;
     ScopedPointer<Label> label_colour_8;
     ScopedPointer<Label> label_colour_2;
     ScopedPointer<TextButton> button_colour_bg;
@@ -165,6 +165,9 @@ private:
     ScopedPointer<ComboBox> combo_block_size;
     ScopedPointer<Label> label_10;
     ScopedPointer<ComboBox> combo_audio_driver;
+    ScopedPointer<TextButton> button_preset_1;
+    ScopedPointer<TextButton> button_preset_2;
+    ScopedPointer<TextButton> button_preset_3;
 
 
     //==============================================================================

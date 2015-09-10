@@ -64,13 +64,6 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-/*
-st_col="4281270271" st2_col="4294966409" stmod_col="4294901760"
-           bon_col="4282580976" boff_col="4278190080" ltx_col="4294966408"
-           ml_col="4294901760" bg_col="4278190080" bgl_col="4278245119"
-           sigl_col="4289724416"
-*/
-
 ComponentColours::ComponentColours() noexcept :
 slider_track_colour( 4278251775 ),
                      slider_track_colour_2( Colour(0xffff6600) ),

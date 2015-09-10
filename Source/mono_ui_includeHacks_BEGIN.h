@@ -9,7 +9,7 @@
 // repaint colours
 //*****************************************************************************
 #define COLOUR_REPLACEMENT_START \
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours; \
+    ComponentColours& colours = UiLookAndFeel::getInstance()->colours; \
     Colour orange_replacement = colours.bg_lines; \
     Colour blue_replacement = colours.signal_lines; \
     Colour border_replacement = colours.bg_lines; \

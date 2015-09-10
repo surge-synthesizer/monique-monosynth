@@ -96,7 +96,7 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
 }
 void Monique_Ui_Mainwindow::show_current_voice_data()
 {
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
@@ -1076,7 +1076,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     switch_finalizer_tab();
 
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_off = colours.button_off_colour;
 
     button_programm_new->setColour(TextButton::buttonColourId, button_off);

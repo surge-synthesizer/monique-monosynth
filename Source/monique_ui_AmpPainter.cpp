@@ -598,7 +598,7 @@ void Monique_Ui_AmpPainter::timerCallback()
 
 void Monique_Ui_AmpPainter::refresh_buttons()
 {
-    ComponentColours colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
