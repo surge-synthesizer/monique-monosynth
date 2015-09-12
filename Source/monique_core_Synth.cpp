@@ -5432,11 +5432,11 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 #else
     if( synth_data->sync )
     {
-        info->bpm = synth_data->speed;
+        info->bpm = audio_processor->get_current_pos_info().bpm;
     }
     else
     {
-        info->bpm = audio_processor->get_current_pos_info().bpm;
+        info->bpm = synth_data->speed;
     }
 #endif
     info->samples_since_start = audio_processor->get_current_pos_info().timeInSamples;
