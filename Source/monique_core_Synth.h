@@ -59,28 +59,39 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     float current_velocity;
     int current_step;
     bool an_arp_note_is_already_running;
+    int sample_position_for_restart_arp;
+    struct ArpInfo
+    {
+        int current_note;
+        float current_velocity;
+    } arp_info;
 
     //==============================================================================
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void start_internal( int midiNoteNumber, float velocity ) noexcept;
     void stopNote(float, bool allowTailOff) override;
+public:
+    void stop_arp() noexcept;
+    void restart_arp( int sample_pos_in_buffer_ ) noexcept;
+private:
     void stop_internal() noexcept;
     void release_if_inactive() noexcept;
-    
+
     void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
     void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
-    
+
     int getCurrentlyPlayingNote() const noexcept override;
-    
+
     void pitchWheelMoved (int /*newValue*/) override;
     void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override;
 
 public:
     //==============================================================================
-    int get_current_note() const noexcept { return current_note; }
+    int get_current_note() const noexcept;
+    float get_current_velocity() const noexcept;
     void reset() noexcept;
     void reset_internal() noexcept;
-    
+
 public:
     //==============================================================================
     // UI INFOS
@@ -96,11 +107,19 @@ public:
     //==============================================================================
     COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
     COLD ~MoniqueSynthesiserVoice() noexcept;
-    
+
     static void kill(ENV* env_) noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)
 };
+
+//==================================================================================
+inline int MoniqueSynthesiserVoice::get_current_note() const noexcept {
+    return current_note;
+}
+inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept {
+    return current_velocity;
+}
 
 #endif
 

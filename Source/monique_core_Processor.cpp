@@ -1,88 +1,124 @@
-
 #include "monique_core_Processor.h"
+
 #include "monique_core_Datastructures.h"
 #include "monique_core_Synth.h"
 
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_SegmentedMeter.h"
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+COLD AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
+{
+    return new Monique_Ui_Mainwindow();
+}
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new MoniqueAudioProcessor();
+}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-template<typename T, int size>
-class CircularBuffer 
+#ifdef IS_STANDALONE
+#define CLOCKS_TO_SMOOTH 24
+class ClockSmoothBuffer : RuntimeListener
 {
     int pos;
-    T buffer[size];
-    T sum;
+    double buffer[CLOCKS_TO_SMOOTH];
+    double sum;
 
 public:
-    inline void add( T val_ ) noexcept {
-        sum-=buffer[pos];
-        buffer[pos] = val_;
-        sum+=val_;
+    inline void add( double val_ ) noexcept;
+    inline double get_average() const noexcept;
+    inline double add_and_get_average( double val_ ) noexcept;
+    inline void reset( double value_ = 0 ) noexcept;
 
-        ++pos;
-        if( pos == size )
-            pos = 0;
-    }
-    inline T get_average() const noexcept {
-        return sum / size;
-    }
-
-    CircularBuffer() : pos(0), sum(0) {
-        for( int i = 0 ; i != size ; ++i )
-            buffer[i] = 0;
-    }
+public:
+    COLD ClockSmoothBuffer();
+    COLD ~ClockSmoothBuffer();
 };
 
 //==============================================================================
+COLD ClockSmoothBuffer::ClockSmoothBuffer() : pos(0), sum(0)
+{
+    reset();
+}
+COLD ClockSmoothBuffer::~ClockSmoothBuffer() {}
+
 //==============================================================================
-//==============================================================================
-MoniqueAudioProcessor::MoniqueAudioProcessor()
-    :
-#ifdef IS_STANDALONE
-    clock_smoth_buffer( new type_CLOCK_SMOTH_BUFFER ),
+inline void ClockSmoothBuffer::add( double val_ ) noexcept
+{
+    sum-=buffer[pos];
+    buffer[pos] = val_;
+    sum+=val_;
+
+    if( ++pos == CLOCKS_TO_SMOOTH )
+    {
+        pos = 0;
+    }
+}
+inline double ClockSmoothBuffer::add_and_get_average( double val_ ) noexcept
+{
+    add(val_);
+    return get_average();
+}
+inline double ClockSmoothBuffer::get_average() const noexcept
+{
+    return sum * ( 1.0 / CLOCKS_TO_SMOOTH );
+}
+inline void ClockSmoothBuffer::reset( double value_ ) noexcept
+{
+    sum = 0;
+    for( int i = 0 ; i != CLOCKS_TO_SMOOTH ; ++i )
+    {
+        buffer[i] = value_;
+        sum += value_;
+    }
+}
 #endif
 
-    peak_meter(nullptr),
-    repaint_peak_meter(false)
+//==============================================================================
+COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
+:
+#ifdef IS_STANDALONE
+clock_smoother( new ClockSmoothBuffer() ),
+                last_clock_sample(0),
+                try_to_restart_arp( false ),
+                connection_missed_counter(0),
+                received_a_clock_in_time(false),
+#endif
+                peak_meter(nullptr)
 {
     // CREATE SINGLETONS
     RuntimeNotifyer::getInstance();
 
-    std::cout << "MONIQUE: init processor" << std::endl;
+    std::cout << "MONIQUE: init core" << std::endl;
     FloatVectorOperations::enableFlushToZeroMode(true);
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 
-        std::cout << "MONIQUE: init core" << std::endl;
         synth = new Synthesiser();
         synth_data = new MoniqueSynthData(MASTER);
-
-#ifdef IS_PLUGIN
         voice = new MoniqueSynthesiserVoice(this,synth_data);
         synth->addVoice (voice);
         synth->addSound (new MoniqueSynthesiserSound());
-#else // IS_STANDALONE
-        {
-            voice = new MoniqueSynthesiserVoice(this,synth_data);
-            synth->addVoice (voice);
-            synth->addSound (new MoniqueSynthesiserSound());
-        }
 
+#ifdef IS_STANDALONE
         audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
         if( audio_is_successful_initalized )
         {
-            setPlayConfigDetails ( 0, 2, 0, 0);
+            AudioDeviceManager::AudioDeviceSetup setup;
+            getAudioDeviceSetup(setup);
+            setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
             addAudioCallback (&player);
             player.setProcessor (this);
         }
 #endif
     }
 
-    std::cout << "MONIQUE: init midi" << std::endl;
+    std::cout << "MONIQUE: init load last project and settings" << std::endl;
     {
         synth_data->load_settings();
         synth_data->read_midi();
@@ -93,11 +129,10 @@ MoniqueAudioProcessor::MoniqueAudioProcessor()
     }
 }
 
-// ----------------------------------------------------
-MoniqueAudioProcessor::~MoniqueAudioProcessor()
+COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
-    // trigger_send_clear_feedback();
-    // stop_midi_devices();
+    trigger_send_clear_feedback();
+
 #ifdef IS_STANDALONE
     mono_AudioDeviceManager::save();
     closeAudioDevice();
@@ -114,71 +149,54 @@ MoniqueAudioProcessor::~MoniqueAudioProcessor()
 }
 
 //==============================================================================
-/*
+//==============================================================================
+//==============================================================================
+void MoniqueAudioProcessor::set_peak_meter( Monique_Ui_SegmentedMeter*peak_meter_ ) noexcept
+{
+    ScopedLock locked(peak_meter_lock);
+    peak_meter = peak_meter_;
+}
+void MoniqueAudioProcessor::clear_preak_meter() noexcept
+{
+    ScopedLock locked(peak_meter_lock);
+    peak_meter = nullptr;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #ifdef IS_STANDALONE
-void MoniqueAudioProcessor::handle_extern_midi_start( const MidiMessage& message ) noexcept
+void MoniqueAudioProcessor::timerCallback()
 {
-    data_in_processor->messageCollector.addMessageToQueue( message );
-}
-void MoniqueAudioProcessor::handle_extern_midi_stop( const MidiMessage& message) noexcept
-{
-
-    data_in_processor->messageCollector.addMessageToQueue( message );
-
-}
-void MoniqueAudioProcessor::handle_extern_midi_continue( const MidiMessage& message ) noexcept
-{
-
-}
-void MoniqueAudioProcessor::handle_extern_midi_clock( const MidiMessage& message ) noexcept
-{
-    if( synth_data->sync ) {
-        clock_smoth_buffer->add( message.getTimeStamp()-last_clock_sample );
-        last_clock_sample = message.getTimeStamp();
-
-        data_in_processor->messageCollector.addMessageToQueue( message );
+    if( GET_DATA( runtime_info ).is_extern_synced )
+    {
+        if( not received_a_clock_in_time )
+        {
+            connection_missed_counter++;
+            if( connection_missed_counter > 14 )
+            {
+                GET_DATA( runtime_info ).is_extern_synced = false;
+            }
+        }
+        else
+        {
+            connection_missed_counter = 0;
+            received_a_clock_in_time = false;
+        }
+    }
+    else
+    {
+        Timer::stopTimer();
+        return;
     }
 }
 #endif
-*/
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-/*
-void MoniqueAudioProcessor::handle_extern_note_input( const MidiMessage& message ) noexcept
-{
-    //MidiKeyboardState::processNextMidiEvent( message );
-    //MidiBuffer buffer( message );
-    // data_in_processor->handle_note_input( buffer );
-
-    // TODO, TR SENDS NOTES
-    data_in_processor->messageCollector.addMessageToQueue( message );
-}
-void MoniqueAudioProcessor::handle_extern_cc_input( const MidiMessage& message_ ) noexcept
-{
-    MidiBuffer buffer( message_ );
-    data_in_processor->handle_cc_input( buffer );
-}
-void MoniqueAudioProcessor::trigger_send_feedback() noexcept
-{
-    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
-    for( int i = 0 ; i != parameters.size() ; ++ i )
-        parameters.getUnchecked(i)->midi_control->send_feedback_only();
-}
-void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
-{
-    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
-    for( int i = 0 ; i != parameters.size() ; ++ i )
-        parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
-}
-*/
 //==============================================================================
 //==============================================================================
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
-
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
     {
         prepareToPlay(getSampleRate(),getBlockSize());
@@ -194,7 +212,6 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
         current_pos_info.resetToDefault();
         is_first_time=false;
     }
-    current_pos_info.bpm = synth_data->speed;
     current_pos_info.timeSigNumerator = 4;
     current_pos_info.timeSigDenominator = 4;
     current_pos_info.isPlaying = true;
@@ -210,110 +227,166 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 #endif
             if( current_pos_info.timeInSamples + num_samples >= 0 && current_pos_info.isPlaying )
             {
-                //data_in_processor->incomingMidi.clear();
-                //data_in_processor->messageCollector.removeNextBlockOfMessages (data_in_processor->incomingMidi, num_samples);
-#ifndef IS_STANDALONE
-                MidiBuffer::Iterator message_iter( data_in_processor->incomingMidi );
-                MidiMessage extern_midi_message;
-                int sample_position;
-                RuntimeInfo& runtime_info = GET_DATA( runtime_info );
-                runtime_info.next_step_at_sample.clearQuick();
-                runtime_info.next_step.clearQuick();
-                while( message_iter.getNextEvent( extern_midi_message, sample_position ) )
+#ifdef IS_STANDALONE
+                // +++++ SYNC BLOCK EXTERN MIDI
                 {
-                    int64 abs_event_time_in_samples = current_pos_info.timeInSamples+sample_position;
-                    if( extern_midi_message.isNoteOnOrOff() )
+                    // CLEAN LAST BLOCK
+                    RuntimeInfo& runtime_info = GET_DATA( runtime_info );
+                    // FOR SECURITy REMOVE INVALID OLD STEPS
+                    OwnedArray< RuntimeInfo::Step >& steps_in_block( runtime_info.steps_in_block );
+                    if( steps_in_block.size() )
                     {
-                        midi_messages_.addEvent( extern_midi_message, sample_position );
-                    }
-                    else if( extern_midi_message.isMidiStart() )
-                    {
-                        last_start_sample = abs_event_time_in_samples;
-                        runtime_info.clock_counter = 0;
-                        runtime_info.is_extern_synced = true;
-                        runtime_info.is_running = true;
-                    }
-                    else if( extern_midi_message.isMidiStop() )
-                    {
-                        MidiMessage notes_off = MidiMessage::allNotesOff(1);
-                        midi_messages_.addEvent( notes_off, sample_position );
-                        runtime_info.is_extern_synced = false;
-                        runtime_info.is_running = false;
-                    }
-                    else if( extern_midi_message.isMidiClock() )
-                    {
-                        // TODO  der sync muss immer gesteted werden!
-                        if( synth_data->sync )
+                        while( steps_in_block.getFirst()->at_absolute_sample < current_pos_info.timeInSamples )
                         {
-                            synth_data->speed = 60.0/(clock_smoth_buffer->get_average() * 24);
-                        }
+                            steps_in_block.remove(0,true);
 
-                        //todo clean up
-                        //todo not needed in plugin
-                        int factor = 96/16;
-                        static int samples_to_count = 96;
-                        /*
-                                    switch( synth_data->arp_sequencer_data->speed_multi ) {
-                                    case _XNORM :
-                                        factor = 96/16;
-                                        break;
-                                    case _X2 :
-                                        factor = 96/32;
-                                        break;
-                                    case _X05 :
-                                        factor = 96/8;
-                                        break;
-                                    case _X4 :
-                                        factor = 96/64; // BUG
-                                        break;
-                                    case _X025 :
-                                        factor = 96/4;
-                                        break;
-                                    default  : //TODO
-                                        factor = 96/48;
-                                        break;
-                                    }
-                                    */
-                        if( runtime_info.clock_counter%factor == 0 )
-                        {
-                            if( runtime_info.is_running )
+                            if( not steps_in_block.size() )
                             {
-                                runtime_info.next_step_at_sample.add( sample_position );
-                                runtime_info.next_step.add( runtime_info.clock_counter/factor );
+                                break;
                             }
                         }
-                        runtime_info.clock_counter++;
-                        if( runtime_info.clock_counter == samples_to_count )
-                        {
-                            runtime_info.clock_counter = 0;
+                    }
 
-                            samples_to_count = 96;
-                            /*
-                                        switch( synth_data->arp_sequencer_data->speed_multi )
+                    // GET THE MESSAGES
+                    MidiBuffer sync_messages;
+                    get_sync_input_messages( sync_messages, num_samples );
+
+                    // RUN THE LOOP AND PROCESS TJHE MESSAGES
+                    const bool is_synced( synth_data->sync );
+                    if( is_synced )
+                    {
+                        MidiBuffer::Iterator message_iter( sync_messages );
+                        MidiMessage input_midi_message;
+                        int sample_position = 0;
+
+                        const double speed_multiplyer = ArpSequencerData::speed_multi_to_value( GET_DATA( arp_data ).speed_multi );
+                        static constexpr int clocks_per_step = 6;
+                        static constexpr int clocks_per_beat = 24;
+                        static constexpr int clocks_per_bar = 96;
+                        while( message_iter.getNextEvent( input_midi_message, sample_position ) )
+                        {
+                            const int64 abs_event_time_in_samples = current_pos_info.timeInSamples+sample_position;
+
+                            // CLOCK
+                            if( input_midi_message.isMidiClock() )
+                            {
+                                received_a_clock_in_time = true;
+                                runtime_info.is_extern_synced = true;
+                                if( not Timer::isTimerRunning() )
+                                {
+                                    Timer::startTimer( 100 );
+                                }
+
+                                const int clock_in_bar = runtime_info.clock_counter.clock();
+                                const int clock_absolute = runtime_info.clock_counter.clock_absolut();
+
+                                // X 1
+                                bool success = false;
+                                if( speed_multiplyer == 1 )
+                                {
+                                    if( clock_in_bar % clocks_per_step == 0 )
+                                    {
+                                        runtime_info.steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples, abs_event_time_in_samples-last_clock_sample ) );
+
+                                        success = true;
+                                    }
+                                }
+                                //  X > 1 // WIRD LANGSAMER
+                                else if( speed_multiplyer > 1 )
+                                {
+                                    int sum_generate_sub_clocks_per_clock = speed_multiplyer;
+                                    const double current_samples_per_clock = double(abs_event_time_in_samples-last_clock_sample) / speed_multiplyer;
+                                    int clock_id = clock_in_bar*speed_multiplyer;
+                                    for( int i = 0 ; i != speed_multiplyer ; ++i )
+                                    {
+                                        int tmp_clock_id = ((clock_id+i)%96);
+                                        if( tmp_clock_id % clocks_per_step == 0 )
                                         {
-                                        case _XNORM :
-                                            samples_to_count = 96;
-                                            break;
-                                        case _X2 :
-                                            samples_to_count = 96/2;
-                                            break;
-                                        case _X05 :
-                                            samples_to_count = 96*2;
-                                            break;
-                                        case _X4 :
-                                            samples_to_count = 96/4;
-                                            break;
-                                        case _X025 :
-                                            samples_to_count = 96*4;
-                                            break;
-                                        default   : //TODO
-                                            samples_to_count = 96/3;
-                                            break;
+                                            runtime_info.steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i, current_samples_per_clock ) );
+
+                                            success = true;
                                         }
-                                        */
+                                    }
+                                }
+                                // X < 1 // WIRD SCHNELLER
+                                else
+                                {
+                                    const double speed_multiplyer__ = 1.0/speed_multiplyer;
+
+                                    const int factor = clocks_per_step*speed_multiplyer__;
+                                    const int faster_clocks_per_bar = clocks_per_bar*speed_multiplyer__;
+                                    const int faster_clocks_semi_absolut = clock_absolute % faster_clocks_per_bar;
+                                    if( faster_clocks_semi_absolut % factor == 0 )
+                                    {
+                                        runtime_info.steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
+
+                                        success = true;
+                                    }
+                                }
+
+                                // SYNC SPEED
+                                if( is_synced )
+                                {
+                                    const double current_samples_per_clock = abs_event_time_in_samples-last_clock_sample;
+                                    int samples_per_beat = current_samples_per_clock*clocks_per_beat;
+                                    double ms_per_beat = samplesToMs(samples_per_beat,sample_rate);
+                                    if( not(ms_per_beat > 0 ) )
+                                    {
+                                        ms_per_beat = 1;
+                                    }
+
+                                    current_pos_info.bpm = clock_smoother->add_and_get_average((60.0 * 1000) / ms_per_beat);
+                                }
+
+                                last_clock_sample = abs_event_time_in_samples;
+
+                                runtime_info.clock_counter++;
+                            }
+                            // SYNC START
+                            else if( input_midi_message.isMidiStart() )
+                            {
+                                runtime_info.clock_counter.reset();
+                                runtime_info.steps_in_block.clearQuick(true);
+                                runtime_info.is_running = true;
+                                runtime_info.is_extern_synced = true;
+
+                                if( try_to_restart_arp )
+                                {
+                                    voice->restart_arp(sample_position);
+                                    try_to_restart_arp = false;
+                                }
+
+                                DBG( "START" );
+                            }
+                            // SYNC STOP
+                            else if( input_midi_message.isMidiStop() )
+                            {
+                                MidiMessage notes_off = MidiMessage::allNotesOff(1);
+                                runtime_info.is_running = false;
+
+                                voice->stop_arp();
+                                try_to_restart_arp = true;
+
+                                DBG( "STOP" );
+                            }
+                            // SYNC CONTINUE
+                            else if( input_midi_message.isMidiContinue() )
+                            {
+                                runtime_info.is_running = true;
+                                runtime_info.is_extern_synced = true;
+
+                                if( try_to_restart_arp )
+                                {
+                                    voice->restart_arp(sample_position);
+                                    try_to_restart_arp = false;
+                                }
+
+                                DBG( "START" );
+                            }
                         }
                     }
                 }
+                // +++++ SYNC BLOCK EXTERN MIDI
 #endif
 #ifdef PROFILE
                 {
@@ -331,7 +404,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                         std::cout << "PROCESS NUM SAMPLES:" << current_pos_info.timeInSamples << " LEFT:" << 44100 * 10 - current_pos_info.timeInSamples << std::endl;
                 }
 #endif
-                // MIDI IN
+                // PROCESS THE SYNTH
                 AppInstanceStore::getInstance()->lock_amp_painter();
                 {
                     // RENDER SYNTH
@@ -342,7 +415,10 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 
                     // VISUALIZE
                     if( peak_meter )
+                    {
+                        ScopedLock locked(peak_meter_lock);
                         peak_meter->process( buffer_.getReadPointer(0), num_samples );
+                    }
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
             }
@@ -353,7 +429,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
+COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
 {
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
@@ -363,17 +439,64 @@ void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
     RuntimeNotifyer::getInstance()->set_block_size( block_size_ );
     voice->reset_internal();
 }
-void MoniqueAudioProcessor::releaseResources()
+COLD void MoniqueAudioProcessor::releaseResources()
 {
     // TODO reset all
 }
-void MoniqueAudioProcessor::reset()
+COLD void MoniqueAudioProcessor::reset()
 {
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+void MoniqueAudioProcessor::handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity)
+{
+    MidiMessage message( MidiMessage::noteOn( midiChannel, midiNoteNumber, velocity ) );
+    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
+
+    collect_incoming_midi_messages
+    (
+        mono_AudioDeviceManager::INPUT_ID::NOTES,
+        message
+    );
+}
+void MoniqueAudioProcessor::handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber)
+{
+    MidiMessage message( MidiMessage::noteOff( midiChannel, midiNoteNumber, 0 ) );
+    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
+
+    collect_incoming_midi_messages
+    (
+        mono_AudioDeviceManager::INPUT_ID::NOTES,
+        message
+    );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+void MoniqueAudioProcessor::trigger_send_feedback() noexcept
+{
+    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
+    for( int i = 0 ; i != parameters.size() ; ++ i )
+    {
+        parameters.getUnchecked(i)->midi_control->send_feedback_only();
+    }
+}
+void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
+{
+    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
+    for( int i = 0 ; i != parameters.size() ; ++ i )
+    {
+        parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#ifdef IS_PLUGIN
 int MoniqueAudioProcessor::getNumParameters()
 {
     return synth_data->get_atomateable_parameters().size();
@@ -409,10 +532,12 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
 {
     set_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_), percent_ );
 }
+#endif
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#ifdef IS_PLUGIN
 void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
     XmlElement xml("PROJECT-1.0");
@@ -432,10 +557,15 @@ void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBy
         }
     }
 }
+#endif
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
+bool MoniqueAudioProcessor::hasEditor() const
+{
+    return true;
+}
 const String MoniqueAudioProcessor::getName() const
 {
 #ifdef IS_STANDALONE
@@ -534,19 +664,4 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
     synth_data->rename(name_);
 }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-bool MoniqueAudioProcessor::hasEditor() const
-{
-    return true;
-}
-AudioProcessorEditor* MoniqueAudioProcessor::createEditor()
-{
-    return new Monique_Ui_Mainwindow();
-}
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new MoniqueAudioProcessor();
-}
 

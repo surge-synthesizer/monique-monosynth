@@ -403,7 +403,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 
     return success;
 }
-inline bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
+bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
 {
     send_clear_feedback_only();
 
@@ -434,7 +434,7 @@ inline bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_
 
     return success;
 }
-inline bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
+bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
 {
     send_clear_feedback_only();
 
@@ -491,7 +491,7 @@ void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexce
         send_modulation_feedback();
 }
 
-inline void MIDIControl::send_feedback_only() const noexcept
+void MIDIControl::send_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
@@ -510,14 +510,16 @@ inline void MIDIControl::send_feedback_only() const noexcept
         }
     }
 }
-inline void MIDIControl::send_clear_feedback_only() const noexcept {
+void MIDIControl::send_clear_feedback_only() const noexcept 
+{
     if( is_valid_trained() )
     {
         AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, 0 );
     }
 }
 
-inline void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept {
+void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept 
+{
     is_in_ctrl_mode = mode_;
 
     send_feedback_only();

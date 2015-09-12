@@ -90,7 +90,7 @@ forcedinline static int64 msToSamplesFast (float timeMs, float sampleRate) noexc
  */
 forcedinline static double samplesToMs (int64 numSamples, double sampleRate) noexcept
 {
-    return (1000 * (numSamples / sampleRate));
+    return (1000.0 * (numSamples / sampleRate));
 }
 forcedinline static double samplesToMsFast (int64 numSamples, float sampleRate) noexcept
 {

@@ -2268,6 +2268,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const speed;
     BoolParameter*const sync;
+    RuntimeInfo*const runtime_info;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2338,7 +2339,21 @@ class BPMSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return String(speed->get_value())+String(" BPM");
+        String value( round01(runtime_info->bpm) );
+#ifdef IS_STANDALONE
+        if( runtime_info->is_extern_synced )
+        {
+            value += String(" EXT");
+        }
+        else
+        {
+            value += String(" BPM");
+        }
+#else
+        value += String(" BPM");
+#endif
+
+        return value;
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -2359,7 +2374,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(speed->get_value());
+        return String(round01(speed->get_value()));
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -2372,7 +2387,8 @@ public:
     BPMSlConfig()
         :
         speed( &(GET_DATA(synth_data).speed) ),
-        sync( &(GET_DATA(synth_data).sync) )
+        sync( &(GET_DATA(synth_data).sync) ),
+        runtime_info( &(GET_DATA(runtime_info)) )
     {}
 
     JUCE_LEAK_DETECTOR (BPMSlConfig)
@@ -2389,6 +2405,7 @@ public:
 class SpeedMultiSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const speed_multi;
+    Parameter*const speed;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2474,25 +2491,24 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+        return String(round0(speed->get_value()*ArpSequencerData::speed_multi_to_value(speed_multi->get_value())));
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+        return "BPM";
     }
-    */
 
 public:
     SpeedMultiSlConfig()
         :
-        speed_multi( &(GET_DATA(arp_data).speed_multi) )
+        speed_multi( &(GET_DATA(arp_data).speed_multi) ),
+        speed( &(GET_DATA(synth_data).speed) )
     {}
 
     JUCE_LEAK_DETECTOR (SpeedMultiSlConfig)
@@ -4228,7 +4244,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         if( tune->midi_control->get_ctrl_mode() )
             return String( round01(velocity->get_value()*100) );
         else
-            return String( tune->get_value() );
+            return String( round01(tune->get_value()) );
     }
     StringRef get_center_suffix() const noexcept override
     {

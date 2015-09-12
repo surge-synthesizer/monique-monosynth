@@ -439,13 +439,17 @@ void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ ) const
 {
     front_parameter->midi_control->set_ctrl_mode( mode_ );
     if( back_parameter )
+    {
         back_parameter->midi_control->set_ctrl_mode( mode_ );
+    }
 }
 
 void Monique_Ui_DualSlider::sliderClicked (Slider*s_)
 {
     if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
+    {
         sliderValueChanged(s_);
+    }
 }
 //[/MiscUserDefs]
 

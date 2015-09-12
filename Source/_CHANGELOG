@@ -2,17 +2,24 @@ CHANGES 0.6
 - add 3 basic colour presets ( need to be optimized - if anybody like to create a theme -> send it to me :-) )
 - add support for load save audio and midi devices
 - simplifyed CC : only CC (no notes) are supported and receive on each MIDI channel
+- fix: arp note value show 0....
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
 - osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
 - osc square and saw going out of center on higher octaves
 - midi sync is brocken
+- restore program speed
+- note slider values are not vissible 0.....
+
+- error on add modulation amount!!!!
+- see program
 
 MY TODO
 - test performance HeapBlock on the stack vs array of floats
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
+- new file handling asks for changed old ones (set current programm correctly?)
 
 TODO:
 - reset: oscs to zero on sleep
@@ -70,17 +77,11 @@ bücher
 
 
 
-
-
-
-
-
 PRRRRRROOOOOOOOOOOOOOO
-
 - midi option (channel, note support)
 - advanced settings: osci, adsr presets
 - advanced settings: morph
 - advanced outputs: curves
 - digital analog filter selection
 - sequencer
--
+- 3 filter arp buttons, not only one

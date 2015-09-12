@@ -95,7 +95,7 @@ samples_since_start(0),
 #ifdef IS_STANDALONE
                     ,
                     is_extern_synced(false),
-                    clock_counter(0)
+                    clock_counter()
 #endif
 {
     mono_ParameterOwnerStore::getInstance()->runtime_info = this;
@@ -1072,7 +1072,7 @@ connect
 // ----
 speed_multi
 (
-    MIN_MAX( -9, 9 ),
+    MIN_MAX( -15, 15 ),
     0,
     generate_param_name(ARP_NAME,id_,"speed_multi"),
     generate_short_human_name(ARP_NAME,"speed_multi")
@@ -1112,96 +1112,6 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
     params_.add( &data_->connect );
 
     params_.add( &data_->speed_multi );
-}
-
-//==============================================================================
-StringRef ArpSequencerData::speed_multi_to_text( int speed_multi_ ) noexcept
-{
-    switch( speed_multi_ )
-    {
-    case 0 :
-        return "x1";
-    case 1 :
-        return "x2";
-    case -1 :
-        return "/2";
-    case 2 :
-        return "x3";
-    case -2 :
-        return "/3";
-    case 3 :
-        return "x4";
-    case -3 :
-        return "/4";
-    case 4 :
-        return "x5";
-    case -4 :
-        return "/5";
-    case 5 :
-        return "x7";
-    case -5 :
-        return "/7";
-    case 6 :
-        return "x8";
-    case -6 :
-        return "/8";
-    case 7 :
-        return "x9";
-    case -7 :
-        return "/9";
-    case 8 :
-        return "x12";
-    case -8 :
-        return "/12";
-    case 9 :
-        return "x16";
-    default /*-9*/ :
-        return "/16";
-    }
-}
-double ArpSequencerData::speed_multi_to_value( int speed_multi_ ) noexcept
-{
-    switch( speed_multi_ )
-    {
-    case 0 :
-        return 1;
-    case 1 :
-        return 2;
-    case -1 :
-        return 0.5;
-    case 2 :
-        return 3;
-    case -2 :
-        return (1.0/3);
-    case 3 :
-        return 4;
-    case -3 :
-        return (1.0/4);
-    case 4 :
-        return 5;
-    case -4 :
-        return (1.0/5);
-    case 5 :
-        return 7;
-    case -5 :
-        return (1.0/7);
-    case 6 :
-        return 8;
-    case -6 :
-        return (1.0/8);
-    case 7 :
-        return 9;
-    case -7 :
-        return (1.0/9);
-    case 8 :
-        return 12;
-    case -8 :
-        return (1.0/12);
-    case 9 :
-        return 16;
-    default /*-9*/ :
-        return (1.0/16);
-    }
 }
 
 //==============================================================================
@@ -3074,6 +2984,13 @@ bool MoniqueSynthData::create_new() noexcept
     {
         refresh_banks_and_programms();
         current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_program_name);
+	
+        // BACKUP
+        saveable_backups.clearQuick();
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
+        }
     }
 
     return success;

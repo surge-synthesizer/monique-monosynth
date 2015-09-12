@@ -1043,10 +1043,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     last_programm = -1;
     is_in_help_mode = false;
 
-    _app_instance_store->audio_processor->peak_meter = volume_master_meter;
-
-    voice = reinterpret_cast< MoniqueSynthesiserVoice* >( _app_instance_store->audio_processor->synth->getVoice(0) );
-    synth_data = _app_instance_store->audio_processor->synth_data;
+    voice = reinterpret_cast< MoniqueSynthesiserVoice* >( GET_DATA_PTR( voice ) );
+    synth_data = GET_DATA_PTR( synth_data );
     last_ctrl_mode = synth_data->ctrl = false;
 
     last_shuffle = -1;
@@ -1120,6 +1118,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     //setVisible(true);
     AppInstanceStore::getInstance()->editor = this;
+    _app_instance_store->audio_processor->set_peak_meter( volume_master_meter );
     Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
 
     //UiLookAndFeel::getInstance()->colours.edit();
@@ -1142,7 +1141,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
         AppInstanceStore::getInstance()->kill_amp_painter();
     }
 
-    _app_instance_store->audio_processor->peak_meter = nullptr;
+    _app_instance_store->audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
     speed_multi = nullptr;
@@ -1968,7 +1967,7 @@ void Monique_Ui_Mainwindow::resized()
     resize_subeditors();
 
 #include "mono_ui_includeHacks_END.h"
-    
+
     synth_data->ui_scale_factor = getHeight()/original_h;
     //[/UserResized]
 }

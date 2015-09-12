@@ -181,6 +181,7 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
 struct RuntimeInfo
 {
     int64 samples_since_start;
@@ -189,10 +190,51 @@ struct RuntimeInfo
 #ifdef IS_STANDALONE
     bool is_extern_synced;
     bool is_running;
-    int clock_counter;
 
-    Array<int64> next_step_at_sample;
-    Array<int> next_step;
+    class ClockCounter
+    {
+        int clock_counter;
+        int clock_counter_absolut;
+
+    public:
+        inline void operator++(int) noexcept
+        {
+            if( ++clock_counter >= 96 )
+            {
+                clock_counter = 0;
+            }
+            if( ++clock_counter_absolut >= 96*16 )
+            {
+                clock_counter_absolut = 0;
+            }
+        }
+        inline int clock() noexcept
+        {
+            return clock_counter;
+        }
+        inline int clock_absolut() noexcept
+        {
+            return clock_counter_absolut;
+        }
+        inline void reset() noexcept
+        {
+            clock_counter = 0;
+            clock_counter_absolut = clock_counter;
+        }
+
+        COLD ClockCounter() : clock_counter(0), clock_counter_absolut(0) {}
+    } clock_counter;
+
+    struct Step
+    {
+        const int step_id;
+        const int64 at_absolute_sample;
+	const int samples_per_step;
+
+        inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept;
+        inline ~Step() noexcept;
+    };
+    OwnedArray<Step> steps_in_block;
 #endif
 
 private:
@@ -203,6 +245,17 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeInfo)
 };
+
+//==============================================================================
+#ifdef IS_STANDALONE
+inline RuntimeInfo::Step::Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
+:
+step_id( step_id_ ),
+         at_absolute_sample( at_absolute_sample_ ),
+         samples_per_step( samples_per_step_ )
+{}
+inline RuntimeInfo::Step::~Step() noexcept {}
+#endif
 
 //==============================================================================
 //==============================================================================
@@ -412,6 +465,146 @@ struct ArpSequencerData
     static StringRef speed_multi_to_text( int speed_multi_ ) noexcept;
     static double speed_multi_to_value( int speed_multi_ ) noexcept;
 };
+
+//==========================================================================
+inline double ArpSequencerData::speed_multi_to_value( int speed_multi_ ) noexcept
+{
+    switch( speed_multi_ )
+    {
+    case 0 :
+        return 1;
+    case 1 :
+        return 2;
+    case -1 :
+        return 0.5;
+    case 2 :
+        return 3;
+    case -2 :
+        return (1.0/3);
+    case 3 :
+        return 4;
+    case -3 :
+        return (1.0/4);
+    case 4 :
+        return 5;
+    case -4 :
+        return (1.0/5);
+    case 5 :
+        return 6;
+    case -5 :
+        return (1.0/6);
+    case 6 :
+        return 7;
+    case -6 :
+        return (1.0/7);
+    case 7 :
+        return 8;
+    case -7 :
+        return (1.0/8);
+    case 8 :
+        return 9;
+    case -8 :
+        return (1.0/9);
+    case 9 :
+        return 10;
+    case -9 :
+        return (1.0/10);
+    case 10 :
+        return 11;
+    case -10 :
+        return (1.0/11);
+    case 11 :
+        return 12;
+    case -11 :
+        return (1.0/12);
+    case 12 :
+        return 13;
+    case -12 :
+        return (1.0/13);
+    case 13 :
+        return 14;
+    case -13 :
+        return (1.0/14);
+    case 14 :
+        return 15;
+    case -14 :
+        return (1.0/15);
+    case 15 :
+        return 16;
+    default : // case -15 :
+        return (1.0/16);
+    }
+}
+
+//==============================================================================
+inline StringRef ArpSequencerData::speed_multi_to_text( int speed_multi_ ) noexcept
+{
+    switch( speed_multi_ )
+    {
+    case 0 :
+        return "x1";
+    case 1 :
+        return "x2";
+    case -1 :
+        return "/2";
+    case 2 :
+        return "x3";
+    case -2 :
+        return "/3";
+    case 3 :
+        return "x4";
+    case -3 :
+        return "/4";
+    case 4 :
+        return "x5";
+    case -4 :
+        return "/5";
+    case 5 :
+        return "x6";
+    case -5 :
+        return "/6";
+    case 6 :
+        return "x7";
+    case -6 :
+        return "/7";
+    case 7 :
+        return "x8";
+    case -7 :
+        return "/8";
+    case 8 :
+        return "x9";
+    case -8 :
+        return "/9";
+    case 9 :
+        return "x10";
+    case -9 :
+        return "/10";
+    case 10 :
+        return "x11";
+    case -10 :
+        return "/11";
+    case 11 :
+        return "x12";
+    case -11 :
+        return "/12";
+    case 12 :
+        return "x16";
+    case -12 :
+        return "/13";
+    case 13 :
+        return "x14";
+    case -13 :
+        return "/14";
+    case 14 :
+        return "x15";
+    case -14 :
+        return "/15";
+    case 15 :
+        return "x16";
+    default : // -15 :
+        return "/16";
+    }
+}
 
 //==============================================================================
 //==============================================================================
@@ -688,7 +881,7 @@ public:
     void save_settings() const noexcept;
     void ask_and_save_if_changed() noexcept;
     void load_settings() noexcept;
-    
+
 public:
     // ==============================================================================
     void save_midi() const noexcept;

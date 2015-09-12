@@ -17,30 +17,75 @@
 class MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class MoniqueSynthesiserVoice;
+class ClockSmoothBuffer;
+class ArpInfo;
 
-template<typename,int> class CircularBuffer;
-#define type_CLOCK_SMOTH_BUFFER CircularBuffer< double, 12 >
 class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
     public MidiKeyboardStateListener,
     public mono_AudioDeviceManager
+#ifdef IS_STANDALONE
+    ,
+public Timer
+#endif
 {
 #ifdef IS_STANDALONE
-    double last_clock_sample;
-    double last_start_sample;
-    ScopedPointer<type_CLOCK_SMOTH_BUFFER> clock_smoth_buffer;
-#endif
 public:
-    /// PROCESS
-    // ==============================================================================
+    AudioProcessorPlayer player;
+    bool audio_is_successful_initalized;
 private:
-    void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
-    void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
-    void releaseResources() override;
-    void reset() override;
+    ClockSmoothBuffer* clock_smoother;
+    int64 last_clock_sample;
+    bool try_to_restart_arp;
+    
+    bool received_a_clock_in_time;
+    bool connection_missed_counter;
+    void timerCallback() override;
+#endif
 
+    // ==============================================================================
+    // DATA & SYNTH PROCESSOR
+    MoniqueSynthData* synth_data;
+    MoniqueSynthesiserVoice* voice;
+    Synthesiser* synth;
+
+    // ==============================================================================
+    // UI
+    Monique_Ui_SegmentedMeter* peak_meter;
+    CriticalSection peak_meter_lock;
+public:
+    void set_peak_meter( Monique_Ui_SegmentedMeter*peak_meter_ ) noexcept;
+    void clear_preak_meter() noexcept;
+
+private:
+    // ==============================================================================
+    // PROCESS
+    AudioPlayHead::CurrentPositionInfo current_pos_info;
+    void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
+    COLD void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
+    COLD void releaseResources() override;
+    COLD void reset() override;
+public:
+    inline const AudioPlayHead::CurrentPositionInfo& get_current_pos_info() const noexcept
+    {
+        return current_pos_info;
+    }
+
+private:
+    //==========================================================================
+    // MIDI KEYBOARD
+    void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) override;
+    void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) override;
+
+    // ==============================================================================
+    // MIDI
+    void trigger_send_feedback() noexcept;
+    void trigger_send_clear_feedback() noexcept;
+
+    // ==============================================================================
     /// AUTOMATION PARAMETERS
+#ifdef IS_PLUGIN
     int getNumParameters() override;
     bool isParameterAutomatable (int parameterIndex) const override;
     float getParameter ( int index_ ) override;
@@ -50,14 +95,20 @@ private:
     String getParameterLabel (int index) const override;
     int getParameterNumSteps (int index_ ) override;
     float getParameterDefaultValue (int index_) override;
+#endif
 
-private:
-    /// LOAD AND SAVE
+    //==========================================================================
+    // LOAD SAVE
+#ifdef IS_PLUGIN
     void getStateInformation ( MemoryBlock& dest_data_ ) override;
     void setStateInformation ( const void* data_, int size_in_bytes_ ) override;
+#else
+    void getStateInformation ( MemoryBlock& dest_data_ ) override {}
+    void setStateInformation ( const void* data_, int size_in_bytes_ ) override {}
+#endif
 
-private:
-    /// SETUP
+    //==========================================================================
+    // CONFIG
     bool hasEditor() const  override;
     const String getName() const  override;
     const String getInputChannelName ( int channel_index_ ) const  override;
@@ -69,51 +120,24 @@ private:
     bool silenceInProducesSilenceOut() const  override;
     double getTailLengthSeconds() const  override;
 
-    /// PROGRAMMS - NOT SUPPORTED YET
-
+    //==========================================================================
+    // PROGRAM HANDLIG (PLUGIN ONLY)
     int getNumPrograms()  override;
     int getCurrentProgram()  override;
     void setCurrentProgram ( int index_ )  override;
     const String getProgramName ( int index_ )  override;
     void changeProgramName ( int index_, const String& name_ )  override;
 
-    // --------------------------------------------------------------------------------------------
-    // --------------------------------------------------------------------------------------------
-    // --------------------------------------------------------------------------------------------
+    //==========================================================================
+    // BOOT UI
+    COLD AudioProcessorEditor* createEditor()  override;
 
-    AudioProcessorEditor* createEditor()  override;
+    //==========================================================================
+    friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();
+    friend class ContainerDeletePolicy< MoniqueAudioProcessor >;
+    COLD MoniqueAudioProcessor() noexcept;
+    COLD ~MoniqueAudioProcessor() noexcept;
 
-public:
-    MoniqueAudioProcessor();
-#ifdef IS_STANDALONE
-    AudioProcessorPlayer player;
-    bool audio_is_successful_initalized;
-#endif
-
-    ~MoniqueAudioProcessor();
-
-private:
-    Array< MidiMessage > user_keyboard_messages;
-    virtual void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) {
-        synth->noteOn( midiChannel,midiNoteNumber,velocity );
-    }
-    virtual void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) {
-        synth->noteOff( midiChannel,midiNoteNumber,0, true );
-    }
-
-public:
-    // TODO privates!!!:
-    AudioPlayHead::CurrentPositionInfo current_pos_info;
-
-    // SYNTH
-    MoniqueSynthData* synth_data;
-    MoniqueSynthesiserVoice* voice;
-    Synthesiser* synth;
-
-    Monique_Ui_SegmentedMeter* peak_meter;
-    bool repaint_peak_meter;
-
-    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR ( MoniqueAudioProcessor )
 };
 

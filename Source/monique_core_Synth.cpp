@@ -391,9 +391,9 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
         current_modulation_amount+=delta_modulation_amount;
     }
 
-    if( current_modulation_amount < 1 )
+    if( current_modulation_amount < -1 )
     {
-        current_modulation_amount = 1;
+        current_modulation_amount = -1;
     }
     else if( current_modulation_amount > 1 )
     {
@@ -404,11 +404,11 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
     float smoothed_value = value_smoother.tick();
     if( current_modulation_amount >= 0 )
     {
-        smoothed_value += ((max_value-smoothed_value)*current_modulation_amount)*current_modulation_in_percent_;
+        smoothed_value += ((max_value-smoothed_value)*(current_modulation_in_percent_*current_modulation_amount));
     }
     else
     {
-        smoothed_value += ((smoothed_value-min_value)*current_modulation_amount)*current_modulation_in_percent_;
+        smoothed_value += ((smoothed_value-min_value)*(current_modulation_in_percent_*current_modulation_amount));
     }
 
     return smoothed_value;
@@ -5130,21 +5130,25 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
     double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
     double steps_per_min = info->bpm*4/1.0 * speed_multi;
     double steps_per_sample = steps_per_min/samples_per_min;
-    double samples_per_step = samples_per_min/steps_per_min;
     int64 sync_sample_pos = info->samples_since_start+start_sample_;
     int64 step = next_step_on_hold;
     step_at_sample_current_buffer = -1;
+
+    double samples_per_step = samples_per_min/steps_per_min; // WILL BE OVERRIDDEN IN STANDALONE!
     for( int i = 0 ; i < num_samples_; ++i )
     {
 #ifdef IS_STANDALONE
         if( info->is_extern_synced )
         {
-            if( info->next_step_at_sample.size() )
+            OwnedArray< RuntimeInfo::Step >& steps_in_block( info->steps_in_block );
+            if( steps_in_block.size() )
             {
-                if( info->next_step_at_sample.getFirst() == start_sample_+i )
+                RuntimeInfo::Step& step__( *steps_in_block.getFirst() );
+                if( step__.at_absolute_sample == sync_sample_pos )
                 {
-                    step = info->next_step.remove(0);
-                    info->next_step_at_sample.remove(0);
+                    step = step__.step_id;
+                    samples_per_step = step__.samples_per_step;
+                    steps_in_block.remove(0,true);
                 }
             }
         }
@@ -5170,7 +5174,6 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
 
         if( found_a_step and shuffle_to_back_counter == 0 )
         {
-            found_a_step = false;
             step_at_sample_current_buffer = i;
             current_step = next_step_on_hold;
             return i;
@@ -5245,7 +5248,8 @@ fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) )
 current_note(-1),
 current_velocity(0),
 current_step(0),
-an_arp_note_is_already_running(false)
+an_arp_note_is_already_running(false),
+sample_position_for_restart_arp(-1)
 {
     mono_ThreadManager::getInstance();
     mono_ParameterOwnerStore::getInstance()->voice = this;
@@ -5343,7 +5347,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
         fx_processor->start_attack();
     }
 }
-void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
+void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 {
     if( not synth_data->arp_sequencer_data->is_on )
     {
@@ -5356,6 +5360,29 @@ void MoniqueSynthesiserVoice::stopNote ( float, bool allowTailOff )
             stop_internal();
             clearCurrentNote();
         }
+    }
+}
+void MoniqueSynthesiserVoice::stop_arp() noexcept
+{
+    arp_info.current_note = -1;
+    sample_position_for_restart_arp = -1;
+    if( synth_data->arp_sequencer_data->is_on )
+    {
+        arp_info.current_note = current_note;
+        arp_info.current_velocity = current_velocity;
+
+        stop_internal();
+        current_note = -1;
+        //clearCurrentNote();
+    }
+}
+void MoniqueSynthesiserVoice::restart_arp( int sample_pos_in_buffer_ ) noexcept
+{
+    if( arp_info.current_note != -1 )
+    {
+        current_note = arp_info.current_note;
+        current_velocity = arp_info.current_velocity;
+        sample_position_for_restart_arp = sample_pos_in_buffer_;
     }
 }
 void MoniqueSynthesiserVoice::stop_internal() noexcept
@@ -5371,7 +5398,7 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 {
-    if( fx_processor->final_env->get_current_stage() == END_ENV )
+    if( not GET_DATA_PTR( arp_data )->is_on and fx_processor->final_env->get_current_stage() == END_ENV )
     {
         const float last_out_average = fx_processor->last_output_smoother.get_average();
         if( last_out_average < 0.0000001f and last_out_average > -0.0000001f )
@@ -5385,8 +5412,34 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer_, int start_sample_, int num_samples_ )
 {
     // GET POSITION INFOS
-    info->bpm = synth_data->sync ? audio_processor->current_pos_info.bpm : synth_data->speed;
-    info->samples_since_start = audio_processor->current_pos_info.timeInSamples;
+#ifdef IS_STANDALONE
+    if( synth_data->sync )
+    {
+        if( info->is_extern_synced )
+        {
+            info->bpm = audio_processor->get_current_pos_info().bpm;
+        }
+        else
+        {
+            info->bpm = synth_data->speed;
+        }
+    }
+    else
+    {
+        info->is_extern_synced = false;
+        info->bpm = synth_data->speed;
+    }
+#else
+    if( synth_data->sync )
+    {
+        info->bpm = synth_data->speed;
+    }
+    else
+    {
+        info->bpm = audio_processor->get_current_pos_info().bpm;
+    }
+#endif
+    info->samples_since_start = audio_processor->get_current_pos_info().timeInSamples;
 
     int count_start_sample = start_sample_;
     int counted_samples = num_samples_;
@@ -5400,9 +5453,18 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         counted_samples -= samples_to_next_arp_step_in_this_buffer;
 
         // RENDER THE NEXT BLOCK
+        int step_id = arp_sequencer->get_current_step();
+
+        // FORCE AN ARP RESTART
+        if( sample_position_for_restart_arp > -1 and step_id == 0 )
+        {
+            start_internal( current_note, current_velocity );
+            an_arp_note_is_already_running = true;
+            sample_position_for_restart_arp = -1;
+        }
         if( samples_to_next_arp_step_in_this_buffer > 0 )
         {
-            render_block( output_buffer_, is_a_step ? arp_sequencer->get_current_step() : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
+            render_block( output_buffer_, is_a_step ? step_id : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
         }
         count_start_sample += samples_to_next_arp_step_in_this_buffer;
 
@@ -5415,7 +5477,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
             an_arp_note_is_already_running = false;
         }
 
-        const bool is_a_new_arp_step_to_start = arp_is_on and is_a_step and is_step_enabled;
+        const bool is_a_new_arp_step_to_start = (arp_is_on and is_a_step and is_step_enabled);
         if( is_a_new_arp_step_to_start )
         {
             start_internal( current_note, current_velocity );
@@ -5585,7 +5647,6 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
     eq_processor->reset();
     fx_processor->reset();
 }
-
 
 //==============================================================================
 float MoniqueSynthesiserVoice::get_filter_env_amp( int filter_id_ ) const noexcept

@@ -82,19 +82,25 @@ private:
     //==========================================================================
     MidiMessageCollector cc_input_collector;
     MidiMessageCollector note_input_collector;
+    MidiMessageCollector sync_input_collector;
+protected:
     void collect_incoming_midi_messages ( INPUT_ID input_id_, const MidiMessage& midi_message_ ) noexcept;
 
 protected:
     //==========================================================================
     //==========================================================================
     //==========================================================================
-    void get_cc_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
+    inline void get_cc_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
     {
         cc_input_collector.removeNextBlockOfMessages( midi_messages_, num_samples_ );
     }
-    void get_note_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
+    inline void get_note_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
     {
         note_input_collector.removeNextBlockOfMessages( midi_messages_, num_samples_ );
+    }
+    inline void get_sync_input_messages( MidiBuffer& midi_messages_, int num_samples_ ) noexcept
+    {
+        sync_input_collector.removeNextBlockOfMessages( midi_messages_, num_samples_ );
     }
 
 private:

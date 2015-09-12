@@ -24,4 +24,7 @@
 #define COLD
 #undef restrict
 #define restrict
+#undef noexcept
+#define noexcept
+#define IS_STANDALONE
 #endif

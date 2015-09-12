@@ -49,6 +49,7 @@ COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) n
     thru_collector.reset(sample_rate);
     cc_input_collector.reset(sample_rate);
     note_input_collector.reset(sample_rate);
+    sync_input_collector.reset(sample_rate);
 }
 
 //==============================================================================
@@ -193,6 +194,8 @@ void mono_AudioDeviceManager::MidiInputCallback_CC::handleIncomingMidiMessage(Mi
 //==============================================================================
 void mono_AudioDeviceManager::MidiInputCallback_NOTES::handleIncomingMidiMessage(MidiInput*, const MidiMessage& message)
 {
+    //if( message.isNoteOnOrOff() )
+    //    return;
     manager->collect_incoming_midi_messages( INPUT_ID::NOTES, message );
 }
 
@@ -216,19 +219,19 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
 #ifdef IS_STANDALONE
         if( midi_message_.isMidiClock() )
         {
-            note_input_collector.addMessageToQueue( midi_message_ );
+            sync_input_collector.addMessageToQueue( midi_message_ );
         }
         else if( midi_message_.isMidiStart() )
         {
-            note_input_collector.addMessageToQueue( midi_message_ );
+            sync_input_collector.addMessageToQueue( midi_message_ );
         }
         else if( midi_message_.isMidiStop() )
         {
-            note_input_collector.addMessageToQueue( midi_message_ );
+            sync_input_collector.addMessageToQueue( midi_message_ );
         }
         else if( midi_message_.isMidiContinue() )
         {
-            note_input_collector.addMessageToQueue( midi_message_ );
+            sync_input_collector.addMessageToQueue( midi_message_ );
         }
         else // IF
 #endif
@@ -261,7 +264,7 @@ mono_AudioDeviceManager::AdvancedMidiInputCallback* mono_AudioDeviceManager::get
     {
     case INPUT_ID::CC :
         return cc_input_callback;
-    case INPUT_ID::NOTES :
+    default : //  INPUT_ID::NOTES :
         return note_input_callback;
     }
 }
@@ -319,7 +322,7 @@ MidiOutput* mono_AudioDeviceManager::get_output_device(mono_AudioDeviceManager::
     {
     case OUTPUT_ID::THRU :
         return midi_thru_output;
-    case OUTPUT_ID::FEEDBACK :
+    default : //  OUTPUT_ID::FEEDBACK :
         return midi_feedback_output;
     }
 }
@@ -384,7 +387,7 @@ String mono_AudioDeviceManager::get_selected_out_device(mono_AudioDeviceManager:
     case OUTPUT_ID::FEEDBACK :
         return midi_feedback_name;
         break;
-    case OUTPUT_ID::THRU :
+    default : // OUTPUT_ID::THRU :
         return midi_thru_name;
         break;
     }

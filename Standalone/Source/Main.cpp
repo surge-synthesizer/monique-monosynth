@@ -5,29 +5,56 @@
 class MoniqueSynthesizerApp  : public JUCEApplication
 {
 public:
-    //==============================================================================
-    MoniqueSynthesizerApp() noexcept {}
-    ~MoniqueSynthesizerApp() noexcept {}
+    //==========================================================================
+    COLD MoniqueSynthesizerApp() noexcept;
+    COLD ~MoniqueSynthesizerApp() noexcept;
 
-    const String getApplicationName() override
-    {
-        return ProjectInfo::projectName;
-    }
-    const String getApplicationVersion() override
-    {
-        return ProjectInfo::versionString;
-    }
-    bool moreThanOneInstanceAllowed() override
-    {
-        return true;
-    }
+    const String getApplicationName() override;
+    const String getApplicationVersion() override;
+    bool moreThanOneInstanceAllowed() override;
 
-    //==============================================================================
-    void initialise (const String&) override
-    {
-        standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
+    //==========================================================================
+    COLD void initialise (const String&) override;
+    COLD void shutdown() override;
+
+    //==========================================================================
+    COLD void suspended() override;
+    COLD void resumed() override;
+
+    COLD void systemRequestedQuit() override;
+    COLD void anotherInstanceStarted (const String&) override;
+
+private:
+    ScopedPointer<StandaloneFilterWindow> standaloneFilterWindow;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesizerApp)
+};
+
+//==============================================================================
+COLD MoniqueSynthesizerApp::MoniqueSynthesizerApp() noexcept {}
+COLD MoniqueSynthesizerApp::~MoniqueSynthesizerApp() noexcept {}
+
+//==============================================================================
+const String MoniqueSynthesizerApp::getApplicationName()
+{
+    return ProjectInfo::projectName;
+}
+const String MoniqueSynthesizerApp::getApplicationVersion()
+{
+    return ProjectInfo::versionString;
+}
+bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
+{
+    return true;
+}
+
+//==============================================================================
+COLD void MoniqueSynthesizerApp::initialise (const String&)
+{
+    standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
-// +++++++++ PROFILE
+    {
+        // +++++++++ PROFILE
 #if JUCE_LINUX || JUCE_WINDOWS
         standaloneFilterWindow->setUsingNativeTitleBar( false );
 #else
@@ -45,36 +72,28 @@ public:
         standaloneFilterWindow->addToDesktop();
         standaloneFilterWindow->setVisible(true);
         standaloneFilterWindow->setEnabled(true);
-// +++++++++ PROFILE
+        // +++++++++ PROFILE
+    }
 #endif
-    }
-
-    void shutdown() override
-    {
-        DBG( "USR QUIT") ;
-        standaloneFilterWindow = nullptr; // (deletes our window)
-    }
+}
+COLD void MoniqueSynthesizerApp::shutdown()
+{
+    DBG( "USR QUIT") ;
+    standaloneFilterWindow = nullptr; // (deletes our window)
+}
 
 //==============================================================================
-    void suspended() override {}
-    void resumed() override {}
+COLD void MoniqueSynthesizerApp::suspended() {}
+COLD void MoniqueSynthesizerApp::resumed() {}
+COLD void MoniqueSynthesizerApp::systemRequestedQuit()
+{
+    DBG( "SYS QUIT") ;
 
-    void systemRequestedQuit() override
-    {
-        DBG( "SYS QUIT") ;
-
-        quit();
-    }
-
-    void anotherInstanceStarted (const String&) override
-    {
-    }
-
-private:
-    ScopedPointer<StandaloneFilterWindow> standaloneFilterWindow;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesizerApp)
-};
+    quit();
+}
+COLD void MoniqueSynthesizerApp::anotherInstanceStarted (const String&)
+{
+}
 
 //==============================================================================
 // This macro generates the main() routine that launches the app.

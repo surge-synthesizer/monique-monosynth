@@ -60,7 +60,6 @@ void SynthesiserVoice::clearCurrentNote()
     currentlyPlayingNote = -1;
     currentlyPlayingSound = nullptr;
 }
-
 void SynthesiserVoice::aftertouchChanged (int) {}
 
 bool SynthesiserVoice::wasStartedBefore (const SynthesiserVoice& other) const noexcept
