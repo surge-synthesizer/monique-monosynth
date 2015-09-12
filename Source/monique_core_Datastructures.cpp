@@ -1918,7 +1918,7 @@ ui_scale_factor
 force_envs_to_zero
 (
     MIN_MAX( 0, 1 ),
-    0.2,
+    0,
     1000,
     generate_param_name(ENV_NAME,MASTER,"force_env2zero"),
     generate_short_human_name("MAIN","force_env2zero")

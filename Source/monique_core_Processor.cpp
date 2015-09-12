@@ -134,6 +134,7 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     trigger_send_clear_feedback();
 
 #ifdef IS_STANDALONE
+    delete clock_smoother;
     mono_AudioDeviceManager::save();
     closeAudioDevice();
     removeAudioCallback (&player);
@@ -197,6 +198,9 @@ void MoniqueAudioProcessor::timerCallback()
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
+    if( buffer_.getNumChannels() < 2 )
+      return;
+  
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
     {
         prepareToPlay(getSampleRate(),getBlockSize());
