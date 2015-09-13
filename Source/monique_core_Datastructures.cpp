@@ -1761,8 +1761,8 @@ glide_motor_time
 ),
 velocity_glide_time
 (
-    MIN_MAX( 1, 20000 ),
-    500,
+    MIN_MAX( 30, 999 ),
+    30,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
     generate_short_human_name("MAIN","velocity_glide_time")
 ),

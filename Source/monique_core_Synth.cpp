@@ -5477,7 +5477,8 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
-    bool only_process_lfo = current_note == -1;
+    if( current_note == -1 )
+      return;
 
     Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave();
 
@@ -5543,7 +5544,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         arp_sequencer->current_velocity = current_velocity;
     }
-    fx_processor->velocity_glide.update( synth_data->velocity_glide_time );
+    fx_processor->velocity_glide.update( msToSamplesFast(synth_data->velocity_glide_time.get_value(),RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate()) );
 
     fx_processor->process( output_buffer_, start_sample_, num_samples_ );
     // OSCs - THREAD 1 ?

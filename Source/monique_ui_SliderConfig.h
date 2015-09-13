@@ -3766,7 +3766,7 @@ public:
 class GlideConfig : public ModulationSliderConfigBase
 {
     Parameter*const glide;
-    Parameter*const velocity_glide_time;
+    IntParameter*const velocity_glide_time;
     BoolParameter*const connect;
 
     //==============================================================================
@@ -3851,20 +3851,28 @@ class GlideConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+        float value;
+        if( glide->midi_control->get_ctrl_mode() )
+        {
+            value = velocity_glide_time->get_value();
+        }
+        else
+        {
+	    const float sr = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate();
+            value = samplesToMsFast(glide->get_value()*sr/2,sr);
+        }
+        return String(round0(value));
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+        return "ms";
     }
-    */
 
 public:
     GlideConfig()

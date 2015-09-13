@@ -92,7 +92,7 @@ forcedinline static double samplesToMs (int64 numSamples, double sampleRate) noe
 {
     return (1000.0 * (numSamples / sampleRate));
 }
-forcedinline static double samplesToMsFast (int64 numSamples, float sampleRate) noexcept
+forcedinline static float samplesToMsFast (int64 numSamples, float sampleRate) noexcept
 {
     return (1000.0f * (float(numSamples) / sampleRate));
 }
