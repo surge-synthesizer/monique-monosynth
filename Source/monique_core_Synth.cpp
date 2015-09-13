@@ -1161,6 +1161,7 @@ public:
 public:
     inline void setFrequency( float frequency ) noexcept;
     inline void reset() noexcept;
+    inline void reset_and_update_current_angle( int sample_pos_in_bar_ ) noexcept;
 
     inline bool isNewCylce() const noexcept;
     inline void clearNewCycleState() noexcept;
@@ -1209,7 +1210,12 @@ inline float mono_SineWave::tick() noexcept
 }
 
 // -----------------------------------------------------------------
-inline void mono_SineWave::reset( void ) noexcept
+inline void mono_SineWave::reset() noexcept
+{
+    current_angle = 0;
+    last_tick_value = 0;
+}
+inline void mono_SineWave::reset_and_update_current_angle( int sample_pos_in_bar_ ) noexcept
 {
     current_angle = 0;
     last_tick_value = 0;
@@ -1442,14 +1448,16 @@ inline void mono_Modulate::clearNewCycleState() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class LFO
+class LFO : public RuntimeListener
 {
     mono_SineWave sine_generator;
 
-    float last_frequency;
+    float last_speed;
+    float samples_per_cylce;
+    float last_out;
 
-    int last_factor;
-    int step_to_wait_for_sync;
+    int glide_counter;
+    float glide_value;
 
     const int id;
 
@@ -1459,12 +1467,9 @@ class LFO
 
 public:
     //==============================================================================
-    inline void process( int step_number_, int num_samples_ ) noexcept;
+    inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept;
+    COLD void sample_rate_changed( double ) noexcept;
 
-private:
-    inline void sync( int step_number_ ) noexcept;
-
-public:
     //==============================================================================
     float get_current_amp() const noexcept;
 
@@ -1482,10 +1487,11 @@ COLD LFO::LFO( int id_ ) noexcept
 :
 sine_generator(),
 
-               last_frequency(0),
+               last_speed(0),
+               samples_per_cylce(100),
+               last_out(0),
 
-               last_factor(0),
-               step_to_wait_for_sync(false),
+               glide_counter(0),
 
                id( id_ ),
 
@@ -1496,115 +1502,100 @@ sine_generator(),
 COLD LFO::~LFO() noexcept {}
 
 //==============================================================================
-inline void LFO::process( int step_number_, int num_samples_ ) noexcept
+float get_lfo_speed_multi( float speed_ ) noexcept
 {
-    float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
-    sync( step_number_ );
-
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    float factor = 1;
+    if( speed_ <= 6 )
     {
-        process_buffer[sid] = (sine_generator.tick() + 1) * 0.5f;
+        factor = 1;
+        if( speed_ == 0 )
+            factor = 16; //return "16/1";
+        else if( speed_ <= 1 )
+            factor = 12; //return "12/1";
+        else if( speed_ <= 2 )
+            factor = 8;
+        else if( speed_ <= 3 )
+            factor = 4;
+        else if( speed_ <= 4 )
+            factor = 3;
+        else if( speed_ <= 5 )
+            factor = 2;
     }
+    else if( speed_ <= 17 )
+    {
+        factor = 0;
+        if( speed_ <= 7 )
+            factor = 3.0f/4;
+        else if( speed_ <= 8 )
+            factor = 1.0f/2;
+        else if( speed_ <= 9 )
+            factor = 1.0f/3;
+        else if( speed_ <= 10 )
+            factor = 1.0f/4;
+        else if( speed_ <= 11 )
+            factor = 1.0f/8;
+        else if( speed_ <= 12 )
+            factor = 1.0f/12;
+        else if( speed_ <= 13 )
+            factor = 1.0f/16;
+        else if( speed_ <= 14 )
+            factor = 1.0f/24;
+        else if( speed_ <= 15 )
+            factor = 1.0f/32;
+        else if( speed_ <= 16 )
+            factor = 1.0f/64;
+        else
+            factor = 1.0f/128;
+    }
+
+    return factor;
 }
-void LFO::sync( int step_number_ ) noexcept
+#define LFO_GLIDE_SAMPLES 100.0f
+inline void LFO::process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
 {
     const float speed( lfo_data->speed );
-    if( speed <= 6 )
+    if( speed != last_speed )
     {
-        if( step_number_ == 0 )
+        const float bars_per_sec = runtime_info->bpm/4/60;
+        if( speed <= 17 )
         {
-            float factor = 1; // 1/1
-            if( speed == 0 )
-                factor = 16; //return "16/1";
-            else if( speed <= 1 )
-                factor = 12; //return "12/1";
-            else if( speed <= 2 )
-                factor = 8;
-            else if( speed <= 3 )
-                factor = 4;
-            else if( speed <= 4 )
-                factor = 3;
-            else if( speed <= 5 )
-                factor = 2;
-
-            const float whole_notes_per_sec( runtime_info->bpm / 4 / 60 ); // = 1 at our slider
-            float frequency = whole_notes_per_sec / factor;
-
-            step_to_wait_for_sync--;
-            if( last_factor != factor )
-            {
-                step_to_wait_for_sync = 0;
-                last_factor = factor;
-            }
-
-            if( step_to_wait_for_sync <= 0 )
-            {
-                last_frequency = frequency;
-                sine_generator.setFrequency( frequency );
-                sine_generator.reset();
-
-                step_to_wait_for_sync = last_factor;
-            }
+            const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( lfo_data->speed );
+            samples_per_cylce = sample_rate / cycles_per_sec;
         }
-    }
-    else if( speed <= 17 )
-    {
-        if( step_number_ == 0 )
+        else
         {
-            float factor = 0;
-            if( speed <= 7 )
-                factor = 3.0f/4;
-            else if( speed <= 8 )
-                factor = 1.0f/2;
-            else if( speed <= 9 )
-                factor = 1.0f/3;
-            else if( speed <= 10 )
-                factor = 1.0f/4;
-            else if( speed <= 11 )
-                factor = 1.0f/8;
-            else if( speed <= 12 )
-                factor = 1.0f/12;
-            else if( speed <= 13 )
-                factor = 1.0f/16;
-            else if( speed <= 14 )
-                factor = 1.0f/24;
-            else if( speed <= 15 )
-                factor = 1.0f/32;
-            else if( speed <= 16 )
-                factor = 1.0f/64;
-            else
-                factor = 1.0f/128;
-
-            const float whole_notes_per_sec( runtime_info->bpm/4 / 60 ); // = 1 at our slider
-            double frequency = (whole_notes_per_sec / factor);
-            {
-                last_frequency = frequency;
-                sine_generator.setFrequency( frequency );
-                sine_generator.reset();
-            }
-
-            step_to_wait_for_sync = 0;
-            last_factor = 0;
-        }
-    }
-    else
-    {
-        float frequency = midiToFrequency(33+speed-18);
-        if( frequency != last_frequency )
-        {
-            last_frequency = frequency;
-            sine_generator.setFrequency( frequency );
+            samples_per_cylce = sample_rate * (1.0f/midiToFrequency(33+speed-18));
         }
 
-        step_to_wait_for_sync = 0;
-        last_factor = 0;
+        glide_counter = LFO_GLIDE_SAMPLES;
+        glide_value = last_out;
+        last_speed = speed;
     }
+
+    int64 sync_sample_pos = runtime_info->samples_since_start+start_pos_in_buffer_;
+    float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
+        float amp = lfo2amp( sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+        if( --glide_counter > 0 )
+        {
+            float glide = (1.0f/LFO_GLIDE_SAMPLES*glide_counter);
+            amp = amp*(1.0f-glide) + glide_value*glide;
+        }
+        process_buffer[sid] = amp;
+    }
+    last_out = process_buffer[num_samples_-1];
+}
+void LFO::sample_rate_changed( double ) noexcept
+{
+    last_speed = -1;
 }
 
 //==============================================================================
 float LFO::get_current_amp() const noexcept
 {
-    return lfo2amp(sine_generator.lastOut());
+    return last_out;
 }
 
 //==============================================================================
@@ -2327,8 +2318,8 @@ COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
 
     current_stage(END_ENV),
 
-    env_data( env_data_ ),
-    synth_data( synth_data_ )
+    synth_data( synth_data_ ),
+    env_data( env_data_ )
 {
 }
 COLD ENV::~ENV() {}
@@ -4079,8 +4070,8 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                          hold_sustain( processor_->eq_data->hold[band_id_]),
                          glide_motor_time( processor_->synth_data->glide_motor_time ),
-                         shape_smoother( &processor_->shape_smoother[band_id_] ),
                          velocity_smoother( &processor_->velocity_smoother[band_id_] ),
+                         shape_smoother( &processor_->shape_smoother[band_id_] ),
                          amp2velocity_smoother( &processor_->amp2velocity_smoother[band_id_] ),
 
                          filter_frequency( processor_->frequency_low_pass[band_id_] ),
@@ -5504,9 +5495,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // LFO WILL ALWAYS PEROCESSED
     if( only_process_lfo )
     {
-        lfos[0]->process( step_number_, num_samples_ );
-        lfos[1]->process( step_number_, num_samples_ );
-        lfos[2]->process( step_number_, num_samples_ );
+        lfos[0]->process( step_number_, start_sample_, num_samples_ );
+        lfos[1]->process( step_number_, start_sample_, num_samples_ );
+        lfos[2]->process( step_number_, start_sample_, num_samples_ );
 
         return;
     }
@@ -5514,7 +5505,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
-        lfos[0]->process( step_number_, num_samples );
+        lfos[0]->process( step_number_, start_sample_, num_samples );
         filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
         oscs[0]->process( data_buffer, num_samples ); // NEED LFO 0
 
@@ -5524,23 +5515,28 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         {
             MoniqueSynthesiserVoice*const voice;
             const int num_samples;
+            const int start_sample;
             const int step_number;
             void exec() noexcept override
             {
                 voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
-                voice->lfos[1]->process( step_number, num_samples );
+                voice->lfos[1]->process( step_number, start_sample, num_samples );
                 voice->oscs[1]->process( voice->data_buffer, num_samples );
             }
             Executer(MoniqueSynthesiserVoice*const voice_,
             int num_samples_,
+            int start_sample_,
             int step_number_)
                 : voice(voice_),
-                num_samples(num_samples_),step_number(step_number_) {}
+                num_samples(num_samples_),
+                start_sample(start_sample_),
+                step_number(step_number_)
+            {}
         };
-        Executer executer( this, num_samples, step_number_ );
+        Executer executer( this, num_samples, start_sample_, step_number_ );
         executer.try_run_paralel();
 
-        lfos[2]->process( step_number_, num_samples );
+        lfos[2]->process( step_number_, start_sample_, num_samples );
         filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
         oscs[2]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
 
@@ -5708,8 +5704,8 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 //==============================================================================
 COLD mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept
 :
-ui_env(nullptr),
-ui_env_preset_data(nullptr)
+ui_env_preset_data(nullptr),
+ui_env(nullptr)
 {}
 
 COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept

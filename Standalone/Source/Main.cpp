@@ -51,6 +51,17 @@ bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
 //==============================================================================
 COLD void MoniqueSynthesizerApp::initialise (const String&)
 {
+    std::cout << sin( float_Pi*0 ) << std::endl;
+    std::cout << std::abs( sin( float_Pi*0.5) ) << std::endl;
+    std::cout << sin( float_Pi*1 ) << std::endl;
+    std::cout << sin( float_Pi*1.5 ) << std::endl;
+    std::cout << sin( float_Pi*2 ) << std::endl;
+  
+   
+    std::cout << fmod( float_Pi+1.12, float_Pi ) << std::endl;
+  
+  
+  
     standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
     {
