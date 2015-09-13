@@ -1577,7 +1577,7 @@ inline void LFO::process( int step_number_, int start_pos_in_buffer_, int num_sa
     for( int sid = 0 ; sid != num_samples_ ; ++sid )
     {
         const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
-        float amp = lfo2amp( sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+        float amp = lfo2amp( std::sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
         if( --glide_counter > 0 )
         {
             float glide = (1.0f/LFO_GLIDE_SAMPLES*glide_counter);
@@ -2585,7 +2585,7 @@ public:
     //==============================================================================
     // RETURNS TRUE ON COFF CHANGED
     inline bool update(float resonance_, float cutoff_, float gain_ ) noexcept;
-    inline void update_with_resoance(float resonance_, float cutoff_, float gain_ ) noexcept;
+    inline void update_with_calc(float resonance_, float cutoff_, float gain_ ) noexcept;
     inline void copy_coefficient_from( const AnalogFilter& other_ ) noexcept;
     inline void copy_state_from( const AnalogFilter& other_ ) noexcept;
 
@@ -2596,7 +2596,7 @@ public:
     inline void reset() noexcept;
 
 private:
-    inline void calc_coefficients( bool with_resonance_ ) noexcept;
+    inline void calc_coefficients() noexcept;
 
     COLD void sample_rate_changed( double ) noexcept override;
 
@@ -2625,25 +2625,26 @@ COLD AnalogFilter::~AnalogFilter() noexcept {}
 inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) noexcept
 {
     bool success = false;
+    resonance_*=0.8;
     if( cutoff != cutoff_ || gain != gain_ || res != resonance_ )
     {
         gain = gain_;
         cutoff = cutoff_;
         res = resonance_;
-        res4 = resonance_*4;
+        res4 = gain_*4;
         success = true;
     }
     return success;
 }
-inline void AnalogFilter::update_with_resoance(float resonance_, float cutoff_, float gain_) noexcept
+inline void AnalogFilter::update_with_calc(float resonance_, float cutoff_, float gain_) noexcept
 {
     if( cutoff != cutoff_ || gain != gain_ || res != resonance_ )
     {
         gain = gain_;
         cutoff = cutoff_;
         res = resonance_;
-        res4 = resonance_*4;
-        calc_coefficients( true );
+        res4 = gain_*4;
+        calc_coefficients();
     }
 }
 
@@ -2760,7 +2761,7 @@ inline void AnalogFilter::reset() noexcept
 }
 
 //==============================================================================
-inline void AnalogFilter::calc_coefficients( bool with_resonance_ ) noexcept
+inline void AnalogFilter::calc_coefficients() noexcept
 {
     {
         float f = (cutoff+cutoff) * sample_rate_1ths;
@@ -2768,15 +2769,10 @@ inline void AnalogFilter::calc_coefficients( bool with_resonance_ ) noexcept
         p=f*((1.5f+agressive)-((0.5f+agressive)*f));
         k=p*2-1;
     }
-    if( with_resonance_ )
     {
         const float t=(1.0f-p)*1.386249f;
         const float t2=12.0f+t*t;
         r = res*(t2+6.0f*t)/(t2-6.0f*t);
-    }
-    else
-    {
-        r = 1;
     }
 }
 
@@ -2889,7 +2885,7 @@ inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, 
 {
     if( flt_2.update( resonance_, cutoff_, gain_ ) )
     {
-        flt_2.calc_coefficients( false );
+        flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
     }
 }
@@ -2912,7 +2908,7 @@ inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_,
 {
     if( flt_2.update( resonance_, cutoff_, gain_ ) )
     {
-        flt_2.calc_coefficients( false );
+        flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
     }
 }
@@ -2934,9 +2930,9 @@ inline void DoubleAnalogFilter::updateBand(float resonance_, float cutoff_, floa
 {
     if( flt_1.update( resonance_, cutoff_+10, gain_ ) )
     {
-        flt_1.calc_coefficients( false );
+        flt_1.calc_coefficients();
         flt_2.update( resonance_, cutoff_, gain_ );
-        flt_2.calc_coefficients( false );
+        flt_2.calc_coefficients();
     }
 }
 inline float DoubleAnalogFilter::processBand(float in_) noexcept
@@ -4043,7 +4039,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                         tmp_env_buffer[sid ] = amp;
 
                         // UPDATE FILTER
-                        filter.update_with_resoance( 0.2f*shape, filter_frequency, normalized_sustain );
+                        filter.update_with_calc( 0.2f*shape, filter_frequency, normalized_sustain );
 
                         // PROCESS
                         {

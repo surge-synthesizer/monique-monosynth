@@ -3,6 +3,7 @@ CHANGES 0.6
 - add support for load save audio and midi devices
 - simplifyed CC : only CC (no notes) are supported and receive on each MIDI channel
 - fix: arp note value show 0....
+- fix lfo sync and speed
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
@@ -16,7 +17,6 @@ MY TODO
 - new file handling asks for changed old ones (set current programm correctly?)
 
 TODO:
-- lfo programm switch glide
 - reset: oscs to zero on sleep
 - add: keyboard arrow up/down, left/right to control slider values
 - add: modulation amounts as automation params- add: midi bank select
