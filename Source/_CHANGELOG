@@ -4,6 +4,7 @@ CHANGES 0.6
 - simplifyed CC : only CC (no notes) are supported and receive on each MIDI channel
 - fix: arp note value show 0....
 - fix lfo sync and speed
+- changed filter resoanance and gain!!!!!!
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect

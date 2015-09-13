@@ -5488,16 +5488,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     if( step_number_ != -1 )
         current_step = step_number_;
 
-    // LFO WILL ALWAYS PEROCESSED
-    if( only_process_lfo )
-    {
-        lfos[0]->process( step_number_, start_sample_, num_samples_ );
-        lfos[1]->process( step_number_, start_sample_, num_samples_ );
-        lfos[2]->process( step_number_, start_sample_, num_samples_ );
-
-        return;
-    }
-
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
