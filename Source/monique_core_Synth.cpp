@@ -5201,7 +5201,7 @@ inline int ArpSequencer::get_step_before() const noexcept
 }
 inline float ArpSequencer::get_current_tune() const noexcept
 {
-    return data->tune[get_current_step()];
+    return data->tune[get_current_step()].get_value();
 }
 inline bool ArpSequencer::found_last_process_a_step() const noexcept
 {

@@ -241,6 +241,45 @@ COLD ArrayOfBoolParameters::~ArrayOfBoolParameters() noexcept
         delete parameters[i];
     }
 }
+//==============================================================================
+//==============================================================================
+//==============================================================================
+COLD ArrayOfIntParameters::ArrayOfIntParameters
+(
+    const int num_parameters_,
+
+    const int min_value_, const int max_value_, const int init_value_,
+
+    const String& owner_class_name_,
+    const int owner_id_,
+
+    const String& param_name_,
+    const String& param_name_short_,
+
+    bool create_human_id_
+) noexcept
+:
+size( num_parameters_ )
+{
+    parameters = new IntParameter*[size];
+    for( int i = 0 ; i != size ; ++i )
+    {
+        parameters[i] = new IntParameter
+        (
+	    MIN_MAX( min_value_, max_value_ ),
+            init_value_,
+            generate_param_name(owner_class_name_,owner_id_,param_name_,i),
+            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+        );
+    }
+}
+COLD ArrayOfIntParameters::~ArrayOfIntParameters() noexcept
+{
+    for( int i = size-1 ; i > -1 ; --i )
+    {
+        delete parameters[i];
+    }
+}
 
 //==============================================================================
 //==============================================================================

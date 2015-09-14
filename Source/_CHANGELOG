@@ -6,7 +6,9 @@ CHANGES 0.6
 - fix lfo sync and speed
 - changed filter resoanance and gain!!!!!!
 - set min velocity glide time to 30ms and max 999
-- fix show velocity and note glide time values on ui
+- fix: show velocity and note glide time values on ui
+- fix: reset osc if the synt "sleeps"
+
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
@@ -22,7 +24,7 @@ MY TODO
 - no retrigger on press key if the arp is enabeld
 
 TODO:
-- reset: oscs to zero on sleep
+- tune is an int parameter
 - add: keyboard arrow up/down, left/right to control slider values
 - add: modulation amounts as automation params- add: midi bank select
 - add: midi mod wheel; pitch wheel support
@@ -34,8 +36,6 @@ TODO:
 - add hide standalone settings in plugin
 
 QUESTS
-- sync lfo with note on?
-- how to set return value?
 - should have buttons which enables ADSR preset curves have an own colour? 
 
 -------------------------------------------------------------------

@@ -295,7 +295,7 @@ public:
     inline void register_listener( ParameterListener* listener_ ) noexcept;
     inline void register_always_listener( ParameterListener* listener_ ) noexcept;
     inline void remove_listener( const ParameterListener* listener_ ) noexcept;
-    
+
 protected:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
     // NOTIFICATIONS
@@ -647,6 +647,56 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( ArrayOfBoolParameters )
     MONO_NOT_MOVE_COPY_OPERATOR( ArrayOfBoolParameters )
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class ArrayOfIntParameters
+{
+    const int size;
+    IntParameter** parameters;
+
+public:
+    inline IntParameter& operator[]( int index_ ) noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters[ index_ ];
+    }
+    inline IntParameter& get( int index_ ) const noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters[ index_ ];
+    }
+    inline const IntParameter& operator[]( int index_ ) const noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters[ index_ ];
+    }
+    inline const IntParameter& get( int index_ ) noexcept
+    {
+        DEBUG_CHECK_ARRAY_RANGE( index_ );
+        return *parameters[ index_ ];
+    }
+
+public:
+    COLD ArrayOfIntParameters( const int num_parameters_,
+
+                       const int min_value_, const int max_value_, const int init_value_,
+
+                       const String& owner_class_name_,
+                       const int owner_id_,
+
+                       const String& param_name_,
+                       const String& param_name_short_,
+                       bool create_human_id_ = true
+                     ) noexcept;
+    COLD ~ArrayOfIntParameters() noexcept;
+
+private:
+    // ==============================================================================
+    MONO_NOT_CTOR_COPYABLE( ArrayOfIntParameters )
+    MONO_NOT_MOVE_COPY_OPERATOR( ArrayOfIntParameters )
 };
 
 //==============================================================================

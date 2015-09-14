@@ -448,7 +448,7 @@ struct ArpSequencerData
     BoolParameter is_on;
 
     ArrayOfBoolParameters step;
-    ArrayOfParameters tune;
+    ArrayOfIntParameters tune;
     ArrayOfParameters velocity;
 
     Parameter shuffle;

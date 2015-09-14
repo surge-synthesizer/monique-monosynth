@@ -1035,8 +1035,7 @@ tune
     SUM_ENV_ARP_STEPS,
 
     MIN_MAX( -48, 48 ),
-    false,
-    96*10,
+    0,
 
     ARP_NAME,id_,
     "tune","tune", false
