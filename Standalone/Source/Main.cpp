@@ -1,6 +1,62 @@
 #include "../../Source/App_h_includer.h"
 #include "juce_StandaloneFilterWindow.h"
+/*
+#define ARRAY_SIZE 100000
+#define TEST_CYCLES 10000
+float* work_array_of_floats = new float[ARRAY_SIZE];
+float* store_array_of_floats_test_1 = new float[ARRAY_SIZE];
+float* store_array_of_floats_test_2 = new float[ARRAY_SIZE];
+struct use_stack
+{
+    void run( int size_, float* target_ ) noexcept
+    {
+        float work_array_of_floats__[ARRAY_SIZE];
+        float output__[ARRAY_SIZE];
+        FloatVectorOperations::copy( output__, target_, size_ );
+        for( int n = 0; n != TEST_CYCLES ; ++n )
+            for( int i = 0; i != size_ ; ++i )
+            {
+                work_array_of_floats__[i] = output__[i] * output__[i];
+                output__[i] = work_array_of_floats__[i]*1.21*work_array_of_floats__[i];
+            }
 
+        FloatVectorOperations::copy( target_, output__, size_ );
+    }
+
+    use_stack( int size_ ) {}
+};
+struct use_ptr
+{
+    static void run( int size_, float* target_, float* src_ ) noexcept
+    {
+        for( int n = 0; n != TEST_CYCLES ; ++n )
+            for( int i = 0; i != size_ ; ++i )
+            {
+                src_[i] = target_[i] * target_[i];
+                target_[i] = src_[i]*1.21*src_[i];
+            }
+    };
+};
+
+
+
+void run_test() noexcept
+{
+    for( int i = 0; i != ARRAY_SIZE ; ++i )
+    {
+        store_array_of_floats_test_1[i] = 1.23;
+        store_array_of_floats_test_2[i] = 1.23;
+    }
+    use_stack stack__(ARRAY_SIZE);
+    int64 start_time = Time::getMillisecondCounter();
+    stack__.run( ARRAY_SIZE, store_array_of_floats_test_1 );
+    std::cout<< "use_stack: "<< Time::getMillisecondCounter() - start_time << std::endl;
+
+    start_time = Time::getMillisecondCounter();
+    use_ptr::run( ARRAY_SIZE, store_array_of_floats_test_2, work_array_of_floats );
+    std::cout<< "use_ptr: "<< Time::getMillisecondCounter() - start_time << std::endl;
+};
+*/
 //==============================================================================
 class MoniqueSynthesizerApp  : public JUCEApplication
 {
@@ -51,17 +107,8 @@ bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
 //==============================================================================
 COLD void MoniqueSynthesizerApp::initialise (const String&)
 {
-    std::cout << sin( float_Pi*0 ) << std::endl;
-    std::cout << std::abs( sin( float_Pi*0.5) ) << std::endl;
-    std::cout << sin( float_Pi*1 ) << std::endl;
-    std::cout << sin( float_Pi*1.5 ) << std::endl;
-    std::cout << sin( float_Pi*2 ) << std::endl;
-  
-   
-    std::cout << fmod( float_Pi+1.12, float_Pi ) << std::endl;
-  
-  
-  
+    //run_test();
+
     standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
     {

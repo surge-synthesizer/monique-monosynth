@@ -3895,7 +3895,7 @@ public:
 //==============================================================================
 class ShuffleConfig : public ModulationSliderConfigBase
 {
-    Parameter*const shuffle;
+    IntParameter*const shuffle;
     BoolParameter*const is_on;
 
     //==============================================================================
@@ -3980,20 +3980,18 @@ class ShuffleConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+        return ArpSequencerData::shuffle_to_text( shuffle->get_value() ).text;
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+        return "th";
     }
-    */
 
 public:
     ShuffleConfig()

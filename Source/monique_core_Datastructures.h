@@ -229,7 +229,7 @@ struct RuntimeInfo
     {
         const int step_id;
         const int64 at_absolute_sample;
-	const int samples_per_step;
+        const int samples_per_step;
 
         inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept;
         inline ~Step() noexcept;
@@ -451,7 +451,7 @@ struct ArpSequencerData
     ArrayOfIntParameters tune;
     ArrayOfParameters velocity;
 
-    Parameter shuffle;
+    IntParameter shuffle;
     BoolParameter connect;
     IntParameter speed_multi;
 
@@ -464,6 +464,9 @@ struct ArpSequencerData
     //==========================================================================
     static StringRef speed_multi_to_text( int speed_multi_ ) noexcept;
     static double speed_multi_to_value( int speed_multi_ ) noexcept;
+    
+    static StringRef shuffle_to_text( int speed_multi_ ) noexcept;
+    static float shuffle_to_value( int speed_multi_ ) noexcept;
 };
 
 //==========================================================================
@@ -603,6 +606,86 @@ inline StringRef ArpSequencerData::speed_multi_to_text( int speed_multi_ ) noexc
         return "x16";
     default : // -15 :
         return "/16";
+    }
+}
+
+//==============================================================================
+inline float ArpSequencerData::shuffle_to_value( int suffle_ ) noexcept
+{
+    switch( suffle_ )
+    {
+    case 0 :
+        return 0;
+    case 1 :
+        return 1.0f/128;
+    case 2 :
+        return 1.0f/96;
+    case 3 :
+        return 1.0f/64;
+    case 4 :
+        return 1.0f/48;
+    case 5 :
+        return 1.0f/32;
+    case 6 :
+        return 1.0f/24;
+    case 7 :
+        return 1.0f/16;
+    case 8 :
+        return 1.0f/12;
+    case 9 :
+        return 1.0f/8;
+    case 10 :
+        return 2.0f/8;
+    case 11 :
+        return 3.0f/8;
+    case 12 :
+        return 4.0f/8;
+    case 13 :
+        return 5.0f/8;
+    case 14 :
+        return 6.0f/8;
+    case 15 :
+        return 7.0f/8;
+    }
+}
+
+//==============================================================================
+inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
+{
+    switch( suffle_ )
+    {
+    case 0 :
+        return "OFF";
+    case 1 :
+        return "1/128";
+    case 2 :
+        return "1/96";
+    case 3 :
+        return "1/64";
+    case 4 :
+        return "1/32";
+    case 5 :
+        return "1/32";
+    case 6 :
+        return "1/24";
+    case 7 :
+        return "1/16";
+    case 8 :
+        return "1/12";
+    case 9 :
+        return "1/8";
+    case 10 :
+        return "2/8";
+    case 11 :
+        return "3/8";
+    case 12 :
+        return "4/8";
+    case 13 :
+        return "5/8";
+    case 14 :
+        return "6/8";
+    case 15 :
+        return "7/8";
     }
 }
 

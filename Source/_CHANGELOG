@@ -12,27 +12,15 @@ CHANGES 0.6
 - remove audio options from plugin - add vst and versions info instead
 
 
-:!: KNOWN BUGS:
-- set from current updated the morph group a bit... this is uncorrect
-- osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
-- osc square and saw going out of center on higher octaves
 
-MY TODO
-- test performance HeapBlock on the stack vs array of floats
-- buggy manual morph if auto morph is running -> stop auto morph on manual morph
-- do not process the unused bands
-- new file handling asks for changed old ones (set current programm correctly?)
-- record to file standalone
-- no retrigger on press key if the arp is enabeld
+
 
 TODO:
-- add hide standalone settings in plugin
-
-- add: keyboard arrow up/down, left/right to control slider values
-
 - add: morph ints
 - add-back: morph toggles
 - add-back set from current for all
+- buggy manual morph if auto morph is running -> stop auto morph on manual morph
+- set from current updated the morph group a bit... this is uncorrect
 
 - add: modulation amounts as automation params- add: midi bank select
 
@@ -44,6 +32,15 @@ TODO:
 - shuffle: snap to note durations
 
 - add tooltips
+
+- do not process the unused bands
+
+- record to file standalone
+
+- no retrigger on press key if the arp is enabeld
+
+- osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
+- osc square and saw going out of center on higher octaves
 
 QUESTS
 - should have buttons which enables ADSR preset curves have an own colour? 
@@ -96,3 +93,4 @@ PRRRRRROOOOOOOOOOOOOOO
 - 3 filter arp buttons, not only one
 - asio support
 - open an editor to define a pattern if steps for a step
+- add: keyboard arrow up/down, left/right to control slider values

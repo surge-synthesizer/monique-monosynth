@@ -1055,9 +1055,8 @@ velocity
 // ----
 shuffle
 (
-    MIN_MAX( 0, 1 ),
-    0.333,
-    1000,
+    MIN_MAX( 0, 15 ),
+    0,
     generate_param_name(ARP_NAME,id_,"shuffle"),
     generate_short_human_name(ARP_NAME,"shuffle")
 ),

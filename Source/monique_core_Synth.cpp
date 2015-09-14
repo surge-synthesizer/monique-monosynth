@@ -5167,7 +5167,7 @@ inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int nu
             next_step_on_hold = step;
 
             if( current_step % 2 == 0 )
-                shuffle_to_back_counter = mono_floor(samples_per_step*0.8f * data->shuffle);
+                shuffle_to_back_counter = mono_floor(samples_per_step * ArpSequencerData::shuffle_to_value( data->shuffle ));
             else
                 shuffle_to_back_counter = 0;
 
