@@ -4252,7 +4252,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         if( tune->midi_control->get_ctrl_mode() )
             return String( round01(velocity->get_value()*100) );
         else
-            return String( round01(tune->get_value()) );
+            return String( tune->get_value() );
     }
     StringRef get_center_suffix() const noexcept override
     {
