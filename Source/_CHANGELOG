@@ -10,9 +10,7 @@ CHANGES 0.6
 - fix: reset osc if the synt "sleeps"
 - adjust the ui size to 95% of the size of the desktop if the desktop is to small for the current/tryed scale
 - remove audio options from plugin - add vst and versions info instead
-
-
-
+- change shuffle: snap to note durations
 
 
 TODO:
@@ -29,13 +27,9 @@ TODO:
 - add: modwheel to ui
 - close devices
 
-- shuffle: snap to note durations
-
 - add tooltips
 
 - do not process the unused bands
-
-- record to file standalone
 
 - no retrigger on press key if the arp is enabeld
 
@@ -94,3 +88,4 @@ PRRRRRROOOOOOOOOOOOOOO
 - asio support
 - open an editor to define a pattern if steps for a step
 - add: keyboard arrow up/down, left/right to control slider values
+- record to file standalone
