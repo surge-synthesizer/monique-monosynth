@@ -9,6 +9,7 @@ CHANGES 0.6
 - fix: show velocity and note glide time values on ui
 - fix: reset osc if the synt "sleeps"
 - adjust the ui size to 95% of the size of the desktop if the desktop is to small for the current/tryed scale
+- remove audio options from plugin - add vst and versions info instead
 
 
 :!: KNOWN BUGS:
@@ -25,16 +26,24 @@ MY TODO
 - no retrigger on press key if the arp is enabeld
 
 TODO:
+- add hide standalone settings in plugin
+
+- add: keyboard arrow up/down, left/right to control slider values
+
+- add: morph ints
+- add-back: morph toggles
+- add-back set from current for all
+
 - add: modulation amounts as automation params- add: midi bank select
+
 - add: midi mod wheel; pitch wheel support
 - add: panic
-- add-back: morph toggles
-- shuffle: snap to note durations
 - add: modwheel to ui
+- close devices
+
+- shuffle: snap to note durations
+
 - add tooltips
-- add hide standalone settings in plugin
-- add: keyboard arrow up/down, left/right to control slider values
-- add: morph ints
 
 QUESTS
 - should have buttons which enables ADSR preset curves have an own colour? 
@@ -85,3 +94,5 @@ PRRRRRROOOOOOOOOOOOOOO
 - digital analog filter selection
 - sequencer
 - 3 filter arp buttons, not only one
+- asio support
+- open an editor to define a pattern if steps for a step

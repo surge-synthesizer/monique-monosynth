@@ -142,7 +142,7 @@ UiLookAndFeel::UiLookAndFeel()
         ToggleButton::textColourId,                 0xff000000,
 
         TextEditor::backgroundColourId,             0xffffffff,
-        TextEditor::textColourId,                   0xffff0000,
+        TextEditor::textColourId,                   colours.label_text_colour.getARGB(),
         TextEditor::highlightColourId,              0x66ff0000,
         TextEditor::highlightedTextColourId,        0xffffffff,
         TextEditor::outlineColourId,                0x00000000,

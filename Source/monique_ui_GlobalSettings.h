@@ -105,6 +105,9 @@ private:
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
+    // Binary resources:
+    static const char* vst_logo_100x_png;
+    static const int vst_logo_100x_pngSize;
 
 
 private:
@@ -168,6 +171,10 @@ private:
     ScopedPointer<TextButton> button_preset_1;
     ScopedPointer<TextButton> button_preset_2;
     ScopedPointer<TextButton> button_preset_3;
+    ScopedPointer<TextEditor> text_info_monique;
+    ScopedPointer<TextEditor> text_info_vst;
+    ScopedPointer<ImageButton> image_vst;
+    ScopedPointer<HyperlinkButton> link_to_monoplugs;
 
 
     //==============================================================================

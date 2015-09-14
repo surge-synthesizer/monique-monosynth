@@ -693,7 +693,12 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#ifdef IS_STANDALONE
 #define THREAD_LIMIT 4
+#else
+#define THREAD_LIMIT 0
+#endif
+
 class MorphGroup;
 struct MoniqueSynthData : ParameterListener
 {
