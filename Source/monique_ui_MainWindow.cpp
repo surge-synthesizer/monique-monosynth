@@ -254,7 +254,26 @@ void Monique_Ui_Mainwindow::update_slider_handling()
 void Monique_Ui_Mainwindow::update_size()
 {
     float ui_scale_factor = synth_data->ui_scale_factor;
-    setBounds(getX(),getY(),original_w*ui_scale_factor, original_h*ui_scale_factor);
+    const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getMainDisplay() );
+    const int main_display_h = main_display.userArea.getHeight();
+    const int main_display_w = main_display.userArea.getWidth();
+    int use_height = original_h*ui_scale_factor;
+    int use_width = original_w*ui_scale_factor;
+    
+    if( main_display_h < use_height )
+    {
+        use_height = main_display_h * 0.9;
+        float new_scale = 1.0f/original_h*use_height;
+        use_width = original_w*new_scale;
+    }
+    if( main_display_w < use_width )
+    {
+        use_width = main_display_w * 0.9;
+        float new_scale = 1.0f/original_w*use_width;
+        use_height = original_h*new_scale;
+    }
+
+    setBounds(getX(),getY(),use_width,use_height);
 }
 void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
@@ -1094,15 +1113,13 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     combo_programm->setEditableText(false);
     update_slider_handling();
 
-    if( false )
-    {
+    /*
         //[/UserPreSize]
 
         setSize (1465, 1235);
 
-
         //[Constructor] You can add your own custom stuff here..
-    }
+    */
     addAndMakeVisible (resizer = new ResizableCornerComponent (this, &resizeLimits));
 #ifdef IS_PLUGIN
     //resizeLimits.setSizeLimits (1440.0f*0.7f, 1080.0f*0.7f, 1440*10, 1080*10);

@@ -8,6 +8,7 @@ CHANGES 0.6
 - set min velocity glide time to 30ms and max 999
 - fix: show velocity and note glide time values on ui
 - fix: reset osc if the synt "sleeps"
+- adjust the ui size to 95% of the size of the desktop if the desktop is to small for the current/tryed scale
 
 
 :!: KNOWN BUGS:
@@ -24,8 +25,6 @@ MY TODO
 - no retrigger on press key if the arp is enabeld
 
 TODO:
-- tune is an int parameter
-- add: keyboard arrow up/down, left/right to control slider values
 - add: modulation amounts as automation params- add: midi bank select
 - add: midi mod wheel; pitch wheel support
 - add: panic
@@ -34,6 +33,8 @@ TODO:
 - add: modwheel to ui
 - add tooltips
 - add hide standalone settings in plugin
+- add: keyboard arrow up/down, left/right to control slider values
+- add: morph ints
 
 QUESTS
 - should have buttons which enables ADSR preset curves have an own colour? 
