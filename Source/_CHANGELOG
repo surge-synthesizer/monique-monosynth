@@ -5,6 +5,8 @@ CHANGES 0.6
 - fix: arp note value show 0....
 - fix lfo sync and speed
 - changed filter resoanance and gain!!!!!!
+- set min velocity glide time to 30ms and max 999
+- fix show velocity and note glide time values on ui
 
 :!: KNOWN BUGS:
 - set from current updated the morph group a bit... this is uncorrect
@@ -16,6 +18,8 @@ MY TODO
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - do not process the unused bands
 - new file handling asks for changed old ones (set current programm correctly?)
+- record to file standalone
+- no retrigger on press key if the arp is enabeld
 
 TODO:
 - reset: oscs to zero on sleep

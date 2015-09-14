@@ -1659,7 +1659,9 @@ class OSC : public RuntimeListener
 public:
     //==============================================================================
     inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
-    inline void reset( int root_note_ ) noexcept;
+    inline void update( int root_note_ ) noexcept;
+    
+    inline void reset() noexcept;
 
 private:
     //==============================================================================
@@ -2021,8 +2023,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
     _last_root_note = _root_note;
 }
-
-inline void OSC::reset( int root_note_ ) noexcept
+inline void OSC::update( int root_note_ ) noexcept
 {
     root_note_ += synth_data->octave_offset *12;
     const float glide = synth_data->glide;
@@ -2040,6 +2041,20 @@ inline void OSC::reset( int root_note_ ) noexcept
     }
 
     _root_note = root_note_;
+}
+//==============================================================================
+inline void OSC::reset() noexcept
+{
+    saw_generator.reset();
+    square_generator.reset();
+    sine_generator.reset();
+
+    modulator.reset();
+
+    octave_smoother.reset();
+    fm_amount_smoother.reset();
+    
+    lfo2fix_octave_smoother.reset();
 }
 
 //==============================================================================
@@ -3485,7 +3500,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 {
                     const float amp = amp_mix[sid];
                     tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
-                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF*2.0f) * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
+                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF/2) * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
                     tmp_gain_buffer[sid] = gain_smoother.tick( amp );
                     tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
@@ -5309,7 +5324,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        oscs[i]->reset( midi_note_number_+arp_offset );
+        oscs[i]->update( midi_note_number_+arp_offset );
     }
 
     // PROCESSORS
@@ -5629,6 +5644,10 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
     }
     eq_processor->reset();
     fx_processor->reset();
+    for( int osc_id = 0 ; osc_id != SUM_OSCS ; ++osc_id )
+    {
+        oscs[osc_id]->reset();
+    }
 }
 
 //==============================================================================
