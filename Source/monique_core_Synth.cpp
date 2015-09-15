@@ -5741,14 +5741,8 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     env->start_attack( true );
     const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() / 10;
     sustain_end_ = -1;
-    bool is_first_attack = true;
-    while( true )
+    while( env->get_current_stage() != END_ENV )
     {
-        if( ! is_first_attack and ( env->get_current_stage() == SUSTAIN or env->get_current_stage() == DECAY ) )
-        {
-            break;
-        }
-
         // GET DATA
         env->process( one_sample_buffer, 1 );
         if( env->get_current_stage() != SUSTAIN )
@@ -5770,12 +5764,6 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
         {
             env->set_to_release();
             sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate());
-        }
-
-        if( is_first_attack && env->get_current_stage() == END_ENV )
-        {
-            is_first_attack = false;
-            env->start_attack();
         }
     }
 

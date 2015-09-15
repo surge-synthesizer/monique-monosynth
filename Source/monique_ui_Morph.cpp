@@ -84,6 +84,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_34->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_morph_group_1 = new ComboBox (String::empty));
+    combo_morph_group_1->setTooltip (TRANS("Load a program to the RIGHT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_1->setEditableText (false);
     combo_morph_group_1->setJustificationType (Justification::centredLeft);
     combo_morph_group_1->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -91,6 +94,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_1->addListener (this);
 
     addAndMakeVisible (combo_morph_group_2 = new ComboBox (String::empty));
+    combo_morph_group_2->setTooltip (TRANS("Load a program to the RIGHT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_2->setEditableText (false);
     combo_morph_group_2->setJustificationType (Justification::centredLeft);
     combo_morph_group_2->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -98,6 +104,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_2->addListener (this);
 
     addAndMakeVisible (combo_morph_group_3 = new ComboBox (String::empty));
+    combo_morph_group_3->setTooltip (TRANS("Load a program to the RIGHT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_3->setEditableText (false);
     combo_morph_group_3->setJustificationType (Justification::centredLeft);
     combo_morph_group_3->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -105,6 +114,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_3->addListener (this);
 
     addAndMakeVisible (combo_morph_group_4 = new ComboBox (String::empty));
+    combo_morph_group_4->setTooltip (TRANS("Load a program to the RIGHT side of the ARPEGGIATOR morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_4->setEditableText (false);
     combo_morph_group_4->setJustificationType (Justification::centredLeft);
     combo_morph_group_4->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -112,6 +124,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_4->addListener (this);
 
     addAndMakeVisible (combo_morph_group_5 = new ComboBox (String::empty));
+    combo_morph_group_5->setTooltip (TRANS("Load a program to the LEFT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_5->setEditableText (false);
     combo_morph_group_5->setJustificationType (Justification::centredLeft);
     combo_morph_group_5->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -119,6 +134,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_5->addListener (this);
 
     addAndMakeVisible (combo_morph_group_6 = new ComboBox (String::empty));
+    combo_morph_group_6->setTooltip (TRANS("Load a program to the LEFT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_6->setEditableText (false);
     combo_morph_group_6->setJustificationType (Justification::centredLeft);
     combo_morph_group_6->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -126,6 +144,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_6->addListener (this);
 
     addAndMakeVisible (combo_morph_group_7 = new ComboBox (String::empty));
+    combo_morph_group_7->setTooltip (TRANS("Load a program to the LEFT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_7->setEditableText (false);
     combo_morph_group_7->setJustificationType (Justification::centredLeft);
     combo_morph_group_7->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -133,6 +154,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_7->addListener (this);
 
     addAndMakeVisible (combo_morph_group_8 = new ComboBox (String::empty));
+    combo_morph_group_8->setTooltip (TRANS("Load a program to the LEFT side of the ARPEGGIATOR morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_8->setEditableText (false);
     combo_morph_group_8->setJustificationType (Justification::centredLeft);
     combo_morph_group_8->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -149,6 +173,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_set_left_1 = new TextButton (String::empty));
+    button_set_left_1->setTooltip (TRANS("Set the current state as the LEFT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_1->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_1->addListener (this);
     button_set_left_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -156,6 +183,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_left_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_left_2 = new TextButton (String::empty));
+    button_set_left_2->setTooltip (TRANS("Set the current state as the LEFT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_2->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_2->addListener (this);
     button_set_left_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -163,6 +193,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_left_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_left_3 = new TextButton (String::empty));
+    button_set_left_3->setTooltip (TRANS("Set the current state as the LEFT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_3->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_3->addListener (this);
     button_set_left_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -170,6 +203,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_left_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_left_4 = new TextButton (String::empty));
+    button_set_left_4->setTooltip (TRANS("Set the current state as the LEFT side of the ARPEGGIATOR morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_4->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_4->addListener (this);
     button_set_left_4->setColour (TextButton::buttonColourId, Colours::black);
@@ -177,6 +213,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_left_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_right_1 = new TextButton (String::empty));
+    button_set_right_1->setTooltip (TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_1->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_1->addListener (this);
     button_set_right_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -184,6 +223,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_right_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_right_2 = new TextButton (String::empty));
+    button_set_right_2->setTooltip (TRANS("Set the current state as the RIGHT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_2->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_2->addListener (this);
     button_set_right_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -191,6 +233,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_right_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_right_3 = new TextButton (String::empty));
+    button_set_right_3->setTooltip (TRANS("Set the current state as the RIGHT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_3->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_3->addListener (this);
     button_set_right_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -198,6 +243,9 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_right_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (button_set_right_4 = new TextButton (String::empty));
+    button_set_right_4->setTooltip (TRANS("Set the current state as the RIGHT side of the ARPEGGIATOR morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_4->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_4->addListener (this);
     button_set_right_4->setColour (TextButton::buttonColourId, Colours::black);
@@ -713,65 +761,73 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="36"/>
   <COMBOBOX name="" id="6b20aebfc73aac49" memberName="combo_morph_group_1"
-            virtualName="" explicitFocusOrder="0" pos="100 90 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="100 90 150 30" tooltip="Load a program to the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="feb2297e12b64ba2" memberName="combo_morph_group_2"
-            virtualName="" explicitFocusOrder="0" pos="360 90 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="360 90 150 30" tooltip="Load a program to the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="308668407147eb6a" memberName="combo_morph_group_3"
-            virtualName="" explicitFocusOrder="0" pos="620 90 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="620 90 150 30" tooltip="Load a program to the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="6f35e1d484c7ec07" memberName="combo_morph_group_4"
-            virtualName="" explicitFocusOrder="0" pos="880 90 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="880 90 150 30" tooltip="Load a program to the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="bc6993231c0c71b4" memberName="combo_morph_group_5"
-            virtualName="" explicitFocusOrder="0" pos="100 30 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="100 30 150 30" tooltip="Load a program to the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="bd00414d21da9940" memberName="combo_morph_group_6"
-            virtualName="" explicitFocusOrder="0" pos="360 30 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="360 30 150 30" tooltip="Load a program to the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="dc620a04b2f3c235" memberName="combo_morph_group_7"
-            virtualName="" explicitFocusOrder="0" pos="620 30 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="620 30 150 30" tooltip="Load a program to the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <COMBOBOX name="" id="97e42362463feae7" memberName="combo_morph_group_8"
-            virtualName="" explicitFocusOrder="0" pos="880 30 150 30" editable="0"
-            layout="33" items="" textWhenNonSelected="PRESET" textWhenNoItems="-"/>
+            virtualName="" explicitFocusOrder="0" pos="880 30 150 30" tooltip="Load a program to the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            editable="0" layout="33" items="" textWhenNonSelected="PRESET"
+            textWhenNoItems="-"/>
   <LABEL name="" id="2d5427059e8d821" memberName="label_19" virtualName=""
          explicitFocusOrder="0" pos="20 30 80 30" textCol="ffff3b00" edTextCol="ffff3b00"
          edBkgCol="0" labelText="LEFT PRESET" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="" id="9a3c3dfa23389bbf" memberName="button_set_left_1"
-              virtualName="" explicitFocusOrder="0" pos="100 60 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="100 60 150 25" tooltip="Set the current state as the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c49e8ed08e43c50b" memberName="button_set_left_2"
-              virtualName="" explicitFocusOrder="0" pos="360 60 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="360 60 150 25" tooltip="Set the current state as the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8097b16b582b5ab8" memberName="button_set_left_3"
-              virtualName="" explicitFocusOrder="0" pos="620 60 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="620 60 150 25" tooltip="Set the current state as the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ebaf45ab7ef39acf" memberName="button_set_left_4"
-              virtualName="" explicitFocusOrder="0" pos="880 60 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="880 60 150 25" tooltip="Set the current state as the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8906266e2ef4832" memberName="button_set_right_1"
-              virtualName="" explicitFocusOrder="0" pos="100 120 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="100 120 150 25" tooltip="Set the current state as the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="edc15917a087fcef" memberName="button_set_right_2"
-              virtualName="" explicitFocusOrder="0" pos="360 120 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="360 120 150 25" tooltip="Set the current state as the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="22e64fa9111b2ae3" memberName="button_set_right_3"
-              virtualName="" explicitFocusOrder="0" pos="620 120 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="620 120 150 25" tooltip="Set the current state as the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ffe2586bcf362e2a" memberName="button_set_right_4"
-              virtualName="" explicitFocusOrder="0" pos="880 120 150 25" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
+              virtualName="" explicitFocusOrder="0" pos="880 120 150 25" tooltip="Set the current state as the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET FROM CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="273817f565f46996" memberName="button_set_all_from_current"
               virtualName="" explicitFocusOrder="0" pos="900 200 50 120" bgColOff="ff000000"
