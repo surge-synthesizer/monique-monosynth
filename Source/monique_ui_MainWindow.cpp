@@ -146,8 +146,6 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
         sl_morhp_mix->setValue( synth_data->linear_morhp_state*1000, dontSendNotification );
     }
 
-    // MIDI LEARN
-    button_midi_learn->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? button_on : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : button_off );
     button_ctrl_toggle->setColour( TextButton::buttonColourId, synth_data->ctrl ? Colours::red : button_off );
 
     // EDITORS
@@ -845,13 +843,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_6_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_6_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
-    button_midi_learn->setButtonText (TRANS("LEARN"));
-    button_midi_learn->addListener (this);
-    button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
-    button_midi_learn->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (button_ctrl_toggle = new TextButton (String::empty));
     button_ctrl_toggle->setTooltip (TRANS("Enables the SHIFT MODE. \n"
     "\n"
@@ -1394,7 +1385,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     filter_type_6_1 = nullptr;
     filter_type_6_2 = nullptr;
     filter_type_6_3 = nullptr;
-    button_midi_learn = nullptr;
     button_ctrl_toggle = nullptr;
     colour = nullptr;
     speed = nullptr;
@@ -2032,7 +2022,6 @@ void Monique_Ui_Mainwindow::resized()
     filter_type_6_1->setBounds (1005 - 60, 60, 60, 30);
     filter_type_6_2->setBounds (1005 - 60, 240, 60, 30);
     filter_type_6_3->setBounds (1005 - 60, 420, 60, 30);
-    button_midi_learn->setBounds (1145 - 60, 1000 - 30, 60, 30);
     button_ctrl_toggle->setBounds (100, 1000, 60, 30);
     colour->setBounds (585 - 60, 750 - 130, 60, 130);
     speed->setBounds (1285 - 60, 950 - 130, 60, 130);
@@ -2635,13 +2624,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         }
         show_info_popup( buttonThatWasClicked, synth_data->filter_datas[flt_id]->filter_type.midi_control );
         //[/UserButtonCode_filter_type_6_3]
-    }
-    else if (buttonThatWasClicked == button_midi_learn)
-    {
-        //[UserButtonCode_button_midi_learn] -- add your button handler code here..
-        popup = nullptr;
-        MIDIControlHandler::getInstance()->toggle_midi_learn();
-        //[/UserButtonCode_button_midi_learn]
     }
     else if (buttonThatWasClicked == button_ctrl_toggle)
     {
@@ -3526,10 +3508,6 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
               virtualName="" explicitFocusOrder="0" pos="1005r 420 60 30" tooltip="Set this FILTER TYPE to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="1145r 1000r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LEARN"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
               virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" tooltip="Enables the SHIFT MODE. &#10;&#10;In SHIFT MODE are all back sliders visble and front slider become inaccessable."

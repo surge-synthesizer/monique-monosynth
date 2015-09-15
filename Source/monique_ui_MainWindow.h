@@ -261,7 +261,6 @@ private:
     ScopedPointer<TextButton> filter_type_6_1;
     ScopedPointer<TextButton> filter_type_6_2;
     ScopedPointer<TextButton> filter_type_6_3;
-    ScopedPointer<TextButton> button_midi_learn;
     ScopedPointer<TextButton> button_ctrl_toggle;
     ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Monique_Ui_DualSlider> speed;

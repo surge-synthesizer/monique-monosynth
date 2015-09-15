@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_25ABB3D6E01A1620__
-#define __JUCE_HEADER_25ABB3D6E01A1620__
+#ifndef __JUCE_HEADER_3437163A265DCA8E__
+#define __JUCE_HEADER_3437163A265DCA8E__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -37,9 +37,10 @@ class mono_AudioDeviceManager;
                                                                     //[/Comments]
 */
 class Monique_Ui_MidiIO  : public Component,
-    public ComboBoxListener,
-    public ButtonListener,
-    public SliderListener
+                           public Monique_Ui_Refreshable,
+                           public ComboBoxListener,
+                           public ButtonListener,
+                           public SliderListener
 {
 public:
     //==============================================================================
@@ -48,7 +49,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    void refresh();
+    void refresh() noexcept override;
+    void update_combo_boxed();
 
     const float original_w;
     const float original_h;
@@ -86,7 +88,7 @@ private:
     ScopedPointer<Slider> slider_midi_pickup;
     ScopedPointer<Label> label_2;
     ScopedPointer<Label> label_4;
-    ScopedPointer<Label> label_8;
+    ScopedPointer<TextButton> button_midi_learn;
 
 
     //==============================================================================
@@ -96,4 +98,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_25ABB3D6E01A1620__
+#endif   // __JUCE_HEADER_3437163A265DCA8E__

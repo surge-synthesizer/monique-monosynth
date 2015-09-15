@@ -13,6 +13,8 @@ CHANGES 0.6
 - change shuffle: snap to note durations
 - add modulation amount to automatable parameters (plugin)
 - add tooltips
+- start adr preset sliders from 1 not from 0
+- move the midi learn button to the midi setting and rename it to train
 
 TODO:
 - option to keep the arp on or of as global var!
