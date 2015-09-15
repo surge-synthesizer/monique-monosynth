@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_18B5A51C4AF6A8D4__
-#define __JUCE_HEADER_18B5A51C4AF6A8D4__
+#ifndef __JUCE_HEADER_15EBFFC85DA080CA__
+#define __JUCE_HEADER_15EBFFC85DA080CA__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -132,9 +132,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class Monique_Ui_AmpPainter  : public Component,
-    public Timer,
-    public SliderListener,
-    public ButtonListener
+                               public Timer,
+                               public SliderListener,
+                               public ButtonListener
 {
 public:
     //==============================================================================
@@ -261,4 +261,4 @@ inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, const
 };
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_18B5A51C4AF6A8D4__
+#endif   // __JUCE_HEADER_15EBFFC85DA080CA__

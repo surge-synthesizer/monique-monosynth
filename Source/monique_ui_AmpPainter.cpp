@@ -35,6 +35,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     //[/Constructor_pre]
 
     addAndMakeVisible (sl_show_range = new Slider (String::empty));
+    sl_show_range->setTooltip (TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange (0.001, 1, 0.001);
     sl_show_range->setSliderStyle (Slider::LinearHorizontal);
     sl_show_range->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -44,51 +45,63 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     sl_show_range->addListener (this);
 
     addAndMakeVisible (osc_1 = new TextButton ("new button"));
-    osc_1->setButtonText (TRANS("OSC 1"));
+    osc_1->setTooltip (TRANS("Turns visualisation for OSC 1 on or off."));
+    osc_1->setButtonText (TRANS("OSC1"));
     osc_1->addListener (this);
 
     addAndMakeVisible (osc_2 = new TextButton ("new button"));
-    osc_2->setButtonText (TRANS("OSC 2"));
+    osc_2->setTooltip (TRANS("Turns visualisation for OSC 2 on or off."));
+    osc_2->setButtonText (TRANS("OSC2"));
     osc_2->addListener (this);
 
     addAndMakeVisible (osc_3 = new TextButton ("new button"));
-    osc_3->setButtonText (TRANS("OSC 3"));
+    osc_3->setTooltip (TRANS("Turns visualisation for OSC 3 on or off."));
+    osc_3->setButtonText (TRANS("OSC3"));
     osc_3->addListener (this);
 
     addAndMakeVisible (eq = new TextButton ("new button"));
-    eq->setButtonText (TRANS("EQ"));
+    eq->setTooltip (TRANS("Turns visualisation for the EQ BANK output on or off."));
+    eq->setButtonText (TRANS("EQ OUT"));
     eq->addListener (this);
 
     addAndMakeVisible (out = new TextButton ("new button"));
-    out->setButtonText (TRANS("OUT"));
+    out->setTooltip (TRANS("Turns visualisation for the FINAL/MAIN output on or off."));
+    out->setButtonText (TRANS("MAIN OUT"));
     out->addListener (this);
 
     addAndMakeVisible (f_1 = new TextButton ("new button"));
-    f_1->setButtonText (TRANS("F 1"));
+    f_1->setTooltip (TRANS("Turns visualisation for FILTER 1 OUTPUT on or off."));
+    f_1->setButtonText (TRANS("F1 OUT"));
     f_1->addListener (this);
 
     addAndMakeVisible (f_2 = new TextButton ("new button"));
-    f_2->setButtonText (TRANS("F 2"));
+    f_2->setTooltip (TRANS("Turns visualisation for FILTER 2 OUTPUT on or off."));
+    f_2->setButtonText (TRANS("F2 OUT"));
     f_2->addListener (this);
 
     addAndMakeVisible (f_3 = new TextButton ("new button"));
-    f_3->setButtonText (TRANS("F 3"));
+    f_3->setTooltip (TRANS("Turns visualisation for FILTER 3 OUTPUT on or off."));
+    f_3->setButtonText (TRANS("F3 OUT"));
     f_3->addListener (this);
 
     addAndMakeVisible (f_env_1 = new TextButton ("new button"));
-    f_env_1->setButtonText (TRANS("F-ADSR 1"));
+    f_env_1->setTooltip (TRANS("Turns visualisation for the FILTER 1 MOD MIX on or off."));
+    f_env_1->setButtonText (TRANS("F1 - MOD MIX"));
     f_env_1->addListener (this);
 
     addAndMakeVisible (f_env_2 = new TextButton ("new button"));
-    f_env_2->setButtonText (TRANS("F-ADSR 2"));
+    f_env_2->setTooltip (TRANS("Turns visualisation for the FILTER 2 MOD MIX on or off."));
+    f_env_2->setButtonText (TRANS("F2 - MOD MIX"));
     f_env_2->addListener (this);
 
     addAndMakeVisible (f_env_3 = new TextButton ("new button"));
-    f_env_3->setButtonText (TRANS("F-ADSR 3"));
+    f_env_3->setTooltip (TRANS("Turns visualisation for the FILTER 3 MOD MIX on or off."));
+    f_env_3->setButtonText (TRANS("F3 - MOD MIX"));
     f_env_3->addListener (this);
 
     addAndMakeVisible (out_env = new TextButton ("new button"));
-    out_env->setButtonText (TRANS("O-ADSR"));
+    out_env->setTooltip (TRANS("Turns visualisation for the FINAL/MAIN ADSR on or off."));
+    out_env->setButtonText (TRANS("MAIN ADSR"));
     out_env->addListener (this);
 
     addAndMakeVisible (drawing_area = new Component());
@@ -174,9 +187,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     // TODO paint all or only values
     {
         lock_for_reading();
-	
+
 	ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
-	
+
         g.fillAll (colours.bg);
 
         // TODO MAKE INTS!
@@ -289,7 +302,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const bool show_eq = synth_data.osci_show_eq;
         const bool show_out = synth_data.osci_show_out;
         const bool show_out_env = synth_data.osci_show_out_env;
-	
+
 	// OSC'S
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
@@ -737,47 +750,50 @@ BEGIN_JUCER_METADATA
                  initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505"/>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
-          explicitFocusOrder="0" pos="215 150 1240 20" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" min="0.0010000000000000000208"
-          max="1" int="0.0010000000000000000208" style="LinearHorizontal"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+          explicitFocusOrder="0" pos="215 150 1240 20" tooltip="Define the drawed time (max = 1 second)."
+          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
+          min="0.0010000000000000000208" max="1" int="0.0010000000000000000208"
+          style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="new button" id="f50c5e2947daf2d9" memberName="osc_1" virtualName=""
-              explicitFocusOrder="0" pos="30 10 60 20" buttonText="OSC 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 10 60 20" tooltip="Turns visualisation for OSC 1 on or off."
+              buttonText="OSC1" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="430b47338d775167" memberName="osc_2" virtualName=""
-              explicitFocusOrder="0" pos="30 35 60 20" buttonText="OSC 2" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 35 60 20" tooltip="Turns visualisation for OSC 2 on or off."
+              buttonText="OSC2" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2c8665efd6c0c37d" memberName="osc_3" virtualName=""
-              explicitFocusOrder="0" pos="30 60 60 20" buttonText="OSC 3" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 60 60 20" tooltip="Turns visualisation for OSC 3 on or off."
+              buttonText="OSC3" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="eq" virtualName=""
-              explicitFocusOrder="0" pos="100 10 60 20" buttonText="EQ" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="100 10 60 20" tooltip="Turns visualisation for the EQ BANK output on or off."
+              buttonText="EQ OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="100 35 60 20" buttonText="OUT" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="100 35 60 20" tooltip="Turns visualisation for the FINAL/MAIN output on or off."
+              buttonText="MAIN OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
-              explicitFocusOrder="0" pos="30 95 60 20" buttonText="F 1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 95 60 20" tooltip="Turns visualisation for FILTER 1 OUTPUT on or off."
+              buttonText="F1 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="773e5360237ed15c" memberName="f_2" virtualName=""
-              explicitFocusOrder="0" pos="30 120 60 20" buttonText="F 2" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 120 60 20" tooltip="Turns visualisation for FILTER 2 OUTPUT on or off."
+              buttonText="F2 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="60cf3f432ebdbf40" memberName="f_3" virtualName=""
-              explicitFocusOrder="0" pos="30 145 60 20" buttonText="F 3" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="30 145 60 20" tooltip="Turns visualisation for FILTER 3 OUTPUT on or off."
+              buttonText="F3 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
-              virtualName="" explicitFocusOrder="0" pos="100 95 60 20" buttonText="F-ADSR 1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="100 95 60 20" tooltip="Turns visualisation for the FILTER 1 MOD MIX on or off."
+              buttonText="F1 - MOD MIX" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="68fc0bbd2cf58e73" memberName="f_env_2"
-              virtualName="" explicitFocusOrder="0" pos="100 120 60 20" buttonText="F-ADSR 2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="100 120 60 20" tooltip="Turns visualisation for the FILTER 2 MOD MIX on or off."
+              buttonText="F2 - MOD MIX" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="1d48bab8b4aaf7c9" memberName="f_env_3"
-              virtualName="" explicitFocusOrder="0" pos="100 145 60 20" buttonText="F-ADSR 3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="100 145 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
+              buttonText="F3 - MOD MIX" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="100 60 60 20" buttonText="O-ADSR"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              explicitFocusOrder="0" pos="100 60 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
+              buttonText="MAIN ADSR" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
                     explicitFocusOrder="0" pos="215 10 1240 135" class="Component"
                     params=""/>
