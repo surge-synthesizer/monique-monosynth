@@ -2122,9 +2122,7 @@ static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< 
     params_.add( &data_->resonance );
     params_.add( &data_->curve_shape );
     params_.add( &data_->octave_offset );
-    params_.add( &data_->morph_motor_time );
     params_.add( &data_->speed );
-    params_.add( &data_->glide_motor_time );
     params_.add( &data_->velocity_glide_time );
     params_.add( &data_->sync );
 
@@ -2195,6 +2193,9 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &midi_pickup_offset );
     global_parameters.add( &ctrl );
+    
+    global_parameters.add( &glide_motor_time );
+    global_parameters.add( &morph_motor_time );
 
     global_parameters.minimiseStorageOverheads();
 }

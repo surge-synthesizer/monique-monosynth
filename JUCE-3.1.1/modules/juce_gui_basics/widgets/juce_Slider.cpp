@@ -640,7 +640,8 @@ public:
         //m.addItem (1, TRANS ("Velocity-sensitive mode"), true, isVelocityBased);
         //m.addSeparator();
 
-        if (isRotary() and false)
+        //if (isRotary())
+	if( false )
         {
             PopupMenu rotaryMenu;
             rotaryMenu.addItem (2, TRANS ("Use circular dragging"),           true, style == Rotary);
