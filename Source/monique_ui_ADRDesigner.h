@@ -129,7 +129,6 @@ private:
     ScopedPointer<Slider> slider_env_shape;
     ScopedPointer<Label> label_shape;
     ScopedPointer<Label> label_test_value;
-    ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label3;
     ScopedPointer<Slider> slider_force_to_zero;
     ScopedPointer<Label> label2;

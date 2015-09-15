@@ -885,7 +885,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( state->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_value()) );
+            return String( round001(state->get_value()+1) );
         else
             return String( round01(input_sustain->get_value()*100)  );
     }
@@ -4798,16 +4798,17 @@ class CModSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( modulation->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_value()) );
+            return String( round001(state->get_value()+1) );
         else
             return String( round01(chorus_data->modulation*100)  );
     }
-    /*
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( modulation->midi_control->get_ctrl_mode() )
+            return "X";
+        else
+            return "";
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -5290,20 +5291,24 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        if( velocity->midi_control->get_ctrl_mode() )
+            return String( round001(state->get_value()+1) );
+        else
+            return String( round01(velocity->get_value())  );
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( velocity->midi_control->get_ctrl_mode() )
+            return "X";
+        else
+            return "";
     }
-    */
 
     //==============================================================================
     // TOOLTIP
