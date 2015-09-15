@@ -75,6 +75,7 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*co
     //[/Constructor_pre]
 
     addAndMakeVisible (combo_midi_number = new ComboBox (String::empty));
+    combo_midi_number->setTooltip (TRANS("Select the MIDI controller number manually."));
     combo_midi_number->setEditableText (false);
     combo_midi_number->setJustificationType (Justification::centredLeft);
     combo_midi_number->setTextWhenNothingSelected (TRANS("NR"));
@@ -224,8 +225,8 @@ BEGIN_JUCER_METADATA
     <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
   </BACKGROUND>
   <COMBOBOX name="" id="eaa2024654148814" memberName="combo_midi_number"
-            virtualName="" explicitFocusOrder="0" pos="10 20 60 30" editable="0"
-            layout="33" items="" textWhenNonSelected="NR" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="10 20 60 30" tooltip="Select the MIDI controller number manually."
+            editable="0" layout="33" items="" textWhenNonSelected="NR" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="337cd4804743bec8" memberName="close" virtualName=""
               explicitFocusOrder="0" pos="10 55 60 30" bgColOff="ffff0000"
               bgColOn="ffff0000" textCol="ff000000" textColOn="ff000000" buttonText="ESC X"

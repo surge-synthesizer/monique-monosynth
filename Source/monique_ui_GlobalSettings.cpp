@@ -229,11 +229,44 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
+    addAndMakeVisible (text_info_monique = new TextEditor ("new text editor"));
+    text_info_monique->setMultiLine (true);
+    text_info_monique->setReturnKeyStartsNewLine (false);
+    text_info_monique->setReadOnly (true);
+    text_info_monique->setScrollbarsShown (false);
+    text_info_monique->setCaretVisible (false);
+    text_info_monique->setPopupMenuEnabled (false);
+    text_info_monique->setColour (TextEditor::backgroundColourId, Colour (0xff050505));
+    text_info_monique->setText (TRANS("Aus Liebe zur Musik.\n"
+    "Thomas Arndt | Monoplugs"));
+
+    addAndMakeVisible (image_vst = new ImageButton ("new button"));
+    image_vst->setButtonText (String::empty);
+
+    image_vst->setImages (false, true, true,
+                          ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
+                          Image(), 1.000f, Colour (0x00000000),
+                          Image(), 1.000f, Colour (0x00000000));
+    addAndMakeVisible (text_info_vst = new TextEditor ("new text editor"));
+    text_info_vst->setMultiLine (true);
+    text_info_vst->setReturnKeyStartsNewLine (false);
+    text_info_vst->setReadOnly (true);
+    text_info_vst->setScrollbarsShown (false);
+    text_info_vst->setCaretVisible (false);
+    text_info_vst->setPopupMenuEnabled (false);
+    text_info_vst->setColour (TextEditor::backgroundColourId, Colour (0xff050505));
+    text_info_vst->setText (TRANS("VST is a trademark of Steinberg Media Technologies GmbH"));
+
+    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String::empty,
+                                                                URL ("http://monique-synthesizer.monoplugs.com")));
+    link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
+
     addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
                                                              ,0,7));
 
     addAndMakeVisible (label_colour_4 = new Label (String::empty,
                                                    TRANS("BUTTON ON")));
+    label_colour_4->setTooltip (TRANS("Click to change this colour."));
     label_colour_4->setFont (Font (30.00f, Font::plain));
     label_colour_4->setJustificationType (Justification::centredLeft);
     label_colour_4->setEditable (false, false, false);
@@ -247,6 +280,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_7 = new Label (String::empty,
                                                    TRANS("VALUE SLIDER (FRONT)")));
+    label_colour_7->setTooltip (TRANS("Click to change this colour."));
     label_colour_7->setFont (Font (30.00f, Font::plain));
     label_colour_7->setJustificationType (Justification::centredLeft);
     label_colour_7->setEditable (false, false, false);
@@ -256,6 +290,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_9 = new Label (String::empty,
                                                    TRANS("MODULATION SLIDER (BACK)")));
+    label_colour_9->setTooltip (TRANS("Click to change this colour."));
     label_colour_9->setFont (Font (30.00f, Font::plain));
     label_colour_9->setJustificationType (Justification::centredLeft);
     label_colour_9->setEditable (false, false, false);
@@ -265,6 +300,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_6 = new Label (String::empty,
                                                    TRANS("LABELS")));
+    label_colour_6->setTooltip (TRANS("Click to change this colour."));
     label_colour_6->setFont (Font (30.00f, Font::plain));
     label_colour_6->setJustificationType (Justification::centredLeft);
     label_colour_6->setEditable (false, false, false);
@@ -274,6 +310,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_5 = new Label (String::empty,
                                                    TRANS("BUTTON OFF")));
+    label_colour_5->setTooltip (TRANS("Click to change this colour."));
     label_colour_5->setFont (Font (30.00f, Font::plain));
     label_colour_5->setJustificationType (Justification::centredLeft);
     label_colour_5->setEditable (false, false, false);
@@ -282,6 +319,9 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_morph_motor_time = new Slider ("0"));
+    slider_morph_motor_time->setTooltip (TRANS("Define the MORPH MOTOR TIME.\n"
+    "\n"
+    "Morph motor time is the speed of the morph sliders if you morph via the morph pad or the horizontal slider below the morph sliders"));
     slider_morph_motor_time->setRange (1, 20000, 1);
     slider_morph_motor_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_morph_motor_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
@@ -292,6 +332,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     slider_morph_motor_time->addListener (this);
 
     addAndMakeVisible (slider_glide_time = new Slider ("0"));
+    slider_glide_time->setTooltip (TRANS("Define the GLIDE MOTOR TIME.\n"
+    "\n"
+    "Glide motor time is smoothes your inputs at many sliders on the main user interface. \n"
+    "\n"
+    "Set a large value here and try to change the MASTER VOLUME and do it again with a small one.\n"
+    "\n"
+    "Affected: OSC sliders, FILTER sliders, EQ sliders, FX sliders, MASTER VOLUME"));
     slider_glide_time->setRange (1, 20000, 1);
     slider_glide_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_glide_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
@@ -321,6 +368,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_16 = new Label (String::empty,
                                              TRANS("INPUT ENV\'S")));
+    label_16->setTooltip (TRANS("Turn amp animations at the FILTER INPUS on or off."));
     label_16->setFont (Font (30.00f, Font::plain));
     label_16->setJustificationType (Justification::centredLeft);
     label_16->setEditable (false, false, false);
@@ -329,10 +377,12 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_16->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (toggle_animate_input_env = new ToggleButton (String::empty));
+    toggle_animate_input_env->setTooltip (TRANS("Turn amp animations at the FILTER INPUS on or off."));
     toggle_animate_input_env->addListener (this);
 
     addAndMakeVisible (label_18 = new Label (String::empty,
                                              TRANS("EQ ENV")));
+    label_18->setTooltip (TRANS("Turn amp animations at the EQ BANK on or off."));
     label_18->setFont (Font (30.00f, Font::plain));
     label_18->setJustificationType (Justification::centredLeft);
     label_18->setEditable (false, false, false);
@@ -341,10 +391,14 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (toggle_animate_eq_env = new ToggleButton (String::empty));
+    toggle_animate_eq_env->setTooltip (TRANS("Turn amp animations at the EQ BANK on or off."));
     toggle_animate_eq_env->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
                                              TRANS("MODULATIONS")));
+    label_19->setTooltip (TRANS("Turn amp animations at the mudulated parameters on or off.\n"
+    "\n"
+    "E.G: CUTOFF or OSC LFO modulation."));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredLeft);
     label_19->setEditable (false, false, false);
@@ -353,6 +407,9 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (toggle_output_cc_mute4 = new ToggleButton (String::empty));
+    toggle_output_cc_mute4->setTooltip (TRANS("Turn amp animations at the mudulated parameters on or off.\n"
+    "\n"
+    "E.G: CUTOFF or OSC LFO modulation."));
     toggle_output_cc_mute4->addListener (this);
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
@@ -401,6 +458,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_multicore_cpus = new ComboBox (String::empty));
+    combo_multicore_cpus->setTooltip (TRANS("Select the threads you like to spend to process Moniqiue. \n"
+    "\n"
+    "Note: Its recommended to use NOT more threads as your CPU has cores! \n"
+    "Please take a look at the CPU usage and decide how many threads are the best for your CPU."));
     combo_multicore_cpus->setEditableText (false);
     combo_multicore_cpus->setJustificationType (Justification::centredLeft);
     combo_multicore_cpus->setTextWhenNothingSelected (String::empty);
@@ -417,6 +478,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_sensitivity = new Slider ("0"));
+    slider_sensitivity->setTooltip (TRANS("Define the sensitivity of each rotary slider. You can test the effect with this slider."));
     slider_sensitivity->setRange (100, 2000, 1);
     slider_sensitivity->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_sensitivity->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
@@ -437,6 +499,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_3 = new Label (String::empty,
                                             TRANS("LINEAR DRAG")));
+    label_3->setTooltip (TRANS("Set the slider drag to linear (rotary sliders). \n"
+    "(You can drag a slider by move the mouse up/down or left/right)"));
     label_3->setFont (Font (30.00f, Font::plain));
     label_3->setJustificationType (Justification::centredLeft);
     label_3->setEditable (false, false, false);
@@ -446,6 +510,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_5 = new Label (String::empty,
                                             TRANS("ROTARY DRAG")));
+    label_5->setTooltip (TRANS("Set the slider drag to rotary (rotary sliders). \n"
+    "(You can drag a slider by move the mouse around the slider)"));
     label_5->setFont (Font (30.00f, Font::plain));
     label_5->setJustificationType (Justification::centredLeft);
     label_5->setEditable (false, false, false);
@@ -454,9 +520,13 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (toggle_slider_linear = new ToggleButton (String::empty));
+    toggle_slider_linear->setTooltip (TRANS("Set the slider drag to linear (rotary sliders). \n"
+    "(You can drag a slider by move the mouse up/down or left/right)"));
     toggle_slider_linear->addListener (this);
 
     addAndMakeVisible (toggle_slider_rotary = new ToggleButton (String::empty));
+    toggle_slider_rotary->setTooltip (TRANS("Set the slider drag to rotary (rotary sliders). \n"
+    "(You can drag a slider by move the mouse around the slider)"));
     toggle_slider_rotary->addListener (this);
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
@@ -470,6 +540,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_1 = new Label (String::empty,
                                                    TRANS("BACKGROUND")));
+    label_colour_1->setTooltip (TRANS("Click to change this colour."));
     label_colour_1->setFont (Font (30.00f, Font::plain));
     label_colour_1->setJustificationType (Justification::centredLeft);
     label_colour_1->setEditable (false, false, false);
@@ -479,6 +550,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_8 = new Label (String::empty,
                                                    TRANS("VALUE SLIDER 2 (BACK)")));
+    label_colour_8->setTooltip (TRANS("Click to change this colour."));
     label_colour_8->setFont (Font (30.00f, Font::plain));
     label_colour_8->setJustificationType (Justification::centredLeft);
     label_colour_8->setEditable (false, false, false);
@@ -488,6 +560,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
 
     addAndMakeVisible (label_colour_2 = new Label (String::empty,
                                                    TRANS("BORDERS")));
+    label_colour_2->setTooltip (TRANS("Click to change this colour."));
     label_colour_2->setFont (Font (30.00f, Font::plain));
     label_colour_2->setJustificationType (Justification::centredLeft);
     label_colour_2->setEditable (false, false, false);
@@ -496,31 +569,38 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
+    button_colour_bg->setTooltip (TRANS("Click to change this colour."));
     button_colour_bg->setButtonText (String::empty);
     button_colour_bg->addListener (this);
 
     addAndMakeVisible (button_colour_border = new TextButton ("new button"));
+    button_colour_border->setTooltip (TRANS("Click to change this colour."));
     button_colour_border->setButtonText (String::empty);
     button_colour_border->addListener (this);
 
     addAndMakeVisible (button_colour_buttons_on = new TextButton ("new button"));
+    button_colour_buttons_on->setTooltip (TRANS("Click to change this colour."));
     button_colour_buttons_on->setButtonText (String::empty);
     button_colour_buttons_on->addListener (this);
 
     addAndMakeVisible (button_colour_slider_1 = new TextButton ("new button"));
+    button_colour_slider_1->setTooltip (TRANS("Click to change this colour."));
     button_colour_slider_1->setButtonText (String::empty);
     button_colour_slider_1->addListener (this);
 
     addAndMakeVisible (button_colour_slider_2 = new TextButton ("new button"));
+    button_colour_slider_2->setTooltip (TRANS("Click to change this colour."));
     button_colour_slider_2->setButtonText (String::empty);
     button_colour_slider_2->addListener (this);
 
     addAndMakeVisible (button_colour_slider_mod = new TextButton ("new button"));
+    button_colour_slider_mod->setTooltip (TRANS("Click to change this colour."));
     button_colour_slider_mod->setButtonText (String::empty);
     button_colour_slider_mod->addListener (this);
 
     addAndMakeVisible (label_colour_3 = new Label (String::empty,
                                                    TRANS("SIGNAL LINES")));
+    label_colour_3->setTooltip (TRANS("Click to change this colour."));
     label_colour_3->setFont (Font (30.00f, Font::plain));
     label_colour_3->setJustificationType (Justification::centredLeft);
     label_colour_3->setEditable (false, false, false);
@@ -529,14 +609,17 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_colour_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_colour_signal_lines = new TextButton ("new button"));
+    button_colour_signal_lines->setTooltip (TRANS("Click to change this colour."));
     button_colour_signal_lines->setButtonText (String::empty);
     button_colour_signal_lines->addListener (this);
 
     addAndMakeVisible (button_colour_buttons_off = new TextButton ("new button"));
+    button_colour_buttons_off->setTooltip (TRANS("Click to change this colour."));
     button_colour_buttons_off->setButtonText (String::empty);
     button_colour_buttons_off->addListener (this);
 
     addAndMakeVisible (button_colour_labels = new TextButton ("new button"));
+    button_colour_labels->setTooltip (TRANS("Click to change this colour."));
     button_colour_labels->setButtonText (String::empty);
     button_colour_labels->addListener (this);
 
@@ -559,6 +642,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_audio_device = new ComboBox (String::empty));
+    combo_audio_device->setTooltip (TRANS("Select an audio device you like to use for the audio playback."));
     combo_audio_device->setEditableText (false);
     combo_audio_device->setJustificationType (Justification::centredLeft);
     combo_audio_device->setTextWhenNothingSelected (String::empty);
@@ -584,6 +668,9 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_sample_rate = new ComboBox (String::empty));
+    combo_sample_rate->setTooltip (TRANS("Select the sample rate you like to use for the audio playback.\n"
+    "\n"
+    "Note: the quality of larger sample rates is better, but needs more CPU power."));
     combo_sample_rate->setEditableText (false);
     combo_sample_rate->setJustificationType (Justification::centredLeft);
     combo_sample_rate->setTextWhenNothingSelected (String::empty);
@@ -591,6 +678,9 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     combo_sample_rate->addListener (this);
 
     addAndMakeVisible (combo_block_size = new ComboBox (String::empty));
+    combo_block_size->setTooltip (TRANS("Select the block size you like to use for the audio playback.\n"
+    "\n"
+    "Note: smaller block sizes are more in time, but needs more CPU power."));
     combo_block_size->setEditableText (false);
     combo_block_size->setJustificationType (Justification::centredLeft);
     combo_block_size->setTextWhenNothingSelected (String::empty);
@@ -607,6 +697,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (combo_audio_driver = new ComboBox (String::empty));
+    combo_audio_driver->setTooltip (TRANS("Select an audio driver you like to use for the audio playback."));
     combo_audio_driver->setEditableText (false);
     combo_audio_driver->setJustificationType (Justification::centredLeft);
     combo_audio_driver->setTextWhenNothingSelected (String::empty);
@@ -614,48 +705,19 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     combo_audio_driver->addListener (this);
 
     addAndMakeVisible (button_preset_1 = new TextButton ("new button"));
+    button_preset_1->setTooltip (TRANS("Click to load this preset."));
     button_preset_1->setButtonText (TRANS("PRE1"));
     button_preset_1->addListener (this);
 
     addAndMakeVisible (button_preset_2 = new TextButton ("new button"));
+    button_preset_2->setTooltip (TRANS("Click to load this preset."));
     button_preset_2->setButtonText (TRANS("PRE2"));
     button_preset_2->addListener (this);
 
     addAndMakeVisible (button_preset_3 = new TextButton ("new button"));
+    button_preset_3->setTooltip (TRANS("Click to load this preset."));
     button_preset_3->setButtonText (TRANS("PRE3"));
     button_preset_3->addListener (this);
-
-    addAndMakeVisible (text_info_monique = new TextEditor ("new text editor"));
-    text_info_monique->setMultiLine (true);
-    text_info_monique->setReturnKeyStartsNewLine (false);
-    text_info_monique->setReadOnly (true);
-    text_info_monique->setScrollbarsShown (false);
-    text_info_monique->setCaretVisible (false);
-    text_info_monique->setPopupMenuEnabled (false);
-    text_info_monique->setColour (TextEditor::backgroundColourId, Colour (0xff050505));
-    text_info_monique->setText (TRANS("Aus Liebe zur Musik.\n"
-    "Thomas Arndt | Monoplugs"));
-
-    addAndMakeVisible (text_info_vst = new TextEditor ("new text editor"));
-    text_info_vst->setMultiLine (true);
-    text_info_vst->setReturnKeyStartsNewLine (false);
-    text_info_vst->setReadOnly (true);
-    text_info_vst->setScrollbarsShown (false);
-    text_info_vst->setCaretVisible (false);
-    text_info_vst->setPopupMenuEnabled (false);
-    text_info_vst->setColour (TextEditor::backgroundColourId, Colour (0xff050505));
-    text_info_vst->setText (TRANS("VST is a trademark of Steinberg Media Technologies GmbH"));
-
-    addAndMakeVisible (image_vst = new ImageButton ("new button"));
-    image_vst->setButtonText (String::empty);
-
-    image_vst->setImages (false, true, true,
-                          ImageCache::getFromMemory (vst_logo_100x_png, vst_logo_100x_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000));
-    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String::empty,
-                                                                URL ("http://monique-synthesizer.monoplugs.com")));
-    link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
 
 
     //[UserPreSize]
@@ -748,6 +810,10 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    text_info_monique = nullptr;
+    image_vst = nullptr;
+    text_info_vst = nullptr;
+    link_to_monoplugs = nullptr;
     colour_selector = nullptr;
     label_colour_4 = nullptr;
     button_current_editor_color = nullptr;
@@ -804,10 +870,6 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     button_preset_1 = nullptr;
     button_preset_2 = nullptr;
     button_preset_3 = nullptr;
-    text_info_monique = nullptr;
-    text_info_vst = nullptr;
-    image_vst = nullptr;
-    link_to_monoplugs = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -847,6 +909,10 @@ void Monique_Ui_GlobalSettings::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    text_info_monique->setBounds (1150, 30, 290, 50);
+    image_vst->setBounds (1340, 80, 90, 60);
+    text_info_vst->setBounds (1150, 80, 180, 60);
+    link_to_monoplugs->setBounds (1150, 30, 280, 50);
     colour_selector->setBounds (660, 30, 270, 110);
     label_colour_4->setBounds (810, 30, 90, 33);
     button_current_editor_color->setBounds (940, 40, 90, 90);
@@ -903,10 +969,6 @@ void Monique_Ui_GlobalSettings::resized()
     button_preset_1->setBounds (1070, 30, 43, 30);
     button_preset_2->setBounds (1070, 70, 43, 30);
     button_preset_3->setBounds (1070, 110, 43, 30);
-    text_info_monique->setBounds (1150, 30, 290, 50);
-    text_info_vst->setBounds (1150, 80, 180, 60);
-    image_vst->setBounds (1340, 80, 90, 60);
-    link_to_monoplugs->setBounds (1150, 30, 280, 50);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
@@ -1290,45 +1352,67 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1125 10 330 150" cornerSize="6" fill="solid: 0" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
   </BACKGROUND>
+  <TEXTEDITOR name="new text editor" id="ba7b0a21898922b7" memberName="text_info_monique"
+              virtualName="" explicitFocusOrder="0" pos="1150 30 290 50" bkgcol="ff050505"
+              initialText="Aus Liebe zur Musik.&#10;Thomas Arndt | Monoplugs"
+              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
+              caret="0" popupmenu="0"/>
+  <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
+               virtualName="" explicitFocusOrder="0" pos="1340 80 90 60" buttonText=""
+               connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
+               resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
+               resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
+               opacityDown="1" colourDown="0"/>
+  <TEXTEDITOR name="new text editor" id="5aad8cd486f0e13c" memberName="text_info_vst"
+              virtualName="" explicitFocusOrder="0" pos="1150 80 180 60" bkgcol="ff050505"
+              initialText="VST is a trademark of Steinberg Media Technologies GmbH"
+              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
+              caret="0" popupmenu="0"/>
+  <HYPERLINKBUTTON name="" id="c0eeed7d74bb8534" memberName="link_to_monoplugs"
+                   virtualName="" explicitFocusOrder="0" pos="1150 30 280 50" tooltip="http://monique-synthesizer.monoplugs.com"
+                   buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
+                   url="http://monique-synthesizer.monoplugs.com"/>
   <GENERICCOMPONENT name="" id="f80f96857b452ce6" memberName="colour_selector" virtualName="ColourSelector"
                     explicitFocusOrder="0" pos="660 30 270 110" class="ColourSelector"
                     params="ColourSelector::showColourspace&#10;,0,7"/>
   <LABEL name="" id="4164e3b93fd006e0" memberName="label_colour_4" virtualName=""
-         explicitFocusOrder="0" pos="810 30 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON ON" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="810 30 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON ON"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="" id="63428e6e6c1ae9c4" memberName="button_current_editor_color"
               virtualName="" explicitFocusOrder="0" pos="940 40 90 90" buttonText="OK"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="bb43131d9973a62b" memberName="label_colour_7" virtualName=""
-         explicitFocusOrder="0" pos="930 30 120 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER (FRONT)"
+         explicitFocusOrder="0" pos="930 30 120 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER (FRONT)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="f570869fba483c15" memberName="label_colour_9" virtualName=""
-         explicitFocusOrder="0" pos="930 110 120 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATION SLIDER (BACK)"
+         explicitFocusOrder="0" pos="930 110 120 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATION SLIDER (BACK)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="62a873940890f9fe" memberName="label_colour_6" virtualName=""
-         explicitFocusOrder="0" pos="810 110 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LABELS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="810 110 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="LABELS"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="d6b2a5702bcb546f" memberName="label_colour_5" virtualName=""
-         explicitFocusOrder="0" pos="810 70 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON OFF" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="810 70 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON OFF"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <SLIDER name="0" id="30eb597ef479a74e" memberName="slider_morph_motor_time"
           virtualName="Slider" explicitFocusOrder="0" pos="30 40 60 70"
+          tooltip="Define the MORPH MOTOR TIME.&#10;&#10;Morph motor time is the speed of the morph sliders if you morph via the morph pad or the horizontal slider below the morph sliders"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="0" id="c244467fb56dffee" memberName="slider_glide_time"
           virtualName="Slider" explicitFocusOrder="0" pos="120 40 60 70"
+          tooltip="Define the GLIDE MOTOR TIME.&#10;&#10;Glide motor time is smoothes your inputs at many sliders on the main user interface. &#10;&#10;Set a large value here and try to change the MASTER VOLUME and do it again with a small one.&#10;&#10;Affected: OSC sliders, FILTER sliders, EQ sliders, FX sliders, MASTER VOLUME"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
@@ -1344,29 +1428,32 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="dfd8e91824767f78" memberName="label_16" virtualName=""
-         explicitFocusOrder="0" pos="260 30 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT ENV'S" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="260 30 100 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT ENV'S"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="f342323c5495d0a1" memberName="toggle_animate_input_env"
-                virtualName="" explicitFocusOrder="0" pos="220 30 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+                virtualName="" explicitFocusOrder="0" pos="220 30 33 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <LABEL name="" id="55ed48882dea6ac8" memberName="label_18" virtualName=""
-         explicitFocusOrder="0" pos="260 70 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="EQ ENV" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="260 70 100 33" tooltip="Turn amp animations at the EQ BANK on or off."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="EQ ENV"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_animate_eq_env"
-                virtualName="" explicitFocusOrder="0" pos="220 70 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+                virtualName="" explicitFocusOrder="0" pos="220 70 33 33" tooltip="Turn amp animations at the EQ BANK on or off."
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <LABEL name="" id="48465e518b2a9587" memberName="label_19" virtualName=""
-         explicitFocusOrder="0" pos="260 110 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATIONS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="260 110 100 33" tooltip="Turn amp animations at the mudulated parameters on or off.&#10;&#10;E.G: CUTOFF or OSC LFO modulation."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATIONS"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="13a54c23c88819cb" memberName="toggle_output_cc_mute4"
-                virtualName="" explicitFocusOrder="0" pos="220 110 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+                virtualName="" explicitFocusOrder="0" pos="220 110 33 33" tooltip="Turn amp animations at the mudulated parameters on or off.&#10;&#10;E.G: CUTOFF or OSC LFO modulation."
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline_1"
          virtualName="" explicitFocusOrder="0" pos="30 -4 150 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="GLOBAL TIMES" editableSingleClick="0"
@@ -1393,8 +1480,8 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_multicore_cpus"
-            virtualName="" explicitFocusOrder="0" pos="1360 110 80 30" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="1360 110 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="DL" id="dd5b53cdc2ebaa9f" memberName="label_ui_headline_4"
          virtualName="" explicitFocusOrder="0" pos="430 -4 170 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SLIDERS" editableSingleClick="0"
@@ -1402,6 +1489,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="ada70618221d405" memberName="slider_sensitivity"
           virtualName="Slider" explicitFocusOrder="0" pos="410 40 60 70"
+          tooltip="Define the sensitivity of each rotary slider. You can test the effect with this slider."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="100" max="2000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
@@ -1412,73 +1500,75 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="308a6ce808eddf2e" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="530 50 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="LINEAR DRAG" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="530 50 100 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="LINEAR DRAG"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="70949c3310a2e558" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="530 90 100 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ROTARY DRAG" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="530 90 100 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ROTARY DRAG"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="992c96a954884e8b" memberName="toggle_slider_linear"
-                virtualName="" explicitFocusOrder="0" pos="500 50 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+                virtualName="" explicitFocusOrder="0" pos="500 50 33 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <TOGGLEBUTTON name="" id="83332647a3954a0b" memberName="toggle_slider_rotary"
-                virtualName="" explicitFocusOrder="0" pos="500 90 33 33" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+                virtualName="" explicitFocusOrder="0" pos="500 90 33 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
   <LABEL name="DL" id="9eb0361b7a0444ac" memberName="label_ui_headline_5"
          virtualName="" explicitFocusOrder="0" pos="790 -4 182 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="COLOURS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="55a3217ef78a3c61" memberName="label_colour_1" virtualName=""
-         explicitFocusOrder="0" pos="690 30 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="BACKGROUND" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="690 30 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BACKGROUND"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="414941fefbe1a3cf" memberName="label_colour_8" virtualName=""
-         explicitFocusOrder="0" pos="930 70 120 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER 2 (BACK)"
+         explicitFocusOrder="0" pos="930 70 120 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER 2 (BACK)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="2efba9c3ce22653b" memberName="label_colour_2" virtualName=""
-         explicitFocusOrder="0" pos="690 70 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="BORDERS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="690 70 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BORDERS"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="new button" id="914ce4dd638de5f3" memberName="button_colour_bg"
-              virtualName="" explicitFocusOrder="0" pos="660 30 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="660 30 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="e427e1f8d74ea481" memberName="button_colour_border"
-              virtualName="" explicitFocusOrder="0" pos="660 70 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="660 70 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3891f5f1ede2a913" memberName="button_colour_buttons_on"
-              virtualName="" explicitFocusOrder="0" pos="780 30 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="780 30 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2bde73aa342c2457" memberName="button_colour_slider_1"
-              virtualName="" explicitFocusOrder="0" pos="900 30 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="900 30 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="8ddcc2620647afb5" memberName="button_colour_slider_2"
-              virtualName="" explicitFocusOrder="0" pos="900 70 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="900 70 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="27311d6a38d6510d" memberName="button_colour_slider_mod"
-              virtualName="" explicitFocusOrder="0" pos="900 110 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="900 110 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af67a383712e7be7" memberName="label_colour_3" virtualName=""
-         explicitFocusOrder="0" pos="690 110 90 33" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="SIGNAL LINES" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="33"/>
+         explicitFocusOrder="0" pos="690 110 90 33" tooltip="Click to change this colour."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SIGNAL LINES"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="new button" id="a907651961c48243" memberName="button_colour_signal_lines"
-              virtualName="" explicitFocusOrder="0" pos="660 110 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="660 110 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="aa8131218b1a4e24" memberName="button_colour_buttons_off"
-              virtualName="" explicitFocusOrder="0" pos="780 70 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="780 70 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="16cb69a9f61a0c7f" memberName="button_colour_labels"
-              virtualName="" explicitFocusOrder="0" pos="780 110 33 30" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="780 110 33 30" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="DL" id="668d26bcc5860c72" memberName="label_ui_headline_6"
          virtualName="" explicitFocusOrder="0" pos="1210 -4 170 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="AUDIO &amp; CPU"
@@ -1490,8 +1580,8 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="efb590c00df9d613" memberName="combo_audio_device"
-            virtualName="" explicitFocusOrder="0" pos="1210 70 80 30" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="1210 70 80 30" tooltip="Select an audio device you like to use for the audio playback."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="49f12ab9e3d54910" memberName="label_8" virtualName=""
          explicitFocusOrder="0" pos="1140 110 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RATE:" editableSingleClick="0"
@@ -1503,48 +1593,28 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="db95d5d8a64a8ebc" memberName="combo_sample_rate"
-            virtualName="" explicitFocusOrder="0" pos="1210 110 80 30" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="1210 110 80 30" tooltip="Select the sample rate you like to use for the audio playback.&#10;&#10;Note: the quality of larger sample rates is better, but needs more CPU power."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="" id="d76df912445a2ff8" memberName="combo_block_size" virtualName=""
-            explicitFocusOrder="0" pos="1360 30 80 30" editable="0" layout="33"
-            items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            explicitFocusOrder="0" pos="1360 30 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="2c9d694778c498dc" memberName="label_10" virtualName=""
          explicitFocusOrder="0" pos="1140 30 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DRIVER:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
-            virtualName="" explicitFocusOrder="0" pos="1210 30 80 30" editable="0"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            virtualName="" explicitFocusOrder="0" pos="1210 30 80 30" tooltip="Select an audio driver you like to use for the audio playback."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="new button" id="bd0d585ced4d3b09" memberName="button_preset_1"
-              virtualName="" explicitFocusOrder="0" pos="1070 30 43 30" buttonText="PRE1"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1070 30 43 30" tooltip="Click to load this preset."
+              buttonText="PRE1" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="7a187799895dfa50" memberName="button_preset_2"
-              virtualName="" explicitFocusOrder="0" pos="1070 70 43 30" buttonText="PRE2"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1070 70 43 30" tooltip="Click to load this preset."
+              buttonText="PRE2" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="202c6d241354941d" memberName="button_preset_3"
-              virtualName="" explicitFocusOrder="0" pos="1070 110 43 30" buttonText="PRE3"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTEDITOR name="new text editor" id="ba7b0a21898922b7" memberName="text_info_monique"
-              virtualName="" explicitFocusOrder="0" pos="1150 30 290 50" bkgcol="ff050505"
-              initialText="Aus Liebe zur Musik.&#10;Thomas Arndt | Monoplugs"
-              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
-              caret="0" popupmenu="0"/>
-  <TEXTEDITOR name="new text editor" id="5aad8cd486f0e13c" memberName="text_info_vst"
-              virtualName="" explicitFocusOrder="0" pos="1150 80 180 60" bkgcol="ff050505"
-              initialText="VST is a trademark of Steinberg Media Technologies GmbH"
-              multiline="1" retKeyStartsLine="0" readonly="1" scrollbars="0"
-              caret="0" popupmenu="0"/>
-  <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
-               virtualName="" explicitFocusOrder="0" pos="1340 80 90 60" buttonText=""
-               connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
-               resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
-               resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
-               opacityDown="1" colourDown="0"/>
-  <HYPERLINKBUTTON name="" id="c0eeed7d74bb8534" memberName="link_to_monoplugs"
-                   virtualName="" explicitFocusOrder="0" pos="1150 30 280 50" tooltip="http://monique-synthesizer.monoplugs.com"
-                   buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
-                   url="http://monique-synthesizer.monoplugs.com"/>
+              virtualName="" explicitFocusOrder="0" pos="1070 110 43 30" tooltip="Click to load this preset."
+              buttonText="PRE3" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

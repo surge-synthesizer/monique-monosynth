@@ -15,6 +15,7 @@ CHANGES 0.6
 - add tooltips
 - start adr preset sliders from 1 not from 0
 - move the midi learn button to the midi setting and rename it to train
+- reduce the context menu (right mouse) to "set return value"
 
 TODO:
 - option to keep the arp on or of as global var!

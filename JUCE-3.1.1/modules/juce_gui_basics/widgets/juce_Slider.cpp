@@ -637,10 +637,10 @@ public:
     {
         PopupMenu m;
         m.setLookAndFeel (&owner.getLookAndFeel());
-        m.addItem (1, TRANS ("Velocity-sensitive mode"), true, isVelocityBased);
-        m.addSeparator();
+        //m.addItem (1, TRANS ("Velocity-sensitive mode"), true, isVelocityBased);
+        //m.addSeparator();
 
-        if (isRotary())
+        if (isRotary() and false)
         {
             PopupMenu rotaryMenu;
             rotaryMenu.addItem (2, TRANS ("Use circular dragging"),           true, style == Rotary);

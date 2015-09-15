@@ -115,6 +115,10 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextEditor> text_info_monique;
+    ScopedPointer<ImageButton> image_vst;
+    ScopedPointer<TextEditor> text_info_vst;
+    ScopedPointer<HyperlinkButton> link_to_monoplugs;
     ScopedPointer<ColourSelector> colour_selector;
     ScopedPointer<Label> label_colour_4;
     ScopedPointer<TextButton> button_current_editor_color;
@@ -171,10 +175,6 @@ private:
     ScopedPointer<TextButton> button_preset_1;
     ScopedPointer<TextButton> button_preset_2;
     ScopedPointer<TextButton> button_preset_3;
-    ScopedPointer<TextEditor> text_info_monique;
-    ScopedPointer<TextEditor> text_info_vst;
-    ScopedPointer<ImageButton> image_vst;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
 
 
     //==============================================================================
