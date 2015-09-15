@@ -659,7 +659,9 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     "Values larger zero try to get the amp of each curve back to zero (in the defined attack time) if the release of the last note isn\'t completely done.\n"
     "This makes curves more aggressive.\n"
     "\n"
-    "On zero it is turned off."));
+    "On zero it is turned off.\n"
+    "\n"
+    "Note: this is may be not easy to see on the right plotter. To make this effect more visible (just for your learning curve) reduce the DECAY and RELEASE time to an minimum and play around with the slider."));
     slider_force_to_zero->setRange (0, 1, 0.01);
     slider_force_to_zero->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_force_to_zero->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
@@ -1487,7 +1489,7 @@ BEGIN_JUCER_METADATA
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="241b05fe5f21f4d6" memberName="slider_force_to_zero"
           virtualName="Slider" explicitFocusOrder="0" pos="1150 105r 60 70"
-          tooltip="Define the FORCE curve to Zero time and amount.&#10;&#10;Values larger zero try to get the amp of each curve back to zero (in the defined attack time) if the release of the last note isn't completely done.&#10;This makes curves more aggressive.&#10;&#10;On zero it is turned off."
+          tooltip="Define the FORCE curve to Zero time and amount.&#10;&#10;Values larger zero try to get the amp of each curve back to zero (in the defined attack time) if the release of the last note isn't completely done.&#10;This makes curves more aggressive.&#10;&#10;On zero it is turned off.&#10;&#10;Note: this is may be not easy to see on the right plotter. To make this effect more visible (just for your learning curve) reduce the DECAY and RELEASE time to an minimum and play around with the slider."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="TextBoxBelow"
