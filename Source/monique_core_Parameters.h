@@ -682,15 +682,15 @@ public:
 public:
     COLD ArrayOfIntParameters( const int num_parameters_,
 
-                       const int min_value_, const int max_value_, const int init_value_,
+                               const int min_value_, const int max_value_, const int init_value_,
 
-                       const String& owner_class_name_,
-                       const int owner_id_,
+                               const String& owner_class_name_,
+                               const int owner_id_,
 
-                       const String& param_name_,
-                       const String& param_name_short_,
-                       bool create_human_id_ = true
-                     ) noexcept;
+                               const String& param_name_,
+                               const String& param_name_short_,
+                               bool create_human_id_ = true
+                             ) noexcept;
     COLD ~ArrayOfIntParameters() noexcept;
 
 private:
@@ -810,6 +810,12 @@ static inline int get_num_steps( const Parameter* param_ ) noexcept
 static inline bool has_modulation( const Parameter* param_ ) noexcept
 {
     return param_->get_modulation_amount() != HAS_NO_MODULATION;
+}
+
+//==============================================================================
+static inline float get_percent_default_modulation_value( const Parameter* param_ ) noexcept
+{
+    return  param_->get_info().init_modulation_amount;
 }
 
 //==============================================================================

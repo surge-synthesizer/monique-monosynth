@@ -211,6 +211,25 @@ struct ModulationSliderConfigBase
         return entered_value_;
     }
 
+    //==============================================================================
+    // TOOLTIP
+    virtual StringRef get_tootip_front() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_tootip_top() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_tootip_bottom() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_tootip_back() const noexcept
+    {
+        return "";
+    }
+
 protected:
     ModulationSliderConfigBase() {}
 

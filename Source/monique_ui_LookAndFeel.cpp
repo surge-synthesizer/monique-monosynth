@@ -49,11 +49,12 @@ static Colour createBaseColour (Colour buttonColour,
 static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 {
     const float tooltipFontSize = 13.0f;
-    const int maxToolTipWidth = 400;
+    const int maxToolTipWidth = 500;
 
     AttributedString s;
-    s.setJustification (Justification::centred);
-    s.append (text, Font (tooltipFontSize, Font::bold), colour);
+    s.setJustification (Justification::centredLeft);
+    Font monospace(Font::getDefaultMonospacedFontName(),tooltipFontSize,0);
+    s.append (text, monospace, colour);
 
     TextLayout tl;
     tl.createLayoutWithBalancedLineLengths (s, (float) maxToolTipWidth);
@@ -206,9 +207,9 @@ UiLookAndFeel::UiLookAndFeel()
         ProgressBar::backgroundColourId,            0xffeeeeee,
         ProgressBar::foregroundColourId,            0xffaaaaee,
 
-        TooltipWindow::backgroundColourId,          0xffeeeebb,
-        TooltipWindow::textColourId,                0xff000000,
-        TooltipWindow::outlineColourId,             0x4c000000,
+        TooltipWindow::backgroundColourId,          0xff000000,
+        TooltipWindow::textColourId,                0xffffff99,
+        TooltipWindow::outlineColourId,             0xffffff99,
 
         TabbedComponent::backgroundColourId,        0x00000000,
         TabbedComponent::outlineColourId,           0xff777777,
@@ -1355,8 +1356,8 @@ void UiLookAndFeel::getTooltipSize (const String& tipText, int& width, int& heig
 {
     const TextLayout tl (LookAndFeelHelpers::layoutTooltipText (tipText, Colours::black));
 
-    width  = (int) (tl.getWidth() + 14.0f);
-    height = (int) (tl.getHeight() + 6.0f);
+    width  = (int) (tl.getWidth() + 30.0f);
+    height = (int) (tl.getHeight() + 20.0f);
 }
 
 void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int height)

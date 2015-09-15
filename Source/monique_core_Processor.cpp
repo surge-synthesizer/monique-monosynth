@@ -127,6 +127,9 @@ clock_smoother( new ClockSmoothBuffer() ),
 #endif
         MidiKeyboardState::addListener(this);
     }
+#ifdef IS_PLUGIN
+    init_automatable_parameters();
+#endif
 }
 
 COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
@@ -199,8 +202,8 @@ void MoniqueAudioProcessor::timerCallback()
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
     if( buffer_.getNumChannels() < 2 )
-      return;
-  
+        return;
+
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
     {
         prepareToPlay(getSampleRate(),getBlockSize());
@@ -501,9 +504,23 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
 //==============================================================================
 //==============================================================================
 #ifdef IS_PLUGIN
+void MoniqueAudioProcessor::init_automatable_parameters() noexcept
+{
+    Array< Parameter* >&  all_automatable_parameters = synth_data->get_atomateable_parameters();
+    for( int i = 0 ; i != all_automatable_parameters.size() ; ++i )
+    {
+        Parameter* param( all_automatable_parameters.getUnchecked(i) );
+        jassert( not automateable_parameters.contains( param ) );
+        automateable_parameters.add( param );
+        if( has_modulation( param ) )
+        {
+            automateable_parameters.add( nullptr );
+        }
+    }
+}
 int MoniqueAudioProcessor::getNumParameters()
 {
-    return synth_data->get_atomateable_parameters().size();
+    return automateable_parameters.size();
 }
 bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const
 {
@@ -511,30 +528,74 @@ bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const
 }
 float MoniqueAudioProcessor::getParameter( int i_ )
 {
-    return get_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_) );
+    float value = 0;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        value = get_percent_value( param );
+    }
+    else
+    {
+        value = automateable_parameters.getUnchecked(i_-1)->get_modulation_amount();
+    }
+    return value;
 }
 const String MoniqueAudioProcessor::getParameterText( int i_ )
 {
-    return String( get_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_) ) );
+    return String(getParameter(i_));
 }
-String MoniqueAudioProcessor::getParameterLabel (int i_) const {
+String MoniqueAudioProcessor::getParameterLabel (int i_) const
+{
     return  "N/A";
 }
 int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
 {
-    return synth_data->get_atomateable_parameters().getUnchecked(i_)->get_info().num_steps;
+    int value = 0;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        value = get_num_steps( param );
+    }
+    else
+    {
+        value = 1000;
+    }
+    return value;
 }
 float MoniqueAudioProcessor::getParameterDefaultValue( int i_ )
 {
-    return get_percent_default_value( synth_data->get_atomateable_parameters().getUnchecked(i_) );
+    int value = 0;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        value = get_percent_default_value( param );
+    }
+    else
+    {
+        value = get_percent_default_modulation_value( automateable_parameters.getUnchecked(i_-1) );
+    }
+    return value;
 }
 const String MoniqueAudioProcessor::getParameterName( int i_ )
 {
-    return synth_data->get_atomateable_parameters().getUnchecked(i_)->get_info().short_name;
+    String name;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        name = param->get_info().short_name;
+    }
+    else
+    {
+        name = automateable_parameters.getUnchecked(i_-1)->get_info().short_name + String("_MOD");
+    }
+    return name;
 }
 void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
 {
-    set_percent_value( synth_data->get_atomateable_parameters().getUnchecked(i_), percent_ );
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        set_percent_value( param, percent_ );
+    }
+    else
+    {
+        automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( percent_ );
+    }
 }
 #endif
 

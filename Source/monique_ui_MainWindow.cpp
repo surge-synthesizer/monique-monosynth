@@ -304,7 +304,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
 
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
-            String::empty));
+                                                       String::empty));
     label_effect_hider->setFont (Font (30.00f, Font::plain));
     label_effect_hider->setJustificationType (Justification::centredLeft);
     label_effect_hider->setEditable (false, false, false);
@@ -381,7 +381,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (new FSustainSlConfig()));
 
     addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (new FDecaySlConfig()
-                                                               ));
+                                                                ));
 
     addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (new FAttackSlConfig()));
 
@@ -416,7 +416,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (new FAttackSlConfig(0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
-            TRANS("M O N I Q U E")));
+                                                   TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
     label_monolisa->setJustificationType (Justification::centredRight);
     label_monolisa->setEditable (false, false, false);
@@ -425,6 +425,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_monolisa->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (filter_type_2_1 = new TextButton ("VOICE 1"));
+    filter_type_2_1->setTooltip (TRANS("Set this FILTER TYPE to HIGH PASS."));
     filter_type_2_1->setButtonText (TRANS("HP"));
     filter_type_2_1->addListener (this);
     filter_type_2_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -432,6 +433,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_3_1 = new TextButton ("VOICE 1"));
+    filter_type_3_1->setTooltip (TRANS("Set this FILTER TYPE to BAND PASS."));
     filter_type_3_1->setButtonText (TRANS("BAND"));
     filter_type_3_1->addListener (this);
     filter_type_3_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -439,6 +441,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_2_2 = new TextButton ("VOICE 1"));
+    filter_type_2_2->setTooltip (TRANS("Set this FILTER TYPE to HIGH PASS."));
     filter_type_2_2->setButtonText (TRANS("HP"));
     filter_type_2_2->addListener (this);
     filter_type_2_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -446,6 +449,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_3_2 = new TextButton ("VOICE 1"));
+    filter_type_3_2->setTooltip (TRANS("Set this FILTER TYPE to BAND PASS."));
     filter_type_3_2->setButtonText (TRANS("BAND"));
     filter_type_3_2->addListener (this);
     filter_type_3_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -453,6 +457,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_2_3 = new TextButton ("VOICE 1"));
+    filter_type_2_3->setTooltip (TRANS("Set this FILTER TYPE to HIGH PASS."));
     filter_type_2_3->setButtonText (TRANS("HP"));
     filter_type_2_3->addListener (this);
     filter_type_2_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -460,6 +465,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_3_3 = new TextButton ("VOICE 1"));
+    filter_type_3_3->setTooltip (TRANS("Set this FILTER TYPE to BAND PASS."));
     filter_type_3_3->setButtonText (TRANS("BAND"));
     filter_type_3_3->addListener (this);
     filter_type_3_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -467,6 +473,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_3_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_5_1 = new TextButton ("VOICE 1"));
+    filter_type_5_1->setTooltip (TRANS("Set this FILTER TYPE to PASS (not filtered)."));
     filter_type_5_1->setButtonText (TRANS("PASS"));
     filter_type_5_1->addListener (this);
     filter_type_5_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -474,6 +481,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_5_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_5_2 = new TextButton ("VOICE 1"));
+    filter_type_5_2->setTooltip (TRANS("Set this FILTER TYPE to PASS (not filtered)."));
     filter_type_5_2->setButtonText (TRANS("PASS"));
     filter_type_5_2->addListener (this);
     filter_type_5_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -481,6 +489,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_5_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_5_3 = new TextButton ("VOICE 1"));
+    filter_type_5_3->setTooltip (TRANS("Set this FILTER TYPE to PASS (not filtered)."));
     filter_type_5_3->setButtonText (TRANS("PASS"));
     filter_type_5_3->addListener (this);
     filter_type_5_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -488,96 +497,127 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_5_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_2 = new TextButton (String::empty));
+    button_sequence_2->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_2->addListener (this);
     button_sequence_2->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_3 = new TextButton (String::empty));
+    button_sequence_3->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_3->addListener (this);
     button_sequence_3->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_4 = new TextButton (String::empty));
+    button_sequence_4->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_4->addListener (this);
     button_sequence_4->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_4->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_5 = new TextButton (String::empty));
+    button_sequence_5->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_5->addListener (this);
     button_sequence_5->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_5->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_6 = new TextButton (String::empty));
+    button_sequence_6->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_6->addListener (this);
     button_sequence_6->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_6->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_7 = new TextButton (String::empty));
+    button_sequence_7->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_7->addListener (this);
     button_sequence_7->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_7->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_8 = new TextButton (String::empty));
+    button_sequence_8->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_8->addListener (this);
     button_sequence_8->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_8->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
+    button_sequence_9->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_9->addListener (this);
     button_sequence_9->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_9->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_10 = new TextButton (String::empty));
+    button_sequence_10->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_10->addListener (this);
     button_sequence_10->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_10->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_10->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_11 = new TextButton (String::empty));
+    button_sequence_11->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_11->addListener (this);
     button_sequence_11->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_11->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_11->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_12 = new TextButton (String::empty));
+    button_sequence_12->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_12->addListener (this);
     button_sequence_12->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_12->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_12->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_13 = new TextButton (String::empty));
+    button_sequence_13->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_13->addListener (this);
     button_sequence_13->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_13->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_13->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_14 = new TextButton (String::empty));
+    button_sequence_14->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_14->addListener (this);
     button_sequence_14->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_14->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_14->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_15 = new TextButton (String::empty));
+    button_sequence_15->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_15->addListener (this);
     button_sequence_15->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_15->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_15->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_16 = new TextButton (String::empty));
+    button_sequence_16->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_16->addListener (this);
     button_sequence_16->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_16->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (combo_programm = new ComboBox (String::empty));
+    combo_programm->setTooltip (TRANS("Select a program of the selected BANK."));
     combo_programm->setEditableText (true);
     combo_programm->setJustificationType (Justification::centredLeft);
     combo_programm->setTextWhenNothingSelected (TRANS("SELECT PROGRAM"));
@@ -585,6 +625,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     combo_programm->addListener (this);
 
     addAndMakeVisible (button_programm_left = new TextButton (String::empty));
+    button_programm_left->setTooltip (TRANS("Load the program before of the selected BANK."));
     button_programm_left->setButtonText (TRANS("<"));
     button_programm_left->addListener (this);
     button_programm_left->setColour (TextButton::buttonColourId, Colours::black);
@@ -592,6 +633,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_left->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_programm_right = new TextButton (String::empty));
+    button_programm_right->setTooltip (TRANS("Load the next program of the selected BANK."));
     button_programm_right->setButtonText (TRANS(">"));
     button_programm_right->addListener (this);
     button_programm_right->setColour (TextButton::buttonColourId, Colours::black);
@@ -599,6 +641,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_right->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_programm_replace = new TextButton (String::empty));
+    button_programm_replace->setTooltip (TRANS("Replaces the selected program."));
     button_programm_replace->setButtonText (TRANS("REPLACE"));
     button_programm_replace->addListener (this);
     button_programm_replace->setColour (TextButton::buttonColourId, Colours::black);
@@ -606,6 +649,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_replace->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_programm_new = new TextButton (String::empty));
+    button_programm_new->setTooltip (TRANS("Create a new program in the selected BANK."));
     button_programm_new->setButtonText (TRANS("NEW"));
     button_programm_new->addListener (this);
     button_programm_new->setColour (TextButton::buttonColourId, Colours::black);
@@ -613,6 +657,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_new->setColour (TextButton::textColourOffId, Colour (0xffd0ff00));
 
     addAndMakeVisible (button_open_oszi = new TextButton (String::empty));
+    button_open_oszi->setTooltip (TRANS("Open/Close the OSCILLOSCOPE.\n"
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_oszi->setButtonText (TRANS("OSCI"));
     button_open_oszi->addListener (this);
     button_open_oszi->setColour (TextButton::buttonColourId, Colours::black);
@@ -620,13 +667,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_oszi->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_open_midi_io_settings = new TextButton (String::empty));
-    button_open_midi_io_settings->setButtonText (TRANS("MIDI IO"));
+    button_open_midi_io_settings->setTooltip (TRANS("Open/Close the MIDI EDITOR.\n"
+    "\n"
+    "Note: press ESC to close editors."));
+    button_open_midi_io_settings->setButtonText (TRANS("MIDI"));
     button_open_midi_io_settings->addListener (this);
     button_open_midi_io_settings->setColour (TextButton::buttonColourId, Colours::black);
     button_open_midi_io_settings->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_open_midi_io_settings->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (combo_bank = new ComboBox (String::empty));
+    combo_bank->setTooltip (TRANS("Select the current program bank."));
     combo_bank->setEditableText (false);
     combo_bank->setJustificationType (Justification::centredLeft);
     combo_bank->setTextWhenNothingSelected (String::empty);
@@ -634,6 +685,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     combo_bank->addListener (this);
 
     addAndMakeVisible (button_programm_load = new TextButton (String::empty));
+    button_programm_load->setTooltip (TRANS("Load the selected program."));
     button_programm_load->setButtonText (TRANS("LOAD"));
     button_programm_load->addListener (this);
     button_programm_load->setColour (TextButton::buttonColourId, Colours::black);
@@ -709,6 +761,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(2)));
 
     addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
+    button_sequence_1->setTooltip (TRANS("Turns this STEP on and off.\n"
+    "(Has no effect if the ARPEGGIATOR is turned off)"));
     button_sequence_1->addListener (this);
     button_sequence_1->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -725,6 +779,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_distortion_3 = new Monique_Ui_DualSlider (new GForceSlConfig(2)));
 
     addAndMakeVisible (button_arp_speed_XNORM = new TextButton (String::empty));
+    button_arp_speed_XNORM->setTooltip (TRANS("Shortcut to set the SPEED MULTIPLIER/DIVISOR back to 1x (in sync)."));
     button_arp_speed_XNORM->setButtonText (TRANS("x1"));
     button_arp_speed_XNORM->addListener (this);
     button_arp_speed_XNORM->setColour (TextButton::buttonColourId, Colours::black);
@@ -740,12 +795,16 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (osc_wave_2 = new Monique_Ui_DualSlider (new WAVESlConfig(1)));
 
     addAndMakeVisible (sl_morhp_mix = new Slider ("new slider"));
+    sl_morhp_mix->setTooltip (TRANS("Morph between the morph sliders. \n"
+    "\n"
+    "Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."));
     sl_morhp_mix->setRange (0, 3000, 0.01);
     sl_morhp_mix->setSliderStyle (Slider::LinearHorizontal);
     sl_morhp_mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     sl_morhp_mix->addListener (this);
 
     addAndMakeVisible (button_programm_delete = new TextButton (String::empty));
+    button_programm_delete->setTooltip (TRANS("Delete the selected program."));
     button_programm_delete->setButtonText (TRANS("DELETE"));
     button_programm_delete->addListener (this);
     button_programm_delete->setColour (TextButton::buttonColourId, Colours::black);
@@ -753,6 +812,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_delete->setColour (TextButton::textColourOffId, Colour (0xffff7900));
 
     addAndMakeVisible (button_open_config = new TextButton (String::empty));
+    button_open_config->setTooltip (TRANS("Open/Close the ADR PRESET DESIGNER.\n"
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_config->setButtonText (TRANS("ADR"));
     button_open_config->addListener (this);
     button_open_config->setColour (TextButton::buttonColourId, Colours::black);
@@ -760,6 +822,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_config->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_6_1 = new TextButton ("VOICE 1"));
+    filter_type_6_1->setTooltip (TRANS("Set this FILTER TYPE to LOW PASS."));
     filter_type_6_1->setButtonText (TRANS("LP"));
     filter_type_6_1->addListener (this);
     filter_type_6_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -767,6 +830,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_6_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_6_2 = new TextButton ("VOICE 1"));
+    filter_type_6_2->setTooltip (TRANS("Set this FILTER TYPE to LOW PASS."));
     filter_type_6_2->setButtonText (TRANS("LP"));
     filter_type_6_2->addListener (this);
     filter_type_6_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -774,6 +838,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_6_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (filter_type_6_3 = new TextButton ("VOICE 1"));
+    filter_type_6_3->setTooltip (TRANS("Set this FILTER TYPE to LOW PASS."));
     filter_type_6_3->setButtonText (TRANS("LP"));
     filter_type_6_3->addListener (this);
     filter_type_6_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -788,6 +853,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_midi_learn->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_ctrl_toggle = new TextButton (String::empty));
+    button_ctrl_toggle->setTooltip (TRANS("Enables the SHIFT MODE. \n"
+    "\n"
+    "In SHIFT MODE are all back sliders visble and front slider become inaccessable."));
     button_ctrl_toggle->setButtonText (TRANS("SHIFT"));
     button_ctrl_toggle->addListener (this);
     button_ctrl_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -799,6 +867,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (speed = new Monique_Ui_DualSlider (new BPMSlConfig()));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
+    button_open_morph->setTooltip (TRANS("Open/Close the MORPH EDITOR.\n"
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_morph->setButtonText (TRANS("EDIT"));
     button_open_morph->addListener (this);
     button_open_morph->setColour (TextButton::buttonColourId, Colours::black);
@@ -806,6 +877,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_morph->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (effect_finalizer_switch = new TextButton (String::empty));
+    effect_finalizer_switch->setTooltip (TRANS("Switch between FX and EQ BANK section."));
     effect_finalizer_switch->setButtonText (TRANS("F X"));
     effect_finalizer_switch->addListener (this);
     effect_finalizer_switch->setColour (TextButton::buttonColourId, Colours::black);
@@ -813,7 +885,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-            TRANS("OSC")));
+                                                       TRANS("OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -822,7 +894,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-            TRANS("FLT")));
+                                                       TRANS("FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -831,7 +903,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-            TRANS("FX")));
+                                                       TRANS("FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -840,7 +912,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-            TRANS("ARP")));
+                                                       TRANS("ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -849,6 +921,11 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
+    button_values_toggle->setTooltip (TRANS("Enables/disables the CTRL MODE. \n"
+    "\n"
+    "In CTRL MODE are all values visble.\n"
+    "\n"
+    "Hold down the CTRL key on your keyboard and drag any slider to control it in velocity mode."));
     button_values_toggle->setButtonText (TRANS("CTRL"));
     button_values_toggle->addListener (this);
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -860,7 +937,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
 
     addAndMakeVisible (label_ui_headline4 = new Label ("DL",
-            TRANS("FILTER INPUTS")));
+                                                       TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
@@ -869,7 +946,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline7 = new Label ("DL",
-            TRANS("OSCILLATORS")));
+                                                       TRANS("OSCILLATORS")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
@@ -878,7 +955,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline8 = new Label ("DL",
-            TRANS("FILTER ENVELOPE")));
+                                                       TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
@@ -887,7 +964,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline9 = new Label ("DL",
-            TRANS("LFO")));
+                                                       TRANS("LFO")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
@@ -896,7 +973,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline10 = new Label ("DL",
-            TRANS("FILTER CONFIGURATION")));
+                                                        TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
@@ -905,7 +982,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline11 = new Label ("DL",
-            TRANS("FILTER FX")));
+                                                        TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
@@ -914,7 +991,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline12 = new Label ("DL",
-            TRANS("OUTPUT")));
+                                                        TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
@@ -923,7 +1000,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label ("DL",
-            TRANS("MAIN ENVELOPE")));
+                                                        TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -932,7 +1009,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("DL",
-            TRANS("SHAPE")));
+                                                TRANS("SHAPE")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -941,7 +1018,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_reverb = new Label ("DL",
-            TRANS("REVERB")));
+                                                 TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
     label_reverb->setEditable (false, false, false);
@@ -950,7 +1027,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_delay = new Label ("DL",
-            TRANS("DELAY")));
+                                                TRANS("DELAY")));
     label_delay->setFont (Font (30.00f, Font::plain));
     label_delay->setJustificationType (Justification::centred);
     label_delay->setEditable (false, false, false);
@@ -959,7 +1036,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_chorus = new Label ("DL",
-            TRANS("CHORUS")));
+                                                 TRANS("CHORUS")));
     label_chorus->setFont (Font (30.00f, Font::plain));
     label_chorus->setJustificationType (Justification::centred);
     label_chorus->setEditable (false, false, false);
@@ -968,7 +1045,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_fx_mix = new Label ("DL",
-            TRANS("FX MIX")));
+                                                 TRANS("FX MIX")));
     label_fx_mix->setFont (Font (30.00f, Font::plain));
     label_fx_mix->setJustificationType (Justification::centred);
     label_fx_mix->setEditable (false, false, false);
@@ -977,7 +1054,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline19 = new Label ("DL",
-            TRANS("MORPH SECTION")));
+                                                        TRANS("MORPH SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
@@ -986,7 +1063,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline20 = new Label ("DL",
-            TRANS("ARPEGGIATOR")));
+                                                        TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
@@ -995,7 +1072,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline21 = new Label ("DL",
-            TRANS("GLIDE")));
+                                                        TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
@@ -1004,7 +1081,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline22 = new Label ("DL",
-            TRANS("SPEED")));
+                                                        TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
@@ -1013,7 +1090,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline23 = new Label ("DL",
-            TRANS("MASTER")));
+                                                        TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
@@ -1022,7 +1099,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline24 = new Label ("DL",
-            TRANS("OCTAVE")));
+                                                        TRANS("OCTAVE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
@@ -1031,7 +1108,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline25 = new Label ("DL",
-            TRANS("FM")));
+                                                        TRANS("FM")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
@@ -1042,7 +1119,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter());
 
     addAndMakeVisible (label_eq = new Label ("DL",
-            TRANS("EQUALIZER")));
+                                             TRANS("EQUALIZER")));
     label_eq->setFont (Font (30.00f, Font::plain));
     label_eq->setJustificationType (Justification::centred);
     label_eq->setEditable (false, false, false);
@@ -1051,6 +1128,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_eq->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_open_config2 = new TextButton (String::empty));
+    button_open_config2->setTooltip (TRANS("Open/Close the SETUP EDITOR.\n"
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_config2->setButtonText (TRANS("SETUP"));
     button_open_config2->addListener (this);
     button_open_config2->setColour (TextButton::buttonColourId, Colours::black);
@@ -1089,8 +1169,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
-        getChildComponent(i)->setOpaque(true);
-        getChildComponent(i)->setRepaintsOnMouseActivity(false);
+        Component* comp( getChildComponent(i) );
+        comp->setOpaque(true);
+
+	/*
+        if( Button* button = dynamic_cast< Button* >( comp ) )
+        {
+            button->setTooltip("test");
+        }
+        */
     }
     label_monolisa->setOpaque(false);
 
@@ -3135,135 +3222,147 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 30" tooltip="Set this FILTER TYPE to HIGH PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 30"
+              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 30" tooltip="Set this FILTER TYPE to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="HP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 30" bgColOff="ff000000"
+  <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
+              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 30" tooltip="Set this FILTER TYPE to HIGH PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
+              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 30"
+              tooltip="Set this FILTER TYPE to BAND PASS." bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
+              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 30" tooltip="Set this FILTER TYPE to HIGH PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
+              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 30" tooltip="Set this FILTER TYPE to BAND PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 155 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 155 60 33" tooltip="Set this FILTER TYPE to PASS (not filtered)."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 335 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 335 60 33" tooltip="Set this FILTER TYPE to PASS (not filtered)."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 515 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 515 60 33" tooltip="Set this FILTER TYPE to PASS (not filtered)."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
-              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="17704b0ee658c01b" memberName="button_sequence_3"
-              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="70bcd1e56b41c2c6" memberName="button_sequence_4"
-              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e835074126c3a82d" memberName="button_sequence_5"
-              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7ebcf311504b804b" memberName="button_sequence_6"
-              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7964742ab1d9d236" memberName="button_sequence_7"
-              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="290ac159e50889a3" memberName="button_sequence_8"
-              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
-              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8ad414b935f59d8" memberName="button_sequence_10"
-              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="af5f2477751cef2c" memberName="button_sequence_11"
-              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d3687d6b28982234" memberName="button_sequence_12"
-              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="804115318ad213c1" memberName="button_sequence_13"
               virtualName="" explicitFocusOrder="0" pos="1025r 840r 60 20"
+              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="13d758647984d5d5" memberName="button_sequence_14"
               virtualName="" explicitFocusOrder="0" pos="1085r 840r 60 20"
+              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8cbd35271097248c" memberName="button_sequence_15"
               virtualName="" explicitFocusOrder="0" pos="1145r 840r 60 20"
+              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
               virtualName="" explicitFocusOrder="0" pos="1205r 840r 60 20"
+              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
-            explicitFocusOrder="0" pos="645r 1030r 310 30" editable="1" layout="33"
-            items="" textWhenNonSelected="SELECT PROGRAM" textWhenNoItems="EMPTY BANK"/>
+            explicitFocusOrder="0" pos="645r 1030r 310 30" tooltip="Select a program of the selected BANK."
+            editable="1" layout="33" items="" textWhenNonSelected="SELECT PROGRAM"
+            textWhenNoItems="EMPTY BANK"/>
   <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
               virtualName="" explicitFocusOrder="0" pos="275r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              tooltip="Load the program before of the selected BANK." bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
               virtualName="" explicitFocusOrder="0" pos="705r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              tooltip="Load the next program of the selected BANK." bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b91a29c51d2d93f1" memberName="button_programm_replace"
               virtualName="" explicitFocusOrder="0" pos="835r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
+              tooltip="Replaces the selected program." bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="9481aeac211cafc0" memberName="button_programm_new"
               virtualName="" explicitFocusOrder="0" pos="775r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
-              explicitFocusOrder="0" pos="965 1000 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI" connectedEdges="0"
+              tooltip="Create a new program in the selected BANK." bgColOff="ff000000"
+              textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
+              explicitFocusOrder="0" pos="965 1000 60 30" tooltip="Open/Close the OSCILLOSCOPE.&#10;&#10;Note: press ESC to close editors."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="57c6c986fc98dac" memberName="button_open_midi_io_settings"
               virtualName="" explicitFocusOrder="0" pos="1145r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI IO"
+              tooltip="Open/Close the MIDI EDITOR.&#10;&#10;Note: press ESC to close editors."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_bank" virtualName=""
-            explicitFocusOrder="0" pos="335r 1030r 60 30" editable="0" layout="33"
-            items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+            explicitFocusOrder="0" pos="335r 1030r 60 30" tooltip="Select the current program bank."
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="aa7c44443637097c" memberName="button_programm_load"
               virtualName="" explicitFocusOrder="0" pos="955r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              tooltip="Load the selected program." bgColOff="ff000000" textCol="ffff3b00"
+              textColOn="ffffff00" buttonText="LOAD" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
                     explicitFocusOrder="0" pos="160r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(0)"/>
@@ -3367,9 +3466,9 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="815r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
-              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
                     explicitFocusOrder="0" pos="455r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig()"/>
@@ -3386,9 +3485,9 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1285r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="x1" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" tooltip="Shortcut to set the SPEED MULTIPLIER/DIVISOR back to 1x (in sync)."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x1"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
                     explicitFocusOrder="0" pos="90r 755r 60 130" class="Monique_Ui_DualSlider"
                     params="new FMFreqSlConfig()"/>
@@ -3402,38 +3501,40 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="90r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(1)"/>
   <SLIDER name="new slider" id="20de89a2be986cc1" memberName="sl_morhp_mix"
-          virtualName="" explicitFocusOrder="0" pos="1165 715 180 33" min="0"
-          max="3000" int="0.010000000000000000208" style="LinearHorizontal"
+          virtualName="" explicitFocusOrder="0" pos="1165 715 180 33" tooltip="Morph between the morph sliders. &#10;&#10;Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."
+          min="0" max="3000" int="0.010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="" id="87db63f1017ff04b" memberName="button_programm_delete"
               virtualName="" explicitFocusOrder="0" pos="895r 1030r 60 30"
-              bgColOff="ff000000" textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              tooltip="Delete the selected program." bgColOff="ff000000" textCol="ffff0000"
+              textColOn="ffff7900" buttonText="DELETE" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
   <TEXTBUTTON name="" id="120408211886469e" memberName="button_open_config"
               virtualName="" explicitFocusOrder="0" pos="1085r 1030r 60 30"
+              tooltip="Open/Close the ADR PRESET DESIGNER.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="ADR"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 30" tooltip="Set this FILTER TYPE to LOW PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 30" tooltip="Set this FILTER TYPE to LOW PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="LP" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 30" tooltip="Set this FILTER TYPE to LOW PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
               virtualName="" explicitFocusOrder="0" pos="1145r 1000r 60 30"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LEARN"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
-              virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" tooltip="Enables the SHIFT MODE. &#10;&#10;In SHIFT MODE are all back sliders visble and front slider become inaccessable."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
                     explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FColourSlConfig()"/>
@@ -3441,13 +3542,13 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1285r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
-              virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" tooltip="Open/Close the MORPH EDITOR.&#10;&#10;Note: press ESC to close editors."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
-              virtualName="" explicitFocusOrder="0" pos="520r 620 25 130" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="F X" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="520r 620 25 130" tooltip="Switch between FX and EQ BANK section."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="F X"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af640d06672c6a96" memberName="label_ui_headline2"
          virtualName="" explicitFocusOrder="0" pos="1105 616 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSC" editableSingleClick="0"
@@ -3469,9 +3570,9 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Enables/disables the CTRL MODE. &#10;&#10;In CTRL MODE are all values visble.&#10;&#10;Hold down the CTRL key on your keyboard and drag any slider to control it in velocity mode."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
                     explicitFocusOrder="0" pos="735r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new RWidthSlConfig()"/>
@@ -3588,6 +3689,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="30ecdded1d4d2622" memberName="button_open_config2"
               virtualName="" explicitFocusOrder="0" pos="1205r 1030r 60 30"
+              tooltip="Open/Close the SETUP EDITOR.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SETUP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

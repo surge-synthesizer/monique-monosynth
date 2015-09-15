@@ -160,14 +160,12 @@ Monique_Ui_DragPad::Monique_Ui_DragPad ()
 
     //[UserPreSize]
     this->setWantsKeyboardFocus(false);
-    this->setRepaintsOnMouseActivity(false);
     //this->setOpaque(true);
 
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         Component* comp = getChildComponent(i);
         comp->setWantsKeyboardFocus(false);
-        comp->setRepaintsOnMouseActivity(false);
         // comp->setOpaque(true);
     }
 

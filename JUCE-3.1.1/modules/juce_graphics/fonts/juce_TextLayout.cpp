@@ -202,7 +202,7 @@ void TextLayout::draw (Graphics& g, const Rectangle<float>& area) const
     for (int i = 0; i < getNumLines(); ++i)
     {
         const Line& line = getLine (i);
-        const Point<float> lineOrigin (origin + line.lineOrigin);
+        const Point<float> lineOrigin (origin + line.lineOrigin );
 
         for (int j = 0; j < line.runs.size(); ++j)
         {
@@ -213,7 +213,7 @@ void TextLayout::draw (Graphics& g, const Rectangle<float>& area) const
             for (int k = 0; k < run.glyphs.size(); ++k)
             {
                 const Glyph& glyph = run.glyphs.getReference (k);
-                context.drawGlyph (glyph.glyphCode, AffineTransform::translation (lineOrigin.x + glyph.anchor.x,
+                context.drawGlyph (glyph.glyphCode, AffineTransform::translation (lineOrigin.x + glyph.anchor.x +15,
                                                                                   lineOrigin.y + glyph.anchor.y));
             }
         }

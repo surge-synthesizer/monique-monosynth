@@ -17,6 +17,51 @@
 
 // TODO replace the pointers to the base by references to the real params
 
+#define SHORTCUT_SHIFT "\nNote: Global shortcut: SHIFT."
+
+#define SHORTCUT_CTRL  "\nNote: Global shortcut: CTRL."
+
+#define EXAMPLE_START  "\nExample:\n----------\n"
+
+#define LINE__  "--------------------\n"
+
+#define GENERAL_MOD_EXAMPLE \
+  "\n" \
+  "General Modulation Example:\n" \
+  "----------------------------------------------------------------------\n" \
+  "CUTOFF                   = 50 (MIN:0, MAX:100)\n" \
+  "CUTOFF-MODULATION        = +50%\n" \
+  "Current ADSR-LFO-MIX amp = 50%\n" \
+  "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n" \
+  "Result CUTOFF            = 75\n" \
+  "======================================================================\n" \
+  "Formula: CUTOFF + (MAX-CUTOFF) * CUTOFF-MODULATION * ADSR-LFO-MIX"
+
+#define NO_MOD_EFFECT "(Has no effect if MODUL is turned off)\n"
+
+#define VALUES_EDITABLE_ON_TOP "\nNote: to edit the value via keyboard click on the top label."
+
+
+#define GERNERAL_SIGNAL_FLOW         "\n" \
+				     "\n" \
+                                     "General signal flow:\n" \
+                                     "--------------------\n" \
+                                     "OSC's                -> FILTER 1 INPUT-> FILTER 1 FX-> FILTER 1 OUT-> MIX\n" \
+                                     "OSC's or FILTER 1 OUT-> FILTER 2 INPUT-> ..........................-> MIX\n" \
+                                     "OSC's or FILTER 2 OUT-> FILTER 3 INPUT-> ..........................-> MIX\n" \
+                                     "MIX -> EQ -> FX -> YOUR EARS!"
+#define GERNERAL_SLIDER_INFORMATION  "\n\n" \
+                                     "_________________________________________________________________________\n" \
+				     "\n" \
+                                     "General slider info:\n" \
+                                     "--------------------\n" \
+                                     "To edit the value in velocity mode: press CTRL & drag the slider.\n" \
+                                     "Double click the slider to return to the factory default value.\n" \
+				     "To set the current state as return value: click the right mouse button and select 'set current value as new return'." \
+				     GERNERAL_SIGNAL_FLOW
+
+// VIRTUALISIERUNG: OSCI, TOP BUTTON
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -54,11 +99,11 @@ class WAVESlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -90,7 +135,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -107,7 +152,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -130,6 +175,41 @@ class WAVESlConfig : public ModulationSliderConfigBase
             return "%";
         else
             return "wav";
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Change the WAVE of this oscillator. \n"
+               "Sine (LEFT), Square, Saw, Noise (RIGHT)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "OSC 1: Turns FM modulations on and off (except FM amount, FM amount is always controlled by the back slider).\n"
+               "\n"
+               "OSC 2 & 3: Turns sync to OSC 1 on and off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between FM amount and WAVE form sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Add an amount of the FM oscillator to this oscillator.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
     }
 
 public:
@@ -168,7 +248,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -185,11 +265,11 @@ class OSCSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -256,7 +336,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -285,6 +365,46 @@ class OSCSlConfig : public ModulationSliderConfigBase
             return "%";
         else
             return "#";
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Detune this oscillator to the currently running note in semitones.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns TUNE modulation by LFO on and off.\n"
+               "(OSC 1 uses LFO 1 (from FILTER 1), OSC 2 uses LFO 2... ."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between TUNE and LFO modulation range sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the LFO modulation range which will be added to the current TUNE.\n"
+               "\n"
+               "A modulation amount larger 0 will increase the TUNE. Values smaller 0 decrease.\n"
+
+               EXAMPLE_START
+               "TUNE = 0, MODULATION = +100%\n"
+               "Current LFO amp = 50%\n"
+               "Result TUNE = 12\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
     }
 
 public:
@@ -336,11 +456,11 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -373,7 +493,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -390,7 +510,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -399,17 +519,50 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Set the frequency of the FM oscillator.\n"
+               "Zero = OSC 1 frequency.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns sync to OSC 1 on and off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between FM FREQUENCY and FM SWING sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the FM SWING amount. Values larger zero switch the FM oscillator phase smoothly faster and faster.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FMFreqSlConfig()
@@ -442,7 +595,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -459,11 +612,11 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -496,7 +649,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -504,7 +657,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "OSC PLUS";
+        return "OSC PLUSE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -531,9 +684,76 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define pulses for each oscillator.\n"
+               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
+               "\n"
+               LINE__
+               "\n"
+               "Values larger zero insert cycle breaks of the duration of one OSC cycle.\n"
+               "Examples:\n"
+               "PULSE = 0 = --- _|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_ ---\n"
+               "\n"
+               "PULSE = 1 = --- _|‾|_____|‾|_____|‾|_____|‾|_____|‾|_____ ---\n"
+               "\n"
+               "PULSE = 2 = --- _|‾|_________|‾|_________|‾|_________|‾|_ ---\n"
+               "\n"
+               LINE__
+               "\n"
+               "Values smaller zero change the cycle duration. One becomes longer, the next one shorter.\n"
+               "Examples:\n"
+               "PULSE =   0 = --- _|‾‾‾‾‾‾|______|‾‾‾‾‾‾|______|‾‾‾‾‾‾|__ ---\n"
+               "\n"
+               "PULSE =  -1 = --- _|‾‾‾‾‾|_______|‾‾‾‾‾|_______|‾‾‾‾‾|___ ---\n"
+               "\n"
+               "PULSE = -12 = --- _|‾|___________|‾|___________|‾|_______ ---\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns FM SHOT for each oscillator on and off.\n"
+               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
+               "\n"
+               "If FM SHOT is enabled only ONE cycle of the FM oscillator will be added to the OSC cylce and than it waits for a new cycle of the modulated OSC."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between OSC SWITCH and OSC PULSE sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define phase switches for each oscillator.\n"
+               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
+               "\n"
+               LINE__
+               "\n"
+               "Values larger zero switches the phase after the defined number of cycles.\n"
+               "Examples:\n"
+               "PULSE = 0 = --- _|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_ ---\n"
+               "\n"
+               "PULSE = 1 = --- _|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_ ---\n"
+               "\n"
+               "PULSE = 3 = --- _|‾|_|‾|_|‾|_,_|‾|_|‾|_|‾'‾|_|‾|_|‾|_|‾|_ ---\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FMAmountSlConfig()
@@ -574,7 +794,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -598,7 +818,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -652,7 +872,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -682,6 +902,48 @@ class InputSlConfig : public ModulationSliderConfigBase
         }
 
         return input_text;
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the input amount for an OSC into this FILTER.\n"
+               "(Will be the sustain level if 'FIX IN' is turned off)\n"
+               "\n"
+               "FILTER 2 & 3:\n"
+               "On the left side of the slider (minus) the raw OSC is used as input into the FILTER.\n"
+               "If the slider is on the right side (plus) the filtered result of the OSC through the FILTER before is used as input.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns 'FIX IN' on and off.\n"
+               "\n"
+               "If 'FIX IN' is enabled the INPUT slider just defines the input amount.\n"
+               "If disabled the INPUT slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between INPUT/SUSTAIN and ADR PRESET sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set an ADR curve to control the input amount for an OSC into this FILTER.\n"
+               "(Will have no effect if 'FIX IN' is enabled)\n"
+               "\n"
+               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
+               "The INPUT slider amount will be the sustain level for your curve.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
     }
 
 public:
@@ -736,11 +998,11 @@ class GForceSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -773,7 +1035,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -790,7 +1052,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -799,17 +1061,51 @@ class GForceSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Set the amount of the filter DISTORTION.\n"
+               "(Also processed if 'PASS' as filter type is selected)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns DISTORTION MODULATION by ADSR-LFO-MIX on or off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between DISTORTION and DISTORTION MODULATION sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the DISTORTION MODULATION amount.\n"
+               NO_MOD_EFFECT
+               GENERAL_MOD_EXAMPLE
+               "\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     GForceSlConfig( int id_ )
@@ -835,6 +1131,8 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     Parameter*const attack;
     Parameter*const max_attack_time;
 
+    const bool is_main_adsr;
+
     //==============================================================================
     // BASIC SLIDER TYPE
     bool get_is_linear() const noexcept override
@@ -855,11 +1153,11 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -880,19 +1178,19 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -909,7 +1207,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -943,16 +1241,67 @@ class FAttackSlConfig : public ModulationSliderConfigBase
         return (entered_value_-MIN_ENV_TIMES)/max_attack_time->get_value();
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return "Set the ATTACK time in ms.\n"
+                   "\n"
+                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+        else
+        {
+            return "Set the ATTACK time in ms.\n"
+                   "\n"
+                   "Possible targets: MOD-MIX\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between ATTACK and MAX ATTACK sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the maximum ATTACK time for the front slider.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+
 public:
     FAttackSlConfig( int id_ )
         :
         attack( &(GET_DATA(filter_datas[id_]).env_data->attack) ),
-        max_attack_time( &(GET_DATA(filter_datas[id_]).env_data->max_attack_time) )
+        max_attack_time( &(GET_DATA(filter_datas[id_]).env_data->max_attack_time) ),
+        is_main_adsr(false)
     {}
     FAttackSlConfig()
         :
         attack(  &(GET_DATA(synth_data).env_data->attack) ),
-        max_attack_time(  &(GET_DATA(synth_data).env_data->max_attack_time) )
+        max_attack_time(  &(GET_DATA(synth_data).env_data->max_attack_time) ),
+        is_main_adsr(true)
     {}
 
     JUCE_LEAK_DETECTOR (FAttackSlConfig)
@@ -970,6 +1319,8 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 {
     Parameter*const decay;
     Parameter*const max_decay_time;
+
+    const bool is_main_adsr;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -991,11 +1342,11 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1016,19 +1367,19 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1045,7 +1396,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1081,16 +1432,67 @@ class FDecaySlConfig : public ModulationSliderConfigBase
         return (entered_value_)/max_decay_time->get_value();
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return "Set the DECAY time in ms.\n"
+                   "\n"
+                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+        else
+        {
+            return "Set the DECAY time in ms.\n"
+                   "\n"
+                   "Possible targets: MOD-MIX\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between DECAY and MAX DECAY sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the maximum DECAY time for the front slider.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+
 public:
     FDecaySlConfig( int id_ )
         :
         decay( &(GET_DATA(filter_datas[id_]).env_data->decay) ),
-        max_decay_time( &(GET_DATA(filter_datas[id_]).env_data->max_decay_time) )
+        max_decay_time( &(GET_DATA(filter_datas[id_]).env_data->max_decay_time) ),
+        is_main_adsr(false)
     {}
     FDecaySlConfig()
         :
         decay( &(GET_DATA(synth_data).env_data->decay) ),
-        max_decay_time( &(GET_DATA(synth_data).env_data->max_decay_time) )
+        max_decay_time( &(GET_DATA(synth_data).env_data->max_decay_time) ),
+        is_main_adsr(true)
     {}
 
     JUCE_LEAK_DETECTOR (FDecaySlConfig)
@@ -1107,6 +1509,8 @@ public:
 class FSustainSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const sustain;
+
+    const bool is_main_adsr;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1128,11 +1532,11 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1141,12 +1545,12 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return max_decay_time;
+    return max_decay_time;
     }
     */
 
@@ -1155,19 +1559,19 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1180,11 +1584,11 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "RANGE";
+    return "RANGE";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1211,9 +1615,51 @@ class FSustainSlConfig : public ModulationSliderConfigBase
         return entered_value_/100;
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return "Set the SUSTAIN level in percent.\n"
+                   "\n"
+                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+        else
+        {
+            return "Set the SUSTAIN level in percent.\n"
+                   "\n"
+                   "Possible targets: MOD-MIX\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
+    }
+    */
+
 public:
-    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ) {}
-    FSustainSlConfig() : sustain( &(GET_DATA(synth_data).env_data->sustain) ) {}
+    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ), is_main_adsr(false) {}
+    FSustainSlConfig() : sustain( &(GET_DATA(synth_data).env_data->sustain) ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1229,6 +1675,8 @@ public:
 class FSustainTimeSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const sustain_time;
+
+    const bool is_main_adsr;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1250,11 +1698,11 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1263,12 +1711,12 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return max_decay_time;
+    return max_decay_time;
     }
     */
 
@@ -1277,19 +1725,19 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1302,11 +1750,11 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MAX T(ms)";
+    return "MAX T(ms)";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1338,9 +1786,55 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         return entered_value_/10000;
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return "Set the SUSTAIN time in ms.\n"
+                   "\n"
+                   "If the slider is set to max, the sustain time is unlimited (until note off).\n"
+                   "\n"
+                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+        else
+        {
+            return "Set the SUSTAIN time in ms.\n"
+                   "\n"
+                   "If the slider is set to max, the sustain time is unlimited (until note off)\n."
+                   "\n"
+                   "Possible targets: MOD-MIX\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
+    }
+    */
+
 public:
-    FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ) {}
-    FSustainTimeSlConfig() : sustain_time( &(GET_DATA(synth_data).env_data->sustain_time) ) {}
+    FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ), is_main_adsr(false) {}
+    FSustainTimeSlConfig() : sustain_time( &(GET_DATA(synth_data).env_data->sustain_time) ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
@@ -1357,6 +1851,8 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const release;
     Parameter*const max_release_time;
+
+    const bool is_main_adsr;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -1378,11 +1874,11 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1403,19 +1899,19 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1432,7 +1928,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1466,17 +1962,68 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
         return (entered_value_-MIN_ENV_TIMES)/max_release_time->get_value();
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return "Set the RELEASE time in ms.\n"
+                   "\n"
+                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+        else
+        {
+            return "Set the RELEASE time in ms.\n"
+                   "\n"
+                   "Possible targets: MOD-MIX\n"
+                   "\n"
+                   VALUES_EDITABLE_ON_TOP
+                   GERNERAL_SLIDER_INFORMATION
+
+                   ;
+        }
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between RELEASE and MAX RELEASE sliders.\n"
+               SHORTCUT_SHIFT
+
+               ;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the maximum RELEASE time for the front slider.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+
 public:
     FReleaseSlConfig( int id_ )
         :
         release( &(GET_DATA(filter_datas[id_]).env_data->release) ),
-        max_release_time( &(GET_DATA(filter_datas[id_]).env_data->max_release_time) )
+        max_release_time( &(GET_DATA(filter_datas[id_]).env_data->max_release_time) ),
+        is_main_adsr(false)
     {}
 
     FReleaseSlConfig()
         :
         release( &(GET_DATA(synth_data).env_data->release) ),
-        max_release_time( &(GET_DATA(synth_data).env_data->max_release_time) )
+        max_release_time( &(GET_DATA(synth_data).env_data->max_release_time) ),
+        is_main_adsr(true)
     {}
 
     JUCE_LEAK_DETECTOR (FReleaseSlConfig)
@@ -1499,7 +2046,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1516,11 +2063,11 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1529,12 +2076,12 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return UNDEFINED_SLIDER_STYLE;
+    return UNDEFINED_SLIDER_STYLE;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     */
 
@@ -1543,19 +2090,19 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1568,11 +2115,11 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1581,15 +2128,46 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the used MODULATION MIX of ADSR & LFO.\n"
+               "\n"
+               "If the slider is on the left side only the ADSR amp will be used as modulation signal.\n"
+               "On the right side only the LFO amp will be uesd.\n"
+               "In the middle 50% of the ADSR and 50% of the LFO will be used as modulator.\n"
+               "\n"
+               "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, VOLUME\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
     }
     */
 
@@ -1622,7 +2200,7 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1639,11 +2217,11 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1652,12 +2230,12 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return UNDEFINED_SLIDER_STYLE;
+    return UNDEFINED_SLIDER_STYLE;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     */
 
@@ -1666,19 +2244,19 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_IS_ON_OFF;
+    return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return sync;
+    return sync;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "IN-SYNC";
+    return "IN-SYNC";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1691,11 +2269,11 @@ class LFOSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1763,6 +2341,36 @@ class LFOSlConfig : public ModulationSliderConfigBase
             return "#";
     }
 
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Set the LFO speed.\n"
+               "\n"
+               "If the LFO speed is slow (note durations) the LFO is always synced to the current BPM.\n"
+               "If the LFO speed is fast (note values) the LFO is not synced to anything.\n"
+               "\n"
+               "Possible targets: OSC, MODULATION-MIX\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
+    }
+    */
+
 public:
     LFOSlConfig( int id_ )
         :
@@ -1793,7 +2401,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1810,11 +2418,11 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1847,7 +2455,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1864,7 +2472,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1873,17 +2481,51 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the filter CUTOFF (filter frequency) in percent.\n"
+               "(Has no effect if 'PASS' as filter type is selected)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns CUTOFF MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between CUTOFF and CUTOFF MODULATION sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the CUTOFF MODULATION amount.\n"
+               NO_MOD_EFFECT
+               GENERAL_MOD_EXAMPLE
+               "\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FCutoffSLConfig( int id_ )
@@ -1913,7 +2555,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1930,11 +2572,11 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -1967,7 +2609,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -1984,7 +2626,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -1993,17 +2635,51 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the filter RESONANCE (boost frequencys at the edge of the filter CUTOFF) in percent.\n"
+               "(Has no effect if 'PASS' as filter type is selected)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns RESONANCE MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between RESONANCE and RESONANCE MODULATION sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the RESONANCE MODULATION amount.\n"
+               NO_MOD_EFFECT
+               GENERAL_MOD_EXAMPLE
+               "\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FResonanceSLConfig( int id_ )
@@ -2033,7 +2709,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2050,11 +2726,11 @@ class FGainSLConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2087,7 +2763,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2104,7 +2780,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2113,17 +2789,51 @@ class FGainSLConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the filter GAIN (boost the filter frequencys) in percent.\n"
+               "(Has no effect if 'PASS' as filter type is selected)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns GAIN MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between GAIN and GAIN MODULATION sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the GAIN MODULATION amount.\n"
+               NO_MOD_EFFECT
+               GENERAL_MOD_EXAMPLE
+               "\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FGainSLConfig( int id_ )
@@ -2153,7 +2863,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2170,11 +2880,11 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2207,7 +2917,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2224,7 +2934,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2233,17 +2943,51 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the filter OUTPUT VOLUME in percent.\n"
+               "\n"
+               "Target: EQ bank, BOOST (of the next filter)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns VOLUME MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between VOLUME and VOLUME MODULATION sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set the VOLUME MODULATION amount.\n"
+               NO_MOD_EFFECT
+               GENERAL_MOD_EXAMPLE
+               "\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FVolumeSlConfig( int id_ )
@@ -2275,7 +3019,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2292,11 +3036,11 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2305,12 +3049,12 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return MODULATION_SLIDER;
+    return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return speed;
+    return speed;
     }
     */
 
@@ -2331,7 +3075,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2358,7 +3102,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     */
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2379,7 +3123,38 @@ class BPMSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the internal speed of Monique in BPM.\n"
+               "(PLUGIN: has no effect if SYNC is turned on)\n"
+               "(STANALONE: has no effect if SYNC is turned on and a MIDI clock is continuously received)\n"
+               "\n"
+               "Affected: ARPEGGIATOR, LFO (if slow) (OSC's and FM if LFO MOD is turned on)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns SPEED SYNC on or off.\n"
+               "\n"
+               "If disabled you can define your own speed ignoring the host speed (plugin) or the MIDI-Clock (standalone)."
+               ;
+    }
+    /*
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
     }
     */
 
@@ -2412,7 +3187,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2429,11 +3204,11 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2442,12 +3217,12 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return MODULATION_SLIDER;
+    return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return speed_multi;
+    return speed_multi;
     }
     */
 
@@ -2456,19 +3231,19 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_IS_ON_OFF;
+    return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "x1";
+    return "x1";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2481,7 +3256,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     */
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2503,6 +3278,33 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     {
         return "BPM";
     }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the SPEED MULTIPLIER/DIVISOR.\n"
+               "\n"
+               "Affected: ARPEGGIATOR, LFO (if slow) (OSC's and FM if LFO MOD is turned on)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
+    }
+    */
 
 public:
     SpeedMultiSlConfig()
@@ -2531,7 +3333,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2548,11 +3350,11 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2561,12 +3363,12 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return MODULATION_SLIDER;
+    return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return speed_multi;
+    return speed_multi;
     }
     */
 
@@ -2575,19 +3377,19 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_IS_ON_OFF;
+    return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "x1";
+    return "x1";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2596,15 +3398,15 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_text() const noexcept override
     {
-        return speed_multi_to_text( speed_multi->get_scaled_value() );
+    return speed_multi_to_text( speed_multi->get_scaled_value() );
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return true;
+    return true;
     }
     */
 
@@ -2633,7 +3435,34 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the OCTAVE OFFSET related to current root note (e.g. pressed on keyboard).\n"
+               "\n"
+               "Affected: OSC's, FM"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+    return "";
     }
     */
 
@@ -2667,7 +3496,7 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2691,10 +3520,10 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_max_value() const noexcept override
     {
-        if( id == 0 )
-            return 0;
-        else
-            return DONT_OVERRIDE_SLIDER_VALUE;
+    if( id == 0 )
+    return 0;
+    else
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2715,19 +3544,19 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2744,7 +3573,7 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2753,17 +3582,53 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the PEAK BOOST amount of the filter output.\n"
+               "\n"
+               "FILTER 2 & 3: boosts or limits the filter ouput by peaks in the output of the filter before."
+               " The boost attack & release time become more agressive with an larger value."
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
     {
         return "";
     }
     */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between PEAK BOOST and SOFT CLIPPING sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define the SOFT CLIPPING amount of the filter output.\n"
+               "\n"
+               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
+               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FCompressorSlConfig( int id_ )
@@ -2794,7 +3659,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2811,11 +3676,11 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2824,12 +3689,12 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -2838,19 +3703,19 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2863,11 +3728,11 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2876,17 +3741,52 @@ class FColourSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the SHAPE amount of the FX input (after EQ bank).\n"
+               "\n"
+               "Shaping makes some details in the sound more 'visible'."
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
     {
         return "";
     }
     */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between PEAK BOOST and SOFT CLIPPING sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define the SOFT CLIPPING amount of the filter output.\n"
+               "\n"
+               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
+               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     FColourSlConfig()
@@ -2914,7 +3814,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2931,11 +3831,11 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -2944,12 +3844,12 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -2958,19 +3858,19 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -2983,11 +3883,11 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -2996,13 +3896,39 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the ROOM of the reverb effect.\n"
+               "(Has no effect if FX MIX is set to zero)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -3034,7 +3960,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3051,11 +3977,11 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3064,12 +3990,12 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -3078,19 +4004,19 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3103,11 +4029,11 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3116,13 +4042,39 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the WIDTH of the reverb effect.\n"
+               "(Has no effect if FX MIX is set to zero)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -3154,7 +4106,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3171,11 +4123,11 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3184,12 +4136,12 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -3198,19 +4150,19 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3223,11 +4175,11 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3236,13 +4188,39 @@ class RDrySlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the WET/DRY amount of the reverb effect.\n"
+               "(Has no effect if FX MIX is set to zero)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -3274,7 +4252,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3291,11 +4269,11 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3304,12 +4282,12 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -3318,19 +4296,19 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3343,11 +4321,11 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3356,13 +4334,39 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the DELAY time of the delay effect.\n"
+               "(Has no effect if FX MIX is set to zero)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -3394,7 +4398,7 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3411,11 +4415,11 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3424,12 +4428,12 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -3438,19 +4442,19 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3463,11 +4467,11 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3476,13 +4480,43 @@ class BypassConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the amount of the FX input and output mix.\n"
+               "\n"
+               "Values larger zero add the FX output to the FX input (EQ output).\n(If the value is zero the FX section is bypassed)\n"
+               "\n"
+               "Affected:     REVERB, DELAY, CHORUS\n"
+               "NOT Affected: SHAPE\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -3515,7 +4549,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3532,11 +4566,11 @@ class VolumeConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3557,19 +4591,19 @@ class VolumeConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3586,7 +4620,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3595,17 +4629,52 @@ class VolumeConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the final output volume.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+
+
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return ""
+    }
+    */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between MASTER VOLUME and SOFT CLIPPING sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define the SOFT CLIPPING amount of the final output.\n"
+               "\n"
+               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
+               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     VolumeConfig()
@@ -3639,7 +4708,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3656,11 +4725,11 @@ class CModSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3716,7 +4785,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3736,9 +4805,49 @@ class CModSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the CHORUS amount in percent.\n"
+               "(Will be the sustain level if 'FIX' is turned off)\n"
+               "(Has no effect if FX MIX is set to zero)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns 'FIX' on and off.\n"
+               "\n"
+               "If 'FIX IN' is enabled the CHORUS slider just defines the CHORUS amount.\n"
+               "If disabled the CHORUS slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between CHORUS amount and CHORUS ADR sliders.\n"
+
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set an ADR curve to control the CHORUS amount.\n"
+               "(Has no effect if FIX is enabled)\n"
+               "\n"
+               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
+               "The CHORUS slider amount will be the sustain level for your curve.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     CModSlConfig()
@@ -3774,7 +4883,7 @@ class GlideConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3791,11 +4900,11 @@ class GlideConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3828,7 +4937,7 @@ class GlideConfig : public ModulationSliderConfigBase
     /*
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -3845,7 +4954,7 @@ class GlideConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3864,7 +4973,7 @@ class GlideConfig : public ModulationSliderConfigBase
         }
         else
         {
-	    const float sr = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate();
+            const float sr = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate();
             value = samplesToMsFast(glide->get_value()*sr/2,sr);
         }
         return String(round0(value));
@@ -3872,6 +4981,45 @@ class GlideConfig : public ModulationSliderConfigBase
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the NOTE GLIDE time in ms.\n"
+               "(Has no effect if the ARPEGGIATOR is turned off)\n"
+               "\n"
+               "Values larger zero will glide more and more smoothly from the last note to the current one.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Binds the steps of the ARPEGGIATOR.\n"
+               "(Has no effect if the ARPEGGIATOR is turned off)\n"
+               "\n"
+               "If enabled all steps without an empty step between will be handled as one note (no envelope retrigger)."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between NOTE GLIDE time and VELOCITY GLIDE sliders.\n"
+
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define the VELOCITY GLIDE time in ms.\n"
+               "\n"
+               "Values larger zero will glide more and more smoothly from the last velocity to the current one.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
     }
 
 public:
@@ -3903,7 +5051,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3920,11 +5068,11 @@ class ShuffleConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -3933,12 +5081,12 @@ class ShuffleConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return is_on;
+    return is_on;
     }
     */
 
@@ -3970,11 +5118,11 @@ class ShuffleConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -3992,6 +5140,38 @@ class ShuffleConfig : public ModulationSliderConfigBase
     {
         return "th";
     }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the SHUFFLE amount of the ARPEGGIATOR STEPS in note durations.\n"
+               "(Has no effect if the ARPEGGIATOR is turned off)\n"
+               "\n"
+               "Values larger zero makes the duration of each second ARPEGGIATOR step shorter and the step before longer.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns the ARPEGGIATOR on or off.\n"
+               "\n"
+               "If enabled notes will automatically triggered at the position of the enabled ARPEGGIATOR STEPS."
+
+               ;
+    }
+    /*
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "";
+    }
+    */
 
 public:
     ShuffleConfig()
@@ -4028,7 +5208,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4045,11 +5225,11 @@ class EQSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -4104,7 +5284,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4113,17 +5293,58 @@ class EQSlConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+    return "";
     }
     */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the BAND BOOST amount for this frequency.\n"
+               "(Will be the sustain level if 'FIX' is turned off)\n"
+               "\n"
+
+               "Values larger zero will boost this band. Values smaller zero will reduce this band"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "Turns 'FIX' on and off.\n"
+               "\n"
+               "If 'FIX' is enabled the BAND BOOST slider just defines the boost amount.\n"
+               "If disabled the BAND BOOST slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
+
+               ;
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between BAND BOOST and ADR PRESET sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Set an ADR curve to control the band boost amount for this frequency.\n"
+               "(Will have no effect if 'FIX' is enabled)\n"
+               "\n"
+               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
+               "The BAND BOOST slider amount will be the sustain level for your curve.\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
 
 public:
     EQSlConfig( int id_ )
@@ -4164,7 +5385,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4181,11 +5402,11 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -4206,19 +5427,19 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -4235,7 +5456,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4258,6 +5479,42 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
             return "%";
         else
             return "#";
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Define the NOTE OFFSET for this step in semitones.\n"
+               "(Has no effect if the ARPEGGIATOR is turned off)\n"
+               "\n"
+               "See: NOTE-G (NOTE GLIDE) (left)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "SEE MAINWINDOW";
+    }
+    */
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "Switch between NOTE OFFSET and VELOCITY OFFSET sliders.\n"
+               SHORTCUT_SHIFT;
+    }
+    StringRef get_tootip_back() const noexcept override
+    {
+        return "Define the VELOCITY amount for this step.\n"
+               "(Has no effect if the ARPEGGIATOR is turned off)\n"
+               "\n"
+               "See: VELO-G (VELOCITY GLIDE) (left)\n"
+
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
     }
 
 public:
@@ -4289,7 +5546,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     bool get_is_linear() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4306,11 +5563,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     int get_override_front_min_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     int get_override_front_max_value() const noexcept override
     {
-        return DONT_OVERRIDE_SLIDER_VALUE;
+    return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
 
@@ -4319,12 +5576,12 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-        return VALUE_SLIDER_2;
+    return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return clipping;
+    return clipping;
     }
     */
 
@@ -4333,19 +5590,19 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return nullptr;
+    return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "";
+    return "";
     }
     float get_top_button_amp() const noexcept override
     {
-        return NO_TOP_BUTTON_AMP;
+    return NO_TOP_BUTTON_AMP;
     }
     */
 
@@ -4358,11 +5615,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "";
+    return "";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+    return false;
     }
     */
 
@@ -4371,13 +5628,57 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
     }
     String get_center_value() const noexcept override
     {
-        return "";
+    return "";
     }
     StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    StringRef get_tootip_front() const noexcept override
+    {
+        return "Morph between two programs, one the LEFT side and one on the RIGHT side.\n"
+               "\n"
+	       "\n"
+               "OSC Morph Group:\n"
+	       "Morphs: OSC's, FM\n"
+	       "Except: OSC SWITCH, OSC PULSE, BUTTONS\n"
+	       "\n"
+               "FLT Morph Group:\n"
+	       "Morphs: FILTERS\n"
+	       "Except: FILTER TYPE, BUTTONS\n"
+	       "\n"
+	       "FX Morph Group:\n"
+	       "Morphs: EQ BANK, SHAPE, REVERB, DELAY, CHORUS, FX-MIX, MASTER VOLUME, ADR PRESETS\n"
+	       "Except: BUTTONS\n"
+	       "\n"
+	       "ARP Morph Group:\n"
+	       "Morphs: (ARPEGGIATOR), SHUFFLE, NOTE-G, VELO-G, STEP NOTE, STEP VELOCITY\n"
+	       "Except: BUTTONS\n"
+	       "\n"
+	       "\n"
+	       "With the MORPH EDITOR you can load each of your available programs to the left or right side of each morph group."
+               GERNERAL_SLIDER_INFORMATION
+
+               ;
+    }
+    /*
+    StringRef get_tootip_top() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_bottom() const noexcept override
+    {
+        return "";
+    }
+    StringRef get_tootip_back() const noexcept override
     {
         return "";
     }
@@ -4392,84 +5693,6 @@ public:
 
     JUCE_LEAK_DETECTOR (MorphSLConfig)
 };
-
-/*
-        if (sliderThatWasMoved == sl_morph_1)
-    {
-        //[UserSliderCode_sl_morph_1] -- add your slider handling code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-        &synth_data->morhp_states[0],
-        sliderThatWasMoved
-        )
-        else
-    {
-        synth_data->morph( 0, sl_morph_1->getValue()/1000, true );
-    }
-        show_info_popup( sliderThatWasMoved, synth_data->morhp_states[0].midi_control );
-        //[/UserSliderCode_sl_morph_1]
-    }
-        else if (sliderThatWasMoved == sl_morph_2)
-    {
-        //[UserSliderCode_sl_morph_2] -- add your slider handling code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-        &synth_data->morhp_states[1],
-        sliderThatWasMoved
-        )
-        else
-    {
-        synth_data->morph( 1, sl_morph_2->getValue()/1000, true );
-    }
-        show_info_popup( sliderThatWasMoved, synth_data->morhp_states[1].midi_control );
-        //[/UserSliderCode_sl_morph_2]
-    }
-        else if (sliderThatWasMoved == sl_morph_3)
-    {
-        //[UserSliderCode_sl_morph_3] -- add your slider handling code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-        &synth_data->morhp_states[2],
-        sliderThatWasMoved
-        )
-        else
-    {
-        synth_data->morph( 2, sl_morph_3->getValue()/1000, true );
-    }
-        show_info_popup( sliderThatWasMoved, synth_data->morhp_states[2].midi_control );
-        //[/UserSliderCode_sl_morph_3]
-    }
-        else if (sliderThatWasMoved == sl_morph_4)
-    {
-        //[UserSliderCode_sl_morph_4] -- add your slider handling code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-        &synth_data->morhp_states[3],
-        sliderThatWasMoved
-        )
-        else
-    {
-        synth_data->morph( 3, sl_morph_4->getValue()/1000, true );
-    }
-        show_info_popup( sliderThatWasMoved, synth_data->morhp_states[3].midi_control );
-        //[/UserSliderCode_sl_morph_4]
-    }
-        else if (sliderThatWasMoved == sl_morhp_mix)
-    {
-        //[UserSliderCode_sl_morhp_mix] -- add your slider handling code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-        &synth_data->linear_morhp_state,
-        sliderThatWasMoved
-        )
-        else
-    {
-        synth_data->linear_morhp_state = sl_morhp_mix->getValue()/1000;
-    }
-        show_info_popup( sliderThatWasMoved, synth_data->linear_morhp_state.midi_control );
-        //[/UserSliderCode_sl_morhp_mix]
-    }
-        */
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
 

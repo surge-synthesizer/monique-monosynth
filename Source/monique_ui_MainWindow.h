@@ -115,6 +115,7 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
+    TooltipWindow tooltipWindow;
     //[/UserVariables]
 
     //==============================================================================

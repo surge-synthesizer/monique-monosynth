@@ -11,23 +11,23 @@ CHANGES 0.6
 - adjust the ui size to 95% of the size of the desktop if the desktop is to small for the current/tryed scale
 - remove audio options from plugin - add vst and versions info instead
 - change shuffle: snap to note durations
-
+- add modulation amount to automatable parameters (plugin)
+- add tooltips
 
 TODO:
-- add: morph ints
+- option to keep the arp on or of as global var!
+
+- glide time and morph time to settings
+
 - add-back: morph toggles
 - add-back set from current for all
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - set from current updated the morph group a bit... this is uncorrect
 
-- add: modulation amounts as automation params- add: midi bank select
-
 - add: midi mod wheel; pitch wheel support
 - add: panic
 - add: modwheel to ui
 - close devices
-
-- add tooltips
 
 - do not process the unused bands
 
@@ -35,6 +35,9 @@ TODO:
 
 - osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
 - osc square and saw going out of center on higher octaves
+- osc mod off turns not of negative pulse
+
+- move the learn button into the midi io editor and rename it to midi
 
 QUESTS
 - should have buttons which enables ADSR preset curves have an own colour? 

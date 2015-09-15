@@ -86,6 +86,9 @@ private:
     // ==============================================================================
     /// AUTOMATION PARAMETERS
 #ifdef IS_PLUGIN
+    Array< Parameter* > automateable_parameters;
+    void init_automatable_parameters() noexcept;
+    
     int getNumParameters() override;
     bool isParameterAutomatable (int parameterIndex) const override;
     float getParameter ( int index_ ) override;

@@ -375,13 +375,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     }
 
     this->setWantsKeyboardFocus(false);
-    this->setRepaintsOnMouseActivity(false);
     this->setOpaque(true);
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         Component* comp = getChildComponent(i);
         comp->setWantsKeyboardFocus(false);
-        comp->setRepaintsOnMouseActivity(false);
         comp->setOpaque(true);
     }
     drag_pad->setOpaque(false);

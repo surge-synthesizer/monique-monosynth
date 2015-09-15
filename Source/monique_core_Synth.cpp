@@ -2902,6 +2902,7 @@ inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, 
     {
         flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
+	flt_2.r = 0;
     }
 }
 inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
@@ -2925,6 +2926,7 @@ inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_,
     {
         flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
+	flt_2.r = 0;
     }
 }
 inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept

@@ -96,6 +96,12 @@ noexcept
                 front_slider_->setRange( min, max, interval );
             }
         }
+
+        StringRef tooltip = slider_config_->get_tootip_front();
+        if( not tooltip.isEmpty() )
+        {
+            front_slider_->setTooltip( tooltip.text );
+        }
     }
 
     // BACK - SECOND AND MOD
@@ -157,6 +163,18 @@ noexcept
         bottom_button_->setButtonText( slider_config_->get_bottom_button_text().text );
         bottom_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
         bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
+
+	StringRef tooltip = slider_config_->get_tootip_bottom();
+        if( not tooltip.isEmpty() )
+        {
+            bottom_button_->setTooltip( tooltip.text );
+        }
+
+        tooltip = slider_config_->get_tootip_back();
+        if( not tooltip.isEmpty() )
+        {
+            back_slider_->setTooltip( tooltip.text );
+        }
     }
 
     if( top_parameter )
@@ -167,6 +185,12 @@ noexcept
         top_button_->setButtonText( slider_config_->get_top_button_text().text );
         top_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
         top_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
+
+	StringRef tooltip = slider_config_->get_tootip_top();
+        if( not tooltip.isEmpty() )
+        {
+            top_button_->setTooltip( tooltip.text );
+        }
     }
 
     if( has_bottom_label )
@@ -187,8 +211,8 @@ void Monique_Ui_DualSlider::show_view_mode()
     {
         slider_modulation->setOpaque( not is_in_ctrl_mode );
         slider_modulation->setEnabled( is_in_ctrl_mode );
-	
-	is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
+
+        is_in_ctrl_mode ? slider_value->toBack() : slider_modulation->toBack();
     }
     {
         slider_value->setOpaque( is_in_ctrl_mode or not slider_modulation );
@@ -509,7 +533,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
-            String::empty));
+                                              String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (true, true, false);
@@ -573,7 +597,6 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         getChildComponent(i)->setWantsKeyboardFocus(false);
-        getChildComponent(i)->setRepaintsOnMouseActivity(false);
     }
 
     show_view_mode();
