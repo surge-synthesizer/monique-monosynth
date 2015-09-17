@@ -504,120 +504,120 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     filter_type_5_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_2 = new TextButton (String::empty));
-    button_sequence_2->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_2->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener (this);
     button_sequence_2->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_3 = new TextButton (String::empty));
-    button_sequence_3->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_3->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener (this);
     button_sequence_3->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_4 = new TextButton (String::empty));
-    button_sequence_4->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_4->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener (this);
     button_sequence_4->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_4->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_5 = new TextButton (String::empty));
-    button_sequence_5->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_5->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener (this);
     button_sequence_5->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_5->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_6 = new TextButton (String::empty));
-    button_sequence_6->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_6->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener (this);
     button_sequence_6->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_6->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_7 = new TextButton (String::empty));
-    button_sequence_7->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_7->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener (this);
     button_sequence_7->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_7->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_8 = new TextButton (String::empty));
-    button_sequence_8->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_8->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener (this);
     button_sequence_8->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_8->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
-    button_sequence_9->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_9->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener (this);
     button_sequence_9->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_9->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_10 = new TextButton (String::empty));
-    button_sequence_10->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_10->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener (this);
     button_sequence_10->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_10->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_10->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_11 = new TextButton (String::empty));
-    button_sequence_11->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_11->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener (this);
     button_sequence_11->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_11->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_11->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_12 = new TextButton (String::empty));
-    button_sequence_12->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_12->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener (this);
     button_sequence_12->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_12->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_12->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_13 = new TextButton (String::empty));
-    button_sequence_13->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_13->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener (this);
     button_sequence_13->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_13->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_13->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_14 = new TextButton (String::empty));
-    button_sequence_14->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_14->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener (this);
     button_sequence_14->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_14->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_14->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_15 = new TextButton (String::empty));
-    button_sequence_15->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_15->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener (this);
     button_sequence_15->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_15->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_15->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_sequence_16 = new TextButton (String::empty));
-    button_sequence_16->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_16->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener (this);
     button_sequence_16->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -768,8 +768,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(2)));
 
     addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
-    button_sequence_1->setTooltip (TRANS("Turns this STEP on and off.\n"
-    "(Has no effect if the ARPEGGIATOR is turned off)"));
+    button_sequence_1->setTooltip (TRANS("Turns this step on or off.\n"
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener (this);
     button_sequence_1->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -3267,67 +3267,67 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
-              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="17704b0ee658c01b" memberName="button_sequence_3"
-              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="70bcd1e56b41c2c6" memberName="button_sequence_4"
-              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e835074126c3a82d" memberName="button_sequence_5"
-              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7ebcf311504b804b" memberName="button_sequence_6"
-              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7964742ab1d9d236" memberName="button_sequence_7"
-              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="290ac159e50889a3" memberName="button_sequence_8"
-              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
-              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8ad414b935f59d8" memberName="button_sequence_10"
-              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="af5f2477751cef2c" memberName="button_sequence_11"
-              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d3687d6b28982234" memberName="button_sequence_12"
-              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="804115318ad213c1" memberName="button_sequence_13"
               virtualName="" explicitFocusOrder="0" pos="1025r 840r 60 20"
-              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="13d758647984d5d5" memberName="button_sequence_14"
               virtualName="" explicitFocusOrder="0" pos="1085r 840r 60 20"
-              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8cbd35271097248c" memberName="button_sequence_15"
               virtualName="" explicitFocusOrder="0" pos="1145r 840r 60 20"
-              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
               virtualName="" explicitFocusOrder="0" pos="1205r 840r 60 20"
-              tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
@@ -3474,7 +3474,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="815r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
-              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" tooltip="Turns this STEP on and off.&#10;(Has no effect if the ARPEGGIATOR is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
