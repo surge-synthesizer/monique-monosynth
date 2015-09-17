@@ -109,8 +109,5 @@ inclusive=0
 pattern=*.o
 targets=1
 
-[MakeBuilder]
-Number Of Jobs=6
-
 [Project]
 VersionControlSupport=kdevgit

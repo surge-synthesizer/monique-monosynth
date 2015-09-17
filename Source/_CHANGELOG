@@ -25,6 +25,8 @@ CHANGES 0.6
 - changed: buttons ALWAYS turn functions on if enabled and off if diabled (some buttons was turning functions off if enabled before))
 - fix/change button animations
 
+- fix colour load bug on mac. -> please delete your config file if you have problems with the colours.
+
 - change CAPTIONS
 -------------------------
 - OSC:
