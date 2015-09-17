@@ -33,8 +33,6 @@ AppInstanceStore::~AppInstanceStore() noexcept
 void AppInstanceStore::lock_amp_painter() noexcept
 {
     amp_painter_lock.enter();
-    if( ampPainter )
-      ampPainter->lock_for_writing();
 }
 
 Monique_Ui_AmpPainter* AppInstanceStore::get_create_amp_painter() noexcept
@@ -51,8 +49,6 @@ Monique_Ui_AmpPainter* AppInstanceStore::get_create_amp_painter() noexcept
 void AppInstanceStore::unlock_amp_painter() noexcept
 {
     amp_painter_lock.exit();
-    if( ampPainter )
-      ampPainter->unlock_for_writing();
 }
 void AppInstanceStore::kill_amp_painter() noexcept
 {

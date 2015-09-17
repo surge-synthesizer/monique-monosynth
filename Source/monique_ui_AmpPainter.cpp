@@ -658,9 +658,12 @@ COLD void EndlessBuffer::block_size_changed() noexcept
 }
 
 //==============================================================================
-inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept {
+inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept 
+{
     for( int i = 0 ; i != buffers.size() ; ++i )
+    {
         buffers.getUnchecked(i)->read_lock();
+    }
 }
 inline void EndlessBuffer::read_lock() noexcept
 {
@@ -674,9 +677,12 @@ inline float EndlessBuffer::get_next_and_count( int& pos_ ) const noexcept
 
     return sample_buffer.getReadPointer()[pos_];
 }
-inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept {
+inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept 
+{
     for( int i = 0 ; i != buffers.size() ; ++i )
+    {
         buffers.getUnchecked(i)->read_unlock();
+    }
 }
 inline void EndlessBuffer::read_unlock() noexcept
 {

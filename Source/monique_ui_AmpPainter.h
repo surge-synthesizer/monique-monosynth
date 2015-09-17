@@ -39,9 +39,7 @@ protected:
     int reader_position;
 
 public:
-    inline void write_lock() noexcept;
     inline void write( const float* samples_, int num_samples_ ) noexcept;
-    inline void write_unlock() noexcept;
 
 public:
     inline void read_lock() noexcept;
@@ -57,10 +55,6 @@ public:
     COLD ~EndlessBuffer();
 };
 //==============================================================================
-inline void EndlessBuffer::write_lock() noexcept
-{
-    writer_lock.enter();
-}
 inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noexcept
 {
     float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
@@ -75,10 +69,6 @@ inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noex
     }
 
     reader_position = tmp_position;
-}
-inline void EndlessBuffer::write_unlock() noexcept
-{
-    writer_lock.enter();
 }
 
 //==============================================================================
@@ -132,9 +122,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class Monique_Ui_AmpPainter  : public Component,
-                               public Timer,
-                               public SliderListener,
-                               public ButtonListener
+    public Timer,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
@@ -157,20 +147,12 @@ private:
     Array<EndlessBuffer*> buffers;
 
 public:
-    inline void lock_for_writing() noexcept {
-        for( int i = 0 ; i != buffers.size() ; ++i )
-            buffers.getUnchecked(i)->write_lock();
-    }
     inline void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
     inline void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
     inline void add_eq( const float* values_, int num_samples_ ) noexcept;
     inline void add_out_env( const float* values_, int num_samples_ ) noexcept;
     inline void add_out( const float* values_, int num_samples_ ) noexcept;
     inline void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
-    inline void unlock_for_writing() noexcept {
-        for( int i = 0 ; i != buffers.size() ; ++i )
-            buffers.getUnchecked(i)->write_unlock();
-    }
 private:
     inline void lock_for_reading() noexcept;
     inline void unlock_for_reading() noexcept;
