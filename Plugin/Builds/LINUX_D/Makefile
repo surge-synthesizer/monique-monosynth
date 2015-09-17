@@ -18,7 +18,7 @@ ifeq ($(CONFIG),DEVEL)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.5" -D "JUCE_APP_VERSION_HEX=0x500" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.6" -D "JUCE_APP_VERSION_HEX=0x600" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O0 -std=c++11 -Wall
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 

@@ -3139,10 +3139,12 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
             read_from(xml);
             success = true;
 
+	    /* NOTE OPTION
             if( Monique_Ui_Mainwindow*mainwindow = AppInstanceStore::getInstance()->editor )
             {
                 mainwindow->update_slider_return_values();
             }
+            */
         }
         else
         {
@@ -3324,4 +3326,5 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 

@@ -232,7 +232,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
         {
 #endif
-            if( current_pos_info.timeInSamples + num_samples >= 0 && current_pos_info.isPlaying )
+            if( current_pos_info.timeInSamples + num_samples >= 0 ) //&& current_pos_info.isPlaying )
             {
 #ifdef IS_STANDALONE
                 // +++++ SYNC BLOCK EXTERN MIDI

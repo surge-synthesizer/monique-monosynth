@@ -18,6 +18,8 @@ CHANGES 0.6
 - reduce the context menu (right mouse) to "set return value"
 - make the morph motor time and glide motor time to settings parameters and no more as project parameter
 - update return values on load another program
+- plugin fix: playback works also if the daw not runs
+- disable double click to program value
 
 - rename a lot of buttons
 - changed: buttons ALWAYS turn functions on if enabled and off if diabled (some buttons was turning functions off if enabled before))
@@ -43,6 +45,10 @@ CHANGES 0.6
 - add shortcuts to the area captions. EXAMPLE: "OSCILLATORS" to "OSCILLATORS (O)"
 
 TODO:
+- do not ask for save first if you try to load the new program
+
+- if you delete a old program and it was changed, it asks for save that deleted one!
+
 play always, also if the daw is offline
 crash wenn tim auf adr geht
 filter input not 0 by defaultctrl == command 

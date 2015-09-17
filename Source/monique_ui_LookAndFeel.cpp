@@ -85,19 +85,19 @@ void ComponentColours::read_from(XmlElement* xml_) noexcept
     XmlElement* xml = xml_->getChildByName("COLOURS");
     if( xml )
     {
-        slider_track_colour = Colour( xml->getIntAttribute( "st_col", 4278251775 ) );
-        slider_track_colour_2 = Colour( xml->getIntAttribute( "st2_col", Colour(0xffff6600).getARGB() ) );
-        slider_track_colour_modulation = Colour( xml->getIntAttribute( "stmod_col", 4290445124 ) );
+        slider_track_colour = Colour( xml->getIntAttribute( "st_col", slider_track_colour.getARGB()  ) );
+        slider_track_colour_2 = Colour( xml->getIntAttribute( "st2_col", slider_track_colour_2.getARGB()  ) );
+        slider_track_colour_modulation = Colour( xml->getIntAttribute( "stmod_col", slider_track_colour_modulation.getARGB()  ) );
 
-        button_on_colour = Colour( xml->getIntAttribute( "bon_col", 4294942532 ) );
-        button_off_colour = Colour( xml->getIntAttribute( "boff_col", 4279308561 ) );
-        label_text_colour = Colour( xml->getIntAttribute( "ltx_col", 4294942532 ) );
+        button_on_colour = Colour( xml->getIntAttribute( "bon_col", button_on_colour.getARGB()  ) );
+        button_off_colour = Colour( xml->getIntAttribute( "boff_col", button_off_colour.getARGB()  ) );
+        label_text_colour = Colour( xml->getIntAttribute( "ltx_col", label_text_colour.getARGB()  ) );
 
         midi_learn = Colour( xml->getIntAttribute( "ml_col", Colours::red.getARGB() ) );
 
-        bg = Colour( xml->getIntAttribute( "bg_col", 0xff050505 ) );
-        bg_lines = Colour( xml->getIntAttribute( "bgl_col", 0xffff3b00 ) );
-        signal_lines = Colour( xml->getIntAttribute( "sigl_col", 4278251775 ) );
+        bg = Colour( xml->getIntAttribute( "bg_col", bg.getARGB()  ) );
+        bg_lines = Colour( xml->getIntAttribute( "bgl_col", bg_lines.getARGB()  ) );
+        signal_lines = Colour( xml->getIntAttribute( "sigl_col", signal_lines.getARGB()  ) );
     }
 }
 void ComponentColours::save_to(XmlElement* xml_) noexcept
