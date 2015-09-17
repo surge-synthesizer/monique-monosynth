@@ -21,6 +21,7 @@ CHANGES 0.6
 
 - rename a lot of buttons
 - changed: buttons ALWAYS turn functions on if enabled and off if diabled (some buttons was turning functions off if enabled before))
+- fix/change button animations
 
 - change CAPTIONS
 -------------------------
@@ -43,17 +44,10 @@ CHANGES 0.6
 
 TODO:
 play always, also if the daw is offline
-lfo animation is buggy
 crash wenn tim auf adr geht
-filter input not 0 by default
-massive probleme mit dem oscilloscope on mac
-klare line bei den button was ist an oder aus -> negativ is nicht an, immer positiv an!
-sensing message an live
-modul to mod
-ctrl == command 
+filter input not 0 by defaultctrl == command 
 load colour theme
 parameter feedback
-blinken muss immer auch die an schaltung ersichlich sein!
 
 one second:
 explain a dual slider quick

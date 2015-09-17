@@ -283,7 +283,7 @@ void Monique_Ui_Mainwindow::update_size()
         use_height = original_h*new_scale;
     }
 
-    setBounds(getX(),getY(),use_width,use_height);
+    setSize(use_width,use_height);
 }
 void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
@@ -925,7 +925,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     "\n"
     "In CTRL mode are all values visble.\n"
     "\n"
-    "Hold down the CTRL/CMD key on your keyboard and drag a slider to control it in velocity mode."));
+    "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
+    "\n"
+    "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface."));
     button_values_toggle->setButtonText (TRANS("CTRL"));
     button_values_toggle->addListener (this);
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -1233,17 +1235,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 #else
     resizer->setVisible(false);
 #endif
-    update_size();
 
-    keyboard->setLowestVisibleKey(50);
-    keyboard->setAvailableRange( 0, 127 );
-    keyboard->setKeyWidth(45);
 
     //setVisible(true);
     AppInstanceStore::getInstance()->editor = this;
     _app_instance_store->audio_processor->set_peak_meter( volume_master_meter );
     Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
 
+    update_size();
+    keyboard->setLowestVisibleKey(50);
+    keyboard->setAvailableRange( 0, 127 );
+    keyboard->setKeyWidth(45);
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
@@ -1253,10 +1255,10 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     //[Destructor_pre]. You can add your own custom destruction code here..
     Monique_Ui_Refresher::getInstance()->stopTimer();
     Monique_Ui_Refresher::getInstance()->remove_all();
-    Thread::sleep(100);
+    //Thread::sleep(100);
 
     AppInstanceStore::getInstance()->editor = nullptr;
-    Thread::sleep(500); // to be sure we are no more in a update run
+    //Thread::sleep(500); // to be sure we are no more in a update run
 
     if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
@@ -3574,7 +3576,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down the CTRL/CMD key on your keyboard and drag a slider to control it in velocity mode."
+              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""

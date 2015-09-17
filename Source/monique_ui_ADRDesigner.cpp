@@ -82,7 +82,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     //[/Constructor_pre]
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-            TRANS("GROUP 4 (MIX: 3 to 4)")));
+                                                        TRANS("GROUP 4 (MIX: 3 to 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -91,7 +91,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-            TRANS("GROUP 3 (MIX: 2 to 4)")));
+                                                        TRANS("GROUP 3 (MIX: 2 to 4)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -100,7 +100,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-            TRANS("GROUP 2 (MIX: 1 to 3)")));
+                                                        TRANS("GROUP 2 (MIX: 1 to 3)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -109,7 +109,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-            TRANS("ADSR PRESET GROUP 1 (MIX: 1 to 2)")));
+                                                        TRANS("ENV MORPH GROUP 1 (MIX: 1 to 2)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -118,7 +118,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_3 = new Label (String::empty,
-            TRANS("SUS TIME")));
+                                                TRANS("SUS TIME")));
     label_sus_3->setFont (Font (15.00f, Font::plain));
     label_sus_3->setJustificationType (Justification::centred);
     label_sus_3->setEditable (false, false, false);
@@ -127,7 +127,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sus_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_2 = new Label (String::empty,
-            TRANS("SUS TIME")));
+                                                TRANS("SUS TIME")));
     label_sus_2->setFont (Font (15.00f, Font::plain));
     label_sus_2->setJustificationType (Justification::centred);
     label_sus_2->setEditable (false, false, false);
@@ -138,7 +138,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     addAndMakeVisible (plotter = new Component());
 
     addAndMakeVisible (label_att_1 = new Label (String::empty,
-            TRANS("ATTACK")));
+                                                TRANS("ATTACK")));
     label_att_1->setFont (Font (15.00f, Font::plain));
     label_att_1->setJustificationType (Justification::centred);
     label_att_1->setEditable (false, false, false);
@@ -158,7 +158,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_attack_1->addListener (this);
 
     addAndMakeVisible (label_dec_1 = new Label (String::empty,
-            TRANS("DECAY")));
+                                                TRANS("DECAY")));
     label_dec_1->setFont (Font (15.00f, Font::plain));
     label_dec_1->setJustificationType (Justification::centred);
     label_dec_1->setEditable (false, false, false);
@@ -178,7 +178,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_decay_1->addListener (this);
 
     addAndMakeVisible (label_rel_1 = new Label (String::empty,
-            TRANS("RELEASE")));
+                                                TRANS("RELEASE")));
     label_rel_1->setFont (Font (15.00f, Font::plain));
     label_rel_1->setJustificationType (Justification::centred);
     label_rel_1->setEditable (false, false, false);
@@ -198,7 +198,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_release_1->addListener (this);
 
     addAndMakeVisible (label_att_2 = new Label (String::empty,
-            TRANS("ATTACK")));
+                                                TRANS("ATTACK")));
     label_att_2->setFont (Font (15.00f, Font::plain));
     label_att_2->setJustificationType (Justification::centred);
     label_att_2->setEditable (false, false, false);
@@ -218,7 +218,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_attack_2->addListener (this);
 
     addAndMakeVisible (label_dec_2 = new Label (String::empty,
-            TRANS("DECAY")));
+                                                TRANS("DECAY")));
     label_dec_2->setFont (Font (15.00f, Font::plain));
     label_dec_2->setJustificationType (Justification::centred);
     label_dec_2->setEditable (false, false, false);
@@ -238,7 +238,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_decay_2->addListener (this);
 
     addAndMakeVisible (label_rel_2 = new Label (String::empty,
-            TRANS("RELEASE")));
+                                                TRANS("RELEASE")));
     label_rel_2->setFont (Font (15.00f, Font::plain));
     label_rel_2->setJustificationType (Justification::centred);
     label_rel_2->setEditable (false, false, false);
@@ -258,7 +258,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_release_2->addListener (this);
 
     addAndMakeVisible (label_att_3 = new Label (String::empty,
-            TRANS("ATTACK")));
+                                                TRANS("ATTACK")));
     label_att_3->setFont (Font (15.00f, Font::plain));
     label_att_3->setJustificationType (Justification::centred);
     label_att_3->setEditable (false, false, false);
@@ -278,7 +278,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_attack_3->addListener (this);
 
     addAndMakeVisible (label_dec_3 = new Label (String::empty,
-            TRANS("DECAY")));
+                                                TRANS("DECAY")));
     label_dec_3->setFont (Font (15.00f, Font::plain));
     label_dec_3->setJustificationType (Justification::centred);
     label_dec_3->setEditable (false, false, false);
@@ -298,7 +298,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_decay_3->addListener (this);
 
     addAndMakeVisible (label_rel_3 = new Label (String::empty,
-            TRANS("RELEASE")));
+                                                TRANS("RELEASE")));
     label_rel_3->setFont (Font (15.00f, Font::plain));
     label_rel_3->setJustificationType (Justification::centred);
     label_rel_3->setEditable (false, false, false);
@@ -318,7 +318,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_release_3->addListener (this);
 
     addAndMakeVisible (label_att_4 = new Label (String::empty,
-            TRANS("ATTACK")));
+                                                TRANS("ATTACK")));
     label_att_4->setFont (Font (15.00f, Font::plain));
     label_att_4->setJustificationType (Justification::centred);
     label_att_4->setEditable (false, false, false);
@@ -338,7 +338,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_attack_4->addListener (this);
 
     addAndMakeVisible (label_dec_4 = new Label (String::empty,
-            TRANS("DECAY")));
+                                                TRANS("DECAY")));
     label_dec_4->setFont (Font (15.00f, Font::plain));
     label_dec_4->setJustificationType (Justification::centred);
     label_dec_4->setEditable (false, false, false);
@@ -358,7 +358,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_decay_4->addListener (this);
 
     addAndMakeVisible (label_rel_4 = new Label (String::empty,
-            TRANS("RELEASE")));
+                                                TRANS("RELEASE")));
     label_rel_4->setFont (Font (15.00f, Font::plain));
     label_rel_4->setJustificationType (Justification::centred);
     label_rel_4->setEditable (false, false, false);
@@ -378,7 +378,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_release_4->addListener (this);
 
     addAndMakeVisible (label6 = new Label ("new label",
-                                           TRANS("TEST MIX:")));
+                                           TRANS("TEST MORPH:")));
     label6->setFont (Font (15.00f, Font::plain));
     label6->setJustificationType (Justification::centredRight);
     label6->setEditable (false, false, false);
@@ -388,13 +388,13 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
 
     addAndMakeVisible (slider_test = new Slider ("0"));
     slider_test->setTooltip (TRANS("Test the morph of your 4 preset groups and take a look at the resulting curve on the right.\n"
-                                   "\n"
-                                   "Examples:\n"
-                                   "Slider pos: 1:\n"
-                                   "Only the settings of the first group will be used.\n"
-                                   "\n"
-                                   "Slider Pos 1.5:\n"
-                                   "50% of the settings of the first group and 50% of the second morph builds the result mix."));
+    "\n"
+    "Examples:\n"
+    "Slider pos: 1:\n"
+    "Only the settings of the first group will be used.\n"
+    "\n"
+    "Slider Pos 1.5:\n"
+    "50% of the settings of the first group and 50% of the second morph builds the result mix."));
     slider_test->setRange (0, 3, 0.001);
     slider_test->setSliderStyle (Slider::LinearHorizontal);
     slider_test->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -449,7 +449,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_sustain_time_4->addListener (this);
 
     addAndMakeVisible (label_sus_4 = new Label (String::empty,
-            TRANS("SUS TIME")));
+                                                TRANS("SUS TIME")));
     label_sus_4->setFont (Font (15.00f, Font::plain));
     label_sus_4->setJustificationType (Justification::centred);
     label_sus_4->setEditable (false, false, false);
@@ -458,7 +458,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sus_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sus_1 = new Label (String::empty,
-            TRANS("SUS TIME")));
+                                                TRANS("SUS TIME")));
     label_sus_1->setFont (Font (15.00f, Font::plain));
     label_sus_1->setJustificationType (Justification::centred);
     label_sus_1->setEditable (false, false, false);
@@ -467,7 +467,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sus_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_1 = new Label ("VL",
-            TRANS("x\n")));
+                                                   TRANS("x\n")));
     label_attack_1->setFont (Font (15.00f, Font::plain));
     label_attack_1->setJustificationType (Justification::centred);
     label_attack_1->setEditable (false, false, false);
@@ -476,7 +476,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_attack_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_1 = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_decay_1->setFont (Font (15.00f, Font::plain));
     label_decay_1->setJustificationType (Justification::centred);
     label_decay_1->setEditable (false, false, false);
@@ -485,7 +485,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_decay_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_1 = new Label ("VL",
-            TRANS("x\n")));
+                                                         TRANS("x\n")));
     label_sustain_time_1->setFont (Font (15.00f, Font::plain));
     label_sustain_time_1->setJustificationType (Justification::centred);
     label_sustain_time_1->setEditable (false, false, false);
@@ -494,7 +494,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sustain_time_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_1 = new Label ("VL",
-            TRANS("x\n")));
+                                                    TRANS("x\n")));
     label_release_1->setFont (Font (15.00f, Font::plain));
     label_release_1->setJustificationType (Justification::centred);
     label_release_1->setEditable (false, false, false);
@@ -503,7 +503,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_release_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_2 = new Label ("VL",
-            TRANS("x\n")));
+                                                   TRANS("x\n")));
     label_attack_2->setFont (Font (15.00f, Font::plain));
     label_attack_2->setJustificationType (Justification::centred);
     label_attack_2->setEditable (false, false, false);
@@ -512,7 +512,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_attack_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_2 = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_decay_2->setFont (Font (15.00f, Font::plain));
     label_decay_2->setJustificationType (Justification::centred);
     label_decay_2->setEditable (false, false, false);
@@ -521,7 +521,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_decay_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_2 = new Label ("VL",
-            TRANS("x\n")));
+                                                         TRANS("x\n")));
     label_sustain_time_2->setFont (Font (15.00f, Font::plain));
     label_sustain_time_2->setJustificationType (Justification::centred);
     label_sustain_time_2->setEditable (false, false, false);
@@ -530,7 +530,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sustain_time_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_2 = new Label ("VL",
-            TRANS("x\n")));
+                                                    TRANS("x\n")));
     label_release_2->setFont (Font (15.00f, Font::plain));
     label_release_2->setJustificationType (Justification::centred);
     label_release_2->setEditable (false, false, false);
@@ -539,7 +539,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_release_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_3 = new Label ("VL",
-            TRANS("x\n")));
+                                                   TRANS("x\n")));
     label_attack_3->setFont (Font (15.00f, Font::plain));
     label_attack_3->setJustificationType (Justification::centred);
     label_attack_3->setEditable (false, false, false);
@@ -548,7 +548,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_attack_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_3 = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_decay_3->setFont (Font (15.00f, Font::plain));
     label_decay_3->setJustificationType (Justification::centred);
     label_decay_3->setEditable (false, false, false);
@@ -557,7 +557,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_decay_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_3 = new Label ("VL",
-            TRANS("x\n")));
+                                                         TRANS("x\n")));
     label_sustain_time_3->setFont (Font (15.00f, Font::plain));
     label_sustain_time_3->setJustificationType (Justification::centred);
     label_sustain_time_3->setEditable (false, false, false);
@@ -566,7 +566,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sustain_time_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_3 = new Label ("VL",
-            TRANS("x\n")));
+                                                    TRANS("x\n")));
     label_release_3->setFont (Font (15.00f, Font::plain));
     label_release_3->setJustificationType (Justification::centred);
     label_release_3->setEditable (false, false, false);
@@ -575,7 +575,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_release_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack_4 = new Label ("VL",
-            TRANS("x\n")));
+                                                   TRANS("x\n")));
     label_attack_4->setFont (Font (15.00f, Font::plain));
     label_attack_4->setJustificationType (Justification::centred);
     label_attack_4->setEditable (false, false, false);
@@ -584,7 +584,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_attack_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay_4 = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_decay_4->setFont (Font (15.00f, Font::plain));
     label_decay_4->setJustificationType (Justification::centred);
     label_decay_4->setEditable (false, false, false);
@@ -593,7 +593,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_decay_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time_4 = new Label ("VL",
-            TRANS("x\n")));
+                                                         TRANS("x\n")));
     label_sustain_time_4->setFont (Font (15.00f, Font::plain));
     label_sustain_time_4->setJustificationType (Justification::centred);
     label_sustain_time_4->setEditable (false, false, false);
@@ -602,7 +602,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_sustain_time_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release_4 = new Label ("VL",
-            TRANS("x\n")));
+                                                    TRANS("x\n")));
     label_release_4->setFont (Font (15.00f, Font::plain));
     label_release_4->setJustificationType (Justification::centred);
     label_release_4->setEditable (false, false, false);
@@ -622,7 +622,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-            TRANS("SHAPE")));
+                                                TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -631,7 +631,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_test_value = new Label (String::empty,
-            TRANS("x\n")));
+                                                     TRANS("x\n")));
     label_test_value->setFont (Font (15.00f, Font::plain));
     label_test_value->setJustificationType (Justification::centredLeft);
     label_test_value->setEditable (false, false, false);
@@ -650,13 +650,13 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
 
     addAndMakeVisible (slider_force_to_zero = new Slider ("0"));
     slider_force_to_zero->setTooltip (TRANS("Define the FORCE curve to Zero time and amount.\n"
-                                            "\n"
-                                            "Values larger zero try to get the amp of each curve back to zero (in the defined attack time) if the release of the last note isn\'t completely done.\n"
-                                            "This makes curves more aggressive.\n"
-                                            "\n"
-                                            "On zero it is turned off.\n"
-                                            "\n"
-                                            "Note: this is may be not easy to see on the right plotter. To make this effect more visible (just for your learning curve) reduce the DECAY time to 1 ms and the RELEASE time to a minimum, than play with the slider and see what happens."));
+    "\n"
+    "Values larger zero try to get the amp of each curve back to zero (in the defined attack time) if the release of the last note isn\'t completely done.\n"
+    "This makes curves more aggressive.\n"
+    "\n"
+    "On zero it is turned off.\n"
+    "\n"
+    "Note: this is may be not easy to see on the right plotter. To make this effect more visible (just for your learning curve) reduce the DECAY time to 1 ms and the RELEASE time to a minimum, than play with the slider and see what happens."));
     slider_force_to_zero->setRange (0, 1, 0.01);
     slider_force_to_zero->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_force_to_zero->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
@@ -676,7 +676,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_force_z = new Label ("new label",
-            TRANS("FORCE 0")));
+                                                  TRANS("FORCE 0")));
     label_force_z->setFont (Font (15.00f, Font::plain));
     label_force_z->setJustificationType (Justification::centred);
     label_force_z->setEditable (false, false, false);
@@ -691,7 +691,7 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
         getChildComponent(i)->setRepaintsOnMouseActivity(false);
         getChildComponent(i)->setWantsKeyboardFocus(false);
 
-        if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) ) 
+        if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) )
 	{
             SET_SLIDER_STYLE( slider, VALUE_SLIDER );
             slider->setOpaque(true);
@@ -961,7 +961,7 @@ void Monique_Ui_Settings::resized()
     slider_decay_4->setBounds (920 - 60, 105 - 50, 60, 50);
     label_rel_4->setBounds (980, 105, 60, 33);
     slider_release_4->setBounds (1040 - 60, 105 - 50, 60, 50);
-    label6->setBounds (20, 150, 60, 33);
+    label6->setBounds (20, 150, 80, 33);
     slider_test->setBounds (135, 185 - 40, 792, 40);
     slider_sustain_time_1->setBounds (140, 55, 60, 50);
     slider_sustain_time_2->setBounds (460 - 60, 105 - 50, 60, 50);
@@ -987,7 +987,7 @@ void Monique_Ui_Settings::resized()
     label_release_4->setBounds (980, 17, 60, 33);
     slider_env_shape->setBounds (1140 - 60, 105 - 70, 60, 70);
     label_shape->setBounds (1080, 105, 60, 33);
-    label_test_value->setBounds (80, 150, 50, 33);
+    label_test_value->setBounds (100, 150, 30, 33);
     label3->setBounds (1080, 125, 60, 33);
     slider_force_to_zero->setBounds (1150, 105 - 70, 60, 70);
     label2->setBounds (1150, 125, 60, 33);
@@ -1178,7 +1178,7 @@ BEGIN_JUCER_METADATA
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline_1"
          virtualName="" explicitFocusOrder="0" pos="50 -4 180 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ADSR PRESET GROUP 1 (MIX: 1 to 2)"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="ENV MORPH GROUP 1 (MIX: 1 to 2)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="63733ef294c01fe3" memberName="label_sus_3" virtualName=""
@@ -1330,8 +1330,8 @@ BEGIN_JUCER_METADATA
           textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="c4e98860bf594960" memberName="label6" virtualName=""
-         explicitFocusOrder="0" pos="20 150 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="TEST MIX:" editableSingleClick="0"
+         explicitFocusOrder="0" pos="20 150 80 33" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="TEST MORPH:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="34"/>
   <SLIDER name="0" id="11e6ab83bd6d05d" memberName="slider_test" virtualName="Slider"
@@ -1471,7 +1471,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="9e8f8c2aecf0c625" memberName="label_test_value" virtualName=""
-         explicitFocusOrder="0" pos="80 150 50 33" textCol="ffffff00"
+         explicitFocusOrder="0" pos="100 150 30 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
