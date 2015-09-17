@@ -68,7 +68,7 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 ComponentColours::ComponentColours() noexcept :
 slider_track_colour( 4278251775 ),
                      slider_track_colour_2( Colour(0xffff6600) ),
-                     slider_track_colour_modulation( 4294942532 ),
+                     slider_track_colour_modulation( 4290445124 ),
                      button_on_colour( 4294942532 ),
                      button_off_colour( 4279308561 ),
                      label_text_colour( 4294942532 ),
@@ -87,7 +87,7 @@ void ComponentColours::read_from(XmlElement* xml_) noexcept
     {
         slider_track_colour = Colour( xml->getIntAttribute( "st_col", 4278251775 ) );
         slider_track_colour_2 = Colour( xml->getIntAttribute( "st2_col", Colour(0xffff6600).getARGB() ) );
-        slider_track_colour_modulation = Colour( xml->getIntAttribute( "stmod_col", 4294942532 ) );
+        slider_track_colour_modulation = Colour( xml->getIntAttribute( "stmod_col", 4290445124 ) );
 
         button_on_colour = Colour( xml->getIntAttribute( "bon_col", 4294942532 ) );
         button_off_colour = Colour( xml->getIntAttribute( "boff_col", 4279308561 ) );

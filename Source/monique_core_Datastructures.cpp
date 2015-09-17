@@ -191,11 +191,11 @@ sync
     generate_param_name(OSC_NAME,id_,"sync"),
     generate_short_human_name(OSC_NAME,id_,"fm_sync")
 ),
-mod_off
+o_mod
 (
-    true,
+    false,
     generate_param_name(OSC_NAME,id_,"mod_off"),
-    generate_short_human_name(OSC_NAME,id_,"mod_off")
+    generate_short_human_name(OSC_NAME,id_,"o-mod")
 ),
 
 puls_width
@@ -235,7 +235,7 @@ static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
     dest_->fm_amount = src_->fm_amount;
     dest_->fm_wave = src_->fm_wave;
     dest_->sync = src_->sync;
-    dest_->mod_off = src_->mod_off;
+    dest_->o_mod = src_->o_mod;
     dest_->puls_width = src_->puls_width;
     dest_->fm_swing = src_->fm_swing;
     dest_->osc_switch = src_->osc_switch;
@@ -249,6 +249,7 @@ static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Param
     params_.add( &osc_data_->fm_amount );
     params_.add( &osc_data_->fm_wave );
     params_.add( &osc_data_->sync );
+    params_.add( &osc_data_->o_mod );
     params_.add( &osc_data_->puls_width );
     params_.add( &osc_data_->fm_swing );
     params_.add( &osc_data_->osc_switch );
@@ -2193,7 +2194,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &midi_pickup_offset );
     global_parameters.add( &ctrl );
-    
+
     global_parameters.add( &glide_motor_time );
     global_parameters.add( &morph_motor_time );
 
@@ -2983,7 +2984,7 @@ bool MoniqueSynthData::create_new() noexcept
     {
         refresh_banks_and_programms();
         current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_program_name);
-	
+
         // BACKUP
         saveable_backups.clearQuick();
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
@@ -3121,6 +3122,7 @@ bool MoniqueSynthData::load_next() noexcept
 
     return success;
 }
+#include "monique_ui_MainWindow.h"
 bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
 {
     ask_and_save_if_changed();
@@ -3136,9 +3138,16 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
         {
             read_from(xml);
             success = true;
+
+            if( Monique_Ui_Mainwindow*mainwindow = AppInstanceStore::getInstance()->editor )
+            {
+                mainwindow->update_slider_return_values();
+            }
         }
         else
+        {
             success = false;
+        }
     }
 
     return success;

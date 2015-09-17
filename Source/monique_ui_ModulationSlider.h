@@ -104,9 +104,12 @@ public:
     {}
 };
 
-enum {
+enum 
+{
+    TOP_BUTTON_IS_ON = -4,
+    TOP_BUTTON_IS_OFF = -5,
     NO_TOP_BUTTON_AMP = -3,
-    FIXED_TOP_BUTTON_COLOUR = -2
+    FIXED_TOP_BUTTON_COLOUR = -2,
 };
 
 struct ModulationSliderConfigBase
@@ -251,10 +254,10 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-                               public Monique_Ui_Refreshable,
-                               public SliderListener,
-                               public ButtonListener,
-                               public LabelListener
+    public Monique_Ui_Refreshable,
+    public SliderListener,
+    public ButtonListener,
+    public LabelListener
 {
 public:
     //==============================================================================
@@ -266,6 +269,7 @@ public:
     bool is_in_ctrl_view() const;
     void set_ctrl_view_mode( bool mode_ ) const;
     void show_view_mode();
+    void update_return_values() noexcept;
 
     const float original_w;
     const float original_h;

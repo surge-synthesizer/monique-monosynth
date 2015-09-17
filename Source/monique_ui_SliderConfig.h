@@ -17,48 +17,152 @@
 
 // TODO replace the pointers to the base by references to the real params
 
-#define SHORTCUT_SHIFT "\nNote: Global shortcut: SHIFT."
 
-#define SHORTCUT_CTRL  "\nNote: Global shortcut: CTRL."
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define LINE_DOTTED  "-------------------------------------------------------------------------\n"
+#define LINE_STRIPE  "_________________________________________________________________________\n"
 
-#define EXAMPLE_START  "\nExample:\n----------\n"
-
-#define LINE__  "--------------------\n"
-
-#define GENERAL_MOD_EXAMPLE \
-  "\n" \
-  "General Modulation Example:\n" \
-  "----------------------------------------------------------------------\n" \
-  "CUTOFF                   = 50 (MIN:0, MAX:100)\n" \
-  "CUTOFF-MODULATION        = +50%\n" \
-  "Current ADSR-LFO-MIX amp = 50%\n" \
-  "‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾\n" \
-  "Result CUTOFF            = 75\n" \
-  "======================================================================\n" \
-  "Formula: CUTOFF + (MAX-CUTOFF) * CUTOFF-MODULATION * ADSR-LFO-MIX"
-
-#define NO_MOD_EFFECT "(Has no effect if MODUL is turned off)\n"
-
-#define VALUES_EDITABLE_ON_TOP "\nNote: to edit the value via keyboard click on the top label."
-
-
-#define GERNERAL_SIGNAL_FLOW         "\n" \
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define GERNERAL_SIGNAL_FLOW         "\n\n" \
+                                     LINE_STRIPE \
 				     "\n" \
-                                     "General signal flow:\n" \
+                                     "GENERAL SIGNAL FLOW:\n" \
                                      "--------------------\n" \
                                      "OSC's                -> FILTER 1 INPUT-> FILTER 1 FX-> FILTER 1 OUT-> MIX\n" \
                                      "OSC's or FILTER 1 OUT-> FILTER 2 INPUT-> ..........................-> MIX\n" \
                                      "OSC's or FILTER 2 OUT-> FILTER 3 INPUT-> ..........................-> MIX\n" \
                                      "MIX -> EQ -> FX -> YOUR EARS!"
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #define GERNERAL_SLIDER_INFORMATION  "\n\n" \
-                                     "_________________________________________________________________________\n" \
+                                     LINE_STRIPE \
 				     "\n" \
-                                     "General slider info:\n" \
-                                     "--------------------\n" \
+                                     "GENERAL SLIDER/DIAL INFO:\n" \
+                                     "-------------------------\n" \
                                      "To edit the value in velocity mode: press CTRL & drag the slider.\n" \
                                      "Double click the slider to return to the factory default value.\n" \
-				     "To set the current state as return value: click the right mouse button and select 'set current value as new return'." \
-				     GERNERAL_SIGNAL_FLOW
+				     "To set the current state as return value: click the right mouse button and select 'set current value as new return'."
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define TOP_SLIDER_DESCIPTION( text ) \
+StringRef get_tootip_front() const noexcept override \
+{ \
+    return \
+    text "\n" \
+    GERNERAL_SLIDER_INFORMATION \
+    GERNERAL_SIGNAL_FLOW; \
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define BACK_SLIDER_DESCRIPTION( text ) \
+StringRef get_tootip_back() const noexcept override \
+{ \
+  return \
+  text "\n" \
+  GERNERAL_SLIDER_INFORMATION \
+  GERNERAL_SIGNAL_FLOW; \
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define GERNERAL_TOP_BUTTON_INFORMATION "\n\n" \
+					LINE_STRIPE \
+					"\n" \
+					"GENERAL TOP BUTTON INFO:\n" \
+					"------------------------\n" \
+					"Buttons on top of sliders/dials turns usually modulations for the front slider on or off." \
+					" The modulations are usually controlled by the back slider."
+
+#define TOP_BUTTON_DESCRIPTION( text ) \
+StringRef get_tootip_top() const noexcept override \
+{ \
+  return \
+  text "\n" \
+  GERNERAL_TOP_BUTTON_INFORMATION; \
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define GERNERAL_SWITCH_BUTTON_INFORMATION  "\n\n" \
+                                     LINE_STRIPE \
+				     "\n" \
+                                     "GENERAL BOTTOM BUTTON INFO:\n" \
+                                     "---------------------------\n" \
+                                     "Global shortcut: SHIFT\n" \
+                                     "Buttons below sliders/dials switch always from front slider to back slider and vice versa.\n"
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define GENERAL_MOD_EXAMPLE "\n\n" \
+				     LINE_STRIPE \
+				     "\n" \
+				     "GENERAL MODULATION EXAMPLE:\n" \
+				     "---------------------------\n" \
+				     "Defined CUTOFF is 50 (MIN:0, MAX:100).\n" \
+				     "Defined CUTOFF-MODULATION is plus 50%.\n" \
+				     "Current ADSR-LFO-MIX amplitude is 50% of the maximum.\n" \
+				     "The outcome CUTOFF will be 62.5.\n" \
+				     "\n" \
+				     "FORMULA:\n" \
+				     "--------\n" \
+				     "OUTCOME = CUTOFF + (MAX-CUTOFF) * CUTOFF-MODULATION * ADSR-LFO-MIX\n" \
+				     "62.5    = 50     + (100-50)     * 50%               * 50%" \
+ 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define BOTTOM_BUTTON_SLIDERS( front_name, back_name ) \
+StringRef get_tootip_bottom() const noexcept override \
+{ \
+  return \
+  "Switch between '" front_name "' (front) and '" back_name "' (back) sliders.\n" \
+  GERNERAL_SWITCH_BUTTON_INFORMATION; \
+}
+
+#define BOTTOM_BUTTON_DIALS( front_name, back_name ) \
+StringRef get_tootip_bottom() const noexcept override \
+{ \
+  return \
+  "Switch between '" front_name "' (front) and '" back_name "' (back) dials.\n" \
+  GERNERAL_SWITCH_BUTTON_INFORMATION; \
+}
+
+
+
+
+
+
+
+
+#define SHORTCUT_SHIFT "\nNote: .\nNote: Buttons below sliders/dials are always switchs from front slider to back slider and vice versa."
+
+#define SHORTCUT_CTRL  "\nNote: Global shortcut: CTRL."
+
+#define EXAMPLE_START  "\nExample:\n----------\n"
+
+
+
+
+#define NO_MOD_EFFECT "(Has no effect if X-MOD is turned off)\n"
+
+#define VALUES_EDITABLE_ON_TOP "\nNote: to edit the value via keyboard click on the top label."
+
+
+
+
 
 // VIRTUALISIERUNG: OSCI, TOP BUTTON
 
@@ -78,6 +182,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     BoolParameter*const top_parameter;
 
     const String top_text;
+    const String bottom_text;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -143,7 +248,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "WAVE";
+        return bottom_text;
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -179,46 +284,41 @@ class WAVESlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Change the WAVE of this oscillator. \n"
-               "Sine (LEFT), Square, Saw, Noise (RIGHT)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "OSC 1: Turns FM modulations on and off (except FM amount, FM amount is always controlled by the back slider).\n"
-               "\n"
-               "OSC 2 & 3: Turns sync to OSC 1 on and off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between FM amount and WAVE form sliders.\n"
-               SHORTCUT_SHIFT
-
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Add an amount of the FM oscillator to this oscillator.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the wave form of this oscillator.\n"
+        "(Sine (LEFT), Square, Saw, Noise (RIGHT))"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "OSC 1: Turns oscillator modulations on and off (OSC PULSE and OSC SWITCH).\n"
+        "(See FM section: O-PULSE and O-SWITCH dials)\n"
+        "\n"
+        "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
+        "\n"
+        "If SYNC is enabled the oscillator waits for the next cycle of OSC 1 to start its next own cycle.\n"
+        "If SYNC is disabled this oscillator is absolutely independent."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "WAVE FORM",
+        "FM MASS"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the mass of the FM oscillator which will be added to this oscillator.\n"
+        "\n"
+        "OSC 1: will be also added if O-MOD is turned off."
+    )
 
 public:
     WAVESlConfig( int id_ )
         :
         wave( &(GET_DATA(osc_datas[id_]).wave) ),
         fm_amount( &(GET_DATA(osc_datas[id_]).fm_amount) ),
-        top_parameter( id_ == 0 ? &(GET_DATA(osc_datas[id_]).mod_off) : &(GET_DATA(osc_datas[id_]).sync) ),
-        top_text( id_ == 0 ? "MOD OFF" : "SYNC" )
+        top_parameter( id_ == 0 ? &(GET_DATA(osc_datas[id_]).o_mod) : &(GET_DATA(osc_datas[id_]).sync) ),
+        top_text( id_ == 0 ? "O-MOD" : "SYNC" ),
+        bottom_text( "WAV-" + String(id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (WAVESlConfig)
@@ -305,19 +405,14 @@ class OSCSlConfig : public ModulationSliderConfigBase
         {
             if( bool(is_lfo_modulated->get_value()) )
             {
-                value = get_last_modulation_amount(octave)*(1.0f/48);
+                value = get_last_modulation_amount(octave);
             }
             else
                 value = NO_TOP_BUTTON_AMP;
         }
         else
         {
-            if( bool(is_lfo_modulated->get_value()) )
-            {
-                value = 0.999f;
-            }
-            else
-                value = 0;
+            value = NO_TOP_BUTTON_AMP;
         }
 
         return value;
@@ -331,7 +426,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -369,51 +464,49 @@ class OSCSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Detune this oscillator to the currently running note in semitones.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns TUNE modulation by LFO on and off.\n"
-               "(OSC 1 uses LFO 1 (from FILTER 1), OSC 2 uses LFO 2... ."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between TUNE and LFO modulation range sliders.\n"
-               SHORTCUT_SHIFT
-
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the LFO modulation range which will be added to the current TUNE.\n"
-               "\n"
-               "A modulation amount larger 0 will increase the TUNE. Values smaller 0 decrease.\n"
-
-               EXAMPLE_START
-               "TUNE = 0, MODULATION = +100%\n"
-               "Current LFO amp = 50%\n"
-               "Result TUNE = 12\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Detune this oscillator in semitones.\n"
+        "\n"
+        "OSC 1: Affected: FM TUNE.\n"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns tune modulation by LFO on and off.\n"
+        "(OSC 1 will be modulated by LFO 1 (See: FILTER 1), OSC 2 by LFO 2... .)"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "OSC TUNE",
+        "LFO TUNE-MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the power of the tune modulation by the LFO amplitude relative to the defined tune (front).\n"
+        "\n"
+        "Values greater than 0 increase the current tune by the current LFO amplitude. Values less than 0 decrease the tune by the current LFO amplitude.\n"
+        "\n"
+        "\n"
+        "EXAMPLE:\n"
+        "--------\n"
+        "Defined tune is 12 (front) (maximum 24).\n"
+        "Defined tune-modulation power is plus 50% (this).\n"
+        "Current LFO amplitude is 100% of the maximum.\n"
+        "The outcome tune will be 18.\n"
+        "\n"
+        "FORMULA:\n"
+        "--------\n"
+        "OUTCOME = TUNE + (MAX-TUNE) * MOD-POWER * CURRENT AMPLITUDE\n"
+        "18      = 12   + (24-12)    * 50%       * 100%"
+    )
 
 public:
     OSCSlConfig( int id_ )
         :
         octave( &(GET_DATA(osc_datas[id_]).octave) ),
         is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
-        top_text( String("LFO ") + String(id_+1) ),
-        bottom_text( String("OSC ") + String(id_+1) ),
+        top_text( String("L-MOD") ),
+        bottom_text( String("TUNE-") + String(id_+1) ),
 
         synth_data( GET_DATA_PTR( synth_data ) )
     {}
@@ -501,11 +594,11 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "FM FREQ";
+        return "F-TUNE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "FM SWING";
+        return "F-SWING";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -533,37 +626,36 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Set the frequency of the FM oscillator.\n"
-               "Zero = OSC 1 frequency.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns sync to OSC 1 on and off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between FM FREQUENCY and FM SWING sliders.\n"
-               SHORTCUT_SHIFT
-
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the FM SWING amount. Values larger zero switch the FM oscillator phase smoothly faster and faster.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-
+    TOP_SLIDER_DESCIPTION
+    (
+        "Detune the FM oscillator relative, upwards to the tune of OSC 1.\n"
+        "(Zero = same as TUNE of OSC 1)\n"
+        "\n"
+        "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns sync to OSC 1 on or off.\n"
+        "\n"
+        "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one OSC 1 cycle).\n"
+        "\n"
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0\n"
+        "\n"
+        "See: FM SHOT (next button on the right)"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "FM TUNE",
+        "FM SWING"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the FM SWING amount.\n"
+        "\n"
+        "Values greater than 0 switch the FM oscillator phase smoothly (greater values = faster).\n"
+        "\n"
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0"
+    )
 public:
     FMFreqSlConfig()
         :
@@ -657,11 +749,11 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "OSC PLUSE";
+        return "O-PLUSE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "OSC SWITCH";
+        return "O-SWCH";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -690,70 +782,75 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define pulses for each oscillator.\n"
-               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
-               "\n"
-               LINE__
-               "\n"
-               "Values larger zero insert cycle breaks of the duration of one OSC cycle.\n"
-               "Examples:\n"
-               "PULSE = 0 = --- _|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_ ---\n"
-               "\n"
-               "PULSE = 1 = --- _|‾|_____|‾|_____|‾|_____|‾|_____|‾|_____ ---\n"
-               "\n"
-               "PULSE = 2 = --- _|‾|_________|‾|_________|‾|_________|‾|_ ---\n"
-               "\n"
-               LINE__
-               "\n"
-               "Values smaller zero change the cycle duration. One becomes longer, the next one shorter.\n"
-               "Examples:\n"
-               "PULSE =   0 = --- _|‾‾‾‾‾‾|______|‾‾‾‾‾‾|______|‾‾‾‾‾‾|__ ---\n"
-               "\n"
-               "PULSE =  -1 = --- _|‾‾‾‾‾|_______|‾‾‾‾‾|_______|‾‾‾‾‾|___ ---\n"
-               "\n"
-               "PULSE = -12 = --- _|‾|___________|‾|___________|‾|_______ ---\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns FM SHOT for each oscillator on and off.\n"
-               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
-               "\n"
-               "If FM SHOT is enabled only ONE cycle of the FM oscillator will be added to the OSC cylce and than it waits for a new cycle of the modulated OSC."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between OSC SWITCH and OSC PULSE sliders.\n"
-               SHORTCUT_SHIFT
-
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define phase switches for each oscillator.\n"
-               "(Can by turned off for OSC 1 by enabling 'MOD OFF')\n"
-               "\n"
-               LINE__
-               "\n"
-               "Values larger zero switches the phase after the defined number of cycles.\n"
-               "Examples:\n"
-               "PULSE = 0 = --- _|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_|‾|_ ---\n"
-               "\n"
-               "PULSE = 1 = --- _|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_|‾'‾|_,_ ---\n"
-               "\n"
-               "PULSE = 3 = --- _|‾|_|‾|_|‾|_,_|‾|_|‾|_|‾'‾|_|‾|_|‾|_|‾|_ ---\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define pulses for each oscillator.\n"
+        "\n"
+        "Affected: OSC 1 (if O-MOD is turned on), OSC 2 & 3\n"
+        "\n"
+        LINE_DOTTED
+        "\n"
+        "Values greater than 0 insert cycle breaks with the duration of one cycle of the affected oscillator.\n"
+        "\n"
+        "EXAMPLES:\n"
+        "---------\n"
+        "PULSE = 0 =   ‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| \n"
+        "               |_| |_| |_| |_| |_| |_| |_| |_| |_| |_\n"
+        "\n"
+        "PULSE = 1 =   ‾|  ___|‾|  ___|‾|  ___|‾|  ___|‾|  ___\n"
+        "               |_|     |_|     |_|     |_|     |_|   \n"
+        "\n"
+        "PULSE = 2 =   ‾|  _______|‾|  _______|‾|  _______|‾| \n"
+        "               |_|         |_|         |_|         |_\n"
+        "\n"
+        LINE_DOTTED
+        "\n"
+        "Values less than 0 change the cycle duration. One cycle becomes longer, the next one shorter.\n"
+        "\n"
+        "EXAMPLES:\n"
+        "---------\n"
+        "PULSE =   0 = ‾‾‾‾‾‾|      |‾‾‾‾‾‾|      |‾‾‾‾‾‾|    \n"
+        "                    |______|      |______|      |____\n"
+        "\n"
+        "PULSE =  -1 = ‾‾‾‾‾‾‾|       |‾‾‾‾‾|     |‾‾‾‾‾‾‾|   \n"
+        "                     |_______|     |_____|       |___\n"
+        "\n"
+        "PULSE = -12 = ‾‾‾‾‾‾‾‾‾‾‾|           |‾| |‾‾‾‾‾‾‾‾‾‾‾\n"
+        "                         |___________| |_|           "
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns FM SHOT for each oscillator on and off.\n"
+        "\n"
+        "If FM SHOT is enabled only one cycle of the FM oscillator will be added to the modulated oscillator and then the FM OSC waits for a new OSC 1 cycle to start its next own cycle."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "OSC PULSE",
+        "OSC SWITCH"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define phase switches for each oscillator.\n"
+        "\n"
+        "Affected: OSC 1 (if O-MOD is turned on), OSC 2 & 3\n"
+        "\n"
+        LINE_DOTTED
+        "\n"
+        "Values greater than 0 switches the phase after the defined number of cycles.\n"
+        "\n"
+        "EXAMPLES:\n"
+        "---------\n"
+        "SWITCH = 0 =  ‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| \n"
+        "               |_| |_| |_| |_| |_| |_| |_| |_| |_| |_\n"
+        "\n"
+        "SWITCH = 1 =  ‾|   |‾|‾|   |‾|‾|   |‾|‾|   |‾|‾|   |‾\n"
+        "               |_|_|   |_|_|   |_|_|   |_|_|   |_|_| \n"
+        "\n"
+        "\n"
+        "SWITCH = 3 =  ‾|   |‾| |‾| |‾|‾| |‾| |‾|   |‾| |‾| |‾\n"
+        "               |_|_| |_| |_|   |_| |_| |_|_| |_| |_| "
+    )
 
 public:
     FMAmountSlConfig()
@@ -846,15 +943,34 @@ class InputSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "FIX IN";
+        return "ENV";
     }
     float get_top_button_amp() const noexcept override
     {
-        float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! synth_data->animate_input_env )
-            value = NO_TOP_BUTTON_AMP;
-        else if( not bool(input_hold->get_value()) )
-            value = mono_ParameterOwnerStore::getInstance()->voice->get_flt_input_env_amp(filter_id,input_id);
+        float value = NO_TOP_BUTTON_AMP;
+        const bool is_on = not bool(input_hold->get_value());
+        if( synth_data->animate_input_env )
+        {
+            if( is_on )
+            {
+                value = mono_ParameterOwnerStore::getInstance()->voice->get_flt_input_env_amp(filter_id,input_id);
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
+        else
+        {
+            if( is_on )
+            {
+                value = TOP_BUTTON_IS_ON;
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
 
         return value;
     }
@@ -867,7 +983,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "ADR";
+        return "MO-ENV";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -892,7 +1008,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     StringRef get_center_suffix() const noexcept override
     {
         if( state->midi_control->get_ctrl_mode() )
-            return "X";
+            return "MO";
         else if( input_sustain->get_value() >= 0 )
         {
             if( filter_id == 1 )
@@ -906,45 +1022,35 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the input amount for an OSC into this FILTER.\n"
-               "(Will be the sustain level if 'FIX IN' is turned off)\n"
-               "\n"
-               "FILTER 2 & 3:\n"
-               "On the left side of the slider (minus) the raw OSC is used as input into the FILTER.\n"
-               "If the slider is on the right side (plus) the filtered result of the OSC through the FILTER before is used as input.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns 'FIX IN' on and off.\n"
-               "\n"
-               "If 'FIX IN' is enabled the INPUT slider just defines the input amount.\n"
-               "If disabled the INPUT slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between INPUT/SUSTAIN and ADR PRESET sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set an ADR curve to control the input amount for an OSC into this FILTER.\n"
-               "(Will have no effect if 'FIX IN' is enabled)\n"
-               "\n"
-               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
-               "The INPUT slider amount will be the sustain level for your curve.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the OSC input gain into this filter.\n"
+        "(Will be the sustain level if ENV is turned on)\n"
+        "\n"
+        "FILTER 2 & 3:\n"
+        "On the left side of the dial (minus) the original OSC signal will be used as input.\n"
+        "On the right side (plus) the filtered OSC signal through the filter before will be used as input."
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns morphable ENV modulations for the OSC input gain on or off.\n"
+        "\n"
+        "If ENV is enabled the input dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
+        "If ENV is disabled the input dial defines input gain and the morphable envelope will be ignored."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "INPUT/SUSTAIN",
+        "MORPH ENV"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define an envelope to control the OSC input gain into this FILTER.\n"
+        "(Has no effect if ENV is turned off)\n"
+        "\n"
+        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
+        "The input dial (front dial) will be the sustain level for this envelope."
+    )
 
 public:
     InputSlConfig( int filter_id_, int input_id_ )
@@ -1030,7 +1136,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MODUL";
+        return "X-MOD";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -1047,7 +1153,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -1075,37 +1181,26 @@ class GForceSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Set the amount of the filter DISTORTION.\n"
-               "(Also processed if 'PASS' as filter type is selected)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns DISTORTION MODULATION by ADSR-LFO-MIX on or off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between DISTORTION and DISTORTION MODULATION sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the DISTORTION MODULATION amount.\n"
-               NO_MOD_EFFECT
-               GENERAL_MOD_EXAMPLE
-               "\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter distortion power.\n"
+        "(Also processed if 'PASS' as filter type is selected)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns filter distortion modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "DISTORTION",
+        "DISTORTION MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the filter distortion modulation power relative to the defined distortion (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
 
 public:
     GForceSlConfig( int id_ )
@@ -1243,52 +1338,35 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        if( is_main_adsr )
-        {
-            return "Set the ATTACK time in ms.\n"
-                   "\n"
-                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+    TOP_SLIDER_DESCIPTION
+    (
+        is_main_adsr
 
-                   ;
-        }
-        else
-        {
-            return "Set the ATTACK time in ms.\n"
-                   "\n"
-                   "Possible targets: MOD-MIX\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+        ?
 
-                   ;
-        }
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between ATTACK and MAX ATTACK sliders.\n"
-               SHORTCUT_SHIFT
+        "Define the main envelope attack time in ms.\n"
+        "\n"
+        "Controls the output gain (processed after EQ bank and before FX).\n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
 
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the maximum ATTACK time for the front slider.\n"
+        :
 
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+        "Define the filter envelope attack time in ms.\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+    )
+    BOTTOM_BUTTON_SLIDERS
+    (
+        "ATTACK",
+        "MAX ATTACK"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the the maximum, adjustable attack time for the front slider."
+    )
 
 public:
     FAttackSlConfig( int id_ )
@@ -1434,52 +1512,35 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        if( is_main_adsr )
-        {
-            return "Set the DECAY time in ms.\n"
-                   "\n"
-                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+    TOP_SLIDER_DESCIPTION
+    (
+        is_main_adsr
 
-                   ;
-        }
-        else
-        {
-            return "Set the DECAY time in ms.\n"
-                   "\n"
-                   "Possible targets: MOD-MIX\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+        ?
 
-                   ;
-        }
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between DECAY and MAX DECAY sliders.\n"
-               SHORTCUT_SHIFT
+        "Define the main envelope decay time in ms.\n"
+        "\n"
+        "Controls the output gain (processed after EQ bank and before FX).\n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
 
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the maximum DECAY time for the front slider.\n"
+        :
 
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+        "Define the filter envelope decay time in ms.\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+    )
+    BOTTOM_BUTTON_SLIDERS
+    (
+        "DECAY",
+        "MAX DECAY"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the the maximum, adjustable decay time for the front slider."
+    )
 
 public:
     FDecaySlConfig( int id_ )
@@ -1617,45 +1678,26 @@ class FSustainSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        if( is_main_adsr )
-        {
-            return "Set the SUSTAIN level in percent.\n"
-                   "\n"
-                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+    TOP_SLIDER_DESCIPTION
+    (
+        is_main_adsr
 
-                   ;
-        }
-        else
-        {
-            return "Set the SUSTAIN level in percent.\n"
-                   "\n"
-                   "Possible targets: MOD-MIX\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+        ?
 
-                   ;
-        }
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+        "Define the main envelope sustain level.\n"
+        "\n"
+        "Controls the output gain (processed after EQ bank and before FX).\n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+
+        :
+
+        "Define the filter envelope sustain level.\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+    )
 
 public:
     FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ), is_main_adsr(false) {}
@@ -1788,49 +1830,30 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        if( is_main_adsr )
-        {
-            return "Set the SUSTAIN time in ms.\n"
-                   "\n"
-                   "If the slider is set to max, the sustain time is unlimited (until note off).\n"
-                   "\n"
-                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+    TOP_SLIDER_DESCIPTION
+    (
+        is_main_adsr
 
-                   ;
-        }
-        else
-        {
-            return "Set the SUSTAIN time in ms.\n"
-                   "\n"
-                   "If the slider is set to max, the sustain time is unlimited (until note off)\n."
-                   "\n"
-                   "Possible targets: MOD-MIX\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+        ?
 
-                   ;
-        }
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+        "Define the main envelope sustain time in ms.\n"
+        "\n"
+        "If the slider is set to max, the sustain time is unlimited (until note off).\n"
+        "\n"
+        "Controls the output gain (processed after EQ bank and before FX).\n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+
+        :
+
+        "Define the filter envelope sustain time in ms.\n"
+        "\n"
+        "If the slider is set to max, the sustain time is unlimited (until note off).\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+    )
 
 public:
     FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ), is_main_adsr(false) {}
@@ -1964,52 +1987,35 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        if( is_main_adsr )
-        {
-            return "Set the RELEASE time in ms.\n"
-                   "\n"
-                   "Controls the OUTPUT VOLUME (processed after EQ bank and before FX).\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+    TOP_SLIDER_DESCIPTION
+    (
+        is_main_adsr
 
-                   ;
-        }
-        else
-        {
-            return "Set the RELEASE time in ms.\n"
-                   "\n"
-                   "Possible targets: MOD-MIX\n"
-                   "\n"
-                   VALUES_EDITABLE_ON_TOP
-                   GERNERAL_SLIDER_INFORMATION
+        ?
 
-                   ;
-        }
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between RELEASE and MAX RELEASE sliders.\n"
-               SHORTCUT_SHIFT
+        "Define the main envelope release time in ms.\n"
+        "\n"
+        "Controls the output gain (processed after EQ bank and before FX).\n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
 
-               ;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the maximum RELEASE time for the front slider.\n"
+        :
 
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+        "Define the filter envelope release time in ms.\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "\n"
+        VALUES_EDITABLE_ON_TOP
+    )
+    BOTTOM_BUTTON_SLIDERS
+    (
+        "RELEASE",
+        "MAX RELEASE"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the the maximum, adjustable release time for the front slider."
+    )
 
 public:
     FReleaseSlConfig( int id_ )
@@ -2142,34 +2148,16 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the used MODULATION MIX of ADSR & LFO.\n"
-               "\n"
-               "If the slider is on the left side only the ADSR amp will be used as modulation signal.\n"
-               "On the right side only the LFO amp will be uesd.\n"
-               "In the middle 50% of the ADSR and 50% of the LFO will be used as modulator.\n"
-               "\n"
-               "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, VOLUME\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the mix of filter envelope & LFO which will be used as modulator (X-MOD)).\n"
+        "\n"
+        "If the slider is on the left side only the filter envelope amplitude will be used as modulation signal.\n"
+        "On the right side: only the LFO amplitude will be uesd as modulation signal.\n"
+        "In the middle: 50% of the envelope and 50% of the LFO will be used as modulator.\n"
+        "\n"
+        "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, FILTER VOLUME"
+    )
 
 public:
     EnvLfoSlConfig( int id_ )
@@ -2343,33 +2331,15 @@ class LFOSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Set the LFO speed.\n"
-               "\n"
-               "If the LFO speed is slow (note durations) the LFO is always synced to the current BPM.\n"
-               "If the LFO speed is fast (note values) the LFO is not synced to anything.\n"
-               "\n"
-               "Possible targets: OSC, MODULATION-MIX\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the LFO speed.\n"
+        "\n"
+        "If the LFO speed is slow (note durations) the LFO is always synced to the current speed (BPM).\n"
+        "If the LFO speed is fast (note values) the LFO is not synced to anything.\n"
+        "\n"
+        "Possible targets: OSC, MOD-MIX -> CUTOFF, RESONANCE, GAIN, DESTROY, FILTER VOLUME"
+    )
 
 public:
     LFOSlConfig( int id_ )
@@ -2450,7 +2420,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MODUL";
+        return "X-MOD";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2467,7 +2437,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2495,37 +2465,26 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the filter CUTOFF (filter frequency) in percent.\n"
-               "(Has no effect if 'PASS' as filter type is selected)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns CUTOFF MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between CUTOFF and CUTOFF MODULATION sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the CUTOFF MODULATION amount.\n"
-               NO_MOD_EFFECT
-               GENERAL_MOD_EXAMPLE
-               "\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter cutoff frequency.\n"
+        "(Has no effect if 'PASS' as filter type is selected)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns cutoff modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "CUTOFF",
+        "CUTOFF MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the cutoff modulation power relative to the defined cutoff (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
 
 public:
     FCutoffSLConfig( int id_ )
@@ -2621,7 +2580,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2649,37 +2608,26 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the filter RESONANCE (boost frequencys at the edge of the filter CUTOFF) in percent.\n"
-               "(Has no effect if 'PASS' as filter type is selected)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns RESONANCE MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between RESONANCE and RESONANCE MODULATION sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the RESONANCE MODULATION amount.\n"
-               NO_MOD_EFFECT
-               GENERAL_MOD_EXAMPLE
-               "\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter resonance (boost frequencys at the edge of the cutoff).\n"
+        "(Has no effect if 'PASS' as filter type is selected)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns resonance modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "RESONANCE",
+        "RESONANCE MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the resonance modulation power relative to the defined resonance (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
 
 public:
     FResonanceSLConfig( int id_ )
@@ -2758,7 +2706,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MODUL";
+        return "X-MOD";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2775,7 +2723,7 @@ class FGainSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2803,37 +2751,26 @@ class FGainSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the filter GAIN (boost the filter frequencys) in percent.\n"
-               "(Has no effect if 'PASS' as filter type is selected)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns GAIN MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between GAIN and GAIN MODULATION sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the GAIN MODULATION amount.\n"
-               NO_MOD_EFFECT
-               GENERAL_MOD_EXAMPLE
-               "\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter gain (boost the frequencys below the cutoff (LOW PASS), above the cutoff (HIGH PASS), close to the cutoff (BAND PASS) ).\n"
+        "(Has no effect if 'PASS' as filter type is selected)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns gain modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "GAIN",
+        "GAIN MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the gain modulation power relative to the defined gain (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
 
 public:
     FGainSLConfig( int id_ )
@@ -2912,7 +2849,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MODUL";
+        return "X-MOD";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -2929,7 +2866,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MOD (%)";
+        return "MOD %";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -2957,37 +2894,28 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the filter OUTPUT VOLUME in percent.\n"
-               "\n"
-               "Target: EQ bank, BOOST (of the next filter)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns VOLUME MODULATION by ADSR-LFO-MIX (MOD-MIX) on or off."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between VOLUME and VOLUME MODULATION sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set the VOLUME MODULATION amount.\n"
-               NO_MOD_EFFECT
-               GENERAL_MOD_EXAMPLE
-               "\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter output volume.\n"
+        "\n"
+        "Output target: EQ bank\n"
+        "Affected: BOOST of the next filter (except FILTER 3, there is no FILTER 4)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns filter volume modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "FILTER VOLUME",
+        "FILTER VOLUME MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the filter volume modulation power relative to the defined filter volume (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
 
 public:
     FVolumeSlConfig( int id_ )
@@ -3129,34 +3057,20 @@ class BPMSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the internal speed of Monique in BPM.\n"
-               "(PLUGIN: has no effect if SYNC is turned on)\n"
-               "(STANALONE: has no effect if SYNC is turned on and a MIDI clock is continuously received)\n"
-               "\n"
-               "Affected: ARPEGGIATOR, LFO (if slow) (OSC's and FM if LFO MOD is turned on)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns SPEED SYNC on or off.\n"
-               "\n"
-               "If disabled you can define your own speed ignoring the host speed (plugin) or the MIDI-Clock (standalone)."
-               ;
-    }
-    /*
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define Moniques internal speed in BPM.\n"
+        "(PLUGIN: has no effect if SYNC is turned on)\n"
+        "(STANALONE: has no effect if SYNC is turned on and a MIDI clock is continuously received)\n"
+        "\n"
+        "Affected: ARPEGGIATOR, LFO's (if slow) (OSC's and FM if L-MOD is turned on)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns SPEED SYNC on or off.\n"
+        "\n"
+        "If disabled you can define your own speed ignoring the host speed (plugin) or the MIDI-Clock (standalone)."
+    )
 
 public:
     BPMSlConfig()
@@ -3281,30 +3195,12 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the SPEED MULTIPLIER/DIVISOR.\n"
-               "\n"
-               "Affected: ARPEGGIATOR, LFO (if slow) (OSC's and FM if LFO MOD is turned on)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the speed multiplier/divisor.\n"
+        "\n"
+        "Affected: ARPEGGIATOR, LFO's (if slow) (OSC's and FM if L-MOD is turned on)\n"
+    )
 
 public:
     SpeedMultiSlConfig()
@@ -3441,30 +3337,12 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the OCTAVE OFFSET related to current root note (e.g. pressed on keyboard).\n"
-               "\n"
-               "Affected: OSC's, FM"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-    return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the octave offset related to the current root note (e.g. pressed on the keyboard).\n"
+        "\n"
+        "Affected: OSC's, FM"
+    )
 
 public:
     OctaveOffsetSlConfig()
@@ -3596,39 +3474,24 @@ class FCompressorSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the PEAK BOOST amount of the filter output.\n"
-               "\n"
-               "FILTER 2 & 3: boosts or limits the filter ouput by peaks in the output of the filter before."
-               " The boost attack & release time become more agressive with an larger value."
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between PEAK BOOST and SOFT CLIPPING sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define the SOFT CLIPPING amount of the filter output.\n"
-               "\n"
-               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
-               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the peak boost power of the filter output.\n"
+        "\n"
+        "FILTER 2 & 3: boosts or limits the filter ouput by peaks in the output of the filter before."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "OUTPUT PEAK BOOST",
+        "OUTPUT SOFT CLIPPING"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the soft clipping amount of the filter output.\n"
+        "\n"
+        "Values greater than 0 clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
+        "Note: that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
+    )
 
 public:
     FCompressorSlConfig( int id_ )
@@ -3755,38 +3618,12 @@ class FColourSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the SHAPE amount of the FX input (after EQ bank).\n"
-               "\n"
-               "Shaping makes some details in the sound more 'visible'."
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between PEAK BOOST and SOFT CLIPPING sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define the SOFT CLIPPING amount of the filter output.\n"
-               "\n"
-               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
-               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the shape amount of the FX input (after EQ bank).\n"
+        "\n"
+        "Shaping makes some details in the sound more 'visible'."
+    )
 
 public:
     FColourSlConfig()
@@ -3910,29 +3747,11 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the ROOM of the reverb effect.\n"
-               "(Has no effect if FX MIX is set to zero)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the room of the reverb effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
 
 public:
     RRoomSlConfig()
@@ -4056,29 +3875,11 @@ class RWidthSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the WIDTH of the reverb effect.\n"
-               "(Has no effect if FX MIX is set to zero)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the width of the reverb effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
 
 public:
     RWidthSlConfig()
@@ -4202,29 +4003,11 @@ class RDrySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the WET/DRY amount of the reverb effect.\n"
-               "(Has no effect if FX MIX is set to zero)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the wet/dry mix of the reverb effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
 
 public:
     RDrySlConfig()
@@ -4348,29 +4131,11 @@ class DelaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the DELAY time of the delay effect.\n"
-               "(Has no effect if FX MIX is set to zero)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the delay time of the delay effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
 
 public:
     DelaySlConfig()
@@ -4494,33 +4259,16 @@ class BypassConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the amount of the FX input and output mix.\n"
-               "\n"
-               "Values larger zero add the FX output to the FX input (EQ output).\n(If the value is zero the FX section is bypassed)\n"
-               "\n"
-               "Affected:     REVERB, DELAY, CHORUS\n"
-               "NOT Affected: SHAPE\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the mix of FX output and FX input.\n"
+        "\n"
+        "Values greater than 0 add more and more of the FX section output to the not FX processed signal (EQ output).\n"
+        "(If the value is zero the FX section is bypassed)\n"
+        "\n"
+        "Affected:     REVERB, DELAY, CHORUS\n"
+        "NOT Affected: SHAPE"
+    )
 
 public:
     BypassConfig()
@@ -4643,38 +4391,22 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the final output volume.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-
-
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return ""
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between MASTER VOLUME and SOFT CLIPPING sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define the SOFT CLIPPING amount of the final output.\n"
-               "\n"
-               "Values larger zero clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
-               "Note that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the final output volume."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "MASTER VOLUME",
+        "SOFT CLIPPING"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the SOFT CLIPPING amount of the final output.\n"
+        "\n"
+        "Values greater than 0 clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
+        "Note: that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
+    )
 
 public:
     VolumeConfig()
@@ -4757,16 +4489,33 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "FIX";
+        return "ENV";
     }
     float get_top_button_amp() const noexcept override
     {
-        float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! synth_data->animate_eq_env )
-            value = NO_TOP_BUTTON_AMP;
-        else if( ! bool(hold_modulation->get_value())  )
+        float value = NO_TOP_BUTTON_AMP;
+        const bool is_on = not bool(hold_modulation->get_value());
+        if( synth_data->animate_eq_env )
         {
-            value = mono_ParameterOwnerStore::getInstance()->voice->get_chorus_modulation_env_amp();
+            if( is_on )
+            {
+                value = mono_ParameterOwnerStore::getInstance()->voice->get_chorus_modulation_env_amp();
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
+        else
+        {
+            if( is_on )
+            {
+                value = TOP_BUTTON_IS_ON;
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
         }
 
         return value;
@@ -4780,7 +4529,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "ADR";
+        return "MO-ENV";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -4805,50 +4554,39 @@ class CModSlConfig : public ModulationSliderConfigBase
     StringRef get_center_suffix() const noexcept override
     {
         if( modulation->midi_control->get_ctrl_mode() )
-            return "X";
+            return "MO";
         else
             return "";
     }
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the CHORUS amount in percent.\n"
-               "(Will be the sustain level if 'FIX' is turned off)\n"
-               "(Has no effect if FX MIX is set to zero)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns 'FIX' on and off.\n"
-               "\n"
-               "If 'FIX IN' is enabled the CHORUS slider just defines the CHORUS amount.\n"
-               "If disabled the CHORUS slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between CHORUS amount and CHORUS ADR sliders.\n"
-
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set an ADR curve to control the CHORUS amount.\n"
-               "(Has no effect if FIX is enabled)\n"
-               "\n"
-               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
-               "The CHORUS slider amount will be the sustain level for your curve.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the chorus amount.\n"
+        "(Will be the sustain level if ENV is turned on)\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns morphable ENV modulations for the chorus amount on or off.\n"
+        "\n"
+        "If ENV is enabled the chorus dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
+        "If ENV is disabled the chorus dial defines just the chorus amount and the morphable envelope will be ignored."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "CHORUS AMOUNT",
+        "MORPH ENV"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define an envelope to control the chorus amount.\n"
+        "(Has no effect if ENV is turned off)\n"
+        "\n"
+        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
+        "The chorus dial (front dial) will be the sustain level for this envelope."
+    )
 
 public:
     CModSlConfig()
@@ -4986,42 +4724,30 @@ class GlideConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the NOTE GLIDE time in ms.\n"
-               "(Has no effect if the ARPEGGIATOR is turned off)\n"
-               "\n"
-               "Values larger zero will glide more and more smoothly from the last note to the current one.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Binds the steps of the ARPEGGIATOR.\n"
-               "(Has no effect if the ARPEGGIATOR is turned off)\n"
-               "\n"
-               "If enabled all steps without an empty step between will be handled as one note (no envelope retrigger)."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between NOTE GLIDE time and VELOCITY GLIDE sliders.\n"
-
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define the VELOCITY GLIDE time in ms.\n"
-               "\n"
-               "Values larger zero will glide more and more smoothly from the last velocity to the current one.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the note glide time.\n"
+        "\n"
+        "Values greater than 0 will glide more and more smoothly from the last note tune to the current one."
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Binds the steps of the arpeggiator.\n"
+        "(Has no effect if the ARP is turned off)\n"
+        "\n"
+        "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger)."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "NOTE GLIDE",
+        "VELOCITY GLIDE"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the velocity glide time.\n"
+        "\n"
+        "Values greater than 0 will glide more and more smoothly from the last velocity to the current one.\n"
+    )
 
 public:
     GlideConfig()
@@ -5144,35 +4870,19 @@ class ShuffleConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the SHUFFLE amount of the ARPEGGIATOR STEPS in note durations.\n"
-               "(Has no effect if the ARPEGGIATOR is turned off)\n"
-               "\n"
-               "Values larger zero makes the duration of each second ARPEGGIATOR step shorter and the step before longer.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns the ARPEGGIATOR on or off.\n"
-               "\n"
-               "If enabled notes will automatically triggered at the position of the enabled ARPEGGIATOR STEPS."
-
-               ;
-    }
-    /*
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the shuffle of the arpeggiator steps in note durations.\n"
+        "(Has no effect if ARP is turned off)\n"
+        "\n"
+        "Values greater than 0 decrease the duration of each second step and increase the step before."
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns the arpeggiator on or off.\n"
+        "\n"
+        "If enabled notes will automatically triggered at the position of the enabled arpeggiator steps."
+    )
 
 public:
     ShuffleConfig()
@@ -5258,15 +4968,33 @@ class EQSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "FIX";
+        return "ENV";
     }
     float get_top_button_amp() const noexcept override
     {
-        float value = FIXED_TOP_BUTTON_COLOUR;
-        if( ! synth_data->animate_eq_env )
-            value = NO_TOP_BUTTON_AMP;
-        else if( ! bool(hold->get_value()) ) {
-            value = mono_ParameterOwnerStore::getInstance()->voice->get_band_env_amp(id);
+        float value = NO_TOP_BUTTON_AMP;
+        const bool is_on = not bool(hold->get_value());
+        if( synth_data->animate_eq_env )
+        {
+            if( is_on )
+            {
+                value = mono_ParameterOwnerStore::getInstance()->voice->get_band_env_amp(id);
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
+        else
+        {
+            if( is_on )
+            {
+                value = TOP_BUTTON_IS_ON;
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
         }
 
         return value;
@@ -5280,7 +5008,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "ADR";
+        return "MO-ENV";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -5300,56 +5028,45 @@ class EQSlConfig : public ModulationSliderConfigBase
         if( velocity->midi_control->get_ctrl_mode() )
             return String( round001(state->get_value()+1) );
         else
-            return String( round01(velocity->get_value())  );
+            return String( round01(velocity->get_value()*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
         if( velocity->midi_control->get_ctrl_mode() )
-            return "X";
+            return "MO";
         else
             return "";
     }
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the BAND BOOST amount for this frequency.\n"
-               "(Will be the sustain level if 'FIX' is turned off)\n"
-               "\n"
-
-               "Values larger zero will boost this band. Values smaller zero will reduce this band"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "Turns 'FIX' on and off.\n"
-               "\n"
-               "If 'FIX' is enabled the BAND BOOST slider just defines the boost amount.\n"
-               "If disabled the BAND BOOST slider amount will be the sustain level of an ADR curve you can choose with the ADR slider (back slider)."
-
-               ;
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between BAND BOOST and ADR PRESET sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Set an ADR curve to control the band boost amount for this frequency.\n"
-               "(Will have no effect if 'FIX' is enabled)\n"
-               "\n"
-               "The slider position morphs between 4 ADR presets which you can define with the ADR preset editor (ADR button at the bottom of the main user interface).\n"
-               "The BAND BOOST slider amount will be the sustain level for your curve.\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the band boost amount for this frequency (bottom button caption).\n"
+        "(Will be the sustain level if ENV is turned on)\n"
+        "\n"
+        "Values greater than 0 will boost this band and values less than 0 will reduce it."
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns morphable ENV modulations for the band boost on or off.\n"
+        "\n"
+        "If ENV is enabled the band boost dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
+        "If ENV is disabled the band boost dial defines just the band boost amount and the morphable envelope will be ignored."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "BAND BOOST",
+        "MORPH ENV"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define an envelope to control the band boost amount.\n"
+        "(Has no effect if ENV is turned off)\n"
+        "\n"
+        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
+        "The band boost dial (front dial) will be the sustain level for this envelope."
+    )
 
 public:
     EQSlConfig( int id_ )
@@ -5488,39 +5205,25 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Define the NOTE OFFSET for this step in semitones.\n"
-               "(Has no effect if the ARPEGGIATOR is turned off)\n"
-               "\n"
-               "See: NOTE-G (NOTE GLIDE) (left)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "SEE MAINWINDOW";
-    }
-    */
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "Switch between NOTE OFFSET and VELOCITY OFFSET sliders.\n"
-               SHORTCUT_SHIFT;
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "Define the VELOCITY amount for this step.\n"
-               "(Has no effect if the ARPEGGIATOR is turned off)\n"
-               "\n"
-               "See: VELO-G (VELOCITY GLIDE) (left)\n"
-
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the note offset for this step in semitones.\n"
+        "(Has no effect if the arpeggiator (ARP) is turned off)\n"
+        "\n"
+        "See: NOTE-G (NOTE GLIDE) (left)"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "NOTE OFFSET",
+        "VELOCITY"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the velocity amount for this step.\n"
+        "(Has no effect if the arpeggiator (ARP) is turned off)\n"
+        "\n"
+        "See: VELO-G (VELOCITY GLIDE) (left)\n"
+    )
 
 public:
     ArpStepSlConfig( int id_ )
@@ -5647,47 +5350,30 @@ class MorphSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    StringRef get_tootip_front() const noexcept override
-    {
-        return "Morph between two programs, one the LEFT side and one on the RIGHT side.\n"
-               "\n"
-	       "\n"
-               "OSC Morph Group:\n"
-	       "Morphs: OSC's, FM\n"
-	       "Except: OSC SWITCH, OSC PULSE, BUTTONS\n"
-	       "\n"
-               "FLT Morph Group:\n"
-	       "Morphs: FILTERS\n"
-	       "Except: FILTER TYPE, BUTTONS\n"
-	       "\n"
-	       "FX Morph Group:\n"
-	       "Morphs: EQ BANK, SHAPE, REVERB, DELAY, CHORUS, FX-MIX, MASTER VOLUME, ADR PRESETS\n"
-	       "Except: BUTTONS\n"
-	       "\n"
-	       "ARP Morph Group:\n"
-	       "Morphs: (ARPEGGIATOR), SHUFFLE, NOTE-G, VELO-G, STEP NOTE, STEP VELOCITY\n"
-	       "Except: BUTTONS\n"
-	       "\n"
-	       "\n"
-	       "With the MORPH EDITOR you can load each of your available programs to the left or right side of each morph group."
-               GERNERAL_SLIDER_INFORMATION
-
-               ;
-    }
-    /*
-    StringRef get_tootip_top() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_bottom() const noexcept override
-    {
-        return "";
-    }
-    StringRef get_tootip_back() const noexcept override
-    {
-        return "";
-    }
-    */
+    TOP_SLIDER_DESCIPTION
+    (
+        "Morph between two programs, one the LEFT side and one on the RIGHT side.\n"
+        "\n"
+        "\n"
+        "OSC Morph Group:\n"
+        "Morphs: OSC's, FM\n"
+        "Except: OSC SWITCH, OSC PULSE, BUTTONS\n"
+        "\n"
+        "FLT Morph Group:\n"
+        "Morphs: FILTERS\n"
+        "Except: FILTER TYPE, BUTTONS\n"
+        "\n"
+        "FX Morph Group:\n"
+        "Morphs: EQ BANK, SHAPE, REVERB, DELAY, CHORUS, FX-MIX, MASTER VOLUME, ADR PRESETS\n"
+        "Except: BUTTONS\n"
+        "\n"
+        "ARP Morph Group:\n"
+        "Morphs: (ARPEGGIATOR), SHUFFLE, NOTE-G, VELO-G, STEP NOTE, STEP VELOCITY\n"
+        "Except: BUTTONS\n"
+        "\n"
+        "\n"
+        "With the morph editor (EDIT) you can load each of your programs to the left or right side of each morph group."
+    )
 
 public:
     MorphSLConfig(int id_)
@@ -5700,4 +5386,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
+
+
 

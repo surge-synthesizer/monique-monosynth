@@ -399,12 +399,14 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
     {
         current_modulation_amount = 1;
     }
-    last_modulation = current_modulation_in_percent_;
-
+    last_modulation = (current_modulation_in_percent_*current_modulation_amount);
     float smoothed_value = value_smoother.tick();
     if( current_modulation_amount >= 0 )
     {
-        smoothed_value += ((max_value-smoothed_value)*(current_modulation_in_percent_*current_modulation_amount));
+        const float max_modulation = max_value - smoothed_value;
+	const float modulation_offset = max_modulation*current_modulation_amount;
+	const float current_modulation_offset = modulation_offset*current_modulation_in_percent_;
+        smoothed_value += current_modulation_offset;
     }
     else
     {
@@ -1660,7 +1662,7 @@ public:
     //==============================================================================
     inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
     inline void update( int root_note_ ) noexcept;
-    
+
     inline void reset() noexcept;
 
 private:
@@ -1721,7 +1723,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
     // FM SWING
     const float master_fm_swing = master_osc_data->fm_swing;
-    const bool master_osc_modulation_is_off = id == MASTER_OSC ? master_osc_data->mod_off : false;
+    const bool master_osc_modulation_is_on = id == MASTER_OSC ? master_osc_data->o_mod : false;
     if( master_fm_swing != 0 ) {
         const bool was_negative = puls_swing_delta < 0;
         puls_swing_delta = sample_rate * master_fm_swing * 0.00000005;
@@ -1885,7 +1887,8 @@ inline void OSC::process(DataBuffer* data_buffer_,
             {
                 // TODO saw and square offset BLIT - HOW TO SOLVE???
                 // PULS |¯|_|¯¯¯|___|¯|_|¯¯¯|_
-                if( master_pulse_width < 0 )
+                const bool add_modulations = true ; // ( master_osc_modulation_is_on and id == MASTER_OSC ) or id != MASTER_OSC;
+                if( add_modulations and master_pulse_width < 0 )
                 {
                     current_puls_frequence_offset = (1.0f/12.0f*master_pulse_width*-1.0f);
                     if( last_puls_was_large )
@@ -1897,7 +1900,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     last_puls_was_large ^= true;
                 }
                 // PULS WITH _|¯|_  break  _|¯|_
-                else if( master_pulse_width > 0 and puls_with_break_counter < 1 )
+                else if( add_modulations and master_pulse_width > 0 and puls_with_break_counter < 1 )
                 {
                     puls_with_break_counter = master_pulse_width;
                     current_puls_frequence_offset = 0;
@@ -1911,7 +1914,8 @@ inline void OSC::process(DataBuffer* data_buffer_,
                 // SWING
                 if( master_switch > 0 )
                 {
-                    if( puls_swing_switch_counter <= 0 ) {
+                    if( puls_swing_switch_counter <= 0 )
+                    {
                         puls_swing_multi *= -1;
                         puls_swing_switch_counter = master_switch;
                     }
@@ -1987,23 +1991,26 @@ inline void OSC::process(DataBuffer* data_buffer_,
         // OUTPUT // PULS FALL DOWN
         {
             // OVERWRITE WITH ZERO PULS?
-            if( puls_with_break_counter > 0 and !master_osc_modulation_is_off ) {
+            if( puls_with_break_counter > 0 and master_osc_modulation_is_on )
+            {
                 sample = 0;
             }
 
             // AMP / FM SWING
             {
                 puls_swing_amp += puls_swing_delta;
-                if( puls_swing_amp < -1 ) {
+                if( puls_swing_amp < -1 )
+                {
                     puls_swing_amp = -1;
                     puls_swing_delta *= -1;
                 }
-                else if( puls_swing_amp > 1 ) {
+                else if( puls_swing_amp > 1 )
+                {
                     puls_swing_amp = 1;
                     puls_swing_delta *= -1;
                 }
                 {
-                    if( !master_osc_modulation_is_off )
+                    if( master_osc_modulation_is_on )
                     {
                         if( master_fm_swing > 0 )
                             modulator_sample *= puls_swing_amp;
@@ -2053,7 +2060,7 @@ inline void OSC::reset() noexcept
 
     octave_smoother.reset();
     fm_amount_smoother.reset();
-    
+
     lfo2fix_octave_smoother.reset();
 }
 
@@ -2902,7 +2909,7 @@ inline void DoubleAnalogFilter::updateLow2Pass(float resonance_, float cutoff_, 
     {
         flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
-	flt_2.r = 0;
+        flt_2.r = 0;
     }
 }
 inline float DoubleAnalogFilter::processLow2Pass(float in_) noexcept
@@ -2926,7 +2933,7 @@ inline void DoubleAnalogFilter::updateHigh2Pass(float resonance_, float cutoff_,
     {
         flt_2.calc_coefficients();
         flt_1.copy_coefficient_from( flt_2 );
-	flt_2.r = 0;
+        flt_2.r = 0;
     }
 }
 inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
@@ -5495,7 +5502,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
     if( current_note == -1 )
-      return;
+        return;
 
     Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave();
 
@@ -5769,6 +5776,7 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     delete one_sample_buffer;
 }
+
 
 
 

@@ -87,6 +87,8 @@ public:
     void resize_sequence_buttons();
     void switch_finalizer_tab();
     void update_slider_handling();
+    Array< Monique_Ui_DualSlider* > dual_sliders;
+    void update_slider_return_values();
     void update_size();
 
     Array<int> last_morpher_index;
@@ -296,6 +298,7 @@ private:
     ScopedPointer<Monique_Ui_SegmentedMeter> volume_master_meter;
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
+    ScopedPointer<Label> label_ui_headline14;
 
 
     //==============================================================================

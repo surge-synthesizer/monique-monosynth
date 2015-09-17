@@ -17,16 +17,56 @@ CHANGES 0.6
 - move the midi learn button to the midi setting and rename it to train
 - reduce the context menu (right mouse) to "set return value"
 - make the morph motor time and glide motor time to settings parameters and no more as project parameter
+- update return values on load another program
+
+- rename a lot of buttons
+- changed: buttons ALWAYS turn functions on if enabled and off if diabled (some buttons was turning functions off if enabled before))
+
+- change CAPTIONS
+-------------------------
+- OSC:
+----------------
+- "MOD OFF" to "O-MOD" (it's now a button to turn the function on) (please invert it in your projects)
+- "WAVE" to "WAV-1", "WAV-2"... 
+- "OSC 1" to "TUNE-1", "TUNE-2"... 
+- "LFO 1"; "LFO 2" to "L-MOD"... 
+
+- FM
+----------------
+- "OSC PULSE" to "O-PULSE"
+- "OSC SWITCH" to "O-SWCH"
+
+- general
+- "MOD (%)" to "MOD %" (shorter, more readable)
+
+- add shortcuts to the area captions. EXAMPLE: "OSCILLATORS" to "OSCILLATORS (O)"
 
 TODO:
-- glide time and morph time to settings
+play always, also if the daw is offline
+lfo animation is buggy
+crash wenn tim auf adr geht
+filter input not 0 by default
+massive probleme mit dem oscilloscope on mac
+klare line bei den button was ist an oder aus -> negativ is nicht an, immer positiv an!
+sensing message an live
+modul to mod
+ctrl == command 
+load colour theme
+parameter feedback
+blinken muss immer auch die an schaltung ersichlich sein!
 
-- add-back: morph toggles
-- add-back set from current for all
-- buggy manual morph if auto morph is running -> stop auto morph on manual morph
-- set from current updated the morph group a bit... this is uncorrect
+one second:
+explain a dual slider quick
+explain the main ui quick
 
-- add: midi mod wheel; pitch wheel support
+-dial animation for envs like for waves?
+- fix osc pulse for osc2&3
+
+- option to make linear sliders to rotarys
+
+- check midi sync, add virtual ports and host handling
+
+- add: midi mod wheel; pitch wheel support, feedback, refactore midi handling classes
 - add: panic
 - add: modwheel to ui
 - close devices
@@ -35,7 +75,10 @@ TODO:
 - osc square and saw going out of center on higher octaves
 - osc mod off turns not of negative pulse
 
-- update return values on load
+- buggy manual morph if auto morph is running -> stop auto morph on manual morph
+- set from current updated the morph group a bit... this is uncorrect
+
+- turn off tooltips
 
 QUESTS
 - no retrigger on press key if the arp is enabeld
@@ -84,6 +127,8 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- add-back set from current for all
+- add-back: morph toggles
 - midi option (channel, note support)
 - advanced settings: osci, adsr presets
 - advanced settings: morph
@@ -95,3 +140,4 @@ PRRRRRROOOOOOOOOOOOOOO
 - open an editor to define a pattern if steps for a step
 - add: keyboard arrow up/down, left/right to control slider values
 - record to file standalone
+- osc open sound control

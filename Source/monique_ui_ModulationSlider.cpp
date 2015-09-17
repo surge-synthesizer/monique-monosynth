@@ -164,7 +164,7 @@ noexcept
         bottom_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
         bottom_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
 
-	StringRef tooltip = slider_config_->get_tootip_bottom();
+        StringRef tooltip = slider_config_->get_tootip_bottom();
         if( not tooltip.isEmpty() )
         {
             bottom_button_->setTooltip( tooltip.text );
@@ -186,7 +186,7 @@ noexcept
         top_button_->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_off_colour );
         top_button_->setColour (TextButton::textColourOnId, UiLookAndFeel::getInstance()->colours.label_text_colour );
 
-	StringRef tooltip = slider_config_->get_tootip_top();
+        StringRef tooltip = slider_config_->get_tootip_top();
         if( not tooltip.isEmpty() )
         {
             top_button_->setTooltip( tooltip.text );
@@ -222,7 +222,14 @@ void Monique_Ui_DualSlider::show_view_mode()
     if( button_bottom )
     {
         button_bottom->setButtonText( not is_in_ctrl_mode ? _config->get_bottom_button_text().text : _config->get_bottom_button_switch_text().text );
-        button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? UiLookAndFeel::getInstance()->colours.button_on_colour : UiLookAndFeel::getInstance()->colours.button_off_colour );
+        if( modulation_parameter )
+        {
+            button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? UiLookAndFeel::getInstance()->colours.slider_track_colour_modulation : UiLookAndFeel::getInstance()->colours.button_off_colour );
+        }
+        else
+        {
+            button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? UiLookAndFeel::getInstance()->colours.slider_track_colour_2 : UiLookAndFeel::getInstance()->colours.button_off_colour );
+        }
     }
 
     if( label_top )
@@ -231,6 +238,25 @@ void Monique_Ui_DualSlider::show_view_mode()
         {
             label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
             label_top->repaint();
+        }
+    }
+}
+
+void Monique_Ui_DualSlider::update_return_values() noexcept
+{
+    if( slider_value )
+    {
+        slider_value->setDoubleClickReturnValue( true, front_parameter->get_value() );
+    }
+    if( slider_modulation )
+    {
+        if( modulation_parameter )
+        {
+            slider_modulation->setDoubleClickReturnValue( true, modulation_parameter->get_modulation_amount() );
+        }
+        else if( back_parameter )
+        {
+            slider_modulation->setDoubleClickReturnValue( true, back_parameter->get_value() );
         }
     }
 }
@@ -250,11 +276,28 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     amp*=-1;
                 if( amp > 1 )
                     amp = 1;
+                amp = (amp+1)*0.5f;
 
                 button_top->setColour
                 (
                     TextButton::buttonColourId,
                     UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-amp ).interpolatedWith(UiLookAndFeel::getInstance()->colours.button_off_colour,1.0f-amp)
+                );
+            }
+            else if( amp == TOP_BUTTON_IS_ON )
+            {
+                button_top->setColour
+                (
+                    TextButton::buttonColourId,
+                    UiLookAndFeel::getInstance()->colours.button_on_colour
+                );
+            }
+            else if( amp == TOP_BUTTON_IS_OFF )
+            {
+                button_top->setColour
+                (
+                    TextButton::buttonColourId,
+                    UiLookAndFeel::getInstance()->colours.button_off_colour
                 );
             }
             else if( amp == FIXED_TOP_BUTTON_COLOUR )
@@ -533,7 +576,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
-                                              String::empty));
+            String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (true, true, false);
@@ -881,3 +924,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

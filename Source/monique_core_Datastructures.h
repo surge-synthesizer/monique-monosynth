@@ -292,7 +292,7 @@ struct OSCData
 
     BoolParameter fm_wave; // TODO RENAME!
     BoolParameter sync;
-    BoolParameter mod_off;
+    BoolParameter o_mod;
 
     IntParameter puls_width;
     Parameter fm_swing;
