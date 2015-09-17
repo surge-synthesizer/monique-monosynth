@@ -404,8 +404,8 @@ inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ 
     if( current_modulation_amount >= 0 )
     {
         const float max_modulation = max_value - smoothed_value;
-	const float modulation_offset = max_modulation*current_modulation_amount;
-	const float current_modulation_offset = modulation_offset*current_modulation_in_percent_;
+        const float modulation_offset = max_modulation*current_modulation_amount;
+        const float current_modulation_offset = modulation_offset*current_modulation_in_percent_;
         smoothed_value += current_modulation_offset;
     }
     else
@@ -5728,32 +5728,62 @@ COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
     clearSingletonInstance();
 }
 //==============================================================================
-void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ )
+void mono_ParameterOwnerStore::init_ui_env() noexcept
 {
-    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
+    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstance();
     if( ! store->ui_env )
     {
-        store->ui_env_preset_data = new ENVPresetData( 999, store->env_preset_def );
+        store->ui_env_preset_def = new ENVPresetDef( 999 );
+        store->ui_env_preset_data = new ENVPresetData( 999, store->ui_env_preset_def );
         store->ui_env = new ENV( GET_DATA_PTR( synth_data ), store->ui_env_preset_data );
     }
+}
+void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ ) noexcept
+{
+    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
     ENV* env = store->ui_env;
     ENVPresetData* data = store->ui_env_preset_data;
+    ENVPresetDef* def = store->ui_env_preset_def;
+
+    int max_viewed_time = 30+30+30+30;
+    const float time_reducer = 0.1;
+    def->attack_1 = store->synth_data->env_preset_def->attack_1 * time_reducer;
+    def->attack_2 = store->synth_data->env_preset_def->attack_2 * time_reducer;
+    def->attack_3 = store->synth_data->env_preset_def->attack_3 * time_reducer;
+    def->attack_4 = store->synth_data->env_preset_def->attack_4 * time_reducer;
+    
+    def->decay_1 = store->synth_data->env_preset_def->decay_1 * time_reducer;
+    def->decay_2 = store->synth_data->env_preset_def->decay_2 * time_reducer;
+    def->decay_3 = store->synth_data->env_preset_def->decay_3 * time_reducer;
+    def->decay_4 = store->synth_data->env_preset_def->decay_4 * time_reducer;
+    
+    def->sustain_time_1 = store->synth_data->env_preset_def->sustain_time_1 * time_reducer;
+    def->sustain_time_2 = store->synth_data->env_preset_def->sustain_time_2 * time_reducer;
+    def->sustain_time_3 = store->synth_data->env_preset_def->sustain_time_3 * time_reducer;
+    def->sustain_time_4 = store->synth_data->env_preset_def->sustain_time_4 * time_reducer;
+    
+    def->release_1 = store->synth_data->env_preset_def->release_1 * time_reducer;
+    def->release_2 = store->synth_data->env_preset_def->release_2 * time_reducer;
+    def->release_3 = store->synth_data->env_preset_def->release_3 * time_reducer;
+    def->release_4 = store->synth_data->env_preset_def->release_4 * time_reducer;
+    
     data->state = state_;
     data->sustain = 0.5;
-    float* one_sample_buffer = new float;
+    
+    float one_sample_buffer = 0;
     bool count_sustain = false;
     env->start_attack( false );
     env->overwrite_current_value( 0.5 );
     env->set_current_stage( RELEASE );
     env->start_attack( true );
-    const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() / 10;
+    const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() * 0.05;
     sustain_end_ = -1;
     while( env->get_current_stage() != END_ENV )
     {
         // GET DATA
-        env->process( one_sample_buffer, 1 );
+        env->process( &one_sample_buffer, 1 );
         if( env->get_current_stage() != SUSTAIN )
-            curve.add(*one_sample_buffer);
+            curve.add( one_sample_buffer );
 
         // START COUNT SUSTAIN
         if( env->get_current_stage() == SUSTAIN && ! count_sustain )
@@ -5773,8 +5803,6 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
             sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate());
         }
     }
-
-    delete one_sample_buffer;
 }
 
 

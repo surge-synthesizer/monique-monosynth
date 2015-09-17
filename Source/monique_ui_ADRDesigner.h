@@ -51,9 +51,6 @@ public:
     const float original_h;
 
 private:
-    int repaint_counter;
-    int last_repaint_counter;
-
     void refresh() noexcept override;
     Array< float > curve;
 

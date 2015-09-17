@@ -1010,11 +1010,13 @@ public:
     MoniqueSynthesiserVoice* voice;
 
     // ==============================================================================
+    ENVPresetDef* ui_env_preset_def;
     ENVPresetData* ui_env_preset_data;
     ENV* ui_env;
 
     // ==============================================================================
-    static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ );
+    static void init_ui_env() noexcept;
+    static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ ) noexcept;
 
     // ==============================================================================
     COLD mono_ParameterOwnerStore() noexcept;
