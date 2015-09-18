@@ -207,8 +207,9 @@ puls_width
 ),
 fm_swing
 (
-    MIN_MAX( 0, 16 ),
+    MIN_MAX( 0, 1 ),
     0,
+    1000,
     generate_param_name(OSC_NAME,id_,"fm_swing"),
     generate_short_human_name(OSC_NAME,id_,"fm_swing")
 ),
@@ -3138,12 +3139,12 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
             read_from(xml);
             success = true;
 
-	    /* NOTE OPTION
-            if( Monique_Ui_Mainwindow*mainwindow = AppInstanceStore::getInstance()->editor )
-            {
-                mainwindow->update_slider_return_values();
-            }
-            */
+            /* NOTE OPTION
+                if( Monique_Ui_Mainwindow*mainwindow = AppInstanceStore::getInstance()->editor )
+                {
+                    mainwindow->update_slider_return_values();
+                }
+                */
         }
         else
         {

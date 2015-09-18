@@ -295,7 +295,7 @@ struct OSCData
     BoolParameter o_mod;
 
     IntParameter puls_width;
-    IntParameter fm_swing;
+    Parameter fm_swing;
     IntParameter osc_switch;
 
     // FOR UI FEEDBACK

@@ -119,6 +119,21 @@ private:
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
+#define SNAP_TO_ZERO_AMOUNT 0.00001f
+static inline float snap_to_zero( float x_ ) noexcept
+{
+    if( x_ < SNAP_TO_ZERO_AMOUNT and x_ > -SNAP_TO_ZERO_AMOUNT )
+    {
+        x_ = 0;
+    }
+
+    return x_;
+}
+
+
+// ==============================================================================
+// ==============================================================================
+// ==============================================================================
 // TODO is it more performant to have the listerner functions not inlined in the param class?
 // -> e.g. move to info?
 class MIDIControl;
@@ -171,6 +186,7 @@ public:
     // SETTER
     inline void set_value( float value_ ) noexcept
     {
+        value_ = snap_to_zero(value_);
         if( value != value_ )
         {
             if( value_ > info->max_value )
@@ -197,6 +213,7 @@ public:
     }
     inline void set_value_without_notification( float value_ ) noexcept
     {
+        value_ = snap_to_zero(value_);
         if( value != value_ )
         {
             if( value_ > info->max_value )
@@ -227,6 +244,7 @@ public:
     // MODULATOR (OPTIONAL PARAMETER)
     inline void set_modulation_amount( float modulation_amount_ ) noexcept
     {
+        modulation_amount_ = snap_to_zero(modulation_amount_);
         if( modulation_amount != modulation_amount_ )
         {
             if( modulation_amount_ > 1 )
@@ -244,6 +262,7 @@ public:
     }
     inline void set_modulation_amount_without_notification( float modulation_amount_ ) noexcept
     {
+        modulation_amount_ = snap_to_zero(modulation_amount_);
         if( modulation_amount != modulation_amount_ )
         {
             if( modulation_amount_ > 1 )
@@ -1208,6 +1227,7 @@ static inline void read_midi_from( const XmlElement& xml_, Parameter* param_ ) n
 }
 
 #endif
+
 
 
 

@@ -291,8 +291,8 @@ class WAVESlConfig : public ModulationSliderConfigBase
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "OSC 1: Turns oscillator modulations on and off (OSC PULSE and OSC SWITCH).\n"
-        "(See FM section: O-PULSE and O-SWITCH dials)\n"
+        "OSC 1: Turns oscillator modulations on and off (OSC PULSE, OSC SWITCH and FM SWING).\n"
+        "(See FM section: O-PULSE, O-SWITCH and FM SWING dials)\n"
         "\n"
         "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
         "\n"
@@ -445,10 +445,14 @@ class OSCSlConfig : public ModulationSliderConfigBase
     {
         const float value = octave->get_value();
         if( octave->midi_control->get_ctrl_mode() )
+        {
             return String( round0(octave->get_modulation_amount() * 100) );
+        }
         else
         {
-            if( value < 10 and value > -10 )
+            if( value == 0 )
+                return String(0);
+            else if( value < 10 and value > -10 )
                 return String(round001(value));
             else
                 return String(round01(value));
@@ -617,14 +621,14 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         if( fm_multi->midi_control->get_ctrl_mode() )
         {
-            const int swing = fm_swing->get_value();
+            const float swing = fm_swing->get_value();
             if( swing == 0 )
             {
                 return "OFF";
             }
             else
             {
-                return String( ArpSequencerData::shuffle_to_text( 17-swing ).text );
+                return String( swing );
             }
         }
         else

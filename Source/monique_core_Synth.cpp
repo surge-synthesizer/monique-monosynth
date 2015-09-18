@@ -1722,26 +1722,18 @@ inline void OSC::process(DataBuffer* data_buffer_,
     const float* const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
 
     // FM SWING
-    const int master_fm_swing = master_osc_data->fm_swing;
+    const float master_fm_swing = master_osc_data->fm_swing;
     const bool master_osc_modulation_is_on = id == MASTER_OSC ? master_osc_data->o_mod : true;
     if( master_fm_swing != 0 )
     {
         const bool was_negative = puls_swing_delta < 0;
-
         {
-            double samples_per_min = sample_rate*60;
-            double beats_per_min = GET_DATA( runtime_info ).bpm;
-            double beats_per_sample = beats_per_min/samples_per_min;
-            float samples_per_swing_cylce = beats_per_sample / ArpSequencerData::shuffle_to_value( 17-master_fm_swing );
-
-            puls_swing_delta = samples_per_swing_cylce;
-
-            debug_sample_print( puls_swing_delta, 2000 );
-        }
-
-        if( was_negative )
-        {
-            puls_swing_delta *= -1;
+	  todo glide the delta!
+            puls_swing_delta = (1.0f + 30.0f * master_fm_swing)*sample_rate_1ths;
+            if( was_negative )
+            {
+                puls_swing_delta *=-1;
+            }
         }
     }
     else
@@ -1771,16 +1763,17 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
             // GLIDE
             bool is_glide_rest = false;
-            if( glide_time_in_samples > 0 ) {
+            if( glide_time_in_samples > 0 )
+            {
                 --glide_time_in_samples;
                 is_glide_rest = true;
             }
             if
             (
                 _last_root_note != _root_note
-                || octave_smoother.is_changed_since_last_tick()
-                || is_glide_rest
-                || last_cycle_was_pulse_switch
+                or octave_smoother.is_changed_since_last_tick()
+                or is_glide_rest
+                or last_cycle_was_pulse_switch
             )
             {
                 float new_frequence;
@@ -1804,7 +1797,8 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     if( new_frequence < 1 )
                         new_frequence = 1;
                 }
-                if( last_frequency != new_frequence ) {
+                if( last_frequency != new_frequence )
+                {
                     saw_generator.setFrequency(new_frequence);
                     square_generator.setFrequency(new_frequence);
                     sine_generator.setFrequency(new_frequence);
@@ -1812,11 +1806,31 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     change_modulator_frequency = true;
 
                     last_frequency = new_frequence;
+
+                    // HERE THE SWING
+                    /*
+                    {
+                                double samples_per_min = sample_rate*60;
+                                double beats_per_min = GET_DATA( runtime_info ).bpm;
+                                double beats_per_sample = beats_per_min/samples_per_min;
+                                float samples_per_swing_cylce = beats_per_sample / ArpSequencerData::shuffle_to_value( 17-master_fm_swing );
+
+                                puls_swing_delta = samples_per_swing_cylce;
+
+                                debug_sample_print( ArpSequencerData::shuffle_to_value( 17-master_fm_swing), 2000 );
+                            }
+                    {
+                        puls_swing_delta = (last_frequency/master_fm_swing) * sample_rate_1ths;
+
+                        debug_sample_print( ArpSequencerData::shuffle_to_value( 17-master_fm_swing), 2000 );
+                    }
+                            */
                 }
 
                 _last_root_note = _root_note;
             }
-            else if( master_fm_multi != last_modulator_multi ) {
+            else if( master_fm_multi != last_modulator_multi )
+            {
                 change_modulator_frequency = true;
             }
 

@@ -1,3 +1,6 @@
+DONE:
+- change return value to factory default
+- fm swing better adjustable (reduce max speed)
 
 TODO:
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
@@ -28,6 +31,28 @@ TODO:
 QUESTS:
 - no retrigger on press key if the arp is enabeld?
 - option to keep the arp on or of as global var?
+
+TIM
+Ok hier mal ‚ne kurze Liste:
+
+- sehr geiles Teil
+- läuft
+- jetzt kommt Kritik
+- die Regler müssen definitiv mapbar sein, sonst kann man nicht automatisieren
+- es MUSS einen Pan Regler für die 3 Kanäle geben - auch Automatisierbar (LFO, ENV (evtl.)
+- bei Reso steht immer noch „Modul“
+- Denn Filter müssen wir uns unbedingt mal näher anschauen - tut nicht so wie ich will, aber das kann auch an meiner jetzigen Unkenntnis liegen 
+- Die FM Sektion vom OSC Morph Dial (rotary Fader  wird nicht mit automatisiert
+- wie kann ich doofen Popups abschalten? Da sollte auch ein Button (an der obersten Ebene der GUI) sein, wo man die Hilfe ein & aus schalten kann
+- Das Hilfe Popup reagiert etwas „Rude“ wie ich finde
+- wie verhält sich das jetzt mit Sequenzer und live gespielten Noten (find ich gut wie sich das grade verhält aber es ist ein Mysterium für mich   … also fast zumindest …
+
+So, da ich ja ab und an auch in meinem Alter noch etwas lernfähig bin hab ich jetzt anfangs auch mal mit was positiven begonnen, danach kommt schon so ein kleiner Vorgeschmack zu der mail die Du dann morgen von mir bekommst.
+
+Also dann mal ‚ne ruhige Nacht 
+
+Gruss Tim
+
 
 -------------------------------------------------------------------
 
