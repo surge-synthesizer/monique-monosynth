@@ -246,17 +246,17 @@ void Monique_Ui_DualSlider::update_return_values() noexcept
 {
     if( slider_value )
     {
-        slider_value->setDoubleClickReturnValue( true, front_parameter->get_value() );
+        slider_value->setDoubleClickReturnValue( true, front_parameter->get_info().init_value );
     }
     if( slider_modulation )
     {
         if( modulation_parameter )
         {
-            slider_modulation->setDoubleClickReturnValue( true, modulation_parameter->get_modulation_amount() );
+            slider_modulation->setDoubleClickReturnValue( true, modulation_parameter->get_info().init_modulation_amount );
         }
         else if( back_parameter )
         {
-            slider_modulation->setDoubleClickReturnValue( true, back_parameter->get_value() );
+            slider_modulation->setDoubleClickReturnValue( true, back_parameter->get_info().init_value );
         }
     }
 }

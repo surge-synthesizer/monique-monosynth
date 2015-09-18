@@ -207,9 +207,8 @@ puls_width
 ),
 fm_swing
 (
-    MIN_MAX( 0, 1 ),
+    MIN_MAX( 0, 16 ),
     0,
-    1000,
     generate_param_name(OSC_NAME,id_,"fm_swing"),
     generate_short_human_name(OSC_NAME,id_,"fm_swing")
 ),

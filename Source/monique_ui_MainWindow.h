@@ -88,7 +88,7 @@ public:
     void switch_finalizer_tab();
     void update_slider_handling();
     Array< Monique_Ui_DualSlider* > dual_sliders;
-    void update_slider_return_values();
+    //void update_slider_return_values();
     void update_size();
 
     Array<int> last_morpher_index;

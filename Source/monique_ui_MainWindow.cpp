@@ -252,6 +252,7 @@ void Monique_Ui_Mainwindow::update_slider_handling()
 {
     update_slider_handling_(this);
 }
+/*
 void Monique_Ui_Mainwindow::update_slider_return_values()
 {
     for( int i = 0 ; i != dual_sliders.size() ; ++i )
@@ -261,6 +262,7 @@ void Monique_Ui_Mainwindow::update_slider_return_values()
     }
 
 }
+*/
 void Monique_Ui_Mainwindow::update_size()
 {
     float ui_scale_factor = synth_data->ui_scale_factor;
@@ -1218,7 +1220,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     combo_programm->setEditableText(false);
     update_slider_handling();
-    update_slider_return_values();
+    //update_slider_return_values();
 
     /*
     //[/UserPreSize]

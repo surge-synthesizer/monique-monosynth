@@ -1,91 +1,33 @@
-CHANGES 0.6
-- add 3 basic colour presets ( need to be optimized - if anybody like to create a theme -> send it to me :-) )
-- add support for load save audio and midi devices
-- simplifyed CC : only CC (no notes) are supported and receive on each MIDI channel
-- fix: arp note value show 0....
-- fix lfo sync and speed
-- changed filter resoanance and gain!!!!!!
-- set min velocity glide time to 30ms and max 999
-- fix: show velocity and note glide time values on ui
-- fix: reset osc if the synt "sleeps"
-- adjust the ui size to 95% of the size of the desktop if the desktop is to small for the current/tryed scale
-- remove audio options from plugin - add vst and versions info instead
-- change shuffle: snap to note durations
-- add modulation amount to automatable parameters (plugin)
-- add tooltips
-- start adr preset sliders from 1 not from 0
-- move the midi learn button to the midi setting and rename it to train
-- reduce the context menu (right mouse) to "set return value"
-- make the morph motor time and glide motor time to settings parameters and no more as project parameter
-- update return values on load another program
-- plugin fix: playback works also if the daw not runs
-- disable double click to program value
-
-- rename a lot of buttons
-- changed: buttons ALWAYS turn functions on if enabled and off if diabled (some buttons was turning functions off if enabled before))
-- fix/change button animations
-
-- fix colour load bug on mac. -> please delete your config file if you have problems with the colours.
-
-- change CAPTIONS
--------------------------
-- OSC:
-----------------
-- "MOD OFF" to "O-MOD" (it's now a button to turn the function on) (please invert it in your projects)
-- "WAVE" to "WAV-1", "WAV-2"... 
-- "OSC 1" to "TUNE-1", "TUNE-2"... 
-- "LFO 1"; "LFO 2" to "L-MOD"... 
-
-- FM
-----------------
-- "OSC PULSE" to "O-PULSE"
-- "OSC SWITCH" to "O-SWCH"
-
-- general
-- "MOD (%)" to "MOD %" (shorter, more readable)
-
-- add shortcuts to the area captions. EXAMPLE: "OSCILLATORS" to "OSCILLATORS (O)"
 
 TODO:
-- do not ask for save first if you try to load the new program
+- bug: if you delete a old program and it was changed, it asks for save that deleted one!
+- add: a good default program or settings to start with monique (e.g. filter inputs not zero)
+- add: plugin: parameter feedback is not implemented yet
+- add: a layer with help information for the main ui (Also explain a dual slider quick)
+- bug: osc pulse for osc2&3
+- bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
 
-- if you delete a old program and it was changed, it asks for save that deleted one!
+- add: option to make linear sliders to dials or change the sensitivity
 
-play always, also if the daw is offline
-crash wenn tim auf adr geht
-filter input not 0 by defaultctrl == command 
-load colour theme
-parameter feedback
-
-one second:
-explain a dual slider quick
-explain the main ui quick
-
--dial animation for envs like for waves?
-- fix osc pulse for osc2&3
-
-- option to make linear sliders to rotarys
-
-- check midi sync, add virtual ports and host handling
+- midi sync works again, but i've to check this modul and have to add virtual ports and host handling
 
 - add: midi mod wheel; pitch wheel support, feedback, refactore midi handling classes
 - add: panic
-- add: modwheel to ui
-- close devices
 
 - osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
 - osc square and saw going out of center on higher octaves
-- osc mod off turns not of negative pulse
 
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - set from current updated the morph group a bit... this is uncorrect
 
 - turn off tooltips
 
-QUESTS
-- no retrigger on press key if the arp is enabeld
-- should have buttons which enables ADSR preset curves have an own colour? 
-- option to keep the arp on or of as global var!
+- fm swing in notenlängen
+
+
+QUESTS:
+- no retrigger on press key if the arp is enabeld?
+- option to keep the arp on or of as global var?
 
 -------------------------------------------------------------------
 

@@ -295,7 +295,7 @@ struct OSCData
     BoolParameter o_mod;
 
     IntParameter puls_width;
-    Parameter fm_swing;
+    IntParameter fm_swing;
     IntParameter osc_switch;
 
     // FOR UI FEEDBACK
@@ -646,6 +646,8 @@ inline float ArpSequencerData::shuffle_to_value( int suffle_ ) noexcept
         return 6.0f/8;
     case 15 :
         return 7.0f/8;
+    case 16 :
+        return 1;
     }
 }
 
@@ -686,6 +688,8 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
         return "6/8";
     case 15 :
         return "7/8";
+    case 16 :
+        return "1/1";
     }
 }
 

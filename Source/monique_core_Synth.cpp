@@ -1722,16 +1722,32 @@ inline void OSC::process(DataBuffer* data_buffer_,
     const float* const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
 
     // FM SWING
-    const float master_fm_swing = master_osc_data->fm_swing;
-    const bool master_osc_modulation_is_on = id == MASTER_OSC ? master_osc_data->o_mod : false;
-    if( master_fm_swing != 0 ) {
+    const int master_fm_swing = master_osc_data->fm_swing;
+    const bool master_osc_modulation_is_on = id == MASTER_OSC ? master_osc_data->o_mod : true;
+    if( master_fm_swing != 0 )
+    {
         const bool was_negative = puls_swing_delta < 0;
-        puls_swing_delta = sample_rate * master_fm_swing * 0.00000005;
+
+        {
+            double samples_per_min = sample_rate*60;
+            double beats_per_min = GET_DATA( runtime_info ).bpm;
+            double beats_per_sample = beats_per_min/samples_per_min;
+            float samples_per_swing_cylce = beats_per_sample / ArpSequencerData::shuffle_to_value( 17-master_fm_swing );
+
+            puls_swing_delta = samples_per_swing_cylce;
+
+            debug_sample_print( puls_swing_delta, 2000 );
+        }
+
         if( was_negative )
+        {
             puls_swing_delta *= -1;
+        }
     }
     else
+    {
         puls_swing_amp = 1;
+    }
 
     const int glide_motor_time = synth_data->glide_motor_time;
     ValueSmootherModulatedUpdater u_octave( &octave_smoother, glide_motor_time );
@@ -1887,8 +1903,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
             {
                 // TODO saw and square offset BLIT - HOW TO SOLVE???
                 // PULS |¯|_|¯¯¯|___|¯|_|¯¯¯|_
-                const bool add_modulations = true ; // ( master_osc_modulation_is_on and id == MASTER_OSC ) or id != MASTER_OSC;
-                if( add_modulations and master_pulse_width < 0 )
+                if( master_pulse_width < 0 )
                 {
                     current_puls_frequence_offset = (1.0f/12.0f*master_pulse_width*-1.0f);
                     if( last_puls_was_large )
@@ -1900,7 +1915,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     last_puls_was_large ^= true;
                 }
                 // PULS WITH _|¯|_  break  _|¯|_
-                else if( add_modulations and master_pulse_width > 0 and puls_with_break_counter < 1 )
+                else if( master_pulse_width > 0 and puls_with_break_counter < 1 )
                 {
                     puls_with_break_counter = master_pulse_width;
                     current_puls_frequence_offset = 0;
@@ -5751,25 +5766,25 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     def->attack_2 = store->synth_data->env_preset_def->attack_2 * time_reducer;
     def->attack_3 = store->synth_data->env_preset_def->attack_3 * time_reducer;
     def->attack_4 = store->synth_data->env_preset_def->attack_4 * time_reducer;
-    
+
     def->decay_1 = store->synth_data->env_preset_def->decay_1 * time_reducer;
     def->decay_2 = store->synth_data->env_preset_def->decay_2 * time_reducer;
     def->decay_3 = store->synth_data->env_preset_def->decay_3 * time_reducer;
     def->decay_4 = store->synth_data->env_preset_def->decay_4 * time_reducer;
-    
+
     def->sustain_time_1 = store->synth_data->env_preset_def->sustain_time_1 * time_reducer;
     def->sustain_time_2 = store->synth_data->env_preset_def->sustain_time_2 * time_reducer;
     def->sustain_time_3 = store->synth_data->env_preset_def->sustain_time_3 * time_reducer;
     def->sustain_time_4 = store->synth_data->env_preset_def->sustain_time_4 * time_reducer;
-    
+
     def->release_1 = store->synth_data->env_preset_def->release_1 * time_reducer;
     def->release_2 = store->synth_data->env_preset_def->release_2 * time_reducer;
     def->release_3 = store->synth_data->env_preset_def->release_3 * time_reducer;
     def->release_4 = store->synth_data->env_preset_def->release_4 * time_reducer;
-    
+
     data->state = state_;
     data->sustain = 0.5;
-    
+
     float one_sample_buffer = 0;
     bool count_sustain = false;
     env->start_attack( false );

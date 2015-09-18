@@ -609,20 +609,36 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        if( fm_multi->midi_control->get_ctrl_mode() )
+        {
+            const int swing = fm_swing->get_value();
+            if( swing == 0 )
+            {
+                return "OFF";
+            }
+            else
+            {
+                return String( ArpSequencerData::shuffle_to_text( 17-swing ).text );
+            }
+        }
+        else
+        {
+            return String( fm_multi->get_value() );
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( fm_multi->midi_control->get_ctrl_mode() )
+            return "th";
+        else
+            return "";
     }
-    */
 
     //==============================================================================
     // TOOLTIP
