@@ -830,9 +830,8 @@ struct MoniqueSynthData : ParameterListener
     IntParameter num_extra_threads;
 
     // SETTINGS
-    BoolParameter animate_input_env;
-    BoolParameter animate_eq_env;
-    BoolParameter animate_modulations;
+    BoolParameter animate_envs;
+    BoolParameter show_tooltips;
     BoolParameter sliders_in_rotary_mode;
     IntParameter sliders_sensitivity;
     Parameter ui_scale_factor;

@@ -401,7 +401,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value;
-        if( synth_data->animate_modulations )
+        if( synth_data->animate_envs )
         {
             if( bool(is_lfo_modulated->get_value()) )
             {
@@ -969,7 +969,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     {
         float value = NO_TOP_BUTTON_AMP;
         const bool is_on = not bool(input_hold->get_value());
-        if( synth_data->animate_input_env )
+        if( synth_data->animate_envs )
         {
             if( is_on )
             {
@@ -4515,7 +4515,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         float value = NO_TOP_BUTTON_AMP;
         const bool is_on = not bool(hold_modulation->get_value());
-        if( synth_data->animate_eq_env )
+        if( synth_data->animate_envs )
         {
             if( is_on )
             {
@@ -4994,7 +4994,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         float value = NO_TOP_BUTTON_AMP;
         const bool is_on = not bool(hold->get_value());
-        if( synth_data->animate_eq_env )
+        if( synth_data->animate_envs )
         {
             if( is_on )
             {

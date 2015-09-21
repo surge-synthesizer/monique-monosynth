@@ -1083,6 +1083,8 @@ COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 //==============================================================================
 static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ ) noexcept
 {
+    dest_->is_on = src_->is_on;
+
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
 
@@ -1097,7 +1099,10 @@ static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ )
 }
 static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< Parameter* >& params_ ) noexcept
 {
-    for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i ) {
+    params_.add( &data_->is_on );
+
+    for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
+    {
         params_.add( &data_->step[i] );
         params_.add( &data_->tune[i] );
         params_.add( &data_->velocity[i] );
@@ -1871,23 +1876,17 @@ num_extra_threads
 ),
 
 // -------------------------------------------------------------
-animate_input_env
+animate_envs
 (
     true,
-    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_input_env"),
-    generate_short_human_name("animate_input_env")
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
+    generate_short_human_name("animate_envs")
 ),
-animate_eq_env
+show_tooltips
 (
     true,
-    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_eq_env"),
-    generate_short_human_name("animate_eq_env")
-),
-animate_modulations
-(
-    true,
-    generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_modulations"),
-    generate_short_human_name("animate_modulations")
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
+    generate_short_human_name("show_tooltips")
 ),
 sliders_in_rotary_mode
 (
@@ -2181,9 +2180,8 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &osci_show_range );
     global_parameters.add( &num_extra_threads );
 
-    global_parameters.add( &animate_input_env );
-    global_parameters.add( &animate_eq_env );
-    global_parameters.add( &animate_modulations );
+    global_parameters.add( &animate_envs );
+    global_parameters.add( &show_tooltips );
 
     global_parameters.add( &sliders_in_rotary_mode );
     global_parameters.add( &sliders_sensitivity );
@@ -2197,9 +2195,6 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &morph_motor_time );
 
     global_parameters.minimiseStorageOverheads();
-
-    global_parameters.add( &arp_sequencer_data->is_on );
-
 }
 
 //==============================================================================

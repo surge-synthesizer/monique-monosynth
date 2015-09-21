@@ -75,6 +75,7 @@ public:
     ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
 
     void refresh() noexcept override;
+    void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
     void show_current_voice_data();
     void show_programs_and_select();
     void show_ctrl_state();
@@ -120,7 +121,7 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
     ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
-    TooltipWindow tooltipWindow;
+    ScopedPointer< TooltipWindow > tooltipWindow;
     //[/UserVariables]
 
     //==============================================================================

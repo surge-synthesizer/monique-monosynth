@@ -308,7 +308,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
             {
                 if( modulation_parameter )
                 {
-                    if( synth_data->animate_modulations )
+                    if( synth_data->animate_envs )
                     {
                         float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
                         button_top->setColour (TextButton::buttonColourId, UiLookAndFeel::getInstance()->colours.button_on_colour.darker( 1.0f-modulation ) );

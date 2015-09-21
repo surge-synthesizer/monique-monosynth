@@ -133,9 +133,7 @@ private:
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
     ScopedPointer<Label> label_18;
-    ScopedPointer<ToggleButton> toggle_animate_eq_env;
-    ScopedPointer<Label> label_19;
-    ScopedPointer<ToggleButton> toggle_output_cc_mute4;
+    ScopedPointer<ToggleButton> toggle_show_tooltips;
     ScopedPointer<Label> label_ui_headline_1;
     ScopedPointer<Label> label_ui_headline_2;
     ScopedPointer<Label> label_2;

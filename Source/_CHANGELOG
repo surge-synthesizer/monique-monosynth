@@ -4,12 +4,22 @@ DONE:
 - the sequencer is a global settings param now
 - chnaged the highest band of the eq from 8000-16000hertz to 8000 to 22000hertz
 - change the 3rd colour preset
-- change arp on/off to an global settings param and no more to an project param
 - fix: morphing of sustain levels of an morphable env was not working
 - update: automation paramter text, labels, values, host notification
 - add: f11 to enter full screen 
+- reduce: opton show animations (was 3) to only animate modulations
+- add: option to turn show tooltips off / increase popuptime to 1000ms (700 before)
+- add: press h to show tooltips immediately (~30ms) if the show tooltips option is turned off or show it immediately (~30ms instead 1000ms)
+
+DISCUSS:
+- change arp on/off to an global settings param and no more to an project param
 
 TODO:
+- change order params and short names
+
+- option arp: trigger on keypres or just pitch the arp
+- press h for help, turn off tool tips
+
 - remove unneded osc parameters
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
 - bug: osc pulse for osc2&3
@@ -36,7 +46,6 @@ TODO:
 
 QUESTS:
 - no retrigger on press key if the arp is enabeld?
-- option to keep the arp on or of as global var?
 
 TIM
 Ok hier mal ‚ne kurze Liste:

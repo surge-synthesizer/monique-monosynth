@@ -36,9 +36,8 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     slider_morph_motor_time->setValue( synth_data.morph_motor_time.get_value(), dontSendNotification );
     slider_glide_time->setValue( synth_data.glide_motor_time.get_value(), dontSendNotification );
 
-    toggle_animate_input_env->setToggleState( synth_data.animate_input_env ,dontSendNotification );
-    toggle_animate_eq_env->setToggleState( synth_data.animate_eq_env ,dontSendNotification );
-    toggle_output_cc_mute4->setToggleState( synth_data.animate_modulations ,dontSendNotification );
+    toggle_animate_input_env->setToggleState( synth_data.animate_envs ,dontSendNotification );
+    toggle_show_tooltips->setToggleState( synth_data.show_tooltips ,dontSendNotification );
 
     label_cpu_usage->setText
     (
@@ -367,7 +366,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_16 = new Label (String::empty,
-                                             TRANS("INPUT ENV\'S")));
+                                             TRANS("ANIMATE ENV\'S")));
     label_16->setTooltip (TRANS("Turn amp animations at the FILTER INPUS on or off."));
     label_16->setFont (Font (30.00f, Font::plain));
     label_16->setJustificationType (Justification::centredLeft);
@@ -381,8 +380,10 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     toggle_animate_input_env->addListener (this);
 
     addAndMakeVisible (label_18 = new Label (String::empty,
-                                             TRANS("EQ ENV")));
-    label_18->setTooltip (TRANS("Turn amp animations at the EQ BANK on or off."));
+                                             TRANS("SHOW TOOLTIPS")));
+    label_18->setTooltip (TRANS("Turn tooltips on or off.\n"
+    "\n"
+    "Press the \"h\" on your keyboard to show the tooltip if this option is turned off."));
     label_18->setFont (Font (30.00f, Font::plain));
     label_18->setJustificationType (Justification::centredLeft);
     label_18->setEditable (false, false, false);
@@ -390,27 +391,9 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_18->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_18->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (toggle_animate_eq_env = new ToggleButton (String::empty));
-    toggle_animate_eq_env->setTooltip (TRANS("Turn amp animations at the EQ BANK on or off."));
-    toggle_animate_eq_env->addListener (this);
-
-    addAndMakeVisible (label_19 = new Label (String::empty,
-                                             TRANS("MODULATIONS")));
-    label_19->setTooltip (TRANS("Turn amp animations at the mudulated parameters on or off.\n"
-    "\n"
-    "E.G: CUTOFF or OSC LFO modulation."));
-    label_19->setFont (Font (30.00f, Font::plain));
-    label_19->setJustificationType (Justification::centredLeft);
-    label_19->setEditable (false, false, false);
-    label_19->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_19->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (toggle_output_cc_mute4 = new ToggleButton (String::empty));
-    toggle_output_cc_mute4->setTooltip (TRANS("Turn amp animations at the mudulated parameters on or off.\n"
-    "\n"
-    "E.G: CUTOFF or OSC LFO modulation."));
-    toggle_output_cc_mute4->addListener (this);
+    addAndMakeVisible (toggle_show_tooltips = new ToggleButton (String::empty));
+    toggle_show_tooltips->setTooltip (TRANS("Turn amp animations at the EQ BANK on or off."));
+    toggle_show_tooltips->addListener (this);
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
                                                         TRANS("GLOBAL TIMES")));
@@ -422,7 +405,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-                                                        TRANS("ANIMATIONS")));
+                                                        TRANS("MISC")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -828,9 +811,7 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_16 = nullptr;
     toggle_animate_input_env = nullptr;
     label_18 = nullptr;
-    toggle_animate_eq_env = nullptr;
-    label_19 = nullptr;
-    toggle_output_cc_mute4 = nullptr;
+    toggle_show_tooltips = nullptr;
     label_ui_headline_1 = nullptr;
     label_ui_headline_2 = nullptr;
     label_2 = nullptr;
@@ -927,9 +908,7 @@ void Monique_Ui_GlobalSettings::resized()
     label_16->setBounds (260, 30, 100, 33);
     toggle_animate_input_env->setBounds (220, 30, 33, 33);
     label_18->setBounds (260, 70, 100, 33);
-    toggle_animate_eq_env->setBounds (220, 70, 33, 33);
-    label_19->setBounds (260, 110, 100, 33);
-    toggle_output_cc_mute4->setBounds (220, 110, 33, 33);
+    toggle_show_tooltips->setBounds (220, 70, 33, 33);
     label_ui_headline_1->setBounds (30, -4, 150, 35);
     label_ui_headline_2->setBounds (220, -4, 140, 35);
     label_2->setBounds (1290, 70, 60, 33);
@@ -1010,20 +989,15 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == toggle_animate_input_env)
     {
         //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
-        GET_DATA( synth_data ).animate_input_env = buttonThatWasClicked->getToggleState();
+        GET_DATA( synth_data ).animate_envs = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_animate_input_env]
     }
-    else if (buttonThatWasClicked == toggle_animate_eq_env)
+    else if (buttonThatWasClicked == toggle_show_tooltips)
     {
-        //[UserButtonCode_toggle_animate_eq_env] -- add your button handler code here..
-        GET_DATA( synth_data ).animate_eq_env = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_eq_env]
-    }
-    else if (buttonThatWasClicked == toggle_output_cc_mute4)
-    {
-        //[UserButtonCode_toggle_output_cc_mute4] -- add your button handler code here..
-        GET_DATA( synth_data ).animate_modulations = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_output_cc_mute4]
+        //[UserButtonCode_toggle_show_tooltips] -- add your button handler code here..
+        GET_DATA( synth_data ).show_tooltips = buttonThatWasClicked->getToggleState();
+	AppInstanceStore::getInstance()->editor->update_tooltip_handling(false);
+        //[/UserButtonCode_toggle_show_tooltips]
     }
     else if (buttonThatWasClicked == toggle_slider_linear)
     {
@@ -1433,7 +1407,7 @@ BEGIN_JUCER_METADATA
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="dfd8e91824767f78" memberName="label_16" virtualName=""
          explicitFocusOrder="0" pos="260 30 100 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT ENV'S"
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATE ENV'S"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="f342323c5495d0a1" memberName="toggle_animate_input_env"
@@ -1441,21 +1415,12 @@ BEGIN_JUCER_METADATA
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="" id="55ed48882dea6ac8" memberName="label_18" virtualName=""
-         explicitFocusOrder="0" pos="260 70 100 33" tooltip="Turn amp animations at the EQ BANK on or off."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="EQ ENV"
+         explicitFocusOrder="0" pos="260 70 100 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SHOW TOOLTIPS"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_animate_eq_env"
+  <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_show_tooltips"
                 virtualName="" explicitFocusOrder="0" pos="220 70 33 33" tooltip="Turn amp animations at the EQ BANK on or off."
-                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
-                state="0"/>
-  <LABEL name="" id="48465e518b2a9587" memberName="label_19" virtualName=""
-         explicitFocusOrder="0" pos="260 110 100 33" tooltip="Turn amp animations at the mudulated parameters on or off.&#10;&#10;E.G: CUTOFF or OSC LFO modulation."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATIONS"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TOGGLEBUTTON name="" id="13a54c23c88819cb" memberName="toggle_output_cc_mute4"
-                virtualName="" explicitFocusOrder="0" pos="220 110 33 33" tooltip="Turn amp animations at the mudulated parameters on or off.&#10;&#10;E.G: CUTOFF or OSC LFO modulation."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline_1"
@@ -1465,7 +1430,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="b5bc2cbedd6ff2b1" memberName="label_ui_headline_2"
          virtualName="" explicitFocusOrder="0" pos="220 -4 140 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATIONS" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="MISC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="a5e27df00dd3061" memberName="label_2" virtualName=""

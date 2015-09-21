@@ -532,7 +532,6 @@ void MoniqueAudioProcessor::init_automatable_parameters() noexcept
 }
 int MoniqueAudioProcessor::getNumParameters()
 {
-  return 50;
     return automateable_parameters.size();
 }
 /*
