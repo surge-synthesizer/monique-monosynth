@@ -1835,8 +1835,8 @@ inline void OSC::process(DataBuffer* data_buffer_,
             }
 
             // MODULATOR FREQUENCY TODO -> only osc 1
-            if( change_modulator_frequency ) 
-	    {
+            if( change_modulator_frequency )
+            {
                 last_modulator_multi = master_fm_freq;
                 const float modulator_frequency = last_frequency* (1.1f + 14.9f*last_modulator_multi);
                 modulator.setVibratoRate( modulator_frequency );
@@ -1918,27 +1918,30 @@ inline void OSC::process(DataBuffer* data_buffer_,
             {
                 // TODO saw and square offset BLIT - HOW TO SOLVE???
                 // PULS |¯|_|¯¯¯|___|¯|_|¯¯¯|_
-                if( master_pulse_width < 0 )
+                if( master_osc_modulation_is_on )
                 {
-                    current_puls_frequence_offset = (1.0f/12.0f*master_pulse_width*-1.0f);
-                    if( last_puls_was_large )
-                        current_puls_frequence_offset = 1.0f + 1.0f*current_puls_frequence_offset;
-                    else
-                        current_puls_frequence_offset = 1.0f - 0.5f*current_puls_frequence_offset;
+                    if( master_pulse_width < 0 )
+                    {
+                        current_puls_frequence_offset = (1.0f/12.0f*master_pulse_width*-1.0f);
+                        if( last_puls_was_large )
+                            current_puls_frequence_offset = 1.0f + 1.0f*current_puls_frequence_offset;
+                        else
+                            current_puls_frequence_offset = 1.0f - 0.5f*current_puls_frequence_offset;
 
-                    last_cycle_was_pulse_switch = true;
-                    last_puls_was_large ^= true;
-                }
-                // PULS WITH _|¯|_  break  _|¯|_
-                else if( master_pulse_width > 0 and puls_with_break_counter < 1 )
-                {
-                    puls_with_break_counter = master_pulse_width;
-                    current_puls_frequence_offset = 0;
-                }
-                else
-                {
-                    --puls_with_break_counter;
-                    current_puls_frequence_offset = 0;
+                        last_cycle_was_pulse_switch = true;
+                        last_puls_was_large ^= true;
+                    }
+                    // PULS WITH _|¯|_  break  _|¯|_
+                    else if( master_pulse_width > 0 and puls_with_break_counter < 1 )
+                    {
+                        puls_with_break_counter = master_pulse_width;
+                        current_puls_frequence_offset = 0;
+                    }
+                    else
+                    {
+                        --puls_with_break_counter;
+                        current_puls_frequence_offset = 0;
+                    }
                 }
 
                 // SWING
@@ -2060,7 +2063,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
             output_buffer[sid] = sample;
         }
     }
-    
+
     _last_root_note = _root_note;
 }
 inline void OSC::update( int root_note_ ) noexcept
