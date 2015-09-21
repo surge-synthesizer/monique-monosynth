@@ -129,7 +129,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
-
+    
     // FILTER 1
     int f_type = synth_data->filter_datas[0]->filter_type;
     filter_type_6_1->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
@@ -2938,6 +2938,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     else if( key.getTextDescription() == "h" )
     {
         update_tooltip_handling(true);
+        success = true;
     }
 #ifdef IS_PLUGIN
     else if( key.getTextDescription() == "F11" )

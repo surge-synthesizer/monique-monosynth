@@ -1089,7 +1089,19 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_preset_2] -- add your button handler code here..
         ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
-        colours.slider_track_colour = Colour(4281270271);
+        colours.slider_track_colour = Colour(0xffc8c8c8);
+        colours.slider_track_colour_2 = Colour(0xff989898);
+        colours.slider_track_colour_modulation = Colour(0xffae3500);
+        colours.button_on_colour = Colour(0xffbbbbbb);
+        colours.button_off_colour = Colour(0xff111111);
+        colours.label_text_colour = Colour(0xff989898);
+        colours.midi_learn = Colours::red;
+        colours.bg = Colour(0xff000000);
+        colours.bg_lines = Colour(0xff5a5a5a);
+        colours.signal_lines = Colour(0xffb03500);
+	
+/*
+         colours.slider_track_colour = Colour(4281270271);
         colours.slider_track_colour_2 = Colour(4294966409);
         colours.slider_track_colour_modulation = Colour(4294901760);
         colours.button_on_colour = Colour(4282580976);
@@ -1099,7 +1111,8 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
         colours.bg = Colour(4278190080);
         colours.bg_lines = Colour(4278245119);
         colours.signal_lines = Colour(4289724416);
-
+        */
+	
         AppInstanceStore::getInstance()->editor->repaint();
         //[/UserButtonCode_button_preset_2]
     }

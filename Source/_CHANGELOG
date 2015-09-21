@@ -14,6 +14,9 @@ DONE:
 - reorder and rename: a lot of automation params (plugin)
 - fix: chorus env wasn't saved
 - fix: if o-mod was turned of, fm swing was not added to the modulator signal
+- fix negativ pulse was added to the osc if o-mod was turned off
+- change 2nd and 3rd colour theme
+- changed: values near zero snaps to zero (smaller 0.001) to avoid e.g. sync problems of two osc with the same freq
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
@@ -23,20 +26,14 @@ DISCUSS:
 TODO:
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
 
-- bug: osc pulse for osc2&3
-- bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
-
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
-
 - add: option to make linear sliders to dials or change the sensitivity
 
 - midi sync works again, but i've to check this modul and have to add virtual ports and host handling
-
 - add: midi mod wheel; pitch wheel support, feedback, refactore midi handling classes
 - add: panic
 
-- osc 2 and 3 sync problem if they run on the same frequency like the first one (short break -> rounding error)
 - osc square and saw going out of center on higher octaves
 
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
