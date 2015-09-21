@@ -13,6 +13,7 @@ DONE:
 - fix load a default device on sartup (to TEST!!!!!)
 - reorder and rename: a lot of automation params (plugin)
 - fix: chorus env wasn't saved
+- fix: if o-mod was turned of, fm swing was not added to the modulator signal
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
@@ -22,7 +23,6 @@ DISCUSS:
 TODO:
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
 
-- remove unneded osc parameters
 - bug: osc pulse for osc2&3
 - bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
 

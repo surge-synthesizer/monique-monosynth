@@ -2043,7 +2043,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
                     puls_swing_delta *= -1;
                 }
                 {
-                    if( master_osc_modulation_is_on )
+                    //if( master_osc_modulation_is_on )
                     {
                         if( master_fm_swing > 0 )
                             modulator_sample *= puls_swing_amp;
@@ -2060,7 +2060,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
             output_buffer[sid] = sample;
         }
     }
-
+    
     _last_root_note = _root_note;
 }
 inline void OSC::update( int root_note_ ) noexcept
