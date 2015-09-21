@@ -532,6 +532,7 @@ void MoniqueAudioProcessor::init_automatable_parameters() noexcept
 }
 int MoniqueAudioProcessor::getNumParameters()
 {
+  return 50;
     return automateable_parameters.size();
 }
 /*
@@ -549,24 +550,29 @@ float MoniqueAudioProcessor::getParameter( int i_ )
     }
     else
     {
-        value = automateable_parameters.getUnchecked(i_-1)->get_modulation_amount();
+        value = (1.0f + automateable_parameters.getUnchecked(i_-1)->get_modulation_amount() ) * 0.5;
     }
     return value;
 }
 const String MoniqueAudioProcessor::getParameterText( int i_ )
 {
-    return String(getParameter(i_));
+    String value;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        value = String(round001(param->get_value()));
+    }
+    else
+    {
+        value = String(round01(automateable_parameters.getUnchecked(i_-1)->get_modulation_amount()*100));
+    }
+    return value;
 }
 String MoniqueAudioProcessor::getParameterLabel (int i_) const
 {
     String value;
-    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    if( not automateable_parameters.getUnchecked(i_) )
     {
-        value = String(param->get_value());
-    }
-    else
-    {
-        value = String(automateable_parameters.getUnchecked(i_-1)->get_modulation_amount());
+        value = "%";
     }
     return value;
 }
@@ -579,7 +585,7 @@ int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
     }
     else
     {
-        value = 1000;
+        value = 1000 * 2;
     }
     return value;
 }
@@ -592,7 +598,7 @@ float MoniqueAudioProcessor::getParameterDefaultValue( int i_ )
     }
     else
     {
-        value = get_percent_default_modulation_value( automateable_parameters.getUnchecked(i_-1) );
+        value = (1.0f + get_percent_default_modulation_value( automateable_parameters.getUnchecked(i_-1) ) ) * 0.5;
     }
     return value;
 }
@@ -617,7 +623,7 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
     }
     else
     {
-        automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( percent_ );
+        automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( (percent_*2)-1 );
     }
 }
 
@@ -640,7 +646,7 @@ void MoniqueAudioProcessor::parameter_value_on_load_changed( Parameter* param_ )
 }
 void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param_ ) noexcept
 {
-    sendParamChangeMessageToListeners( param_->get_info().parameter_host_id+1, param_->get_modulation_amount() );
+    sendParamChangeMessageToListeners( param_->get_info().parameter_host_id+1, (1.0f + param_->get_modulation_amount())*0.5 );
 }
 #endif
 

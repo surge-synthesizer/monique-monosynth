@@ -6,10 +6,11 @@ DONE:
 - change the 3rd colour preset
 - change arp on/off to an global settings param and no more to an project param
 - fix: morphing of sustain levels of an morphable env was not working
+- update: automation paramter text, labels, values, host notification
 
 TODO:
 - f11 fullscreen, Control+Cmd+F (mac)
-
+- remove unneded osc parameters
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: plugin: parameter feedback is not implemented yet
