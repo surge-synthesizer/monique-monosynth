@@ -7,11 +7,11 @@ DONE:
 - fix: morphing of sustain levels of an morphable env was not working
 - update: automation paramter text, labels, values, host notification
 - add: f11 to enter full screen 
-- reduce: opton show animations (was 3) to only animate modulations
+- reduce: optoin show animations (was 3) to only animate modulations
 - add: option to turn show tooltips off / increase popuptime to 1000ms (700 before)
 - add: press h to show tooltips immediately (~30ms) if the show tooltips option is turned off or show it immediately (~30ms instead 1000ms)
 - fix load a default device on sartup (to TEST!!!!!)
-- reorder and rename a lot of params (plugin automation params)
+- reorder and rename: a lot of automation params (plugin)
 - fix: chorus env wasn't saved
 
 DISCUSS:
@@ -20,8 +20,8 @@ DISCUSS:
 - option to disable save on change  (live mode)
 
 TODO:
-
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
+
 - remove unneded osc parameters
 - bug: osc pulse for osc2&3
 - bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
@@ -109,6 +109,7 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- lfo sync as note offset to the current root note
 - add-back set from current for all
 - add-back: morph toggles
 - midi option (channel, note support)
