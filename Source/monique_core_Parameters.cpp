@@ -51,6 +51,10 @@ type( type_ ),
 
       name(name_),
       short_name(short_name_)
+#ifdef IS_PLUGIN
+      ,
+      parameter_host_id( -1 )
+#endif
 {}
 
 COLD ParameterInfo::~ParameterInfo() noexcept {}
@@ -266,7 +270,7 @@ size( num_parameters_ )
     {
         parameters[i] = new IntParameter
         (
-	    MIN_MAX( min_value_, max_value_ ),
+            MIN_MAX( min_value_, max_value_ ),
             init_value_,
             generate_param_name(owner_class_name_,owner_id_,param_name_,i),
             create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
@@ -549,7 +553,7 @@ void MIDIControl::send_feedback_only() const noexcept
         }
     }
 }
-void MIDIControl::send_clear_feedback_only() const noexcept 
+void MIDIControl::send_clear_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
@@ -557,7 +561,7 @@ void MIDIControl::send_clear_feedback_only() const noexcept
     }
 }
 
-void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept 
+void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept
 {
     is_in_ctrl_mode = mode_;
 
@@ -601,7 +605,7 @@ void MIDIControlHandler::toggle_midi_learn() noexcept
 void MIDIControlHandler::set_learn_param( Parameter* param_ ) noexcept
 {
     clear();
-    
+
     learning_param = param_;
 }
 void MIDIControlHandler::set_learn_width_ctrl_param( Parameter* param_, Parameter* ctrl_param_, Component* comp_ ) noexcept

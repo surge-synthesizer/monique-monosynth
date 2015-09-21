@@ -142,6 +142,15 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     closeAudioDevice();
     removeAudioCallback (&player);
     player.setProcessor(nullptr);
+#else
+    for( int i = 0 ; i != automateable_parameters.size() ; ++i )
+    {
+        Parameter* param( automateable_parameters.getUnchecked(i) );
+        if( param )
+        {
+            param->remove_listener( this );
+        }
+    }
 #endif
     synth_data->save_midi();
     synth_data->save_settings();
@@ -504,6 +513,7 @@ void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
 //==============================================================================
 //==============================================================================
 #ifdef IS_PLUGIN
+// NOTE THE MODULATION AMOUNT ID OF AN PARAM IS +1
 void MoniqueAudioProcessor::init_automatable_parameters() noexcept
 {
     Array< Parameter* >&  all_automatable_parameters = synth_data->get_atomateable_parameters();
@@ -511,7 +521,9 @@ void MoniqueAudioProcessor::init_automatable_parameters() noexcept
     {
         Parameter* param( all_automatable_parameters.getUnchecked(i) );
         jassert( not automateable_parameters.contains( param ) );
+        const_cast< ParameterInfo* >( &param->get_info() )->parameter_host_id = automateable_parameters.size();
         automateable_parameters.add( param );
+        param->register_always_listener( this );
         if( has_modulation( param ) )
         {
             automateable_parameters.add( nullptr );
@@ -522,10 +534,12 @@ int MoniqueAudioProcessor::getNumParameters()
 {
     return automateable_parameters.size();
 }
+/*
 bool MoniqueAudioProcessor::isParameterAutomatable ( int ) const
 {
     return true;
 }
+*/
 float MoniqueAudioProcessor::getParameter( int i_ )
 {
     float value = 0;
@@ -545,7 +559,16 @@ const String MoniqueAudioProcessor::getParameterText( int i_ )
 }
 String MoniqueAudioProcessor::getParameterLabel (int i_) const
 {
-    return  "N/A";
+    String value;
+    if( Parameter*param = automateable_parameters.getUnchecked(i_) )
+    {
+        value = String(param->get_value());
+    }
+    else
+    {
+        value = String(automateable_parameters.getUnchecked(i_-1)->get_modulation_amount());
+    }
+    return value;
 }
 int MoniqueAudioProcessor::getParameterNumSteps( int i_ )
 {
@@ -596,6 +619,28 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
     {
         automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( percent_ );
     }
+}
+
+//==============================================================================
+void MoniqueAudioProcessor::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    sendParamChangeMessageToListeners( param_->get_info().parameter_host_id, get_percent_value( param_ ) );
+}
+void MoniqueAudioProcessor::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+}
+void MoniqueAudioProcessor::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+    if( has_modulation( param_ ) )
+    {
+        parameter_modulation_value_changed( param_ );
+    }
+}
+void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param_ ) noexcept
+{
+    sendParamChangeMessageToListeners( param_->get_info().parameter_host_id+1, param_->get_modulation_amount() );
 }
 #endif
 
@@ -706,7 +751,9 @@ int MoniqueAudioProcessor::getNumPrograms()
 {
     int size = 0;
     for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
+    {
         size += synth_data->get_programms( bank_id ).size();
+    }
 
     return size;
 }

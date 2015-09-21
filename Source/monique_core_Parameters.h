@@ -63,6 +63,9 @@ struct ParameterInfo
 
     const String name;
     const String short_name;
+#ifdef IS_PLUGIN
+    int parameter_host_id;
+#endif
 
 private:
     // ==============================================================================
@@ -225,6 +228,7 @@ public:
                 value_ = info->min_value;
             }
             value = value_;
+            notify_always_value_listeners();
         }
     }
 
@@ -768,7 +772,9 @@ inline void ChangeParamOverTime::forceStopAndKill() noexcept
 {
     stopTimer();
     if( param.get_runtime_info().timeChanger == this )
+    {
         param.get_runtime_info().timeChanger = nullptr;
+    }
 
     delete this;
     return;
@@ -778,7 +784,9 @@ inline void ChangeParamOverTime::forceStopAndKill() noexcept
 inline void ParameterRuntimeInfo::stop_time_change() const noexcept
 {
     if( timeChanger )
+    {
         timeChanger->forceStopAndKill();
+    }
 }
 
 //==============================================================================
@@ -990,6 +998,7 @@ static inline void write_parameter_to_file( XmlElement& xml_, const Parameter* p
 }
 static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
+    bool success = false;
     const ParameterInfo& info = param_->get_info();
     {
         const float old_value = param_->get_value();
@@ -1008,7 +1017,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
             }
 
             param_->set_value_without_notification( new_value );
-            param_->notify_on_load_value_listeners();
+            success = true;
         }
     }
 
@@ -1020,8 +1029,13 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
         if( old_modulation_amount != new_modulation_amount )
         {
             param_->set_modulation_amount_without_notification( new_modulation_amount );
-            param_->notify_on_load_value_listeners();
+            success = true;
         }
+    }
+
+    if( success )
+    {
+        param_->notify_on_load_value_listeners();
     }
 }
 

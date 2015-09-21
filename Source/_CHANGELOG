@@ -1,8 +1,15 @@
 DONE:
 - change return value to factory default
 - fm swing better adjustable (reduce max speed)
+- the sequencer is a global settings param now
+- chnaged the highest band of the eq from 8000-16000hertz to 8000 to 22000hertz
+- change the 3rd colour preset
+- change arp on/off to an global settings param and no more to an project param
+- fix: morphing of sustain levels of an morphable env was not working
 
 TODO:
+- f11 fullscreen, Control+Cmd+F (mac)
+
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: plugin: parameter feedback is not implemented yet
@@ -24,9 +31,7 @@ TODO:
 - set from current updated the morph group a bit... this is uncorrect
 
 - turn off tooltips
-
-- fm swing in notenlängen
-
+- option to disable save on change  (live mode)
 
 QUESTS:
 - no retrigger on press key if the arp is enabeld?

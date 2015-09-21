@@ -1150,6 +1150,90 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline14->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline14->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (overlayer = new ImageButton ("new button"));
+    overlayer->addListener (this);
+
+    overlayer->setImages (false, true, false,
+                          ImageCache::getFromMemory (empty_png, empty_pngSize), 0.500f, Colour (0xcd000000),
+                          Image(), 0.500f, Colour (0xcd000000),
+                          Image(), 0.500f, Colour (0xcd000000));
+    addAndMakeVisible (label = new Label ("I",
+                                          TRANS("OSC 1")));
+    label->setFont (Font (15.00f, Font::plain));
+    label->setJustificationType (Justification::centred);
+    label->setEditable (false, false, false);
+    label->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label->setColour (Label::textColourId, Colour (0xff070000));
+    label->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label2 = new Label ("I",
+                                           TRANS("OSC 2")));
+    label2->setFont (Font (15.00f, Font::plain));
+    label2->setJustificationType (Justification::centred);
+    label2->setEditable (false, false, false);
+    label2->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label2->setColour (Label::textColourId, Colour (0xff070000));
+    label2->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label2->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label3 = new Label ("I",
+                                           TRANS("OSC 3")));
+    label3->setFont (Font (15.00f, Font::plain));
+    label3->setJustificationType (Justification::centred);
+    label3->setEditable (false, false, false);
+    label3->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label3->setColour (Label::textColourId, Colour (0xff070000));
+    label3->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label3->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label4 = new Label ("I",
+                                           TRANS("FM")));
+    label4->setFont (Font (15.00f, Font::plain));
+    label4->setJustificationType (Justification::centred);
+    label4->setEditable (false, false, false);
+    label4->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label4->setColour (Label::textColourId, Colour (0xff070000));
+    label4->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label4->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label5 = new Label ("I",
+                                           TRANS("FILTER 1")));
+    label5->setFont (Font (15.00f, Font::plain));
+    label5->setJustificationType (Justification::centred);
+    label5->setEditable (false, false, false);
+    label5->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label5->setColour (Label::textColourId, Colour (0xff070000));
+    label5->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label5->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label6 = new Label ("I",
+                                           TRANS("FILTER 2")));
+    label6->setFont (Font (15.00f, Font::plain));
+    label6->setJustificationType (Justification::centred);
+    label6->setEditable (false, false, false);
+    label6->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label6->setColour (Label::textColourId, Colour (0xff070000));
+    label6->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label6->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label7 = new Label ("I",
+                                           TRANS("FILTER 3")));
+    label7->setFont (Font (15.00f, Font::plain));
+    label7->setJustificationType (Justification::centred);
+    label7->setEditable (false, false, false);
+    label7->setColour (Label::backgroundColourId, Colour (0x00ff0000));
+    label7->setColour (Label::textColourId, Colour (0xff070000));
+    label7->setColour (TextEditor::textColourId, Colour (0x00000000));
+    label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label7->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+
 
     //[UserPreSize]
     SET_SLIDER_STYLE(sl_morhp_mix,VALUE_SLIDER);
@@ -1183,7 +1267,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
         Component* comp( getChildComponent(i) );
-        comp->setOpaque(true);
+        if( comp->GET_LABEL_STYLE() != "I" ) // DISCRIPTION LABELS
+	{
+            comp->setOpaque(true);
+	}
+	else
+	{
+	   comp->setVisible(false);
+	}
 
         /*
             if( Button* button = dynamic_cast< Button* >( comp ) )
@@ -1195,9 +1286,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
         {
             dual_sliders.add(slider);
         }
-
     }
     label_monolisa->setOpaque(false);
+    overlayer->setOpaque(false);
+    overlayer->setVisible(false);
 
     switch_finalizer_tab();
 
@@ -1245,9 +1337,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
 
     update_size();
-    keyboard->setLowestVisibleKey(50);
+    keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 0, 127 );
     keyboard->setKeyWidth(45);
+
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
@@ -1449,6 +1542,14 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_eq = nullptr;
     button_open_config2 = nullptr;
     label_ui_headline14 = nullptr;
+    overlayer = nullptr;
+    label = nullptr;
+    label2 = nullptr;
+    label3 = nullptr;
+    label4 = nullptr;
+    label5 = nullptr;
+    label6 = nullptr;
+    label7 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2087,6 +2188,14 @@ void Monique_Ui_Mainwindow::resized()
     label_eq->setBounds (740, 580, 90, 35);
     button_open_config2->setBounds (1205 - 60, 1030 - 30, 60, 30);
     label_ui_headline14->setBounds (745, 5, 80, 35);
+    overlayer->setBounds (0, 0, 1465, 1235);
+    label->setBounds (30, 80, 130, 90);
+    label2->setBounds (30, 260, 130, 90);
+    label3->setBounds (30, 440, 130, 90);
+    label4->setBounds (30, 645, 130, 90);
+    label5->setBounds (220, 80, 1210, 90);
+    label6->setBounds (220, 260, 1210, 90);
+    label7->setBounds (220, 440, 1210, 90);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -2711,6 +2820,11 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             editor_global_settings = nullptr;
         //[/UserButtonCode_button_open_config2]
     }
+    else if (buttonThatWasClicked == overlayer)
+    {
+        //[UserButtonCode_overlayer] -- add your button handler code here..
+        //[/UserButtonCode_overlayer]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2901,7 +3015,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
                  parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
                  constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
@@ -3705,11 +3819,63 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="MOD MIX (X)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
+  <IMAGEBUTTON name="new button" id="20c5266d6aef074" memberName="overlayer"
+               virtualName="" explicitFocusOrder="0" pos="0 0 1465 1235" buttonText="new button"
+               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="0"
+               resourceNormal="empty_png" opacityNormal="0.5" colourNormal="cd000000"
+               resourceOver="" opacityOver="0.5" colourOver="cd000000" resourceDown=""
+               opacityDown="0.5" colourDown="cd000000"/>
+  <LABEL name="I" id="d96a05c47c3b7ff4" memberName="label" virtualName=""
+         explicitFocusOrder="0" pos="30 80 130 90" bkgCol="ff0000" textCol="ff070000"
+         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 1" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="c2b8a440e07c0c4c" memberName="label2" virtualName=""
+         explicitFocusOrder="0" pos="30 260 130 90" bkgCol="ff0000" textCol="ff070000"
+         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 2" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="e6cd346db717806a" memberName="label3" virtualName=""
+         explicitFocusOrder="0" pos="30 440 130 90" bkgCol="ff0000" textCol="ff070000"
+         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 3" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="8f5254b4567e321b" memberName="label4" virtualName=""
+         explicitFocusOrder="0" pos="30 645 130 90" bkgCol="ff0000" textCol="ff070000"
+         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FM" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="bc8b9c9916a1476e" memberName="label5" virtualName=""
+         explicitFocusOrder="0" pos="220 80 1210 90" bkgCol="ff0000" textCol="ff070000"
+         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 1"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="6d326068896edb31" memberName="label6" virtualName=""
+         explicitFocusOrder="0" pos="220 260 1210 90" bkgCol="ff0000"
+         textCol="ff070000" edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 2"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
+  <LABEL name="I" id="9c7d2be909f29e94" memberName="label7" virtualName=""
+         explicitFocusOrder="0" pos="220 440 1210 90" bkgCol="ff0000"
+         textCol="ff070000" edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 3"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
 */
 #endif
+
+//==============================================================================
+// Binary resources - be careful not to edit any of these sections!
+
+// JUCER_RESOURCE: empty_png, 159, "../Images/empty.png"
+static const unsigned char resource_Monique_Ui_Mainwindow_empty_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,8,4,0,0,0,181,28,12,2,0,0,0,2,98,75,71,68,0,0,170,141,35,50,0,0,
+0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,9,18,16,13,44,67,236,72,225,0,0,0,25,116,69,88,116,67,111,109,109,101,110,116,0,67,114,101,97,116,101,100,32,119,105,116,
+104,32,71,73,77,80,87,129,14,23,0,0,0,11,73,68,65,84,8,215,99,248,255,31,0,3,0,1,255,100,93,114,245,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+
+const char* Monique_Ui_Mainwindow::empty_png = (const char*) resource_Monique_Ui_Mainwindow_empty_png;
+const int Monique_Ui_Mainwindow::empty_pngSize = 159;
 
 
 //[EndFile] You can add extra defines here...

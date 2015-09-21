@@ -1083,8 +1083,6 @@ COLD ArpSequencerData::~ArpSequencerData() noexcept {}
 //==============================================================================
 static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ ) noexcept
 {
-    dest_->is_on = src_->is_on;
-
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
     {
 
@@ -1099,8 +1097,6 @@ static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ )
 }
 static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< Parameter* >& params_ ) noexcept
 {
-    params_.add( &data_->is_on );
-
     for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i ) {
         params_.add( &data_->step[i] );
         params_.add( &data_->tune[i] );
@@ -1379,7 +1375,9 @@ COLD void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) n
     params.add( param_ );
 
     if( is_master_ )
+    {
         param_->register_listener(this);
+    }
 }
 COLD void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept
 {
@@ -2199,6 +2197,9 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &morph_motor_time );
 
     global_parameters.minimiseStorageOverheads();
+
+    global_parameters.add( &arp_sequencer_data->is_on );
+
 }
 
 //==============================================================================

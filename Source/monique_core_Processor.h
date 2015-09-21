@@ -25,7 +25,10 @@ class MoniqueAudioProcessor :
     public MidiKeyboardState,
     public MidiKeyboardStateListener,
     public mono_AudioDeviceManager
-#ifdef IS_STANDALONE
+#ifdef IS_PLUGIN
+    ,
+public ParameterListener
+#else
     ,
 public Timer
 #endif
@@ -38,7 +41,7 @@ private:
     ClockSmoothBuffer* clock_smoother;
     int64 last_clock_sample;
     bool try_to_restart_arp;
-    
+
     bool received_a_clock_in_time;
     bool connection_missed_counter;
     void timerCallback() override;
@@ -88,9 +91,9 @@ private:
 #ifdef IS_PLUGIN
     Array< Parameter* > automateable_parameters;
     void init_automatable_parameters() noexcept;
-    
+
     int getNumParameters() override;
-    bool isParameterAutomatable (int parameterIndex) const override;
+    // bool isParameterAutomatable (int parameterIndex) const override;
     float getParameter ( int index_ ) override;
     void setParameter ( int index_, float value_ ) override;
     const String getParameterName ( int index_ ) override;
@@ -98,6 +101,11 @@ private:
     String getParameterLabel (int index) const override;
     int getParameterNumSteps (int index_ ) override;
     float getParameterDefaultValue (int index_) override;
+
+    void parameter_value_changed( Parameter* ) noexcept override;
+    void parameter_value_changed_always_notification( Parameter* ) noexcept override;
+    void parameter_value_on_load_changed( Parameter* ) noexcept override;
+    void parameter_modulation_value_changed( Parameter* ) noexcept override;
 #endif
 
     //==========================================================================

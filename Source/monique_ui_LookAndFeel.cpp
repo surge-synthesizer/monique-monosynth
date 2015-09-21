@@ -841,12 +841,13 @@ Font UiLookAndFeel::getLabelFont (Label& label)
 
 void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
 {
-    if( label.isOpaque() )
+    String labelStyle = label.GET_LABEL_STYLE();
+    if( label.isOpaque() and labelStyle != "I" )
         g.fillAll (colours.bg);
 
     if (! label.isBeingEdited())
     {
-        String labelStyle = label.GET_LABEL_STYLE();
+
 
         const Font font (getLabelFont (label));
 
@@ -856,6 +857,10 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
         else if( labelStyle == IS_SECOND_VALUE_LABEL )
         {
             col = colours.slider_track_colour_2;
+        }
+        else if( labelStyle == "I" )
+        {
+            col = Colour(0xffffffff);
         }
         else if( labelStyle == IS_DESCRIPTION_LABEL )
         {
@@ -872,7 +877,8 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
                               label.getJustificationType(), 1, 0.5f);
         glyphs.createPath(text_path);
 
-        if( labelStyle == IS_VALUE_LABEL ) {
+        if( labelStyle == IS_VALUE_LABEL ) 
+	{
             DropShadow drop_shadow( col, 1, Point<int>(0,0) );
             drop_shadow.drawForPath( g, text_path );
         }

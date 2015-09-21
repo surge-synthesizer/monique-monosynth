@@ -1728,7 +1728,7 @@ inline void OSC::process(DataBuffer* data_buffer_,
     {
         const bool was_negative = puls_swing_delta < 0;
         {
-	  todo glide the delta!
+            // TODO todo glide the delta!
             puls_swing_delta = (1.0f + 30.0f * master_fm_swing)*sample_rate_1ths;
             if( was_negative )
             {
@@ -3973,9 +3973,15 @@ amp2velocity_smoother(),
     {
         envs.add( new ENV( synth_data_, eq_data->env_datas.getUnchecked( band_id ) ) );
 
-        const float frequency_low_pass_tmp = (62.5f/2) * pow(2,band_id+1);
-
-        frequency_low_pass[band_id] = frequency_low_pass_tmp;
+        float frequency_low_pass_tmp = (62.5f/2) * pow(2,band_id+1);
+        if( band_id == SUM_EQ_BANDS-1 )
+        {
+            frequency_low_pass[band_id] = 22000;
+        }
+        else
+        {
+            frequency_low_pass[band_id] = frequency_low_pass_tmp;
+        }
         frequency_high_pass[band_id] = frequency_low_pass_tmp / 2;
     }
 

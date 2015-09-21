@@ -111,6 +111,9 @@ public:
     bool keyStateChanged (const bool isKeyDown);
     void modifierKeysChanged (const ModifierKeys& modifiers);
 
+    // Binary resources:
+    static const char* empty_png;
+    static const int empty_pngSize;
 
 
 private:
@@ -299,6 +302,14 @@ private:
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
     ScopedPointer<Label> label_ui_headline14;
+    ScopedPointer<ImageButton> overlayer;
+    ScopedPointer<Label> label;
+    ScopedPointer<Label> label2;
+    ScopedPointer<Label> label3;
+    ScopedPointer<Label> label4;
+    ScopedPointer<Label> label5;
+    ScopedPointer<Label> label6;
+    ScopedPointer<Label> label7;
 
 
     //==============================================================================

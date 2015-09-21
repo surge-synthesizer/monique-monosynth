@@ -1133,17 +1133,21 @@ void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_preset_3] -- add your button handler code here..
         ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
-        colours.slider_track_colour = Colour(4294932480);
-        colours.slider_track_colour_2 = Colour(4294956800);
-        colours.slider_track_colour_modulation = Colour(4278255615);
-        colours.button_on_colour = Colour(4278249471);
-        colours.button_off_colour = Colour(4279308561);
-        colours.label_text_colour = Colour(4294941764);
+        colours.slider_track_colour = Colour(0xff00e2ff);
+        colours.slider_track_colour_2 = Colour(0xffefff00);
+        colours.slider_track_colour_modulation = Colour(0xffff8800);
+        colours.button_on_colour = Colour(0xffd86300);
+        colours.button_off_colour = Colour(0xff111111);
+        colours.label_text_colour = Colour(0xffffbe73);
         colours.midi_learn = Colours::red;
-        colours.bg = Colour(4278519045);
-        colours.bg_lines = Colour(4278255591);
-        colours.signal_lines = Colour(4294901760);
-
+        colours.bg = Colour(0xff050505);
+        colours.bg_lines = Colour(0xffffc28f);
+        colours.signal_lines = Colour(0xffe26700);
+	/*
+st_col="" st2_col="" stmod_col="" bon_col=""
+           boff_col="" ltx_col="" ml_col="" bg_col=""
+           bgl_col="" sigl_col=""/>
+           */
         AppInstanceStore::getInstance()->editor->repaint();
         //[/UserButtonCode_button_preset_3]
     }
