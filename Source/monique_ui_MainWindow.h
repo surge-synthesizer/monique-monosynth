@@ -124,6 +124,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<ImageButton> overlayer;
     ScopedPointer<Monique_Ui_DualSlider> speed_multi;
     ScopedPointer<Monique_Ui_DualSlider> morpher_4;
     ScopedPointer<Monique_Ui_DualSlider> morpher_3;
@@ -302,7 +303,6 @@ private:
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
     ScopedPointer<Label> label_ui_headline14;
-    ScopedPointer<ImageButton> overlayer;
     ScopedPointer<Label> label;
     ScopedPointer<Label> label2;
     ScopedPointer<Label> label3;

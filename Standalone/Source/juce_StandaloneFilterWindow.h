@@ -32,6 +32,8 @@ public:
     COLD void visibilityChanged() override;
     COLD void minimisationStateChanged( bool isNowMinimised ) override;
 
+    COLD bool keyPressed (const KeyPress& key) override;
+
 private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
@@ -137,6 +139,27 @@ COLD void StandaloneFilterWindow::minimisationStateChanged( bool isNowMinimised 
     {
         resumed();
     }
+}
+
+//==============================================================================
+COLD bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
+{
+    bool success = false;
+    if( key.getTextDescription() == "F11"  )
+    {
+        if( Desktop::getInstance().getKioskModeComponent() )
+        {
+            Desktop::getInstance().setKioskModeComponent (nullptr);
+        }
+        else
+        {
+            Desktop::getInstance().setKioskModeComponent (this);
+        }
+
+        success = true;
+    }
+
+    return success;
 }
 
 //==============================================================================

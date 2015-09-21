@@ -302,6 +302,13 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     is_ctrl_down = false;
     //[/Constructor_pre]
 
+    addAndMakeVisible (overlayer = new ImageButton ("new button"));
+    overlayer->addListener (this);
+
+    overlayer->setImages (false, true, false,
+                          ImageCache::getFromMemory (empty_png, empty_pngSize), 0.500f, Colour (0xcd000000),
+                          Image(), 0.500f, Colour (0xcd000000),
+                          Image(), 0.500f, Colour (0xcd000000));
     addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (new SpeedMultiSlConfig()));
 
     addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (new MorphSLConfig(3)));
@@ -929,7 +936,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     "\n"
     "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
     "\n"
-    "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface."));
+    "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface.\n"
+    "Press F11 to toggle fullscreen mode."));
     button_values_toggle->setButtonText (TRANS("CTRL"));
     button_values_toggle->addListener (this);
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -1150,13 +1158,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline14->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline14->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (overlayer = new ImageButton ("new button"));
-    overlayer->addListener (this);
-
-    overlayer->setImages (false, true, false,
-                          ImageCache::getFromMemory (empty_png, empty_pngSize), 0.500f, Colour (0xcd000000),
-                          Image(), 0.500f, Colour (0xcd000000),
-                          Image(), 0.500f, Colour (0xcd000000));
     addAndMakeVisible (label = new Label ("I",
                                           TRANS("OSC 1")));
     label->setFont (Font (15.00f, Font::plain));
@@ -1268,13 +1269,13 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     {
         Component* comp( getChildComponent(i) );
         if( comp->GET_LABEL_STYLE() != "I" ) // DISCRIPTION LABELS
-	{
+        {
             comp->setOpaque(true);
-	}
-	else
-	{
-	   comp->setVisible(false);
-	}
+        }
+        else
+        {
+            comp->setVisible(false);
+        }
 
         /*
             if( Button* button = dynamic_cast< Button* >( comp ) )
@@ -1340,7 +1341,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 0, 127 );
     keyboard->setKeyWidth(45);
-
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
@@ -1364,6 +1364,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     _app_instance_store->audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    overlayer = nullptr;
     speed_multi = nullptr;
     morpher_4 = nullptr;
     morpher_3 = nullptr;
@@ -1542,7 +1543,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_eq = nullptr;
     button_open_config2 = nullptr;
     label_ui_headline14 = nullptr;
-    overlayer = nullptr;
     label = nullptr;
     label2 = nullptr;
     label3 = nullptr;
@@ -2010,6 +2010,7 @@ void Monique_Ui_Mainwindow::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    overlayer->setBounds (0, 0, 1465, 1235);
     speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
     morpher_4->setBounds (1345 - 60, 620, 60, 130);
     morpher_3->setBounds (1285 - 60, 620, 60, 130);
@@ -2188,7 +2189,6 @@ void Monique_Ui_Mainwindow::resized()
     label_eq->setBounds (740, 580, 90, 35);
     button_open_config2->setBounds (1205 - 60, 1030 - 30, 60, 30);
     label_ui_headline14->setBounds (745, 5, 80, 35);
-    overlayer->setBounds (0, 0, 1465, 1235);
     label->setBounds (30, 80, 130, 90);
     label2->setBounds (30, 260, 130, 90);
     label3->setBounds (30, 440, 130, 90);
@@ -2213,7 +2213,12 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == filter_type_2_1)
+    if (buttonThatWasClicked == overlayer)
+    {
+        //[UserButtonCode_overlayer] -- add your button handler code here..
+        //[/UserButtonCode_overlayer]
+    }
+    else if (buttonThatWasClicked == filter_type_2_1)
     {
         //[UserButtonCode_filter_type_2_1] -- add your button handler code here..
         int flt_id = 0;
@@ -2820,11 +2825,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             editor_global_settings = nullptr;
         //[/UserButtonCode_button_open_config2]
     }
-    else if (buttonThatWasClicked == overlayer)
-    {
-        //[UserButtonCode_overlayer] -- add your button handler code here..
-        //[/UserButtonCode_overlayer]
-    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -2896,6 +2896,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
     bool success = false;
+
     if( key == KeyPress::escapeKey )
     {
         MIDIControlHandler::getInstance()->clear();
@@ -2905,6 +2906,23 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         close_all_subeditors();
         success = true;
     }
+#ifdef IS_PLUGIN
+    else if( key.getTextDescription() == "F11" )
+    {
+        if (this->getPeer() != nullptr)
+        {
+            if( Desktop::getInstance().getKioskModeComponent() )
+            {
+                Desktop::getInstance().setKioskModeComponent (nullptr);
+            }
+            else
+            {
+                Desktop::getInstance().setKioskModeComponent (this);
+            }
+            success = true;
+        }
+    }
+#endif
 
     return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyPressed]
@@ -2958,7 +2976,8 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void Monique_Ui_Mainwindow::close_all_subeditors() {
+void Monique_Ui_Mainwindow::close_all_subeditors()
+{
     editor_midiio = nullptr;
     editor_morph = nullptr;
     editor_settings = nullptr;
@@ -3169,6 +3188,12 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="320 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
+  <IMAGEBUTTON name="new button" id="20c5266d6aef074" memberName="overlayer"
+               virtualName="" explicitFocusOrder="0" pos="0 0 1465 1235" buttonText="new button"
+               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="0"
+               resourceNormal="empty_png" opacityNormal="0.5" colourNormal="cd000000"
+               resourceOver="" opacityOver="0.5" colourOver="cd000000" resourceDown=""
+               opacityDown="0.5" colourDown="cd000000"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
                     explicitFocusOrder="0" pos="1355r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new SpeedMultiSlConfig()"/>
@@ -3692,7 +3717,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface."
+              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface.&#10;Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
@@ -3819,12 +3844,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="MOD MIX (X)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <IMAGEBUTTON name="new button" id="20c5266d6aef074" memberName="overlayer"
-               virtualName="" explicitFocusOrder="0" pos="0 0 1465 1235" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="0"
-               resourceNormal="empty_png" opacityNormal="0.5" colourNormal="cd000000"
-               resourceOver="" opacityOver="0.5" colourOver="cd000000" resourceDown=""
-               opacityDown="0.5" colourDown="cd000000"/>
   <LABEL name="I" id="d96a05c47c3b7ff4" memberName="label" virtualName=""
          explicitFocusOrder="0" pos="30 80 130 90" bkgCol="ff0000" textCol="ff070000"
          edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 1" editableSingleClick="0"

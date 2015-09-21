@@ -7,16 +7,16 @@ DONE:
 - change arp on/off to an global settings param and no more to an project param
 - fix: morphing of sustain levels of an morphable env was not working
 - update: automation paramter text, labels, values, host notification
+- add: f11 to enter full screen 
 
 TODO:
-- f11 fullscreen, Control+Cmd+F (mac)
 - remove unneded osc parameters
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
-- add: a good default program or settings to start with monique (e.g. filter inputs not zero)
-- add: plugin: parameter feedback is not implemented yet
-- add: a layer with help information for the main ui (Also explain a dual slider quick)
 - bug: osc pulse for osc2&3
 - bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
+
+- add: a good default program or settings to start with monique (e.g. filter inputs not zero)
+- add: a layer with help information for the main ui (Also explain a dual slider quick)
 
 - add: option to make linear sliders to dials or change the sensitivity
 
