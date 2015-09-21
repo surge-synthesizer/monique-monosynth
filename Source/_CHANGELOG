@@ -10,6 +10,9 @@ DONE:
 - reduce: opton show animations (was 3) to only animate modulations
 - add: option to turn show tooltips off / increase popuptime to 1000ms (700 before)
 - add: press h to show tooltips immediately (~30ms) if the show tooltips option is turned off or show it immediately (~30ms instead 1000ms)
+- fix load a default device on sartup (to TEST!!!!!)
+- reorder and rename a lot of params (plugin automation params)
+- fix: chorus env wasn't saved
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
@@ -17,10 +20,9 @@ DISCUSS:
 - option to disable save on change  (live mode)
 
 TODO:
-- change order params and short names
 
-- remove unneded osc parameters
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
+- remove unneded osc parameters
 - bug: osc pulse for osc2&3
 - bug: osc1 "mod off" turns not of negative pulse (e.g: osc-pulse)
 

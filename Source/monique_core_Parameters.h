@@ -607,7 +607,7 @@ public:
                             const float min_value_, const float max_value_, const float init_value_,
                             const int num_steps_,
 
-                            const String& owner_class_name_,
+                            const String& owner_class_name_, const String& short_owner_class_name_,
                             const int owner_id_,
 
                             const String& param_name_,
@@ -657,7 +657,7 @@ public:
 
                                 const bool init_value_,
 
-                                const String& owner_class_name_,
+                                const String& owner_class_name_, const String& short_owner_class_name_,
                                 const int owner_id_,
 
                                 const String& param_name_,
@@ -707,7 +707,7 @@ public:
 
                                const int min_value_, const int max_value_, const int init_value_,
 
-                               const String& owner_class_name_,
+                               const String& owner_class_name_, const String& short_owner_class_name_,
                                const int owner_id_,
 
                                const String& param_name_,

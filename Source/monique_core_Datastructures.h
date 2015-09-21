@@ -283,14 +283,16 @@ struct LFOData
 //==============================================================================
 struct OSCData
 {
+    const int id;
+  
     Parameter wave;
-    ModulatedParameter octave;
+    ModulatedParameter tune;
     BoolParameter is_lfo_modulated;
 
-    Parameter fm_multi;
+    Parameter fm_freq;
     Parameter fm_amount;
 
-    BoolParameter fm_wave; // TODO RENAME!
+    BoolParameter fm_shot;
     BoolParameter sync;
     BoolParameter o_mod;
 
@@ -407,9 +409,6 @@ struct FilterData : ParameterListener
 
     ModulatedParameter resonance;
     BoolParameter modulate_resonance;
-
-    ModulatedParameter width;
-    BoolParameter modulate_width;
 
     ModulatedParameter gain;
     BoolParameter modulate_gain;
@@ -796,7 +795,6 @@ struct MoniqueSynthData : ParameterListener
     Parameter delay;
     Parameter effect_bypass;
     Parameter final_compression;
-    Parameter colour;
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;

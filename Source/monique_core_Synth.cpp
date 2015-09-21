@@ -1699,7 +1699,7 @@ id( id_ ),
     last_puls_was_large(false),
     last_cycle_was_pulse_switch(0),
 
-    octave_smoother( &GET_DATA( osc_datas[id_] ).octave ),
+    octave_smoother( &GET_DATA( osc_datas[id_] ).tune ),
     fm_amount_smoother( &GET_DATA( osc_datas[id_] ).fm_amount ),
 
     data_buffer( GET_DATA_PTR(data_buffer) ),
@@ -1749,10 +1749,10 @@ inline void OSC::process(DataBuffer* data_buffer_,
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
     lfo2fix_octave_smoother.reset_counter_on_state_switch( is_lfo_modulated );
     const bool sync = osc_data->sync;
-    const float master_fm_multi = master_osc_data->fm_multi;
+    const float master_fm_freq = master_osc_data->fm_freq;
     const int master_pulse_width = master_osc_data->puls_width;
     const bool master_sync = master_osc_data->sync;
-    const bool master_fm_wave = master_osc_data->fm_wave;
+    const bool master_fm_shot = master_osc_data->fm_shot;
     const int master_switch = master_osc_data->osc_switch;
     for( int sid = 0 ; sid < num_samples_ ; ++sid )
     {
@@ -1829,14 +1829,15 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
                 _last_root_note = _root_note;
             }
-            else if( master_fm_multi != last_modulator_multi )
+            else if( master_fm_freq != last_modulator_multi )
             {
                 change_modulator_frequency = true;
             }
 
             // MODULATOR FREQUENCY TODO -> only osc 1
-            if( change_modulator_frequency ) {
-                last_modulator_multi = master_fm_multi;
+            if( change_modulator_frequency ) 
+	    {
+                last_modulator_multi = master_fm_freq;
                 const float modulator_frequency = last_frequency* (1.1f + 14.9f*last_modulator_multi);
                 modulator.setVibratoRate( modulator_frequency );
 
@@ -1981,8 +1982,10 @@ inline void OSC::process(DataBuffer* data_buffer_,
             if( id == MASTER_OSC )
             {
                 int used_sync_cycles = 1;
-                if( ! master_fm_wave )
+                if( not master_fm_shot )
+                {
                     used_sync_cycles = modulator_sync_cycles;
+                }
 
                 // PROCESS MODULATOR
                 if( ! waiting_for_modulator_sync )
@@ -1991,7 +1994,8 @@ inline void OSC::process(DataBuffer* data_buffer_,
                 // FM SYNC
                 if( master_sync )
                 {
-                    if( modulator.isNewCylce() ) {
+                    if( modulator.isNewCylce() )
+                    {
                         ++current_modulator_sync_cycle;
                     }
                     if( !waiting_for_modulator_sync and current_modulator_sync_cycle >= used_sync_cycles )

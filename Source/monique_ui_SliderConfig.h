@@ -507,7 +507,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( int id_ )
         :
-        octave( &(GET_DATA(osc_datas[id_]).octave) ),
+        octave( &(GET_DATA(osc_datas[id_]).tune) ),
         is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
         top_text( String("L-MOD") ),
         bottom_text( String("TUNE-") + String(id_+1) ),
@@ -679,9 +679,9 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig()
         :
-        fm_multi( &(GET_DATA(osc_datas[0]).fm_multi) ),
-        fm_swing( &(GET_DATA(osc_datas[0]).fm_swing) ),
-        sync( &(GET_DATA(osc_datas[0]).sync) )
+        fm_multi( &(GET_DATA(osc_datas[MASTER_OSC]).fm_freq) ),
+        fm_swing( &(GET_DATA(osc_datas[MASTER_OSC]).fm_swing) ),
+        sync( &(GET_DATA(osc_datas[MASTER_OSC]).sync) )
     {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
@@ -875,9 +875,9 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig()
         :
-        puls_width( &(GET_DATA(osc_datas[0]).puls_width) ),
-        osc_switch( &(GET_DATA(osc_datas[0]).osc_switch) ),
-        fm_wave( &(GET_DATA(osc_datas[0]).fm_wave) )
+        puls_width( &(GET_DATA(osc_datas[MASTER_OSC]).puls_width) ),
+        osc_switch( &(GET_DATA(osc_datas[MASTER_OSC]).osc_switch) ),
+        fm_wave( &(GET_DATA(osc_datas[MASTER_OSC]).fm_shot) )
     {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)
@@ -2583,7 +2583,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MODUL";
+        return "MOD";
     }
     /*
     float get_top_button_amp() const noexcept override

@@ -77,7 +77,7 @@ COLD bool mono_AudioDeviceManager::save_to( XmlElement* xml_ ) const noexcept
 }
 COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcept
 {
-    String error;
+    String error("ERROR: CAN'T RESTORE DEVICES ON LOAD");
     if( xml_ )
     {
 #ifdef IS_STANDALONE
@@ -124,13 +124,36 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
             }
         }
     }
-    else
-    {
-        error = "DEVICE XML INVALID";
-    }
 
     return error;
 }
+COLD String mono_AudioDeviceManager::read_defaults() noexcept
+{
+    String error("ERROR: CAN'T OPEN ANY DEFAULT DEVICE.");
+#ifdef IS_STANDALONE
+    // AUDIO
+    {
+        const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
+        for( int i = 0 ; i != types.size() ; ++ i )
+        {
+            setCurrentAudioDeviceType( types.getUnchecked(i)->getTypeName(), false );
+            error = AudioDeviceManager::initialise
+            (
+                0,2,
+                nullptr,
+                true
+            );
+            if( error == "" )
+            {
+                break;
+            }
+        }
+    }
+#endif
+
+    return error;
+}
+
 COLD void mono_AudioDeviceManager::save() const noexcept
 {
     File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
@@ -167,7 +190,7 @@ COLD String mono_AudioDeviceManager::read() noexcept
     }
     else
     {
-        error = "CAN'T READ DEVICE FILE";
+        error = read_defaults();
     }
 
     return error;

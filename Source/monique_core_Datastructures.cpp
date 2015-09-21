@@ -14,6 +14,35 @@ static inline float positive( float x ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+static inline int reduce_id_to_smaller_100( int id_ ) noexcept
+{
+    if( id_ >= 500 )
+    {
+        id_ -= 500;
+    }
+    else if( id_ >= 400 )
+    {
+        id_ -= 400;
+    }
+    else if( id_ >= 300 )
+    {
+        id_ -= 300;
+    }
+    else if( id_ >= 200 )
+    {
+        id_ -= 200;
+    }
+    else if( id_ >= 100 )
+    {
+        id_ -= 100;
+    }
+
+    return id_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 COLD RuntimeListener::RuntimeListener() noexcept :
 sample_rate(RuntimeNotifyer::getInstance()->sample_rate),
             sample_rate_1ths(RuntimeNotifyer::getInstance()->sample_rate_1ths),
@@ -136,40 +165,43 @@ static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Param
 //==============================================================================
 //==============================================================================
 #define OSC_NAME "OSC"
+#define FM_NAME "FM"
 COLD OSCData::OSCData( int id_ ) noexcept
 :
+id(id_),
+
 wave
 (
     MIN_MAX( SINE, NOICE ),
     SINE,
     1000,
     generate_param_name(OSC_NAME,id_,"wave"),
-    generate_short_human_name(OSC_NAME,id_,"sync")
+    generate_short_human_name(OSC_NAME,id_,"wave")
 ),
-octave
+tune
 (
     MIN_MAX( -24, 24 ),
     0,
     48*100,
     generate_param_name(OSC_NAME,id_,"octave"),
-    generate_short_human_name(OSC_NAME,id_,"octave"),
+    generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
 ),
 is_lfo_modulated
 (
     false,
     generate_param_name(OSC_NAME,id_,"is_lfo_mod"),
-    generate_short_human_name(OSC_NAME,id_,"mod_lfo")
+    generate_short_human_name(OSC_NAME,id_,"l-mod_ON")
 ),
 
 // -------------------------------------------------------
-fm_multi
+fm_freq
 (
     MIN_MAX( 0, 1 ),
     0,
     1000,
     generate_param_name(OSC_NAME,id_,"fm_multi"),
-    generate_short_human_name(OSC_NAME,id_,"fm_freq")
+    generate_short_human_name(FM_NAME,id_,"tune")
 ),
 fm_amount
 (
@@ -177,25 +209,30 @@ fm_amount
     0,
     1000,
     generate_param_name(OSC_NAME,id_,"fm_power"),
-    generate_short_human_name(OSC_NAME,id_,"fm_power")
+    generate_short_human_name(OSC_NAME,id_,"fm_mass")
 ),
-fm_wave
+fm_shot
 (
     true,
     generate_param_name(OSC_NAME,id_,"fm_wave"),
-    generate_short_human_name(OSC_NAME,id_,"fm_shot")
+    generate_short_human_name(FM_NAME,id_,"shot_ON")
 ),
 sync
 (
     true,
-    generate_param_name(OSC_NAME,id_,"sync"),
-    generate_short_human_name(OSC_NAME,id_,"fm_sync")
+    generate_param_name(OSC_NAME,id_, "sync" ),
+    generate_short_human_name
+    (
+        id_ == MASTER_OSC ? FM_NAME : OSC_NAME ,
+        id_,
+        "sync"
+    )
 ),
 o_mod
 (
     false,
     generate_param_name(OSC_NAME,id_,"mod_off"),
-    generate_short_human_name(OSC_NAME,id_,"o-mod")
+    generate_short_human_name(OSC_NAME,id_,"o-mod_ON")
 ),
 
 puls_width
@@ -203,7 +240,7 @@ puls_width
     MIN_MAX( -12, 12 ),
     0,
     generate_param_name(OSC_NAME,id_,"puls_width"),
-    generate_short_human_name(OSC_NAME,id_,"puls_width")
+    generate_short_human_name(FM_NAME,id_,"osc_pulse")
 ),
 fm_swing
 (
@@ -211,14 +248,14 @@ fm_swing
     0,
     1000,
     generate_param_name(OSC_NAME,id_,"fm_swing"),
-    generate_short_human_name(OSC_NAME,id_,"fm_swing")
+    generate_short_human_name(FM_NAME,id_,"fm_swing")
 ),
 osc_switch
 (
     MIN_MAX( 0, 16 ),
     0,
     generate_param_name(OSC_NAME,id_,"osc_switch"),
-    generate_short_human_name(OSC_NAME,id_,"switch")
+    generate_short_human_name(FM_NAME,id_,"osc_switch")
 ),
 
 last_modulation_value( 0 )
@@ -228,31 +265,59 @@ COLD OSCData::~OSCData() noexcept {}
 //==============================================================================
 static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
 {
-    dest_->wave = src_->wave;
-    dest_->octave = src_->octave;
-    dest_->is_lfo_modulated = src_->is_lfo_modulated;
-    dest_->fm_multi = src_->fm_multi;
-    dest_->fm_amount = src_->fm_amount;
-    dest_->fm_wave = src_->fm_wave;
-    dest_->sync = src_->sync;
-    dest_->o_mod = src_->o_mod;
-    dest_->puls_width = src_->puls_width;
-    dest_->fm_swing = src_->fm_swing;
-    dest_->osc_switch = src_->osc_switch;
+    if( dest_->id == MASTER_OSC )
+    {
+        dest_->o_mod = src_->o_mod;
+        dest_->wave = src_->wave;
+        dest_->fm_amount = src_->fm_amount;
+        dest_->is_lfo_modulated = src_->is_lfo_modulated;
+        dest_->tune = src_->tune;
+
+        dest_->sync = src_->sync;
+        dest_->fm_freq = src_->fm_freq;
+        dest_->fm_swing = src_->fm_swing;
+        dest_->fm_shot = src_->fm_shot;
+        dest_->puls_width = src_->puls_width;
+        dest_->osc_switch = src_->osc_switch;
+    }
+    else
+    {
+        dest_->sync = src_->sync;
+        dest_->wave = src_->wave;
+        dest_->fm_amount = src_->fm_amount;
+        dest_->is_lfo_modulated = src_->is_lfo_modulated;
+        dest_->tune = src_->tune;
+    }
 }
 static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
-    params_.add( &osc_data_->wave );
-    params_.add( &osc_data_->octave );
-    params_.add( &osc_data_->is_lfo_modulated );
-    params_.add( &osc_data_->fm_multi );
-    params_.add( &osc_data_->fm_amount );
-    params_.add( &osc_data_->fm_wave );
-    params_.add( &osc_data_->sync );
-    params_.add( &osc_data_->o_mod );
-    params_.add( &osc_data_->puls_width );
-    params_.add( &osc_data_->fm_swing );
-    params_.add( &osc_data_->osc_switch );
+    if( osc_data_->id == MASTER_OSC )
+    {
+        params_.add( &osc_data_->o_mod );
+        params_.add( &osc_data_->wave );
+        params_.add( &osc_data_->fm_amount );
+        params_.add( &osc_data_->tune );
+        params_.add( &osc_data_->is_lfo_modulated );
+    }
+    else
+    {
+        params_.add( &osc_data_->sync );
+        params_.add( &osc_data_->wave );
+        params_.add( &osc_data_->fm_amount );
+        params_.add( &osc_data_->tune );
+        params_.add( &osc_data_->is_lfo_modulated );
+    }
+}
+static inline void collect_saveable_fm_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
+{
+    {
+        params_.add( &osc_data_->sync );
+        params_.add( &osc_data_->fm_freq );
+        params_.add( &osc_data_->fm_swing );
+        params_.add( &osc_data_->fm_shot );
+        params_.add( &osc_data_->puls_width );
+        params_.add( &osc_data_->osc_switch );
+    }
 }
 
 //==============================================================================
@@ -335,26 +400,30 @@ COLD ENVData::~ENVData() noexcept {}
 static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
 {
     dest_->attack = src_->attack;
-    dest_->max_attack_time = src_->max_attack_time;
     dest_->decay = src_->decay;
-    dest_->max_decay_time = src_->max_decay_time;
     if( include_sustain_ )
+    {
         dest_->sustain = src_->sustain;
+        dest_->max_attack_time = src_->max_attack_time;
+        dest_->max_decay_time = src_->max_decay_time;
+        dest_->max_release_time = src_->max_release_time;
+    }
     dest_->sustain_time = src_->sustain_time;
     dest_->release = src_->release;
-    dest_->max_release_time = src_->max_release_time;
 }
 static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_sustain_ ) noexcept
 {
     params_.add( &data_->attack );
-    params_.add( &data_->max_attack_time );
     params_.add( &data_->decay );
-    params_.add( &data_->max_decay_time );
     if( include_sustain_ )
+    {
         params_.add( &data_->sustain );
+        params_.add( &data_->max_attack_time );
+        params_.add( &data_->max_decay_time );
+        params_.add( &data_->max_release_time );
+    }
     params_.add( &data_->sustain_time );
     params_.add( &data_->release );
-    params_.add( &data_->max_release_time );
 }
 
 //==============================================================================
@@ -544,6 +613,7 @@ static inline void collect_saveable_parameters( ENVPresetDef* data_, Array< Para
 //==============================================================================
 //==============================================================================
 #define ENV_PRESET_NAME "ENVP"
+#define ENV_PRESET_NAME_SHORT "M-ENV"
 COLD ENVPresetData::ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept
 :
 ENVData( id_ ),
@@ -554,8 +624,8 @@ state
     MIN_MAX( 0, 3 ),
     0.05,
     3000,
-    generate_param_name(ENV_PRESET_NAME,id,"state"),
-    generate_short_human_name(ENV_PRESET_NAME,id_,"state")
+    generate_param_name(ENV_PRESET_NAME,id_,"state"),
+    generate_short_human_name(ENV_PRESET_NAME_SHORT,reduce_id_to_smaller_100(id_),"morph")
 )
 {
     state.register_always_listener( this );
@@ -743,6 +813,7 @@ float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) no
 //==============================================================================
 //==============================================================================
 #define FILTER_NAME "FLT"
+#define FILTER_NAME_SHORT "F"
 COLD FilterData::FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept
 :
 // ----
@@ -751,7 +822,7 @@ filter_type
     MIN_MAX( LPF_2_PASS, MOOG_AND_LPF ),
     LPF_2_PASS,
     generate_param_name(FILTER_NAME,id_,"filter_type"),
-    generate_short_human_name(FILTER_NAME,id_,"type")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"type")
 ),
 
 // ----
@@ -761,7 +832,7 @@ adsr_lfo_mix
     -0.9,
     2000,
     generate_param_name(FILTER_NAME,id_,"adsr_lfo_mix"),
-    generate_short_human_name(FILTER_NAME,id_,"lfo_mix")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"lfo_mix")
 ),
 
 // ----
@@ -771,14 +842,14 @@ distortion
     0,
     1000,
     generate_param_name(FILTER_NAME,id_,"distortion"),
-    generate_short_human_name(FILTER_NAME,id_,"destroy"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"destroy"),
     0.6
 ),
 modulate_distortion
 (
     false,
     generate_param_name(FILTER_NAME,id_,"modulate_distortion"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_destroy")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_destroy_ON")
 ),
 
 // ----
@@ -788,14 +859,14 @@ cutoff
     0.2,
     1000,
     generate_param_name(FILTER_NAME,id_,"cutoff"),
-    generate_short_human_name(FILTER_NAME,id_,"cutoff"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"cutoff"),
     0.7
 ),
 modulate_cutoff
 (
     true,
     generate_param_name(FILTER_NAME,id_,"modulate_cutoff"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_cutoff")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_cutoff_ON")
 ),
 
 // ----
@@ -805,31 +876,14 @@ resonance
     0.3,
     1000,
     generate_param_name(FILTER_NAME,id_,"resonance"),
-    generate_short_human_name(FILTER_NAME,id_,"resonance"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"resonance"),
     0.2
 ),
 modulate_resonance
 (
     true,
     generate_param_name(FILTER_NAME,id_,"modulate_resonance"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_resonance")
-),
-
-// ----
-width
-(
-    MIN_MAX( 0.001, 1 ),
-    0.5,
-    1000,
-    generate_param_name(FILTER_NAME,id_,"width"),
-    generate_short_human_name(FILTER_NAME,id_,"width"),
-    0.2
-),
-modulate_width
-(
-    true,
-    generate_param_name(FILTER_NAME,id_,"modulate_width"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_width")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_resonance_ON")
 ),
 
 // ----
@@ -839,14 +893,14 @@ gain
     0.3,
     1000,
     generate_param_name(FILTER_NAME,id_,"gain"),
-    generate_short_human_name(FILTER_NAME,id_,"gain"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"gain"),
     0.8
 ),
 modulate_gain
 (
     true,
     generate_param_name(FILTER_NAME,id_,"modulate_gain"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_gain")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_gain_ON")
 ),
 
 // ----
@@ -856,7 +910,7 @@ compressor
     0,
     2000,
     generate_param_name(FILTER_NAME,id_,"compressor"),
-    generate_short_human_name(FILTER_NAME,id_,"peak")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"boost")
 ),
 output
 (
@@ -864,7 +918,7 @@ output
     0.75,
     1000,
     generate_param_name(FILTER_NAME,id_,"output"),
-    generate_short_human_name(FILTER_NAME,id_,"volume"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"volume"),
     0.6
 ),
 output_clipping
@@ -873,13 +927,13 @@ output_clipping
     1,
     1000,
     generate_param_name(FILTER_NAME,id_,"output_clipping"),
-    generate_short_human_name(FILTER_NAME,id_,"clipping")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"clipping")
 ),
 modulate_output
 (
     false,
     generate_param_name(FILTER_NAME,id_,"modulate_output"),
-    generate_short_human_name(FILTER_NAME,id_,"mod_volume")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_volume_ON")
 ),
 
 // ----
@@ -891,8 +945,9 @@ input_sustains
     0,
     2000,
 
-    FILTER_NAME,id_,
-    "input_sustain","in_sustain",true
+    FILTER_NAME,FILTER_NAME_SHORT,
+    id_,
+    "input_sustain","osc_input",true
 ),
 input_holds
 (
@@ -900,8 +955,9 @@ input_holds
 
     true,
 
-    FILTER_NAME,id_,
-    "input_hold","in_fix_sus",true
+    FILTER_NAME,FILTER_NAME_SHORT,
+    id_,
+    "input_hold","env_ON",true
 ),
 
 // ----
@@ -935,13 +991,12 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
     dest_->distortion = src_->distortion;
     dest_->modulate_distortion = src_->modulate_distortion;
     dest_->cutoff = src_->cutoff;
+    dest_->modulate_cutoff = src_->modulate_cutoff;
     dest_->modulate_gain = src_->modulate_gain;
     dest_->resonance = src_->resonance;
     dest_->modulate_resonance = src_->modulate_resonance;
     dest_->gain = src_->gain;
     dest_->modulate_gain = src_->modulate_gain;
-    dest_->width = src_->width;
-    dest_->modulate_width = src_->modulate_width;
     dest_->compressor = src_->compressor;
     dest_->output = src_->output;
     dest_->output_clipping = src_->output_clipping;
@@ -959,32 +1014,33 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
-    params_.add( &data_->filter_type );
+    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
+    {
+        params_.add( &data_->input_sustains[i] );
+        params_.add( &data_->input_holds[i] );
+        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_ );
+    }
+    collect_saveable_parameters( data_->env_data, params_, true );
+
     params_.add( &data_->adsr_lfo_mix );
-    params_.add( &data_->distortion );
-    params_.add( &data_->modulate_distortion );
+
+    params_.add( &data_->filter_type );
+
     params_.add( &data_->cutoff );
     params_.add( &data_->modulate_cutoff );
     params_.add( &data_->resonance );
     params_.add( &data_->modulate_resonance );
     params_.add( &data_->gain );
     params_.add( &data_->modulate_gain );
-    params_.add( &data_->width );
-    params_.add( &data_->modulate_width );
+
+    params_.add( &data_->distortion );
+    params_.add( &data_->modulate_distortion );
+
     params_.add( &data_->compressor );
-    params_.add( &data_->output );
-    params_.add( &data_->modulate_output );
     params_.add( &data_->output_clipping );
 
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
-    {
-        params_.add( &data_->input_holds[i] );
-        params_.add( &data_->input_sustains[i] );
-
-        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_ );
-    }
-
-    collect_saveable_parameters( data_->env_data, params_, true );
+    params_.add( &data_->output );
+    params_.add( &data_->modulate_output );
 }
 
 //==============================================================================
@@ -1028,7 +1084,8 @@ step
 
     false,
 
-    ARP_NAME,id_,
+    ARP_NAME,ARP_NAME,
+    id_,
     "step","step", false
 ),
 tune
@@ -1038,7 +1095,8 @@ tune
     MIN_MAX( -48, 48 ),
     0,
 
-    ARP_NAME,id_,
+    ARP_NAME,ARP_NAME,
+    id_,
     "tune","tune", false
 ),
 velocity
@@ -1049,7 +1107,8 @@ velocity
     0.85,
     1000,
 
-    ARP_NAME,id_,
+    ARP_NAME,ARP_NAME,
+    id_,
     "velocity","velocity", false
 ),
 
@@ -1128,8 +1187,9 @@ velocity
     0,
     2000,
 
-    EQ_NAME,id_,
-    "velocity","velocity", false
+    EQ_NAME,EQ_NAME,
+    id_,
+    "velocity","band_power", false
 ),
 hold
 (
@@ -1137,8 +1197,9 @@ hold
 
     true,
 
-    EQ_NAME,id_,
-    "hold","velocity", false
+    EQ_NAME,EQ_NAME,
+    id_,
+    "hold","env_ON", false
 )
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
@@ -1172,10 +1233,10 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
 {
     for( int i = 0 ; i != SUM_EQ_BANDS ; ++i )
     {
-        collect_saveable_parameters( data_->env_datas.getUnchecked( i ), params_ );
-
         params_.add( &data_->velocity[i] );
         params_.add( &data_->hold[i] );
+
+        collect_saveable_parameters( data_->env_datas.getUnchecked( i ), params_ );
     }
 }
 
@@ -1212,7 +1273,7 @@ room
     0.333,
     1000,
     generate_param_name(REVERB_NAME,id_,"room"),
-    generate_short_human_name(REVERB_NAME,id_,"room")
+    generate_short_human_name("FX","r_room")
 ),
 dry_wet_mix
 (
@@ -1220,7 +1281,7 @@ dry_wet_mix
     0.75,
     1000,
     generate_param_name(REVERB_NAME,id_,"dry-wet"),
-    generate_short_human_name(REVERB_NAME,id_,"dry-wet")
+    generate_short_human_name("FX","r_dry-wet")
 ),
 width
 (
@@ -1228,7 +1289,7 @@ width
     0.3,
     1000,
     generate_param_name(REVERB_NAME,id_,"width"),
-    generate_short_human_name(REVERB_NAME,id_,"width")
+    generate_short_human_name("FX","r_width")
 )
 {}
 
@@ -1238,14 +1299,14 @@ COLD ReverbData::~ReverbData() noexcept {}
 static inline void copy( ReverbData* dest_, const ReverbData* src_ ) noexcept
 {
     dest_->room = src_->room;
-    dest_->dry_wet_mix = src_->dry_wet_mix;
     dest_->width = src_->width;
+    dest_->dry_wet_mix = src_->dry_wet_mix;
 }
 static inline void collect_saveable_parameters( ReverbData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->room );
-    params_.add( &data_->dry_wet_mix );
     params_.add( &data_->width );
+    params_.add( &data_->dry_wet_mix );
 }
 
 //==============================================================================
@@ -1260,13 +1321,13 @@ modulation
     0.333,
     1000,
     generate_param_name(CHORUS_NAME,id_,"modulation"),
-    generate_short_human_name(CHORUS_NAME,id_,"chorus")
+    generate_short_human_name("FX","chorus-amount")
 ),
 hold_modulation
 (
     true,
     generate_param_name(CHORUS_NAME,id_,"hold-modulation"),
-    generate_short_human_name(CHORUS_NAME,id_,"chorus-fix")
+    generate_short_human_name("FX","chorus-env_ON")
 ),
 
 // ----
@@ -1282,13 +1343,16 @@ COLD ChorusData::~ChorusData() noexcept
 //==============================================================================
 static inline void copy( ChorusData* dest_, const ChorusData* src_ ) noexcept
 {
-    dest_->modulation = src_->modulation;
     dest_->hold_modulation = src_->hold_modulation;
+    dest_->modulation = src_->modulation;
+    
+    dest_->modulation_env_data->state = src_->modulation_env_data->state;
 }
 static inline void collect_saveable_parameters( ChorusData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->modulation );
     params_.add( &data_->hold_modulation );
+    params_.add( &data_->modulation_env_data->state );
 }
 
 //==============================================================================
@@ -1681,7 +1745,7 @@ glide
     0.05,
     1000,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
-    generate_short_human_name("MAIN","glide")
+    generate_short_human_name("GLOB","note_glide")
 ),
 delay
 (
@@ -1689,7 +1753,7 @@ delay
     0,
     1000,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
-    generate_short_human_name("MAIN","delay")
+    generate_short_human_name("FX","delay")
 ),
 effect_bypass
 (
@@ -1697,7 +1761,7 @@ effect_bypass
     1,
     1000,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
-    generate_short_human_name("MAIN","fx_bypass")
+    generate_short_human_name("FX","mix")
 ),
 final_compression
 (
@@ -1707,21 +1771,13 @@ final_compression
     generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
     generate_short_human_name("MAIN","clipping")
 ),
-colour
-(
-    MIN_MAX( 0, 1 ),
-    0.9,
-    100,
-    generate_param_name(SYNTH_DATA_NAME,MASTER,"colour"),
-    generate_short_human_name("MAIN","colour")
-),
 resonance
 (
     MIN_MAX( 0, 1 ),
     0.05,
     100,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
-    generate_short_human_name("MAIN","shape")
+    generate_short_human_name("FX","shape")
 ),
 curve_shape
 (
@@ -1729,21 +1785,21 @@ curve_shape
     0.5,
     100,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),
-    generate_short_human_name("MAIN","env_shape")
+    generate_short_human_name("GLOB","env_shape")
 ),
 octave_offset
 (
     MIN_MAX( -2, 2 ),
     0,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
-    generate_short_human_name("MAIN","octave")
+    generate_short_human_name("GLOB","octave")
 ),
 
 sync
 (
     true,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
-    generate_short_human_name("MAIN","sync")
+    generate_short_human_name("SPEED","sync")
 ),
 speed
 (
@@ -1751,7 +1807,7 @@ speed
     128,
     980*10,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
-    generate_short_human_name("MAIN","speed")
+    generate_short_human_name("SPEED","speed")
 ),
 
 glide_motor_time
@@ -1759,21 +1815,21 @@ glide_motor_time
     MIN_MAX( 20, 20000 ),
     500,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
-    generate_short_human_name("MAIN","glide_motor_time")
+    generate_short_human_name("GLOB","glide_motor_time")
 ),
 velocity_glide_time
 (
     MIN_MAX( 30, 999 ),
     30,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
-    generate_short_human_name("MAIN","velocity_glide_time")
+    generate_short_human_name("GLOB","velocity_glide")
 ),
 
 ctrl
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
-    generate_short_human_name("MAIN","ctrl")
+    generate_short_human_name("GLOB","ctrl")
 ),
 midi_pickup_offset
 (
@@ -1781,7 +1837,7 @@ midi_pickup_offset
     0.2,
     100,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
-    generate_short_human_name("MAIN","midi_pick_up")
+    generate_short_human_name("MIDI","cc_pick_up")
 ),
 
 // -------------------------------------------------------------
@@ -1789,73 +1845,73 @@ osci_show_osc_1
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
-    generate_short_human_name("MAIN","osci_show_osc_1")
+    generate_short_human_name("GLOB","osci_show_osc_1")
 ),
 osci_show_osc_2
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
-    generate_short_human_name("MAIN","osci_show_osc_2")
+    generate_short_human_name("GLOB","osci_show_osc_2")
 ),
 osci_show_osc_3
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
-    generate_short_human_name("MAIN","osci_show_osc_3")
+    generate_short_human_name("GLOB","osci_show_osc_3")
 ),
 osci_show_flt_env_1
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
-    generate_short_human_name("MAIN","osci_show_flt_env_1")
+    generate_short_human_name("GLOB","osci_show_flt_env_1")
 ),
 osci_show_flt_env_2
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
-    generate_short_human_name("MAIN","osci_show_flt_env_2")
+    generate_short_human_name("GLOB","osci_show_flt_env_2")
 ),
 osci_show_flt_env_3
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
-    generate_short_human_name("MAIN","osci_show_flt_env_3")
+    generate_short_human_name("GLOB","osci_show_flt_env_3")
 ),
 osci_show_flt_1
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
-    generate_short_human_name("MAIN","osci_show_flt_1")
+    generate_short_human_name("GLOB","osci_show_flt_1")
 ),
 osci_show_flt_2
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
-    generate_short_human_name("MAIN","osci_show_flt_2")
+    generate_short_human_name("GLOB","osci_show_flt_2")
 ),
 osci_show_flt_3
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
-    generate_short_human_name("MAIN","osci_show_flt_3")
+    generate_short_human_name("GLOB","osci_show_flt_3")
 ),
 osci_show_eq
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
-    generate_short_human_name("MAIN","osci_show_eq")
+    generate_short_human_name("GLOB","osci_show_eq")
 ),
 osci_show_out
 (
     true,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
-    generate_short_human_name("MAIN","osci_show_out")
+    generate_short_human_name("GLOB","osci_show_out")
 ),
 osci_show_out_env
 (
     false,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
-    generate_short_human_name("MAIN","osci_show_out_env")
+    generate_short_human_name("GLOB","osci_show_out_env")
 ),
 osci_show_range
 (
@@ -1863,7 +1919,7 @@ osci_show_range
     0.05,
     100,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
-    generate_short_human_name("MAIN","osci_show_range")
+    generate_short_human_name("GLOB","osci_show_range")
 ),
 
 // -------------------------------------------------------------
@@ -1872,7 +1928,7 @@ num_extra_threads
     MIN_MAX( 0, THREAD_LIMIT ),
     0,
     generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-    generate_short_human_name("MAIN","cpus")
+    generate_short_human_name("GLOB","cpus")
 ),
 
 // -------------------------------------------------------------
@@ -1917,7 +1973,7 @@ force_envs_to_zero
     0,
     1000,
     generate_param_name(ENV_NAME,MASTER,"force_env2zero"),
-    generate_short_human_name("MAIN","force_env2zero")
+    generate_short_human_name("GLOB","force_env2zero")
 ),
 
 // ----
@@ -1938,7 +1994,8 @@ morhp_states
     0,
     1000,
 
-    SYNTH_DATA_NAME,MASTER,
+    SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+    MASTER,
     "morph_state","morph",false
 ),
 morhp_switch_states
@@ -1947,7 +2004,8 @@ morhp_switch_states
 
     LEFT,
 
-    SYNTH_DATA_NAME,MASTER,
+    SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+    MASTER,
     "morph_switch_state","morph_tgl",false
 ),
 linear_morhp_state
@@ -2079,7 +2137,6 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->glide_motor_time = src_->glide_motor_time;
     dest_->velocity_glide_time = src_->velocity_glide_time;
     dest_->sync = src_->sync;
-    dest_->colour = src_->colour;
     dest_->resonance = src_->resonance;
     dest_->curve_shape = src_->curve_shape;
     dest_->octave_offset = src_->octave_offset;
@@ -2111,57 +2168,51 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     // NO NEED FOR COPY
     // morhp_states
 }
-static inline void collect_saveable_parameters( MoniqueSynthData* data_, Array< Parameter* >& params_ ) noexcept
-{
-    params_.add( &data_->volume );
-    params_.add( &data_->glide );
-    params_.add( &data_->delay );
-    params_.add( &data_->effect_bypass );
-    params_.add( &data_->final_compression );
-    params_.add( &data_->colour );
-    params_.add( &data_->resonance );
-    params_.add( &data_->curve_shape );
-    params_.add( &data_->octave_offset );
-    params_.add( &data_->speed );
-    params_.add( &data_->velocity_glide_time );
-    params_.add( &data_->sync );
-
-    params_.add( &data_->force_envs_to_zero );
-
-    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
-    {
-        params_.add( &data_->morhp_states[morpher_id] );
-        params_.add( &data_->morhp_switch_states[morpher_id] );
-    }
-}
 COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 {
     // on top to be the first on load and get the right update order (bit hacky, but ok ;--)
-    collect_saveable_parameters( env_preset_def, saveable_parameters );
-
-    for( int i = 0 ; i != SUM_LFOS ; ++i )
-    {
-        collect_saveable_parameters( lfo_datas[i], saveable_parameters );
-    }
 
     for( int i = 0 ; i != SUM_OSCS ;  ++i )
     {
         collect_saveable_parameters( osc_datas[i], saveable_parameters );
     }
-
+    collect_saveable_fm_parameters( osc_datas[MASTER_OSC], saveable_parameters );
+    for( int i = 0 ; i != SUM_LFOS ; ++i )
+    {
+        collect_saveable_parameters( lfo_datas[i], saveable_parameters );
+    }
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
     {
         collect_saveable_parameters( filter_datas[flt_id], saveable_parameters );
     }
 
-    collect_saveable_parameters( env_data, saveable_parameters, true );
-    collect_saveable_parameters( eq_data, saveable_parameters );
-    collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
+    for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
+    {
+        saveable_parameters.add( &this->morhp_states[morpher_id] );
+        saveable_parameters.add( &this->morhp_switch_states[morpher_id] );
+    }
+    
+    saveable_parameters.add( &this->resonance );
+    saveable_parameters.add( &this->delay );
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
-
-    collect_saveable_parameters( this, saveable_parameters );
-
+    saveable_parameters.add( &this->effect_bypass );
+    collect_saveable_parameters( env_data, saveable_parameters, true );
+    collect_saveable_parameters( eq_data, saveable_parameters );
+    saveable_parameters.add( &this->final_compression );
+    saveable_parameters.add( &this->volume );
+    
+    saveable_parameters.add( &this->glide );
+    saveable_parameters.add( &this->velocity_glide_time );
+    collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
+    saveable_parameters.add( &this->sync );
+    saveable_parameters.add( &this->speed );
+    saveable_parameters.add( &this->octave_offset );
+    
+    saveable_parameters.add( &this->curve_shape );
+    saveable_parameters.add( &this->force_envs_to_zero );
+    collect_saveable_parameters( env_preset_def, saveable_parameters );
+    
     saveable_parameters.minimiseStorageOverheads();
 }
 
@@ -2209,7 +2260,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         {
             {
                 morph_group_1->register_parameter( osc_datas[0]->wave.ptr(), data_type == MASTER );
-                morph_group_1->register_parameter( osc_datas[0]->octave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[0]->tune.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
                 morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
@@ -2221,7 +2272,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
             {
                 morph_group_1->register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
-                morph_group_1->register_parameter( osc_datas[1]->octave.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( osc_datas[1]->tune.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
 
                 morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
@@ -2233,7 +2284,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
             {
                 morph_group_1->register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
-                morph_group_1->register_parameter( osc_datas[2]->octave.ptr(), data_type == MASTER  );
+                morph_group_1->register_parameter( osc_datas[2]->tune.ptr(), data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
 
                 morph_group_1->register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
@@ -2246,19 +2297,13 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
         // FM
         {
-            morph_group_1->register_parameter( osc_datas[0]->fm_multi.ptr(), data_type == MASTER  );
-            morph_group_1->register_parameter( osc_datas[0]->fm_swing.ptr(), data_type == MASTER  );
-            // TODO
-            //morph_group_1->register_parameter( osc_datas[0]->osc_swing.ptr(), data_type == MASTER  );
-            morph_group_1->register_parameter( osc_datas[1]->fm_multi.ptr(), data_type == MASTER  );
-            morph_group_1->register_parameter( osc_datas[2]->fm_multi.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[MASTER_OSC]->fm_freq.ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( osc_datas[MASTER_OSC]->fm_swing.ptr(), data_type == MASTER  );
 
             morph_group_1->register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER  );
             morph_group_1->register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER  );
             morph_group_1->register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[0]->fm_wave.bool_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[1]->fm_wave.bool_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[2]->fm_wave.bool_ptr(), data_type == MASTER  );
+            morph_group_1->register_switch_parameter( osc_datas[MASTER_OSC]->fm_shot.bool_ptr(), data_type == MASTER  );
         }
 
         // FILTERS
@@ -2269,7 +2314,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->width.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
@@ -2284,7 +2328,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2312,7 +2355,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->width.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
@@ -2327,7 +2369,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2355,7 +2396,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->width.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
@@ -2370,7 +2410,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_width.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2438,7 +2477,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         // FX
         {
             // MAIN
-            morph_group_3->register_parameter( colour.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( resonance.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( effect_bypass.ptr(), data_type == MASTER  );
             // REVERB
@@ -3324,5 +3362,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
+
 
 

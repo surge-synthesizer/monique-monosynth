@@ -150,6 +150,7 @@ protected:
 
     COLD bool save_to( XmlElement* xml ) const noexcept;
     COLD String read_from( const XmlElement* xml ) noexcept;
+    COLD String read_defaults() noexcept;
     COLD void save() const noexcept;
     COLD String read() noexcept;
 };

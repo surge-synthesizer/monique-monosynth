@@ -176,7 +176,7 @@ COLD ArrayOfParameters::ArrayOfParameters
     const float min_value_, const float max_value_, const float init_value_,
     const int num_steps_,
 
-    const String& owner_class_name_,
+    const String& owner_class_name_, const String& short_owner_class_name_,
     const int owner_id_,
 
     const String& param_name_,
@@ -196,7 +196,7 @@ size( num_parameters_ )
             init_value_,
             num_steps_,
             generate_param_name(owner_class_name_,owner_id_,param_name_,i),
-            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+            create_human_id_ ? generate_short_human_name(short_owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(short_owner_class_name_,param_name_short_,i)
         );
     }
 }
@@ -216,7 +216,7 @@ COLD ArrayOfBoolParameters::ArrayOfBoolParameters
 
     const bool init_value_,
 
-    const String& owner_class_name_,
+    const String& owner_class_name_, const String& short_owner_class_name_,
     const int owner_id_,
 
     const String& param_name_,
@@ -234,7 +234,7 @@ size( num_parameters_ )
         (
             init_value_,
             generate_param_name(owner_class_name_,owner_id_,param_name_,i),
-            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+            create_human_id_ ? generate_short_human_name(short_owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(short_owner_class_name_,param_name_short_,i)
         );
     }
 }
@@ -254,7 +254,7 @@ COLD ArrayOfIntParameters::ArrayOfIntParameters
 
     const int min_value_, const int max_value_, const int init_value_,
 
-    const String& owner_class_name_,
+    const String& owner_class_name_, const String& short_owner_class_name_,
     const int owner_id_,
 
     const String& param_name_,
@@ -273,7 +273,7 @@ size( num_parameters_ )
             MIN_MAX( min_value_, max_value_ ),
             init_value_,
             generate_param_name(owner_class_name_,owner_id_,param_name_,i),
-            create_human_id_ ? generate_short_human_name(owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(owner_class_name_,param_name_short_,i)
+            create_human_id_ ? generate_short_human_name(short_owner_class_name_,owner_id_,param_name_short_,i) : generate_short_human_name(short_owner_class_name_,param_name_short_,i)
         );
     }
 }
