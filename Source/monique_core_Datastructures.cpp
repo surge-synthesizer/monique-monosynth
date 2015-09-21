@@ -2061,6 +2061,8 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
         mono_ParameterOwnerStore::getInstance()->ui_env = nullptr;
         delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_data;
         mono_ParameterOwnerStore::getInstance()->ui_env_preset_data = nullptr;
+        delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_def;
+        mono_ParameterOwnerStore::getInstance()->ui_env_preset_def = nullptr;
     }
 
     env_preset_def = nullptr;

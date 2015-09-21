@@ -13,12 +13,11 @@ DONE:
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
+- option arp: trigger on keypres or just pitch the arp
+- option to disable save on change  (live mode)
 
 TODO:
 - change order params and short names
-
-- option arp: trigger on keypres or just pitch the arp
-- press h for help, turn off tool tips
 
 - remove unneded osc parameters
 - bug: if you delete a old program and it was changed, it asks for save that deleted one!
@@ -40,9 +39,6 @@ TODO:
 
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 - set from current updated the morph group a bit... this is uncorrect
-
-- turn off tooltips
-- option to disable save on change  (live mode)
 
 QUESTS:
 - no retrigger on press key if the arp is enabeld?
