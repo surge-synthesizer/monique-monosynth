@@ -5395,7 +5395,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 {
     stopped_and_sostenuto_pedal_was_down = false;
     stopped_and_sustain_pedal_was_down = false;
-    was_soft_pedal_down_on_note_start = is_soft_pedal_down;
+    was_soft_pedal_down_on_note_start = is_soft_pedal_down and not synth_data->bind_sustain_and_sostenuto_pedal;
 
     current_note = synth_data->osc_retune and audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;

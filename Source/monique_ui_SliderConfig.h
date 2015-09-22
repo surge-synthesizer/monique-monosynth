@@ -3365,13 +3365,15 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     TOP_BUTTON_DESCRIPTION
     (
         "Turns OSC retune on or off.\n"
-	"Has no effect if soft pedal is not down."
+	"(Has no effect if soft pedal is not down.)"
         "\n"
         "If OSC retune is enabled and the soft pedal is down each second and third note down retunes OSC 2 and OSC 3 relative to the first note which is still down (OSC 1).\n"
 	"If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%.\n"
 	"\n"
 	"Note: MIDI CC 67 = soft pedal"
     )
+    //top button amp if pedal is fdown
+    //same for the bind ??
 
 public:
     OctaveOffsetSlConfig()
