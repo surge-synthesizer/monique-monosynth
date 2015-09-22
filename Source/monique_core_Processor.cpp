@@ -87,6 +87,7 @@ class NoteDownStore
     int8 root_note;
     int8 second_note;
     int8 third_note;
+    bool soft_is_down;
     struct NoteTimestampPair
     {
         const int8 note_number;
@@ -113,10 +114,7 @@ public:
     void handle_midi_messages( const MidiBuffer& messages_ ) noexcept;
     void reset() noexcept;
 
-    bool are_more_than_one_key_down() const noexcept 
-    {
-        return notes_down.size() > 1;
-    }
+    bool are_more_than_one_key_down() const noexcept;
 
 public:
     //==============================================================================
@@ -128,14 +126,13 @@ public:
 COLD NoteDownStore::NoteDownStore() noexcept :
 root_note(-1),
           second_note(-1),
-          third_note(-1)
+          third_note(-1),
+          soft_is_down(false)
 {}
 COLD NoteDownStore::~NoteDownStore() noexcept {}
 
-    bool MoniqueAudioProcessor::are_more_than_one_key_down() const noexcept
-    {
-      return note_down_store->are_more_than_one_key_down();
-    }
+
+
 //==============================================================================
 void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
 {
@@ -150,22 +147,21 @@ void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
     if( root_note == -1 )
     {
         root_note = note_number_;
-        std::cout <<"1st"<< root_note << std::endl;
     }
     else if( second_note == -1 )
     {
         second_note = note_number_;
-        //GET_DATA( osc_datas[1] ).tune.set_value( float( second_note - root_note ) + master_tune );
+        GET_DATA( osc_datas[1] ).tune.set_value( float( second_note - root_note ) + master_tune );
     }
     else if( third_note == -1 )
     {
         third_note = note_number_;
-        //GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
+        GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
     }
     else
     {
         third_note = note_number_;
-        //GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
+        GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
     }
 }
 void NoteDownStore::removeNote( int8 note_number_, int64 sample_ ) noexcept
@@ -195,19 +191,39 @@ void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
     MidiBuffer::Iterator message_iter( messages_ );
     MidiMessage input_midi_message;
     int sample_position = 0;
+    const bool retune_is_on = GET_DATA( synth_data ).osc_retune;
     while( message_iter.getNextEvent( input_midi_message, sample_position ) )
     {
-        if( input_midi_message.isNoteOn() )
+        if( input_midi_message.isSoftPedalOn() )
         {
-            addNote( input_midi_message.getNoteNumber(), sample_position );
+            soft_is_down = true;
         }
-        else if( input_midi_message.isNoteOff() )
+        if( input_midi_message.isSoftPedalOff() )
         {
-            removeNote( input_midi_message.getNoteNumber(), sample_position );
+            soft_is_down = false;
+        }
+        else if( retune_is_on )
+        {
+            if( input_midi_message.isNoteOn() )
+            {
+                addNote( input_midi_message.getNoteNumber(), sample_position );
+            }
+            else if( input_midi_message.isNoteOff() )
+            {
+                removeNote( input_midi_message.getNoteNumber(), sample_position );
+            }
         }
     }
-}
 
+    if( not retune_is_on )
+    {
+        reset();
+    }
+}
+bool NoteDownStore::are_more_than_one_key_down() const noexcept
+{
+    return notes_down.size() > 1;
+}
 void NoteDownStore::reset() noexcept
 {
     notes_down.clearQuick();
@@ -263,7 +279,6 @@ peak_meter(nullptr)
 #ifdef IS_STANDALONE
         synth_data->load();
 #endif
-        MidiKeyboardState::addListener(this);
     }
 #ifdef IS_PLUGIN
     init_automatable_parameters();
@@ -564,6 +579,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     // RENDER SYNTH
                     get_cc_input_messages( midi_messages_, num_samples );
                     get_note_input_messages( midi_messages_, num_samples );
+                    MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
                     note_down_store->handle_midi_messages( midi_messages_ );
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
@@ -605,27 +621,9 @@ COLD void MoniqueAudioProcessor::reset()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueAudioProcessor::handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity)
+bool MoniqueAudioProcessor::are_more_than_one_key_down() const noexcept
 {
-    MidiMessage message( MidiMessage::noteOn( midiChannel, midiNoteNumber, velocity ) );
-    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
-
-    collect_incoming_midi_messages
-    (
-        mono_AudioDeviceManager::INPUT_ID::NOTES,
-        message
-    );
-}
-void MoniqueAudioProcessor::handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber)
-{
-    MidiMessage message( MidiMessage::noteOff( midiChannel, midiNoteNumber, 0 ) );
-    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
-
-    collect_incoming_midi_messages
-    (
-        mono_AudioDeviceManager::INPUT_ID::NOTES,
-        message
-    );
+    return note_down_store->are_more_than_one_key_down();
 }
 
 //==============================================================================

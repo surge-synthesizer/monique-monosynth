@@ -798,6 +798,7 @@ struct MoniqueSynthData : ParameterListener
     Parameter resonance;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;
+    BoolParameter osc_retune;
 
     BoolParameter sync;
     Parameter speed;

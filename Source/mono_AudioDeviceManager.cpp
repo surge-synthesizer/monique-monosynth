@@ -332,14 +332,6 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                     thru_collector.addMessageToQueue( midi_message_ );
                 }
             }
-            else if( midi_message_.isAftertouch() )
-            {
-                std::cout << "isAftertouch" << std::endl;
-            }
-            else if( midi_message_.isChannelPressure() )
-            {
-                std::cout << "isChannelPressure" << std::endl;
-            }
             else if( midi_message_.isController() )
             {
                 if( use_main_input_as_cc )
@@ -351,6 +343,16 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                     }
                 }
             }
+            /*
+             if( midi_message_.isAftertouch() )
+            {
+               // std::cout << "isAftertouch" << std::endl;
+            }
+            else if( midi_message_.isChannelPressure() )
+            {
+                std::cout << "isChannelPressure" << std::endl;
+            }
+            */
     }
     break;
     }

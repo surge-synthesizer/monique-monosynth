@@ -5397,7 +5397,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     stopped_and_sustain_pedal_was_down = false;
     was_soft_pedal_down_on_note_start = is_soft_pedal_down;
 
-    //current_note = AppInstanceStore::getInstance()->audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
+    current_note = synth_data->osc_retune and audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;
     current_velocity = velocity_;
 
@@ -5813,11 +5813,6 @@ float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueSynthesizer::handleChannelPressure (int midiChannel, int channelPressureValue)
-{
-
-}
-
 void MoniqueSynthesizer::handleSustainPedal(int, bool isDown)
 {
     voice->handle_sustain_pedal( isDown );

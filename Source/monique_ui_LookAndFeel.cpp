@@ -246,7 +246,7 @@ UiLookAndFeel::UiLookAndFeel()
         0x1005001, /*MidiKeyboardComponent::blackNoteColourId*/               0xff000000,
         0x1005002, /*MidiKeyboardComponent::keySeparatorLineColourId*/        colours.bg.getARGB(),
         0x1005003, /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/     colours.button_on_colour.getARGB(),
-        0x1005004, /*MidiKeyboardComponent::keyDownOverlayColourId*/          Colours::yellow.getARGB(),
+        0x1005004, /*MidiKeyboardComponent::keyDownOverlayColourId*/          colours.button_on_colour.withAlpha(0.5f).getARGB(),
         0x1005005, /*MidiKeyboardComponent::textLabelColourId*/               0xff000000,
         0x1005006, /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/  colours.bg.getARGB(),
         0x1005007, /*MidiKeyboardComponent::upDownButtonArrowColourId*/       colours.button_on_colour.getARGB(),

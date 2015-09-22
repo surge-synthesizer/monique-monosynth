@@ -3242,7 +3242,8 @@ public:
 //==============================================================================
 class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 {
-    Parameter*const octave_offset;
+    IntParameter*const octave_offset;
+    BoolParameter*const osc_retune;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3290,24 +3291,22 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOP BUTTON
-    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-    return TOP_BUTTON_IS_ON_OFF;
+        return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-    return nullptr;
+        return osc_retune;
     }
     StringRef get_top_button_text() const noexcept override
     {
-    return "x1";
+        return "O-TUNE";
     }
     float get_top_button_amp() const noexcept override
     {
-    return NO_TOP_BUTTON_AMP;
+        return NO_TOP_BUTTON_AMP;
     }
-    */
 
     //==============================================================================
     // BOTTOM BUTTON
@@ -3363,11 +3362,19 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
         "\n"
         "Affected: OSC's, FM"
     )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns OSC retune on or off.\n"
+        "\n"
+        "If OSC retune is enabled and the soft pedal is down each second and third note down retunes OSC 2 and OSC 3 relative to the first note which is still down (OSC 1).\n"
+	"If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%"
+    )
 
 public:
     OctaveOffsetSlConfig()
         :
-        octave_offset( &(GET_DATA(synth_data).octave_offset) )
+        octave_offset( &(GET_DATA(synth_data).octave_offset) ),
+        osc_retune( &(GET_DATA(synth_data).osc_retune) )
     {}
 
     JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)
@@ -4756,9 +4763,10 @@ class GlideConfig : public ModulationSliderConfigBase
         "(Has no effect if the ARP is turned off)\n"
         "\n"
         "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger).\n"
-	"\n"
-	"If ARP is turned off you can use the sustain pedal to do bind your live played notes.\n"
-	"If Soft Pedal on note start is down the gain of OSC 2 is reduced to 50% and OSC 3 to 33%."
+        "\n"
+        "Sustain pedal can bind and hold notes (main ENV).\n"
+        "Sostenuto pedal can bind and hold notes (filter ENV's).\n"
+        "See: O-TUNE (bottom right) for a soft pedal option."
     )
     BOTTOM_BUTTON_DIALS
     (

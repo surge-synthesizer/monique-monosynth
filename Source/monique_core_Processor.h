@@ -25,7 +25,6 @@ class MoniqueSynthesizer;
 class MoniqueAudioProcessor :
     public AudioProcessor,
     public MidiKeyboardState,
-    public MidiKeyboardStateListener,
     public mono_AudioDeviceManager
 #ifdef IS_PLUGIN
     ,
@@ -84,9 +83,7 @@ private:
 public:
     bool are_more_than_one_key_down() const noexcept;
 private:
-    void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) override;
-    void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) override;
-
+  
     // ==============================================================================
     // MIDI
     void trigger_send_feedback() noexcept;

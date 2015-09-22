@@ -1794,6 +1794,12 @@ octave_offset
     generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
     generate_short_human_name("GLOB","octave")
 ),
+osc_retune
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"osc_retune"),
+    generate_short_human_name("GLOB","osc_retune")
+),
 
 sync
 (
@@ -2140,6 +2146,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->resonance = src_->resonance;
     dest_->curve_shape = src_->curve_shape;
     dest_->octave_offset = src_->octave_offset;
+    dest_->osc_retune = src_->osc_retune;
     dest_->final_compression = src_->final_compression;
     dest_->force_envs_to_zero = src_->force_envs_to_zero;
 
@@ -2207,6 +2214,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
     saveable_parameters.add( &this->sync );
     saveable_parameters.add( &this->speed );
+    saveable_parameters.add( &this->osc_retune );
     saveable_parameters.add( &this->octave_offset );
 
     saveable_parameters.add( &this->curve_shape );

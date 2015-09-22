@@ -141,7 +141,6 @@ class MoniqueSynthesizer : public Synthesiser
 {
     MoniqueSynthesiserVoice*const voice;
 
-    void handleChannelPressure (int midiChannel, int channelPressureValue) override;
     void handleSustainPedal (int midiChannel, bool isDown) override;
     void handleSostenutoPedal (int midiChannel, bool isDown) override;
     void handleSoftPedal (int midiChannel, bool isDown) override;

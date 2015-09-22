@@ -16,21 +16,24 @@ DONE:
 - change 2nd and 3rd colour theme
 - changed: values near zero snaps to zero (smaller 0.001) to avoid e.g. sync problems of two osc with the same freq
 - fix: question save before load a new program on remove
-- add: sustaino pedal support (free play -> arp is turned off)
 - fix: oscilloscope max +1 pix (one was missing)
-- add: pitchbend support (+/- 2 semitones)
-- add: soft pedal support - if the softpedal is down the gain of second and third osc will be reduced to 50% and 33%
-- add: all notes off support
-- add: sostenuto pedal - same as sutain pedal but for the filter envelopes
-
+- add: MIDI all notes off support
+LIVE PLAY
+- add: sustaino pedal support (common implimentation) (free play -> arp is turned off)
+- add: pitchbend support (+/- 2 semitones) (common implimentation)
+- add: sostenuto pedal - same as sutain pedal but for the filter envelopes (NOT common implimentation (but is free for an monophonic synth))
+- add: soft pedal support - if the softpedal is down the gain of second and third osc will be reduced to 50% and 33% (my interpretation of the classic implimentation)
+- add: osc retune option if soft pedal is down and at least two notes/keys and the new O-TUNE option is turned on (NOT common implimentation)
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
 - option arp: trigger on keypres or just pitch the arp
 - option to disable save on change  (live mode)
-- todo: retune osc on a pedal down
 
 TODO:
+- option to set filter release also sustain pedal
+- option retune osc on a pedal down
+
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
