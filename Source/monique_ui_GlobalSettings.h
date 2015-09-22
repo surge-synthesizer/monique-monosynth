@@ -173,6 +173,8 @@ private:
     ScopedPointer<TextButton> button_preset_1;
     ScopedPointer<TextButton> button_preset_2;
     ScopedPointer<TextButton> button_preset_3;
+    ScopedPointer<Label> label_6;
+    ScopedPointer<ToggleButton> toggle_one_pedal;
 
 
     //==============================================================================

@@ -283,6 +283,11 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 {
                     thru_collector.addMessageToQueue( midi_message_ );
                 }
+                // BIND PEDALS OPTION
+                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                {
+                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 64, 127 ) );
+                }
             }
             else if( midi_message_.isSustainPedalOff() )
             {
@@ -290,6 +295,11 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 if( main_input_thru )
                 {
                     thru_collector.addMessageToQueue( midi_message_ );
+                }
+                // BIND PEDALS OPTION
+                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                {
+                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 64, 0 ) );
                 }
             }
             else if( midi_message_.isSostenutoPedalOn() )
@@ -343,16 +353,16 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                     }
                 }
             }
-            /*
-             if( midi_message_.isAftertouch() )
-            {
-               // std::cout << "isAftertouch" << std::endl;
-            }
-            else if( midi_message_.isChannelPressure() )
-            {
-                std::cout << "isChannelPressure" << std::endl;
-            }
-            */
+        /*
+         if( midi_message_.isAftertouch() )
+        {
+           // std::cout << "isAftertouch" << std::endl;
+        }
+        else if( midi_message_.isChannelPressure() )
+        {
+            std::cout << "isChannelPressure" << std::endl;
+        }
+        */
     }
     break;
     }

@@ -24,6 +24,10 @@ LIVE PLAY
 - add: sostenuto pedal - same as sutain pedal but for the filter envelopes (NOT common implimentation (but is free for an monophonic synth))
 - add: soft pedal support - if the softpedal is down the gain of second and third osc will be reduced to 50% and 33% (my interpretation of the classic implimentation)
 - add: osc retune option if soft pedal is down and at least two notes/keys and the new O-TUNE option is turned on (NOT common implimentation)
+- add: option to bind the sostenuto and sustaino to the sustaino pedal
+
+TODO: need option to bind susteno and sos...
+
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
@@ -31,9 +35,6 @@ DISCUSS:
 - option to disable save on change  (live mode)
 
 TODO:
-- option to set filter release also sustain pedal
-- option retune osc on a pedal down
-
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph
 
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
@@ -119,3 +120,4 @@ PRRRRRROOOOOOOOOOOOOOO
 - add: keyboard arrow up/down, left/right to control slider values
 - record to file standalone
 - osc open sound control
+- wind support

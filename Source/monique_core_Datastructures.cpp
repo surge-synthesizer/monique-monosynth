@@ -1950,6 +1950,12 @@ show_tooltips
     generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
     generate_short_human_name("show_tooltips")
 ),
+bind_sustain_and_sostenuto_pedal
+(
+    false,
+    generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
+    generate_short_human_name("GLOB","bind_pedals")
+),
 sliders_in_rotary_mode
 (
     false,
