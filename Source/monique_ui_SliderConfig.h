@@ -3365,9 +3365,12 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     TOP_BUTTON_DESCRIPTION
     (
         "Turns OSC retune on or off.\n"
+	"Has no effect if soft pedal is not down."
         "\n"
         "If OSC retune is enabled and the soft pedal is down each second and third note down retunes OSC 2 and OSC 3 relative to the first note which is still down (OSC 1).\n"
-	"If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%"
+	"If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%.\n"
+	"\n"
+	"Note: MIDI CC 67 = soft pedal"
     )
 
 public:
@@ -4765,8 +4768,12 @@ class GlideConfig : public ModulationSliderConfigBase
         "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger).\n"
         "\n"
         "Sustain pedal can bind and hold notes (main ENV).\n"
-        "Sostenuto pedal can bind and hold notes (filter ENV's).\n"
-        "See: O-TUNE (bottom right) for a soft pedal option."
+        "Sostenuto pedal can bind and hold the filter ENV's.\n"
+        "(If you only have a sustain pedal you can enable bind pedals in the setup.)\n"
+	"\n"
+	"Note: MIDI CC 64 = sustain pedal.\n"
+	"Note: MIDI CC 66 = sostenuto pedal.\n"
+	"Note: MIDI CC 67 = soft pedal (See: O-TUNE (bottom right) for a soft pedal option)"
     )
     BOTTOM_BUTTON_DIALS
     (

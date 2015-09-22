@@ -2,6 +2,7 @@
 #include "monique_core_Parameters.h"
 #include "monique_core_Synth.h"
 #include <unistd.h>
+#include <sys/socket.h>
 
 //==============================================================================
 //==============================================================================
@@ -2249,6 +2250,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &animate_envs );
     global_parameters.add( &show_tooltips );
+    global_parameters.add( &bind_sustain_and_sostenuto_pedal );
 
     global_parameters.add( &sliders_in_rotary_mode );
     global_parameters.add( &sliders_sensitivity );
