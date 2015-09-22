@@ -202,11 +202,20 @@ void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
         {
             soft_is_down = false;
         }
-        else if( retune_is_on )
+        else
         {
             if( input_midi_message.isNoteOn() )
             {
-                addNote( input_midi_message.getNoteNumber(), sample_position );
+                if( retune_is_on and soft_is_down )
+                {
+                    addNote( input_midi_message.getNoteNumber(), sample_position );
+                }
+                else
+                {
+                    // ONLY REMEMBER THe LAST ONE IF THE PEDAL IS NOT DOWN
+                    reset();
+                    addNote( input_midi_message.getNoteNumber(), sample_position );
+                }
             }
             else if( input_midi_message.isNoteOff() )
             {
