@@ -17,11 +17,18 @@ DONE:
 - changed: values near zero snaps to zero (smaller 0.001) to avoid e.g. sync problems of two osc with the same freq
 - fix: question save before load a new program on remove
 - add: sustaino pedal support (free play -> arp is turned off)
+- fix: oscilloscope max +1 pix (one was missing)
+- add: pitchbend support (+/- 2 semitones)
+- add: soft pedal support - if the softpedal is down the gain of second and third osc will be reduced to 50% and 33%
+- add: all notes off support
+- add: sostenuto pedal - same as sutain pedal but for the filter envelopes
+
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
 - option arp: trigger on keypres or just pitch the arp
 - option to disable save on change  (live mode)
+- todo: retune osc on a pedal down
 
 TODO:
 - buggy manual morph if auto morph is running -> stop auto morph on manual morph

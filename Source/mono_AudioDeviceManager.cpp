@@ -241,22 +241,18 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         if( midi_message_.isMidiClock() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
-            std::cout << "isMidiClock" << std::endl;
         }
         else if( midi_message_.isMidiStart() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
-            std::cout << "isMidiStart" << std::endl;
         }
         else if( midi_message_.isMidiStop() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
-            std::cout << "isMidiStop" << std::endl;
         }
         else if( midi_message_.isMidiContinue() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
-            std::cout << "isMidiContinue" << std::endl;
         }
         else // IF
 #endif
@@ -268,15 +264,17 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 {
                     thru_collector.addMessageToQueue( midi_message_ );
                 }
-                std::cout << "isNoteOnOrOff" << std::endl;
             }
             else if( midi_message_.isAllNotesOff() )
             {
-                std::cout << "isAllNotesOff" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isProgramChange() )
             {
-                std::cout << "isProgramChange" << std::endl;
             }
             else if( midi_message_.isSustainPedalOn() )
             {
@@ -296,23 +294,43 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
             }
             else if( midi_message_.isSostenutoPedalOn() )
             {
-                std::cout << "isSostenutoPedalOn" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isSostenutoPedalOff() )
             {
-                std::cout << "isSostenutoPedalOff" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isSoftPedalOn() )
             {
-                std::cout << "isSoftPedalOn" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isSoftPedalOff() )
             {
-                std::cout << "isSoftPedalOff" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isPitchWheel() )
             {
-                std::cout << "isPitchWheel" << std::endl;
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
             }
             else if( midi_message_.isAftertouch() )
             {
@@ -332,7 +350,6 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                         thru_collector.addMessageToQueue( midi_message_ );
                     }
                 }
-                std::cout << "isController" << std::endl;
             }
     }
     break;

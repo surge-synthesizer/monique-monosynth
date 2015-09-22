@@ -20,6 +20,7 @@ class MoniqueSynthesiserVoice;
 class ClockSmoothBuffer;
 class ArpInfo;
 class NoteDownStore;
+class MoniqueSynthesizer;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -52,7 +53,7 @@ private:
     // DATA & SYNTH PROCESSOR
     MoniqueSynthData* synth_data;
     MoniqueSynthesiserVoice* voice;
-    Synthesiser* synth;
+    MoniqueSynthesizer* synth;
 
     // ==============================================================================
     // UI

@@ -239,11 +239,9 @@ peak_meter(nullptr)
     {
         AppInstanceStore::getInstance()->audio_processor = this;
 
-        synth = new Synthesiser();
         synth_data = new MoniqueSynthData(MASTER);
         voice = new MoniqueSynthesiserVoice(this,synth_data);
-        synth->addVoice (voice);
-        synth->addSound (new MoniqueSynthesiserSound());
+        synth = new MoniqueSynthesizer( voice, new MoniqueSynthesiserSound() );
 
 #ifdef IS_STANDALONE
         audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");

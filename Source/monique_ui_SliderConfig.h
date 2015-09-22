@@ -4755,7 +4755,10 @@ class GlideConfig : public ModulationSliderConfigBase
         "Binds the steps of the arpeggiator.\n"
         "(Has no effect if the ARP is turned off)\n"
         "\n"
-        "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger)."
+        "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger).\n"
+	"\n"
+	"If ARP is turned off you can use the sustain pedal to do bind your live played notes.\n"
+	"If Soft Pedal on note start is down the gain of OSC 2 is reduced to 50% and OSC 3 to 33%."
     )
     BOTTOM_BUTTON_DIALS
     (

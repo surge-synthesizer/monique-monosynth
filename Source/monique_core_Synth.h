@@ -56,6 +56,13 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 
     //==============================================================================
     int current_note;
+    float pitch_offset;
+    bool is_sostenuto_pedal_down;
+    bool stopped_and_sostenuto_pedal_was_down;
+    bool is_soft_pedal_down;
+    bool was_soft_pedal_down_on_note_start;
+    bool is_sustain_pedal_down;
+    bool stopped_and_sustain_pedal_was_down;
     float current_velocity;
     int current_step;
     bool an_arp_note_is_already_running;
@@ -67,7 +74,9 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     } arp_info;
 
     //==============================================================================
-    bool canPlaySound (SynthesiserSound*) override { return true; }
+    bool canPlaySound (SynthesiserSound*) override {
+        return true;
+    }
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void start_internal( int midiNoteNumber, float velocity ) noexcept;
     void stopNote(float, bool allowTailOff) override;
@@ -89,6 +98,9 @@ public:
     float get_current_velocity() const noexcept;
     void reset() noexcept;
     void reset_internal() noexcept;
+    void handle_sustain_pedal( bool down_ ) noexcept;
+    void handle_sostueno_pedal( bool down_ ) noexcept;
+    void handle_soft_pedal( bool down_ ) noexcept;
 
 public:
     //==============================================================================
@@ -112,12 +124,41 @@ public:
 };
 
 //==================================================================================
-inline int MoniqueSynthesiserVoice::get_current_note() const noexcept {
+inline int MoniqueSynthesiserVoice::get_current_note() const noexcept
+{
     return current_note;
 }
-inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept {
+inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
+{
     return current_velocity;
 }
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class MoniqueSynthesizer : public Synthesiser
+{
+    MoniqueSynthesiserVoice*const voice;
+
+    void handleChannelPressure (int midiChannel, int channelPressureValue) override;
+    void handleSustainPedal (int midiChannel, bool isDown) override;
+    void handleSostenutoPedal (int midiChannel, bool isDown) override;
+    void handleSoftPedal (int midiChannel, bool isDown) override;
+
+public:
+    COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
+    COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;
+
+public:
+COLD MoniqueSynthesizer( MoniqueSynthesiserVoice*voice_, const SynthesiserSound::Ptr& sound_ ) noexcept :
+    voice( voice_ )
+    {
+        Synthesiser::addVoice(voice_);
+        Synthesiser::addSound(sound_);
+    }
+    COLD ~MoniqueSynthesizer() noexcept {}
+};
 
 #endif
 

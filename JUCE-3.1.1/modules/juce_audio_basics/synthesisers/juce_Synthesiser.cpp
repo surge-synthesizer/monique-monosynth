@@ -261,7 +261,7 @@ void Synthesiser::noteOn (const int midiChannel,
         SynthesiserSound* const sound = sounds.getUnchecked(i);
 
         if (sound->appliesToNote (midiNoteNumber)
-             && sound->appliesToChannel (midiChannel))
+                && sound->appliesToChannel (midiChannel))
         {
             // If hitting a note that's still ringing, stop it first (it could be
             // still playing because of the sustain or sostenuto pedal).
@@ -270,7 +270,7 @@ void Synthesiser::noteOn (const int midiChannel,
                 SynthesiserVoice* const voice = voices.getUnchecked (j);
 
                 if (voice->getCurrentlyPlayingNote() == midiNoteNumber
-                     && voice->isPlayingChannel (midiChannel))
+                        && voice->isPlayingChannel (midiChannel))
                     stopVoice (voice, 1.0f, true);
             }
 
@@ -326,12 +326,12 @@ void Synthesiser::noteOff (const int midiChannel,
         SynthesiserVoice* const voice = voices.getUnchecked (i);
 
         if (voice->getCurrentlyPlayingNote() == midiNoteNumber
-              && voice->isPlayingChannel (midiChannel))
+                && voice->isPlayingChannel (midiChannel))
         {
             if (SynthesiserSound* const sound = voice->getCurrentlyPlayingSound())
             {
                 if (sound->appliesToNote (midiNoteNumber)
-                     && sound->appliesToChannel (midiChannel))
+                        && sound->appliesToChannel (midiChannel))
                 {
                     jassert (! voice->keyIsDown || voice->sustainPedalDown == sustainPedalsDown [midiChannel]);
 
@@ -379,10 +379,17 @@ void Synthesiser::handleController (const int midiChannel,
 {
     switch (controllerNumber)
     {
-        case 0x40:  handleSustainPedal   (midiChannel, controllerValue >= 64); break;
-        case 0x42:  handleSostenutoPedal (midiChannel, controllerValue >= 64); break;
-        case 0x43:  handleSoftPedal      (midiChannel, controllerValue >= 64); break;
-        default:    break;
+    case 0x40:
+        handleSustainPedal   (midiChannel, controllerValue >= 64);
+        break;
+    case 0x42:
+        handleSostenutoPedal (midiChannel, controllerValue >= 64);
+        break;
+    case 0x43:
+        handleSoftPedal      (midiChannel, controllerValue >= 64);
+        break;
+    default:
+        break;
     }
 
     const ScopedLock sl (lock);
@@ -405,7 +412,7 @@ void Synthesiser::handleAftertouch (int midiChannel, int midiNoteNumber, int aft
         SynthesiserVoice* const voice = voices.getUnchecked (i);
 
         if (voice->getCurrentlyPlayingNote() == midiNoteNumber
-              && (midiChannel <= 0 || voice->isPlayingChannel (midiChannel)))
+                && (midiChannel <= 0 || voice->isPlayingChannel (midiChannel)))
             voice->aftertouchChanged (aftertouchValue);
     }
 }
@@ -478,22 +485,22 @@ void Synthesiser::handleSostenutoPedal (int midiChannel, bool isDown)
     }
 }
 
-void Synthesiser::handleSoftPedal (int midiChannel, bool /*isDown*/)
+void Synthesiser::handleSoftPedal (int midiChannel, bool isDown)
 {
-    (void) midiChannel;
     jassert (midiChannel > 0 && midiChannel <= 16);
 }
 
 void Synthesiser::handleProgramChange (int midiChannel, int programNumber)
 {
-    (void) midiChannel; (void) programNumber;
+    (void) midiChannel;
+    (void) programNumber;
     jassert (midiChannel > 0 && midiChannel <= 16);
 }
 
 //==============================================================================
 SynthesiserVoice* Synthesiser::findFreeVoice (SynthesiserSound* soundToPlay,
-                                              int midiChannel, int midiNoteNumber,
-                                              const bool stealIfNoneAvailable) const
+        int midiChannel, int midiNoteNumber,
+        const bool stealIfNoneAvailable) const
 {
     const ScopedLock sl (lock);
 
@@ -520,7 +527,7 @@ struct VoiceAgeSorter
 };
 
 SynthesiserVoice* Synthesiser::findVoiceToSteal (SynthesiserSound* soundToPlay,
-                                                 int /*midiChannel*/, int midiNoteNumber) const
+        int /*midiChannel*/, int midiNoteNumber) const
 {
     // This voice-stealing algorithm applies the following heuristics:
     // - Re-use the oldest notes first
@@ -609,3 +616,4 @@ SynthesiserVoice* Synthesiser::findVoiceToSteal (SynthesiserSound* soundToPlay,
 
     return low;
 }
+

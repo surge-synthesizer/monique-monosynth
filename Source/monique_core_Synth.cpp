@@ -1621,8 +1621,8 @@ class OSC : public RuntimeListener
 
     bool waiting_for_sync;
 
-    int _root_note;
-    int _last_root_note;
+    float _root_note;
+    float _last_root_note;
 
     float last_modulator_multi;
     bool waiting_for_modulator_sync;
@@ -1660,8 +1660,8 @@ class OSC : public RuntimeListener
 
 public:
     //==============================================================================
-    inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
-    inline void update( int root_note_ ) noexcept;
+    inline void process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept;
+    inline void update( float root_note_ ) noexcept;
 
     inline void reset() noexcept;
 
@@ -1712,14 +1712,16 @@ id( id_ ),
 COLD OSC::~OSC() noexcept {}
 
 //==============================================================================
-inline void OSC::process(DataBuffer* data_buffer_,
-                         const int num_samples_) noexcept
+inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept
 {
     float* const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
     float* const switch_buffer( data_buffer->osc_switchs.getWritePointer(id) );
     float* const osc_sync_switch_buffer( data_buffer->osc_sync_switchs.getWritePointer(MASTER_OSC) );
     float* const osc_modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
     const float* const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
+
+    // SOSTENUTO
+    const float volume_multi = is_sostenuto_pedal_down_ ? 1.0f / (id+1) : 1;
 
     // FM SWING
     const float master_fm_swing = master_osc_data->fm_swing;
@@ -2058,20 +2060,25 @@ inline void OSC::process(DataBuffer* data_buffer_,
 
             // OUT
             if( fm_amount )
+            {
                 sample = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
+            }
 
-            output_buffer[sid] = sample;
+            output_buffer[sid] = sample * volume_multi;
         }
     }
 
     _last_root_note = _root_note;
 }
-inline void OSC::update( int root_note_ ) noexcept
+inline void OSC::update( float root_note_ ) noexcept
 {
     root_note_ += synth_data->octave_offset *12;
     const float glide = synth_data->glide;
     if( glide != 0 and (_root_note != root_note_ || glide_time_in_samples > 0 ) )
     {
+        // NOTE RANGE
+        root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
+
         const float rest_glide = glide_time_in_samples*glide_note_delta;
         const float glide_notes_diverence = _root_note - root_note_;
         glide_time_in_samples = (sample_rate/2) * glide;
@@ -2350,7 +2357,7 @@ private:
 
 public:
     //==============================================================================
-    inline void start_attack( bool force_to_zero = true ) noexcept;
+    inline void start_attack( bool is_pedal_down_ ) noexcept;
     inline void set_to_release() noexcept;
     inline void reset() noexcept;
 
@@ -2467,14 +2474,14 @@ inline void ENV::update_stage() noexcept
     }
 }
 
-inline void ENV::start_attack( bool force_to_zero ) noexcept
+inline void ENV::start_attack( bool is_pedal_down_ ) noexcept
 {
     current_stage = TRIGGER_START;
-    if( force_to_zero > 0 )
+    if( not is_pedal_down_ )
     {
         const bool arp_is_on( GET_DATA( arp_data ).is_on );
-	// BIND / GLIDE / SUTAINO
-        envelop.force_zero_glide( ( synth_data->force_envs_to_zero and arp_is_on ) or ( not arp_is_on and not GET_DATA( voice ).isSustainPedalDown() ) );
+        // BIND / GLIDE / SUTAINO
+        envelop.force_zero_glide( synth_data->force_envs_to_zero );
     }
     update_stage();
 }
@@ -3221,7 +3228,7 @@ private:
     DataBuffer*const data_buffer;
 
 public:
-    inline void start_attack() noexcept;
+    inline void start_attack( bool is_sostueno_pedal_down_ ) noexcept;
     inline void start_release() noexcept;
     inline void reset() noexcept;
     inline void process( const int num_samples ) noexcept;
@@ -3276,13 +3283,13 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
 COLD FilterProcessor::~FilterProcessor() noexcept {}
 
 //==============================================================================
-inline void FilterProcessor::start_attack() noexcept
+inline void FilterProcessor::start_attack( bool is_sostueno_pedal_down_ ) noexcept
 {
-    env->start_attack();
+    env->start_attack( is_sostueno_pedal_down_ );
 
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
     {
-        input_envs.getUnchecked(input_id)->start_attack();
+        input_envs.getUnchecked(input_id)->start_attack( is_sostueno_pedal_down_ );
     }
 }
 inline void FilterProcessor::start_release() noexcept
@@ -3931,7 +3938,7 @@ public:
     OwnedArray< ENV > envs;
 
 public:
-    inline void start_attack() noexcept;
+    inline void start_attack( bool is_sostueno_pedal_down_ ) noexcept;
     inline void start_release() noexcept;
     inline void reset() noexcept;
     inline void process( int num_samples_ ) noexcept;
@@ -4001,11 +4008,11 @@ amp2velocity_smoother(),
 COLD EQProcessor::~EQProcessor() noexcept {}
 
 //==============================================================================
-inline void EQProcessor::start_attack() noexcept
+inline void EQProcessor::start_attack( bool is_sostueno_pedal_down_ ) noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        envs.getUnchecked(band_id)->start_attack();
+        envs.getUnchecked(band_id)->start_attack( is_sostueno_pedal_down_ );
     }
 }
 inline void EQProcessor::start_release() noexcept
@@ -4742,15 +4749,21 @@ private:
 public:
     inline void process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
 
-    void start_attack() noexcept
+    void start_attack( bool is_sustain_pedal_down_, bool is_sostueno_pedal_down_ ) noexcept
     {
-        chorus_modulation_env->start_attack();
-        final_env->start_attack();
+        chorus_modulation_env->start_attack(is_sostueno_pedal_down_);
+        final_env->start_attack(is_sustain_pedal_down_);
     }
-    void start_release() noexcept
+    void start_release( bool is_sustain_pedal_down_, bool is_sostenuto_pedal_down_ ) noexcept
     {
-        chorus_modulation_env->set_to_release();
-        final_env->set_to_release();
+        if( not is_sostenuto_pedal_down_ )
+        {
+            chorus_modulation_env->set_to_release();
+        }
+        if( not is_sustain_pedal_down_ )
+        {
+            final_env->set_to_release();
+        }
     }
     void reset() noexcept
     {
@@ -5303,6 +5316,15 @@ eq_processor( new EQProcessor( synth_data_ ) ),
 fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) ),
 
 current_note(-1),
+pitch_offset(0),
+
+is_sostenuto_pedal_down(false),
+stopped_and_sostenuto_pedal_was_down(false),
+is_soft_pedal_down(false),
+was_soft_pedal_down_on_note_start(false),
+is_sustain_pedal_down(false),
+stopped_and_sustain_pedal_was_down(false),
+
 current_velocity(0),
 current_step(0),
 an_arp_note_is_already_running(false),
@@ -5371,6 +5393,10 @@ void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_,
 }
 void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_ ) noexcept
 {
+    stopped_and_sostenuto_pedal_was_down = false;
+    stopped_and_sustain_pedal_was_down = false;
+    was_soft_pedal_down_on_note_start = is_soft_pedal_down;
+
     //current_note = AppInstanceStore::getInstance()->audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;
     current_velocity = velocity_;
@@ -5380,13 +5406,12 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        oscs[i]->update( current_note+arp_offset );
+        oscs[i]->update( current_note+arp_offset+pitch_offset );
     }
 
     // PROCESSORS
     bool start_up = true;
     const bool arp_connect = synth_data->arp_sequencer_data->connect;
-    const bool is_sustainpedal_down = SynthesiserVoice::isSustainPedalDown();
     if( is_arp_on and arp_connect and an_arp_note_is_already_running )
     {
         start_up = false;
@@ -5400,31 +5425,24 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     {
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
         {
-            filter_processors[voice_id]->start_attack();
+            filter_processors[voice_id]->start_attack( is_sostenuto_pedal_down );
         }
-        eq_processor->start_attack();
-        fx_processor->start_attack();
+        eq_processor->start_attack(is_sostenuto_pedal_down);
+        fx_processor->start_attack(is_sustain_pedal_down, is_sostenuto_pedal_down);
     }
 }
 void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 {
     if( not synth_data->arp_sequencer_data->is_on )
     {
-        const bool is_sustainpedal_down = SynthesiserVoice::isSustainPedalDown();
         if( allowTailOff )
         {
-            if( not is_sustainpedal_down )
-            {
-                stop_internal();
-            }
+            stop_internal();
         }
         else
         {
-            if( not is_sustainpedal_down )
-            {
-                stop_internal();
-                clearCurrentNote();
-            }
+            stop_internal();
+            clearCurrentNote();
         }
     }
 }
@@ -5453,12 +5471,18 @@ void MoniqueSynthesiserVoice::restart_arp( int sample_pos_in_buffer_ ) noexcept
 }
 void MoniqueSynthesiserVoice::stop_internal() noexcept
 {
-    for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+    stopped_and_sostenuto_pedal_was_down = is_sostenuto_pedal_down;
+    stopped_and_sustain_pedal_was_down = is_sustain_pedal_down;
+
+    if( not is_sostenuto_pedal_down )
     {
-        filter_processors[voice_id]->start_release();
+        eq_processor->start_release();
+        for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+        {
+            filter_processors[voice_id]->start_release();
+        }
     }
-    eq_processor->start_release();
-    fx_processor->start_release();
+    fx_processor->start_release( is_sustain_pedal_down, is_sostenuto_pedal_down );
 }
 
 //==============================================================================
@@ -5563,23 +5587,28 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )
+    {
         return;
+    }
 
     if( step_number_ != -1 )
+    {
         current_step = step_number_;
+    }
 
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
         lfos[0]->process( step_number_, start_sample_, num_samples );
         filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
-        oscs[0]->process( data_buffer, num_samples ); // NEED LFO 0
+        oscs[0]->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED LFO 0
 
         // SUB THREAD
         // DEPENCIES OSC 0
         struct Executer : public mono_Thread
         {
             MoniqueSynthesiserVoice*const voice;
+            const bool was_soft_pedal_down_on_note_start;
             const int num_samples;
             const int start_sample;
             const int step_number;
@@ -5587,24 +5616,26 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             {
                 voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
                 voice->lfos[1]->process( step_number, start_sample, num_samples );
-                voice->oscs[1]->process( voice->data_buffer, num_samples );
+                voice->oscs[1]->process( voice->data_buffer, was_soft_pedal_down_on_note_start, num_samples );
             }
             Executer(MoniqueSynthesiserVoice*const voice_,
+            bool was_soft_pedal_down_on_note_start_,
             int num_samples_,
             int start_sample_,
             int step_number_)
                 : voice(voice_),
+                was_soft_pedal_down_on_note_start(was_soft_pedal_down_on_note_start_),
                 num_samples(num_samples_),
                 start_sample(start_sample_),
                 step_number(step_number_)
             {}
         };
-        Executer executer( this, num_samples, start_sample_, step_number_ );
+        Executer executer( this,  was_soft_pedal_down_on_note_start, num_samples, start_sample_, step_number_ );
         executer.try_run_paralel();
 
         lfos[2]->process( step_number_, start_sample_, num_samples );
         filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
-        oscs[2]->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+        oscs[2]->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED OSC 0 && LFO 2
 
         while( executer.isWorking() ) {}
     }
@@ -5643,7 +5674,17 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     }
 }
 
-void MoniqueSynthesiserVoice::pitchWheelMoved (int) {}
+void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
+{
+    pitch_offset = (pitch_ > 0x2000 ? 2.0f/0x2000*(pitch_-0x2000) : -2.0f/0x2000*(0x2000-pitch_));
+
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on;
+    float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
+    for( int i = 0 ; i != SUM_OSCS ; ++i )
+    {
+        oscs[i]->update( current_note+arp_offset+pitch_offset );
+    }
+}
 void MoniqueSynthesiserVoice::controllerMoved (int cc_number_, int cc_value_ )
 {
     MIDIControlHandler*const midi_learn_handler = MIDIControlHandler::getInstance();
@@ -5709,6 +5750,32 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
         oscs[osc_id]->reset();
     }
 }
+void MoniqueSynthesiserVoice::handle_sustain_pedal( bool down_ ) noexcept
+{
+    is_sustain_pedal_down = down_;
+    if( not down_ )
+    {
+        if( stopped_and_sustain_pedal_was_down )
+        {
+            stop_internal();
+        }
+    }
+}
+void MoniqueSynthesiserVoice::handle_sostueno_pedal( bool down_ ) noexcept
+{
+    is_sostenuto_pedal_down = down_;
+    if( not down_ )
+    {
+        if( stopped_and_sostenuto_pedal_was_down )
+        {
+            stop_internal();
+        }
+    }
+}
+void MoniqueSynthesiserVoice::handle_soft_pedal( bool down_ ) noexcept
+{
+    is_soft_pedal_down = down_;
+}
 
 //==============================================================================
 float MoniqueSynthesiserVoice::get_filter_env_amp( int filter_id_ ) const noexcept
@@ -5741,6 +5808,29 @@ float MoniqueSynthesiserVoice::get_band_env_amp( int band_id_ ) const noexcept
 float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
 {
     return fx_processor->chorus_modulation_env->get_amp();
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+void MoniqueSynthesizer::handleChannelPressure (int midiChannel, int channelPressureValue)
+{
+
+}
+
+void MoniqueSynthesizer::handleSustainPedal(int, bool isDown)
+{
+    voice->handle_sustain_pedal( isDown );
+}
+
+void MoniqueSynthesizer::handleSostenutoPedal(int, bool isDown)
+{
+    voice->handle_sostueno_pedal( isDown );
+}
+
+void MoniqueSynthesizer::handleSoftPedal(int, bool isDown)
+{
+    voice->handle_soft_pedal( isDown );
 }
 
 //==============================================================================
@@ -5823,10 +5913,10 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     float one_sample_buffer = 0;
     bool count_sustain = false;
-    env->start_attack( false );
+    env->start_attack( true );
     env->overwrite_current_value( 0.5 );
     env->set_current_stage( RELEASE );
-    env->start_attack( true );
+    env->start_attack( false );
     const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() * 0.05;
     sustain_end_ = -1;
     while( env->get_current_stage() != END_ENV )
@@ -5855,6 +5945,8 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
         }
     }
 }
+
+
 
 
 
