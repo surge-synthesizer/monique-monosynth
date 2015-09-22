@@ -80,16 +80,156 @@ inline void ClockSmoothBuffer::reset( double value_ ) noexcept
 #endif
 
 //==============================================================================
+//==============================================================================
+//==============================================================================
+class NoteDownStore
+{
+    int8 root_note;
+    int8 second_note;
+    int8 third_note;
+    struct NoteTimestampPair
+    {
+        const int8 note_number;
+        const int64 sample_pos;
+
+        inline bool operator== ( const NoteTimestampPair pair_ ) const noexcept
+        {
+            return note_number == pair_.note_number;
+        }
+
+        inline NoteTimestampPair( int8 note_number_, int64 sample_pos_ )
+noexcept :
+        note_number(note_number_), sample_pos(sample_pos_) {}
+        inline ~NoteTimestampPair() noexcept {}
+    };
+    Array< NoteTimestampPair > notes_down;
+
+    //==============================================================================
+    void addNote( int8 note_number_, int64 sample_ ) noexcept;
+    void removeNote( int8 note_number_, int64 sample_ ) noexcept;
+
+public:
+    //==============================================================================
+    void handle_midi_messages( const MidiBuffer& messages_ ) noexcept;
+    void reset() noexcept;
+
+    bool are_more_than_one_key_down() const noexcept 
+    {
+        return notes_down.size() > 1;
+    }
+
+public:
+    //==============================================================================
+    COLD NoteDownStore() noexcept;
+    COLD ~NoteDownStore() noexcept;
+};
+
+//==============================================================================
+COLD NoteDownStore::NoteDownStore() noexcept :
+root_note(-1),
+          second_note(-1),
+          third_note(-1)
+{}
+COLD NoteDownStore::~NoteDownStore() noexcept {}
+
+    bool MoniqueAudioProcessor::are_more_than_one_key_down() const noexcept
+    {
+      return note_down_store->are_more_than_one_key_down();
+    }
+//==============================================================================
+void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
+{
+    NoteTimestampPair pair(note_number_,sample_);
+    if( not notes_down.contains( pair ) )
+    {
+        notes_down.add( pair );
+    }
+
+    float master_tune = GET_DATA( osc_datas[MASTER_OSC] ).tune;
+    float used_root_tune = root_note + master_tune;
+    if( root_note == -1 )
+    {
+        root_note = note_number_;
+        std::cout <<"1st"<< root_note << std::endl;
+    }
+    else if( second_note == -1 )
+    {
+        second_note = note_number_;
+        //GET_DATA( osc_datas[1] ).tune.set_value( float( second_note - root_note ) + master_tune );
+    }
+    else if( third_note == -1 )
+    {
+        third_note = note_number_;
+        //GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
+    }
+    else
+    {
+        third_note = note_number_;
+        //GET_DATA( osc_datas[2] ).tune.set_value( float( third_note - root_note ) + master_tune );
+    }
+}
+void NoteDownStore::removeNote( int8 note_number_, int64 sample_ ) noexcept
+{
+    NoteTimestampPair pair(note_number_,sample_);
+
+    notes_down.removeFirstMatchingValue( pair );
+
+    if( root_note == note_number_ )
+    {
+        root_note = second_note;
+        second_note = third_note;
+        third_note = -1;
+    }
+    else if( second_note == note_number_ )
+    {
+        second_note = third_note;
+        third_note = -1;
+    }
+    else if( third_note == note_number_ )
+    {
+        third_note = -1;
+    }
+}
+void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
+{
+    MidiBuffer::Iterator message_iter( messages_ );
+    MidiMessage input_midi_message;
+    int sample_position = 0;
+    while( message_iter.getNextEvent( input_midi_message, sample_position ) )
+    {
+        if( input_midi_message.isNoteOn() )
+        {
+            addNote( input_midi_message.getNoteNumber(), sample_position );
+        }
+        else if( input_midi_message.isNoteOff() )
+        {
+            removeNote( input_midi_message.getNoteNumber(), sample_position );
+        }
+    }
+}
+
+void NoteDownStore::reset() noexcept
+{
+    notes_down.clearQuick();
+    root_note = -1;
+    second_note = -1;
+    third_note = -1;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 :
 #ifdef IS_STANDALONE
 clock_smoother( new ClockSmoothBuffer() ),
-                last_clock_sample(0),
-                try_to_restart_arp( false ),
-                connection_missed_counter(0),
-                received_a_clock_in_time(false),
+last_clock_sample(0),
+try_to_restart_arp( false ),
+connection_missed_counter(0),
+received_a_clock_in_time(false),
 #endif
-                peak_meter(nullptr)
+note_down_store( new NoteDownStore() ),
+peak_meter(nullptr)
 {
     // CREATE SINGLETONS
     RuntimeNotifyer::getInstance();
@@ -426,6 +566,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     // RENDER SYNTH
                     get_cc_input_messages( midi_messages_, num_samples );
                     get_note_input_messages( midi_messages_, num_samples );
+                    note_down_store->handle_midi_messages( midi_messages_ );
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
 
@@ -780,5 +921,7 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
     synth_data->set_current_program_abs(id_);
     synth_data->rename(name_);
 }
+
+
 
 

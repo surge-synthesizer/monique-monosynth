@@ -197,8 +197,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         int width = drawing_area->getWidth();
         float scale = float(width)/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
-        const int paint_start_offset_y = drawing_area->getY();
-        const float height = drawing_area->getHeight()-1;
+        const int paint_start_offset_y = drawing_area->getY() + 1;
+        const float height = drawing_area->getHeight()-3;
         const int line_center = paint_start_offset_y + height/2;
 
         const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);

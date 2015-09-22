@@ -2471,7 +2471,11 @@ inline void ENV::start_attack( bool force_to_zero ) noexcept
 {
     current_stage = TRIGGER_START;
     if( force_to_zero > 0 )
-        envelop.force_zero_glide( synth_data->force_envs_to_zero );
+    {
+        const bool arp_is_on( GET_DATA( arp_data ).is_on );
+	// BIND / GLIDE / SUTAINO
+        envelop.force_zero_glide( ( synth_data->force_envs_to_zero and arp_is_on ) or ( not arp_is_on and not GET_DATA( voice ).isSustainPedalDown() ) );
+    }
     update_stage();
 }
 inline void ENV::set_to_release() noexcept
@@ -5367,6 +5371,7 @@ void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_,
 }
 void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_ ) noexcept
 {
+    //current_note = AppInstanceStore::getInstance()->audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;
     current_velocity = velocity_;
 
@@ -5375,12 +5380,13 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        oscs[i]->update( midi_note_number_+arp_offset );
+        oscs[i]->update( current_note+arp_offset );
     }
 
     // PROCESSORS
     bool start_up = true;
     const bool arp_connect = synth_data->arp_sequencer_data->connect;
+    const bool is_sustainpedal_down = SynthesiserVoice::isSustainPedalDown();
     if( is_arp_on and arp_connect and an_arp_note_is_already_running )
     {
         start_up = false;
@@ -5404,14 +5410,21 @@ void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 {
     if( not synth_data->arp_sequencer_data->is_on )
     {
+        const bool is_sustainpedal_down = SynthesiserVoice::isSustainPedalDown();
         if( allowTailOff )
         {
-            stop_internal();
+            if( not is_sustainpedal_down )
+            {
+                stop_internal();
+            }
         }
         else
         {
-            stop_internal();
-            clearCurrentNote();
+            if( not is_sustainpedal_down )
+            {
+                stop_internal();
+                clearCurrentNote();
+            }
         }
     }
 }
@@ -5630,10 +5643,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     }
 }
 
-int MoniqueSynthesiserVoice::getCurrentlyPlayingNote() const noexcept
-{
-    return current_note;
-}
 void MoniqueSynthesiserVoice::pitchWheelMoved (int) {}
 void MoniqueSynthesiserVoice::controllerMoved (int cc_number_, int cc_value_ )
 {

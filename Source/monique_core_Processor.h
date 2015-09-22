@@ -19,6 +19,7 @@ class Monique_Ui_SegmentedMeter;
 class MoniqueSynthesiserVoice;
 class ClockSmoothBuffer;
 class ArpInfo;
+class NoteDownStore;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -78,6 +79,10 @@ public:
 private:
     //==========================================================================
     // MIDI KEYBOARD
+    ScopedPointer< NoteDownStore > note_down_store;
+public:
+    bool are_more_than_one_key_down() const noexcept;
+private:
     void handleNoteOn (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber, float velocity) override;
     void handleNoteOff (MidiKeyboardState* /*source*/, int midiChannel, int midiNoteNumber) override;
 

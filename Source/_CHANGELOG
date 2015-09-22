@@ -1,10 +1,8 @@
 DONE:
-- change return value to factory default
-- fm swing better adjustable (reduce max speed)
-- the sequencer is a global settings param now
-- chnaged the highest band of the eq from 8000-16000hertz to 8000 to 22000hertz
-- change the 3rd colour preset
-- fix: morphing of sustain levels of an morphable env was not working
+- change: return value to factory default
+- change: fm swing better adjustable (reduce max speed)
+- chnage: the highest band of the eq from 8000-16000hertz to 8000 to 22000hertz
+- fix: morphing of sustain levels of an morphable env was broken
 - update: automation paramter text, labels, values, host notification
 - add: f11 to enter full screen 
 - reduce: optoin show animations (was 3) to only animate modulations
@@ -17,6 +15,8 @@ DONE:
 - fix negativ pulse was added to the osc if o-mod was turned off
 - change 2nd and 3rd colour theme
 - changed: values near zero snaps to zero (smaller 0.001) to avoid e.g. sync problems of two osc with the same freq
+- fix: question save before load a new program on remove
+- add: sustaino pedal support (free play -> arp is turned off)
 
 DISCUSS:
 - change arp on/off to an global settings param and no more to an project param
@@ -24,7 +24,7 @@ DISCUSS:
 - option to disable save on change  (live mode)
 
 TODO:
-- bug: if you delete a old program and it was changed, it asks for save that deleted one!
+- buggy manual morph if auto morph is running -> stop auto morph on manual morph
 
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
@@ -35,9 +35,6 @@ TODO:
 - add: panic
 
 - osc square and saw going out of center on higher octaves
-
-- buggy manual morph if auto morph is running -> stop auto morph on manual morph
-- set from current updated the morph group a bit... this is uncorrect
 
 QUESTS:
 - no retrigger on press key if the arp is enabeld?
@@ -93,6 +90,7 @@ bücher
 
 OPTIMIZE
 - do not process the unused bands
+- calculate glide on value change, about 5% of 25% percent usage
 
 
 PRRRRRROOOOOOOOOOOOOOO

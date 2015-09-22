@@ -217,8 +217,6 @@ void mono_AudioDeviceManager::MidiInputCallback_CC::handleIncomingMidiMessage(Mi
 //==============================================================================
 void mono_AudioDeviceManager::MidiInputCallback_NOTES::handleIncomingMidiMessage(MidiInput*, const MidiMessage& message)
 {
-    //if( message.isNoteOnOrOff() )
-    //    return;
     manager->collect_incoming_midi_messages( INPUT_ID::NOTES, message );
 }
 
@@ -243,18 +241,22 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         if( midi_message_.isMidiClock() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
+            std::cout << "isMidiClock" << std::endl;
         }
         else if( midi_message_.isMidiStart() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
+            std::cout << "isMidiStart" << std::endl;
         }
         else if( midi_message_.isMidiStop() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
+            std::cout << "isMidiStop" << std::endl;
         }
         else if( midi_message_.isMidiContinue() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
+            std::cout << "isMidiContinue" << std::endl;
         }
         else // IF
 #endif
@@ -266,14 +268,71 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 {
                     thru_collector.addMessageToQueue( midi_message_ );
                 }
+                std::cout << "isNoteOnOrOff" << std::endl;
             }
-            else if( use_main_input_as_cc and midi_message_.isController() )
+            else if( midi_message_.isAllNotesOff() )
             {
-                cc_input_collector.addMessageToQueue( midi_message_ );
+                std::cout << "isAllNotesOff" << std::endl;
+            }
+            else if( midi_message_.isProgramChange() )
+            {
+                std::cout << "isProgramChange" << std::endl;
+            }
+            else if( midi_message_.isSustainPedalOn() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
                 if( main_input_thru )
                 {
                     thru_collector.addMessageToQueue( midi_message_ );
                 }
+            }
+            else if( midi_message_.isSustainPedalOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+                if( main_input_thru )
+                {
+                    thru_collector.addMessageToQueue( midi_message_ );
+                }
+            }
+            else if( midi_message_.isSostenutoPedalOn() )
+            {
+                std::cout << "isSostenutoPedalOn" << std::endl;
+            }
+            else if( midi_message_.isSostenutoPedalOff() )
+            {
+                std::cout << "isSostenutoPedalOff" << std::endl;
+            }
+            else if( midi_message_.isSoftPedalOn() )
+            {
+                std::cout << "isSoftPedalOn" << std::endl;
+            }
+            else if( midi_message_.isSoftPedalOff() )
+            {
+                std::cout << "isSoftPedalOff" << std::endl;
+            }
+            else if( midi_message_.isPitchWheel() )
+            {
+                std::cout << "isPitchWheel" << std::endl;
+            }
+            else if( midi_message_.isAftertouch() )
+            {
+                std::cout << "isAftertouch" << std::endl;
+            }
+            else if( midi_message_.isChannelPressure() )
+            {
+                std::cout << "isChannelPressure" << std::endl;
+            }
+            else if( midi_message_.isController() )
+            {
+                if( use_main_input_as_cc )
+                {
+                    cc_input_collector.addMessageToQueue( midi_message_ );
+                    if( main_input_thru )
+                    {
+                        thru_collector.addMessageToQueue( midi_message_ );
+                    }
+                }
+                std::cout << "isController" << std::endl;
             }
     }
     break;

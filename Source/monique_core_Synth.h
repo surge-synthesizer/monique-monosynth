@@ -67,6 +67,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     } arp_info;
 
     //==============================================================================
+    bool canPlaySound (SynthesiserSound*) override { return true; }
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void start_internal( int midiNoteNumber, float velocity ) noexcept;
     void stopNote(float, bool allowTailOff) override;
@@ -80,11 +81,8 @@ private:
     void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
     void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
 
-    int getCurrentlyPlayingNote() const noexcept override;
-
-    void pitchWheelMoved (int /*newValue*/) override;
-    void controllerMoved (int /*controllerNumber*/, int /*newValue*/) override;
-
+    void pitchWheelMoved (int newPitchWheelValue) override;
+    void controllerMoved (int controllerNumber, int newControllerValue) override;
 public:
     //==============================================================================
     int get_current_note() const noexcept;
