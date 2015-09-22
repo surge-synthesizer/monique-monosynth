@@ -1345,7 +1345,7 @@ static inline void copy( ChorusData* dest_, const ChorusData* src_ ) noexcept
 {
     dest_->hold_modulation = src_->hold_modulation;
     dest_->modulation = src_->modulation;
-    
+
     dest_->modulation_env_data->state = src_->modulation_env_data->state;
 }
 static inline void collect_saveable_parameters( ChorusData* data_, Array< Parameter* >& params_ ) noexcept
@@ -2191,7 +2191,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
         saveable_parameters.add( &this->morhp_states[morpher_id] );
         saveable_parameters.add( &this->morhp_switch_states[morpher_id] );
     }
-    
+
     saveable_parameters.add( &this->resonance );
     saveable_parameters.add( &this->delay );
     collect_saveable_parameters( reverb_data, saveable_parameters );
@@ -2201,18 +2201,18 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters( eq_data, saveable_parameters );
     saveable_parameters.add( &this->final_compression );
     saveable_parameters.add( &this->volume );
-    
+
     saveable_parameters.add( &this->glide );
     saveable_parameters.add( &this->velocity_glide_time );
     collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
     saveable_parameters.add( &this->sync );
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
-    
+
     saveable_parameters.add( &this->curve_shape );
     saveable_parameters.add( &this->force_envs_to_zero );
     collect_saveable_parameters( env_preset_def, saveable_parameters );
-    
+
     saveable_parameters.minimiseStorageOverheads();
 }
 
@@ -3007,7 +3007,15 @@ static inline String& generate_programm_name( const String& bank_, String& name_
     } while( exist );
 
     return name_;
-};
+}
+void MoniqueSynthData::create_internal_backup() noexcept
+{
+    saveable_backups.clearQuick();
+    for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+    {
+        saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
+    }
+}
 bool MoniqueSynthData::create_new() noexcept
 {
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
@@ -3021,12 +3029,7 @@ bool MoniqueSynthData::create_new() noexcept
         refresh_banks_and_programms();
         current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_program_name);
 
-        // BACKUP
-        saveable_backups.clearQuick();
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-        {
-            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
-        }
+        create_internal_backup();
     }
 
     return success;
@@ -3075,7 +3078,14 @@ bool MoniqueSynthData::replace() noexcept
         true
     );
     if( success )
+    {
         success = write2file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+
+        if( success )
+        {
+            create_internal_backup();
+        }
+    }
 
     return success;
 }
@@ -3097,6 +3107,8 @@ bool MoniqueSynthData::remove() noexcept
         program.moveToTrash();
         current_program = -1;
         refresh_banks_and_programms();
+
+        create_internal_backup();
     }
 
     return success;
@@ -3210,12 +3222,7 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
             }
         }
 
-        // BACKUP
-        saveable_backups.clearQuick();
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-        {
-            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
-        }
+        create_internal_backup();
     }
 }
 bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) noexcept
@@ -3254,12 +3261,7 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             }
         }
 
-        // BACKUP
-        saveable_backups.clearQuick();
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
-        {
-            saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
-        }
+        create_internal_backup();
     }
 }
 //==============================================================================

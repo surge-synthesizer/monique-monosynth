@@ -947,6 +947,7 @@ public:
     const String& get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
+    void create_internal_backup() noexcept;
     bool create_new() noexcept;
     bool rename( const String& new_name_ ) noexcept;
     bool replace() noexcept;
