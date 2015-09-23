@@ -559,7 +559,7 @@ void MIDIControl::send_clear_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
-        AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, 0 );
+        AppInstanceStore::getInstance()->audio_processor->clear_feedback_message( midi_number );
     }
 }
 

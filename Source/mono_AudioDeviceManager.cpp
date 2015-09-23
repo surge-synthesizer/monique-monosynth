@@ -3,6 +3,26 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
+static inline void show_feedback() noexcept
+{
+    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    for( int i = 0 ; i != parameters.size() ; ++ i )
+    {
+        parameters.getUnchecked(i)->midi_control->send_feedback_only();
+    }
+}
+void mono_AudioDeviceManager::clear_feedback() noexcept
+{
+    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    for( int i = 0 ; i != parameters.size() ; ++ i )
+    {
+        parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
 :
 main_input_thru
@@ -411,18 +431,22 @@ String mono_AudioDeviceManager::get_selected_in_device(mono_AudioDeviceManager::
 }
 
 //==============================================================================
-void mono_AudioDeviceManager::send_thru_messages(MidiBuffer& midi_messages_, int pos_) noexcept
+void mono_AudioDeviceManager::send_thru_messages(int num_samples_) noexcept
 {
+    MidiBuffer midi_messages;
+    thru_collector.removeNextBlockOfMessages( midi_messages, num_samples_ );
     if( midi_thru_output )
     {
-        midi_thru_output->sendBlockOfMessages( midi_messages_, 1, sample_rate );
+        midi_thru_output->sendBlockOfMessages( midi_messages, Time::getMillisecondCounterHiRes(), sample_rate );
     }
 }
-void mono_AudioDeviceManager::send_feedback_messages(MidiBuffer& midi_messages_, int pos_) noexcept
+void mono_AudioDeviceManager::send_feedback_messages(int num_samples_) noexcept
 {
+    MidiBuffer midi_messages;
+    cc_feedback_collector.removeNextBlockOfMessages( midi_messages, num_samples_ );
     if( midi_feedback_output )
     {
-        midi_feedback_output->sendBlockOfMessages( midi_messages_, 1, sample_rate );
+        midi_feedback_output->sendBlockOfMessages( midi_messages, Time::getMillisecondCounterHiRes(), sample_rate );
     }
 }
 
@@ -441,28 +465,37 @@ StringArray mono_AudioDeviceManager::get_available_out_ports() const noexcept
 {
     return MidiOutput::getDevices();
 }
+//==============================================================================
+//==============================================================================
+//==============================================================================
 void mono_AudioDeviceManager::close_out_port( OUTPUT_ID output_id_ ) noexcept
 {
     switch( output_id_ )
     {
     case OUTPUT_ID::FEEDBACK :
+    {
         if( midi_feedback_output )
         {
-            midi_feedback_output->startBackgroundThread();
+            clear_feedback();
+
+            midi_feedback_output->stopBackgroundThread();
             delete midi_feedback_output;
             midi_feedback_output = nullptr;
         }
         midi_feedback_name = "";
         break;
+    }
     case OUTPUT_ID::THRU :
+    {
         if( midi_thru_output )
         {
-            midi_thru_output->startBackgroundThread();
+            midi_thru_output->stopBackgroundThread();
             delete midi_thru_output;
             midi_thru_output = nullptr;
         }
         midi_thru_name = "";
         break;
+    }
     }
 }
 bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID output_id_, const String& device_name_) noexcept
@@ -477,16 +510,29 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
         switch( output_id_ )
         {
         case OUTPUT_ID::FEEDBACK :
+        {
+            // TODO SEND FEEDBACK
+
             midi_feedback_output = output;
             midi_feedback_name = device_name_;
-            break;
-        case OUTPUT_ID::THRU :
-            midi_thru_output = output;
-            midi_thru_name = device_name_;
+
+            output->startBackgroundThread();
+
+            show_feedback();
+
             break;
         }
+        case OUTPUT_ID::THRU :
+        {
+            midi_thru_output = output;
+            midi_thru_name = device_name_;
 
-        output->startBackgroundThread();
+            output->startBackgroundThread();
+
+            break;
+        }
+        }
+
     }
 
     return output;
@@ -496,11 +542,13 @@ String mono_AudioDeviceManager::get_selected_out_device(mono_AudioDeviceManager:
     switch( output_id_ )
     {
     case OUTPUT_ID::FEEDBACK :
+    {
         return midi_feedback_name;
-        break;
+    }
     default : // OUTPUT_ID::THRU :
+    {
         return midi_thru_name;
-        break;
+    }
     }
 }
 

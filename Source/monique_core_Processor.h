@@ -83,12 +83,6 @@ private:
 public:
     bool are_more_than_one_key_down() const noexcept;
 private:
-  
-    // ==============================================================================
-    // MIDI
-    void trigger_send_feedback() noexcept;
-    void trigger_send_clear_feedback() noexcept;
-
     // ==============================================================================
     /// AUTOMATION PARAMETERS
 #ifdef IS_PLUGIN

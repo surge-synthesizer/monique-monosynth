@@ -296,8 +296,8 @@ peak_meter(nullptr)
 
 COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
-    trigger_send_clear_feedback();
-
+     clear_feedback();
+  
 #ifdef IS_STANDALONE
     delete clock_smoother;
     mono_AudioDeviceManager::save();
@@ -602,8 +602,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
 
-                send_feedback_messages(midi_messages_,num_samples);
-                send_thru_messages(midi_messages_,num_samples);
+                send_feedback_messages(num_samples);
+                send_thru_messages(num_samples);
             }
         }
     }
@@ -636,26 +636,6 @@ COLD void MoniqueAudioProcessor::reset()
 bool MoniqueAudioProcessor::are_more_than_one_key_down() const noexcept
 {
     return note_down_store->are_more_than_one_key_down();
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-void MoniqueAudioProcessor::trigger_send_feedback() noexcept
-{
-    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
-    for( int i = 0 ; i != parameters.size() ; ++ i )
-    {
-        parameters.getUnchecked(i)->midi_control->send_feedback_only();
-    }
-}
-void MoniqueAudioProcessor::trigger_send_clear_feedback() noexcept
-{
-    Array< Parameter* >& parameters = synth_data->get_atomateable_parameters();
-    for( int i = 0 ; i != parameters.size() ; ++ i )
-    {
-        parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
-    }
 }
 
 //==============================================================================

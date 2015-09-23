@@ -121,8 +121,8 @@ private:
     String midi_thru_name, midi_feedback_name;
 
 public:
-    void send_thru_messages( MidiBuffer& midi_messages_, int pos_ ) noexcept;
-    void send_feedback_messages( MidiBuffer& midi_messages_, int pos_ ) noexcept;
+    void send_thru_messages( int num_samples_ ) noexcept;
+    void send_feedback_messages( int num_samples_ ) noexcept;
 
 private:
     //==========================================================================
@@ -136,11 +136,8 @@ public:
 
 public:
     // SEND
-    inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept
-    {
-        //   if( cc_output )
-        //       cc_output->send_message_now( message, 0 );
-    }
+    inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept;
+    inline void clear_feedback_message( int cc_number_ ) noexcept;
 
 private:
     COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
@@ -148,6 +145,7 @@ private:
 protected:
     COLD mono_AudioDeviceManager() noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
+    void clear_feedback() noexcept;
 
     COLD bool save_to( XmlElement* xml ) const noexcept;
     COLD String read_from( const XmlElement* xml ) noexcept;
@@ -156,4 +154,20 @@ protected:
     COLD String read() noexcept;
 };
 
+inline void mono_AudioDeviceManager::send_feedback_message( int cc_number_, int cc_value_ ) noexcept
+{
+    if( midi_feedback_output )
+    {
+        MidiMessage message = MidiMessage::controllerEvent( 1, cc_number_, cc_value_ );
+        message.setTimeStamp( Time::getMillisecondCounterHiRes() );
+        cc_feedback_collector.addMessageToQueue( message );
+    }
+}
+inline void mono_AudioDeviceManager::clear_feedback_message( int cc_number_ ) noexcept
+{
+    if( midi_feedback_output )
+    {
+        midi_feedback_output->sendMessageNow( MidiMessage::controllerEvent( 1, cc_number_, 0 ) );
+    }
+}
 #endif  // MONO_AUDIODEVICEMANAGER_H_INCLUDED
