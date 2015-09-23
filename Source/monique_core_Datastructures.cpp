@@ -2589,12 +2589,12 @@ const String& MoniqueSynthData::get_morph_source_name( int id_abs_ ) const noexc
     // LEFT
     if( id_abs_ < 4 )
     {
-        return left_morph_source_names[id_abs_];
+        return right_morph_source_names[id_abs_];
     }
     // RIGHT
     else
     {
-        return right_morph_source_names[id_abs_-4];
+        return left_morph_source_names[id_abs_-4];
     }
 }
 float MoniqueSynthData::get_morph_state( int morpher_id_ ) const noexcept
