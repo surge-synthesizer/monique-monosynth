@@ -32,6 +32,10 @@ void Monique_Ui_MidiIO::refresh() noexcept
 {
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     button_midi_learn->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? colours.button_on_colour : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
+
+    toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
+    toggle_input_main_cc->setToggleState( _audio_device_manager->use_main_input_as_cc, dontSendNotification );
+    toggle_input_cc_thru->setToggleState( _audio_device_manager->cc_input_thru, dontSendNotification );
 }
 void Monique_Ui_MidiIO::update_combo_boxed()
 {
@@ -59,6 +63,18 @@ void Monique_Ui_MidiIO::update_combo_boxed()
             // SELECT THE CURRENT ONE
             String selected_cc_in_device( _audio_device_manager->get_selected_in_device( mono_AudioDeviceManager::INPUT_ID::CC ) );
             combo_input_cc->setSelectedItemIndex( input_devices.indexOf( selected_cc_in_device ), dontSendNotification );
+        }
+
+        // INPUT CHANNEL
+        int current_channel = _audio_device_manager->input_channel;
+        combo_input_main_channel->clear( dontSendNotification );
+        {
+            combo_input_main_channel->addItem( "OMNI", 1 );
+            for( int i = 0 ; i != 16 ; ++i )
+            {
+                combo_input_main_channel->addItem( String( i+1 ), i+2 );
+            }
+            combo_input_main_channel->setSelectedItemIndex( current_channel, dontSendNotification );
         }
     }
 
@@ -109,9 +125,9 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_main = new ComboBox ("RECIEVE_MIDI_MAIN"));
     combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
-    "STANDALONE: MIDI-Clock will be received at this input."));
+                                        "\n"
+                                        "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
+                                        "STANDALONE: MIDI-Clock will be received at this input."));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
     combo_input_main->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
@@ -120,7 +136,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_main_channel = new ComboBox (String::empty));
     combo_input_main_channel->setTooltip (TRANS("Select a the MIDI channel there you like to listen to notes.\n"
-    "(Kepp OMNI if you don\'t know the channel there you MIDI device sends its notes)"));
+                                          "(Kepp OMNI if you don\'t know the channel there you MIDI device sends its notes)"));
     combo_input_main_channel->setEditableText (false);
     combo_input_main_channel->setJustificationType (Justification::centredLeft);
     combo_input_main_channel->setTextWhenNothingSelected (TRANS("CH"));
@@ -151,8 +167,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_output_thru = new ComboBox ("SEND_MIDI_THRU"));
     combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Send to host\" here."));
+                                         "\n"
+                                         "PLUGIN: normaly you should keep \"Send to host\" here."));
     combo_output_thru->setEditableText (false);
     combo_output_thru->setJustificationType (Justification::centredLeft);
     combo_output_thru->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
@@ -170,10 +186,10 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_cc = new ComboBox ("RECIEVE_CC"));
     combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
-    "\n"
-    "See: MIDI TRAIN (right)"));
+                                      "\n"
+                                      "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
+                                      "\n"
+                                      "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
     combo_input_cc->setJustificationType (Justification::centredLeft);
     combo_input_cc->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
@@ -207,13 +223,13 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (slider_midi_pickup = new Slider ("0"));
     slider_midi_pickup->setTooltip (TRANS("Define the CC PICKUP in percent. \n"
-    "\n"
-    "Example:\n"
-    "A listen sliders value is 50 (MIN:0, MAX:100).\n"
-    "The current position of your MIDI controller slider is 0% or 0.\n"
-    "The PICKUP offset is about 50% (middle).\n"
-    "\n"
-    "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
+                                          "\n"
+                                          "Example:\n"
+                                          "A listen sliders value is 50 (MIN:0, MAX:100).\n"
+                                          "The current position of your MIDI controller slider is 0% or 0.\n"
+                                          "The PICKUP offset is about 50% (middle).\n"
+                                          "\n"
+                                          "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
     slider_midi_pickup->setRange (0, 1000, 1);
     slider_midi_pickup->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_midi_pickup->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -242,9 +258,11 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
     label_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
-    button_midi_learn->setTooltip (TRANS("Enables the MIDI TRAIN or LEARN mode.\n"
-    "\n"
-    "Handling: enable MIDI TRAIN and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener)."));
+    button_midi_learn->setTooltip (TRANS("Enables the MIDI train/learn mode.\n"
+                                         "\n"
+                                         "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
+                                         "\n"
+                                         "Shortcut: CTRL + m"));
     button_midi_learn->setButtonText (TRANS("TRAIN"));
     button_midi_learn->addListener (this);
     button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
@@ -258,7 +276,9 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
     {
         Component* comp = getChildComponent(i);
         if( not dynamic_cast< ToggleButton* >( comp ) )
+        {
             comp->setOpaque(true);
+        }
     }
 
     slider_midi_pickup->setValue( GET_DATA(synth_data).midi_pickup_offset*1000, dontSendNotification );
@@ -385,7 +405,7 @@ void Monique_Ui_MidiIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     else if (comboBoxThatHasChanged == combo_input_main_channel)
     {
         //[UserComboBoxCode_combo_input_main_channel] -- add your combo box handling code here..
-        // TODO
+        _audio_device_manager->input_channel = combo_input_main_channel->getSelectedItemIndex();
         //[/UserComboBoxCode_combo_input_main_channel]
     }
     else if (comboBoxThatHasChanged == combo_output_thru)
@@ -420,6 +440,7 @@ void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == toggle_input_main_thru)
     {
         //[UserButtonCode_toggle_input_main_thru] -- add your button handler code here..
+        _audio_device_manager->main_input_thru = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_input_main_thru]
     }
     else if (buttonThatWasClicked == toggle_input_main_cc)
@@ -431,7 +452,7 @@ void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == toggle_input_cc_thru)
     {
         //[UserButtonCode_toggle_input_cc_thru] -- add your button handler code here..
-        _audio_device_manager->main_input_thru = buttonThatWasClicked->getToggleState();
+        _audio_device_manager->cc_input_thru = buttonThatWasClicked->getToggleState();
         //[/UserButtonCode_toggle_input_cc_thru]
     }
     else if (buttonThatWasClicked == button_midi_learn)
@@ -566,7 +587,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="530r 120 60 35" tooltip="Enables the MIDI TRAIN or LEARN mode.&#10;&#10;Handling: enable MIDI TRAIN and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener)."
+              virtualName="" explicitFocusOrder="0" pos="530r 120 60 35" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="TRAIN"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

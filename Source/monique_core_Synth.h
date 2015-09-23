@@ -91,7 +91,7 @@ private:
     void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
 
     void pitchWheelMoved (int newPitchWheelValue) override;
-    void controllerMoved (int controllerNumber, int newControllerValue) override;
+    void controllerMoved (int controllerNumber, int newControllerValue) override { } // see synthesizer
 public:
     //==============================================================================
     int get_current_note() const noexcept;
@@ -144,7 +144,10 @@ class MoniqueSynthesizer : public Synthesiser
     void handleSustainPedal (int midiChannel, bool isDown) override;
     void handleSostenutoPedal (int midiChannel, bool isDown) override;
     void handleSoftPedal (int midiChannel, bool isDown) override;
-
+    
+    void handleBankSelect (int controllerValue) noexcept;
+    void handleProgramChange (int midiChannel, int programNumber) override;
+    void handleController (int midiChannel, int controllerNumber, int controllerValue) override;    
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
     COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;

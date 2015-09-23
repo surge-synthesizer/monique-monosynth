@@ -270,6 +270,8 @@ public:
     void set_ctrl_view_mode( bool mode_ ) const;
     void show_view_mode();
     void update_return_values() noexcept;
+    
+    Parameter* get_front_parameter() noexcept { return front_parameter; }
 
     const float original_w;
     const float original_h;

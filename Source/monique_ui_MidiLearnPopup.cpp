@@ -94,9 +94,9 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*co
     //[UserPreSize]
     related_to_comp = nullptr;
 
-    for( int i = 1 ; i != 129 ; ++i )
+    for( int i = 0 ; i != 128 ; ++i )
     {
-        combo_midi_number->addItem( String(i), i );
+        combo_midi_number->addItem( String(i), i+1 );
     }
 
     /*

@@ -284,7 +284,7 @@ struct LFOData
 struct OSCData
 {
     const int id;
-  
+
     Parameter wave;
     ModulatedParameter tune;
     BoolParameter is_lfo_modulated;
@@ -463,7 +463,7 @@ struct ArpSequencerData
     //==========================================================================
     static StringRef speed_multi_to_text( int speed_multi_ ) noexcept;
     static double speed_multi_to_value( int speed_multi_ ) noexcept;
-    
+
     static StringRef shuffle_to_text( int speed_multi_ ) noexcept;
     static float shuffle_to_value( int speed_multi_ ) noexcept;
 };
@@ -795,7 +795,7 @@ struct MoniqueSynthData : ParameterListener
     Parameter delay;
     Parameter effect_bypass;
     Parameter final_compression;
-    Parameter resonance;
+    Parameter shape;
     Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;
     BoolParameter osc_retune;
@@ -855,6 +855,7 @@ private:
     Array< Parameter* > saveable_parameters;
     Array< float > saveable_backups;
     Array< Parameter* > global_parameters;
+    Array< Parameter* > all_parameters;
     COLD void colect_saveable_parameters() noexcept;
     COLD void colect_global_parameters() noexcept;
 
@@ -863,6 +864,14 @@ public:
     inline Array< Parameter* >& get_atomateable_parameters() noexcept
     {
         return saveable_parameters;
+    }
+    inline Array< Parameter* >& get_global_parameters() noexcept
+    {
+        return global_parameters;
+    }
+    inline Array< Parameter* >& get_all_parameters() noexcept
+    {
+        return all_parameters;
     }
 
     // ==============================================================================

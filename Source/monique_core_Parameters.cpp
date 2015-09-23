@@ -531,7 +531,9 @@ void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexcept
 {
     if( is_in_ctrl_mode )
+    {
         send_modulation_feedback();
+    }
 }
 
 void MIDIControl::send_feedback_only() const noexcept

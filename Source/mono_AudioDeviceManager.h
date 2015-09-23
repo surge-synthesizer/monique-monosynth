@@ -25,9 +25,10 @@
 class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
 {
 public:
-    bool main_input_thru;
-    bool cc_input_thru;
-    bool use_main_input_as_cc;
+    BoolParameter main_input_thru;
+    BoolParameter cc_input_thru;
+    BoolParameter use_main_input_as_cc;
+    IntParameter input_channel;
 
     //==========================================================================
     enum INPUT_ID

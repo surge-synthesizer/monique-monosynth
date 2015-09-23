@@ -601,6 +601,9 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     }
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
+
+                send_feedback_messages(midi_messages_,num_samples);
+                send_thru_messages(midi_messages_,num_samples);
             }
         }
     }

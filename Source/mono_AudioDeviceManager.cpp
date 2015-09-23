@@ -5,15 +5,37 @@
 //==============================================================================
 COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
 :
-main_input_thru( false ),
-                 cc_input_thru( false ),
-                 use_main_input_as_cc( false ),
+main_input_thru
+(
+    false,
+    generate_param_name("MIDI",1,"main_thru"),
+    generate_short_human_name("MIDI_main_thru")
+),
+cc_input_thru
+(
+    false,
+    generate_param_name("MIDI",1,"cc_thru"),
+    generate_short_human_name("MIDI_cc_thru")
+),
+use_main_input_as_cc
+(
+    true,
+    generate_param_name("MIDI",1,"cc_via_main"),
+    generate_short_human_name("MIDI_cc_via_main")
+),
+input_channel
+(
+    MIN_MAX( 0, 16 ),
+    0, // OMNI
+    generate_param_name("MIDI",1,"input_channel"),
+    generate_short_human_name("MIDI_input_channel")
+),
 
-                 cc_input_callback( new MidiInputCallback_CC(this) ),
-                 note_input_callback( new MidiInputCallback_NOTES(this) ),
+cc_input_callback( new MidiInputCallback_CC(this) ),
+note_input_callback( new MidiInputCallback_NOTES(this) ),
 
-                 midi_thru_output(nullptr),
-                 midi_feedback_output(nullptr)
+midi_thru_output(nullptr),
+midi_feedback_output(nullptr)
 {
     sample_rate_changed(0);
 }
@@ -71,6 +93,12 @@ COLD bool mono_AudioDeviceManager::save_to( XmlElement* xml_ ) const noexcept
         xml_->setAttribute( "thruOutputDeviceName", midi_thru_name );
         xml_->setAttribute( "feedbackOutputDeviceName", midi_feedback_name );
 
+        // PARAMS
+        write_parameter_to_file( *xml_, &main_input_thru );
+        write_parameter_to_file( *xml_, &cc_input_thru );
+        write_parameter_to_file( *xml_, &use_main_input_as_cc );
+        write_parameter_to_file( *xml_, &input_channel );
+
         success = true;
     }
     return success;
@@ -123,6 +151,12 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
                 open_out_port( OUTPUT_ID::FEEDBACK, feedback_device );
             }
         }
+
+        // PARAMS
+        read_parameter_from_file( *xml_, &main_input_thru );
+        read_parameter_from_file( *xml_, &cc_input_thru );
+        read_parameter_from_file( *xml_, &use_main_input_as_cc );
+        read_parameter_from_file( *xml_, &input_channel );
     }
 
     return error;
@@ -233,6 +267,12 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         {
             cc_input_collector.addMessageToQueue( midi_message_ );
         }
+
+        // THRU
+        if( cc_input_thru )
+        {
+            thru_collector.addMessageToQueue( midi_message_ );
+        }
     }
     break;
     case INPUT_ID::NOTES :
@@ -256,113 +296,73 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         }
         else // IF
 #endif
-            // ELSE IF!!!!
-            if( midi_message_.isNoteOnOrOff() )
+            if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
             {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
+                // ELSE IF!!!!
+                if( midi_message_.isNoteOnOrOff() )
                 {
-                    thru_collector.addMessageToQueue( midi_message_ );
+                    note_input_collector.addMessageToQueue( midi_message_ );
                 }
-            }
-            else if( midi_message_.isAllNotesOff() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
+                else if( midi_message_.isAllNotesOff() )
                 {
-                    thru_collector.addMessageToQueue( midi_message_ );
+                    note_input_collector.addMessageToQueue( midi_message_ );
                 }
-            }
-            else if( midi_message_.isProgramChange() )
-            {
-            }
-            else if( midi_message_.isSustainPedalOn() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
+                else if( midi_message_.isProgramChange() )
                 {
-                    thru_collector.addMessageToQueue( midi_message_ );
+                    note_input_collector.addMessageToQueue( midi_message_ );
                 }
-                // BIND PEDALS OPTION
-                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                else if( midi_message_.isSustainPedalOn() )
                 {
-                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
-                }
-            }
-            else if( midi_message_.isSustainPedalOff() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-                // BIND PEDALS OPTION
-                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
-                {
-                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
-                }
-            }
-            else if( midi_message_.isSostenutoPedalOn() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-            }
-            else if( midi_message_.isSostenutoPedalOff() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-            }
-            else if( midi_message_.isSoftPedalOn() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-            }
-            else if( midi_message_.isSoftPedalOff() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-            }
-            else if( midi_message_.isPitchWheel() )
-            {
-                note_input_collector.addMessageToQueue( midi_message_ );
-                if( main_input_thru )
-                {
-                    thru_collector.addMessageToQueue( midi_message_ );
-                }
-            }
-            else if( midi_message_.isController() )
-            {
-                if( use_main_input_as_cc )
-                {
-                    cc_input_collector.addMessageToQueue( midi_message_ );
-                    if( main_input_thru )
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                    // BIND PEDALS OPTION
+                    if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
                     {
-                        thru_collector.addMessageToQueue( midi_message_ );
+                        note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
+                    }
+                }
+                else if( midi_message_.isSustainPedalOff() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                    // BIND PEDALS OPTION
+                    if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                    {
+                        note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
+                    }
+                }
+                else if( midi_message_.isSostenutoPedalOn() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                }
+                else if( midi_message_.isSostenutoPedalOff() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                }
+                else if( midi_message_.isSoftPedalOn() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                }
+                else if( midi_message_.isSoftPedalOff() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                }
+                else if( midi_message_.isPitchWheel() )
+                {
+                    note_input_collector.addMessageToQueue( midi_message_ );
+                }
+                else if( midi_message_.isController() )
+                {
+                    if( use_main_input_as_cc )
+                    {
+                        cc_input_collector.addMessageToQueue( midi_message_ );
                     }
                 }
             }
-        /*
-         if( midi_message_.isAftertouch() )
+
+        // THRU
+        if( main_input_thru )
         {
-           // std::cout << "isAftertouch" << std::endl;
+            thru_collector.addMessageToQueue( midi_message_ );
         }
-        else if( midi_message_.isChannelPressure() )
-        {
-            std::cout << "isChannelPressure" << std::endl;
-        }
-        */
     }
     break;
     }

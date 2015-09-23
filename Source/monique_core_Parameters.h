@@ -1259,11 +1259,16 @@ static inline void write_midi_to( XmlElement& xml_, const Parameter* param_ ) no
 static inline void read_midi_from( const XmlElement& xml_, Parameter* param_ ) noexcept
 {
     const ParameterInfo& info = param_->get_info();
-    param_->midi_control->train
-    (
-        xml_.getIntAttribute( info.name + "_MIDI_NR", -1 ),
-        xml_.getStringAttribute( info.name + "_MIDI_CTRL", "" )
-    );
+    const int number = xml_.getIntAttribute( info.name + "_MIDI_NR", -1 );
+    if( number != -1 )
+    {
+        const String ctrl = xml_.getStringAttribute( info.name + "_MIDI_CTRL", "" );
+        param_->midi_control->train
+        (
+            number,
+            ctrl
+        );
+    }
 }
 
 #endif

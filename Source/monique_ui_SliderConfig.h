@@ -3658,7 +3658,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig()
         :
-        shape( &(GET_DATA(synth_data).resonance) )
+        shape( &(GET_DATA(synth_data).shape) )
     {}
 
     JUCE_LEAK_DETECTOR (FColourSlConfig)

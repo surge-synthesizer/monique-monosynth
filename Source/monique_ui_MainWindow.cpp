@@ -129,7 +129,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
-    
+
     // FILTER 1
     int f_type = synth_data->filter_datas[0]->filter_type;
     filter_type_6_1->setColour( TextButton::buttonColourId, f_type == LPF || f_type == LPF_2_PASS ? button_on : button_off );
@@ -2925,7 +2925,6 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 {
     //[UserCode_keyPressed] -- Add your code here...
     bool success = false;
-
     if( key == KeyPress::escapeKey )
     {
         MIDIControlHandler::getInstance()->clear();
@@ -2935,9 +2934,80 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         close_all_subeditors();
         success = true;
     }
-    else if( key.getTextDescription() == "h" )
+    else if( key.getTextDescription() == "ctrl + +")
+    {
+        synth_data->ui_scale_factor = synth_data->ui_scale_factor + 0.1;
+        update_size();
+        success = true;
+    }
+    else if( key.getTextDescription() == "ctrl + -" )
+    {
+        synth_data->ui_scale_factor = synth_data->ui_scale_factor - 0.1;
+        update_size();
+        success = true;
+    }
+    else if( key.getTextDescription() == "ctrl + H" )
     {
         update_tooltip_handling(true);
+        success = true;
+    }
+    else if( key.getTextDescription() == "ctrl + M" )
+    {
+        MIDIControlHandler::getInstance()->toggle_midi_learn();
+        const Desktop& desktop = Desktop::getInstance();
+        bool found = false;
+        for (int i = 0; i != desktop.getNumMouseSources() ; ++i )
+        {
+            const MouseInputSource* const mi = desktop.getMouseSource(i);
+            Component* const c = mi->getComponentUnderMouse();
+            if( c )
+            {
+                if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( c ) )
+                {
+                    {
+                        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+                        (
+                            slider->get_front_parameter(),
+                            c
+                        )
+                    }
+                    show_info_popup(c,slider->get_front_parameter()->midi_control);
+                    found = true;
+                    break;
+                }
+                else
+                {
+                    Component*parent = c->getParentComponent();
+                    if( parent )
+                    {
+                        do
+                        {
+                            if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
+                            {
+                                {
+                                    IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+                                    (
+                                        slider->get_front_parameter(),
+                                        c
+                                    )
+                                }
+
+                                show_info_popup(c,slider->get_front_parameter()->midi_control);
+                                found = true;
+                                break;
+                            }
+                        }
+                        while( parent = parent->getParentComponent() );
+                    }
+                }
+            }
+
+            if( found )
+            {
+                break;
+            }
+        }
+
         success = true;
     }
 #ifdef IS_PLUGIN
@@ -2965,29 +3035,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 bool Monique_Ui_Mainwindow::keyStateChanged (const bool isKeyDown)
 {
     //[UserCode_keyStateChanged] -- Add your code here...
-    bool success = false;
-    if( isKeyDown )
-    {
-        if( is_ctrl_down )
-        {
-            if( (KeyPress::isKeyCurrentlyDown( '+' ) or KeyPress::isKeyCurrentlyDown( KeyPress::numberPadAdd ) ) )
-            {
-                synth_data->ui_scale_factor = synth_data->ui_scale_factor + 0.1;
-                update_size();
-                success = true;
-            }
-            else if ( (KeyPress::isKeyCurrentlyDown( '-' ) or KeyPress::isKeyCurrentlyDown( KeyPress::numberPadSubtract ) ) )
-            {
-                synth_data->ui_scale_factor = synth_data->ui_scale_factor - 0.1;
-                update_size();
-                success = true;
-            }
-        }
-    }
-
-    update_tooltip_handling(isKeyDown);
-
-    return success;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
+    return false;  // Return true if your handler uses this key event, or false to allow it to be passed-on.
     //[/UserCode_keyStateChanged]
 }
 
@@ -2995,8 +3043,13 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
     is_ctrl_down = modifiers.isCtrlDown();
-    if( ! combo_programm->isTextEditable() )
+    if( not combo_programm->isTextEditable() )
     {
+        if( not is_ctrl_down )
+        {
+            update_tooltip_handling(false);
+        }
+
         const bool is_shift_down = modifiers.isShiftDown();
 
         synth_data->ctrl = is_shift_down;
