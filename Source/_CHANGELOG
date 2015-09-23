@@ -19,8 +19,9 @@ DONE:
 - fix: oscilloscope max +1 pix (one was missing)
 - add: MIDI all notes off support
 - fix: stop motor morph (morph pad or horizontal slider) if you move a single morph slider manually
+- add: store morph source programm names
 
-LIVE PLAY
+LIVE PLAY (focus to a piano keyboard and pedals, but you can use controll the functions via MIDI cc to.)
 - add: sustaino pedal support (common implimentation) (free play -> arp is turned off)
 - add: pitchbend support (+/- 2 semitones) (common implimentation)
 - add: sostenuto pedal - same as sutain pedal but for the filter envelopes (NOT common implimentation (but is free for an monophonic synth))
@@ -35,13 +36,13 @@ DISCUSS:
 - option to disable save on change  (live mode)
 
 TODO:
+- store the loaded morph program sorce as name
+
 - default midi map to general midi definitions
+http://www.nortonmusic.com/midi_cc.html
 - midi sync works again, but i've to check this modul and have to add virtual ports and host handling
 - add: midi mod wheel; pitch wheel support, feedback, refactore midi handling classes
 
-
-- buggy manual morph if auto morph is running -> stop auto morph on manual morph
-http://www.nortonmusic.com/midi_cc.html
 - only show the real active keys on the midi keyboard (1 or 3 if in osc tune mode)
 - play the notes on release which are still down
 - add: panic
@@ -49,8 +50,6 @@ http://www.nortonmusic.com/midi_cc.html
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - add: option to make linear sliders to dials or change the sensitivity
-
-
 
 - osc square and saw going out of center on higher octaves
 

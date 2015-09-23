@@ -885,6 +885,11 @@ private:
     ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
     OwnedArray< MoniqueSynthData > left_morph_sources;
     OwnedArray< MoniqueSynthData > right_morph_sources;
+    StringArray left_morph_source_names;
+    StringArray right_morph_source_names;
+public:
+    const String& get_morph_source_name( int id_abs_ ) const noexcept;
+private:
 
     COLD void init_morph_groups( DATA_TYPES data_type ) noexcept;
 

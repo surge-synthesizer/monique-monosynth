@@ -2271,6 +2271,14 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 //==============================================================================
 COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
+    left_morph_source_names.add( "FACTORY DEFAULT" );
+    left_morph_source_names.add( "FACTORY DEFAULT" );
+    left_morph_source_names.add( "FACTORY DEFAULT" );
+    left_morph_source_names.add( "FACTORY DEFAULT" );
+    right_morph_source_names.add( "FACTORY DEFAULT" );
+    right_morph_source_names.add( "FACTORY DEFAULT" );
+    right_morph_source_names.add( "FACTORY DEFAULT" );
+    right_morph_source_names.add( "FACTORY DEFAULT" );
     {
         // OSC'S
         {
@@ -2576,6 +2584,19 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     left_morph_sources.minimiseStorageOverheads();
     right_morph_sources.minimiseStorageOverheads();
 }
+const String& MoniqueSynthData::get_morph_source_name( int id_abs_ ) const noexcept
+{
+    // LEFT
+    if( id_abs_ < 4 )
+    {
+        return left_morph_source_names[id_abs_];
+    }
+    // RIGHT
+    else
+    {
+        return right_morph_source_names[id_abs_-4];
+    }
+}
 float MoniqueSynthData::get_morph_state( int morpher_id_ ) const noexcept
 {
     return morhp_states[morpher_id_];
@@ -2728,9 +2749,15 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     case 0 :
     {
         if( left_or_right_ == LEFT )
+        {
             morph_group_to_update = left_morph_sources[0]->morph_group_1;
+            left_morph_source_names.getReference(0) = "UPDATED FROM CURRENT";
+        }
         else
+        {
             morph_group_to_update = right_morph_sources[0]->morph_group_1;
+            right_morph_source_names.getReference(0) = "UPDATED FROM CURRENT";
+        }
 
         morph_group_source = morph_group_1;
         break;
@@ -2738,9 +2765,15 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     case 1 :
     {
         if( left_or_right_ == LEFT )
+        {
             morph_group_to_update = left_morph_sources[1]->morph_group_2;
+            left_morph_source_names.getReference(1) = "UPDATED FROM CURRENT";
+        }
         else
+        {
             morph_group_to_update = right_morph_sources[1]->morph_group_2;
+            right_morph_source_names.getReference(1) = "UPDATED FROM CURRENT";
+        }
 
         morph_group_source = morph_group_2;
         break;
@@ -2748,9 +2781,15 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     case 2 :
     {
         if( left_or_right_ == LEFT )
+        {
             morph_group_to_update = left_morph_sources[2]->morph_group_3;
+            left_morph_source_names.getReference(2) = "UPDATED FROM CURRENT";
+        }
         else
+        {
             morph_group_to_update = right_morph_sources[2]->morph_group_3;
+            right_morph_source_names.getReference(2) = "UPDATED FROM CURRENT";
+        }
 
         morph_group_source = morph_group_3;
         break;
@@ -2758,9 +2797,15 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     case 3 :
     {
         if( left_or_right_ == LEFT )
+        {
             morph_group_to_update = left_morph_sources[3]->morph_group_4;
+            left_morph_source_names.getReference(3) = "UPDATED FROM CURRENT";
+        }
         else
+        {
             morph_group_to_update = right_morph_sources[3]->morph_group_4;
+            right_morph_source_names.getReference(3) = "UPDATED FROM CURRENT";
+        }
 
         morph_group_source = morph_group_4;
         break;
@@ -2786,6 +2831,7 @@ bool MoniqueSynthData::try_to_load_programm_to_left_side( int morpher_id_, int b
     if( success )
     {
         run_sync_morph();
+        left_morph_source_names.getReference(morpher_id_) = synth_data->get_current_program_name_abs();
     }
 
     return success;
@@ -2799,6 +2845,7 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
     if( success )
     {
         run_sync_morph();
+        right_morph_source_names.getReference(morpher_id_) = synth_data->get_current_program_name_abs();
     }
 
     return success;
@@ -3250,7 +3297,9 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
         {
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
+                xml_->setAttribute( String("left_morph_source_")+String( morpher_id ), left_morph_source_names[morpher_id] );
                 left_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("LeftMorphData_")+String(morpher_id)));
+                xml_->setAttribute( String("right_morph_source_")+String( morpher_id ), right_morph_source_names[morpher_id] );
                 right_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("RightMorphData_")+String(morpher_id)));
             }
         }
@@ -3283,7 +3332,9 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
         {
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
+                left_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute( String("left_morph_source_")+String( morpher_id ), "FACTORY DEFAULT" );
                 left_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("LeftMorphData_")+String(morpher_id)));
+                right_morph_source_names.getReference(morpher_id) = xml_->getStringAttribute( String("right_morph_source_")+String( morpher_id ), "FACTORY DEFAULT" );
                 right_morph_sources[morpher_id]->read_from(xml_->getChildByName(String("RightMorphData_")+String(morpher_id)));
             }
 

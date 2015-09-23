@@ -51,6 +51,8 @@ public:
     const float original_h;
 
 private:
+    Array< ComboBox* > morph_combos;
+    void refresh_combos() noexcept;
     //[/UserMethods]
 
     void paint (Graphics& g);
