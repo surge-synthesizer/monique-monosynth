@@ -36,6 +36,7 @@ class ParameterListener
 {
     friend class Parameter;
     virtual void parameter_value_changed( Parameter* ) noexcept {}
+    virtual void parameter_value_changed_by_automation( Parameter* ) noexcept {}
     virtual void parameter_value_changed_always_notification( Parameter* ) noexcept {}
     virtual void parameter_value_on_load_changed( Parameter* ) noexcept {}
     virtual void parameter_modulation_value_changed( Parameter* ) noexcept {}
@@ -231,6 +232,23 @@ public:
             notify_always_value_listeners();
         }
     }
+    inline void set_value_by_automation( float value_ ) noexcept
+    {
+        value_ = snap_to_zero(value_);
+        if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+            notify_value_listeners_by_automation();
+        }
+    }
 
 public:
     // ==============================================================================
@@ -323,6 +341,7 @@ protected:
     // NOT THREAD SAVE IF YOU ADD LISTENERS AT RUNTIME
     // NOTIFICATIONS
     inline void notify_value_listeners() noexcept;
+    inline void notify_value_listeners_by_automation() noexcept;
     inline void notify_always_value_listeners() noexcept;
     friend void read_parameter_from_file( const XmlElement&, Parameter* ) noexcept;
     inline void notify_on_load_value_listeners() noexcept;
@@ -388,14 +407,21 @@ inline void Parameter::notify_value_listeners() noexcept
     {
         value_listeners.getUnchecked(i)->parameter_value_changed( this );
     }
-};
+}
+inline void Parameter::notify_value_listeners_by_automation() noexcept
+{
+    for( int i = 0 ; i != value_listeners.size() ; ++i )
+    {
+        value_listeners.getUnchecked(i)->parameter_value_changed_by_automation( this );
+    }
+}
 inline void Parameter::notify_always_value_listeners() noexcept
 {
     for( int i = 0 ; i != always_value_listeners.size() ; ++i )
     {
         always_value_listeners.getUnchecked(i)->parameter_value_changed_always_notification( this );
     }
-};
+}
 inline void Parameter::notify_on_load_value_listeners() noexcept
 {
     for( int i = 0 ; i != value_listeners.size() ; ++i )

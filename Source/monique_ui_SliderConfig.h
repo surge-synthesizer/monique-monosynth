@@ -3372,8 +3372,6 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 	"\n"
 	"Note: MIDI CC 67 = soft pedal"
     )
-    //top button amp if pedal is fdown
-    //same for the bind ??
 
 public:
     OctaveOffsetSlConfig()

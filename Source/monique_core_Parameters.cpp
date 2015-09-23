@@ -323,7 +323,7 @@ void ChangeParamOverTime::timerCallback()
     }
     else
     {
-        param = target_value;
+        param.set_value_by_automation( target_value );
         forceStopAndKill();
         return;
     }
@@ -340,7 +340,7 @@ inline void ChangeParamOverTime::change() noexcept
         current_value = min;
     }
 
-    param = current_value;
+    param.set_value_by_automation( current_value );
 }
 
 //==============================================================================

@@ -2648,16 +2648,25 @@ void MoniqueSynthData::run_sync_morph() noexcept
 //==============================================================================
 void MoniqueSynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    if( param_ == morhp_states[0].ptr() ) {
+    param_->get_runtime_info().stop_time_change();
+    parameter_value_changed_by_automation( param_ );
+}
+void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
+{
+    if( param_ == morhp_states[0].ptr() )
+    {
         morph( 0, *param_ );
     }
-    else if( param_ == morhp_states[1].ptr() ) {
+    else if( param_ == morhp_states[1].ptr() )
+    {
         morph( 1, *param_ );
     }
-    else if( param_ == morhp_states[2].ptr() ) {
+    else if( param_ == morhp_states[2].ptr() )
+    {
         morph( 2, *param_ );
     }
-    else if( param_ == morhp_states[3].ptr() ) {
+    else if( param_ == morhp_states[3].ptr() )
+    {
         morph( 3, *param_ );
     }
     else if( param_ == linear_morhp_state.ptr() )
@@ -2717,6 +2726,7 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     switch( morpher_id_ )
     {
     case 0 :
+    {
         if( left_or_right_ == LEFT )
             morph_group_to_update = left_morph_sources[0]->morph_group_1;
         else
@@ -2724,7 +2734,9 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
 
         morph_group_source = morph_group_1;
         break;
+    }
     case 1 :
+    {
         if( left_or_right_ == LEFT )
             morph_group_to_update = left_morph_sources[1]->morph_group_2;
         else
@@ -2732,7 +2744,9 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
 
         morph_group_source = morph_group_2;
         break;
+    }
     case 2 :
+    {
         if( left_or_right_ == LEFT )
             morph_group_to_update = left_morph_sources[2]->morph_group_3;
         else
@@ -2740,7 +2754,9 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
 
         morph_group_source = morph_group_3;
         break;
+    }
     case 3 :
+    {
         if( left_or_right_ == LEFT )
             morph_group_to_update = left_morph_sources[3]->morph_group_4;
         else
@@ -2748,6 +2764,7 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
 
         morph_group_source = morph_group_4;
         break;
+    }
     }
 
     for( int i = 0 ; i != morph_group_to_update->params.size() ; ++i )
