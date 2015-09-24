@@ -49,6 +49,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    int last_state_change;
     void refresh() noexcept override;
     void update_combo_boxed();
 

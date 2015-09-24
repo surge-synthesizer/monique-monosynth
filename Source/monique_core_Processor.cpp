@@ -296,7 +296,7 @@ peak_meter(nullptr)
 
 COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
-     clear_feedback();
+     clear_feedback_and_shutdown();
   
 #ifdef IS_STANDALONE
     delete clock_smoother;

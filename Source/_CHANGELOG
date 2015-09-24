@@ -53,6 +53,26 @@ NOT DONE (but until friday):
 - add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
 
+- recolour midi button if there are some errors
+- message that not all ports available on start
+- message that an audio device is no more available
+- message that the user should select an device on first start
+- 
+
+
+isNoteOnOrOff
+isAllNotesOff
+isProgramChange
+isSustainPedalOn
+isSustainPedalOff
+isSostenutoPedalOn
+isSostenutoPedalOff
+isSoftPedalOn
+isSoftPedalOff
+isPitchWheel
+isController
+
+
 QUESTS:
 - get your pro version free for an feature request which we will add to the pro version
 

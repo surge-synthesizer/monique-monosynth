@@ -36,6 +36,14 @@ void Monique_Ui_MidiIO::refresh() noexcept
     toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
     toggle_input_main_cc->setToggleState( _audio_device_manager->use_main_input_as_cc, dontSendNotification );
     toggle_input_cc_thru->setToggleState( _audio_device_manager->cc_input_thru, dontSendNotification );
+
+    int state_change_counter = _audio_device_manager->get_state_change_counter();
+    if( state_change_counter != last_state_change )
+    {
+        last_state_change = state_change_counter;
+	std::cout << state_change_counter << std::endl;
+        update_combo_boxed();
+    }
 }
 void Monique_Ui_MidiIO::update_combo_boxed()
 {
@@ -48,10 +56,30 @@ void Monique_Ui_MidiIO::update_combo_boxed()
             String selected_item_text = combo_input_main->getText();
             combo_input_main->clear( dontSendNotification );
             combo_input_main->addItemList( input_devices, 1 );
+            combo_input_main->addItem( CLOSED_PORT, 1+input_devices.size() );
 
             // SELECT THE CURRENT ONE
             String selected_note_in_device( _audio_device_manager->get_selected_in_device( mono_AudioDeviceManager::INPUT_ID::NOTES ) );
-            combo_input_main->setSelectedItemIndex( input_devices.indexOf( selected_note_in_device ), dontSendNotification );
+            const mono_AudioDeviceManager::DEVICE_STATE state( _audio_device_manager->get_selected_in_device_state( mono_AudioDeviceManager::INPUT_ID::NOTES ) );
+            switch( state )
+            {
+            case mono_AudioDeviceManager::DEVICE_STATE::OPEN :
+                combo_input_main->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
+                combo_input_main->setSelectedItemIndex( input_devices.indexOf( selected_note_in_device ), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::CLOSED :
+                combo_input_main->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
+                combo_input_main->setSelectedItemIndex( input_devices.size(), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::REMOVED :
+                combo_input_main->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
+                combo_input_main->setText( "REMOVED: " +selected_note_in_device, dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::ERROR :
+                combo_input_main->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.2f));
+                combo_input_main->setText( "ERROR: " +selected_note_in_device, dontSendNotification );
+                break;
+            }
         }
 
         // CC INPUT
@@ -59,10 +87,30 @@ void Monique_Ui_MidiIO::update_combo_boxed()
             String selected_item_text = combo_input_cc->getText();
             combo_input_cc->clear( dontSendNotification );
             combo_input_cc->addItemList( input_devices, 1 );
+            combo_input_cc->addItem( CLOSED_PORT, 1+input_devices.size() );
 
             // SELECT THE CURRENT ONE
             String selected_cc_in_device( _audio_device_manager->get_selected_in_device( mono_AudioDeviceManager::INPUT_ID::CC ) );
-            combo_input_cc->setSelectedItemIndex( input_devices.indexOf( selected_cc_in_device ), dontSendNotification );
+            const mono_AudioDeviceManager::DEVICE_STATE state( _audio_device_manager->get_selected_in_device_state( mono_AudioDeviceManager::INPUT_ID::CC ) );
+            switch( state )
+            {
+            case mono_AudioDeviceManager::DEVICE_STATE::OPEN :
+                combo_input_cc->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
+                combo_input_cc->setSelectedItemIndex( input_devices.indexOf( selected_cc_in_device ), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::CLOSED :
+                combo_input_cc->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
+                combo_input_cc->setSelectedItemIndex( input_devices.size(), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::REMOVED :
+                combo_input_cc->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
+                combo_input_cc->setText( "REMOVED: " +selected_cc_in_device, dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::ERROR :
+                combo_input_cc->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.2f));
+                combo_input_cc->setText( "ERROR: " +selected_cc_in_device, dontSendNotification );
+                break;
+            }
         }
 
         // INPUT CHANNEL
@@ -87,10 +135,30 @@ void Monique_Ui_MidiIO::update_combo_boxed()
             String selected_item_text = combo_output_cc->getText();
             combo_output_cc->clear( dontSendNotification );
             combo_output_cc->addItemList( output_devices, 1 );
+            combo_output_cc->addItem( CLOSED_PORT, 1+output_devices.size() );
 
             // SELECT THE CURRENT ONE
             String selected_cc_out_device( _audio_device_manager->get_selected_out_device( mono_AudioDeviceManager::OUTPUT_ID::FEEDBACK ) );
-            combo_output_cc->setSelectedItemIndex( output_devices.indexOf( selected_cc_out_device ), dontSendNotification );
+            const mono_AudioDeviceManager::DEVICE_STATE state( _audio_device_manager->get_selected_out_device_state( mono_AudioDeviceManager::OUTPUT_ID::FEEDBACK ) );
+            switch( state )
+            {
+            case mono_AudioDeviceManager::DEVICE_STATE::OPEN :
+                combo_output_cc->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
+                combo_output_cc->setSelectedItemIndex( output_devices.indexOf( selected_cc_out_device ), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::CLOSED :
+                combo_output_cc->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
+                combo_output_cc->setSelectedItemIndex( output_devices.size(), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::REMOVED :
+                combo_output_cc->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
+                combo_output_cc->setText( "REMOVED: " +selected_cc_out_device, dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::ERROR :
+                combo_output_cc->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.2f));
+                combo_output_cc->setText( "ERROR: " +selected_cc_out_device, dontSendNotification );
+                break;
+            }
         }
 
         // THRU OUTPUT
@@ -98,10 +166,30 @@ void Monique_Ui_MidiIO::update_combo_boxed()
             String selected_item_text = combo_output_thru->getText();
             combo_output_thru->clear( dontSendNotification );
             combo_output_thru->addItemList( output_devices, 1 );
+            combo_output_thru->addItem( CLOSED_PORT, 1+output_devices.size() );
 
             // SELECT THE CURRENT ONE
             String selected_thru_out_device( _audio_device_manager->get_selected_out_device( mono_AudioDeviceManager::OUTPUT_ID::THRU ) );
-            combo_output_thru->setSelectedItemIndex( output_devices.indexOf( selected_thru_out_device ), dontSendNotification );
+            const mono_AudioDeviceManager::DEVICE_STATE state( _audio_device_manager->get_selected_out_device_state( mono_AudioDeviceManager::OUTPUT_ID::THRU ) );
+            switch( state )
+            {
+            case mono_AudioDeviceManager::DEVICE_STATE::OPEN :
+                combo_output_thru->setColour(ComboBox::backgroundColourId, Colours::green.withAlpha(0.3f));
+                combo_output_thru->setSelectedItemIndex( output_devices.indexOf( selected_thru_out_device ), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::CLOSED :
+                combo_output_thru->setColour(ComboBox::backgroundColourId, Colours::orange.withAlpha(0.2f));
+                combo_output_thru->setSelectedItemIndex( output_devices.size(), dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::REMOVED :
+                combo_output_thru->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.5f));
+                combo_output_thru->setText( "REMOVED: " +selected_thru_out_device, dontSendNotification );
+                break;
+            case mono_AudioDeviceManager::DEVICE_STATE::ERROR :
+                combo_output_thru->setColour(ComboBox::backgroundColourId, Colours::red.withAlpha(0.2f));
+                combo_output_thru->setText( "ERROR: " +selected_thru_out_device, dontSendNotification );
+                break;
+            }
         }
     }
 }
@@ -112,6 +200,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
     : _audio_device_manager(audio_device_manager_), original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    last_state_change = -1;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_7 = new Label (String::empty,
@@ -428,7 +517,7 @@ void Monique_Ui_MidiIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     }
 
     //[UsercomboBoxChanged_Post]
-    update_combo_boxed();
+    std::cout << "changed" << std::endl;
     //[/UsercomboBoxChanged_Post]
 }
 

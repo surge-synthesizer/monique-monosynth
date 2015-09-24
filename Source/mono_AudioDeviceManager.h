@@ -4,14 +4,7 @@
 #include "App_h_includer.h"
 #include "monique_core_Datastructures.h"
 
-#define DISABLED_PORT "CLOSED"
-#define DAW_INPUT "RECIEVE FROM HOST"
-#define DAW_OUTPUT "SEND TO HOST"
-#define VIRTUAL_PORT "VIRTUAL PORT"
-
-#define VIRTUAL_PORT_ID -9
-#define UNKNOWN_PORT_ID -1
-
+#define CLOSED_PORT "CLOSED"
 
 //==============================================================================
 //==============================================================================
@@ -42,6 +35,14 @@ public:
         THRU,
         FEEDBACK
     };
+    //==========================================================================
+    enum DEVICE_STATE
+    {
+        OPEN,
+        CLOSED,
+        REMOVED,
+        ERROR
+    };
 
 private:
     //==========================================================================
@@ -57,7 +58,8 @@ private:
         void set_device_name( const String& name_ ) noexcept;
         const String& get_device_name() const noexcept;
     protected:
-        COLD AdvancedMidiInputCallback( mono_AudioDeviceManager*manager_ ) : manager( manager_ ) {}
+        COLD AdvancedMidiInputCallback( mono_AudioDeviceManager*manager_ ) noexcept;
+        COLD ~AdvancedMidiInputCallback() noexcept;
     };
 
     //==========================================================================
@@ -65,7 +67,8 @@ private:
     {
         void handleIncomingMidiMessage (MidiInput*, const MidiMessage& message) override;
     public:
-        COLD MidiInputCallback_CC( mono_AudioDeviceManager*manager_ ) : AdvancedMidiInputCallback( manager_ ) {}
+        COLD MidiInputCallback_CC( mono_AudioDeviceManager*manager_ ) noexcept;
+        COLD ~MidiInputCallback_CC() noexcept;
     }
     *const cc_input_callback;
 
@@ -74,9 +77,11 @@ private:
     {
         void handleIncomingMidiMessage (MidiInput*, const MidiMessage& message) override;
     public:
-        COLD MidiInputCallback_NOTES( mono_AudioDeviceManager*manager_ ) : AdvancedMidiInputCallback( manager_ ) {}
+        COLD MidiInputCallback_NOTES( mono_AudioDeviceManager*manager_ ) noexcept;
+        COLD ~MidiInputCallback_NOTES() noexcept;
     }
     *const note_input_callback;
+    DEVICE_STATE note_input_state,cc_input_state;
 
     //==========================================================================
     //==========================================================================
@@ -111,13 +116,16 @@ public:
     COLD void open_in_port( INPUT_ID input_id_, const String& device_name_ ) noexcept;
     COLD void close_in_port( INPUT_ID input_id_ ) noexcept;
     COLD String get_selected_in_device( INPUT_ID input_id_ ) const noexcept;
+    COLD bool is_selected_in_device_open( INPUT_ID output_id_ ) const noexcept;
+    COLD DEVICE_STATE get_selected_in_device_state( INPUT_ID output_id_ ) const noexcept;
 
     //==========================================================================
     // OUTPUT
 private:
     MidiMessageCollector cc_feedback_collector;
     MidiMessageCollector thru_collector;
-    MidiOutput * midi_thru_output, *midi_feedback_output;
+    MidiOutput *midi_thru_output, *midi_feedback_output;
+    DEVICE_STATE midi_thru_output_state, midi_feedback_output_state;
     String midi_thru_name, midi_feedback_name;
 
 public:
@@ -133,6 +141,8 @@ public:
     COLD bool open_out_port( OUTPUT_ID output_id_, const String& device_name_ ) noexcept;
     COLD void close_out_port( OUTPUT_ID output_id_ ) noexcept;
     COLD String get_selected_out_device( OUTPUT_ID output_id_ ) const noexcept;
+    COLD bool is_selected_out_device_open( OUTPUT_ID output_id_ ) const noexcept;
+    COLD DEVICE_STATE get_selected_out_device_state( OUTPUT_ID output_id_ ) const noexcept;
 
 public:
     // SEND
@@ -142,10 +152,51 @@ public:
 private:
     COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
 
+    class OpenStateChecker : public Timer
+    {
+        friend class mono_AudioDeviceManager;
+        mono_AudioDeviceManager*const manager;
+	
+	StringArray last_in_devices;
+	StringArray last_out_devices;
+
+        volatile bool force_quit;
+
+        bool ignore_note_input;
+        bool ignore_cc_input;
+        bool ignore_thru_output;
+        bool ignore_cc_output;
+
+        bool was_open_note_input;
+        bool was_open_cc_input;
+        bool was_open_thru_output;
+        bool was_open_cc_output;
+
+        bool connection_lost_note_input;
+        bool connection_lost_cc_input;
+        bool connection_lost_thru_output;
+        bool connection_lost_cc_output;
+
+        COLD void timerCallback() override;
+
+        COLD OpenStateChecker( mono_AudioDeviceManager*const manager_ ) noexcept;
+        COLD ~OpenStateChecker() noexcept;
+    } open_state_checker;
+    friend class OpenStateChecker;
+    
+    int state_change_counter;
+    
+public:
+    int get_state_change_counter() const noexcept
+    {
+      return state_change_counter;
+    }
+    
 protected:
     COLD mono_AudioDeviceManager() noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
     void clear_feedback() noexcept;
+    void clear_feedback_and_shutdown() noexcept;
 
     COLD bool save_to( XmlElement* xml ) const noexcept;
     COLD String read_from( const XmlElement* xml ) noexcept;

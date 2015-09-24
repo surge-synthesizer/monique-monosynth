@@ -82,6 +82,7 @@ public:
     void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
     void close_all_subeditors();
     void resize_subeditors();
+    void open_midi_editor_if_closed() noexcept;
 
     float last_shuffle;
     Array< TextButton* > sequence_buttons;

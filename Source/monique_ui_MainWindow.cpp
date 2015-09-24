@@ -2681,10 +2681,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             editor_midiio = nullptr;
         else
         {
-            close_all_subeditors();
-
-            addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( _app_instance_store->audio_processor ) );
-            resize_subeditors();
+            open_midi_editor_if_closed();
         }
         //[/UserButtonCode_button_open_midi_io_settings]
     }
@@ -3107,6 +3104,16 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
+    }
+}
+void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
+{
+    if( not editor_midiio )
+    {
+        close_all_subeditors();
+
+        addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( _app_instance_store->audio_processor ) );
+        resize_subeditors();
     }
 }
 //[/MiscUserCode]

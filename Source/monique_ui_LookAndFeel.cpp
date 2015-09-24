@@ -775,7 +775,7 @@ void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool
 
     const float outlineThickness =1; // box.isEnabled() ? (isButtonDown ? 1.2f : 0.8f) : 0.3f;
 
-    g.setColour (Colour(0xff000000));
+    g.setColour (box.findColour (ComboBox::backgroundColourId));
     g.fillRoundedRectangle (1, 1, width-2, height-2, 4);
 
     drawGlassLozenge (g,
