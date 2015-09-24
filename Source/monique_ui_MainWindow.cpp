@@ -1370,6 +1370,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     combo_programm->setEditableText(false);
     update_slider_handling();
+    update_tooltip_handling(false);
     //update_slider_return_values();
 
     /*

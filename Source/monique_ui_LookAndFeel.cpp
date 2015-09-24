@@ -48,13 +48,16 @@ static Colour createBaseColour (Colour buttonColour,
 
 static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 {
-    const float tooltipFontSize = 13.0f;
-    const int maxToolTipWidth = 500;
+    const int maxToolTipWidth = 530;
 
     AttributedString s;
     s.setJustification (Justification::centredLeft);
-    Font monospace(Font::getDefaultMonospacedFontName(),tooltipFontSize,0);
-    s.append (text, monospace, colour);
+    s.append
+    (
+        text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?: tool tips you can disable in the setup."),
+        Font(Typeface::createSystemTypefaceFor(BinaryData::DroidSansMono_ttf, BinaryData::DroidSansMono_ttfSize)).withHeight(14.0f).withTypefaceStyle("bold"),
+        colour
+    );
 
     TextLayout tl;
     tl.createLayoutWithBalancedLineLengths (s, (float) maxToolTipWidth);
@@ -877,8 +880,8 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
                               label.getJustificationType(), 1, 0.5f);
         glyphs.createPath(text_path);
 
-        if( labelStyle == IS_VALUE_LABEL ) 
-	{
+        if( labelStyle == IS_VALUE_LABEL )
+        {
             DropShadow drop_shadow( col, 1, Point<int>(0,0) );
             drop_shadow.drawForPath( g, text_path );
         }
@@ -1370,10 +1373,10 @@ void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int
 {
     g.fillAll (findColour (TooltipWindow::backgroundColourId));
 
-#if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double it here..
+//#if ! JUCE_MAC // The mac windows already have a non-optional 1 pix outline, so don't double it here..
     g.setColour (findColour (TooltipWindow::outlineColourId));
     g.drawRect (0, 0, width, height, 1);
-#endif
+//#endif
 
     LookAndFeelHelpers::layoutTooltipText (text, findColour (TooltipWindow::textColourId))
     .draw (g, Rectangle<float> ((float) width, (float) height));

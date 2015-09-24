@@ -99,6 +99,8 @@
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
+        <FILE id="cbquTU" name="DroidSansMono.ttf" compile="0" resource="1"
+              file="../Fonts/DroidSansMono.ttf"/>
         <FILE id="RbX7Cw" name="FjallaOne-Regular.otf" compile="0" resource="1"
               file="../Fonts/FjallaOne-Regular.otf"/>
       </GROUP>

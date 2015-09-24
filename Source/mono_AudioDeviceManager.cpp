@@ -270,7 +270,10 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
         const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
         for( int i = 0 ; i != types.size() ; ++ i )
         {
-            setCurrentAudioDeviceType( types.getUnchecked(i)->getTypeName(), false );
+	    AudioIODeviceType* type = types.getUnchecked(i);
+            setCurrentAudioDeviceType( type->getTypeName(), false );
+	    std::cout << type->getTypeName() << std::endl;
+	    type->scanForDevices();
             error = AudioDeviceManager::initialise
             (
                 0,2,
@@ -328,7 +331,6 @@ COLD String mono_AudioDeviceManager::read() noexcept
     else
     {
         error = read_defaults();
-	std::cout << "PORTS:" << error << std::endl;
     }
 
 

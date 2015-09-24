@@ -58,6 +58,7 @@ NOT DONE (but until friday):
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
+- embedd monospace font
 
 - message that an audio device is no more available
 - message that the user should select an device on first start
