@@ -36,6 +36,10 @@ DONE:
 - remove: any midi options from the plugin (all and always handled in host)
 - > midi editor button is not midi learn
 - swap: midi button and setup button 
+- fix default audio device
+- embedd: monospace font for tooltips
+
+- fix bug in filter change -> there was used some values from the filter type before 
 
 DONE: LIVE PLAY (focus to a piano keys and pedals)
 - add: sustain pedal support (common implementation)
@@ -49,7 +53,7 @@ DONE: LIVE PLAY (focus to a piano keys and pedals)
 MIDI DEVICE HANDLING
 - add: store old ports
 - add: device remove, reconect handling
-- checked: midi sync
+- checked: midi sync -> OK
 - add: message that there are some ports available (only first startup)
 
 NOT DONE (but until friday):
@@ -58,7 +62,6 @@ NOT DONE (but until friday):
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
-- embedd monospace font
 
 - message that an audio device is no more available
 - message that the user should select an device on first start
@@ -136,6 +139,8 @@ OPTIMIZE
 
 PRRRRRROOOOOOOOOOOOOOO
 - virtual port support
+- ports inside a plugin
+- channel management
 - only show the real active keys on the midi keyboard (1 or 3 if in osc tune mode)
 - play the notes on release which are still down
 - add breath

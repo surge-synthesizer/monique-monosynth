@@ -2763,6 +2763,8 @@ class AnalogFilter : public RuntimeListener
     float oldy1,oldy2,oldy3;
 
     float cutoff, res, res4;
+    
+    bool force_update;
 
 public:
     //==============================================================================
@@ -2798,7 +2800,9 @@ p(1),k(1),r(1),gain(1),
   y1(1),y2(1),y3(1),y4(1),
   oldx(1),oldy1(1),oldy2(1),oldy3(1),
 
-  cutoff(1000), res(1), res4(1)
+  cutoff(1000), res(1), res4(1),
+  
+  force_update(true)
 {
     sample_rate_changed(0);
 }
@@ -2809,25 +2813,29 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
 {
     bool success = false;
     resonance_*=0.8;
-    if( cutoff != cutoff_ || gain != gain_ || res != resonance_ )
+    if( force_update or ( cutoff != cutoff_ || gain != gain_ || res != resonance_ ) )
     {
         gain = gain_;
         cutoff = cutoff_;
         res = resonance_;
         res4 = gain_*4;
         success = true;
+    
+	force_update = false;
     }
     return success;
 }
 inline void AnalogFilter::update_with_calc(float resonance_, float cutoff_, float gain_) noexcept
 {
-    if( cutoff != cutoff_ || gain != gain_ || res != resonance_ )
+    if( force_update or ( cutoff != cutoff_ || gain != gain_ || res != resonance_ ) )
     {
         gain = gain_;
         cutoff = cutoff_;
         res = resonance_;
         res4 = gain_*4;
         calc_coefficients();
+    
+	force_update = false;
     }
 }
 
@@ -3151,8 +3159,10 @@ inline void DoubleAnalogFilter::update_filter_to( FILTER_TYPS type_ ) noexcept {
             if( last_filter_type != PASS )
             {
                 smooth_filter->flt_1.copy_coefficient_from(flt_1);
+		flt_1.force_update = true;
                 smooth_filter->flt_1.copy_state_from(flt_1);
                 smooth_filter->flt_2.copy_coefficient_from(flt_2);
+		flt_2.force_update = true;
                 smooth_filter->flt_2.copy_state_from(flt_2);
             }
             else
