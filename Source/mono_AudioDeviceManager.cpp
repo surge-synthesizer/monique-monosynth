@@ -1,5 +1,15 @@
 #include "mono_AudioDeviceManager.h"
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#ifdef IS_STANDALONE
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_MIDIIO.h"
 
@@ -87,7 +97,10 @@ midi_thru_output_state(CLOSED),
 midi_feedback_output_state(CLOSED),
 
 open_state_checker(this),
-state_change_counter(0)
+state_change_counter(0),
+
+restored_all_devices(true),
+its_your_first_time(true)
 {
     sample_rate_changed(0);
 }
@@ -160,7 +173,8 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
     String error("ERROR: CAN'T RESTORE DEVICES ON LOAD");
     if( xml_ )
     {
-#ifdef IS_STANDALONE
+        its_your_first_time = false;
+
         // AUDIO
         {
             const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
@@ -170,14 +184,25 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
                 xml_->getChildByName("DEVICESETUP"),
                 true
             );
+            if( error != "" )
+            {
+                //restored_all_devices = false;
+            }
         }
-#endif
+
         // INPUT
         {
             String note_device = xml_->getStringAttribute( "noteInputDeviceName", "" );
             if( note_device != "" )
             {
                 open_in_port( INPUT_ID::NOTES, note_device );
+                if( note_device != CLOSED_PORT )
+                {
+                    if( not is_selected_in_device_open( INPUT_ID::NOTES ) )
+                    {
+                        restored_all_devices = false;
+                    }
+                }
             }
         }
         {
@@ -185,6 +210,13 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
             if( cc_device != "" )
             {
                 open_in_port( INPUT_ID::CC, cc_device );
+                if( cc_device != CLOSED_PORT )
+                {
+                    if( not is_selected_in_device_open( INPUT_ID::CC )  )
+                    {
+                        restored_all_devices = false;
+                    }
+                }
             }
         }
 
@@ -194,6 +226,13 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
             if( thru_device != "" )
             {
                 open_out_port( OUTPUT_ID::THRU, thru_device );
+                if( thru_device != CLOSED_PORT )
+                {
+                    if( not is_selected_out_device_open( OUTPUT_ID::THRU ) )
+                    {
+                        restored_all_devices = false;
+                    }
+                }
             }
         }
         {
@@ -201,6 +240,13 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
             if( feedback_device != "" )
             {
                 open_out_port( OUTPUT_ID::FEEDBACK, feedback_device );
+                if( feedback_device != CLOSED_PORT )
+                {
+                    if( not is_selected_out_device_open( OUTPUT_ID::FEEDBACK ) )
+                    {
+                        restored_all_devices = false;
+                    }
+                }
             }
         }
 
@@ -219,7 +265,6 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
 COLD String mono_AudioDeviceManager::read_defaults() noexcept
 {
     String error("ERROR: CAN'T OPEN ANY DEFAULT DEVICE.");
-#ifdef IS_STANDALONE
     // AUDIO
     {
         const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
@@ -230,7 +275,8 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
             (
                 0,2,
                 nullptr,
-                true
+                true,
+		"*"
             );
             if( error == "" )
             {
@@ -241,7 +287,6 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
 
 
     state_change_counter++;
-#endif
 
     return error;
 }
@@ -283,6 +328,7 @@ COLD String mono_AudioDeviceManager::read() noexcept
     else
     {
         error = read_defaults();
+	std::cout << "PORTS:" << error << std::endl;
     }
 
 
@@ -338,7 +384,6 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
     break;
     case INPUT_ID::NOTES :
     {
-#ifdef IS_STANDALONE
         if( midi_message_.isMidiClock() )
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
@@ -355,69 +400,67 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         {
             sync_input_collector.addMessageToQueue( midi_message_ );
         }
-        else // IF
-#endif
-            if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
+        else if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
+        {
+            // ELSE IF!!!!
+            if( midi_message_.isNoteOnOrOff() )
             {
-                // ELSE IF!!!!
-                if( midi_message_.isNoteOnOrOff() )
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isAllNotesOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isProgramChange() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isSustainPedalOn() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+                // BIND PEDALS OPTION
+                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
                 {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isAllNotesOff() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isProgramChange() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isSustainPedalOn() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                    // BIND PEDALS OPTION
-                    if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
-                    {
-                        note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
-                    }
-                }
-                else if( midi_message_.isSustainPedalOff() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                    // BIND PEDALS OPTION
-                    if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
-                    {
-                        note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
-                    }
-                }
-                else if( midi_message_.isSostenutoPedalOn() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isSostenutoPedalOff() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isSoftPedalOn() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isSoftPedalOff() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isPitchWheel() )
-                {
-                    note_input_collector.addMessageToQueue( midi_message_ );
-                }
-                else if( midi_message_.isController() )
-                {
-                    if( use_main_input_as_cc )
-                    {
-                        cc_input_collector.addMessageToQueue( midi_message_ );
-                    }
+                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
                 }
             }
+            else if( midi_message_.isSustainPedalOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+                // BIND PEDALS OPTION
+                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                {
+                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
+                }
+            }
+            else if( midi_message_.isSostenutoPedalOn() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isSostenutoPedalOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isSoftPedalOn() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isSoftPedalOff() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isPitchWheel() )
+            {
+                note_input_collector.addMessageToQueue( midi_message_ );
+            }
+            else if( midi_message_.isController() )
+            {
+                if( use_main_input_as_cc )
+                {
+                    cc_input_collector.addMessageToQueue( midi_message_ );
+                }
+            }
+        }
 
         // THRU
         if( main_input_thru )
@@ -497,7 +540,7 @@ void mono_AudioDeviceManager::close_in_port(mono_AudioDeviceManager::INPUT_ID in
     AdvancedMidiInputCallback*const midi_callback( get_input_device_callback( input_id_ ) );
     removeMidiInputCallback( midi_callback->get_device_name(), midi_callback );
     setMidiInputEnabled( midi_callback->get_device_name(), false );
-    
+
     midi_callback->set_device_name( CLOSED_PORT );
 
     switch( input_id_ )
@@ -643,8 +686,6 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
         {
         case OUTPUT_ID::FEEDBACK :
         {
-            // TODO SEND FEEDBACK
-
             midi_feedback_output = output;
             midi_feedback_name = device_name_;
 
@@ -771,14 +812,38 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 {
     stopTimer();
 
+    Monique_Ui_Mainwindow*const editor( AppInstanceStore::getInstance()->editor );
+
     StringArray in_devices = manager->get_available_in_ports();
     if( last_in_devices != in_devices )
     {
         last_in_devices = in_devices;
         manager->state_change_counter++;
-    }
 
-    Monique_Ui_Mainwindow*const editor( AppInstanceStore::getInstance()->editor );
+        AppInstanceStore::getInstance()->editor->flash_midi_editor_button();
+
+        if( manager->its_your_first_time )
+        {
+            manager->its_your_first_time = false;
+            bool success = AlertWindow::showNativeDialogBox
+                           (
+                               "MIDI DEVICES DETECTED.",
+                               "Monique found some MIDI input devices. May be your piano keyboard!?\n"
+                               "Do you like to connect it?\n"
+			       "\n"
+                               "(a keyboard you can select at 'INPUT (Notes...)').",
+                               true
+                           );
+            if(force_quit)
+            {
+                return;
+            }
+            if( editor and success )
+            {
+                editor->open_midi_editor_if_closed();
+            }
+        }
+    }
 
     // NOTES IN
     {
@@ -800,7 +865,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         bool success = AlertWindow::showNativeDialogBox
                                        (
                                            "MIDI IN DEVICE CONNECTED.",
-                                           "Monique found a previously MIDI NOTE IN port which was not available on startup.\n"
+                                           "Monique found a previously connected MIDI NOTE IN port.\n"
                                            "Do you like to reactivate that port: " + selected_note_in_device + "?",
                                            true
                                        );
@@ -832,10 +897,6 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->note_input_state = REMOVED;
                     was_open_note_input = false;
                     connection_lost_note_input = true;
-                    if( editor )
-                    {
-                        editor->open_midi_editor_if_closed();
-                    }
                     AlertWindow::showNativeDialogBox
                     (
                         "MIDI IN DEVICE REMOVED.",
@@ -846,6 +907,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     if(force_quit)
                     {
                         return;
+                    }
+                    if( editor )
+                    {
+                        editor->open_midi_editor_if_closed();
                     }
 
 
@@ -875,7 +940,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         bool success = AlertWindow::showNativeDialogBox
                                        (
                                            "MIDI IN DEVICE CONNECTED.",
-                                           "Monique found a previously MIDI CC IN port which was not available on startup.\n"
+                                           "Monique found a previously connected MIDI CC IN port.\n"
                                            "Do you like to reactivate that port: " + selected_cc_in_device + "?",
                                            true
                                        );
@@ -907,10 +972,6 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->cc_input_state = REMOVED;
                     was_open_cc_input = false;
                     connection_lost_cc_input = true;
-                    if( editor )
-                    {
-                        editor->open_midi_editor_if_closed();
-                    }
                     AlertWindow::showNativeDialogBox
                     (
                         "MIDI IN DEVICE REMOVED.",
@@ -921,6 +982,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     if(force_quit)
                     {
                         return;
+                    }
+                    if( editor )
+                    {
+                        editor->open_midi_editor_if_closed();
                     }
 
                     manager->state_change_counter++;
@@ -934,6 +999,8 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
     {
         last_out_devices = out_devices;
         manager->state_change_counter++;
+
+        AppInstanceStore::getInstance()->editor->flash_midi_editor_button();
     }
 
     // THRU OUT
@@ -954,7 +1021,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     bool success = AlertWindow::showNativeDialogBox
                                    (
                                        "MIDI OUT DEVICE CONNECTED.",
-                                       "Monique found a previously MIDI THRU OUT port which was not available on startup.\n"
+                                       "Monique found a previously connected MIDI THRU OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_thru_out_device + "?",
                                        true
                                    );
@@ -986,10 +1053,6 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_thru_output_state = REMOVED;
                 was_open_thru_output = false;
                 connection_lost_thru_output = true;
-                if( editor )
-                {
-                    editor->open_midi_editor_if_closed();
-                }
                 AlertWindow::showNativeDialogBox
                 (
                     "MIDI OUT DEVICE REMOVED.",
@@ -1000,6 +1063,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 if(force_quit)
                 {
                     return;
+                }
+                if( editor )
+                {
+                    editor->open_midi_editor_if_closed();
                 }
 
 
@@ -1026,17 +1093,17 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     bool success = AlertWindow::showNativeDialogBox
                                    (
                                        "MIDI OUT DEVICE CONNECTED.",
-                                       "Monique found a previously MIDI FEEDBACK OUT port which was not available on startup.\n"
+                                       "Monique found a previously connected MIDI FEEDBACK OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_feedback_out_device + "?",
                                        true
                                    );
-                    if(force_quit)
-                    {
-                        return;
-                    }
                     if( success )
                     {
                         manager->open_out_port( OUTPUT_ID::FEEDBACK, selected_feedback_out_device );
+                    }
+                    if(force_quit)
+                    {
+                        return;
                     }
                     ignore_cc_output = not success;
 
@@ -1058,10 +1125,6 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_feedback_output_state = REMOVED;
                 was_open_cc_output = false;
                 connection_lost_cc_output = true;
-                if( editor )
-                {
-                    editor->open_midi_editor_if_closed();
-                }
                 AlertWindow::showNativeDialogBox
                 (
                     "MIDI OUT DEVICE REMOVED.",
@@ -1072,6 +1135,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 if(force_quit)
                 {
                     return;
+                }
+                if( editor )
+                {
+                    editor->open_midi_editor_if_closed();
                 }
 
 
@@ -1093,6 +1160,39 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
     }
 }
 
+#else
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
+{
+    sample_rate_changed(0);
+}
 
+COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
+{
+}
+
+//==============================================================================
+COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) noexcept
+{
+    cc_feedback_collector.reset(sample_rate);
+}
+
+COLD void mono_AudioDeviceManager::clear_feedback_and_shutdown() noexcept
+{
+    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    for( int i = 0 ; i != parameters.size() ; ++ i )
+    {
+        parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
+    }
+}
+#endif
 
 

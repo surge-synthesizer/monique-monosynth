@@ -10,11 +10,14 @@ extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class StandaloneFilterWindow : public DocumentWindow
+class StandaloneFilterWindow : public DocumentWindow, public AsyncUpdater
 {
 public:
     COLD StandaloneFilterWindow(const String& title) noexcept;
     COLD ~StandaloneFilterWindow() noexcept;
+
+    //==========================================================================
+    COLD void handleAsyncUpdate() override;
 
     //==========================================================================
     AudioProcessor* getAudioProcessor() const noexcept;
@@ -63,6 +66,23 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
 COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 {
     deleteFilter();
+}
+
+//==============================================================================
+COLD void StandaloneFilterWindow::handleAsyncUpdate()
+{
+    if( not filter->restored_all_devices_successfully() )
+    {
+        AlertWindow::showNativeDialogBox
+        (
+            "MIDI DEVICES MISSING.",
+            "Monique was not able to reopen all MIDI ports.\n"
+            "Please reconnect your MIDI devices or change your settings.",
+            false
+        );
+	
+	AppInstanceStore::getInstance()->editor->open_midi_editor_if_closed();
+    }
 }
 
 //==============================================================================

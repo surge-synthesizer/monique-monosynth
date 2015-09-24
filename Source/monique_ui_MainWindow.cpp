@@ -180,7 +180,19 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
 
     // EDITORS
     button_open_config->setColour( TextButton::buttonColourId, editor_settings ? Colours::lightblue : button_off );
-    button_open_midi_io_settings->setColour( TextButton::buttonColourId, editor_midiio ? Colours::lightblue : button_off );
+#ifdef IS_STANDALONE
+    if( flash_counter > 0 )
+    {
+        flash_counter--;
+        button_open_midi_io_settings->setColour( TextButton::buttonColourId, Colours::orange.darker() );
+    }
+    else
+    {
+        button_open_midi_io_settings->setColour( TextButton::buttonColourId, editor_midiio ? Colours::lightblue : button_off );
+    }
+#else
+    button_open_midi_io_settings->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? Colours::red : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
+#endif
     button_open_morph->setColour( TextButton::buttonColourId, editor_morph ? Colours::lightblue:button_off );
     button_open_oszi->setColour( TextButton::buttonColourId, AppInstanceStore::getInstance()->get_amp_painter_unsave() ? Colours::lightblue : button_off );
     button_open_config2->setColour( TextButton::buttonColourId, editor_global_settings ? Colours::lightblue:button_off );
@@ -330,6 +342,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     is_ctrl_down = false;
+    flash_counter = 0;
     //[/Constructor_pre]
 
     addAndMakeVisible (overlayer = new ImageButton ("new button"));
@@ -1266,6 +1279,19 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
 
     //[UserPreSize]
+#ifdef IS_PLUGIN
+    button_open_midi_io_settings->setTooltip
+    (
+        "Enables the MIDI train/learn mode.\n"
+        "\n"
+        "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
+        "\n"
+        "Shortcut: CTRL + m"
+    );
+    button_open_midi_io_settings->setButtonText (TRANS("TRAIN"));
+#endif
+
+
     SET_SLIDER_STYLE(sl_morhp_mix,VALUE_SLIDER);
 
     last_bank = -1;
@@ -1294,7 +1320,9 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     sequence_buttons.add( button_sequence_15 );
     sequence_buttons.add( button_sequence_16 );
 
-    for( int i = 0 ; i != getNumChildComponents() ; ++i )
+    for( int i = 0 ;
+            i != getNumChildComponents() ;
+            ++i )
     {
         Component* comp( getChildComponent(i) );
         if( comp->GET_LABEL_STYLE() != "I" ) // DISCRIPTION LABELS
@@ -2128,7 +2156,7 @@ void Monique_Ui_Mainwindow::resized()
     button_programm_replace->setBounds (835 - 60, 1030 - 30, 60, 30);
     button_programm_new->setBounds (775 - 60, 1030 - 30, 60, 30);
     button_open_oszi->setBounds (965, 1000, 60, 30);
-    button_open_midi_io_settings->setBounds (1145 - 60, 1030 - 30, 60, 30);
+    button_open_midi_io_settings->setBounds (1205 - 60, 1030 - 30, 60, 30);
     combo_bank->setBounds (335 - 60, 1030 - 30, 60, 30);
     button_programm_load->setBounds (955 - 60, 1030 - 30, 60, 30);
     osc_1->setBounds (160 - 60, 190 - 130, 60, 130);
@@ -2216,7 +2244,7 @@ void Monique_Ui_Mainwindow::resized()
     label_ui_headline25->setBounds (35, 563, 120, 35);
     volume_master_meter->setBounds (1375, 620, 60, 27);
     label_eq->setBounds (740, 580, 90, 35);
-    button_open_config2->setBounds (1205 - 60, 1030 - 30, 60, 30);
+    button_open_config2->setBounds (1145 - 60, 1030 - 30, 60, 30);
     label_ui_headline14->setBounds (745, 5, 80, 35);
     label->setBounds (30, 80, 130, 90);
     label2->setBounds (30, 260, 130, 90);
@@ -3080,10 +3108,12 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
 
 void Monique_Ui_Mainwindow::resize_subeditors()
 {
+#ifdef IS_STANDALONE
     if( editor_midiio )
     {
         editor_midiio->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
+#endif
     if( editor_morph )
     {
         editor_morph->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
@@ -3106,8 +3136,10 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
 }
+
 void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
 {
+#ifdef IS_STANDALONE
     if( not editor_midiio )
     {
         close_all_subeditors();
@@ -3115,6 +3147,15 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
         addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( _app_instance_store->audio_processor ) );
         resize_subeditors();
     }
+#else
+    MIDIControlHandler::getInstance()->toggle_midi_learn();
+    AppInstanceStore::getInstance()->editor->show_info_popup(nullptr,nullptr);
+#endif
+}
+
+void Monique_Ui_Mainwindow::flash_midi_editor_button() noexcept
+{
+    flash_counter = 30;
 }
 //[/MiscUserCode]
 
@@ -3599,7 +3640,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="57c6c986fc98dac" memberName="button_open_midi_io_settings"
-              virtualName="" explicitFocusOrder="0" pos="1145r 1030r 60 30"
+              virtualName="" explicitFocusOrder="0" pos="1205r 1030r 60 30"
               tooltip="Open/Close the MIDI settings.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
@@ -3932,7 +3973,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="30ecdded1d4d2622" memberName="button_open_config2"
-              virtualName="" explicitFocusOrder="0" pos="1205r 1030r 60 30"
+              virtualName="" explicitFocusOrder="0" pos="1145r 1030r 60 30"
               tooltip="Open/Close the setup.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SETUP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>

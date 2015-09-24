@@ -296,8 +296,8 @@ peak_meter(nullptr)
 
 COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 {
-     clear_feedback_and_shutdown();
-  
+    clear_feedback_and_shutdown();
+
 #ifdef IS_STANDALONE
     delete clock_smoother;
     mono_AudioDeviceManager::save();
@@ -586,8 +586,10 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                 AppInstanceStore::getInstance()->lock_amp_painter();
                 {
                     // RENDER SYNTH
+#ifdef IS_STANDALONE
                     get_cc_input_messages( midi_messages_, num_samples );
                     get_note_input_messages( midi_messages_, num_samples );
+#endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
                     note_down_store->handle_midi_messages( midi_messages_ );
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
@@ -601,9 +603,12 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     }
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
-
+#ifdef IS_STANDALONE
                 send_feedback_messages(num_samples);
                 send_thru_messages(num_samples);
+#else
+                send_feedback_messages(midi_messages_, num_samples);
+#endif
             }
         }
     }
@@ -786,7 +791,6 @@ void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
     XmlElement xml("PROJECT-1.0");
     synth_data->save_to( &xml );
-    mono_AudioDeviceManager::save_to( &xml );
     copyXmlToBinary ( xml, destData );
 }
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
@@ -797,7 +801,6 @@ void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBy
         if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
         {
             synth_data->read_from( xml );
-            mono_AudioDeviceManager::read_from( xml );
         }
     }
 }
@@ -898,7 +901,7 @@ int MoniqueAudioProcessor::getCurrentProgram()
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
     synth_data->set_current_program_abs(id_);
-    synth_data->load();
+    synth_data->load(true,true);
 }
 const String MoniqueAudioProcessor::getProgramName ( int id_ )
 {
@@ -909,7 +912,3 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
     synth_data->set_current_program_abs(id_);
     synth_data->rename(name_);
 }
-
-
-
-

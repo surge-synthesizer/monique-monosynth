@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#ifdef IS_STANDALONE
+
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_LookAndFeel.h"
 
@@ -31,7 +33,7 @@
 void Monique_Ui_MidiIO::refresh() noexcept
 {
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
-    button_midi_learn->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? colours.button_on_colour : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
+    button_midi_learn->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? Colours::red : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
 
     toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
     toggle_input_main_cc->setToggleState( _audio_device_manager->use_main_input_as_cc, dontSendNotification );
@@ -41,7 +43,6 @@ void Monique_Ui_MidiIO::refresh() noexcept
     if( state_change_counter != last_state_change )
     {
         last_state_change = state_change_counter;
-	std::cout << state_change_counter << std::endl;
         update_combo_boxed();
     }
 }
@@ -214,18 +215,18 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_main = new ComboBox ("RECIEVE_MIDI_MAIN"));
     combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes.\n"
-                                        "\n"
-                                        "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
-                                        "STANDALONE: MIDI-Clock will be received at this input."));
+    "\n"
+    "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
+    "STANDALONE: MIDI-Clock will be received at this input."));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
-    combo_input_main->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
-    combo_input_main->setTextWhenNoChoicesAvailable (TRANS("NO DEVICE CONNECTED"));
+    combo_input_main->setTextWhenNothingSelected (String::empty);
+    combo_input_main->setTextWhenNoChoicesAvailable (String::empty);
     combo_input_main->addListener (this);
 
     addAndMakeVisible (combo_input_main_channel = new ComboBox (String::empty));
     combo_input_main_channel->setTooltip (TRANS("Select a the MIDI channel there you like to listen to notes.\n"
-                                          "(Kepp OMNI if you don\'t know the channel there you MIDI device sends its notes)"));
+    "(Kepp OMNI if you are not familiar with MIDI)"));
     combo_input_main_channel->setEditableText (false);
     combo_input_main_channel->setJustificationType (Justification::centredLeft);
     combo_input_main_channel->setTextWhenNothingSelected (TRANS("CH"));
@@ -256,16 +257,16 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_output_thru = new ComboBox ("SEND_MIDI_THRU"));
     combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages.\n"
-                                         "\n"
-                                         "PLUGIN: normaly you should keep \"Send to host\" here."));
+    "\n"
+    "PLUGIN: normaly you should keep \"Send to host\" here."));
     combo_output_thru->setEditableText (false);
     combo_output_thru->setJustificationType (Justification::centredLeft);
-    combo_output_thru->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
-    combo_output_thru->setTextWhenNoChoicesAvailable (TRANS("NO DEVICE CONNECTED"));
+    combo_output_thru->setTextWhenNothingSelected (String::empty);
+    combo_output_thru->setTextWhenNoChoicesAvailable (String::empty);
     combo_output_thru->addListener (this);
 
     addAndMakeVisible (label_6 = new Label (String::empty,
-                                            TRANS("Controller INPUT (CC, Notes)")));
+                                            TRANS("Controller INPUT (CC only)")));
     label_6->setFont (Font (30.00f, Font::plain));
     label_6->setJustificationType (Justification::centredLeft);
     label_6->setEditable (false, false, false);
@@ -275,14 +276,14 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_cc = new ComboBox ("RECIEVE_CC"));
     combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC messages.\n"
-                                      "\n"
-                                      "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
-                                      "\n"
-                                      "See: MIDI TRAIN (right)"));
+    "\n"
+    "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
+    "\n"
+    "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
     combo_input_cc->setJustificationType (Justification::centredLeft);
-    combo_input_cc->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
-    combo_input_cc->setTextWhenNoChoicesAvailable (TRANS("NO DEVICE CONNECTED"));
+    combo_input_cc->setTextWhenNothingSelected (String::empty);
+    combo_input_cc->setTextWhenNoChoicesAvailable (String::empty);
     combo_input_cc->addListener (this);
 
     addAndMakeVisible (toggle_input_main_cc = new ToggleButton (String::empty));
@@ -306,19 +307,19 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
     combo_output_cc->setTooltip (TRANS("Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."));
     combo_output_cc->setEditableText (false);
     combo_output_cc->setJustificationType (Justification::centredLeft);
-    combo_output_cc->setTextWhenNothingSelected (TRANS("SELECT A DEVICE"));
-    combo_output_cc->setTextWhenNoChoicesAvailable (TRANS("NO DEVICE CONNECTED"));
+    combo_output_cc->setTextWhenNothingSelected (String::empty);
+    combo_output_cc->setTextWhenNoChoicesAvailable (String::empty);
     combo_output_cc->addListener (this);
 
     addAndMakeVisible (slider_midi_pickup = new Slider ("0"));
     slider_midi_pickup->setTooltip (TRANS("Define the CC PICKUP in percent. \n"
-                                          "\n"
-                                          "Example:\n"
-                                          "A listen sliders value is 50 (MIN:0, MAX:100).\n"
-                                          "The current position of your MIDI controller slider is 0% or 0.\n"
-                                          "The PICKUP offset is about 50% (middle).\n"
-                                          "\n"
-                                          "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
+    "\n"
+    "Example:\n"
+    "A listen sliders value is 50 (MIN:0, MAX:100).\n"
+    "The current position of your MIDI controller slider is 0% or 0.\n"
+    "The PICKUP offset is about 50% (middle).\n"
+    "\n"
+    "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
     slider_midi_pickup->setRange (0, 1000, 1);
     slider_midi_pickup->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_midi_pickup->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -348,10 +349,10 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
     button_midi_learn->setTooltip (TRANS("Enables the MIDI train/learn mode.\n"
-                                         "\n"
-                                         "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
-                                         "\n"
-                                         "Shortcut: CTRL + m"));
+    "\n"
+    "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
+    "\n"
+    "Shortcut: CTRL + m"));
     button_midi_learn->setButtonText (TRANS("TRAIN"));
     button_midi_learn->addListener (this);
     button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
@@ -517,7 +518,6 @@ void Monique_Ui_MidiIO::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     }
 
     //[UsercomboBoxChanged_Post]
-    std::cout << "changed" << std::endl;
     //[/UsercomboBoxChanged_Post]
 }
 
@@ -609,10 +609,9 @@ BEGIN_JUCER_METADATA
          bold="0" italic="0" justification="36"/>
   <COMBOBOX name="RECIEVE_MIDI_MAIN" id="7c9b1844748d88e" memberName="combo_input_main"
             virtualName="" explicitFocusOrder="0" pos="30 40 430 35" tooltip="Select a MIDI device as input for notes.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here.&#10;STANDALONE: MIDI-Clock will be received at this input."
-            editable="0" layout="33" items="" textWhenNonSelected="SELECT A DEVICE"
-            textWhenNoItems="NO DEVICE CONNECTED"/>
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <COMBOBOX name="" id="f28f9452a84a6616" memberName="combo_input_main_channel"
-            virtualName="" explicitFocusOrder="0" pos="470 40 60 35" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you don't know the channel there you MIDI device sends its notes)"
+            virtualName="" explicitFocusOrder="0" pos="470 40 60 35" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
             editable="0" layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="OMNI"/>
   <LABEL name="" id="af53a5122473eec4" memberName="label_3" virtualName=""
          explicitFocusOrder="0" pos="30 5 410 35" textCol="ffff3b00" edTextCol="ffff3b00"
@@ -630,17 +629,15 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="SEND_MIDI_THRU" id="8d7dd9d502564afb" memberName="combo_output_thru"
             virtualName="" explicitFocusOrder="0" pos="970 40 465 35" tooltip="Select a MIDI device there you like to forward incoming MIDI messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Send to host&quot; here."
-            editable="0" layout="33" items="" textWhenNonSelected="SELECT A DEVICE"
-            textWhenNoItems="NO DEVICE CONNECTED"/>
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <LABEL name="" id="9e4ab2352c294adf" memberName="label_6" virtualName=""
          explicitFocusOrder="0" pos="30 85 410 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller INPUT (CC, Notes)"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller INPUT (CC only)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="RECIEVE_CC" id="db50823c1df0e85" memberName="combo_input_cc"
             virtualName="" explicitFocusOrder="0" pos="30 120 430 35" tooltip="Select a MIDI device as input for CC messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here, but if the routing of your host isn't the best, you can directly select a MIDI controller device here.&#10;&#10;See: MIDI TRAIN (right)"
-            editable="0" layout="33" items="" textWhenNonSelected="SELECT A DEVICE"
-            textWhenNoItems="NO DEVICE CONNECTED"/>
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <TOGGLEBUTTON name="" id="9b95f066f9f18093" memberName="toggle_input_main_cc"
                 virtualName="" explicitFocusOrder="0" pos="540 40 35 35" tooltip="Enable this to receive also CC MIDI messages from the selected input device."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
@@ -656,8 +653,7 @@ BEGIN_JUCER_METADATA
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="SEND_MIDI_CC_FEEDBACK" id="997c13a17c6bb37" memberName="combo_output_cc"
             virtualName="" explicitFocusOrder="0" pos="970 120 465 35" tooltip="Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."
-            editable="0" layout="33" items="" textWhenNonSelected="SELECT A DEVICE"
-            textWhenNoItems="NO DEVICE CONNECTED"/>
+            editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_midi_pickup"
           virtualName="Slider" explicitFocusOrder="0" pos="860 95 60 65"
           tooltip="Define the CC PICKUP in percent. &#10;&#10;Example:&#10;A listen sliders value is 50 (MIN:0, MAX:100).&#10;The current position of your MIDI controller slider is 0% or 0.&#10;The PICKUP offset is about 50% (middle).&#10;&#10;If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."
@@ -687,4 +683,5 @@ END_JUCER_METADATA
 
 
 //[EndFile] You can add extra defines here...
+#endif
 //[/EndFile]

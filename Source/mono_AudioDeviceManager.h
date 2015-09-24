@@ -4,8 +4,8 @@
 #include "App_h_includer.h"
 #include "monique_core_Datastructures.h"
 
+#ifdef IS_STANDALONE
 #define CLOSED_PORT "CLOSED"
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -17,6 +17,9 @@
 //==============================================================================
 class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
 {
+    bool restored_all_devices;
+    bool its_your_first_time;
+
 public:
     BoolParameter main_input_thru;
     BoolParameter cc_input_thru;
@@ -156,9 +159,9 @@ private:
     {
         friend class mono_AudioDeviceManager;
         mono_AudioDeviceManager*const manager;
-	
-	StringArray last_in_devices;
-	StringArray last_out_devices;
+
+        StringArray last_in_devices;
+        StringArray last_out_devices;
 
         volatile bool force_quit;
 
@@ -183,15 +186,19 @@ private:
         COLD ~OpenStateChecker() noexcept;
     } open_state_checker;
     friend class OpenStateChecker;
-    
+
     int state_change_counter;
-    
+
 public:
     int get_state_change_counter() const noexcept
     {
-      return state_change_counter;
+        return state_change_counter;
     }
-    
+    bool restored_all_devices_successfully() const noexcept
+    {
+        return restored_all_devices;
+    }
+
 protected:
     COLD mono_AudioDeviceManager() noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
@@ -204,6 +211,7 @@ protected:
     COLD void save() const noexcept;
     COLD String read() noexcept;
 };
+//==============================================================================
 
 inline void mono_AudioDeviceManager::send_feedback_message( int cc_number_, int cc_value_ ) noexcept
 {
@@ -221,4 +229,57 @@ inline void mono_AudioDeviceManager::clear_feedback_message( int cc_number_ ) no
         midi_feedback_output->sendMessageNow( MidiMessage::controllerEvent( 1, cc_number_, 0 ) );
     }
 }
+#else
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_AudioDeviceManager : public RuntimeListener
+{
+public:
+    // SEND
+    inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept;
+    inline void clear_feedback_message( int cc_number_ ) noexcept;
+    inline void send_feedback_messages( MidiBuffer& midi_messages, int num_samples_ ) noexcept;
+
+    //==========================================================================
+private:
+    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+
+    //==========================================================================
+    // OUTPUT
+private:
+    MidiMessageCollector cc_feedback_collector;
+
+protected:
+    COLD mono_AudioDeviceManager() noexcept;
+    COLD ~mono_AudioDeviceManager() noexcept;
+    COLD void clear_feedback_and_shutdown() noexcept;
+};
+//==============================================================================
+
+inline void mono_AudioDeviceManager::send_feedback_message( int cc_number_, int cc_value_ ) noexcept
+{
+    MidiMessage message = MidiMessage::controllerEvent( 1, cc_number_, cc_value_ );
+    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
+    cc_feedback_collector.addMessageToQueue( message );
+}
+inline void mono_AudioDeviceManager::clear_feedback_message( int cc_number_ ) noexcept
+{
+    MidiMessage message = MidiMessage::controllerEvent( 1, cc_number_, 0 );
+    message.setTimeStamp( Time::getMillisecondCounterHiRes() );
+    cc_feedback_collector.addMessageToQueue( message );
+}
+inline void mono_AudioDeviceManager::send_feedback_messages( MidiBuffer& midi_messages, int num_samples_ ) noexcept
+{
+    cc_feedback_collector.removeNextBlockOfMessages( midi_messages, num_samples_ );
+}
+#endif
+
+
 #endif  // MONO_AUDIODEVICEMANAGER_H_INCLUDED

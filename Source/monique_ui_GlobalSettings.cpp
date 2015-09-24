@@ -40,6 +40,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_show_tooltips->setToggleState( synth_data.show_tooltips ,dontSendNotification );
     toggle_one_pedal->setToggleState( synth_data.bind_sustain_and_sostenuto_pedal, dontSendNotification );
 
+#ifdef IS_STANDALONE
     label_cpu_usage->setText
     (
         String
@@ -49,6 +50,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
         + String("%")
         ,dontSendNotification
     );
+#endif
 
     // COLOURS
     if( button_current_editor_color->isVisible() )
@@ -118,6 +120,7 @@ void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
 
 void Monique_Ui_GlobalSettings::update_audio_devices()
 {
+#ifdef IS_STANDALONE
     combo_audio_device->clear(dontSendNotification);
     combo_sample_rate->clear(dontSendNotification);
     combo_block_size->clear(dontSendNotification);
@@ -219,6 +222,7 @@ void Monique_Ui_GlobalSettings::update_audio_devices()
         combo_block_size->setSelectedId(1,dontSendNotification);
         combo_block_size->setEnabled(false);
     }
+#endif
 }
 //[/MiscUserDefs]
 

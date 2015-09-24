@@ -21,6 +21,8 @@
 #define __JUCE_HEADER_3437163A265DCA8E__
 
 //[Headers]     -- You can add your own extra header files here --
+#ifdef IS_STANDALONE
+
 #include "App_h_includer.h"
 
 class mono_AudioDeviceManager;
@@ -97,6 +99,7 @@ private:
 };
 
 //[EndFile] You can add extra defines here...
+#endif
 //[/EndFile]
 
 #endif   // __JUCE_HEADER_3437163A265DCA8E__

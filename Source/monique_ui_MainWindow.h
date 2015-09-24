@@ -83,6 +83,8 @@ public:
     void close_all_subeditors();
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
+    int flash_counter;
+    void flash_midi_editor_button() noexcept;
 
     float last_shuffle;
     Array< TextButton* > sequence_buttons;

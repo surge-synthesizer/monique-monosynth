@@ -133,6 +133,8 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
         // +++++++++ PROFILE
     }
 #endif
+
+    standaloneFilterWindow->triggerAsyncUpdate();
 }
 COLD void MoniqueSynthesizerApp::shutdown()
 {
