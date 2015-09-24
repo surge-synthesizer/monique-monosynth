@@ -211,6 +211,95 @@ juce_ImplementSingleton (mono_ParameterOwnerStore)
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class PODSmoother
+{
+protected:
+    const float min_value;
+    const float max_value;
+
+    float current_value;
+    float target_value;
+    float delta;
+    int counter;
+
+public:
+    inline float tick_upate( float new_target_, int glide_time_in_samples_ ) noexcept;
+    inline float get_last_tick_value() const noexcept;
+
+    inline void reset() noexcept;
+    inline void replace_current_value( float value_ ) noexcept;
+
+    COLD PODSmoother( float min_, float max_, float init_value_ ) noexcept;
+    COLD ~PODSmoother() noexcept;
+
+private:
+    //MONO_NOT_CTOR_COPYABLE( PODSmoother )
+    MONO_NOT_MOVE_COPY_OPERATOR( PODSmoother )
+};
+
+//==============================================================================
+COLD PODSmoother::PODSmoother( float min_, float max_, float init_value_ ) noexcept
+:
+min_value( min_ ),
+           max_value( max_ ),
+
+           current_value( init_value_ ),
+           target_value( init_value_ ),
+           delta(0),
+           counter(0)
+{}
+
+COLD PODSmoother::~PODSmoother() noexcept {}
+
+//==============================================================================
+inline float PODSmoother::tick_upate( float new_target_, int glide_time_in_samples_ ) noexcept
+{
+    if( target_value != new_target_ )
+    {
+        counter = glide_time_in_samples_;
+        delta = (new_target_-current_value) / glide_time_in_samples_;
+        target_value = new_target_;
+    }
+
+    if( --counter <= 0 )
+    {
+        current_value = target_value;
+    }
+    else
+    {
+        current_value+=delta;
+    }
+
+    if( current_value < min_value )
+    {
+        current_value = min_value;
+    }
+    else if( current_value > max_value )
+    {
+        current_value = max_value;
+    }
+
+    return current_value;
+}
+inline float PODSmoother::get_last_tick_value() const noexcept
+{
+    return current_value;
+}
+inline void PODSmoother::reset() noexcept
+{
+    current_value = target_value;
+    delta = 0;
+    counter = 0;
+}
+inline void PODSmoother::replace_current_value( float value_ ) noexcept
+{
+    current_value = value_;
+    target_value = value_;
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //TODO for 0 to 1 ? or what ever
 // TODO rename to param smoother
 class ValueSmootherModulatedUpdater;
@@ -1192,7 +1281,8 @@ COLD mono_SineWave::mono_SineWave()
 COLD mono_SineWave::~mono_SineWave() {}
 
 // -----------------------------------------------------------------
-inline float mono_SineWave::lastOut() const noexcept {
+inline float mono_SineWave::lastOut() const noexcept
+{
     return last_tick_value;
 }
 inline float mono_SineWave::tick() noexcept
@@ -2135,6 +2225,7 @@ class ValueEnvelope : public RuntimeListener
 {
     int samples_to_target_left;
     float current_value;
+    PODSmoother sustain_smoother;
     float last_value;
     float end_value;
     int force_zero_target;
@@ -2142,9 +2233,8 @@ class ValueEnvelope : public RuntimeListener
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
-    inline void update( float end_value_,
-                        int time_in_samples,
-                        float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
+    inline float sustain_tick( float sustain_, int glide_motor_time_ ) noexcept;
+    inline void update( float end_value_, int time_in_samples, float start_value_ = WORK_FROM_CURRENT_VALUE, bool reset_sustain_ = false ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
     inline void force_zero_glide( float set_to_zero_amount_ ) noexcept;
@@ -2166,6 +2256,7 @@ COLD ValueEnvelope::ValueEnvelope() noexcept
 :
 samples_to_target_left(0),
                        current_value(0),
+                       sustain_smoother(0,1,0),
                        last_value(0),
                        end_value(0),
                        force_zero_target(FORCE_ZERO_SAMPLES),
@@ -2182,8 +2273,6 @@ COLD ValueEnvelope::~ValueEnvelope() noexcept {}
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 {
-    //aufräumen und auch wichtig, die lfos müssenm laufen!!!!
-    //was wenn wir nur einen kurzes releasse haben, dann stopt der LFO immer
     ++current_force_zero_counter;
     --samples_to_target_left;
     if( current_force_zero_counter < force_zero_target and samples_to_target_left > 50 )
@@ -2265,29 +2354,47 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
             }
 
             if( current_value > 1 )
+            {
                 current_value = 1;
+            }
             else if( current_value < 0 )
+            {
                 current_value = 0;
+            }
         }
     }
 
     return current_value;
 }
-inline void ValueEnvelope::update( float end_value_,
-                                   int time_in_samples,
-                                   float start_value_
-                                 ) noexcept
+inline float ValueEnvelope::sustain_tick( float sustain_, int glide_motor_time_ ) noexcept
+{
+    ++current_force_zero_counter;
+    --samples_to_target_left;
+    current_value = sustain_smoother.tick_upate( sustain_, glide_motor_time_ );
+    return current_value;
+}
+
+inline void ValueEnvelope::update( float end_value_, int time_in_samples, float start_value_, bool reset_sustain_ ) noexcept
 {
     // UPDATE INTERNALS
     if( start_value_ != WORK_FROM_CURRENT_VALUE )
+    {
         current_value = start_value_;
+    }
 
     end_value = end_value_;
+    if( reset_sustain_ )
+    {
+        sustain_smoother.reset();
+        sustain_smoother.replace_current_value( current_value );
+    }
 
     // CALC
     samples_to_target_left = msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate );
     if( samples_to_target_left <= 0 )
+    {
         current_value = end_value;
+    }
 }
 
 //==============================================================================
@@ -2307,7 +2414,9 @@ inline void ValueEnvelope::force_zero_glide( float set_to_zero_amount_ ) noexcep
         current_force_zero_counter = 0;
         force_zero_target = msToSamplesFast( 2+40*set_to_zero_amount_, sample_rate );
         if( force_zero_target > samples_to_target_left * 0.8f )
+        {
             force_zero_target = samples_to_target_left * 0.8f;
+        }
     }
     else
     {
@@ -2342,7 +2451,6 @@ float ValueEnvelope::get_current_amp() const noexcept
 class ENV
 {
     ValueEnvelope envelop;
-    ValueSmoother sustain_smoother;
 
     STAGES current_stage;
 
@@ -2379,7 +2487,6 @@ public:
 COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     :
     envelop(),
-    sustain_smoother( &env_data_->sustain ),
 
     current_stage(END_ENV),
 
@@ -2392,7 +2499,6 @@ COLD ENV::~ENV() {}
 //==============================================================================
 inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
 {
-    sustain_smoother.update( synth_data->glide_motor_time );
     const float shape = synth_data->curve_shape;
     float shape_factor = 1;
     if( shape < 0.5f )
@@ -2404,14 +2510,20 @@ inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
         shape_factor = (shape-0.5f) * 2;
     }
 
+    const float sustain = env_data->sustain;
+    const int glide_motor_time = synth_data->glide_motor_time;
     for( int sid = 0 ; sid < num_samples_ ; ++sid )
     {
+        float result;
         if( current_stage == SUSTAIN )
-            envelop.replace_current_value( sustain_smoother.tick() );
+        {
+            result = envelop.sustain_tick( sustain, glide_motor_time );
+        }
         else
-            sustain_smoother.tick();
-
-        dest_[sid] = envelop.tick( shape, shape_factor );
+        {
+            result = envelop.tick( shape, shape_factor );
+        }
+        dest_[sid]  = result;
 
         if( envelop.end_reached() )
         {
@@ -2419,7 +2531,6 @@ inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
         }
     }
 }
-
 inline void ENV::update_stage() noexcept
 {
     switch( current_stage )
@@ -2427,10 +2538,12 @@ inline void ENV::update_stage() noexcept
     case TRIGGER_START :
     {
         if( env_data->decay > 0 )
+        {
             envelop.update( 1, env_data->attack*env_data->max_attack_time );
+        }
         else
         {
-            envelop.update( sustain_smoother.tick(), env_data->attack*env_data->max_attack_time );
+            envelop.update( env_data->sustain, env_data->attack*env_data->max_attack_time );
         }
 
         current_stage = ATTACK;
@@ -2440,7 +2553,7 @@ inline void ENV::update_stage() noexcept
     {
         if( env_data->decay > 0 )
         {
-            envelop.update( sustain_smoother.tick(), env_data->decay*env_data->max_decay_time );
+            envelop.update( env_data->sustain, env_data->decay*env_data->max_decay_time );
             current_stage = DECAY;
             break;
         }
@@ -2449,12 +2562,15 @@ inline void ENV::update_stage() noexcept
     {
         float sustain_time = env_data->sustain_time;
         if( sustain_time == 1.0f )
-            // TODO unlimited
+        {
             sustain_time = sustain_time*100000;
+        }
         else
+        {
             sustain_time = sustain_time*10000;
+        }
 
-        envelop.update( sustain_smoother.tick(), sustain_time );
+        envelop.update( env_data->sustain, sustain_time, WORK_FROM_CURRENT_VALUE, true );
         current_stage = SUSTAIN;
     }
     break;
@@ -2473,7 +2589,6 @@ inline void ENV::update_stage() noexcept
         ;
     }
 }
-
 inline void ENV::start_attack( bool is_pedal_down_ ) noexcept
 {
     current_stage = TRIGGER_START;
@@ -2490,7 +2605,6 @@ inline void ENV::set_to_release() noexcept
     current_stage = SUSTAIN;
     update_stage();
 }
-
 inline void ENV::reset() noexcept
 {
     current_stage = END_ENV;
@@ -3556,7 +3670,7 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 {
                     const float amp = amp_mix[sid];
                     tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
-                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF/2) * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
+                    tmp_cuttof_buffer[sid] = MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
                     tmp_gain_buffer[sid] = gain_smoother.tick( amp );
                     tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
                 }
@@ -5798,7 +5912,7 @@ void MoniqueSynthesizer::handleProgramChange (int midiChannel, int programNumber
         GET_DATA( synth_data ).set_current_program( programNumber );
         if( programNumber == GET_DATA( synth_data ).get_current_program() )
         {
-            GET_DATA( synth_data ).load();
+            GET_DATA( synth_data ).load(true,true);
         }
     }
 }

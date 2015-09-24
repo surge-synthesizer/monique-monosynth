@@ -2067,8 +2067,8 @@ id( data_type ),
     midi_pickup_offset
     (
         MIN_MAX( 0, 1 ),
-        0.2,
-        100,
+        1,
+        1000,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
         generate_short_human_name("MIDI","cc_pick_up")
     ),
@@ -3460,7 +3460,7 @@ bool MoniqueSynthData::remove() noexcept
 }
 
 // ==============================================================================
-bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
+bool MoniqueSynthData::load( bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
     if( current_program == -1 )
         return false;
@@ -3470,7 +3470,8 @@ bool MoniqueSynthData::load( bool load_morph_groups ) noexcept
     (
         synth_data.banks[current_bank],
         synth_data.program_names_per_bank.getReference(current_bank)[current_program],
-        load_morph_groups
+        load_morph_groups,
+        ignore_warnings_
     );
 }
 bool MoniqueSynthData::load_prev() noexcept
@@ -3516,9 +3517,10 @@ bool MoniqueSynthData::load_next() noexcept
     return success;
 }
 #include "monique_ui_MainWindow.h"
-bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups ) noexcept
+bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
-    ask_and_save_if_changed();
+    if( not ignore_warnings_ )
+        ask_and_save_if_changed();
 
     bool success = false;
     File program_file = get_program_file( bank_name_, program_name_ );
@@ -3713,6 +3715,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

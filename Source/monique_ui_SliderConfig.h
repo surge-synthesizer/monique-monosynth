@@ -2583,7 +2583,7 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "MOD";
+        return "X-MOD";
     }
     /*
     float get_top_button_amp() const noexcept override

@@ -710,6 +710,7 @@ void Monique_Ui_MorphConfig::buttonClicked (Button* buttonThatWasClicked)
     }
 
     //[UserbuttonClicked_Post]
+    refresh_combos();
     //[/UserbuttonClicked_Post]
 }
 

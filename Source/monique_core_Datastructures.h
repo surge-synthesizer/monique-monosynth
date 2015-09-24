@@ -970,11 +970,11 @@ public:
     bool replace() noexcept;
     bool remove() noexcept;
 
-    bool load( bool load_morph_groups = true ) noexcept;
+    bool load( bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
     bool load_prev() noexcept;
     bool load_next() noexcept;
 private:
-    bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true ) noexcept;
+    bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
 
 public:
     // ==============================================================================
