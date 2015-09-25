@@ -36,9 +36,9 @@
 */
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
+                                   public ComboBoxListener,
                                    public ButtonListener,
-                                   public SliderListener,
-                                   public ComboBoxListener
+                                   public SliderListener
 {
 public:
     //==============================================================================
@@ -101,9 +101,9 @@ private:
 
     void paint (Graphics& g);
     void resized();
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
 
     // Binary resources:
     static const char* vst_logo_100x_png;
@@ -115,10 +115,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<TextEditor> text_info_monique;
-    ScopedPointer<ImageButton> image_vst;
-    ScopedPointer<TextEditor> text_info_vst;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
+    ScopedPointer<Label> label_9;
+    ScopedPointer<Label> label_2;
+    ScopedPointer<Label> label_4;
+    ScopedPointer<ComboBox> combo_multicore_cpus;
+    ScopedPointer<Label> label_cpu_usage;
+    ScopedPointer<ComboBox> combo_block_size;
+    ScopedPointer<Label> label_10;
+    ScopedPointer<ComboBox> combo_audio_driver;
+    ScopedPointer<ComboBox> combo_audio_device;
+    ScopedPointer<Label> label_7;
+    ScopedPointer<Label> label_8;
+    ScopedPointer<ComboBox> combo_sample_rate;
     ScopedPointer<ColourSelector> colour_selector;
     ScopedPointer<Label> label_colour_4;
     ScopedPointer<TextButton> button_current_editor_color;
@@ -136,10 +144,6 @@ private:
     ScopedPointer<ToggleButton> toggle_show_tooltips;
     ScopedPointer<Label> label_ui_headline_1;
     ScopedPointer<Label> label_ui_headline_2;
-    ScopedPointer<Label> label_2;
-    ScopedPointer<Label> label_cpu_usage;
-    ScopedPointer<Label> label_4;
-    ScopedPointer<ComboBox> combo_multicore_cpus;
     ScopedPointer<Label> label_ui_headline_4;
     ScopedPointer<Slider> slider_sensitivity;
     ScopedPointer<Label> label2;
@@ -162,19 +166,16 @@ private:
     ScopedPointer<TextButton> button_colour_buttons_off;
     ScopedPointer<TextButton> button_colour_labels;
     ScopedPointer<Label> label_ui_headline_6;
-    ScopedPointer<Label> label_7;
-    ScopedPointer<ComboBox> combo_audio_device;
-    ScopedPointer<Label> label_8;
-    ScopedPointer<Label> label_9;
-    ScopedPointer<ComboBox> combo_sample_rate;
-    ScopedPointer<ComboBox> combo_block_size;
-    ScopedPointer<Label> label_10;
-    ScopedPointer<ComboBox> combo_audio_driver;
     ScopedPointer<TextButton> button_preset_1;
     ScopedPointer<TextButton> button_preset_2;
     ScopedPointer<TextButton> button_preset_3;
     ScopedPointer<Label> label_6;
     ScopedPointer<ToggleButton> toggle_one_pedal;
+    ScopedPointer<Label> label_ui_headline_3;
+    ScopedPointer<Label> label_ui_headline_7;
+    ScopedPointer<ImageButton> image_vst;
+    ScopedPointer<Label> label_ui_headline_9;
+    ScopedPointer<HyperlinkButton> link_to_monoplugs;
 
 
     //==============================================================================

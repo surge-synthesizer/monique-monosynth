@@ -100,7 +100,10 @@ open_state_checker(this),
 state_change_counter(0),
 
 restored_all_devices(true),
-its_your_first_time(true)
+its_your_first_time(true),
+
+restored_audio_devices(true),
+init_first_time_audio_device(true)
 {
     sample_rate_changed(0);
 }
@@ -177,17 +180,8 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
 
         // AUDIO
         {
-            const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
-            error = AudioDeviceManager::initialise
-            (
-                0,2,
-                xml_->getChildByName("DEVICESETUP"),
-                true
-            );
-            if( error != "" )
-            {
-                //restored_all_devices = false;
-            }
+            audio_device_init_backup = new XmlElement( *xml_ );
+            error = restore_audio_device(false);
         }
 
         // INPUT
@@ -262,6 +256,32 @@ COLD String mono_AudioDeviceManager::read_from( const XmlElement* xml_ ) noexcep
 
     return error;
 }
+COLD String mono_AudioDeviceManager::restore_audio_device( bool try_to_open_an_alternativ_ ) noexcept
+{
+    String error;
+    const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
+    error = AudioDeviceManager::initialise
+    (
+        0,2,
+        audio_device_init_backup->getChildByName("DEVICESETUP"),
+        try_to_open_an_alternativ_
+    );
+    AudioIODevice* active_device = getCurrentAudioDevice();
+    if( error != "" or not active_device )
+    {
+        restored_audio_devices = false;
+        if( error == "" )
+        {
+            error = "Error open device.";
+        }
+    }
+    else
+    {
+        restored_audio_devices = true;
+    }
+
+    return error;
+}
 COLD String mono_AudioDeviceManager::read_defaults() noexcept
 {
     String error("ERROR: CAN'T OPEN ANY DEFAULT DEVICE.");
@@ -270,24 +290,31 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
         const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
         for( int i = 0 ; i != types.size() ; ++ i )
         {
-	    AudioIODeviceType* type = types.getUnchecked(i);
+            AudioIODeviceType* type = types.getUnchecked(i);
             setCurrentAudioDeviceType( type->getTypeName(), false );
-	    std::cout << type->getTypeName() << std::endl;
-	    type->scanForDevices();
+            type->scanForDevices();
             error = AudioDeviceManager::initialise
             (
                 0,2,
                 nullptr,
-                true,
-		"*"
+                false
             );
-            if( error == "" )
+            AudioIODevice* active_device = getCurrentAudioDevice();
+            if( error == "" and active_device )
             {
+                AudioDeviceManager::updateXml();
                 break;
+            }
+            else
+            {
+                if( error == "" )
+                {
+                    error = "Error open device.";
+                }
+                init_first_time_audio_device = false;
             }
         }
     }
-
 
     state_change_counter++;
 
@@ -832,7 +859,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                                "MIDI DEVICES DETECTED.",
                                "Monique found some MIDI input devices. May be your piano keyboard!?\n"
                                "Do you like to connect it?\n"
-			       "\n"
+                               "\n"
                                "(a keyboard you can select at 'INPUT (Notes...)').",
                                true
                            );

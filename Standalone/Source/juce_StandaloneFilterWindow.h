@@ -71,17 +71,75 @@ COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 //==============================================================================
 COLD void StandaloneFilterWindow::handleAsyncUpdate()
 {
-    if( not filter->restored_all_devices_successfully() )
+    if( not filter->init_first_time_audio_devices_successfully() )
     {
         AlertWindow::showNativeDialogBox
         (
-            "MIDI DEVICES MISSING.",
-            "Monique was not able to reopen all MIDI ports.\n"
-            "Please reconnect your MIDI devices or change your settings.",
+            "AUDIO DEVICES PROBLEM.",
+            "Monique was not able to open an audio device by default.\n"
+            "\n"
+            "Please choose an audio driver and device by yourself.\n"
+	    "(Press OK to open the setup (after see bottom right in the setup (DEVICE AND DRIVER)).)",
             false
         );
-	
-	AppInstanceStore::getInstance()->editor->open_midi_editor_if_closed();
+
+        AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+    }
+    else
+    {
+        if( not filter->restored_audio_devices_successfully() )
+        {
+            bool success = AlertWindow::showNativeDialogBox
+                           (
+                               "AUDIO DEVICES MISSING.",
+                               "Monique was not able to open the last audio device.\n"
+                               "\n"
+                               "Should Monique try to open an alternative device (OK)\n"
+                               "or do you like to select an AUDIO device by yourself (cancel)?.",
+                               true
+                           );
+            if( success )
+            {
+                String error = filter->restore_audio_device(true);
+
+                AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+
+                if( error == "" )
+                {
+                    AlertWindow::showNativeDialogBox
+                    (
+                        "SUCCESS.",
+                        "Audio device is open.\n",
+                        false
+                    );
+                }
+                else
+                {
+                    AlertWindow::showNativeDialogBox
+                    (
+                        "ERROR OPEN AUDIO DEVICE.",
+                        error,
+                        false
+                    );
+                }
+            }
+            else
+            {
+                AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+            }
+        }
+        if( not filter->restored_all_devices_successfully() )
+        {
+            AlertWindow::showNativeDialogBox
+            (
+                "MIDI DEVICES MISSING.",
+                "Monique was not able to reopen all MIDI ports.\n"
+                "Please reconnect your MIDI devices or change your settings.",
+                false
+            );
+
+            AppInstanceStore::getInstance()->editor->open_midi_editor_if_closed();
+        }
     }
 }
 

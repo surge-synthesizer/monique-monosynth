@@ -490,9 +490,9 @@ private:
     String restartDevice (int blockSizeToUse, double sampleRateToUse,
                           const BigInteger& ins, const BigInteger& outs);
     void stopDevice();
-
+public:
     void updateXml();
-
+private:
     void createDeviceTypesIfNeeded();
     void scanDevicesIfNeeded();
     void deleteCurrentDevice();

@@ -1399,6 +1399,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 0, 127 );
     keyboard->setKeyWidth(45);
+    
+   // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
@@ -3136,6 +3138,8 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     {
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
+    
+    resizer->toFront(true);
 }
 
 void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
@@ -3152,6 +3156,16 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     MIDIControlHandler::getInstance()->toggle_midi_learn();
     AppInstanceStore::getInstance()->editor->show_info_popup(nullptr,nullptr);
 #endif
+}
+void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
+{
+    if( not editor_global_settings )
+    {
+        close_all_subeditors();
+
+        addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings() );
+        resize_subeditors();
+    }
 }
 
 void Monique_Ui_Mainwindow::flash_midi_editor_button() noexcept

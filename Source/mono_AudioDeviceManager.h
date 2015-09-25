@@ -18,7 +18,10 @@
 class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
 {
     bool restored_all_devices;
+    bool restored_audio_devices;
     bool its_your_first_time;
+    ScopedPointer<XmlElement> audio_device_init_backup;
+    bool init_first_time_audio_device;
 
 public:
     BoolParameter main_input_thru;
@@ -190,14 +193,10 @@ private:
     int state_change_counter;
 
 public:
-    int get_state_change_counter() const noexcept
-    {
-        return state_change_counter;
-    }
-    bool restored_all_devices_successfully() const noexcept
-    {
-        return restored_all_devices;
-    }
+    int get_state_change_counter() const noexcept;
+    bool restored_all_devices_successfully() const noexcept;
+    bool restored_audio_devices_successfully() const noexcept;
+    bool init_first_time_audio_devices_successfully() const noexcept;
 
 protected:
     COLD mono_AudioDeviceManager() noexcept;
@@ -207,6 +206,9 @@ protected:
 
     COLD bool save_to( XmlElement* xml ) const noexcept;
     COLD String read_from( const XmlElement* xml ) noexcept;
+public:
+    COLD String restore_audio_device( bool try_to_open_an_alternativ_ ) noexcept;
+protected:
     COLD String read_defaults() noexcept;
     COLD void save() const noexcept;
     COLD String read() noexcept;
@@ -228,6 +230,24 @@ inline void mono_AudioDeviceManager::clear_feedback_message( int cc_number_ ) no
     {
         midi_feedback_output->sendMessageNow( MidiMessage::controllerEvent( 1, cc_number_, 0 ) );
     }
+}
+
+//==============================================================================
+inline int mono_AudioDeviceManager::get_state_change_counter() const noexcept
+{
+    return state_change_counter;
+}
+inline bool mono_AudioDeviceManager::restored_all_devices_successfully() const noexcept
+{
+    return restored_all_devices;
+}
+inline bool mono_AudioDeviceManager::restored_audio_devices_successfully() const noexcept
+{
+    return restored_audio_devices;
+}
+inline bool mono_AudioDeviceManager::init_first_time_audio_devices_successfully() const noexcept
+{
+    return init_first_time_audio_device;
 }
 #else
 //==============================================================================

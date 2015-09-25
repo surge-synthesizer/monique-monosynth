@@ -38,8 +38,10 @@ DONE:
 - swap: midi button and setup button 
 - fix default audio device
 - embedd: monospace font for tooltips
-
 - fix bug in filter change -> there was used some values from the filter type before 
+- improved audio device handling and error management
+- fix: corner resizer always on top (was hidden by editors)
+- improve: about box
 
 DONE: LIVE PLAY (focus to a piano keys and pedals)
 - add: sustain pedal support (common implementation)
@@ -62,10 +64,6 @@ NOT DONE (but until friday):
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
-
-- message that an audio device is no more available
-- message that the user should select an device on first start
-- send midi to host options 
 
 
 isNoteOnOrOff
@@ -138,6 +136,7 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- morph between filters
 - virtual port support
 - ports inside a plugin
 - channel management
