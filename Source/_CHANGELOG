@@ -1,69 +1,13 @@
-DONE:
-- change: return value snap to factory default
-- change: fm swing better adjustable (reduce max speed)
-- change: the highest band of the eq from 8000-16000hertz to 8000 to 22000hertz
-- fix: morphing of sustain levels of an morphable env was broken
-- update/fix: automation parameter text, labels, values, host notification
-- add: f11 to enter full screen
-- reduce: option "show animations" (was 3) to only animate modulations
-- add: option "show tooltips" on/off / increase popuptime to 1000ms (700 before)
-- add: press ctrl + h to show tooltips immediately (~30ms), also if the show tooltips option is turned off
-- fix: load a default audio device on startup (standalone)
-- reorder and rename: a lot of automation params (plugin)
-- fix: chorus env wasn't saved
-- fix: if o-mod was turned off, fm swing was not added to the modulator signal
-- fix: negative pulse was added to osc 1 if o-mod was turned off
-- change 2nd and 3rd colour theme (see screens below)
-- changed: values near zero snaps to zero (smaller 0.001) to avoid e.g. sync problems of two osc with the same freq
-- fix: question save before load a new program on remove
-- fix: oscilloscope max +1 pix (one was missing)
-- add: MIDI all notes off support
-- fix: stop motor morph (morph pad or horizontal slider) if you move a single morph slider manually
-- add: store morph source program names (morph editor drop downs)
-- add: shortcut CTRL + M to go in midi learn mode and popup the info if mouse is over a slider or button
-- add: default midi map (patch list will come with the update)
-- add: midi support for bank and program change
-- add: up to 26 banks (A to Z)
-- fix: store some missing midi settings
-- fix: midi thru output
-- fix: send midi controller feedback
-- add: note in midi channel support and omni mode
-- change: default midi pickup to 100% to provide full remote midi control without barriers
-- fix: question to store an deleted program
-- fix: dont ask to save a changed program if the host like to change the program (problems if you like to automate this)
-- fix: HIGH PASS frequency to min 35 hertz and 8000hertz (4000 was the limit)
-- fix: unsmoothed sustain
-- remove: any midi options from the plugin (all and always handled in host)
-- > midi editor button is not midi learn
-- swap: midi button and setup button 
-- fix default audio device
-- embedd: monospace font for tooltips
-- fix bug in filter change -> there was used some values from the filter type before 
-- improved audio device handling and error management
-- fix: corner resizer always on top (was hidden by editors)
-- improve: about box
-
-DONE: LIVE PLAY (focus to a piano keys and pedals)
-- add: sustain pedal support (common implementation)
-- add: pitchbend support (+/- 2 semitones) (common implementation)
-- add: sostenuto pedal - same as sustain pedal but for the filter envelopes (NOT common implementation (but is free for an monophonic synth))
-- add: soft pedal support - if the softpedal is down the gain of second and third osc will be reduced to 50% and 33% (my interpretation of the classic implementation)
-- add: osc retune option if soft pedal is down and at least two notes/keys and the new O-TUNE option is turned on (NOT common implementation)
-- add: option to bind the sostenuto and sustain to the sustain pedal
-- add: keyboard animation for incoming notes
-
-MIDI DEVICE HANDLING
-- add: store old ports
-- add: device remove, reconect handling
-- checked: midi sync -> OK
-- add: message that there are some ports available (only first startup)
-
 NOT DONE (but until friday):
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
+
+- audio unit build
+- asio suppoert
+- bypass
 
 
 isNoteOnOrOff

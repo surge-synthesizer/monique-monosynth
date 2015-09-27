@@ -789,12 +789,14 @@ void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param
 #ifdef IS_PLUGIN
 void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
 {
+    std::cout << "getStateInformation" << std::endl;
     XmlElement xml("PROJECT-1.0");
     synth_data->save_to( &xml );
     copyXmlToBinary ( xml, destData );
 }
 void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
 {
+    std::cout << "setStateInformation" << std::endl;
     ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
     if ( xml )
     {
@@ -900,6 +902,7 @@ int MoniqueAudioProcessor::getCurrentProgram()
 }
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
+    std::cout << "setCurrentProgram" << std::endl;
     synth_data->set_current_program_abs(id_);
     synth_data->load(true,true);
 }
