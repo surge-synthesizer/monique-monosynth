@@ -104,7 +104,7 @@ public:
     {}
 };
 
-enum 
+enum
 {
     TOP_BUTTON_IS_ON = -4,
     TOP_BUTTON_IS_OFF = -5,
@@ -254,10 +254,10 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-    public Monique_Ui_Refreshable,
-    public SliderListener,
-    public ButtonListener,
-    public LabelListener
+                               public Monique_Ui_Refreshable,
+                               public SliderListener,
+                               public ButtonListener,
+                               public LabelListener
 {
 public:
     //==============================================================================
@@ -270,7 +270,7 @@ public:
     void set_ctrl_view_mode( bool mode_ ) const;
     void show_view_mode();
     void update_return_values() noexcept;
-    
+
     Parameter* get_front_parameter() noexcept { return front_parameter; }
 
     const float original_w;

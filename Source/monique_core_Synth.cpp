@@ -5224,6 +5224,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         while( left_executer.isWorking() ) {}
 
         // FINAL MIX
+        /*
         {
             float* left = output_buffer_.getWritePointer(LEFT);
             float* right = output_buffer_.getWritePointer(RIGHT);
@@ -5233,6 +5234,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 left[sid] = right[sid] = sum;
             }
         }
+        */
 
         // VISUALIZE
         if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )

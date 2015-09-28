@@ -9,6 +9,13 @@ NOT DONE (but until friday):
 - asio suppoert
 - bypass
 
+- keyboard arp tauschen
+- env hoch
+- pan effect
+- load save hoch
+- farbe borders grau
+- slider
+
 
 isNoteOnOrOff
 isAllNotesOff
@@ -80,6 +87,7 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- 3D pan
 - morph between filters
 - virtual port support
 - ports inside a plugin
