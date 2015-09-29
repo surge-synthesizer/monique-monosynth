@@ -2,7 +2,6 @@ NOT DONE (but until friday):
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
-- add: option to make linear sliders to dials or change the sensitivity
 - osc square and saw going out of center on higher octaves
 
 - audio unit build
@@ -15,6 +14,8 @@ NOT DONE (but until friday):
 - load save hoch
 - farbe borders grau
 - slider
+
+- option->envelope->slider or rotary
 
 
 isNoteOnOrOff

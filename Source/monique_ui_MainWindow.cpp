@@ -3266,7 +3266,15 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 
         synth_data->ctrl = false;
 
-        close_all_subeditors();
+        if( env_popup )
+        {
+            open_env_popup( nullptr, nullptr, nullptr );
+        }
+        else
+        {
+            close_all_subeditors();
+        }
+
         success = true;
     }
     else if( key.getTextDescription() == "ctrl + +")
@@ -3439,11 +3447,16 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*c
     button_edit_input_env_band_8->setColour( TextButton::buttonColourId, button_off );
     button_edit_input_env_band_9->setColour( TextButton::buttonColourId, button_off );
     button_edit_env_chorus->setColour( TextButton::buttonColourId, button_off );
-    if( ! env_popup )
+
+    if( ! env_popup  )
     {
-        addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2-40 ) );
-        env_popup->set_element_to_show(for_comp_);
-        for_comp_->setColour( TextButton::buttonColourId, button_on );
+        if( env_data_ )
+        {
+            addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2 ) );
+            env_popup->set_element_to_show(for_comp_);
+            for_comp_->setColour( TextButton::buttonColourId, button_on );
+            resize_subeditors();
+        }
     }
     else
     {
@@ -3478,6 +3491,10 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     if( popup )
     {
         popup->update_positions();
+    }
+    if( env_popup )
+    {
+        env_popup->update_positions();
     }
 
     if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
