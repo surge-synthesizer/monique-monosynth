@@ -3494,6 +3494,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     }
     if( env_popup )
     {
+        env_popup->setSize( env_popup->original_w*(1.0f/original_w*getWidth()), env_popup->original_h*(1.0f/original_h*getHeight() ) );
         env_popup->update_positions();
     }
 
