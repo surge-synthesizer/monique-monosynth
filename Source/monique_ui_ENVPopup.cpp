@@ -44,6 +44,8 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
     slider_release->setValue( env_data->release.get_value(), dontSendNotification );
     label_release->setText(String( MIN_ENV_TIMES + slider_release->getValue() *20000)+String("ms"), dontSendNotification);
+    update if changed
+    slider_env_shape->setValue( env_data->shape.get_value(), dontSendNotification );
 }
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_ )
@@ -338,13 +340,12 @@ void Monique_Ui_ENVPopup::paint (Graphics& g)
         }
 
         const int curve_size = curve.size();
-        const int sustain_size = curve.size()/5;
-        float scale_w = float(plotter_width)/(curve.size()+sustain_size);
+        float scale_w = float(plotter_width)/(curve.size());
 
         int last_x = -1;
         int last_y = -1;
         Colour col( UiLookAndFeel::getInstance()->colours.slider_track_colour );
-        for( int i = 0 ; i != curve_size+sustain_size ; ++i )
+        for( int i = 0 ; i != curve_size ; ++i )
         {
             float value = 1.0f-curve[i];
             const int x = scale_w*i+plotter_x;

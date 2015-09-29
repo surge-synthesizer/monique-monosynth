@@ -1,3 +1,7 @@
+DONE
+- remove adr presets and replace it with an individual env
+- fix: wrong step captions:  from 1; 1; 2;... to 1; 2; 3; -> funny bug -> i'm an idiot :D
+
 NOT DONE (but until friday):
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
@@ -8,13 +12,12 @@ NOT DONE (but until friday):
 - asio suppoert
 - bypass
 
-- keyboard arp tauschen
-- env hoch
+- keyboard arp  -> nee -> der noob will das sehen
+- env hoch -> no more needed
 - pan effect
-- load save hoch
-- farbe borders grau
+- load save hoch -> yep
+- farbe borders grau 
 - slider
-
 - option->envelope->slider or rotary
 
 

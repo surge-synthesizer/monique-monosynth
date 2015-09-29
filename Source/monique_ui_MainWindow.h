@@ -28,7 +28,6 @@ class AppInstanceStore;
 class Monique_Ui_MainwindowPopup;
 class Monique_Ui_MidiIO;
 class Monique_Ui_MorphConfig;
-class Monique_Ui_Settings;
 class Monique_Ui_GlobalSettings;
 class Monique_Ui_ENVPopup;
 
@@ -280,7 +279,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> osc_wave_2;
     ScopedPointer<Slider> sl_morhp_mix;
     ScopedPointer<TextButton> button_programm_delete;
-    ScopedPointer<TextButton> button_open_config;
     ScopedPointer<TextButton> filter_type_6_1;
     ScopedPointer<TextButton> filter_type_6_2;
     ScopedPointer<TextButton> filter_type_6_3;

@@ -5256,7 +5256,7 @@ public:
         :
         tune( &(GET_DATA(arp_data).tune[id_]) ),
         velocity( &(GET_DATA(arp_data).velocity[id_]) ),
-        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_) )
+        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (ArpStepSlConfig)
