@@ -326,6 +326,8 @@ struct ENVData
     Parameter sustain_time;
     Parameter release;
     IntParameter max_release_time;
+    
+    Parameter shape;
 
     //==========================================================================
     COLD ENVData( int id_ ) noexcept;
@@ -337,6 +339,7 @@ struct ENVData
 //==============================================================================
 //==============================================================================
 //==============================================================================
+// TODO REMOVE
 struct ENVPresetDef
 {
     Parameter attack_1;
@@ -420,8 +423,8 @@ struct FilterData : ParameterListener
     BoolParameter modulate_output;
 
     ArrayOfParameters input_sustains;
+    OwnedArray<ENVData> input_envs;
     ArrayOfBoolParameters input_holds;
-    OwnedArray<ENVPresetData> input_env_datas;
 
     ENVData*const env_data;
 
@@ -714,7 +717,7 @@ struct EQData : ParameterListener
     ArrayOfParameters velocity;
     ArrayOfBoolParameters hold;
 
-    OwnedArray< ENVPresetData > env_datas;
+    OwnedArray<ENVData> envs;
 
 private:
     //==========================================================================
@@ -796,7 +799,6 @@ struct MoniqueSynthData : ParameterListener
     Parameter effect_bypass;
     Parameter final_compression;
     Parameter shape;
-    Parameter curve_shape; 	// TODO RENAME ENV_CURVE_SHAPE
     IntParameter octave_offset;
     BoolParameter osc_retune;
 
@@ -835,9 +837,6 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter sliders_in_rotary_mode;
     IntParameter sliders_sensitivity;
     Parameter ui_scale_factor;
-
-    // ENV OPTION
-    Parameter force_envs_to_zero;
 
     ScopedPointer< ENVData > env_data;
 
@@ -1036,6 +1035,7 @@ public:
     // ==============================================================================
     static void init_ui_env() noexcept;
     static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ ) noexcept;
+    static void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
 
     // ==============================================================================
     COLD mono_ParameterOwnerStore() noexcept;

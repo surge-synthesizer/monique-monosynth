@@ -390,6 +390,15 @@ max_release_time
     4000,
     generate_param_name(ENV_NAME,id,"max_release_t"),
     generate_short_human_name(ENV_NAME,id_,"max_release_t")
+),
+
+shape
+(
+    MIN_MAX( 0, 1 ),
+    0.5,
+    1000,
+    generate_param_name(ENV_NAME,id,"shape"),
+    generate_short_human_name(ENV_NAME,id_,"shape")
 )
 {
 }
@@ -409,6 +418,8 @@ static inline void copy( ENVData* dest_, const ENVData* src_, bool include_susta
     }
     dest_->sustain_time = src_->sustain_time;
     dest_->release = src_->release;
+
+    dest_->shape = src_->shape;
 }
 static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_sustain_ ) noexcept
 {
@@ -423,6 +434,8 @@ static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter
     }
     params_.add( &data_->sustain_time );
     params_.add( &data_->release );
+
+    params_.add( &data_->shape );
 }
 
 //==============================================================================
@@ -960,14 +973,16 @@ input_holds
 ),
 
 // ----
-input_env_datas( /* INIT IN BODY */ ),
+input_envs( /* INIT IN BODY */ ),
 env_data( new ENVData( id_ ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
-        ENVPresetData*preset_data = new ENVPresetData( i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET, env_preset_def_ );
-        input_env_datas.add( preset_data );
-
+        ENVData* env_data = new ENVData( i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
+        env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
+        env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
+        env_data->max_release_time = env_data->max_release_time.get_info().max_value;
+        input_envs.add( env_data );
         input_sustains[i].register_always_listener(this);
     }
 }
@@ -1006,7 +1021,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_env_datas.getUnchecked(i), src_->input_env_datas.getUnchecked(i) );
+        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), false );
     }
 
     copy( dest_->env_data, src_->env_data, true );
@@ -1017,7 +1032,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
     {
         params_.add( &data_->input_sustains[i] );
         params_.add( &data_->input_holds[i] );
-        collect_saveable_parameters( data_->input_env_datas.getUnchecked(i), params_ );
+        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, false );
     }
     collect_saveable_parameters( data_->env_data, params_, true );
 
@@ -1049,7 +1064,7 @@ void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( input_sustains[i].ptr() == param_ )
         {
-            input_env_datas[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
+            input_envs[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
             break;
         }
     }
@@ -1203,8 +1218,11 @@ hold
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        ENVPresetData* data = new ENVPresetData( band_id+EQ_ENV_ID_OFFSET, def_ );
-        env_datas.add( data );
+        ENVData* env_data = new ENVData( band_id+EQ_ENV_ID_OFFSET );
+        env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
+        env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
+        env_data->max_release_time = env_data->max_release_time.get_info().max_value;
+        envs.add( env_data );
 
         velocity[band_id].register_always_listener(this);
     }
@@ -1225,7 +1243,7 @@ static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
         dest_->velocity[i] = src_->velocity[i];
         dest_->hold[i] = src_->hold[i];
 
-        copy( dest_->env_datas.getUnchecked( i ), src_->env_datas.getUnchecked( i ) );
+        copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ), false );
     }
 }
 static inline void collect_saveable_parameters( EQData* data_, Array< Parameter* >& params_ ) noexcept
@@ -1235,7 +1253,7 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
         params_.add( &data_->velocity[i] );
         params_.add( &data_->hold[i] );
 
-        collect_saveable_parameters( data_->env_datas.getUnchecked( i ), params_ );
+        collect_saveable_parameters( data_->envs.getUnchecked( i ), params_, false );
     }
 }
 
@@ -1246,7 +1264,7 @@ void EQData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( velocity[i].ptr() == param_ )
         {
-            env_datas[i]->sustain.set_value_without_notification( ( 1.0f + param_->get_value() )*0.5 );
+            envs[i]->sustain.set_value_without_notification( ( 1.0f + param_->get_value() )*0.5 );
             break;
         }
     }
@@ -1761,7 +1779,7 @@ COLD void set_default_midi_assignments() noexcept
     // 12
     synth_data.shape.midi_control->train( 12, nullptr );
     // 13
-    synth_data.curve_shape.midi_control->train( 13, nullptr );
+    // TODO synth_data.curve_shape.midi_control->train( 13, nullptr );
     // 14
     synth_data.effect_bypass.midi_control->train( 14, nullptr );
     // 15
@@ -1864,7 +1882,7 @@ COLD void set_default_midi_assignments() noexcept
     // 66 Sustenuto Pedal (on/off) // FIX
     // 67 Soft Pedal (on/off) // FIX
     // 68
-    synth_data.force_envs_to_zero.midi_control->train( 68, nullptr );
+    // TODO synth_data.force_envs_to_zero.midi_control->train( 68, nullptr );
     // 69 UNUSED
     // 70
     master_osc_data.fm_freq.midi_control->train( 70, nullptr );
@@ -2003,14 +2021,6 @@ id( data_type ),
         100,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
         generate_short_human_name("FX","shape")
-    ),
-    curve_shape
-    (
-        MIN_MAX( 0, 1 ),
-        0.5,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"env_shape"),
-        generate_short_human_name("GLOB","env_shape")
     ),
     octave_offset
     (
@@ -2204,16 +2214,6 @@ id( data_type ),
     ),
 
 // ----
-    force_envs_to_zero
-    (
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
-        generate_param_name(ENV_NAME,MASTER,"force_env2zero"),
-        generate_short_human_name("GLOB","force_env2zero")
-    ),
-
-// ----
     env_data( new ENVData( MAIN_ENV ) ),
     env_preset_def(new ENVPresetDef( MASTER ) ),
     eq_data(new EQData(MASTER, env_preset_def)),
@@ -2382,11 +2382,9 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->velocity_glide_time = src_->velocity_glide_time;
     dest_->sync = src_->sync;
     dest_->shape = src_->shape;
-    dest_->curve_shape = src_->curve_shape;
     dest_->octave_offset = src_->octave_offset;
     dest_->osc_retune = src_->osc_retune;
     dest_->final_compression = src_->final_compression;
-    dest_->force_envs_to_zero = src_->force_envs_to_zero;
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -2455,8 +2453,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->osc_retune );
     saveable_parameters.add( &this->octave_offset );
 
-    saveable_parameters.add( &this->curve_shape );
-    saveable_parameters.add( &this->force_envs_to_zero );
     collect_saveable_parameters( env_preset_def, saveable_parameters );
 
     saveable_parameters.minimiseStorageOverheads();
@@ -2575,7 +2571,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_parameter( filter_datas[0]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2616,7 +2616,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_parameter( filter_datas[1]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2657,7 +2661,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_parameter( filter_datas[2]->input_env_datas[input_id]->state.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
@@ -2713,8 +2721,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
 
-            morph_group_3->register_parameter( force_envs_to_zero.ptr(), data_type == MASTER );
-
             //speed_multi
         }
 
@@ -2723,7 +2729,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
             {
                 morph_group_3->register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
-                morph_group_3->register_parameter( eq_data->env_datas[band_id]->state.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( eq_data->envs[band_id]->attack.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( eq_data->envs[band_id]->decay.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( eq_data->envs[band_id]->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
 
                 morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }

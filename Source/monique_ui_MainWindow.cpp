@@ -31,6 +31,7 @@
 #include "monique_ui_GlobalSettings.h"
 #include "monique_ui_Morph.h"
 #include "monique_ui_MidiLearnPopup.h"
+#include "monique_ui_ENVPopup.h"
 //[/Headers]
 
 #include "monique_ui_MainWindow.h"
@@ -258,6 +259,24 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
     eq_7->setVisible( !state_switch );
     eq_8->setVisible( !state_switch );
     eq_9->setVisible( !state_switch );
+    label_band_hz_1->setVisible( !state_switch );
+    label_band_hz_2->setVisible( !state_switch );
+    label_band_hz_3->setVisible( !state_switch );
+    label_band_hz_4->setVisible( !state_switch );
+    label_band_hz_5->setVisible( !state_switch );
+    label_band_hz_6->setVisible( !state_switch );
+    label_band_hz_7->setVisible( !state_switch );
+    label_band_hz_8->setVisible( !state_switch );
+    label_band_hz_9->setVisible( !state_switch );
+    button_edit_input_env_band_1->setVisible( !state_switch );
+    button_edit_input_env_band_2->setVisible( !state_switch );
+    button_edit_input_env_band_3->setVisible( !state_switch );
+    button_edit_input_env_band_4->setVisible( !state_switch );
+    button_edit_input_env_band_5->setVisible( !state_switch );
+    button_edit_input_env_band_6->setVisible( !state_switch );
+    button_edit_input_env_band_7->setVisible( !state_switch );
+    button_edit_input_env_band_8->setVisible( !state_switch );
+    button_edit_input_env_band_9->setVisible( !state_switch );
 
     !state_switch ? effect_finalizer_switch->setButtonText ("E Q") : effect_finalizer_switch->setButtonText ("F X");
 }
@@ -345,13 +364,96 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     flash_counter = 0;
     //[/Constructor_pre]
 
-    addAndMakeVisible (overlayer = new ImageButton ("new button"));
-    overlayer->addListener (this);
+    addAndMakeVisible (label_effect_hider = new Label (String::empty,
+                                                       String::empty));
+    label_effect_hider->setFont (Font (30.00f, Font::plain));
+    label_effect_hider->setJustificationType (Justification::centredLeft);
+    label_effect_hider->setEditable (false, false, false);
+    label_effect_hider->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_effect_hider->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_effect_hider->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    overlayer->setImages (false, true, false,
-                          ImageCache::getFromMemory (empty_png, empty_pngSize), 0.500f, Colour (0xcd000000),
-                          Image(), 0.500f, Colour (0xcd000000),
-                          Image(), 0.500f, Colour (0xcd000000));
+    addAndMakeVisible (label_band_hz_2 = new Label ("DL",
+                                                    TRANS("62Hz")));
+    label_band_hz_2->setFont (Font (30.00f, Font::plain));
+    label_band_hz_2->setJustificationType (Justification::centred);
+    label_band_hz_2->setEditable (false, false, false);
+    label_band_hz_2->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_3 = new Label ("DL",
+                                                    TRANS("125Hz")));
+    label_band_hz_3->setFont (Font (30.00f, Font::plain));
+    label_band_hz_3->setJustificationType (Justification::centred);
+    label_band_hz_3->setEditable (false, false, false);
+    label_band_hz_3->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_4 = new Label ("DL",
+                                                    TRANS("250Hz")));
+    label_band_hz_4->setFont (Font (30.00f, Font::plain));
+    label_band_hz_4->setJustificationType (Justification::centred);
+    label_band_hz_4->setEditable (false, false, false);
+    label_band_hz_4->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_5 = new Label ("DL",
+                                                    TRANS("500Hz")));
+    label_band_hz_5->setFont (Font (30.00f, Font::plain));
+    label_band_hz_5->setJustificationType (Justification::centred);
+    label_band_hz_5->setEditable (false, false, false);
+    label_band_hz_5->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_6 = new Label ("DL",
+                                                    TRANS("1kHz")));
+    label_band_hz_6->setFont (Font (30.00f, Font::plain));
+    label_band_hz_6->setJustificationType (Justification::centred);
+    label_band_hz_6->setEditable (false, false, false);
+    label_band_hz_6->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_7 = new Label ("DL",
+                                                    TRANS("2kHz")));
+    label_band_hz_7->setFont (Font (30.00f, Font::plain));
+    label_band_hz_7->setJustificationType (Justification::centred);
+    label_band_hz_7->setEditable (false, false, false);
+    label_band_hz_7->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_8 = new Label ("DL",
+                                                    TRANS("4kHz")));
+    label_band_hz_8->setFont (Font (30.00f, Font::plain));
+    label_band_hz_8->setJustificationType (Justification::centred);
+    label_band_hz_8->setEditable (false, false, false);
+    label_band_hz_8->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_9 = new Label ("DL",
+                                                    TRANS("8kHz")));
+    label_band_hz_9->setFont (Font (30.00f, Font::plain));
+    label_band_hz_9->setJustificationType (Justification::centred);
+    label_band_hz_9->setEditable (false, false, false);
+    label_band_hz_9->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_band_hz_1 = new Label ("DL",
+                                                    TRANS("31Hz")));
+    label_band_hz_1->setFont (Font (30.00f, Font::plain));
+    label_band_hz_1->setJustificationType (Justification::centred);
+    label_band_hz_1->setEditable (false, false, false);
+    label_band_hz_1->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_band_hz_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_band_hz_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
     addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (new SpeedMultiSlConfig()));
 
     addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (new MorphSLConfig(3)));
@@ -361,15 +463,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (new MorphSLConfig(1)));
 
     addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
-
-    addAndMakeVisible (label_effect_hider = new Label (String::empty,
-            String::empty));
-    label_effect_hider->setFont (Font (30.00f, Font::plain));
-    label_effect_hider->setJustificationType (Justification::centredLeft);
-    label_effect_hider->setEditable (false, false, false);
-    label_effect_hider->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_effect_hider->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_effect_hider->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (eq_9 = new Monique_Ui_DualSlider (new EQSlConfig(8)));
 
@@ -440,7 +533,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (new FSustainSlConfig()));
 
     addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (new FDecaySlConfig()
-                                                               ));
+                                                                ));
 
     addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (new FAttackSlConfig()));
 
@@ -475,7 +568,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (new FAttackSlConfig(0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
-            TRANS("M O N I Q U E")));
+                                                   TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
     label_monolisa->setJustificationType (Justification::centredRight);
     label_monolisa->setEditable (false, false, false);
@@ -557,7 +650,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_2 = new TextButton (String::empty));
     button_sequence_2->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener (this);
     button_sequence_2->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -565,7 +658,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_3 = new TextButton (String::empty));
     button_sequence_3->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener (this);
     button_sequence_3->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -573,7 +666,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_4 = new TextButton (String::empty));
     button_sequence_4->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener (this);
     button_sequence_4->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -581,7 +674,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_5 = new TextButton (String::empty));
     button_sequence_5->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener (this);
     button_sequence_5->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -589,7 +682,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_6 = new TextButton (String::empty));
     button_sequence_6->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener (this);
     button_sequence_6->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -597,7 +690,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_7 = new TextButton (String::empty));
     button_sequence_7->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener (this);
     button_sequence_7->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -605,7 +698,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_8 = new TextButton (String::empty));
     button_sequence_8->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener (this);
     button_sequence_8->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -613,7 +706,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
     button_sequence_9->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener (this);
     button_sequence_9->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -621,7 +714,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_10 = new TextButton (String::empty));
     button_sequence_10->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener (this);
     button_sequence_10->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_10->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -629,7 +722,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_11 = new TextButton (String::empty));
     button_sequence_11->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener (this);
     button_sequence_11->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_11->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -637,7 +730,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_12 = new TextButton (String::empty));
     button_sequence_12->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener (this);
     button_sequence_12->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_12->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -645,7 +738,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_13 = new TextButton (String::empty));
     button_sequence_13->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener (this);
     button_sequence_13->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_13->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -653,7 +746,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_14 = new TextButton (String::empty));
     button_sequence_14->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener (this);
     button_sequence_14->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_14->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -661,7 +754,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_15 = new TextButton (String::empty));
     button_sequence_15->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener (this);
     button_sequence_15->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_15->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -669,7 +762,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_16 = new TextButton (String::empty));
     button_sequence_16->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener (this);
     button_sequence_16->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -717,8 +810,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_oszi = new TextButton (String::empty));
     button_open_oszi->setTooltip (TRANS("Open/Close the oscilloscope.\n"
-                                        "\n"
-                                        "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_oszi->setButtonText (TRANS("OSCI"));
     button_open_oszi->addListener (this);
     button_open_oszi->setColour (TextButton::buttonColourId, Colours::black);
@@ -727,8 +820,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_midi_io_settings = new TextButton (String::empty));
     button_open_midi_io_settings->setTooltip (TRANS("Open/Close the MIDI settings.\n"
-            "\n"
-            "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_midi_io_settings->setButtonText (TRANS("MIDI"));
     button_open_midi_io_settings->addListener (this);
     button_open_midi_io_settings->setColour (TextButton::buttonColourId, Colours::black);
@@ -821,7 +914,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
     button_sequence_1->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener (this);
     button_sequence_1->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -855,8 +948,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (sl_morhp_mix = new Slider ("new slider"));
     sl_morhp_mix->setTooltip (TRANS("Morph between the morph sliders. \n"
-                                    "\n"
-                                    "Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."));
+    "\n"
+    "Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."));
     sl_morhp_mix->setRange (0, 3000, 0.01);
     sl_morhp_mix->setSliderStyle (Slider::LinearHorizontal);
     sl_morhp_mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -872,8 +965,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_config = new TextButton (String::empty));
     button_open_config->setTooltip (TRANS("Open/Close the morphable ENV preset designer.\n"
-                                          "\n"
-                                          "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_config->setButtonText (TRANS("ENV"));
     button_open_config->addListener (this);
     button_open_config->setColour (TextButton::buttonColourId, Colours::black);
@@ -906,8 +999,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_ctrl_toggle = new TextButton (String::empty));
     button_ctrl_toggle->setTooltip (TRANS("Turns the SHIFT mode on or off.\n"
-                                          "\n"
-                                          "The shift mode moves all back sliders to front and front sliders to back."));
+    "\n"
+    "The shift mode moves all back sliders to front and front sliders to back."));
     button_ctrl_toggle->setButtonText (TRANS("SHIFT"));
     button_ctrl_toggle->addListener (this);
     button_ctrl_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -920,8 +1013,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
     button_open_morph->setTooltip (TRANS("Open/Close the morph editor.\n"
-                                         "\n"
-                                         "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_morph->setButtonText (TRANS("EDIT"));
     button_open_morph->addListener (this);
     button_open_morph->setColour (TextButton::buttonColourId, Colours::black);
@@ -937,7 +1030,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-            TRANS("OSC")));
+                                                       TRANS("OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -946,7 +1039,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-            TRANS("FLT")));
+                                                       TRANS("FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -955,7 +1048,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-            TRANS("FX")));
+                                                       TRANS("FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -964,7 +1057,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-            TRANS("ARP")));
+                                                       TRANS("ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -974,12 +1067,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
     button_values_toggle->setTooltip (TRANS("Turns the CTRL mode on or off.\n"
-                                            "\n"
-                                            "In CTRL mode are all values visble.\n"
-                                            "\n"
-                                            "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
-                                            "\n"
-                                            "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."));
+    "\n"
+    "In CTRL mode are all values visble.\n"
+    "\n"
+    "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
+    "\n"
+    "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."));
     button_values_toggle->setButtonText (TRANS("CTRL"));
     button_values_toggle->addListener (this);
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
@@ -991,7 +1084,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
 
     addAndMakeVisible (label_ui_headline4 = new Label ("DL",
-            TRANS("FILTER INPUTS")));
+                                                       TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
@@ -1000,7 +1093,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline7 = new Label ("DL",
-            TRANS("OSCILLATORS (O)")));
+                                                       TRANS("OSCILLATORS (O)")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
@@ -1009,7 +1102,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline8 = new Label ("DL",
-            TRANS("FILTER ENVELOPE")));
+                                                       TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
@@ -1018,7 +1111,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline9 = new Label ("DL",
-            TRANS("LFO (L)")));
+                                                       TRANS("LFO (L)")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
@@ -1027,7 +1120,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline10 = new Label ("DL",
-            TRANS("FILTER CONFIGURATION")));
+                                                        TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
@@ -1036,7 +1129,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline11 = new Label ("DL",
-            TRANS("FILTER FX")));
+                                                        TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
@@ -1045,7 +1138,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline12 = new Label ("DL",
-            TRANS("OUTPUT")));
+                                                        TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
@@ -1054,7 +1147,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label ("DL",
-            TRANS("MAIN ENVELOPE")));
+                                                        TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -1063,7 +1156,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("DL",
-            TRANS("SHAPE")));
+                                                TRANS("SHAPE")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -1072,7 +1165,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_reverb = new Label ("DL",
-            TRANS("REVERB")));
+                                                 TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
     label_reverb->setEditable (false, false, false);
@@ -1081,7 +1174,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_delay = new Label ("DL",
-            TRANS("DELAY")));
+                                                TRANS("DELAY")));
     label_delay->setFont (Font (30.00f, Font::plain));
     label_delay->setJustificationType (Justification::centred);
     label_delay->setEditable (false, false, false);
@@ -1090,7 +1183,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_chorus = new Label ("DL",
-            TRANS("CHORUS")));
+                                                 TRANS("CHORUS")));
     label_chorus->setFont (Font (30.00f, Font::plain));
     label_chorus->setJustificationType (Justification::centred);
     label_chorus->setEditable (false, false, false);
@@ -1099,7 +1192,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_fx_mix = new Label ("DL",
-            TRANS("FX MIX")));
+                                                 TRANS("FX MIX")));
     label_fx_mix->setFont (Font (30.00f, Font::plain));
     label_fx_mix->setJustificationType (Justification::centred);
     label_fx_mix->setEditable (false, false, false);
@@ -1108,7 +1201,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline19 = new Label ("DL",
-            TRANS("MORPH (MO) SECTION")));
+                                                        TRANS("MORPH (MO) SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
@@ -1117,7 +1210,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline20 = new Label ("DL",
-            TRANS("ARPEGGIATOR")));
+                                                        TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
@@ -1126,7 +1219,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline21 = new Label ("DL",
-            TRANS("GLIDE")));
+                                                        TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
@@ -1135,7 +1228,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline22 = new Label ("DL",
-            TRANS("SPEED")));
+                                                        TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
@@ -1144,7 +1237,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline23 = new Label ("DL",
-            TRANS("MASTER")));
+                                                        TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
@@ -1153,7 +1246,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline24 = new Label ("DL",
-            TRANS("OCTAVE")));
+                                                        TRANS("OCTAVE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
@@ -1162,7 +1255,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline25 = new Label ("DL",
-            TRANS("FM (F)")));
+                                                        TRANS("FM (F)")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
@@ -1173,7 +1266,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter());
 
     addAndMakeVisible (label_eq = new Label ("DL",
-            TRANS("EQUALIZER")));
+                                             TRANS("EQUALIZER")));
     label_eq->setFont (Font (30.00f, Font::plain));
     label_eq->setJustificationType (Justification::centred);
     label_eq->setEditable (false, false, false);
@@ -1183,8 +1276,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_config2 = new TextButton (String::empty));
     button_open_config2->setTooltip (TRANS("Open/Close the setup.\n"
-                                           "\n"
-                                           "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_config2->setButtonText (TRANS("SETUP"));
     button_open_config2->addListener (this);
     button_open_config2->setColour (TextButton::buttonColourId, Colours::black);
@@ -1192,7 +1285,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_config2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline14 = new Label ("DL",
-            TRANS("MOD MIX (X)")));
+                                                        TRANS("MOD MIX (X)")));
     label_ui_headline14->setFont (Font (30.00f, Font::plain));
     label_ui_headline14->setJustificationType (Justification::centred);
     label_ui_headline14->setEditable (false, false, false);
@@ -1200,82 +1293,131 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline14->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline14->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label = new Label ("I",
-                                          TRANS("OSC 1")));
-    label->setFont (Font (15.00f, Font::plain));
-    label->setJustificationType (Justification::centred);
-    label->setEditable (false, false, false);
-    label->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label->setColour (Label::textColourId, Colour (0xff070000));
-    label->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_1_1 = new TextButton (String::empty));
+    button_edit_input_env_1_1->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_1_1->addListener (this);
+    button_edit_input_env_1_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_1_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_1_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label2 = new Label ("I",
-                                           TRANS("OSC 2")));
-    label2->setFont (Font (15.00f, Font::plain));
-    label2->setJustificationType (Justification::centred);
-    label2->setEditable (false, false, false);
-    label2->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label2->setColour (Label::textColourId, Colour (0xff070000));
-    label2->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label2->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_1_2 = new TextButton (String::empty));
+    button_edit_input_env_1_2->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_1_2->addListener (this);
+    button_edit_input_env_1_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_1_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_1_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label3 = new Label ("I",
-                                           TRANS("OSC 3")));
-    label3->setFont (Font (15.00f, Font::plain));
-    label3->setJustificationType (Justification::centred);
-    label3->setEditable (false, false, false);
-    label3->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label3->setColour (Label::textColourId, Colour (0xff070000));
-    label3->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label3->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_1_3 = new TextButton (String::empty));
+    button_edit_input_env_1_3->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_1_3->addListener (this);
+    button_edit_input_env_1_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_1_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_1_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label4 = new Label ("I",
-                                           TRANS("FM")));
-    label4->setFont (Font (15.00f, Font::plain));
-    label4->setJustificationType (Justification::centred);
-    label4->setEditable (false, false, false);
-    label4->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label4->setColour (Label::textColourId, Colour (0xff070000));
-    label4->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label4->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_2_1 = new TextButton (String::empty));
+    button_edit_input_env_2_1->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_2_1->addListener (this);
+    button_edit_input_env_2_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_2_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_2_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label5 = new Label ("I",
-                                           TRANS("FILTER 1")));
-    label5->setFont (Font (15.00f, Font::plain));
-    label5->setJustificationType (Justification::centred);
-    label5->setEditable (false, false, false);
-    label5->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label5->setColour (Label::textColourId, Colour (0xff070000));
-    label5->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label5->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_2_2 = new TextButton (String::empty));
+    button_edit_input_env_2_2->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_2_2->addListener (this);
+    button_edit_input_env_2_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_2_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_2_2->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label6 = new Label ("I",
-                                           TRANS("FILTER 2")));
-    label6->setFont (Font (15.00f, Font::plain));
-    label6->setJustificationType (Justification::centred);
-    label6->setEditable (false, false, false);
-    label6->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label6->setColour (Label::textColourId, Colour (0xff070000));
-    label6->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label6->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_2_3 = new TextButton (String::empty));
+    button_edit_input_env_2_3->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_2_3->addListener (this);
+    button_edit_input_env_2_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_2_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_2_3->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (label7 = new Label ("I",
-                                           TRANS("FILTER 3")));
-    label7->setFont (Font (15.00f, Font::plain));
-    label7->setJustificationType (Justification::centred);
-    label7->setEditable (false, false, false);
-    label7->setColour (Label::backgroundColourId, Colour (0x00ff0000));
-    label7->setColour (Label::textColourId, Colour (0xff070000));
-    label7->setColour (TextEditor::textColourId, Colour (0x00000000));
-    label7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label7->setColour (TextEditor::highlightColourId, Colour (0x00000000));
+    addAndMakeVisible (button_edit_input_env_3_1 = new TextButton (String::empty));
+    button_edit_input_env_3_1->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_3_1->addListener (this);
+    button_edit_input_env_3_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_3_2 = new TextButton (String::empty));
+    button_edit_input_env_3_2->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_3_2->addListener (this);
+    button_edit_input_env_3_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_3_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_3_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_3_3 = new TextButton (String::empty));
+    button_edit_input_env_3_3->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_3_3->addListener (this);
+    button_edit_input_env_3_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_3_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_3_3->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_1 = new TextButton (String::empty));
+    button_edit_input_env_band_1->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_1->addListener (this);
+    button_edit_input_env_band_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_2 = new TextButton (String::empty));
+    button_edit_input_env_band_2->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_2->addListener (this);
+    button_edit_input_env_band_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_3 = new TextButton (String::empty));
+    button_edit_input_env_band_3->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_3->addListener (this);
+    button_edit_input_env_band_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_3->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_4 = new TextButton (String::empty));
+    button_edit_input_env_band_4->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_4->addListener (this);
+    button_edit_input_env_band_4->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_4->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_5 = new TextButton (String::empty));
+    button_edit_input_env_band_5->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_5->addListener (this);
+    button_edit_input_env_band_5->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_5->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_6 = new TextButton (String::empty));
+    button_edit_input_env_band_6->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_6->addListener (this);
+    button_edit_input_env_band_6->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_6->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_7 = new TextButton (String::empty));
+    button_edit_input_env_band_7->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_7->addListener (this);
+    button_edit_input_env_band_7->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_7->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_8 = new TextButton (String::empty));
+    button_edit_input_env_band_8->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_8->addListener (this);
+    button_edit_input_env_band_8->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_8->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_input_env_band_9 = new TextButton (String::empty));
+    button_edit_input_env_band_9->setButtonText (TRANS("EDIT"));
+    button_edit_input_env_band_9->addListener (this);
+    button_edit_input_env_band_9->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_9->setColour (TextButton::textColourOffId, Colours::yellow);
 
 
     //[UserPreSize]
@@ -1346,8 +1488,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
         }
     }
     label_monolisa->setOpaque(false);
-    overlayer->setOpaque(false);
-    overlayer->setVisible(false);
 
     switch_finalizer_tab();
 
@@ -1364,6 +1504,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_oszi->setColour(TextButton::buttonColourId, button_off);
     button_open_midi_io_settings->setColour(TextButton::buttonColourId, button_off);
     effect_finalizer_switch->setColour(TextButton::buttonColourId, button_off);
+
+
+    button_edit_input_env_1_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_1_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_1_3->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_3->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_3->setColour( TextButton::buttonColourId, button_off );
 
 
     setOpaque(true);
@@ -1399,8 +1550,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     keyboard->setLowestVisibleKey(24);
     keyboard->setAvailableRange( 0, 127 );
     keyboard->setKeyWidth(45);
-    
-   // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
+
+    // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
     //UiLookAndFeel::getInstance()->colours.edit();
     //[/Constructor]
 }
@@ -1424,13 +1575,21 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     _app_instance_store->audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
-    overlayer = nullptr;
+    label_effect_hider = nullptr;
+    label_band_hz_2 = nullptr;
+    label_band_hz_3 = nullptr;
+    label_band_hz_4 = nullptr;
+    label_band_hz_5 = nullptr;
+    label_band_hz_6 = nullptr;
+    label_band_hz_7 = nullptr;
+    label_band_hz_8 = nullptr;
+    label_band_hz_9 = nullptr;
+    label_band_hz_1 = nullptr;
     speed_multi = nullptr;
     morpher_4 = nullptr;
     morpher_3 = nullptr;
     morpher_2 = nullptr;
     morpher_1 = nullptr;
-    label_effect_hider = nullptr;
     eq_9 = nullptr;
     eq_8 = nullptr;
     eq_7 = nullptr;
@@ -1603,13 +1762,24 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_eq = nullptr;
     button_open_config2 = nullptr;
     label_ui_headline14 = nullptr;
-    label = nullptr;
-    label2 = nullptr;
-    label3 = nullptr;
-    label4 = nullptr;
-    label5 = nullptr;
-    label6 = nullptr;
-    label7 = nullptr;
+    button_edit_input_env_1_1 = nullptr;
+    button_edit_input_env_1_2 = nullptr;
+    button_edit_input_env_1_3 = nullptr;
+    button_edit_input_env_2_1 = nullptr;
+    button_edit_input_env_2_2 = nullptr;
+    button_edit_input_env_2_3 = nullptr;
+    button_edit_input_env_3_1 = nullptr;
+    button_edit_input_env_3_2 = nullptr;
+    button_edit_input_env_3_3 = nullptr;
+    button_edit_input_env_band_1 = nullptr;
+    button_edit_input_env_band_2 = nullptr;
+    button_edit_input_env_band_3 = nullptr;
+    button_edit_input_env_band_4 = nullptr;
+    button_edit_input_env_band_5 = nullptr;
+    button_edit_input_env_band_6 = nullptr;
+    button_edit_input_env_band_7 = nullptr;
+    button_edit_input_env_band_8 = nullptr;
+    button_edit_input_env_band_9 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2070,13 +2240,21 @@ void Monique_Ui_Mainwindow::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    overlayer->setBounds (0, 0, 1465, 1235);
+    label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
+    label_band_hz_2->setBounds (590, 745, 50, 30);
+    label_band_hz_3->setBounds (650, 745, 50, 30);
+    label_band_hz_4->setBounds (710, 745, 50, 30);
+    label_band_hz_5->setBounds (770, 745, 50, 30);
+    label_band_hz_6->setBounds (830, 745, 50, 30);
+    label_band_hz_7->setBounds (890, 745, 50, 30);
+    label_band_hz_8->setBounds (950, 745, 50, 30);
+    label_band_hz_9->setBounds (1010, 745, 50, 30);
+    label_band_hz_1->setBounds (530, 745, 50, 30);
     speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
     morpher_4->setBounds (1345 - 60, 620, 60, 130);
     morpher_3->setBounds (1285 - 60, 620, 60, 130);
     morpher_2->setBounds (1225 - 60, 620, 60, 130);
     morpher_1->setBounds (1165 - 60, 620, 60, 130);
-    label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
     eq_9->setBounds (1065 - 60, 750 - 130, 60, 130);
     eq_8->setBounds (1005 - 60, 750 - 130, 60, 130);
     eq_7->setBounds (945 - 60, 750 - 130, 60, 130);
@@ -2249,13 +2427,24 @@ void Monique_Ui_Mainwindow::resized()
     label_eq->setBounds (740, 580, 90, 35);
     button_open_config2->setBounds (1145 - 60, 1030 - 30, 60, 30);
     label_ui_headline14->setBounds (745, 5, 80, 35);
-    label->setBounds (30, 80, 130, 90);
-    label2->setBounds (30, 260, 130, 90);
-    label3->setBounds (30, 440, 130, 90);
-    label4->setBounds (30, 645, 130, 90);
-    label5->setBounds (220, 80, 1210, 90);
-    label6->setBounds (220, 260, 1210, 90);
-    label7->setBounds (220, 440, 1210, 90);
+    button_edit_input_env_1_1->setBounds (215, 155, 60, 33);
+    button_edit_input_env_1_2->setBounds (275, 155, 60, 33);
+    button_edit_input_env_1_3->setBounds (335, 155, 60, 33);
+    button_edit_input_env_2_1->setBounds (215, 335, 60, 33);
+    button_edit_input_env_2_2->setBounds (275, 335, 60, 33);
+    button_edit_input_env_2_3->setBounds (335, 335, 60, 33);
+    button_edit_input_env_3_1->setBounds (215, 515, 60, 33);
+    button_edit_input_env_3_2->setBounds (275, 515, 60, 33);
+    button_edit_input_env_3_3->setBounds (335, 515, 60, 33);
+    button_edit_input_env_band_1->setBounds (525, 715, 60, 33);
+    button_edit_input_env_band_2->setBounds (585, 715, 60, 33);
+    button_edit_input_env_band_3->setBounds (645, 715, 60, 33);
+    button_edit_input_env_band_4->setBounds (705, 715, 60, 33);
+    button_edit_input_env_band_5->setBounds (765, 715, 60, 33);
+    button_edit_input_env_band_6->setBounds (825, 715, 60, 33);
+    button_edit_input_env_band_7->setBounds (885, 715, 60, 33);
+    button_edit_input_env_band_8->setBounds (945, 715, 60, 33);
+    button_edit_input_env_band_9->setBounds (1005, 715, 60, 33);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -2273,12 +2462,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == overlayer)
-    {
-        //[UserButtonCode_overlayer] -- add your button handler code here..
-        //[/UserButtonCode_overlayer]
-    }
-    else if (buttonThatWasClicked == filter_type_2_1)
+    if (buttonThatWasClicked == filter_type_2_1)
     {
         //[UserButtonCode_filter_type_2_1] -- add your button handler code here..
         int flt_id = 0;
@@ -2882,6 +3066,115 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
             editor_global_settings = nullptr;
         //[/UserButtonCode_button_open_config2]
     }
+    else if (buttonThatWasClicked == button_edit_input_env_1_1)
+    {
+        //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], button_edit_input_env_1_1 );
+        //[/UserButtonCode_button_edit_input_env_1_1]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_1_2)
+    {
+        //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], button_edit_input_env_1_2 );
+        //[/UserButtonCode_button_edit_input_env_1_2]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_1_3)
+    {
+        //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_1_3]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_2_1)
+    {
+        //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_2_1]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_2_2)
+    {
+        //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_2_2]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_2_3)
+    {
+        //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_1_3]
+        //[/UserButtonCode_button_edit_input_env_2_3]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_3_1)
+    {
+        //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_3_1]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_3_2)
+    {
+        //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_3_2]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_3_3)
+    {
+        //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_3_3]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_1)
+    {
+        //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_1]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_2)
+    {
+        //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_2]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_3)
+    {
+        //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_3]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_4)
+    {
+        //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_4]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_5)
+    {
+        //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_5]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_6)
+    {
+        //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_6]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_7)
+    {
+        //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_7]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_8)
+    {
+        //[UserButtonCode_button_edit_input_env_band_8] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[7], &GET_DATA( eq_data ).velocity[7], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_8]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_9)
+    {
+        //[UserButtonCode_button_edit_input_env_band_9] -- add your button handler code here..
+        open_env_popup( GET_DATA( eq_data ).envs[8], &GET_DATA( eq_data ).velocity[8], buttonThatWasClicked );
+        //[/UserButtonCode_button_edit_input_env_band_9]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -3102,10 +3395,44 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
     editor_global_settings = nullptr;
     popup = nullptr;
 
+
     if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
     {
         removeChildComponent( amp_painter );
         AppInstanceStore::getInstance()->kill_amp_painter();
+    }
+}
+void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_ ) noexcept
+{
+    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
+    Colour button_off = colours.button_off_colour;
+    Colour button_on = colours.button_on_colour;
+    button_edit_input_env_1_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_1_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_1_3->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_2_3->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_1->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_2->setColour( TextButton::buttonColourId, button_off );
+    button_edit_input_env_3_3->setColour( TextButton::buttonColourId, button_off );
+    if( ! env_popup )
+    {
+        addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_ ) );
+        env_popup->set_element_to_show(for_comp_);
+        for_comp_->setColour( TextButton::buttonColourId, button_on );
+    }
+    else
+    {
+        if( env_popup->is_open_for() == env_data_ )
+        {
+            env_popup = nullptr;
+        }
+        else
+        {
+            env_popup = nullptr;
+            open_env_popup( env_data_, sustain_, for_comp_ );
+        }
     }
 }
 
@@ -3138,7 +3465,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
     {
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
-    
+
     resizer->toFront(true);
 }
 
@@ -3187,7 +3514,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
                  parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
                  constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
-                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
@@ -3341,12 +3668,56 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="320 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
-  <IMAGEBUTTON name="new button" id="20c5266d6aef074" memberName="overlayer"
-               virtualName="" explicitFocusOrder="0" pos="0 0 1465 1235" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="0"
-               resourceNormal="empty_png" opacityNormal="0.5" colourNormal="cd000000"
-               resourceOver="" opacityOver="0.5" colourOver="cd000000" resourceDown=""
-               opacityDown="0.5" colourDown="cd000000"/>
+  <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
+         virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
+         virtualName="" explicitFocusOrder="0" pos="590 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="62Hz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="9e42519baddf946e" memberName="label_band_hz_3"
+         virtualName="" explicitFocusOrder="0" pos="650 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="125Hz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="ec2bcb9f1c216890" memberName="label_band_hz_4"
+         virtualName="" explicitFocusOrder="0" pos="710 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="250Hz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
+         virtualName="" explicitFocusOrder="0" pos="770 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="500Hz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="8a859696dca2f1f0" memberName="label_band_hz_6"
+         virtualName="" explicitFocusOrder="0" pos="830 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="1kHz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="ceab7b618b72215f" memberName="label_band_hz_7"
+         virtualName="" explicitFocusOrder="0" pos="890 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="2kHz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="5e71728c862154d0" memberName="label_band_hz_8"
+         virtualName="" explicitFocusOrder="0" pos="950 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="4kHz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="9164d2fbcd48eee6" memberName="label_band_hz_9"
+         virtualName="" explicitFocusOrder="0" pos="1010 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="8kHz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="DL" id="b8619ebb44316d58" memberName="label_band_hz_1"
+         virtualName="" explicitFocusOrder="0" pos="530 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="31Hz" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
                     explicitFocusOrder="0" pos="1355r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new SpeedMultiSlConfig()"/>
@@ -3362,11 +3733,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
                     explicitFocusOrder="0" pos="1165r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(0)"/>
-  <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
-         virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="" id="6250362aea841eea" memberName="eq_9" virtualName=""
                     explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(8)"/>
@@ -3997,41 +4363,78 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="MOD MIX (X)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="d96a05c47c3b7ff4" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="30 80 130 90" bkgCol="ff0000" textCol="ff070000"
-         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 1" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="c2b8a440e07c0c4c" memberName="label2" virtualName=""
-         explicitFocusOrder="0" pos="30 260 130 90" bkgCol="ff0000" textCol="ff070000"
-         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 2" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="e6cd346db717806a" memberName="label3" virtualName=""
-         explicitFocusOrder="0" pos="30 440 130 90" bkgCol="ff0000" textCol="ff070000"
-         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="OSC 3" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="8f5254b4567e321b" memberName="label4" virtualName=""
-         explicitFocusOrder="0" pos="30 645 130 90" bkgCol="ff0000" textCol="ff070000"
-         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FM" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="bc8b9c9916a1476e" memberName="label5" virtualName=""
-         explicitFocusOrder="0" pos="220 80 1210 90" bkgCol="ff0000" textCol="ff070000"
-         edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 1"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="6d326068896edb31" memberName="label6" virtualName=""
-         explicitFocusOrder="0" pos="220 260 1210 90" bkgCol="ff0000"
-         textCol="ff070000" edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 2"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
-  <LABEL name="I" id="9c7d2be909f29e94" memberName="label7" virtualName=""
-         explicitFocusOrder="0" pos="220 440 1210 90" bkgCol="ff0000"
-         textCol="ff070000" edTextCol="0" edBkgCol="0" hiliteCol="0" labelText="FILTER 3"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="15" bold="0" italic="0" justification="36"/>
+  <TEXTBUTTON name="" id="b915f30bfb983dc7" memberName="button_edit_input_env_1_1"
+              virtualName="" explicitFocusOrder="0" pos="215 155 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="cfad8aa44907e8cf" memberName="button_edit_input_env_1_2"
+              virtualName="" explicitFocusOrder="0" pos="275 155 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="f7dd0a8e5d005547" memberName="button_edit_input_env_1_3"
+              virtualName="" explicitFocusOrder="0" pos="335 155 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="6c31c6d826c76bfd" memberName="button_edit_input_env_2_1"
+              virtualName="" explicitFocusOrder="0" pos="215 335 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="283cd78e11cc7a6e" memberName="button_edit_input_env_2_2"
+              virtualName="" explicitFocusOrder="0" pos="275 335 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="47db5d103cbca51f" memberName="button_edit_input_env_2_3"
+              virtualName="" explicitFocusOrder="0" pos="335 335 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="1d4a552f9f250c90" memberName="button_edit_input_env_3_1"
+              virtualName="" explicitFocusOrder="0" pos="215 515 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="1d93900dcb94156f" memberName="button_edit_input_env_3_2"
+              virtualName="" explicitFocusOrder="0" pos="275 515 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="4ed4547628245141" memberName="button_edit_input_env_3_3"
+              virtualName="" explicitFocusOrder="0" pos="335 515 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="972bb72707bb206b" memberName="button_edit_input_env_band_1"
+              virtualName="" explicitFocusOrder="0" pos="525 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="e4790e6c91bf6fec" memberName="button_edit_input_env_band_2"
+              virtualName="" explicitFocusOrder="0" pos="585 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="c5b44a8882d48b9" memberName="button_edit_input_env_band_3"
+              virtualName="" explicitFocusOrder="0" pos="645 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="55e4c7770dd6c6a5" memberName="button_edit_input_env_band_4"
+              virtualName="" explicitFocusOrder="0" pos="705 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="325021dee5961ad1" memberName="button_edit_input_env_band_5"
+              virtualName="" explicitFocusOrder="0" pos="765 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="7d42e1a02a42a873" memberName="button_edit_input_env_band_6"
+              virtualName="" explicitFocusOrder="0" pos="825 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="ac8fdd08954a9d8" memberName="button_edit_input_env_band_7"
+              virtualName="" explicitFocusOrder="0" pos="885 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="cd8792a71aafa1ab" memberName="button_edit_input_env_band_8"
+              virtualName="" explicitFocusOrder="0" pos="945 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="83f0697e8cc1c77" memberName="button_edit_input_env_band_9"
+              virtualName="" explicitFocusOrder="0" pos="1005 715 60 33" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -4043,9 +4446,8 @@ END_JUCER_METADATA
 
 // JUCER_RESOURCE: empty_png, 159, "../Images/empty.png"
 static const unsigned char resource_Monique_Ui_Mainwindow_empty_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,8,4,0,0,0,181,28,12,2,0,0,0,2,98,75,71,68,0,0,170,141,35,50,0,0,
-        0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,9,18,16,13,44,67,236,72,225,0,0,0,25,116,69,88,116,67,111,109,109,101,110,116,0,67,114,101,97,116,101,100,32,119,105,116,
-        104,32,71,73,77,80,87,129,14,23,0,0,0,11,73,68,65,84,8,215,99,248,255,31,0,3,0,1,255,100,93,114,245,0,0,0,0,73,69,78,68,174,66,96,130,0,0
-                                                                        };
+0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,9,18,16,13,44,67,236,72,225,0,0,0,25,116,69,88,116,67,111,109,109,101,110,116,0,67,114,101,97,116,101,100,32,119,105,116,
+104,32,71,73,77,80,87,129,14,23,0,0,0,11,73,68,65,84,8,215,99,248,255,31,0,3,0,1,255,100,93,114,245,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
 const char* Monique_Ui_Mainwindow::empty_png = (const char*) resource_Monique_Ui_Mainwindow_empty_png;
 const int Monique_Ui_Mainwindow::empty_pngSize = 159;

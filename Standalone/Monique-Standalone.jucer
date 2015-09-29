@@ -49,6 +49,10 @@
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="sYmvQi" name="monique_ui_DragPad.h" compile="0" resource="0"
               file="../Source/monique_ui_DragPad.h"/>
+        <FILE id="oAPLDu" name="monique_ui_ENVPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_ENVPopup.cpp"/>
+        <FILE id="LtZLjA" name="monique_ui_ENVPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_ENVPopup.h"/>
         <FILE id="miAAJA" name="monique_ui_GlobalSettings.cpp" compile="1"
               resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
         <FILE id="dCx8my" name="monique_ui_GlobalSettings.h" compile="0" resource="0"

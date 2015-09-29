@@ -30,6 +30,7 @@ class Monique_Ui_MidiIO;
 class Monique_Ui_MorphConfig;
 class Monique_Ui_Settings;
 class Monique_Ui_GlobalSettings;
+class Monique_Ui_ENVPopup;
 
 class MoniqueSynthesiserVoice;
 class MoniqueSynthData;
@@ -37,6 +38,8 @@ class MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
 class MIDIControl;
 class Monique_Ui_DualSlider;
+
+class ENVData;
 //[/Headers]
 
 
@@ -73,6 +76,7 @@ public:
     ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
     ScopedPointer<Monique_Ui_Settings> editor_settings;
     ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
+    ScopedPointer<Monique_Ui_ENVPopup> env_popup;
 
     void refresh() noexcept override;
     void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
@@ -81,6 +85,7 @@ public:
     void show_ctrl_state();
     void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
     void close_all_subeditors();
+    void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_ ) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
     void open_setup_editor_if_closed() noexcept;
@@ -129,13 +134,21 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<ImageButton> overlayer;
+    ScopedPointer<Label> label_effect_hider;
+    ScopedPointer<Label> label_band_hz_2;
+    ScopedPointer<Label> label_band_hz_3;
+    ScopedPointer<Label> label_band_hz_4;
+    ScopedPointer<Label> label_band_hz_5;
+    ScopedPointer<Label> label_band_hz_6;
+    ScopedPointer<Label> label_band_hz_7;
+    ScopedPointer<Label> label_band_hz_8;
+    ScopedPointer<Label> label_band_hz_9;
+    ScopedPointer<Label> label_band_hz_1;
     ScopedPointer<Monique_Ui_DualSlider> speed_multi;
     ScopedPointer<Monique_Ui_DualSlider> morpher_4;
     ScopedPointer<Monique_Ui_DualSlider> morpher_3;
     ScopedPointer<Monique_Ui_DualSlider> morpher_2;
     ScopedPointer<Monique_Ui_DualSlider> morpher_1;
-    ScopedPointer<Label> label_effect_hider;
     ScopedPointer<Monique_Ui_DualSlider> eq_9;
     ScopedPointer<Monique_Ui_DualSlider> eq_8;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;
@@ -308,13 +321,24 @@ private:
     ScopedPointer<Label> label_eq;
     ScopedPointer<TextButton> button_open_config2;
     ScopedPointer<Label> label_ui_headline14;
-    ScopedPointer<Label> label;
-    ScopedPointer<Label> label2;
-    ScopedPointer<Label> label3;
-    ScopedPointer<Label> label4;
-    ScopedPointer<Label> label5;
-    ScopedPointer<Label> label6;
-    ScopedPointer<Label> label7;
+    ScopedPointer<TextButton> button_edit_input_env_1_1;
+    ScopedPointer<TextButton> button_edit_input_env_1_2;
+    ScopedPointer<TextButton> button_edit_input_env_1_3;
+    ScopedPointer<TextButton> button_edit_input_env_2_1;
+    ScopedPointer<TextButton> button_edit_input_env_2_2;
+    ScopedPointer<TextButton> button_edit_input_env_2_3;
+    ScopedPointer<TextButton> button_edit_input_env_3_1;
+    ScopedPointer<TextButton> button_edit_input_env_3_2;
+    ScopedPointer<TextButton> button_edit_input_env_3_3;
+    ScopedPointer<TextButton> button_edit_input_env_band_1;
+    ScopedPointer<TextButton> button_edit_input_env_band_2;
+    ScopedPointer<TextButton> button_edit_input_env_band_3;
+    ScopedPointer<TextButton> button_edit_input_env_band_4;
+    ScopedPointer<TextButton> button_edit_input_env_band_5;
+    ScopedPointer<TextButton> button_edit_input_env_band_6;
+    ScopedPointer<TextButton> button_edit_input_env_band_7;
+    ScopedPointer<TextButton> button_edit_input_env_band_8;
+    ScopedPointer<TextButton> button_edit_input_env_band_9;
 
 
     //==============================================================================

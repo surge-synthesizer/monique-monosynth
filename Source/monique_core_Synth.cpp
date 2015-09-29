@@ -2228,8 +2228,6 @@ class ValueEnvelope : public RuntimeListener
     PODSmoother sustain_smoother;
     float last_value;
     float end_value;
-    int force_zero_target;
-    int current_force_zero_counter;
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
@@ -2237,7 +2235,6 @@ public:
     inline void update( float end_value_, int time_in_samples, float start_value_ = WORK_FROM_CURRENT_VALUE, bool reset_sustain_ = false ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
-    inline void force_zero_glide( float set_to_zero_amount_ ) noexcept;
 
     inline void reset() noexcept;
 
@@ -2258,11 +2255,8 @@ samples_to_target_left(0),
                        current_value(0),
                        sustain_smoother(0,1,0),
                        last_value(0),
-                       end_value(0),
-                       force_zero_target(FORCE_ZERO_SAMPLES),
-                       current_force_zero_counter(FORCE_ZERO_SAMPLES)
+                       end_value(0)
 {
-
 }
 COLD ValueEnvelope::~ValueEnvelope() noexcept {}
 
@@ -2273,16 +2267,8 @@ COLD ValueEnvelope::~ValueEnvelope() noexcept {}
 // TODO if sustain only call if sustain is endless!
 inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 {
-    ++current_force_zero_counter;
     --samples_to_target_left;
-    if( current_force_zero_counter < force_zero_target and samples_to_target_left > 50 )
     {
-        float delta = float_Pi*( 0.5f + 1.0f*(1.0f/force_zero_target*current_force_zero_counter));
-        current_value = last_value * (1.0f + std::sin( delta ) )*0.5f;
-    }
-    else
-    {
-        current_force_zero_counter = force_zero_target;
         if( samples_to_target_left > 0 )
         {
             if( samples_to_target_left == 0 )
@@ -2362,13 +2348,16 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
                 current_value = 0;
             }
         }
+        else
+        {
+            current_value = end_value;
+        }
     }
 
     return current_value;
 }
 inline float ValueEnvelope::sustain_tick( float sustain_, int glide_motor_time_ ) noexcept
 {
-    ++current_force_zero_counter;
     --samples_to_target_left;
     current_value = sustain_smoother.tick_upate( sustain_, glide_motor_time_ );
     return current_value;
@@ -2406,30 +2395,11 @@ inline void ValueEnvelope::replace_current_value( float value_ ) noexcept
 {
     current_value = value_;
 }
-inline void ValueEnvelope::force_zero_glide( float set_to_zero_amount_ ) noexcept
-{
-    if( set_to_zero_amount_ > 0 )
-    {
-        last_value = current_value;
-        current_force_zero_counter = 0;
-        force_zero_target = msToSamplesFast( 2+40*set_to_zero_amount_, sample_rate );
-        if( force_zero_target > samples_to_target_left * 0.8f )
-        {
-            force_zero_target = samples_to_target_left * 0.8f;
-        }
-    }
-    else
-    {
-        current_force_zero_counter = 0;
-        force_zero_target = 0;
-    }
-}
 inline void ValueEnvelope::reset() noexcept
 {
     samples_to_target_left = 0;
     current_value = 0;
     end_value = 0;
-    current_force_zero_counter = force_zero_target;
 }
 
 //==============================================================================
@@ -2465,7 +2435,7 @@ private:
 
 public:
     //==============================================================================
-    inline void start_attack( bool is_pedal_down_ ) noexcept;
+    inline void start_attack() noexcept;
     inline void set_to_release() noexcept;
     inline void reset() noexcept;
 
@@ -2477,14 +2447,14 @@ public:
 
 public:
     //==============================================================================
-    COLD ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
-    COLD ~ENV();
+    ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
+    ~ENV();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENV)
 };
 
 //==============================================================================
-COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
+ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     :
     envelop(),
 
@@ -2494,12 +2464,12 @@ COLD ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
     env_data( env_data_ )
 {
 }
-COLD ENV::~ENV() {}
+ENV::~ENV() {}
 
 //==============================================================================
 inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
 {
-    const float shape = synth_data->curve_shape;
+    const float shape = env_data->shape;
     float shape_factor = 1;
     if( shape < 0.5f )
     {
@@ -2589,15 +2559,9 @@ inline void ENV::update_stage() noexcept
         ;
     }
 }
-inline void ENV::start_attack( bool is_pedal_down_ ) noexcept
+inline void ENV::start_attack() noexcept
 {
     current_stage = TRIGGER_START;
-    if( not is_pedal_down_ )
-    {
-        const bool arp_is_on( GET_DATA( arp_data ).is_on );
-        // BIND / GLIDE / SUTAINO
-        envelop.force_zero_glide( synth_data->force_envs_to_zero );
-    }
     update_stage();
 }
 inline void ENV::set_to_release() noexcept
@@ -2763,7 +2727,7 @@ class AnalogFilter : public RuntimeListener
     float oldy1,oldy2,oldy3;
 
     float cutoff, res, res4;
-    
+
     bool force_update;
 
 public:
@@ -2801,7 +2765,7 @@ p(1),k(1),r(1),gain(1),
   oldx(1),oldy1(1),oldy2(1),oldy3(1),
 
   cutoff(1000), res(1), res4(1),
-  
+
   force_update(true)
 {
     sample_rate_changed(0);
@@ -2820,8 +2784,8 @@ inline bool AnalogFilter::update(float resonance_, float cutoff_, float gain_) n
         res = resonance_;
         res4 = gain_*4;
         success = true;
-    
-	force_update = false;
+
+        force_update = false;
     }
     return success;
 }
@@ -2834,8 +2798,8 @@ inline void AnalogFilter::update_with_calc(float resonance_, float cutoff_, floa
         res = resonance_;
         res4 = gain_*4;
         calc_coefficients();
-    
-	force_update = false;
+
+        force_update = false;
     }
 }
 
@@ -3159,10 +3123,10 @@ inline void DoubleAnalogFilter::update_filter_to( FILTER_TYPS type_ ) noexcept {
             if( last_filter_type != PASS )
             {
                 smooth_filter->flt_1.copy_coefficient_from(flt_1);
-		flt_1.force_update = true;
+                flt_1.force_update = true;
                 smooth_filter->flt_1.copy_state_from(flt_1);
                 smooth_filter->flt_2.copy_coefficient_from(flt_2);
-		flt_2.force_update = true;
+                flt_2.force_update = true;
                 smooth_filter->flt_2.copy_state_from(flt_2);
             }
             else
@@ -3352,7 +3316,7 @@ private:
     DataBuffer*const data_buffer;
 
 public:
-    inline void start_attack( bool is_sostueno_pedal_down_ ) noexcept;
+    inline void start_attack() noexcept;
     inline void start_release() noexcept;
     inline void reset() noexcept;
     inline void process( const int num_samples ) noexcept;
@@ -3401,19 +3365,19 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
-        input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_env_datas[i] ) );
+        input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_envs[i] ) );
     }
 }
 COLD FilterProcessor::~FilterProcessor() noexcept {}
 
 //==============================================================================
-inline void FilterProcessor::start_attack( bool is_sostueno_pedal_down_ ) noexcept
+inline void FilterProcessor::start_attack() noexcept
 {
-    env->start_attack( is_sostueno_pedal_down_ );
+    env->start_attack();
 
     for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
     {
-        input_envs.getUnchecked(input_id)->start_attack( is_sostueno_pedal_down_ );
+        input_envs.getUnchecked(input_id)->start_attack();
     }
 }
 inline void FilterProcessor::start_release() noexcept
@@ -3529,9 +3493,13 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
                 {
                     const float sustain = input_sustain_smoother.tick();
                     if( sustain < 0 )
+                    {
                         tmp_input_buffer[sid] = osc_input_buffer[sid];
+                    }
                     else
+                    {
                         tmp_input_buffer[sid] = filter_before_buffer[sid];
+                    }
 
                     tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( tmp_input_ar_amp[sid] );
                 }
@@ -4062,7 +4030,7 @@ public:
     OwnedArray< ENV > envs;
 
 public:
-    inline void start_attack( bool is_sostueno_pedal_down_ ) noexcept;
+    inline void start_attack() noexcept;
     inline void start_release() noexcept;
     inline void reset() noexcept;
     inline void process( int num_samples_ ) noexcept;
@@ -4113,7 +4081,7 @@ amp2velocity_smoother(),
     std::cout << "MONIQUE: init EQ" << std::endl;
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        envs.add( new ENV( synth_data_, eq_data->env_datas.getUnchecked( band_id ) ) );
+        envs.add( new ENV( synth_data_, eq_data->envs.getUnchecked( band_id ) ) );
 
         float frequency_low_pass_tmp = (62.5f/2) * pow(2,band_id+1);
         if( band_id == SUM_EQ_BANDS-1 )
@@ -4132,11 +4100,11 @@ amp2velocity_smoother(),
 COLD EQProcessor::~EQProcessor() noexcept {}
 
 //==============================================================================
-inline void EQProcessor::start_attack( bool is_sostueno_pedal_down_ ) noexcept
+inline void EQProcessor::start_attack() noexcept
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        envs.getUnchecked(band_id)->start_attack( is_sostueno_pedal_down_ );
+        envs.getUnchecked(band_id)->start_attack();
     }
 }
 inline void EQProcessor::start_release() noexcept
@@ -4873,10 +4841,10 @@ private:
 public:
     inline void process( AudioSampleBuffer& output_buffer_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
 
-    void start_attack( bool is_sustain_pedal_down_, bool is_sostueno_pedal_down_ ) noexcept
+    void start_attack() noexcept
     {
-        chorus_modulation_env->start_attack(is_sostueno_pedal_down_);
-        final_env->start_attack(is_sustain_pedal_down_);
+        chorus_modulation_env->start_attack();
+        final_env->start_attack();
     }
     void start_release( bool is_sustain_pedal_down_, bool is_sostenuto_pedal_down_ ) noexcept
     {
@@ -5551,10 +5519,10 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     {
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
         {
-            filter_processors[voice_id]->start_attack( is_sostenuto_pedal_down );
+            filter_processors[voice_id]->start_attack();
         }
-        eq_processor->start_attack(is_sostenuto_pedal_down);
-        fx_processor->start_attack(is_sustain_pedal_down, is_sostenuto_pedal_down);
+        eq_processor->start_attack();
+        fx_processor->start_attack();
     }
 }
 void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
@@ -6069,13 +6037,13 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
 
     float one_sample_buffer = 0;
     bool count_sustain = false;
-    env->start_attack( true );
+    env->start_attack();
     env->overwrite_current_value( 0.5 );
     env->set_current_stage( RELEASE );
-    env->start_attack( false );
+    env->start_attack();
     const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() * 0.05;
     sustain_end_ = -1;
-    while( env->get_current_stage() != END_ENV )
+    while( env->get_current_stage() != END_ENV and not (env->get_current_stage() == RELEASE and one_sample_buffer == 0) )
     {
         // GET DATA
         env->process( &one_sample_buffer, 1 );
@@ -6102,8 +6070,28 @@ void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curv
     }
 }
 
+void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float >& curve ) noexcept
+{
+    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
+    ENV env( &GET_DATA( synth_data ), &env_data_ );
+    env.start_attack();
+    int count_sustain = -1;
+    while( env.get_current_stage() != END_ENV )
+    {
+        float sample;
+        env.process( &sample, 1 );
+        curve.add( sample );
 
-
+        if( env.get_current_stage() == SUSTAIN )
+        {
+            count_sustain++;
+            if( count_sustain == 10000 )
+            {
+                env.set_to_release();
+            }
+        }
+    }
+}
 
 
 

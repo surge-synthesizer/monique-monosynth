@@ -254,10 +254,10 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-                               public Monique_Ui_Refreshable,
-                               public SliderListener,
-                               public ButtonListener,
-                               public LabelListener
+    public Monique_Ui_Refreshable,
+    public SliderListener,
+    public ButtonListener,
+    public LabelListener
 {
 public:
     //==============================================================================

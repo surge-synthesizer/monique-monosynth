@@ -65,10 +65,6 @@ void Monique_Ui_Settings::refresh() noexcept
     label_release_2->setText(String( MIN_ENV_TIMES + env_preset_def->release_2*10000 )+String("ms"), dontSendNotification);
     label_release_3->setText(String( MIN_ENV_TIMES + env_preset_def->release_3*10000 )+String("ms"), dontSendNotification);
     label_release_4->setText(String( MIN_ENV_TIMES + env_preset_def->release_4*10000 )+String("ms"), dontSendNotification);
-
-    MoniqueSynthData* synth_data( GET_DATA_PTR( synth_data ) );
-    slider_force_to_zero->setValue( synth_data->force_envs_to_zero, dontSendNotification );
-    slider_env_shape->setValue( synth_data->curve_shape, dontSendNotification );
 }
 //[/MiscUserDefs]
 
@@ -721,7 +717,6 @@ Monique_Ui_Settings::Monique_Ui_Settings ()
     label_ui_headline_3->setOpaque(true);
     label_ui_headline_4->setOpaque(true);
 
-    slider_env_shape->setValue(GET_DATA(synth_data).curve_shape,dontSendNotification);
     refresh();
 
     /*
@@ -1107,13 +1102,11 @@ void Monique_Ui_Settings::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == slider_env_shape)
     {
         //[UserSliderCode_slider_env_shape] -- add your slider handling code here..
-        GET_DATA(synth_data).curve_shape = slider_env_shape->getValue();
         //[/UserSliderCode_slider_env_shape]
     }
     else if (sliderThatWasMoved == slider_force_to_zero)
     {
         //[UserSliderCode_slider_force_to_zero] -- add your slider handling code here..
-        GET_DATA(synth_data).force_envs_to_zero = slider_force_to_zero->getValue();
         //[/UserSliderCode_slider_force_to_zero]
     }
 

@@ -898,7 +898,6 @@ class InputSlConfig : public ModulationSliderConfigBase
     const int input_id;
 
     Parameter*const input_sustain;
-    Parameter*const state;
     BoolParameter*const input_hold;
 
     const String bottom_text;
@@ -941,6 +940,7 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -948,8 +948,9 @@ class InputSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return state;
+        return nullptr;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -1020,16 +1021,11 @@ class InputSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( state->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_value()+1) );
-        else
-            return String( round01(input_sustain->get_value()*100)  );
+        return String( round01(input_sustain->get_value()*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( state->midi_control->get_ctrl_mode() )
-            return "MO";
-        else if( input_sustain->get_value() >= 0 )
+        if( input_sustain->get_value() >= 0 )
         {
             if( filter_id == 1 )
                 return "F1";
@@ -1042,6 +1038,7 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the OSC input gain into this filter.\n"
@@ -1078,7 +1075,6 @@ public:
         filter_id( filter_id_ ),
         input_id( input_id_ ),
         input_sustain( &(GET_DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
-        state( &(GET_DATA(filter_datas[filter_id_]).input_env_datas[input_id_]->state ) ),
         input_hold( &(GET_DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
 
         bottom_text( String("OSC ") + String(input_id_+1) ),
@@ -3365,12 +3361,12 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     TOP_BUTTON_DESCRIPTION
     (
         "Turns OSC retune on or off.\n"
-	"(Has no effect if soft pedal is not down.)"
+        "(Has no effect if soft pedal is not down.)"
         "\n"
         "If OSC retune is enabled and the soft pedal is down each second and third note down retunes OSC 2 and OSC 3 relative to the first note which is still down (OSC 1).\n"
-	"If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%.\n"
-	"\n"
-	"Note: MIDI CC 67 = soft pedal"
+        "If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%.\n"
+        "\n"
+        "Note: MIDI CC 67 = soft pedal"
     )
 
 public:
@@ -4770,10 +4766,10 @@ class GlideConfig : public ModulationSliderConfigBase
         "Sustain pedal can bind and hold notes (main ENV).\n"
         "Sostenuto pedal can bind and hold the filter ENV's.\n"
         "(If you only have a sustain pedal you can enable bind pedals in the setup.)\n"
-	"\n"
-	"Note: MIDI CC 64 = sustain pedal.\n"
-	"Note: MIDI CC 66 = sostenuto pedal.\n"
-	"Note: MIDI CC 67 = soft pedal (See: O-TUNE (bottom right) for a soft pedal option)"
+        "\n"
+        "Note: MIDI CC 64 = sustain pedal.\n"
+        "Note: MIDI CC 66 = sostenuto pedal.\n"
+        "Note: MIDI CC 67 = soft pedal (See: O-TUNE (bottom right) for a soft pedal option)"
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -4946,7 +4942,6 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     Parameter*const velocity;
     BoolParameter*const hold;
-    Parameter*const state;
 
     String bottom_text;
 
@@ -4984,6 +4979,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -4993,6 +4989,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return state;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -5040,6 +5037,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return bottom_text;
@@ -5048,7 +5046,6 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return "MO-ENV";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -5063,10 +5060,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( velocity->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_value()+1) );
-        else
-            return String( round01(velocity->get_value()*100)  );
+        return String( round01(velocity->get_value()*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -5078,6 +5072,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the band boost amount for this frequency (bottom button caption).\n"
@@ -5112,8 +5107,7 @@ public:
         id( id_ ),
         velocity( &(GET_DATA(eq_data).velocity[id_]) ),
         hold( &(GET_DATA(eq_data).hold[id]) ),
-        state( &(GET_DATA(eq_data).env_datas[id_]->state) ),
-
+        
         synth_data( GET_DATA_PTR( synth_data ) )
     {
         const float frequency_low_pass = (62.5f/2) * pow(2,id_+1);
