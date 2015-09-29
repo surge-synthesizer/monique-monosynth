@@ -55,7 +55,6 @@ OBJECTS := \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
   $(OBJDIR)/monique_core_Processor_aa317247.o \
   $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
-  $(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
   $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
@@ -127,11 +126,6 @@ $(OBJDIR)/monique_core_Processor_aa317247.o: ../../../Source/monique_core_Proces
 $(OBJDIR)/monique_core_Synth_27fdfbf1.o: ../../../Source/monique_core_Synth.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_core_Synth.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/monique_ui_ADRDesigner_ad1be764.o: ../../../Source/monique_ui_ADRDesigner.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_ui_ADRDesigner.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainter.cpp

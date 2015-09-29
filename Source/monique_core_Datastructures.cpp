@@ -441,392 +441,9 @@ static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define ENV_PRESET_DEF_NAME "ENVPD"
-COLD ENVPresetDef::ENVPresetDef ( int id_ ) noexcept
-:
-attack_1
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_1_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_1")
-),
-decay_1
-(
-    MIN_MAX( 0, 1 ),
-    0.1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_1_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_1")
-),
-sustain_time_1
-(
-    MIN_MAX( 0.001, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_1_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_1")
-),
-release_1
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_1_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"release_1")
-),
-
-// ----
-attack_2
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_2_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_2")
-),
-decay_2
-(
-    MIN_MAX( 0, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_2_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_2")
-),
-sustain_time_2
-(
-    MIN_MAX( 0.001, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_2_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_2")
-),
-release_2
-(
-    MIN_MAX( 0, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_2_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"release_2")
-),
-
-// ----
-attack_3
-(
-    MIN_MAX( 0, 1 ),
-    0.5,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_3_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_3")
-),
-decay_3
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_3_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_3")
-),
-sustain_time_3
-(
-    MIN_MAX( 0.001, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_3_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_3")
-),
-release_3
-(
-    MIN_MAX( 0, 1 ),
-    0.1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_3_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"release_3")
-),
-
-// ----
-attack_4
-(
-    MIN_MAX( 0, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"attack_4_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"attack_4")
-),
-decay_4
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"decay_4_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"decay_4")
-),
-sustain_time_4
-(
-    MIN_MAX( 0.001, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"sustain_time_4_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"sus_time_4")
-),
-release_4
-(
-    MIN_MAX( 0, 1 ),
-    1,
-    1000,
-    generate_param_name(ENV_PRESET_DEF_NAME,MASTER,"release_4_"),
-    generate_short_human_name(ENV_PRESET_DEF_NAME,"release_4")
-)
-{}
-COLD ENVPresetDef::~ENVPresetDef() noexcept {}
-
-//==============================================================================
-static inline void copy( ENVPresetDef* dest_, const ENVPresetDef* src_ ) noexcept
-{
-    dest_->attack_1 = src_->attack_1;
-    dest_->decay_1 = src_->decay_1;
-    dest_->sustain_time_1 = src_->sustain_time_1;
-    dest_->release_1 = src_->release_1;
-    dest_->attack_2 = src_->attack_2;
-    dest_->decay_2 = src_->decay_2;
-    dest_->sustain_time_2 = src_->sustain_time_2;
-    dest_->release_2 = src_->release_2;
-    dest_->attack_3 = src_->attack_3;
-    dest_->decay_3 = src_->decay_3;
-    dest_->sustain_time_3 = src_->sustain_time_3;
-    dest_->release_3 = src_->release_3;
-    dest_->attack_4 = src_->attack_4;
-    dest_->decay_4 = src_->decay_4;
-    dest_->sustain_time_4 = src_->sustain_time_4;
-    dest_->release_4 = src_->release_4;
-}
-static inline void collect_saveable_parameters( ENVPresetDef* data_, Array< Parameter* >& params_ ) noexcept
-{
-    params_.add( &data_->attack_1 );
-    params_.add( &data_->decay_1 );
-    params_.add( &data_->sustain_time_1 );
-    params_.add( &data_->release_1 );
-    params_.add( &data_->attack_2 );
-    params_.add( &data_->decay_2 );
-    params_.add( &data_->sustain_time_2 );
-    params_.add( &data_->release_2 );
-    params_.add( &data_->attack_3 );
-    params_.add( &data_->decay_3 );
-    params_.add( &data_->sustain_time_3 );
-    params_.add( &data_->release_3 );
-    params_.add( &data_->attack_4 );
-    params_.add( &data_->decay_4 );
-    params_.add( &data_->sustain_time_4 );
-    params_.add( &data_->release_4 );
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#define ENV_PRESET_NAME "ENVP"
-#define ENV_PRESET_NAME_SHORT "M-ENV"
-COLD ENVPresetData::ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept
-:
-ENVData( id_ ),
-def( def_ ),
-
-state
-(
-    MIN_MAX( 0, 3 ),
-    0.05,
-    3000,
-    generate_param_name(ENV_PRESET_NAME,id_,"state"),
-    generate_short_human_name(ENV_PRESET_NAME_SHORT,reduce_id_to_smaller_100(id_),"morph")
-)
-{
-    state.register_always_listener( this );
-
-    def_->attack_1.register_listener( this );
-    def_->attack_2.register_listener( this );
-    def_->attack_3.register_listener( this );
-    def_->attack_4.register_listener( this );
-    def_->sustain_time_1.register_listener( this );
-    def_->sustain_time_2.register_listener( this );
-    def_->sustain_time_3.register_listener( this );
-    def_->sustain_time_4.register_listener( this );
-    def_->decay_1.register_listener( this );
-    def_->decay_2.register_listener( this );
-    def_->decay_3.register_listener( this );
-    def_->decay_4.register_listener( this );
-    def_->release_1.register_listener( this );
-    def_->release_2.register_listener( this );
-    def_->release_3.register_listener( this );
-    def_->release_4.register_listener( this );
-
-    max_release_time.set_value_without_notification( 10000 );
-    max_decay_time.set_value_without_notification( 10000 );
-    max_release_time.set_value_without_notification( 10000 );
-
-    update_adr_values();
-}
-COLD ENVPresetData::~ENVPresetData() noexcept
-{
-    def->attack_1.remove_listener( this );
-    def->attack_2.remove_listener( this );
-    def->attack_3.remove_listener( this );
-    def->attack_4.remove_listener( this );
-    def->sustain_time_1.remove_listener( this );
-    def->sustain_time_2.remove_listener( this );
-    def->sustain_time_3.remove_listener( this );
-    def->sustain_time_4.remove_listener( this );
-    def->decay_1.remove_listener( this );
-    def->decay_2.remove_listener( this );
-    def->decay_3.remove_listener( this );
-    def->decay_4.remove_listener( this );
-    def->release_1.remove_listener( this );
-    def->release_2.remove_listener( this );
-    def->release_3.remove_listener( this );
-    def->release_4.remove_listener( this );
-}
-
-//==============================================================================
-static inline void copy( ENVPresetData* dest_, const ENVPresetData* src_ ) noexcept
-{
-    dest_->state = src_->state;
-
-    // NO NEED TO COPY - COZ THE VALUES WILL BE UPDATED ON COPY STATE
-    //copy( static_cast< ENVData* >(dest_), static_cast< const ENVData* >(src_), false );
-}
-static inline void collect_saveable_parameters( ENVPresetData* data_, Array< Parameter* >& params_ ) noexcept
-{
-    params_.add( &data_->state );
-}
-
-//==============================================================================
-void ENVPresetData::parameter_value_changed( Parameter* ) noexcept
-{
-    update_adr_values();
-}
-void ENVPresetData::parameter_value_changed_always_notification( Parameter* ) noexcept
-{
-    update_adr_values();
-}
-void ENVPresetData::update_adr_values() noexcept
-{
-    const float value = state;
-    if( value < 1 )
-    {
-        float factor = 1.0f/1.0f * value;
-
-        attack.set_value_without_notification( def->attack_1*( 1.0f-factor ) + def->attack_2 * factor );
-        decay.set_value_without_notification( def->decay_1*( 1.0f-factor ) + def->decay_2 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_1*( 1.0f-factor ) + def->sustain_time_2 * factor );
-        release.set_value_without_notification( def->release_1*( 1.0f-factor ) + def->release_2 * factor );
-    }
-    else if( value < 2 )
-    {
-        float factor = 1.0f/1.0f * (value-1.0f);
-
-        attack.set_value_without_notification( def->attack_2*( 1.0f-factor ) + def->attack_3 * factor );
-        decay.set_value_without_notification( def->decay_2*( 1.0f-factor ) + def->decay_3 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_2*( 1.0f-factor ) + def->sustain_time_3 * factor );
-        release.set_value_without_notification( def->release_2*( 1.0f-factor ) + def->release_3 * factor );
-    }
-    else if( value <= 3 )
-    {
-        float factor = 1.0f/1.0f * (value-2.0f);
-
-        attack.set_value_without_notification( def->attack_3*( 1.0f-factor ) + def->attack_4 * factor );
-        decay.set_value_without_notification( def->decay_3*( 1.0f-factor ) + def->decay_4 * factor );
-        sustain_time.set_value_without_notification( def->sustain_time_4*( 1.0f-factor ) + def->sustain_time_4 * factor );
-        release.set_value_without_notification( def->release_3*( 1.0f-factor ) + def->release_4 * factor );
-    }
-}
-void ENVPresetData::parameter_value_on_load_changed( Parameter* ) noexcept
-{
-    parameter_value_changed(nullptr);
-}
-
-//==============================================================================
-float ENVPresetData::get_attack_at( const ENVPresetDef& def_, float state_ ) noexcept
-{
-    bool is_negative = state_ < 0;
-    if( is_negative )
-        state_*=-1;
-
-    if( state_ <= 1.0f ) {
-        float factor = 1.0f/1.0f * state_;
-        return def_.attack_1*( 1.0f-factor ) + def_.attack_2 * factor;
-    }
-    else if( state_ <= 2.0f ) {
-        float factor = 1.0f/1.0f * (state_-1);
-        return def_.attack_2*( 1.0f-factor ) + def_.attack_3 * factor;
-    }
-    else {
-        float factor = 1.0f/1.0f * (state_-2);
-        return def_.attack_3*( 1.0f-factor ) + def_.attack_4 * factor;
-    }
-}
-float ENVPresetData::get_decay_at( const ENVPresetDef& def_, float state_ ) noexcept
-{
-    bool is_negative = state_ < 0;
-    if( is_negative )
-        state_*=-1;
-
-    if( state_ <= 1.0f ) {
-        float factor = 1.0f/1.0f * state_;
-        return def_.decay_1*( 1.0f-factor ) + def_.decay_2 * factor;
-    }
-    else if( state_ <= 2.0f ) {
-        float factor = 1.0f/1.0f * (state_-1);
-        return def_.decay_2*( 1.0f-factor ) + def_.decay_3 * factor;
-    }
-    else {
-        float factor = 1.0f/1.0f * (state_-2);
-        return def_.decay_3*( 1.0f-factor ) + def_.decay_4 * factor;
-    }
-}
-float ENVPresetData::get_sustain_time_at( const ENVPresetDef& def_, float state_ ) noexcept
-{
-    bool is_negative = state_ < 0;
-    if( is_negative )
-        state_*=-1;
-
-    if( state_ <= 1.0f ) {
-        float factor = 1.0f/1.0f * state_;
-        return def_.sustain_time_1*( 1.0f-factor ) + def_.sustain_time_2 * factor;
-    }
-    else if( state_ <= 2.0f ) {
-        float factor = 1.0f/1.0f * (state_-1);
-        return def_.sustain_time_2*( 1.0f-factor ) + def_.sustain_time_3 * factor;
-    }
-    else {
-        float factor = 1.0f/1.0f * (state_-2);
-        return def_.sustain_time_3*( 1.0f-factor ) + def_.sustain_time_4 * factor;
-    }
-}
-float ENVPresetData::get_release_at( const ENVPresetDef& def_, float state_ ) noexcept
-{
-    bool is_negative = state_ < 0;
-    if( is_negative )
-        state_*=-1;
-
-    if( state_ <= 1.0f ) {
-        float factor = 1.0f/1.0f * state_;
-        return def_.release_1*( 1.0f-factor ) + def_.release_2 * factor;
-    }
-    else if( state_ <= 2.0f ) {
-        float factor = 1.0f/1.0f * (state_-1);
-        return def_.release_2*( 1.0f-factor ) + def_.release_3 * factor;
-    }
-    else {
-        float factor = 1.0f/1.0f * (state_-2);
-        return def_.release_3*( 1.0f-factor ) + def_.release_4 * factor;
-    }
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 #define FILTER_NAME "FLT"
 #define FILTER_NAME_SHORT "F"
-COLD FilterData::FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept
+COLD FilterData::FilterData( int id_ ) noexcept
 :
 // ----
 filter_type
@@ -1191,7 +808,7 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
 //==============================================================================
 //==============================================================================
 #define EQ_NAME "EQ"
-COLD EQData::EQData( int id_, ENVPresetDef*const def_ ) noexcept
+COLD EQData::EQData( int id_ ) noexcept
 :
 velocity
 (
@@ -1330,7 +947,7 @@ static inline void collect_saveable_parameters( ReverbData* data_, Array< Parame
 //==============================================================================
 //==============================================================================
 #define CHORUS_NAME "CHR"
-COLD ChorusData::ChorusData( int id_, ENVPresetDef*const def_ ) noexcept
+COLD ChorusData::ChorusData( int id_ ) noexcept
 :
 modulation
 (
@@ -1348,13 +965,17 @@ hold_modulation
 ),
 
 // ----
-modulation_env_data( new ENVPresetData( CHORUS_ENV_ID_OFFSET, def_ ) )
+env_data( new ENVData( CHORUS_ENV_ID_OFFSET ) )
 {
+    env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
+    env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
+    env_data->max_release_time = env_data->max_release_time.get_info().max_value;
+
     modulation.register_always_listener(this);
 }
 COLD ChorusData::~ChorusData() noexcept
 {
-    delete modulation_env_data;
+    delete env_data;
 }
 
 //==============================================================================
@@ -1363,19 +984,20 @@ static inline void copy( ChorusData* dest_, const ChorusData* src_ ) noexcept
     dest_->hold_modulation = src_->hold_modulation;
     dest_->modulation = src_->modulation;
 
-    dest_->modulation_env_data->state = src_->modulation_env_data->state;
+    copy( dest_->env_data, src_->env_data, false );
 }
 static inline void collect_saveable_parameters( ChorusData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->modulation );
     params_.add( &data_->hold_modulation );
-    params_.add( &data_->modulation_env_data->state );
+
+    collect_saveable_parameters( data_->env_data, params_, false );
 }
 
 //==============================================================================
 void ChorusData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    modulation_env_data->sustain.set_value( positive( param_->get_value() ) );
+    env_data->sustain.set_value_without_notification( positive( param_->get_value() ) );
 }
 void ChorusData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
@@ -2215,11 +1837,10 @@ id( data_type ),
 
 // ----
     env_data( new ENVData( MAIN_ENV ) ),
-    env_preset_def(new ENVPresetDef( MASTER ) ),
-    eq_data(new EQData(MASTER, env_preset_def)),
+    eq_data(new EQData(MASTER)),
     arp_sequencer_data(new ArpSequencerData( MASTER )),
     reverb_data(new ReverbData( MASTER ) ),
-    chorus_data(new ChorusData( MASTER, env_preset_def )),
+    chorus_data(new ChorusData( MASTER )),
 
 // MORPH
 // -------------------------------------------------------------
@@ -2276,7 +1897,6 @@ id( data_type ),
     // SINGLES
     if( data_type == MASTER )
     {
-        mono_ParameterOwnerStore::getInstance()->env_preset_def = env_preset_def;
         mono_ParameterOwnerStore::getInstance()->eq_data = eq_data;
         mono_ParameterOwnerStore::getInstance()->arp_data = arp_sequencer_data;
         mono_ParameterOwnerStore::getInstance()->reverb_data = reverb_data;
@@ -2315,7 +1935,7 @@ id( data_type ),
     // FILTERS
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        FilterData* filter_data = new FilterData(i,env_preset_def);
+        FilterData* filter_data = new FilterData(i);
         filter_datas.add( filter_data );
 
         if( data_type == MASTER )
@@ -2355,19 +1975,6 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     lfo_datas.clear();
     osc_datas.clear();
     filter_datas.clear();
-
-    // AS LAST!! unregister listeners
-    if( mono_ParameterOwnerStore::getInstance()->ui_env )
-    {
-        mono_ParameterOwnerStore::getInstance()->voice->kill( mono_ParameterOwnerStore::getInstance()->ui_env );
-        mono_ParameterOwnerStore::getInstance()->ui_env = nullptr;
-        delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_data;
-        mono_ParameterOwnerStore::getInstance()->ui_env_preset_data = nullptr;
-        delete mono_ParameterOwnerStore::getInstance()->ui_env_preset_def;
-        mono_ParameterOwnerStore::getInstance()->ui_env_preset_def = nullptr;
-    }
-
-    env_preset_def = nullptr;
 }
 
 //==============================================================================
@@ -2402,7 +2009,6 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     }
 
     copy( dest_->env_data, src_->env_data, true );
-    copy( dest_->env_preset_def, src_->env_preset_def );
     copy( dest_->eq_data, src_->eq_data );
     copy( dest_->arp_sequencer_data, src_->arp_sequencer_data );
     copy( dest_->reverb_data, src_->reverb_data );
@@ -2453,7 +2059,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->osc_retune );
     saveable_parameters.add( &this->octave_offset );
 
-    collect_saveable_parameters( env_preset_def, saveable_parameters );
 
     saveable_parameters.minimiseStorageOverheads();
 }
@@ -2708,19 +2313,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( env_data->release.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->max_release_time.ptr(), data_type == MASTER  );
 
-            morph_group_3->register_parameter( env_preset_def->attack_1.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->decay_1.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->release_1.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->attack_2.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->decay_2.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->release_2.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->attack_3.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->decay_3.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->release_3.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->attack_4.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->decay_4.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( env_preset_def->release_4.ptr(), data_type == MASTER );
-
             //speed_multi
         }
 
@@ -2752,8 +2344,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
-
-            morph_group_3->register_parameter( chorus_data->modulation_env_data->state.ptr(), data_type == MASTER  );
+            morph_group_2->register_parameter( chorus_data->env_data->attack.ptr(), data_type == MASTER  );
+            morph_group_2->register_parameter( chorus_data->env_data->decay.ptr(), data_type == MASTER  );
+            morph_group_2->register_parameter( chorus_data->env_data->sustain_time.ptr(), data_type == MASTER  );
+            morph_group_2->register_parameter( chorus_data->env_data->release.ptr(), data_type == MASTER  );
+            morph_group_2->register_parameter( chorus_data->env_data->shape.ptr(), data_type == MASTER  );
             morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
 

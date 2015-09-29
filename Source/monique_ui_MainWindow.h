@@ -74,7 +74,6 @@ public:
     bool is_in_help_mode;
     ScopedPointer<Monique_Ui_MidiIO> editor_midiio;
     ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
-    ScopedPointer<Monique_Ui_Settings> editor_settings;
     ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
 
@@ -339,6 +338,7 @@ private:
     ScopedPointer<TextButton> button_edit_input_env_band_7;
     ScopedPointer<TextButton> button_edit_input_env_band_8;
     ScopedPointer<TextButton> button_edit_input_env_band_9;
+    ScopedPointer<TextButton> button_edit_env_chorus;
 
 
     //==============================================================================

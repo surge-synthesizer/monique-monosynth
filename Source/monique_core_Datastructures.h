@@ -339,66 +339,6 @@ struct ENVData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-// TODO REMOVE
-struct ENVPresetDef
-{
-    Parameter attack_1;
-    Parameter decay_1;
-    Parameter sustain_time_1;
-    Parameter release_1;
-    Parameter attack_2;
-    Parameter decay_2;
-    Parameter sustain_time_2;
-    Parameter release_2;
-    Parameter attack_3;
-    Parameter decay_3;
-    Parameter sustain_time_3;
-    Parameter release_3;
-    Parameter attack_4;
-    Parameter decay_4;
-    Parameter sustain_time_4;
-    Parameter release_4;
-
-    //==========================================================================
-    COLD ENVPresetDef( int id_ ) noexcept;
-    COLD ~ENVPresetDef() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVPresetDef)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-struct ENVPresetData : public ENVData, ParameterListener
-{
-    ENVPresetDef*const def;
-
-    Parameter state;
-
-private:
-    //==========================================================================
-    void parameter_value_changed( Parameter* ) noexcept override;
-    void parameter_value_changed_always_notification( Parameter* ) noexcept override;
-    void update_adr_values() noexcept;
-    void parameter_value_on_load_changed( Parameter* ) noexcept override;
-
-public:
-    //==========================================================================
-    COLD ENVPresetData( int id_, ENVPresetDef* def_ ) noexcept;
-    COLD ~ENVPresetData() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVPresetData)
-
-    //==========================================================================
-    static float get_attack_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_decay_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_sustain_time_at( const ENVPresetDef& def_, float state_ ) noexcept;
-    static float get_release_at( const ENVPresetDef& def_, float state_ ) noexcept;
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 struct FilterData : ParameterListener
 {
     IntParameter filter_type;
@@ -436,7 +376,7 @@ private:
 
 public:
     //==========================================================================
-    COLD FilterData( int id_, ENVPresetDef* env_preset_def_ ) noexcept;
+    COLD FilterData( int id_ ) noexcept;
     COLD ~FilterData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
@@ -727,7 +667,7 @@ private:
 
 public:
     //==========================================================================
-    COLD EQData( int id_, ENVPresetDef*const def_ ) noexcept;
+    COLD EQData( int id_ ) noexcept;
     COLD ~EQData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( EQData )
@@ -757,7 +697,7 @@ struct ChorusData : ParameterListener
     Parameter modulation;
     BoolParameter hold_modulation;
 
-    ENVPresetData*const modulation_env_data;
+    ENVData*const env_data;
 
 private:
     //==========================================================================
@@ -767,7 +707,7 @@ private:
 
 public:
     //==========================================================================
-    COLD ChorusData( int id_, ENVPresetDef*const def_ ) noexcept;
+    COLD ChorusData( int id_ ) noexcept;
     COLD ~ChorusData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ChorusData )
@@ -842,7 +782,6 @@ struct MoniqueSynthData : ParameterListener
 
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
-    ScopedPointer< ENVPresetDef > env_preset_def;
     OwnedArray< FilterData > filter_datas;
     ScopedPointer< EQData > eq_data;
     ScopedPointer< ArpSequencerData > arp_sequencer_data;
@@ -1014,8 +953,6 @@ public:
 
     DataBuffer* data_buffer;
 
-    ENVPresetDef* env_preset_def;
-
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
     Array< FilterData* > filter_datas;
@@ -1028,13 +965,6 @@ public:
     MoniqueSynthesiserVoice* voice;
 
     // ==============================================================================
-    ENVPresetDef* ui_env_preset_def;
-    ENVPresetData* ui_env_preset_data;
-    ENV* ui_env;
-
-    // ==============================================================================
-    static void init_ui_env() noexcept;
-    static void get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ ) noexcept;
     static void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
 
     // ==============================================================================

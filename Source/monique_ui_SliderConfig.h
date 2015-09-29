@@ -4455,7 +4455,6 @@ public:
 class CModSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const modulation;
-    Parameter*const state;
     BoolParameter*const hold_modulation;
 
     MoniqueSynthData*const synth_data;
@@ -4493,6 +4492,7 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -4502,6 +4502,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return state;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -4549,6 +4550,7 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return "CHORS";
@@ -4557,7 +4559,6 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return "MO-ENV";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4572,21 +4573,16 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( modulation->midi_control->get_ctrl_mode() )
-            return String( round001(state->get_value()+1) );
-        else
             return String( round01(chorus_data->modulation*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( modulation->midi_control->get_ctrl_mode() )
-            return "MO";
-        else
             return "";
     }
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the chorus amount.\n"
@@ -4618,7 +4614,6 @@ public:
     CModSlConfig()
         :
         modulation( &(GET_DATA(chorus_data).modulation) ),
-        state( &(GET_DATA(chorus_data).modulation_env_data->state) ),
         hold_modulation( &(GET_DATA(chorus_data).hold_modulation) ),
 
         synth_data( GET_DATA_PTR( synth_data ) ),
@@ -5062,13 +5057,12 @@ class EQSlConfig : public ModulationSliderConfigBase
     {
         return String( round01(velocity->get_value()*100)  );
     }
+    /*
     StringRef get_center_suffix() const noexcept override
     {
-        if( velocity->midi_control->get_ctrl_mode() )
-            return "MO";
-        else
             return "";
     }
+    */
 
     //==============================================================================
     // TOOLTIP

@@ -37,10 +37,6 @@
               file="../Source/monique_core_Synth.cpp"/>
         <FILE id="nFZH6Y" name="monique_core_Synth.h" compile="0" resource="0"
               file="../Source/monique_core_Synth.h"/>
-        <FILE id="TuqVji" name="monique_ui_ADRDesigner.cpp" compile="1" resource="0"
-              file="../Source/monique_ui_ADRDesigner.cpp"/>
-        <FILE id="W6ZM3k" name="monique_ui_ADRDesigner.h" compile="0" resource="0"
-              file="../Source/monique_ui_ADRDesigner.h"/>
         <FILE id="A5Tgzn" name="monique_ui_AmpPainter.cpp" compile="1" resource="0"
               file="../Source/monique_ui_AmpPainter.cpp"/>
         <FILE id="GK0SA6" name="monique_ui_AmpPainter.h" compile="0" resource="0"

@@ -4895,7 +4895,7 @@ reverb_l(),
 
          chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
          amp2chorus_smoother(),
-         chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).modulation_env_data ) ),
+         chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).env_data ) ),
 
          delayPosition( 0 ),
          delayBuffer ( DELAY_BUFFER_SIZE ),
@@ -5475,10 +5475,6 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 
     mono_ThreadManager::deleteInstance();
 }
-void MoniqueSynthesiserVoice::kill( ENV* env_ ) noexcept
-{
-    delete env_;
-}
 
 //==============================================================================
 void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
@@ -5982,94 +5978,12 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept
-:
-ui_env_preset_data(nullptr),
-ui_env(nullptr)
-{}
-
+COLD mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept {}
 COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 {
     clearSingletonInstance();
 }
 //==============================================================================
-void mono_ParameterOwnerStore::init_ui_env() noexcept
-{
-    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstance();
-    if( ! store->ui_env )
-    {
-        store->ui_env_preset_def = new ENVPresetDef( 999 );
-        store->ui_env_preset_data = new ENVPresetData( 999, store->ui_env_preset_def );
-        store->ui_env = new ENV( GET_DATA_PTR( synth_data ), store->ui_env_preset_data );
-    }
-}
-void mono_ParameterOwnerStore::get_full_adsr( float state_, Array< float >& curve, int& sustain_start_, int& sustain_end_ ) noexcept
-{
-    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
-    ENV* env = store->ui_env;
-    ENVPresetData* data = store->ui_env_preset_data;
-    ENVPresetDef* def = store->ui_env_preset_def;
-
-    int max_viewed_time = 30+30+30+30;
-    const float time_reducer = 0.1;
-    def->attack_1 = store->synth_data->env_preset_def->attack_1 * time_reducer;
-    def->attack_2 = store->synth_data->env_preset_def->attack_2 * time_reducer;
-    def->attack_3 = store->synth_data->env_preset_def->attack_3 * time_reducer;
-    def->attack_4 = store->synth_data->env_preset_def->attack_4 * time_reducer;
-
-    def->decay_1 = store->synth_data->env_preset_def->decay_1 * time_reducer;
-    def->decay_2 = store->synth_data->env_preset_def->decay_2 * time_reducer;
-    def->decay_3 = store->synth_data->env_preset_def->decay_3 * time_reducer;
-    def->decay_4 = store->synth_data->env_preset_def->decay_4 * time_reducer;
-
-    def->sustain_time_1 = store->synth_data->env_preset_def->sustain_time_1 * time_reducer;
-    def->sustain_time_2 = store->synth_data->env_preset_def->sustain_time_2 * time_reducer;
-    def->sustain_time_3 = store->synth_data->env_preset_def->sustain_time_3 * time_reducer;
-    def->sustain_time_4 = store->synth_data->env_preset_def->sustain_time_4 * time_reducer;
-
-    def->release_1 = store->synth_data->env_preset_def->release_1 * time_reducer;
-    def->release_2 = store->synth_data->env_preset_def->release_2 * time_reducer;
-    def->release_3 = store->synth_data->env_preset_def->release_3 * time_reducer;
-    def->release_4 = store->synth_data->env_preset_def->release_4 * time_reducer;
-
-    data->state = state_;
-    data->sustain = 0.5;
-
-    float one_sample_buffer = 0;
-    bool count_sustain = false;
-    env->start_attack();
-    env->overwrite_current_value( 0.5 );
-    env->set_current_stage( RELEASE );
-    env->start_attack();
-    const int suatain_samples = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate() * 0.05;
-    sustain_end_ = -1;
-    while( env->get_current_stage() != END_ENV and not (env->get_current_stage() == RELEASE and one_sample_buffer == 0) )
-    {
-        // GET DATA
-        env->process( &one_sample_buffer, 1 );
-        if( env->get_current_stage() != SUSTAIN )
-            curve.add( one_sample_buffer );
-
-        // START COUNT SUSTAIN
-        if( env->get_current_stage() == SUSTAIN && ! count_sustain )
-        {
-            count_sustain = true;
-            sustain_start_ = curve.size();
-        }
-
-        if( sustain_end_ == -1 && count_sustain && data->sustain_time == 1 )
-        {
-            env->set_to_release();
-            sustain_end_ = sustain_start_ + suatain_samples;
-        }
-        else if( sustain_end_ == -1 && count_sustain && data->sustain_time != 1 )
-        {
-            env->set_to_release();
-            sustain_end_ = sustain_start_ + msToSamplesFast(8.0f*data->sustain_time*1000,RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate());
-        }
-    }
-}
-
 void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float >& curve ) noexcept
 {
     mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
@@ -6092,7 +6006,3 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
-
-
-
-
