@@ -541,6 +541,21 @@ compressor
     generate_param_name(FILTER_NAME,id_,"compressor"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"boost")
 ),
+pan
+(
+    MIN_MAX( -1, 1 ),
+    id_ == 1 ? -0.33 : id_ == 2 ? 0.33 : 0,
+    2000,
+    generate_param_name(FILTER_NAME,id_,"pan2"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"pan")
+),
+modulate_pan
+(
+    false,
+    generate_param_name(FILTER_NAME,id_,"modulate_pan"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_pan_ON")
+),
+
 output
 (
     MIN_MAX( 0, 1 ),

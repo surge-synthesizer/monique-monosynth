@@ -5,6 +5,64 @@
 #include "monique_ui_AmpPainter.h"
 #include "monique_core_Processor.h"
 
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+
+COLD ParameterBuffer::ParameterBuffer( Parameter*const param_to_smooth_ ) noexcept
+:
+param_to_smooth(param_to_smooth_),
+                last_value(param_to_smooth_->get_value()),
+                last_target(last_value),
+                difference_per_sample(0)
+{}
+
+void ParameterBuffer::block_size_changed() noexcept override
+{
+    values.setSize( block_size );
+}
+
+inline void ParameterBuffer::smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept
+{
+    const int glide_motor_time = GET_DATA( synth_data ).glide_motor_time;
+    const float target = param_to_smooth->get_value();
+
+    float* target_buffer = values.getWritePointer();
+    FloatVectorOperations::fill( target_buffer, last_value, num_samples_ );
+
+    if( target != last_target )
+    {
+        samples_left = glide_motor_time_in_samples;
+
+        const float difference = target - last_value;
+        difference_per_sample = difference / samples_left;
+
+        last_target = target;
+    }
+
+    if( samples_left > 0 )
+    {
+        if( samples_left >= num_samples_ )
+        {
+            FloatVectorOperations::add( target_buffer, difference_per_sample, num_samples_ );
+            samples_left -= num_samples_;
+        }
+        else
+        {
+            FloatVectorOperations::add( target_buffer, difference_per_sample, samples_left );
+            samples_left = 0;
+        }
+    }
+
+    last_value = target_buffer[num_samples_-1];
+}
 
 //==============================================================================
 //==============================================================================
@@ -1840,7 +1898,15 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
     const float wave = osc_data->wave;
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
     lfo2fix_octave_smoother.reset_counter_on_state_switch( is_lfo_modulated );
-    const bool sync = osc_data->sync;
+    const bool sync
+    (
+        osc_data->sync
+        or
+        (
+            id != MASTER_OSC
+            and ((not is_lfo_modulated and not master_osc_data->is_lfo_modulated) and osc_data->tune == master_osc_data->tune)
+        )
+    );
     const float master_fm_freq = master_osc_data->fm_freq;
     const int master_pulse_width = master_osc_data->puls_width;
     const bool master_sync = master_osc_data->sync;
@@ -1882,7 +1948,8 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
                         new_frequence += frequence_range*frequence_rest_percent;
                     }
                     // PULS
-                    if( current_puls_frequence_offset != 0 ) {
+                    if( current_puls_frequence_offset != 0 )
+                    {
                         new_frequence*=current_puls_frequence_offset;
                     }
 
@@ -2052,7 +2119,9 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
                     osc_sync_switch_buffer[sid] = true;
                 }
                 else if( sync )
+                {
                     waiting_for_sync = true;
+                }
             }
             else if( id == MASTER_OSC ) {
                 osc_sync_switch_buffer[sid] = false;
@@ -3952,15 +4021,40 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         amp_painter->add_filter( id, this_filter_output_buffer, num_samples );
     }
 
+    // PAN
+    {
+        const float pan = filter_data->pan;
+        float* const left_and_input_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(id);
+        float* const right_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS+id);
+        // RIGHT
+        if( pan > 0 )
+        {
+            FloatVectorOperations::copy( right_output_buffer, left_and_input_output_buffer, num_samples );
+            FloatVectorOperations::multiply( left_and_input_output_buffer, 1.0f-pan, num_samples );
+        }
+        else if( pan < 0 )
+        {
+            FloatVectorOperations::copyWithMultiply( right_output_buffer, left_and_input_output_buffer, 1.0f+pan, num_samples );
+        }
+        else
+        {
+            FloatVectorOperations::copy( right_output_buffer, left_and_input_output_buffer, num_samples );
+        }
+    }
+
     // COLLECT THE FINAL OUTPUT
     if( id == FILTER_3 )
     {
-        float* const final_filters_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
-        const float* direct_output_buffer_flt_2 = data_buffer->direct_filter_output_samples.getReadPointer(1);
-        for( int sid = 0 ; sid != num_samples ; ++sid )
-        {
-            final_filters_output_buffer[sid] += direct_output_buffer_flt_2[sid] + this_filter_output_buffer[sid];
-        }
+        float* const master_left_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(0);
+        float* const master_right_output_buffer = data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS);
+        float* const left_output_buffer_flt2 = data_buffer->direct_filter_output_samples.getWritePointer(1);
+        float* const right_output_buffer_flt2 = data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS+1);
+        float* const left_output_buffer_flt3 = data_buffer->direct_filter_output_samples.getWritePointer(2);
+        float* const right_output_buffer_flt3 = data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS+2);
+        FloatVectorOperations::add( master_left_output_buffer, left_output_buffer_flt2, num_samples );
+        FloatVectorOperations::add( master_left_output_buffer, left_output_buffer_flt3, num_samples );
+        FloatVectorOperations::add( master_right_output_buffer, right_output_buffer_flt2, num_samples );
+        FloatVectorOperations::add( master_right_output_buffer, right_output_buffer_flt3, num_samples );
     }
 }
 
@@ -4033,7 +4127,7 @@ public:
     inline void start_attack() noexcept;
     inline void start_release() noexcept;
     inline void reset() noexcept;
-    inline void process( int num_samples_ ) noexcept;
+    inline void process( float* io_buffer_, int num_samples_ ) noexcept;
 
     //==============================================================================
     COLD EQProcessor( MoniqueSynthData* synth_data_ ) noexcept;
@@ -4135,7 +4229,7 @@ void EQProcessor::sample_rate_changed(double) noexcept
 }
 
 // -----------------------------------------------------------------
-inline void EQProcessor::process( int num_samples_ ) noexcept
+inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
 {
     // MULTITHREADED PER BAND
     {
@@ -4228,7 +4322,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                     }
                 }
             }
-            BandExecuter(EQProcessor*const processor_, int num_samples__, int band_id_) noexcept
+            BandExecuter(EQProcessor*const processor_, float*io_buffer_, int num_samples__, int band_id_) noexcept
 :
             num_samples_(num_samples__),
                          band_id(band_id_),
@@ -4246,7 +4340,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 
                          env( *processor_->envs[band_id_] ),
 
-                         direct_filter_output_samples( processor_->data_buffer->direct_filter_output_samples.getReadPointer() ),
+                         direct_filter_output_samples( io_buffer_ ),
                          tmp_band_in_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(IN_DIMENSION) ),
                          tmp_band_out_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(OUT_DIMENSION) ),
                          tmp_env_buffer( processor_->data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(ENV_DIMENSION) ),
@@ -4269,7 +4363,7 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
                 }
             }
 
-            BandExecuter* executer = new BandExecuter(this, num_samples_, band_id);
+            BandExecuter* executer = new BandExecuter(this, io_buffer_, num_samples_, band_id);
             executer->try_run_paralel();
             if( executer->isWorking() )
             {
@@ -4303,7 +4397,6 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
 #define DIMENSION_TMP 0
 #define DIMENSION_TMP_2 1
 
-        float* const out_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
         float* const tmp_all_band_out_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP);
         float* const tmp_all_band_sum_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_2);
         FloatVectorOperations::clear(tmp_all_band_out_buffer,num_samples_);
@@ -4318,12 +4411,12 @@ inline void EQProcessor::process( int num_samples_ ) noexcept
         }
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            out_buffer[sid] = (tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]*0.2));
+            io_buffer_[sid] = (tmp_all_band_out_buffer[sid] / (tmp_all_band_sum_gain_buffer[sid]*0.2));
         }
 
         if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
         {
-            amp_painter->add_eq( out_buffer, num_samples_ );
+            amp_painter->add_eq( io_buffer_, num_samples_ );
         }
     }
 }
@@ -4927,7 +5020,8 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
     const int glide_motor_time = synth_data->glide_motor_time;
 
     // COLLECT BUFFERS
-    float* input_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
+    float* left_input_buffer = data_buffer->direct_filter_output_samples.getWritePointer();
+    float* right_input_buffer = data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS);
 
     // PREPARE REVERB
     const float reverb_room = reverb_data->room;
@@ -4980,7 +5074,9 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             {
-                input_buffer[sid] *= tmp_env_amp[sid]*volume_smoother.tick()*velocity_glide.tick();
+                const float gain = tmp_env_amp[sid]*volume_smoother.tick()*velocity_glide.tick();
+                left_input_buffer[sid] *= gain;
+                right_input_buffer[sid] *= gain;
             }
 
             {
@@ -5163,7 +5259,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                                          num_samples_,
                                          delay_pos,
 
-                                         input_buffer,
+                                         left_input_buffer,
                                          data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_L),
 
                                          delayBuffer.getWritePointer (LEFT),
@@ -5173,13 +5269,14 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
         left_executer.try_run_paralel();
 
         {
-            LeftRightExecuter right_executer(
+            LeftRightExecuter right_executer
+            (
                 this,
 
                 num_samples_,
                 delay_pos,
 
-                input_buffer,
+                right_input_buffer,
                 data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_R),
 
                 delayBuffer.getWritePointer (RIGHT),
@@ -5734,7 +5831,10 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     filter_processors[1]->process( num_samples );
     filter_processors[2]->process( num_samples );
 
-    eq_processor->process( num_samples );
+    // LEFT
+    eq_processor->process( data_buffer->direct_filter_output_samples.getWritePointer(0), num_samples );
+    // RIGHT
+    //eq_processor->process( data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS), num_samples );
 
     if( synth_data->arp_sequencer_data->is_on )
     {

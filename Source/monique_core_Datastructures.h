@@ -94,7 +94,7 @@ public:
     // WORKERS
     mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
-    mono_AudioSampleBuffer<SUM_FILTERS> direct_filter_output_samples;
+    mono_AudioSampleBuffer<SUM_FILTERS*2> direct_filter_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
@@ -181,7 +181,6 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-
 struct RuntimeInfo
 {
     int64 samples_since_start;
@@ -267,6 +266,34 @@ inline RuntimeInfo::Step::~Step() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class ParameterBuffer : public RuntimeListener
+{
+    mono_AudioSampleBuffer<1> values;
+  
+    Parameter*const param_to_smooth;
+    float last_value;
+    float last_target;
+    float difference_per_sample;
+    int samples_left;
+    
+    void block_size_changed() noexcept override; 
+
+public:
+    void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
+
+COLD ParameterBuffer( Parameter*const param_to_smooth_ ) noexcept;
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 struct LFOData
 {
     Parameter speed;
@@ -326,7 +353,7 @@ struct ENVData
     Parameter sustain_time;
     Parameter release;
     IntParameter max_release_time;
-    
+
     Parameter shape;
 
     //==========================================================================
@@ -358,6 +385,8 @@ struct FilterData : ParameterListener
 
 
     Parameter compressor;
+    Parameter pan;
+    BoolParameter modulate_pan;
     ModulatedParameter output;
     Parameter output_clipping;
     BoolParameter modulate_output;

@@ -337,6 +337,9 @@ private:
     ScopedPointer<TextButton> button_edit_input_env_band_8;
     ScopedPointer<TextButton> button_edit_input_env_band_9;
     ScopedPointer<TextButton> button_edit_env_chorus;
+    ScopedPointer<Monique_Ui_DualSlider> flt_pan_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_pan_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_pan_1;
 
 
     //==============================================================================

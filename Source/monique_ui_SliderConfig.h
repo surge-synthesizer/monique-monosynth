@@ -2806,6 +2806,152 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class FPanSlConfig : public ModulationSliderConfigBase
+{
+    Parameter*const pan;
+    BoolParameter*const modulate_volume;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    Parameter* get_front_parameter_base() const noexcept override
+    {
+        return pan;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return MODULATION_SLIDER;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    Parameter* get_back_parameter_base() const noexcept override
+    {
+        return pan;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_MODULATOR;
+    }
+    BoolParameter* get_top_button_parameter_base() const noexcept override
+    {
+        return modulate_volume;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "X-MOD";
+    }
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+    return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "PAN";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "MOD %";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+     // TODO
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the filter output volume.\n"
+        "\n"
+        "Output target: EQ bank\n"
+        "Affected: BOOST of the next filter (except FILTER 3, there is no FILTER 4)"
+    )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns filter volume modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "FILTER VOLUME",
+        "FILTER VOLUME MODULATION POWER"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the filter volume modulation power relative to the defined filter volume (front).\n"
+        NO_MOD_EFFECT
+        GENERAL_MOD_EXAMPLE
+    )
+
+public:
+    FPanSlConfig( int id_ )
+        :
+        pan( &(GET_DATA(filter_datas[id_]).pan) ),
+        modulate_volume( &(GET_DATA(filter_datas[id_]).modulate_output) )
+    {}
+
+    JUCE_LEAK_DETECTOR (FPanSlConfig)
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class FVolumeSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const volume;
@@ -5250,7 +5396,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
         "\n"
         "See: VELO-G (VELOCITY GLIDE) (left)\n"
     )
-
+//todo chencken
 public:
     ArpStepSlConfig( int id_ )
         :

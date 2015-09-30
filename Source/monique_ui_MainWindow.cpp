@@ -1415,6 +1415,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_edit_env_chorus->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_env_chorus->setColour (TextButton::textColourOffId, Colours::yellow);
 
+    addAndMakeVisible (flt_pan_3 = new Monique_Ui_DualSlider (new FPanSlConfig(2)));
+
+    addAndMakeVisible (flt_pan_2 = new Monique_Ui_DualSlider (new FPanSlConfig(1)));
+
+    addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (new FPanSlConfig(0)));
+
 
     //[UserPreSize]
 #ifdef IS_PLUGIN
@@ -1785,6 +1791,9 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_edit_input_env_band_8 = nullptr;
     button_edit_input_env_band_9 = nullptr;
     button_edit_env_chorus = nullptr;
+    flt_pan_3 = nullptr;
+    flt_pan_2 = nullptr;
+    flt_pan_1 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -1859,7 +1868,7 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (20.0f, 60.0f, 1.0f, 541.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 50.0f, 201.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 50.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (20.0f, 600.0f, 76.0f, 1.0f, 1.000f);
@@ -1880,10 +1889,10 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (95.0f, 600.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (855.0f, 55.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 55.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (775.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (615.0f, 760.0f, 421.0f, 1.0f, 1.000f);
@@ -1901,19 +1910,19 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (1015.0f, 755.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 45.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 45.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (875.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 50.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 50.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 45.0f, 621.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 45.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (95.0f, 635.0f, 5.0f, 1.0f, 1.000f);
@@ -1931,19 +1940,19 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (575.0f, 50.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1045.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1025.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1105.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1085.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1165.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1145.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1405.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1255.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1225.0f, 45.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (300.0f, 200.0f, 25.0f, 1.0f, 1.000f);
@@ -1961,7 +1970,7 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (1405.0f, 195.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1315.0f, 200.0f, 91.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (1345.0f, 200.0f, 61.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (40.0f, 415.0f, 110.0f, 1.0f, 1.000f);
@@ -2081,49 +2090,49 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.drawRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 230.0f, 201.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 230.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (435.0f, 235.0f, 280.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (855.0f, 235.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 235.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (775.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 225.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 225.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (875.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 230.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 230.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 225.0f, 621.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 225.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (575.0f, 230.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1045.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1025.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1105.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1085.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1165.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1145.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1405.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1255.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1225.0f, 225.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1385.0f, 375.0f, 40.0f, 1.0f, 1.000f);
@@ -2132,64 +2141,64 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (1405.0f, 375.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1315.0f, 380.0f, 91.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (1345.0f, 380.0f, 61.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (1314, 205, 3, 30);
+    g.fillRect (1344, 205, 3, 30);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1315.0f, 200.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (1345.0f, 200.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 410.0f, 201.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 410.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (435.0f, 415.0f, 280.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (855.0f, 415.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 415.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (775.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 405.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 405.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (875.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 410.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 410.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (785.0f, 405.0f, 621.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 405.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (795.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (575.0f, 410.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1045.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1025.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1105.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1085.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1165.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1145.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1405.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1255.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1225.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (1314, 385, 3, 30);
+    g.fillRect (1344, 385, 3, 30);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1315.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (1345.0f, 380.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (300.0f, 380.0f, 25.0f, 1.0f, 1.000f);
@@ -2235,6 +2244,15 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
 
     g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (260.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1285.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1285.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+
+    g.setColour (Colour (0xff11ffff));
+    g.fillRoundedRectangle (1285.0f, 405.0f, 1.0f, 10.0f, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -2312,15 +2330,15 @@ void Monique_Ui_Mainwindow::resized()
     flt_decay_1->setBounds (545 - 60, 190 - 130, 60, 130);
     flt_attack_1->setBounds (425, 190 - 130, 60, 130);
     label_monolisa->setBounds (1440 - 205, 1055 - 85, 205, 85);
-    filter_type_2_1->setBounds (1005 - 60, 90, 60, 30);
-    filter_type_3_1->setBounds (1005 - 60, 120, 60, 30);
-    filter_type_2_2->setBounds (1005 - 60, 270, 60, 30);
-    filter_type_3_2->setBounds (1005 - 60, 327 - 30, 60, 30);
-    filter_type_2_3->setBounds (1005 - 60, 450, 60, 30);
-    filter_type_3_3->setBounds (1005 - 60, 480, 60, 30);
-    filter_type_5_1->setBounds (1005 - 60, 155, 60, 33);
-    filter_type_5_2->setBounds (1005 - 60, 335, 60, 33);
-    filter_type_5_3->setBounds (1005 - 60, 515, 60, 33);
+    filter_type_2_1->setBounds (985 - 60, 90, 60, 30);
+    filter_type_3_1->setBounds (985 - 60, 120, 60, 30);
+    filter_type_2_2->setBounds (985 - 60, 270, 60, 30);
+    filter_type_3_2->setBounds (985 - 60, 327 - 30, 60, 30);
+    filter_type_2_3->setBounds (985 - 60, 450, 60, 30);
+    filter_type_3_3->setBounds (985 - 60, 480, 60, 30);
+    filter_type_5_1->setBounds (985 - 60, 155, 60, 33);
+    filter_type_5_2->setBounds (985 - 60, 335, 60, 33);
+    filter_type_5_3->setBounds (985 - 60, 515, 60, 33);
     button_sequence_2->setBounds (335 - 60, 840 - 20, 60, 20);
     button_sequence_3->setBounds (395 - 60, 840 - 20, 60, 20);
     button_sequence_4->setBounds (455 - 60, 840 - 20, 60, 20);
@@ -2348,43 +2366,43 @@ void Monique_Ui_Mainwindow::resized()
     osc_1->setBounds (160 - 60, 190 - 130, 60, 130);
     osc_2->setBounds (160 - 60, 370 - 130, 60, 130);
     osc_3->setBounds (160 - 60, 550 - 130, 60, 130);
-    lfo_1->setBounds (905 - 60, 190 - 130, 60, 130);
-    flt_cutoff_1->setBounds (1075 - 60, 190 - 130, 60, 130);
-    lfo_2->setBounds (905 - 60, 370 - 130, 60, 130);
-    lfo_3->setBounds (905 - 60, 550 - 130, 60, 130);
-    flt_cutoff_2->setBounds (1075 - 60, 370 - 130, 60, 130);
-    flt_cutoff_3->setBounds (1075 - 60, 550 - 130, 60, 130);
+    lfo_1->setBounds (900 - 60, 190 - 130, 60, 130);
+    flt_cutoff_1->setBounds (1055 - 60, 190 - 130, 60, 130);
+    lfo_2->setBounds (900 - 60, 370 - 130, 60, 130);
+    lfo_3->setBounds (900 - 60, 550 - 130, 60, 130);
+    flt_cutoff_2->setBounds (1055 - 60, 370 - 130, 60, 130);
+    flt_cutoff_3->setBounds (1055 - 60, 550 - 130, 60, 130);
     flt_input_1->setBounds (215, 60, 60, 130);
     flt_input_2->setBounds (335 - 60, 190 - 130, 60, 130);
     flt_input_3->setBounds (395 - 60, 190 - 130, 60, 130);
-    flt_compressor_1->setBounds (1345 - 60, 190 - 130, 60, 130);
-    flt_distortion_1->setBounds (1285 - 60, 190 - 130, 60, 130);
+    flt_compressor_1->setBounds (1375 - 60, 190 - 130, 60, 130);
+    flt_distortion_1->setBounds (1255 - 60, 190 - 130, 60, 130);
     flt_input_6->setBounds (275 - 60, 370 - 130, 60, 130);
     flt_input_7->setBounds (335 - 60, 370 - 130, 60, 130);
     flt_input_8->setBounds (395 - 60, 370 - 130, 60, 130);
-    flt_compressor_2->setBounds (1345 - 60, 370 - 130, 60, 130);
+    flt_compressor_2->setBounds (1375 - 60, 370 - 130, 60, 130);
     flt_input_11->setBounds (275 - 60, 550 - 130, 60, 130);
     flt_input_12->setBounds (335 - 60, 550 - 130, 60, 130);
     flt_input_13->setBounds (395 - 60, 550 - 130, 60, 130);
-    flt_compressor_3->setBounds (1345 - 60, 550 - 130, 60, 130);
-    flt_resonance_1->setBounds (1135 - 60, 190 - 130, 60, 130);
-    flt_gain_1->setBounds (1195 - 60, 190 - 130, 60, 130);
-    flt_resonance_2->setBounds (1135 - 60, 370 - 130, 60, 130);
-    flt_gain_2->setBounds (1195 - 60, 370 - 130, 60, 130);
-    flt_resonance_3->setBounds (1135 - 60, 550 - 130, 60, 130);
-    flt_gain_3->setBounds (1195 - 60, 550 - 130, 60, 130);
+    flt_compressor_3->setBounds (1375 - 60, 550 - 130, 60, 130);
+    flt_resonance_1->setBounds (1115 - 60, 190 - 130, 60, 130);
+    flt_gain_1->setBounds (1175 - 60, 190 - 130, 60, 130);
+    flt_resonance_2->setBounds (1115 - 60, 370 - 130, 60, 130);
+    flt_gain_2->setBounds (1175 - 60, 370 - 130, 60, 130);
+    flt_resonance_3->setBounds (1115 - 60, 550 - 130, 60, 130);
+    flt_gain_3->setBounds (1175 - 60, 550 - 130, 60, 130);
     flt_volume_1->setBounds (1435 - 60, 190 - 130, 60, 130);
     flt_volume_2->setBounds (1435 - 60, 370 - 130, 60, 130);
     flt_volume_3->setBounds (1435 - 60, 550 - 130, 60, 130);
-    adsr_lfo_mix->setBounds (815 - 60, 190 - 130, 60, 130);
-    lfo_opt_2->setBounds (815 - 60, 370 - 130, 60, 130);
-    lfo_opt_3->setBounds (815 - 60, 550 - 130, 60, 130);
+    adsr_lfo_mix->setBounds (810 - 60, 190 - 130, 60, 130);
+    lfo_opt_2->setBounds (810 - 60, 370 - 130, 60, 130);
+    lfo_opt_3->setBounds (810 - 60, 550 - 130, 60, 130);
     button_sequence_1->setBounds (275 - 60, 840 - 20, 60, 20);
     flt_release_4->setBounds (455 - 60, 750 - 130, 60, 130);
     delay2->setBounds (885 - 60, 750 - 130, 60, 130);
     volume->setBounds (1435 - 60, 750 - 130, 60, 130);
-    flt_distortion_2->setBounds (1285 - 60, 370 - 130, 60, 130);
-    flt_distortion_3->setBounds (1285 - 60, 550 - 130, 60, 130);
+    flt_distortion_2->setBounds (1255 - 60, 370 - 130, 60, 130);
+    flt_distortion_3->setBounds (1255 - 60, 550 - 130, 60, 130);
     button_arp_speed_XNORM->setBounds (1295, 820, 60, 27);
     flt_attack_5->setBounds (90 - 60, 755 - 130, 60, 130);
     flt_attack_6->setBounds (160 - 60, 755 - 130, 60, 130);
@@ -2392,9 +2410,9 @@ void Monique_Ui_Mainwindow::resized()
     osc_wave_2->setBounds (90 - 60, 370 - 130, 60, 130);
     sl_morhp_mix->setBounds (1165, 715, 180, 33);
     button_programm_delete->setBounds (895 - 60, 1030 - 30, 60, 30);
-    filter_type_6_1->setBounds (1005 - 60, 60, 60, 30);
-    filter_type_6_2->setBounds (1005 - 60, 240, 60, 30);
-    filter_type_6_3->setBounds (1005 - 60, 420, 60, 30);
+    filter_type_6_1->setBounds (985 - 60, 60, 60, 30);
+    filter_type_6_2->setBounds (985 - 60, 240, 60, 30);
+    filter_type_6_3->setBounds (985 - 60, 420, 60, 30);
     button_ctrl_toggle->setBounds (100, 1000, 60, 30);
     colour->setBounds (585 - 60, 750 - 130, 60, 130);
     speed->setBounds (1285 - 60, 950 - 130, 60, 130);
@@ -2450,6 +2468,9 @@ void Monique_Ui_Mainwindow::resized()
     button_edit_input_env_band_8->setBounds (945, 715, 60, 33);
     button_edit_input_env_band_9->setBounds (1005, 715, 60, 33);
     button_edit_env_chorus->setBounds (915, 715, 60, 33);
+    flt_pan_3->setBounds (1315 - 60, 550 - 130, 60, 130);
+    flt_pan_2->setBounds (1315 - 60, 370 - 130, 60, 130);
+    flt_pan_1->setBounds (1315 - 60, 190 - 130, 60, 130);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3560,41 +3581,41 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="195 595 285 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="20 60 1 541" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 50 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 50 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="20 600 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="165 830 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="90 830 10 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="435 55 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="40 605 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 600 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="855 55 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="775 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 55 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="615 760 421 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="970 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="615 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1035 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1015 755 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 45 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="875 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 50 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 45 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 45 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 50 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 45 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 635 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 630 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1260 720 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1265 715 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1045 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1105 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1165 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1025 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1085 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1145 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1255 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1225 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="300 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="240 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="360 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1385 195 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 195 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1315 200 91 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1345 200 61 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="40 415 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 410 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="95 410 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3634,43 +3655,43 @@ BEGIN_JUCER_METADATA
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
     <ROUNDRECT pos="1355 595 100 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="575 230 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 230 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="435 235 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="855 235 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="775 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 225 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="875 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 230 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 225 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 235 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 225 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 230 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 225 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1045 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1105 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1165 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1025 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1085 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1145 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1255 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1225 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1385 375 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 375 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1315 380 91 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="1314 205 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="1315 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 410 201 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1345 380 61 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="1344 205 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="1345 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 410 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="435 415 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="855 415 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="775 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 405 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="875 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 410 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="785 405 621 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="795 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 415 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 405 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 410 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 405 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1045 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1105 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1165 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1025 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1085 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1145 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1405 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1255 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="1314 385 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="1315 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1225 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="1344 385 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="1345 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="300 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="240 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="360 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
@@ -3686,6 +3707,9 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="380 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="320 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1285 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1285 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1285 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
          virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
@@ -3911,40 +3935,39 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 90 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 90 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 120 60 30" tooltip="Set the filter type to BAND PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 120 60 30" tooltip="Set the filter type to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 270 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 270 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 327r 60 30"
-              tooltip="Set the filter type to BAND PASS." bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="985r 327r 60 30" tooltip="Set the filter type to BAND PASS."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 450 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 450 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 480 60 30" tooltip="Set the filter type to BAND PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 480 60 30" tooltip="Set the filter type to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 155 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="985r 155 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 335 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="985r 335 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 515 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="985r 515 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
@@ -4062,22 +4085,22 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="160r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="905r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1055r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="905r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="905r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1055r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
-                    explicitFocusOrder="0" pos="1075r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1055r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
                     explicitFocusOrder="0" pos="215 60 60 130" class="Monique_Ui_DualSlider"
@@ -4089,10 +4112,10 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="395r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,2)"/>
   <GENERICCOMPONENT name="" id="2bcfc71597ef5fbd" memberName="flt_compressor_1" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1375r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1255r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
                     explicitFocusOrder="0" pos="275r 370r 60 130" class="Monique_Ui_DualSlider"
@@ -4104,7 +4127,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="395r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,2)"/>
   <GENERICCOMPONENT name="" id="f8269875dd70ecfa" memberName="flt_compressor_2" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1375r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
                     explicitFocusOrder="0" pos="275r 550r 60 130" class="Monique_Ui_DualSlider"
@@ -4116,25 +4139,25 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="395r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,2)"/>
   <GENERICCOMPONENT name="" id="3dab756c3e18a7de" memberName="flt_compressor_3" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1375r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCompressorSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1115r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="8e9c871f56bec21b" memberName="flt_gain_1" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1175r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1115r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="577a04755f6e3eca" memberName="flt_gain_2" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1175r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
-                    explicitFocusOrder="0" pos="1135r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1115r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="5d7a48dcb59f2814" memberName="flt_gain_3" virtualName=""
-                    explicitFocusOrder="0" pos="1195r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1175r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
                     explicitFocusOrder="0" pos="1435r 190r 60 130" class="Monique_Ui_DualSlider"
@@ -4146,13 +4169,13 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1435r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
-                    explicitFocusOrder="0" pos="815r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
-                    explicitFocusOrder="0" pos="815r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
-                    explicitFocusOrder="0" pos="815r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
               virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
@@ -4168,10 +4191,10 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1435r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new VolumeConfig()"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1255r 370r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1255r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
               virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
@@ -4200,15 +4223,15 @@ BEGIN_JUCER_METADATA
               textColOn="ffff7900" buttonText="DELETE" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="1005r 60 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 60 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="1005r 240 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 240 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="1005r 420 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="985r 420 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
@@ -4453,6 +4476,15 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="915 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
+  <GENERICCOMPONENT name="" id="fa465a4afae26fc7" memberName="flt_pan_3" virtualName=""
+                    explicitFocusOrder="0" pos="1315r 550r 60 130" class="Monique_Ui_DualSlider"
+                    params="new FPanSlConfig(2)"/>
+  <GENERICCOMPONENT name="" id="6397e9617b7dcaf9" memberName="flt_pan_2" virtualName=""
+                    explicitFocusOrder="0" pos="1315r 370r 60 130" class="Monique_Ui_DualSlider"
+                    params="new FPanSlConfig(1)"/>
+  <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
+                    explicitFocusOrder="0" pos="1315r 190r 60 130" class="Monique_Ui_DualSlider"
+                    params="new FPanSlConfig(0)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

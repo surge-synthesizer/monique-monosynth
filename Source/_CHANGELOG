@@ -1,12 +1,15 @@
 DONE
 - remove adr presets and replace it with an individual env
 - fix: wrong step captions:  from 1; 1; 2;... to 1; 2; 3; -> funny bug -> i'm an idiot :D
+- force sync if tune is same as osc 1
 
 NOT DONE (but until friday):
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - osc square and saw going out of center on higher octaves
+
+- smooth values on block start
 
 - audio unit build
 - asio suppoert

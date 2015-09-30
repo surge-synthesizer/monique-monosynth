@@ -44,7 +44,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
     slider_release->setValue( env_data->release.get_value(), dontSendNotification );
     label_release->setText(String( MIN_ENV_TIMES + slider_release->getValue() *20000)+String("ms"), dontSendNotification);
-    update if changed
+    // TODO update if changed
     slider_env_shape->setValue( env_data->shape.get_value(), dontSendNotification );
 }
 
