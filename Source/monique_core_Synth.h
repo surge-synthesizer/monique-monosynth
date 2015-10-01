@@ -46,7 +46,8 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 
     friend class mono_ParameterOwnerStore;
     ArpSequencer*const arp_sequencer;
-    EQProcessor*const eq_processor;
+    EQProcessor*const eq_processor_l;
+    EQProcessor*const eq_processor_r;
     FXProcessor*const fx_processor;
 
     //==============================================================================

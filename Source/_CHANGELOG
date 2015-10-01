@@ -4,12 +4,20 @@ DONE
 - force sync if tune is same as osc 1
 
 NOT DONE (but until friday):
+- reduces buffers -> tmp_multithread_band_buffer_9_4 (rename an take a look)
+
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
 - osc square and saw going out of center on higher octaves
 
 - smooth values on block start
+- snap value smooths to the beat
+- remove switch option
+
+- add pan to morph and saveables
+- add switch smoother for modulation-smoother 
+pan für eq
 
 - audio unit build
 - asio suppoert
@@ -22,6 +30,10 @@ NOT DONE (but until friday):
 - farbe borders grau 
 - slider
 - option->envelope->slider or rotary
+
+- create 256 and 128 and 512 optimized loops
+
+- programm load loads bank (plugin bug)
 
 
 isNoteOnOrOff

@@ -186,6 +186,7 @@ tune
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
 ),
+tune_smoother(&tune),
 is_lfo_modulated
 (
     false,
@@ -210,6 +211,7 @@ fm_amount
     generate_param_name(OSC_NAME,id_,"fm_power"),
     generate_short_human_name(OSC_NAME,id_,"fm_mass")
 ),
+fm_amount_smoother(&fm_amount),
 fm_shot
 (
     true,
@@ -367,7 +369,7 @@ sustain
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
-
+sustain_smoother(&sustain),
 sustain_time
 (
     MIN_MAX( 0.001, 1 ),
@@ -463,6 +465,7 @@ adsr_lfo_mix
     generate_param_name(FILTER_NAME,id_,"adsr_lfo_mix"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"lfo_mix")
 ),
+adsr_lfo_mix_smoother(&adsr_lfo_mix),
 
 // ----
 distortion
@@ -474,6 +477,7 @@ distortion
     generate_short_human_name(FILTER_NAME_SHORT,id_,"destroy"),
     0.6
 ),
+distortion_smoother(&distortion),
 modulate_distortion
 (
     false,
@@ -491,6 +495,7 @@ cutoff
     generate_short_human_name(FILTER_NAME_SHORT,id_,"cutoff"),
     0.7
 ),
+cutoff_smoother(&cutoff),
 modulate_cutoff
 (
     true,
@@ -508,6 +513,7 @@ resonance
     generate_short_human_name(FILTER_NAME_SHORT,id_,"resonance"),
     0.2
 ),
+resonance_smoother(&resonance),
 modulate_resonance
 (
     true,
@@ -525,6 +531,7 @@ gain
     generate_short_human_name(FILTER_NAME_SHORT,id_,"gain"),
     0.8
 ),
+gain_smoother(&gain),
 modulate_gain
 (
     true,
@@ -541,6 +548,8 @@ compressor
     generate_param_name(FILTER_NAME,id_,"compressor"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"boost")
 ),
+compressor_smoother(&compressor),
+
 pan
 (
     MIN_MAX( -1, 1 ),
@@ -565,6 +574,7 @@ output
     generate_short_human_name(FILTER_NAME_SHORT,id_,"volume"),
     0.6
 ),
+output_smoother(&output),
 output_clipping
 (
     MIN_MAX( 0, 1 ),
@@ -573,6 +583,8 @@ output_clipping
     generate_param_name(FILTER_NAME,id_,"output_clipping"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"clipping")
 ),
+output_clipping_smoother(&output_clipping),
+
 modulate_output
 (
     false,
@@ -848,6 +860,8 @@ hold
     "hold","env_ON", false
 )
 {
+
+
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
         ENVData* env_data = new ENVData( band_id+EQ_ENV_ID_OFFSET );
@@ -1619,6 +1633,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
         generate_short_human_name("MAIN","volume")
     ),
+    volume_smoother(&volume),
     glide
     (
         MIN_MAX( 0, 1 ),
@@ -1635,6 +1650,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
         generate_short_human_name("FX","delay")
     ),
+    delay_smoother(&delay),
     effect_bypass
     (
         MIN_MAX( 0, 1 ),
@@ -1643,7 +1659,8 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
         generate_short_human_name("FX","mix")
     ),
-    final_compression
+    effect_bypass_smoother(&effect_bypass),
+    final_clipping
     (
         MIN_MAX( 0, 1 ),
         0.7,
@@ -1651,6 +1668,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
         generate_short_human_name("MAIN","clipping")
     ),
+    final_clipping_smoother(&final_clipping),
     shape
     (
         MIN_MAX( 0, 1 ),
@@ -1659,6 +1677,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
         generate_short_human_name("FX","shape")
     ),
+    shape_smoother(&shape),
     octave_offset
     (
         MIN_MAX( -2, 2 ),
@@ -1690,10 +1709,10 @@ id( data_type ),
 
     glide_motor_time
     (
-        MIN_MAX( 20, 20000 ),
-        500,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide_motor_time"),
-        generate_short_human_name("GLOB","glide_motor_time")
+        MIN_MAX( 1, 1000 ),
+        5,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
+        generate_short_human_name("GLOB","smooth_motor_time")
     ),
     velocity_glide_time
     (
@@ -2006,7 +2025,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->shape = src_->shape;
     dest_->octave_offset = src_->octave_offset;
     dest_->osc_retune = src_->osc_retune;
-    dest_->final_compression = src_->final_compression;
+    dest_->final_clipping = src_->final_clipping;
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -2063,7 +2082,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->effect_bypass );
     collect_saveable_parameters( env_data, saveable_parameters, true );
     collect_saveable_parameters( eq_data, saveable_parameters );
-    saveable_parameters.add( &this->final_compression );
+    saveable_parameters.add( &this->final_clipping );
     saveable_parameters.add( &this->volume );
 
     saveable_parameters.add( &this->glide );
@@ -2318,7 +2337,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         // MAIN
         {
             morph_group_3->register_parameter( volume.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( final_compression.ptr(), data_type == MASTER );
+            morph_group_3->register_parameter( final_clipping.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( env_data->attack.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->decay.ptr(), data_type == MASTER  );

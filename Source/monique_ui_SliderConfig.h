@@ -4462,7 +4462,7 @@ public:
 class VolumeConfig : public ModulationSliderConfigBase
 {
     Parameter*const volume;
-    Parameter*const final_compression;
+    Parameter*const final_clipping;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4503,7 +4503,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return final_compression;
+        return final_clipping;
     }
 
     //==============================================================================
@@ -4584,7 +4584,7 @@ public:
     VolumeConfig()
         :
         volume( &(GET_DATA(synth_data).volume) ),
-        final_compression( &(GET_DATA(synth_data).final_compression) )
+        final_clipping( &(GET_DATA(synth_data).final_clipping) )
     {}
 
     JUCE_LEAK_DETECTOR (VolumeConfig)

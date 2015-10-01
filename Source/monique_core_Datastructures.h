@@ -92,6 +92,7 @@ class DataBuffer // DEFINITION IN SYNTH.CPP
 public:
     // ==============================================================================
     // WORKERS
+  // TODO REDUCE TO NEEDED 
     mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS*2> direct_filter_output_samples;
@@ -266,22 +267,64 @@ inline RuntimeInfo::Step::~Step() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class ParameterBuffer : public RuntimeListener
+class SmoothedParameter;
+class SmoothManager : public RuntimeListener
+{
+    friend class SmoothedParameter;
+    Array< SmoothedParameter* > smoothers;
+
+    COLD SmoothManager() noexcept;
+    COLD ~SmoothManager() noexcept;
+
+public:
+    void smooth( int num_samples_ ) noexcept;
+    void reset() noexcept;
+
+public:
+    juce_DeclareSingleton (SmoothManager,false)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class SmoothedParameter : public RuntimeListener
 {
     mono_AudioSampleBuffer<1> values;
-  
+    mono_AudioSampleBuffer<1> values_modulated;
+
     Parameter*const param_to_smooth;
+
+    float const max_value;
+    float const min_value;
+
     float last_value;
     float last_target;
     float difference_per_sample;
     int samples_left;
-    
-    void block_size_changed() noexcept override; 
+    int buffer_is_linear_up_to_date_filled;
+
+    COLD void block_size_changed() noexcept override;
 
 public:
     void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
+    void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
 
-COLD ParameterBuffer( Parameter*const param_to_smooth_ ) noexcept;
+    inline const float* get_smoothed_buffer() const noexcept
+    {
+        return values.getReadPointer();
+    }
+    inline const float* get_smoothed_modulated_buffer() const noexcept
+    {
+        return values_modulated.getReadPointer();
+    }
+    inline float operator[] ( int sid ) const noexcept
+    {
+        return values.getReadPointer()[sid];
+    }
+    void reset() noexcept {}
+
+    COLD SmoothedParameter( Parameter*const param_to_smooth_ ) noexcept;
+    COLD ~SmoothedParameter() noexcept;
 };
 
 //==============================================================================
@@ -314,10 +357,13 @@ struct OSCData
 
     Parameter wave;
     ModulatedParameter tune;
+    SmoothedParameter tune_smoother;
+
     BoolParameter is_lfo_modulated;
 
     Parameter fm_freq;
     Parameter fm_amount;
+    SmoothedParameter fm_amount_smoother;
 
     BoolParameter fm_shot;
     BoolParameter sync;
@@ -350,6 +396,7 @@ struct ENVData
     Parameter decay;
     IntParameter max_decay_time;
     Parameter sustain;
+    SmoothedParameter sustain_smoother;
     Parameter sustain_time;
     Parameter release;
     IntParameter max_release_time;
@@ -358,7 +405,7 @@ struct ENVData
 
     //==========================================================================
     COLD ENVData( int id_ ) noexcept;
-    COLD virtual ~ENVData() noexcept;
+    COLD ~ENVData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
@@ -370,25 +417,33 @@ struct FilterData : ParameterListener
 {
     IntParameter filter_type;
     Parameter adsr_lfo_mix;
+    SmoothedParameter adsr_lfo_mix_smoother;
 
     ModulatedParameter distortion;
+    SmoothedParameter distortion_smoother;
     BoolParameter modulate_distortion;
 
     ModulatedParameter cutoff;
+    SmoothedParameter cutoff_smoother;
     BoolParameter modulate_cutoff;
 
     ModulatedParameter resonance;
+    SmoothedParameter resonance_smoother;
     BoolParameter modulate_resonance;
 
     ModulatedParameter gain;
+    SmoothedParameter gain_smoother;
     BoolParameter modulate_gain;
 
 
     Parameter compressor;
+    SmoothedParameter compressor_smoother;
     Parameter pan;
     BoolParameter modulate_pan;
     ModulatedParameter output;
+    SmoothedParameter output_smoother;
     Parameter output_clipping;
+    SmoothedParameter output_clipping_smoother;
     BoolParameter modulate_output;
 
     ArrayOfParameters input_sustains;
@@ -763,17 +818,23 @@ struct MoniqueSynthData : ParameterListener
     const int id;
 
     Parameter volume;
+    SmoothedParameter volume_smoother;
     Parameter glide;
     Parameter delay;
+    SmoothedParameter delay_smoother;
     Parameter effect_bypass;
-    Parameter final_compression;
+    SmoothedParameter effect_bypass_smoother;
+    Parameter final_clipping;
+    SmoothedParameter final_clipping_smoother;
     Parameter shape;
+    SmoothedParameter shape_smoother;
     IntParameter octave_offset;
     BoolParameter osc_retune;
 
     BoolParameter sync;
     Parameter speed;
 
+    // TODO private
     IntParameter glide_motor_time;
     IntParameter velocity_glide_time;
 

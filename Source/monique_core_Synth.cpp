@@ -15,53 +15,142 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-
-COLD ParameterBuffer::ParameterBuffer( Parameter*const param_to_smooth_ ) noexcept
+COLD SmoothedParameter::SmoothedParameter( Parameter*const param_to_smooth_ ) noexcept
 :
-param_to_smooth(param_to_smooth_),
-                last_value(param_to_smooth_->get_value()),
-                last_target(last_value),
-                difference_per_sample(0)
-{}
+values(block_size),
+       values_modulated(block_size),
 
-void ParameterBuffer::block_size_changed() noexcept override
+       param_to_smooth(param_to_smooth_),
+
+       max_value( param_to_smooth_->get_info().max_value ),
+       min_value( param_to_smooth_->get_info().min_value ),
+
+       last_value(param_to_smooth_->get_value()),
+       last_target(last_value),
+       difference_per_sample(0),
+       samples_left(0),
+       buffer_is_linear_up_to_date_filled(false)
 {
-    values.setSize( block_size );
+    SmoothManager::getInstance()->smoothers.add(this);
+}
+COLD SmoothedParameter::~SmoothedParameter() noexcept
+{
+    SmoothManager::getInstance()->smoothers.removeFirstMatchingValue(this);
 }
 
-inline void ParameterBuffer::smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept
+//==============================================================================
+COLD void SmoothedParameter::block_size_changed() noexcept
 {
-    const int glide_motor_time = GET_DATA( synth_data ).glide_motor_time;
-    const float target = param_to_smooth->get_value();
+    values.setSize( block_size );
+    values_modulated.setSize( block_size );
+    buffer_is_linear_up_to_date_filled = false;
+}
 
-    float* target_buffer = values.getWritePointer();
-    FloatVectorOperations::fill( target_buffer, last_value, num_samples_ );
-
-    if( target != last_target )
+inline void SmoothedParameter::smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept
+{
     {
-        samples_left = glide_motor_time_in_samples;
-
-        const float difference = target - last_value;
-        difference_per_sample = difference / samples_left;
-
-        last_target = target;
+        const float target = param_to_smooth->get_value();
+        if( target != last_target )
+        {
+            samples_left = glide_motor_time_in_samples;
+            difference_per_sample = (target - last_value) / samples_left;
+            last_target = target;
+        }
     }
 
     if( samples_left > 0 )
     {
+        float* target_buffer = values.getWritePointer();
         if( samples_left >= num_samples_ )
         {
-            FloatVectorOperations::add( target_buffer, difference_per_sample, num_samples_ );
+            for( int i = 0 ; i != num_samples_ ; ++i )
+            {
+                target_buffer[i] = last_value += difference_per_sample;
+            }
             samples_left -= num_samples_;
         }
         else
         {
-            FloatVectorOperations::add( target_buffer, difference_per_sample, samples_left );
+            int i = 0;
+            for(  ; i != samples_left ; ++i )
+            {
+                target_buffer[i] = last_value += difference_per_sample;
+            }
             samples_left = 0;
+
+            for(  ; i < num_samples_ ; ++i )
+            {
+                target_buffer[i] = last_target;
+            }
+            last_value = last_target;
+        }
+
+        buffer_is_linear_up_to_date_filled = false;
+    }
+    else if( not buffer_is_linear_up_to_date_filled )
+    {
+        float* target_buffer = values.getWritePointer();
+        for( int i = 0 ; i != values.get_size() ; ++i )
+        {
+            target_buffer[i] = last_target;
+        }
+
+        last_value = last_target;
+        buffer_is_linear_up_to_date_filled = true;
+    }
+}
+
+inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept
+{
+    const float target_modulation = param_to_smooth->get_modulation_amount();
+    if( is_modulated_ and target_modulation != 0 )
+    {
+        float* target_buffer = values_modulated.getWritePointer();
+        const float* source_buffer = values.getReadPointer();
+        if( target_modulation > 0 )
+        {
+            for( int i = 0 ; i != num_samples_ ; ++i )
+            {
+                float in = source_buffer[i];
+                target_buffer[i] = in + (max_value-in) * modulator_buffer_[i]*target_modulation;
+            }
+        }
+        else
+        {
+            for( int i = 0 ; i != num_samples_ ; ++i )
+            {
+                float in = source_buffer[i];
+                target_buffer[i] = in - (in-min_value) * modulator_buffer_[i]*target_modulation;
+            }
         }
     }
+    else
+    {
+        FloatVectorOperations::copy( values_modulated.getWritePointer(), values.getReadPointer(), num_samples_ );
+    }
 
-    last_value = target_buffer[num_samples_-1];
+    param_to_smooth->get_runtime_info().set_last_modulation_amount( modulator_buffer_[num_samples_-1]*target_modulation );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+juce_ImplementSingleton (SmoothManager)
+
+COLD SmoothManager::SmoothManager() noexcept {}
+COLD SmoothManager::~SmoothManager() noexcept
+{
+    clearSingletonInstance();
+}
+
+//==============================================================================
+inline void SmoothManager::smooth( int num_samples_ ) noexcept
+{
+    int glide_motor_time_in_samples( msToSamplesFast(GET_DATA(synth_data).glide_motor_time.get_value(), sample_rate) );
+    for( int i = 0 ; i != smoothers.size() ; ++i )
+    {
+        smoothers.getUnchecked(i)->smooth( glide_motor_time_in_samples, num_samples_ );
+    }
 }
 
 //==============================================================================
@@ -107,9 +196,13 @@ inline bool mono_MultiThreaded::isWorking() const noexcept
 {
     bool is_working;
     if( thread )
+    {
         is_working = thread->isThreadRunning();
+    }
     else
+    {
         is_working = false;
+    }
 
     return is_working;
 }
@@ -269,396 +362,6 @@ juce_ImplementSingleton (mono_ParameterOwnerStore)
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class PODSmoother
-{
-protected:
-    const float min_value;
-    const float max_value;
-
-    float current_value;
-    float target_value;
-    float delta;
-    int counter;
-
-public:
-    inline float tick_upate( float new_target_, int glide_time_in_samples_ ) noexcept;
-    inline float get_last_tick_value() const noexcept;
-
-    inline void reset() noexcept;
-    inline void replace_current_value( float value_ ) noexcept;
-
-    COLD PODSmoother( float min_, float max_, float init_value_ ) noexcept;
-    COLD ~PODSmoother() noexcept;
-
-private:
-    //MONO_NOT_CTOR_COPYABLE( PODSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( PODSmoother )
-};
-
-//==============================================================================
-COLD PODSmoother::PODSmoother( float min_, float max_, float init_value_ ) noexcept
-:
-min_value( min_ ),
-           max_value( max_ ),
-
-           current_value( init_value_ ),
-           target_value( init_value_ ),
-           delta(0),
-           counter(0)
-{}
-
-COLD PODSmoother::~PODSmoother() noexcept {}
-
-//==============================================================================
-inline float PODSmoother::tick_upate( float new_target_, int glide_time_in_samples_ ) noexcept
-{
-    if( target_value != new_target_ )
-    {
-        counter = glide_time_in_samples_;
-        delta = (new_target_-current_value) / glide_time_in_samples_;
-        target_value = new_target_;
-    }
-
-    if( --counter <= 0 )
-    {
-        current_value = target_value;
-    }
-    else
-    {
-        current_value+=delta;
-    }
-
-    if( current_value < min_value )
-    {
-        current_value = min_value;
-    }
-    else if( current_value > max_value )
-    {
-        current_value = max_value;
-    }
-
-    return current_value;
-}
-inline float PODSmoother::get_last_tick_value() const noexcept
-{
-    return current_value;
-}
-inline void PODSmoother::reset() noexcept
-{
-    current_value = target_value;
-    delta = 0;
-    counter = 0;
-}
-inline void PODSmoother::replace_current_value( float value_ ) noexcept
-{
-    current_value = value_;
-    target_value = value_;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//TODO for 0 to 1 ? or what ever
-// TODO rename to param smoother
-class ValueSmootherModulatedUpdater;
-class ValueSmoother
-{
-protected:
-    friend class ValueSmootherModulatedUpdater;
-    Parameter*const base;
-
-    const float min_value;
-    const float max_value;
-
-    float current_value;
-    float target_value;
-    float delta;
-    int counter;
-
-public:
-    inline float tick() noexcept;
-    inline float get_last_tick_value() const noexcept;
-    inline void update( int glide_time_in_samples_ ) noexcept;
-
-    inline void reset() noexcept;
-    inline void replace_current_value( float value_ ) noexcept;
-
-    COLD ValueSmoother( Parameter*const base_ ) noexcept;
-    COLD ValueSmoother( const ValueSmoother& other_ ) noexcept;
-    COLD ~ValueSmoother() noexcept;
-
-private:
-    //MONO_NOT_CTOR_COPYABLE( ValueSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( ValueSmoother )
-};
-
-//==============================================================================
-COLD ValueSmoother::ValueSmoother( Parameter*const base_ ) noexcept
-:
-base( base_ ),
-
-      min_value( base_->get_info().min_value ),
-      max_value( base_->get_info().max_value ),
-
-      current_value( base_->get_value() ),
-      target_value( current_value ),
-      delta(0),
-      counter(0)
-{}
-
-COLD ValueSmoother::ValueSmoother( const ValueSmoother& other_ ) noexcept
-:
-base( other_.base ),
-
-min_value( other_.base->get_info().min_value ),
-max_value( other_.base->get_info().max_value ),
-
-current_value( other_.current_value ),
-target_value( other_.target_value ),
-delta(other_.delta),
-counter(other_.counter)
-{}
-
-COLD ValueSmoother::~ValueSmoother() noexcept {}
-
-//==============================================================================
-inline float ValueSmoother::tick() noexcept
-{
-    if( --counter <= 0 )
-    {
-        current_value = target_value;
-    }
-    else
-    {
-        current_value+=delta;
-    }
-
-    if( current_value < min_value )
-    {
-        current_value = min_value;
-    }
-    else if( current_value > max_value )
-    {
-        current_value = max_value;
-    }
-
-    return current_value;
-}
-inline float ValueSmoother::get_last_tick_value() const noexcept
-{
-    return current_value;
-}
-inline void ValueSmoother::update( int glide_time_in_samples_ ) noexcept
-{
-    float target = base->get_value();
-    if( target_value != target )
-    {
-        counter = glide_time_in_samples_;
-        delta = (target-current_value) / glide_time_in_samples_;
-        target_value = target;
-    }
-}
-inline void ValueSmoother::reset() noexcept
-{
-    target_value = base->get_value();
-    current_value = target_value;
-    delta = 0;
-    counter = 0;
-}
-inline void ValueSmoother::replace_current_value( float value_ ) noexcept
-{
-    current_value = value_;
-    target_value = value_;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class ValueSmootherModulated
-{
-    ValueSmoother value_smoother;
-
-    Parameter*const base;
-
-    float current_modulation_amount;
-    float target_modulation_amount;
-    float delta_modulation_amount;
-    int modulation_counter;
-
-    const float min_value;
-    const float max_value;
-
-    friend class ValueSmootherModulatedUpdater;
-    float last_modulation;
-
-public:
-    inline float tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept;
-private:
-    inline float tick( float current_modulation_in_percent_ ) noexcept;
-public:
-    inline void update( int glide_time_in_samples_ ) noexcept;
-    inline void reset() noexcept;
-
-    COLD ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept;
-    COLD ~ValueSmootherModulated() noexcept;
-
-private:
-    MONO_NOT_CTOR_COPYABLE( ValueSmootherModulated )
-    MONO_NOT_MOVE_COPY_OPERATOR( ValueSmootherModulated )
-};
-
-//==============================================================================
-COLD ValueSmootherModulated::ValueSmootherModulated( ModulatedParameter*const base_ ) noexcept
-:
-value_smoother( base_ ),
-
-                base( base_ ),
-
-                current_modulation_amount( base_->get_modulation_amount() ),
-                target_modulation_amount( base_->get_modulation_amount() ),
-                delta_modulation_amount( 0 ),
-                modulation_counter( 0 ),
-
-                min_value( base_->get_info().min_value ),
-                max_value( base_->get_info().max_value ),
-
-                last_modulation(0)
-{}
-COLD ValueSmootherModulated::~ValueSmootherModulated() noexcept {}
-
-//==============================================================================
-inline float ValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
-{
-    if( --modulation_counter <= 0 )
-    {
-        current_modulation_amount = target_modulation_amount;
-    }
-    else
-    {
-        current_modulation_amount+=delta_modulation_amount;
-    }
-
-    if( current_modulation_amount < -1 )
-    {
-        current_modulation_amount = -1;
-    }
-    else if( current_modulation_amount > 1 )
-    {
-        current_modulation_amount = 1;
-    }
-    last_modulation = (current_modulation_in_percent_*current_modulation_amount);
-    float smoothed_value = value_smoother.tick();
-    if( current_modulation_amount >= 0 )
-    {
-        const float max_modulation = max_value - smoothed_value;
-        const float modulation_offset = max_modulation*current_modulation_amount;
-        const float current_modulation_offset = modulation_offset*current_modulation_in_percent_;
-        smoothed_value += current_modulation_offset;
-    }
-    else
-    {
-        smoothed_value += ((smoothed_value-min_value)*(current_modulation_in_percent_*current_modulation_amount));
-    }
-
-    return smoothed_value;
-}
-inline float ValueSmootherModulated::tick( float current_modulation_in_percent_, bool add_modulation_ ) noexcept
-{
-    float value;
-    if( add_modulation_ )
-    {
-        value = this->tick(current_modulation_in_percent_);
-    }
-    else
-    {
-        value = value_smoother.tick();
-    }
-
-    if( value < min_value )
-    {
-        value = min_value;
-    }
-    else if( value > max_value )
-    {
-        value = max_value;
-    }
-
-    return value;
-}
-inline void ValueSmootherModulated::update( int glide_time_in_samples_ ) noexcept
-{
-    value_smoother.update( glide_time_in_samples_ );
-
-    const float target_modulation = base->get_modulation_amount();
-    if( target_modulation_amount != target_modulation )
-    {
-        modulation_counter = glide_time_in_samples_;
-        delta_modulation_amount = (target_modulation-current_modulation_amount) / glide_time_in_samples_;
-        target_modulation_amount = target_modulation;
-    }
-}
-inline void ValueSmootherModulated::reset() noexcept
-{
-    value_smoother.reset();
-
-    target_modulation_amount = base->get_modulation_amount();
-    current_modulation_amount = target_modulation_amount;
-    delta_modulation_amount = 0;
-    modulation_counter = 0;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class ValueSmootherModulatedTracked : public ValueSmootherModulated
-{
-    float last_out;
-    bool is_changed;
-
-public:
-    inline float tick( float current_modulation_in_percent_ ) noexcept;
-    inline bool is_changed_since_last_tick() const noexcept;
-
-    COLD ValueSmootherModulatedTracked( ModulatedParameter*const base_ );
-    COLD ~ValueSmootherModulatedTracked();
-
-private:
-    MONO_NOT_CTOR_COPYABLE( ValueSmootherModulatedTracked )
-    MONO_NOT_MOVE_COPY_OPERATOR( ValueSmootherModulatedTracked )
-};
-
-//==============================================================================
-COLD ValueSmootherModulatedTracked::ValueSmootherModulatedTracked( ModulatedParameter*const base_ )
-    :
-    ValueSmootherModulated( base_ ),
-    last_out(0),
-    is_changed(true)
-{}
-COLD ValueSmootherModulatedTracked::~ValueSmootherModulatedTracked() {}
-
-//==============================================================================
-inline float ValueSmootherModulatedTracked::tick( float current_modulation_in_percent_ ) noexcept
-{
-    float out = ValueSmootherModulated::tick( current_modulation_in_percent_, true );
-    is_changed = out != last_out;
-    last_out = out;
-    return out;
-}
-inline bool ValueSmootherModulatedTracked::is_changed_since_last_tick() const noexcept
-{
-    return is_changed;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
 #define AMP_SMOOTH_SIZE 10 // TODO as option and based to sample rate
 class AmpSmoothBuffer : RuntimeListener
 {
@@ -711,179 +414,6 @@ inline void AmpSmoothBuffer::reset( float value_ ) noexcept {
         buffer[i] = value_;
         sum += value_;
     }
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class SwitchSmoother
-{
-protected:
-    float current_value;
-    float target_value;
-    float delta;
-    int counter;
-    bool state;
-
-public:
-    inline bool reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept;
-    inline float tick_to( float current_value_ ) noexcept;
-    inline float get_last_tick_value() noexcept;
-    inline void reset() noexcept;
-
-    COLD SwitchSmoother() noexcept;
-    COLD ~SwitchSmoother() noexcept;
-
-private:
-    //MONO_NOT_CTOR_COPYABLE( SwitchSmoother )
-    MONO_NOT_MOVE_COPY_OPERATOR( SwitchSmoother )
-};
-
-//==============================================================================
-COLD SwitchSmoother::SwitchSmoother() noexcept
-:
-current_value( 0 ),
-               target_value( 0 ),
-               delta(0),
-               counter(0),
-               state(true)
-{}
-
-COLD SwitchSmoother::~SwitchSmoother() noexcept {}
-
-//==============================================================================
-inline bool SwitchSmoother::reset_counter_on_state_switch( bool maybe_new_state_ ) noexcept
-{
-    if( state != maybe_new_state_ )
-    {
-        state = maybe_new_state_;
-        counter = 500;
-        delta = 0;
-
-        return true;
-    }
-
-    return false;
-}
-inline float SwitchSmoother::tick_to( float current_value_ ) noexcept
-{
-    if( --counter <= 0 )
-    {
-        current_value = current_value_;
-        target_value = current_value_;
-        delta = 0;
-    }
-    else
-    {
-        //float tmp_old = target_value;
-        if( current_value_ != target_value )
-        {
-            target_value = current_value_;
-            delta = (target_value-current_value) / counter;
-        }
-        //std::cout << counter << " ::: " << "tmp_old:" << tmp_old << " target_value:" << target_value << " delta:" << delta << " delta:" << current_value << std::endl;
-    }
-
-    return current_value+=delta;
-}
-inline float SwitchSmoother::get_last_tick_value() noexcept
-{
-    return current_value;
-}
-inline void SwitchSmoother::reset() noexcept
-{
-    current_value = target_value;
-    delta = 0;
-    counter = 0;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class SwitchAndValueSmootherModulated
-{
-    friend class ValueSmootherModulatedUpdater;
-    SwitchSmoother switch_smoother;
-    ValueSmootherModulated value_smoother;
-
-    bool add_modulation;
-
-public:
-    //==========================================================================
-    inline float tick( float current_modulation_in_percent_ ) noexcept;
-    inline void update( int glide_time_in_samples_, bool add_modulation_ ) noexcept;
-
-    inline void reset() noexcept;
-
-    //==========================================================================
-    COLD SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept;
-    COLD ~SwitchAndValueSmootherModulated() noexcept;
-};
-
-//==============================================================================
-COLD SwitchAndValueSmootherModulated::SwitchAndValueSmootherModulated(ModulatedParameter*const base_) noexcept
-:
-value_smoother( base_ ),
-                add_modulation(false)
-{}
-COLD SwitchAndValueSmootherModulated::~SwitchAndValueSmootherModulated() noexcept {}
-
-//==============================================================================
-inline float SwitchAndValueSmootherModulated::tick( float current_modulation_in_percent_ ) noexcept
-{
-    const float value = switch_smoother.tick_to( add_modulation ? current_modulation_in_percent_ : 0 );
-    return value_smoother.tick( value, value > 0 );
-}
-inline void SwitchAndValueSmootherModulated::update( int glide_time_in_samples_, bool add_modulation_ ) noexcept
-{
-    add_modulation = add_modulation_;
-    value_smoother.update( glide_time_in_samples_ );
-    switch_smoother.reset_counter_on_state_switch(add_modulation_);
-}
-
-inline void SwitchAndValueSmootherModulated::reset() noexcept
-{
-    switch_smoother.reset();
-    value_smoother.reset();
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// UPDATAES THE MODULATION AMOUNT ON KILL
-class ValueSmootherModulatedUpdater
-{
-    ValueSmootherModulated*const smoother;
-
-public:
-    inline ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ )  noexcept;
-    inline ValueSmootherModulatedUpdater( SwitchAndValueSmootherModulated* smoother_, int glide_time_in_samples_, bool add_modulation_ )  noexcept;
-    inline ~ValueSmootherModulatedUpdater() noexcept;
-};
-
-//==============================================================================
-inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( ValueSmootherModulated* smoother_, int glide_time_in_samples_ ) noexcept
-:
-smoother( smoother_ )
-{
-    smoother_->update(glide_time_in_samples_);
-}
-inline ValueSmootherModulatedUpdater::ValueSmootherModulatedUpdater( SwitchAndValueSmootherModulated* switch_smoother_, int glide_time_in_samples_, bool add_modulation_ ) noexcept
-:
-smoother( &switch_smoother_->value_smoother )
-{
-    switch_smoother_->update(glide_time_in_samples_,add_modulation_);
-}
-inline ValueSmootherModulatedUpdater::~ValueSmootherModulatedUpdater() noexcept
-{
-    smoother->base->get_runtime_info().set_last_modulation_amount( smoother->last_modulation );
 }
 
 //==============================================================================
@@ -1221,7 +751,8 @@ inline float mono_BlitSquare::tick( void ) noexcept
     // Avoid a divide by zero, or use of a denomralized divisor
     // at the sinc peak, which has a limiting value of 1.0.
     float denominator = std::sin( phase_ );
-    if ( std::fabs( denominator )  < std::numeric_limits<float>::epsilon() ) {
+    if ( std::fabs( denominator )  < std::numeric_limits<float>::epsilon() )
+    {
         // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
         if ( phase_ < 0.1f || phase_ > (float_Pi*2) - 0.1f )
             lastBlitOutput_ = a_;
@@ -1240,7 +771,8 @@ inline float mono_BlitSquare::tick( void ) noexcept
     dcbState_ = lastBlitOutput_;
 
     phase_ += rate_;
-    if ( phase_ >= (float_Pi*2) ) {
+    if ( phase_ >= (float_Pi*2) )
+    {
         phase_ -= (float_Pi*2);
         _isNewCylce = true;
     }
@@ -1258,17 +790,21 @@ inline void mono_BlitSquare::reset() noexcept
     dcbState_ = 0;
     lastBlitOutput_ = 0;
 }
-inline void mono_BlitSquare::setPhase( float phase ) noexcept {
+inline void mono_BlitSquare::setPhase( float phase ) noexcept
+{
     phase_ = float_Pi * phase;
 }
 
-inline float mono_BlitSquare::getPhase() const noexcept {
+inline float mono_BlitSquare::getPhase() const noexcept
+{
     return phase_ * ( 1.0f/float_Pi );
 }
-inline bool mono_BlitSquare::isNewCylce() const noexcept {
+inline bool mono_BlitSquare::isNewCylce() const noexcept
+{
     return _isNewCylce;
 }
-inline void mono_BlitSquare::clearNewCycleState() noexcept {
+inline void mono_BlitSquare::clearNewCycleState() noexcept
+{
     _isNewCylce = false;
 }
 inline void mono_BlitSquare::setFrequency( float frequency ) noexcept
@@ -1376,14 +912,17 @@ inline void mono_SineWave::setFrequency( float frequency_ ) noexcept
     float cyclesPerSample = frequency_ * sample_rate_1ths;
     delta = cyclesPerSample * (float_Pi*2);
 }
-inline bool mono_SineWave::isNewCylce() const noexcept {
+inline bool mono_SineWave::isNewCylce() const noexcept
+{
     return _isNewCylce;
 }
-inline void mono_SineWave::clearNewCycleState() noexcept {
+inline void mono_SineWave::clearNewCycleState() noexcept
+{
     _isNewCylce = false;
 }
 
-COLD void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept {
+COLD void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept
+{
     setFrequency(frequency);
 }
 
@@ -1552,7 +1091,8 @@ COLD mono_Modulate::mono_Modulate()
 COLD mono_Modulate::~mono_Modulate() {}
 
 // -----------------------------------------------------------------
-inline float mono_Modulate::lastOut() const noexcept {
+inline float mono_Modulate::lastOut() const noexcept
+{
     return last_tick_value;
 }
 inline float mono_Modulate::tick() noexcept
@@ -1569,14 +1109,17 @@ inline float mono_Modulate::tick() noexcept
 }
 
 // -----------------------------------------------------------------
-inline void mono_Modulate::reset() noexcept {
+inline void mono_Modulate::reset() noexcept
+{
     last_tick_value = 0;
     vibrato.reset();
 }
-inline void mono_Modulate::setVibratoRate( float rate ) noexcept {
+inline void mono_Modulate::setVibratoRate( float rate ) noexcept
+{
     vibrato.setFrequency( rate );
 }
-inline void mono_Modulate::setVibratoGain( float gain ) noexcept {
+inline void mono_Modulate::setVibratoGain( float gain ) noexcept
+{
     vibratoGain = gain;
 }
 inline bool mono_Modulate::isNewCylce() const noexcept
@@ -1765,7 +1308,6 @@ class OSC : public RuntimeListener
     float last_frequency;
     int glide_time_in_samples;
     float glide_note_delta;
-    SwitchSmoother lfo2fix_octave_smoother;
 
     bool waiting_for_sync;
 
@@ -1773,6 +1315,7 @@ class OSC : public RuntimeListener
     float _last_root_note;
 
     float last_modulator_multi;
+    float last_tune;
     bool waiting_for_modulator_sync;
     int modulator_sync_cycles;
     int current_modulator_sync_cycle;
@@ -1796,14 +1339,11 @@ class OSC : public RuntimeListener
     mono_Modulate modulator;
     mono_Noise noise;
 
-    ValueSmootherModulatedTracked octave_smoother;
-    ValueSmoother fm_amount_smoother;
-
     // DATA SOURCE
     //==============================================================================
     DataBuffer*const data_buffer;
     const MoniqueSynthData*const synth_data;
-    const OSCData* osc_data;
+    OSCData* osc_data;
     const OSCData* master_osc_data;
 
 public:
@@ -1829,10 +1369,10 @@ id( id_ ),
     last_frequency( 0 ),
     glide_time_in_samples(0),
     glide_note_delta(0),
-    lfo2fix_octave_smoother(),
     waiting_for_sync(false),
     _root_note( 60 ),
     _last_root_note( -1 ),
+    last_tune(0),
     last_modulator_multi( 0 ),
     waiting_for_modulator_sync( false ),
     modulator_sync_cycles( 1 ),
@@ -1846,9 +1386,6 @@ id( id_ ),
     puls_swing_switch_counter(0),
     last_puls_was_large(false),
     last_cycle_was_pulse_switch(0),
-
-    octave_smoother( &GET_DATA( osc_datas[id_] ).tune ),
-    fm_amount_smoother( &GET_DATA( osc_datas[id_] ).fm_amount ),
 
     data_buffer( GET_DATA_PTR(data_buffer) ),
     synth_data( synth_data_ ),
@@ -1891,13 +1428,10 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
         puls_swing_amp = 1;
     }
 
-    const int glide_motor_time = synth_data->glide_motor_time;
-    ValueSmootherModulatedUpdater u_octave( &octave_smoother, glide_motor_time );
-    fm_amount_smoother.update( glide_motor_time );
+    const float* smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
 
     const float wave = osc_data->wave;
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
-    lfo2fix_octave_smoother.reset_counter_on_state_switch( is_lfo_modulated );
     const bool sync
     (
         osc_data->sync
@@ -1912,12 +1446,14 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
     const bool master_sync = master_osc_data->sync;
     const bool master_fm_shot = master_osc_data->fm_shot;
     const int master_switch = master_osc_data->osc_switch;
+    osc_data->tune_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
+    const float* smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
     for( int sid = 0 ; sid < num_samples_ ; ++sid )
     {
         // UPDATE FREQUENCY - TODO after ticks
         {
-            const float octave_mod = octave_smoother.tick( lfo2fix_octave_smoother.tick_to( is_lfo_modulated ? lfo_amps[sid] : 0 ) );
             bool change_modulator_frequency = false;
+            const float tune = smoothed_tune_buffer[sid];
 
             // GLIDE
             bool is_glide_rest = false;
@@ -1929,7 +1465,7 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
             if
             (
                 _last_root_note != _root_note
-                or octave_smoother.is_changed_since_last_tick()
+                or tune != last_tune
                 or is_glide_rest
                 or last_cycle_was_pulse_switch
             )
@@ -1937,7 +1473,7 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
                 float new_frequence;
                 {
                     float floated_note = ( float(_root_note)
-                                           + octave_mod
+                                           + tune
                                            + glide_note_delta*glide_time_in_samples );
                     const int note_low = mono_floor( floated_note );
                     new_frequence = MidiMessage::getMidiNoteInHertz(note_low);
@@ -1992,6 +1528,7 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
             {
                 change_modulator_frequency = true;
             }
+            last_tune = tune;
 
             // MODULATOR FREQUENCY TODO -> only osc 1
             if( change_modulator_frequency )
@@ -2140,7 +1677,6 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
         }
 
         // FMlfo_amplitudes
-        const float fm_amount = fm_amount_smoother.tick();
         float modulator_sample = 0;
         {
             if( id == MASTER_OSC )
@@ -2218,7 +1754,7 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
             }
 
             // OUT
-            if( fm_amount )
+            if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
             {
                 sample = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
             }
@@ -2259,11 +1795,6 @@ inline void OSC::reset() noexcept
     sine_generator.reset();
 
     modulator.reset();
-
-    octave_smoother.reset();
-    fm_amount_smoother.reset();
-
-    lfo2fix_octave_smoother.reset();
 }
 
 //==============================================================================
@@ -2294,14 +1825,13 @@ class ValueEnvelope : public RuntimeListener
 {
     int samples_to_target_left;
     float current_value;
-    PODSmoother sustain_smoother;
     float last_value;
     float end_value;
 
 public:
     inline float tick( float shape_, float shape_factor_ ) noexcept;
-    inline float sustain_tick( float sustain_, int glide_motor_time_ ) noexcept;
-    inline void update( float end_value_, int time_in_samples, float start_value_ = WORK_FROM_CURRENT_VALUE, bool reset_sustain_ = false ) noexcept;
+    inline void sustain_tick( float sustain_ ) noexcept;
+    inline void update( float end_value_, int time_in_samples, float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
     inline bool end_reached() const noexcept;
     inline void replace_current_value( float value_ ) noexcept;
 
@@ -2322,7 +1852,6 @@ COLD ValueEnvelope::ValueEnvelope() noexcept
 :
 samples_to_target_left(0),
                        current_value(0),
-                       sustain_smoother(0,1,0),
                        last_value(0),
                        end_value(0)
 {
@@ -2425,14 +1954,13 @@ inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
 
     return current_value;
 }
-inline float ValueEnvelope::sustain_tick( float sustain_, int glide_motor_time_ ) noexcept
+inline void ValueEnvelope::sustain_tick( float sustain_ ) noexcept
 {
     --samples_to_target_left;
-    current_value = sustain_smoother.tick_upate( sustain_, glide_motor_time_ );
-    return current_value;
+    current_value = sustain_;
 }
 
-inline void ValueEnvelope::update( float end_value_, int time_in_samples, float start_value_, bool reset_sustain_ ) noexcept
+inline void ValueEnvelope::update( float end_value_, int time_in_samples, float start_value_ ) noexcept
 {
     // UPDATE INTERNALS
     if( start_value_ != WORK_FROM_CURRENT_VALUE )
@@ -2441,11 +1969,6 @@ inline void ValueEnvelope::update( float end_value_, int time_in_samples, float 
     }
 
     end_value = end_value_;
-    if( reset_sustain_ )
-    {
-        sustain_smoother.reset();
-        sustain_smoother.replace_current_value( current_value );
-    }
 
     // CALC
     samples_to_target_left = msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate );
@@ -2556,7 +2079,8 @@ inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
         float result;
         if( current_stage == SUSTAIN )
         {
-            result = envelop.sustain_tick( sustain, glide_motor_time );
+            envelop.sustain_tick( sustain );
+            result = env_data->sustain_smoother[sid];
         }
         else
         {
@@ -2609,7 +2133,7 @@ inline void ENV::update_stage() noexcept
             sustain_time = sustain_time*10000;
         }
 
-        envelop.update( env_data->sustain, sustain_time, WORK_FROM_CURRENT_VALUE, true );
+        envelop.update( env_data->sustain, sustain_time, WORK_FROM_CURRENT_VALUE );
         current_stage = SUSTAIN;
     }
     break;
@@ -3268,7 +2792,6 @@ class EnvelopeFollower
     float release;
 
 public:
-    //inline void processEnvelope (const float* input_buffer_, float* output_buffer_, int num_samples_) noexcept;
     inline float process_single_sample (const float in_) noexcept;
     inline void setCoefficients (float attack_, float release_) noexcept;
     inline void reset() noexcept;
@@ -3291,32 +2814,19 @@ envelope (0),
 COLD EnvelopeFollower::~EnvelopeFollower() noexcept {}
 
 //==============================================================================
-/*
-inline void EnvelopeFollower::processEnvelope ( const float* input_buffer_, float* output_buffer_, int num_samples_ ) noexcept
-{
-    for (int i = 0; i != num_samples_; ++i)
-    {
-        using namespace std;
-        float envIn = fabsf (input_buffer_[i]);
-
-        if (envelope < envIn)
-            envelope += attack * (envIn - envelope);
-        else if (envelope > envIn)
-            envelope -= release * (envelope - envIn);
-
-        output_buffer_[i] = envelope;
-    }
-}
-*/
 inline float EnvelopeFollower::process_single_sample ( const float in_ ) noexcept
 {
     using namespace std;
     float envIn = fabsf (in_);
 
     if (envelope < envIn)
+    {
         envelope += attack * (envIn - envelope);
+    }
     else if (envelope > envIn)
+    {
         envelope -= release * (envelope - envIn);
+    }
 
     return envelope;
 }
@@ -3362,26 +2872,16 @@ class FilterProcessor
 
 public:
     ScopedPointer< ENV > env;
+    Array< ENVData* > input_env_datas;
     OwnedArray< ENV > input_envs;
 
 private:
     EnvelopeFollower env_follower;
 
-    SwitchAndValueSmootherModulated cutoff_smoother;
-    SwitchAndValueSmootherModulated resonance_smoother;
-    SwitchAndValueSmootherModulated gain_smoother;
-    SwitchAndValueSmootherModulated distortion_smoother;
-    SwitchAndValueSmootherModulated output_smoother;
-    ValueSmoother mix_smoother;
-    ValueSmoother clipping_smoother;
-    ValueSmoother boost_smoother;
-    ValueSmoother input_sustains[SUM_INPUTS_PER_FILTER];
-    SwitchSmoother amp2sustain_smoother[SUM_INPUTS_PER_FILTER];
-
     const int id;
 
     const MoniqueSynthData*const synth_data;
-    const FilterData*const filter_data;
+    FilterData*const filter_data;
     DataBuffer*const data_buffer;
 
 public:
@@ -3415,17 +2915,6 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
      input_envs(),
      env_follower(),
 
-     cutoff_smoother( &GET_DATA( filter_datas[id_] ).cutoff ),
-     resonance_smoother( &GET_DATA( filter_datas[id_] ).resonance ),
-     gain_smoother( &GET_DATA( filter_datas[id_] ).gain ),
-     distortion_smoother( &GET_DATA( filter_datas[id_] ).distortion ),
-     output_smoother( &GET_DATA( filter_datas[id_] ).output ),
-     mix_smoother( &GET_DATA( filter_datas[id_] ).adsr_lfo_mix ),
-     clipping_smoother( &GET_DATA( filter_datas[id_] ).output_clipping ),
-     boost_smoother( &GET_DATA( filter_datas[id_] ).compressor ),
-     input_sustains { &GET_DATA( filter_datas[id_] ).input_sustains[0], &GET_DATA( filter_datas[id_] ).input_sustains[1], &GET_DATA( filter_datas[id_] ).input_sustains[2] },
-     amp2sustain_smoother(),
-
      id(id_),
 
      synth_data( synth_data_ ),
@@ -3434,7 +2923,9 @@ env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
-        input_envs.add( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).input_envs[i] ) );
+        ENVData*input_env_data(GET_DATA( filter_datas[id_] ).input_envs[i]);
+        input_env_datas.add( input_env_data );
+        input_envs.add( new ENV( synth_data_, input_env_data ) );
     }
 }
 COLD FilterProcessor::~FilterProcessor() noexcept {}
@@ -3467,18 +2958,6 @@ inline void FilterProcessor::reset() noexcept
         input_envs.getUnchecked(input_id)->reset();
     }
 
-    cutoff_smoother.reset();
-    resonance_smoother.reset();
-    gain_smoother.reset();
-    distortion_smoother.reset();
-    output_smoother.reset();
-    mix_smoother.reset();
-    clipping_smoother.reset();
-
-    input_sustains[0].reset();
-    input_sustains[1].reset();
-    input_sustains[2].reset();
-
     double_filter[0].reset();
     double_filter[1].reset();
     double_filter[2].reset();
@@ -3494,30 +2973,18 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
 
     // CALCULATE INPUTS AND ENVELOPS
     {
-        ValueSmoother& input_sustain_smoother = input_sustains[input_id];
-        input_sustain_smoother.update( glide_motor_time );
+        const float* smoothed_sustain_buffer( input_env_datas[input_id]->sustain_smoother.get_smoothed_buffer() );
         const float* const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
 
         // SWITCH FROM AMP TO INPUT CRACKL REMOVER
         const bool input_hold( filter_data->input_holds[input_id] );
-        SwitchSmoother*const amp2s_smoother( &amp2sustain_smoother[input_id] );
-        ENV*const input_env( input_envs.getUnchecked(input_id) );
-        if( amp2s_smoother->reset_counter_on_state_switch( input_hold ) )
-        {
-            if( not input_hold )
-            {
-                input_env->overwrite_current_value( amp2s_smoother->get_last_tick_value() );
-                input_env->set_current_stage( ATTACK );
-            }
-        }
-
         if( input_hold )
         {
             if( id == FILTER_1 )
             {
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( input_sustain_smoother.tick() );
+                    tmp_input_ar_amp[sid] = smoothed_sustain_buffer[sid];
                     tmp_input_buffer[sid] = osc_input_buffer[sid];
                 }
             }
@@ -3526,15 +2993,15 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
                 const float* filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    const float sustain = input_sustain_smoother.tick();
+                    const float sustain = smoothed_sustain_buffer[sid];
                     if( sustain < 0 )
                     {
-                        tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( sustain*-1 );
+                        tmp_input_ar_amp[sid] = sustain*-1;
                         tmp_input_buffer[sid] = osc_input_buffer[sid];
                     }
                     else
                     {
-                        tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( sustain );
+                        tmp_input_ar_amp[sid] = sustain;
                         tmp_input_buffer[sid] = filter_before_buffer[sid];
                     }
                 }
@@ -3543,24 +3010,19 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
         }
         else // USING ADR
         {
+            ENV*const input_env( input_envs.getUnchecked(input_id) );
             input_env->process( tmp_input_ar_amp, num_samples );
 
             if( id == FILTER_1 )
             {
-                input_sustain_smoother.reset();
                 FloatVectorOperations::copy( tmp_input_buffer, osc_input_buffer, num_samples );
-
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( tmp_input_ar_amp[sid] );
-                }
             }
             else
             {
                 const float* filter_before_buffer = data_buffer->filter_output_samples.getReadPointer(input_id + SUM_INPUTS_PER_FILTER*(id-1) );
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    const float sustain = input_sustain_smoother.tick();
+                    const float sustain = smoothed_sustain_buffer[sid];
                     if( sustain < 0 )
                     {
                         tmp_input_buffer[sid] = osc_input_buffer[sid];
@@ -3569,8 +3031,6 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
                     {
                         tmp_input_buffer[sid] = filter_before_buffer[sid];
                     }
-
-                    tmp_input_ar_amp[sid] = amp2s_smoother->tick_to( tmp_input_ar_amp[sid] );
                 }
             }
         }
@@ -3581,14 +3041,14 @@ inline void FilterProcessor::process_amp_mix( const int num_samples ) noexcept
 // ADSTR - LFO MIX
     const int glide_motor_time = synth_data->glide_motor_time;
     float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
-    mix_smoother.update(glide_motor_time);
+    const float* smoothed_mix_buffer( filter_data->adsr_lfo_mix_smoother.get_smoothed_buffer() );
     {
         const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
         const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
             // LFO ADSR MIX - HERE TO SAVE ONE LOOP
-            const float mix = (1.0f+mix_smoother.tick()) * 0.5f;
+            const float mix = (1.0f+smoothed_mix_buffer[sid]) * 0.5f;
             amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
         }
     }
@@ -3606,35 +3066,22 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
 #define MAX_CUTOFF 8000.0f
 #define MIN_CUTOFF 40.0f
 
-        ValueSmootherModulatedUpdater u_cutoof( &cutoff_smoother, glide_motor_time, filter_data->modulate_cutoff );
-        ValueSmootherModulatedUpdater u_resonance( &resonance_smoother, glide_motor_time, filter_data->modulate_resonance );
-        ValueSmootherModulatedUpdater u_gain( &gain_smoother, glide_motor_time, filter_data->modulate_gain );
-        ValueSmootherModulatedUpdater u_distortion( &distortion_smoother, glide_motor_time, filter_data->modulate_distortion );
+        // PREPARE
+        {
+            process_amp_mix(num_samples);
+
+            filter_data->resonance_smoother.process_modulation( filter_data->modulate_resonance, amp_mix, num_samples );
+            filter_data->cutoff_smoother.process_modulation( filter_data->modulate_cutoff, amp_mix, num_samples );
+            filter_data->gain_smoother.process_modulation( filter_data->modulate_gain, amp_mix, num_samples );
+            filter_data->distortion_smoother.process_modulation( filter_data->modulate_distortion, amp_mix, num_samples );
+        }
+
         switch( filter_data->filter_type )
         {
         case LPF :
         case LPF_2_PASS :
         case MOOG_AND_LPF:
         {
-            // PREPARE
-            {
-                process_amp_mix(num_samples);
-
-                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
-
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
-                    tmp_cuttof_buffer[sid] = (MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF) * (1.0f/8);
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
-                }
-            }
-
             // PROCESSOR
             struct LP2PassExecuter : public mono_Thread {
                 FilterProcessor*const processor;
@@ -3660,21 +3107,26 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
-                        filter.updateLow2Pass( tmp_resonance_buffer[sid], tmp_cuttof_buffer[sid]+35, tmp_gain_buffer[sid] );
+                        filter.updateLow2Pass
+                        (
+                            tmp_resonance_buffer[sid],
+                            ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF) * (1.0f/8)) +35 ),
+                            tmp_gain_buffer[sid]
+                        );
                         out_buffer[sid] = DISTORTION_OUT( filter.processLow2Pass( DISTORTION_IN( input_buffer[sid] ) ) );
                     }
                 }
-                LP2PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
+                LP2PassExecuter( FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
                 processor( processor_ ),
                            filter( processor_->double_filter[input_id_] ),
                            input_id( input_id_ ),
                            num_samples_( num_samples__ ),
 
-                           tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
-                           tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
-                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                            input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
                            out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3704,25 +3156,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         case HPF :
         case HIGH_2_PASS :
         {
-            // PREPARE
-            {
-                process_amp_mix(num_samples);
-
-                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
-
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
-                    tmp_cuttof_buffer[sid] = MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
-                }
-            }
-
             // PROCESSOR
             struct HP2PassExecuter : public mono_Thread
             {
@@ -3748,7 +3181,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
-                        filter.updateHigh2Pass( tmp_resonance_buffer[sid], tmp_cuttof_buffer[sid]+35, tmp_gain_buffer[sid] );
+                        filter.updateHigh2Pass
+                        (
+                            tmp_resonance_buffer[sid],
+                            ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF)) +35 ),
+                            tmp_gain_buffer[sid]
+                        );
                         out_buffer[sid] = DISTORTION_OUT( filter.processHigh2Pass( DISTORTION_IN( input_buffer[sid] ) ) );
                     }
                 }
@@ -3759,10 +3197,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                            input_id(input_id_),
                            num_samples_(num_samples__),
 
-                           tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
-                           tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
-                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                            input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
                            out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3792,25 +3230,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         break;
         case BPF:
         {
-            // PREPARE
-            {
-                process_amp_mix(num_samples);
-
-                float* const tmp_resonance_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_RESONANCE);
-                float* const tmp_cuttof_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CUTOFF);
-                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
-
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    const float amp = amp_mix[sid];
-                    tmp_resonance_buffer[sid] = resonance_smoother.tick( amp );
-                    tmp_cuttof_buffer[sid] = MAX_CUTOFF * cutoff_smoother.tick( amp ) + MIN_CUTOFF;
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
-                }
-            }
-
             // PROCESSOR
             struct BandExecuter : public mono_Thread
             {
@@ -3836,7 +3255,12 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float filter_distortion = tmp_distortion_buffer[sid];
-                        filter.updateBand( tmp_resonance_buffer[sid], tmp_cuttof_buffer[sid]+35, tmp_gain_buffer[sid] );
+                        filter.updateBand
+                        (
+                            tmp_resonance_buffer[sid],
+                            ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF)) +35 ),
+                            tmp_gain_buffer[sid]
+                        );
                         out_buffer[sid] = DISTORTION_OUT( filter.processBand( DISTORTION_IN( input_buffer[sid] ) ) );
                     }
                 }
@@ -3847,10 +3271,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                            input_id(input_id_),
                            num_samples_(num_samples__),
 
-                           tmp_resonance_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_RESONANCE)),
-                           tmp_cuttof_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CUTOFF)),
-                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                            input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
                            out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3880,23 +3304,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         break;
         default : //  PASS
         {
-            // PREPARE
-            {
-                process_amp_mix(num_samples);
-
-                float* const tmp_gain_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_GAIN);
-                float* const tmp_distortion_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DISTORTION);
-
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    const float amp = amp_mix[sid];
-                    resonance_smoother.tick( amp );
-                    cutoff_smoother.tick( amp );
-                    tmp_gain_buffer[sid] = gain_smoother.tick( amp );
-                    tmp_distortion_buffer[sid] = distortion_smoother.tick( amp );
-                }
-            }
-
             // PROCESSOR
             struct PassExecuter : public mono_Thread
             {
@@ -3930,8 +3337,8 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                            input_id(input_id_),
                            num_samples_(num_samples__),
 
-                           tmp_gain_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_GAIN)),
-                           tmp_distortion_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DISTORTION)),
+                           tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                           tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                            input_buffer(processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT + input_id_ )),
                            out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3971,16 +3378,18 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         const float* input_ar_amp_1( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_1 ) );
         const float* input_ar_amp_2( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_2 ) );
         const float* input_ar_amp_3( data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer( DIMENSION_INPUT_AMP_3 ) );
-        clipping_smoother.update( glide_motor_time );
+
+        const float* smoothed_clipping_buffer( filter_data->output_clipping_smoother.get_smoothed_buffer() );
         {
-            ValueSmootherModulatedUpdater u_output( &output_smoother, glide_motor_time, filter_data->modulate_output );
+            filter_data->output_smoother.process_modulation( filter_data->modulate_output, amp_mix, num_samples );
+            const float* smoothed_output_buffer = filter_data->output_smoother.get_smoothed_modulated_buffer();
 
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 // OUTPUT MIX AND DISTORTION
                 {
-                    const float amp = output_smoother.tick( amp_mix[sid] );
-                    const float clipping = clipping_smoother.tick();
+                    const float amp = smoothed_output_buffer[sid];
+                    const float clipping = smoothed_clipping_buffer[sid];
                     const float result_sample = amp * ( out_buffer_1[sid] * input_ar_amp_1[sid] + out_buffer_2[sid] * input_ar_amp_2[sid] + out_buffer_3[sid] * input_ar_amp_3[sid]);
                     this_filter_output_buffer[sid] = ( result_sample*(1.0f-clipping) + soft_clipping(result_sample)*clipping );
 
@@ -4063,10 +3472,10 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
                                        int glide_motor_time_,
                                        int num_samples ) noexcept
 {
-    boost_smoother.update( glide_motor_time_ );
+    const float* smoothed_boost_buffer( filter_data->compressor_smoother.get_smoothed_buffer() );
     for( int sid = 0 ; sid != num_samples ; ++sid )
     {
-        float use_power = boost_smoother.tick();
+        float use_power = smoothed_boost_buffer[sid];
         bool is_negative = false;
         if( use_power < 0 )
         {
@@ -4077,17 +3486,27 @@ inline void FilterProcessor::compress( float* io_buffer_, float* tmp_buffer_, co
         env_follower.setCoefficients( 0.008f * use_power + 0.0001f, 0.005f * use_power + 0.0001f );
         float compression = exp( env_follower.process_single_sample(compressor_signal_[sid]) )-1;
         if( is_negative )
+        {
             compression = 1.0f-compression;
+        }
 
         if( compression < 0 )
+        {
             compression = 0;
+        }
         else if( compression > 1 )
+        {
             compression = 1;
-// io_buffer[sid] = input*(1.0f-use_power) + ( (1.0f+FIXED_K)*input/(1.0f+FIXED_K*std::abs(input)) * (1.f - 0.3f*use_power))*use_power;
+        }
+
         if( is_negative )
+        {
             io_buffer_[sid] = (io_buffer_[sid] * (1.0f-use_power)) + ((io_buffer_[sid] * compression)*use_power);
+        }
         else
+        {
             io_buffer_[sid] = io_buffer_[sid] + ((io_buffer_[sid] * compression)*use_power);
+        }
     }
 }
 
@@ -4109,10 +3528,6 @@ class EQProcessor : public RuntimeListener
     AnalogFilter filters[SUM_EQ_BANDS];
     IIRFilter low_pass_filters[SUM_EQ_BANDS];
     IIRFilter high_pass_filters[SUM_EQ_BANDS];
-
-    ValueSmoother velocity_smoother[SUM_EQ_BANDS];
-    ValueSmoother shape_smoother[SUM_EQ_BANDS];
-    SwitchSmoother amp2velocity_smoother[SUM_EQ_BANDS];
 
     friend class mono_ParameterOwnerStore;
 
@@ -4141,36 +3556,9 @@ public:
 //==============================================================================
 COLD EQProcessor::EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
 :
-velocity_smoother
-{
-    GET_DATA_PTR( eq_data )->velocity[0].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[1].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[2].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[3].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[4].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[5].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[6].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[7].ptr(),
-    GET_DATA_PTR( eq_data )->velocity[8].ptr()
-},
-// TODO only one is needed
-shape_smoother
-{
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr(),
-    synth_data_->shape.ptr()
-},
-amp2velocity_smoother(),
-
-                      synth_data( synth_data_ ),
-                      eq_data( GET_DATA_PTR( eq_data ) ),
-                      data_buffer( GET_DATA_PTR( data_buffer ) )
+synth_data( synth_data_ ),
+            eq_data( GET_DATA_PTR( eq_data ) ),
+            data_buffer( GET_DATA_PTR( data_buffer ) )
 {
     std::cout << "MONIQUE: init EQ" << std::endl;
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
@@ -4246,10 +3634,8 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
             const int band_id;
 
             const bool hold_sustain;
-            const int glide_motor_time;
-            ValueSmoother* const velocity_smoother;
-            ValueSmoother* const shape_smoother;
-            SwitchSmoother* const amp2velocity_smoother;
+            const float* const smoothed_velocity_buffer;
+            const float* const smoothed_shape_buffer;
 
             const float filter_frequency;
             IIRFilter& low_pass_filter;
@@ -4273,31 +3659,20 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
 
                 // PROCESS
                 {
-                    // CRACKL BLOCKER
-                    if( amp2velocity_smoother->reset_counter_on_state_switch( hold_sustain ) )
-                    {
-                        if( not hold_sustain )
-                        {
-                            env.overwrite_current_value( amp2velocity_smoother->get_last_tick_value() );
-                            env.set_current_stage( ATTACK );
-                        }
-                    }
-
                     // PROCESS ENVELOPE
                     if( not hold_sustain )
+                    {
                         env.process( tmp_env_buffer, num_samples_ );
-
-                    velocity_smoother->update( 250 );
-                    shape_smoother->update( 250 );
+                    }
 
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        const float shape = shape_smoother->tick();
+                        const float shape = smoothed_shape_buffer[sid];
 
-                        const float raw_sustain = velocity_smoother->tick(); // from -1 to 1
+                        const float raw_sustain = smoothed_velocity_buffer[sid]; // from -1 to 1
                         const float normalized_sustain = (1.0f+raw_sustain)*0.5f;
-                        const float amp = amp2velocity_smoother->tick_to( hold_sustain ? normalized_sustain : tmp_env_buffer[sid] );
+                        const float amp = hold_sustain ? normalized_sustain : tmp_env_buffer[sid];
 
                         tmp_env_buffer[sid ] = amp;
 
@@ -4328,10 +3703,8 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                          band_id(band_id_),
 
                          hold_sustain( processor_->eq_data->hold[band_id_]),
-                         glide_motor_time( processor_->synth_data->glide_motor_time ),
-                         velocity_smoother( &processor_->velocity_smoother[band_id_] ),
-                         shape_smoother( &processor_->shape_smoother[band_id_] ),
-                         amp2velocity_smoother( &processor_->amp2velocity_smoother[band_id_] ),
+                         smoothed_velocity_buffer( processor_->eq_data->envs[band_id_]->sustain_smoother.get_smoothed_buffer() ),
+                         smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_buffer() ),
 
                          filter_frequency( processor_->frequency_low_pass[band_id_] ),
                          low_pass_filter(processor_->low_pass_filters[band_id_]),
@@ -4891,8 +4264,7 @@ class FXProcessor
         DIMENSION_CHORUS_MOD_AMP,
         DIMENSION_DELAY,
         DIMENSION_BYPASS,
-        DIMENSION_CLIPPING,
-        DIMENSION_TMP_CHORUS
+        DIMENSION_CLIPPING
     };
 
     // REVERB
@@ -4903,29 +4275,22 @@ class FXProcessor
 #define DELAY_BUFFER_SIZE 12000
     Chorus chorus_l;
     Chorus chorus_r;
-    ValueSmoother chorus_mod_smoother;
-    SwitchSmoother amp2chorus_smoother;
     friend class mono_ParameterOwnerStore;
     ScopedPointer< ENV > chorus_modulation_env;
 
     // DELAY
     int delayPosition;
     mono_AudioSampleBuffer<2> delayBuffer;
-    ValueSmoother delay_smoother;
 
     // FINAL ENV
     friend class MoniqueSynthesiserVoice;
     ScopedPointer<ENV> final_env;
     // TODO change to a real glide value
 public:
-    ValueSmoother velocity_glide;
+    SmoothedParameter velocity_smoother;
     AmpSmoothBuffer last_output_smoother;
 
 private:
-    ValueSmoother bypass_smoother;
-    ValueSmoother volume_smoother;
-    ValueSmoother clipping_smoother;
-
     const MoniqueSynthData*const synth_data;
     DataBuffer*const data_buffer;
     const ReverbData*const reverb_data;
@@ -4956,15 +4321,9 @@ public:
         reverb_r.reset();
         chorus_l.reset();
         chorus_r.reset();
-        chorus_mod_smoother.reset();
         chorus_modulation_env->reset();
         delayPosition = 0;
-        delay_smoother.reset();
         final_env->reset();
-        velocity_glide.reset();
-        bypass_smoother.reset();
-        volume_smoother.reset();
-        clipping_smoother.reset();
 
         last_output_smoother.reset();
     }
@@ -4986,20 +4345,13 @@ reverb_l(),
          chorus_l(),
          chorus_r(),
 
-         chorus_mod_smoother( &GET_DATA( chorus_data ).modulation ),
-         amp2chorus_smoother(),
          chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).env_data ) ),
 
          delayPosition( 0 ),
          delayBuffer ( DELAY_BUFFER_SIZE ),
-         delay_smoother( &synth_data_->delay ),
 
          final_env( new ENV( synth_data_, synth_data_->env_data ) ),
-         velocity_glide( sequencer_velocity_ ),
-
-         bypass_smoother( &synth_data_->effect_bypass ),
-         volume_smoother( &synth_data_->volume ),
-         clipping_smoother( &synth_data_->final_compression ),
+         velocity_smoother( sequencer_velocity_ ),
 
          synth_data( synth_data_ ),
          data_buffer( GET_DATA_PTR( data_buffer ) ),
@@ -5055,48 +4407,19 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
     // PREPARE
     {
+        float* const tmp_chorus_mod_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP);
+        chorus_modulation_env->process( tmp_chorus_mod_amp, num_samples_ );
+        chorus_data->env_data->sustain_smoother.process_modulation( not chorus_data->hold_modulation, tmp_chorus_mod_amp, num_samples_ );
+
         float* const tmp_env_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_ENV);
         final_env->process( tmp_env_amp, num_samples_ );
-
-        float* const tmp_chorus_mod_amp = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CHORUS_MOD_AMP);
-        float* const tmp_delay = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_DELAY);
-        float* const tmp_bypass = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_BYPASS);
-        float* const tmp_clipping = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_CLIPPING);
-
-        float* const tmp_chorus_amp_buffer = data_buffer->tmp_multithread_band_buffer_9_4.getWritePointer(DIMENSION_TMP_CHORUS);
-        chorus_modulation_env->process( tmp_chorus_amp_buffer, num_samples_ );
-
-        bypass_smoother.update( glide_motor_time );
-        volume_smoother.update( glide_motor_time );
-        clipping_smoother.update( glide_motor_time );
-        delay_smoother.update( glide_motor_time );
-        chorus_mod_smoother.update( glide_motor_time );
+        const float* smoothed_volume_buffer( synth_data->volume_smoother.get_smoothed_buffer() );
+        const float* smoothed_velocity_buffer( velocity_smoother.get_smoothed_buffer() );
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            {
-                const float gain = tmp_env_amp[sid]*volume_smoother.tick()*velocity_glide.tick();
-                left_input_buffer[sid] *= gain;
-                right_input_buffer[sid] *= gain;
-            }
-
-            {
-                const float chorus_modulation = chorus_mod_smoother.tick();
-                const bool is_chorus_amp_fix = chorus_data->hold_modulation;
-                amp2chorus_smoother.reset_counter_on_state_switch(chorus_data->hold_modulation);
-                tmp_chorus_mod_amp[sid] = amp2chorus_smoother.tick_to( is_chorus_amp_fix ? chorus_modulation : tmp_chorus_amp_buffer[sid] );
-            }
-
-            {
-                tmp_delay[sid] = delay_smoother.tick();
-            }
-
-            {
-                tmp_bypass[sid] = bypass_smoother.tick();
-            }
-
-            {
-                tmp_clipping[sid] = clipping_smoother.tick();
-            }
+            const float gain = tmp_env_amp[sid]*smoothed_volume_buffer[sid]*smoothed_velocity_buffer[sid];
+            left_input_buffer[sid] *= gain;
+            right_input_buffer[sid] *= gain;
         }
     }
 #define VOLUME_GAIN 1.5f
@@ -5114,10 +4437,10 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
             float* const delay_data;
             float* const final_output;
 
-            const float* const tmp_chorus_mod_amp;
-            const float* const tmp_delay;
-            const float* const tmp_bypass;
-            const float* const tmp_clipping;
+            const float* const smoothed_chorus_mod_amp;
+            const float* const smoothed_delay_buffer;
+            const float* const smoothed_bypass;
+            const float* const smoothed_clipping;
 
             float* const tmp_samples;
 
@@ -5128,7 +4451,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float in_l = input_buffer[sid];
-                    const float modulation_amp = tmp_chorus_mod_amp[sid];
+                    const float modulation_amp = smoothed_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 
                     float tmp_sample  = processor->chorus_l.tick((modulation_amp * 220) + 1.51f);
@@ -5151,7 +4474,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
                     tmp_samples[sid] += delay_data_in;
 
-                    delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+                    delay_data[delay_pos] = (delay_data_in + in) * smoothed_delay_buffer[sid];
 
                     if ( ++delay_pos >= DELAY_BUFFER_SIZE )
                         delay_pos = 0;
@@ -5160,12 +4483,12 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 // BYPASS -> MIX
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    const float bypass = tmp_bypass[sid];
+                    const float bypass = smoothed_bypass[sid];
                     float tmp = tmp_samples[sid];
                     tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
                     tmp *= VOLUME_GAIN;
 
-                    const float clipping = tmp_clipping[sid];
+                    const float clipping = smoothed_clipping[sid];
                     final_output[sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
                 }
             }
@@ -5177,7 +4500,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 {
                     const float in_r = input_buffer[sid];
 
-                    const float modulation_amp = tmp_chorus_mod_amp[sid];
+                    const float modulation_amp = smoothed_chorus_mod_amp[sid];
                     const float feedback = modulation_amp*0.85f;
 
                     float tmp_sample = processor->chorus_r.tick((modulation_amp * 200) + 1.56f);
@@ -5199,7 +4522,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
 
                     tmp_samples[sid] += delay_data_in;
 
-                    delay_data[delay_pos] = (delay_data_in + in) * tmp_delay[sid];
+                    delay_data[delay_pos] = (delay_data_in + in) * smoothed_delay_buffer[sid];
 
                     if (++delay_pos >= DELAY_BUFFER_SIZE)
                         delay_pos = 0;
@@ -5210,11 +4533,11 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     {
-                        const float bypass = tmp_bypass[sid];
+                        const float bypass = smoothed_bypass[sid];
                         float tmp = tmp_samples[sid];
                         tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
                         tmp *= VOLUME_GAIN;
-                        const float clipping = tmp_clipping[sid];
+                        const float clipping = smoothed_clipping[sid];
                         final_output[sid] = ( soft_clipping( tmp )*clipping + tmp*(1.0f-clipping) );
 
                         // FOR END ENV - RELEASE IF INACTIVE
@@ -5244,10 +4567,10 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, const int s
                        delay_data(delay_data_),
                        final_output(final_output_),
 
-                       tmp_chorus_mod_amp( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CHORUS_MOD_AMP) ),
-                       tmp_delay( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_DELAY) ),
-                       tmp_bypass( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_BYPASS) ),
-                       tmp_clipping( fx_processor_->data_buffer->tmp_multithread_band_buffer_9_4.getReadPointer(DIMENSION_CLIPPING) ),
+                       smoothed_chorus_mod_amp( fx_processor_->chorus_data->env_data->sustain_smoother.get_smoothed_modulated_buffer() ),
+                       smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
+                       smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() ),
+                       smoothed_clipping( fx_processor_->synth_data->final_clipping_smoother.get_smoothed_buffer() ),
 
                        tmp_samples( tmp_samples_ )
             {}
@@ -5503,7 +4826,8 @@ info( new RuntimeInfo() ),
 data_buffer( new DataBuffer(1024) ),
 
 arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
-eq_processor( new EQProcessor( synth_data_ ) ),
+eq_processor_l( new EQProcessor( synth_data_ ) ),
+eq_processor_r( new EQProcessor( synth_data_ ) ),
 fx_processor( new FXProcessor( synth_data_, &arp_sequencer->current_velocity ) ),
 
 current_note(-1),
@@ -5565,7 +4889,8 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     }
 
     delete arp_sequencer;
-    delete eq_processor;
+    delete eq_processor_l;
+    delete eq_processor_r;
     delete fx_processor;
     delete data_buffer;
     delete info;
@@ -5614,7 +4939,8 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
         {
             filter_processors[voice_id]->start_attack();
         }
-        eq_processor->start_attack();
+        eq_processor_l->start_attack();
+        eq_processor_r->start_attack();
         fx_processor->start_attack();
     }
 }
@@ -5663,7 +4989,8 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
 
     if( not is_sostenuto_pedal_down )
     {
-        eq_processor->start_release();
+        eq_processor_l->start_release();
+        eq_processor_r->start_release();
         for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
         {
             filter_processors[voice_id]->start_release();
@@ -5783,6 +5110,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         current_step = step_number_;
     }
 
+    // SMOOTH PARAMETERS
+    SmoothManager::getInstance()->smooth(num_samples_);
+
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
         // MAIN THREAD // NO DEPENCIES
@@ -5832,9 +5162,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     filter_processors[2]->process( num_samples );
 
     // LEFT
-    eq_processor->process( data_buffer->direct_filter_output_samples.getWritePointer(0), num_samples );
+    eq_processor_l->process( data_buffer->direct_filter_output_samples.getWritePointer(0), num_samples );
     // RIGHT
-    //eq_processor->process( data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS), num_samples );
+    eq_processor_r->process( data_buffer->direct_filter_output_samples.getWritePointer(SUM_FILTERS), num_samples );
 
     if( synth_data->arp_sequencer_data->is_on )
     {
@@ -5844,7 +5174,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         arp_sequencer->current_velocity = current_velocity;
     }
-    fx_processor->velocity_glide.update( msToSamplesFast(synth_data->velocity_glide_time.get_value(),RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate()) );
 
     fx_processor->process( output_buffer_, start_sample_, num_samples_ );
     // OSCs - THREAD 1 ?
@@ -5893,7 +5222,8 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
     {
         filter_processors[voice_id]->reset();
     }
-    eq_processor->reset();
+    eq_processor_l->reset();
+    eq_processor_r->reset();
     fx_processor->reset();
     for( int osc_id = 0 ; osc_id != SUM_OSCS ; ++osc_id )
     {
@@ -5953,7 +5283,8 @@ float MoniqueSynthesiserVoice::get_flt_input_env_amp( int flt_id_, int input_id_
 }
 float MoniqueSynthesiserVoice::get_band_env_amp( int band_id_ ) const noexcept
 {
-    return eq_processor->envs[band_id_]->get_amp();
+  // TODO stereo
+    return eq_processor_l->envs[band_id_]->get_amp();
 }
 float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
 {
@@ -6106,3 +5437,4 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+

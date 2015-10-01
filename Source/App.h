@@ -51,6 +51,7 @@ template<int num_channels>
 class mono_AudioSampleBuffer
 {
     AudioSampleBuffer*const buffer;
+    int size;
 
 public:
     inline const float* getReadPointer (int channelNumber = 0) const noexcept;
@@ -58,6 +59,7 @@ public:
 
     //==========================================================================
     COLD void setSize (int newNumSamples ) noexcept;
+    inline int get_size() const noexcept { return size; }
 
     //==========================================================================
     COLD mono_AudioSampleBuffer(int numSamples) noexcept;
@@ -68,7 +70,7 @@ public:
 template<int num_channels>
 COLD mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
 :
-buffer( new AudioSampleBuffer( num_channels, numSamples ) )
+buffer( new AudioSampleBuffer( num_channels, numSamples ) ), size( numSamples )
 {
     buffer->clear();
 }
@@ -93,6 +95,7 @@ template<int num_channels>
 COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples ) noexcept
 {
     buffer->setSize( num_channels, newNumSamples );
+    size = newNumSamples;
 }
 
 // MSVC REPLACEMENTS
