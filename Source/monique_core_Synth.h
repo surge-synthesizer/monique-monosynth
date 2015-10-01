@@ -29,7 +29,7 @@ class LFO;
 class OSC;
 class ENV;
 class FilterProcessor;
-class EQProcessor;
+class EQProcessorStereo;
 class FXProcessor;
 class DataBuffer;
 class ArpSequencer;
@@ -46,8 +46,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 
     friend class mono_ParameterOwnerStore;
     ArpSequencer*const arp_sequencer;
-    EQProcessor*const eq_processor_l;
-    EQProcessor*const eq_processor_r;
+    EQProcessorStereo*const eq_processor;
     FXProcessor*const fx_processor;
 
     //==============================================================================

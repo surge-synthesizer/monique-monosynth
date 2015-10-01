@@ -92,18 +92,34 @@ class DataBuffer // DEFINITION IN SYNTH.CPP
 public:
     // ==============================================================================
     // WORKERS
-  // TODO REDUCE TO NEEDED 
-    mono_AudioSampleBuffer<9*4+2> tmp_multithread_band_buffer_9_4;
+    // TODO REDUCE TO NEEDED
+    mono_AudioSampleBuffer<9> band_env_buffers;
+    mono_AudioSampleBuffer<9> band_in_buffers;
+    mono_AudioSampleBuffer<9> band_out_buffers;
+    mono_AudioSampleBuffer<1> band_sum_out_buffer;
+    mono_AudioSampleBuffer<9> band_gain_buffers;
+    mono_AudioSampleBuffer<1> band_sum_gain_buffer;
+    
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS*2> direct_filter_output_samples;
+    mono_AudioSampleBuffer<2> filter_stereo_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
     mono_AudioSampleBuffer<1> osc_sync_switchs;
     mono_AudioSampleBuffer<1> modulator_samples;
+    
+    mono_AudioSampleBuffer<1> final_env;
+    mono_AudioSampleBuffer<1> chorus_env;
 
+    mono_AudioSampleBuffer<2> fx_tmp;
+    
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
+    mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_env_amps;
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
+    
+    mono_AudioSampleBuffer<1> tmp_buffer;
 
 private:
     // ==============================================================================
@@ -301,7 +317,25 @@ class SmoothedParameter : public RuntimeListener
     float last_target;
     float difference_per_sample;
     int samples_left;
-    int buffer_is_linear_up_to_date_filled;
+    bool buffer_is_linear_up_to_date_filled;
+
+    class ModulatorSignalSmoother
+    {
+        float samples_left_max;
+        int samples_left;
+	float last_modulator;
+
+    public:
+        void reset( float sample_rate_ ) noexcept;
+        float attack( float current_modulator_signal_ ) noexcept;
+        float release() noexcept;
+        bool is_released() const noexcept;
+	
+
+        COLD ModulatorSignalSmoother() noexcept;
+        COLD ~ModulatorSignalSmoother() noexcept;
+    } modulator_smoother;
+    bool was_modulated_last_time;
 
     COLD void block_size_changed() noexcept override;
 

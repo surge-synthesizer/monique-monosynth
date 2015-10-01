@@ -35,6 +35,11 @@ pan für eq
 
 - programm load loads bank (plugin bug)
 
+- eq processor just process env one time
+
+
+-> direct_filter_output_samples splitt
+
 
 isNoteOnOrOff
 isAllNotesOff

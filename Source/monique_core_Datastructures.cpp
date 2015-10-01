@@ -363,9 +363,9 @@ max_decay_time
 
 sustain
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( -1, 1 ),
     0.9,
-    1000,
+    2000,
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
@@ -708,7 +708,7 @@ void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( input_sustains[i].ptr() == param_ )
         {
-            input_envs[i]->sustain.set_value_without_notification( positive( param_->get_value() ) );
+            input_envs[i]->sustain.set_value_without_notification( param_->get_value() );
             break;
         }
     }
@@ -910,7 +910,7 @@ void EQData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( velocity[i].ptr() == param_ )
         {
-            envs[i]->sustain.set_value_without_notification( ( 1.0f + param_->get_value() )*0.5 );
+            envs[i]->sustain.set_value_without_notification( param_->get_value() );
             break;
         }
     }
@@ -1026,7 +1026,7 @@ static inline void collect_saveable_parameters( ChorusData* data_, Array< Parame
 //==============================================================================
 void ChorusData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    env_data->sustain.set_value_without_notification( positive( param_->get_value() ) );
+    env_data->sustain.set_value_without_notification( param_->get_value() );
 }
 void ChorusData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
