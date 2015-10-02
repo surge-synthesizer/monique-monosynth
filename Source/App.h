@@ -58,7 +58,7 @@ public:
     inline float* getWritePointer (int channelNumber = 0) noexcept;
 
     //==========================================================================
-    COLD void setSize (int newNumSamples ) noexcept;
+    COLD void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept;
     inline int get_size() const noexcept { return size; }
 
     //==========================================================================
@@ -92,9 +92,9 @@ inline float* mono_AudioSampleBuffer<num_channels>::getWritePointer (int channel
     return buffer->getWritePointer( channelNumber );
 }
 template<int num_channels>
-COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples ) noexcept
+COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples, bool keep_existing_content_ ) noexcept
 {
-    buffer->setSize( num_channels, newNumSamples );
+    buffer->setSize( num_channels, newNumSamples, keep_existing_content_, keep_existing_content_ );
     size = newNumSamples;
 }
 
@@ -108,6 +108,8 @@ COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples ) noe
 #define and &&
 #define not !
 #endif
+
+
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------

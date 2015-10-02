@@ -256,8 +256,6 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
     eq_5->setVisible( !state_switch );
     eq_6->setVisible( !state_switch );
     eq_7->setVisible( !state_switch );
-    eq_8->setVisible( !state_switch );
-    eq_9->setVisible( !state_switch );
     label_band_hz_1->setVisible( !state_switch );
     label_band_hz_2->setVisible( !state_switch );
     label_band_hz_3->setVisible( !state_switch );
@@ -265,8 +263,6 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
     label_band_hz_5->setVisible( !state_switch );
     label_band_hz_6->setVisible( !state_switch );
     label_band_hz_7->setVisible( !state_switch );
-    label_band_hz_8->setVisible( !state_switch );
-    label_band_hz_9->setVisible( !state_switch );
     button_edit_input_env_band_1->setVisible( !state_switch );
     button_edit_input_env_band_2->setVisible( !state_switch );
     button_edit_input_env_band_3->setVisible( !state_switch );
@@ -274,8 +270,6 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
     button_edit_input_env_band_5->setVisible( !state_switch );
     button_edit_input_env_band_6->setVisible( !state_switch );
     button_edit_input_env_band_7->setVisible( !state_switch );
-    button_edit_input_env_band_8->setVisible( !state_switch );
-    button_edit_input_env_band_9->setVisible( !state_switch );
 
     !state_switch ? effect_finalizer_switch->setButtonText ("E Q") : effect_finalizer_switch->setButtonText ("F X");
 }
@@ -363,6 +357,20 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     flash_counter = 0;
     //[/Constructor_pre]
 
+    addAndMakeVisible (bypass = new Monique_Ui_DualSlider (new BypassConfig()));
+
+    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
+
+    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
+
+    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
+
+    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
+
+    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
+
+    addAndMakeVisible (colour = new Monique_Ui_DualSlider (new FColourSlConfig()));
+
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
                                                        String::empty));
     label_effect_hider->setFont (Font (30.00f, Font::plain));
@@ -373,7 +381,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_effect_hider->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_2 = new Label ("DL",
-                                                    TRANS("62Hz")));
+                                                    TRANS("160Hz")));
     label_band_hz_2->setFont (Font (30.00f, Font::plain));
     label_band_hz_2->setJustificationType (Justification::centred);
     label_band_hz_2->setEditable (false, false, false);
@@ -382,7 +390,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_3 = new Label ("DL",
-                                                    TRANS("125Hz")));
+                                                    TRANS("300Hz")));
     label_band_hz_3->setFont (Font (30.00f, Font::plain));
     label_band_hz_3->setJustificationType (Justification::centred);
     label_band_hz_3->setEditable (false, false, false);
@@ -391,7 +399,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_4 = new Label ("DL",
-                                                    TRANS("250Hz")));
+                                                    TRANS("600Hz")));
     label_band_hz_4->setFont (Font (30.00f, Font::plain));
     label_band_hz_4->setJustificationType (Justification::centred);
     label_band_hz_4->setEditable (false, false, false);
@@ -400,7 +408,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_5 = new Label ("DL",
-                                                    TRANS("500Hz")));
+                                                    TRANS("1.2kHz")));
     label_band_hz_5->setFont (Font (30.00f, Font::plain));
     label_band_hz_5->setJustificationType (Justification::centred);
     label_band_hz_5->setEditable (false, false, false);
@@ -409,7 +417,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_6 = new Label ("DL",
-                                                    TRANS("1kHz")));
+                                                    TRANS("2.5kHz")));
     label_band_hz_6->setFont (Font (30.00f, Font::plain));
     label_band_hz_6->setJustificationType (Justification::centred);
     label_band_hz_6->setEditable (false, false, false);
@@ -418,7 +426,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_7 = new Label ("DL",
-                                                    TRANS("2kHz")));
+                                                    TRANS(">2.5kHz")));
     label_band_hz_7->setFont (Font (30.00f, Font::plain));
     label_band_hz_7->setJustificationType (Justification::centred);
     label_band_hz_7->setEditable (false, false, false);
@@ -426,26 +434,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_band_hz_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_band_hz_8 = new Label ("DL",
-                                                    TRANS("4kHz")));
-    label_band_hz_8->setFont (Font (30.00f, Font::plain));
-    label_band_hz_8->setJustificationType (Justification::centred);
-    label_band_hz_8->setEditable (false, false, false);
-    label_band_hz_8->setColour (Label::textColourId, Colour (0xff1111ff));
-    label_band_hz_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_band_hz_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_band_hz_9 = new Label ("DL",
-                                                    TRANS("8kHz")));
-    label_band_hz_9->setFont (Font (30.00f, Font::plain));
-    label_band_hz_9->setJustificationType (Justification::centred);
-    label_band_hz_9->setEditable (false, false, false);
-    label_band_hz_9->setColour (Label::textColourId, Colour (0xff1111ff));
-    label_band_hz_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_band_hz_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label_band_hz_1 = new Label ("DL",
-                                                    TRANS("31Hz")));
+                                                    TRANS("<80Hz")));
     label_band_hz_1->setFont (Font (30.00f, Font::plain));
     label_band_hz_1->setJustificationType (Justification::centred);
     label_band_hz_1->setEditable (false, false, false);
@@ -463,10 +453,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
 
-    addAndMakeVisible (eq_9 = new Monique_Ui_DualSlider (new EQSlConfig(8)));
-
-    addAndMakeVisible (eq_8 = new Monique_Ui_DualSlider (new EQSlConfig(7)));
-
     addAndMakeVisible (eq_7 = new Monique_Ui_DualSlider (new EQSlConfig(6)));
 
     addAndMakeVisible (eq_6 = new Monique_Ui_DualSlider (new EQSlConfig(5)));
@@ -480,14 +466,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (new EQSlConfig(1)));
 
     addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (new EQSlConfig(0)));
-
-    addAndMakeVisible (bypass = new Monique_Ui_DualSlider (new BypassConfig()));
-
-    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
-
-    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
-
-    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
 
     addAndMakeVisible (osc_wave_3 = new Monique_Ui_DualSlider (new WAVESlConfig(2)));
 
@@ -921,8 +899,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (flt_release_4 = new Monique_Ui_DualSlider (new FReleaseSlConfig()));
 
-    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
-
     addAndMakeVisible (volume = new Monique_Ui_DualSlider (new VolumeConfig()));
 
     addAndMakeVisible (flt_distortion_2 = new Monique_Ui_DualSlider (new GForceSlConfig(1)));
@@ -996,8 +972,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_ctrl_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_ctrl_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (colour = new Monique_Ui_DualSlider (new FColourSlConfig()));
-
     addAndMakeVisible (speed = new Monique_Ui_DualSlider (new BPMSlConfig()));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
@@ -1067,8 +1041,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
     button_values_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_values_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
 
     addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
 
@@ -1394,20 +1366,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_edit_input_env_band_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_input_env_band_7->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (button_edit_input_env_band_8 = new TextButton (String::empty));
-    button_edit_input_env_band_8->setButtonText (TRANS("EDIT"));
-    button_edit_input_env_band_8->addListener (this);
-    button_edit_input_env_band_8->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_input_env_band_8->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_edit_input_env_band_9 = new TextButton (String::empty));
-    button_edit_input_env_band_9->setButtonText (TRANS("EDIT"));
-    button_edit_input_env_band_9->addListener (this);
-    button_edit_input_env_band_9->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_input_env_band_9->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (button_edit_env_chorus = new TextButton (String::empty));
     button_edit_env_chorus->setButtonText (TRANS("EDIT"));
     button_edit_env_chorus->addListener (this);
@@ -1420,6 +1378,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (flt_pan_2 = new Monique_Ui_DualSlider (new FPanSlConfig(1)));
 
     addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (new FPanSlConfig(0)));
+
+    addAndMakeVisible (bypass2 = new Monique_Ui_DualSlider (new BypassConfig()));
 
 
     //[UserPreSize]
@@ -1523,8 +1483,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_edit_input_env_band_5->setColour( TextButton::buttonColourId, button_off );
     button_edit_input_env_band_6->setColour( TextButton::buttonColourId, button_off );
     button_edit_input_env_band_7->setColour( TextButton::buttonColourId, button_off );
-    button_edit_input_env_band_8->setColour( TextButton::buttonColourId, button_off );
-    button_edit_input_env_band_9->setColour( TextButton::buttonColourId, button_off );
     button_edit_env_chorus->setColour( TextButton::buttonColourId, button_off );
 
 
@@ -1586,6 +1544,13 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     _app_instance_store->audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    bypass = nullptr;
+    chorus_modulation = nullptr;
+    delay2 = nullptr;
+    reverb_dry = nullptr;
+    reverb_width = nullptr;
+    reverb_room = nullptr;
+    colour = nullptr;
     label_effect_hider = nullptr;
     label_band_hz_2 = nullptr;
     label_band_hz_3 = nullptr;
@@ -1593,16 +1558,12 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_band_hz_5 = nullptr;
     label_band_hz_6 = nullptr;
     label_band_hz_7 = nullptr;
-    label_band_hz_8 = nullptr;
-    label_band_hz_9 = nullptr;
     label_band_hz_1 = nullptr;
     speed_multi = nullptr;
     morpher_4 = nullptr;
     morpher_3 = nullptr;
     morpher_2 = nullptr;
     morpher_1 = nullptr;
-    eq_9 = nullptr;
-    eq_8 = nullptr;
     eq_7 = nullptr;
     eq_6 = nullptr;
     eq_5 = nullptr;
@@ -1610,10 +1571,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     eq_3 = nullptr;
     eq_2 = nullptr;
     eq_1 = nullptr;
-    bypass = nullptr;
-    chorus_modulation = nullptr;
-    reverb_dry = nullptr;
-    reverb_room = nullptr;
     osc_wave_3 = nullptr;
     keyboard = nullptr;
     glide2 = nullptr;
@@ -1722,7 +1679,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     lfo_opt_3 = nullptr;
     button_sequence_1 = nullptr;
     flt_release_4 = nullptr;
-    delay2 = nullptr;
     volume = nullptr;
     flt_distortion_2 = nullptr;
     flt_distortion_3 = nullptr;
@@ -1737,7 +1693,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     filter_type_6_2 = nullptr;
     filter_type_6_3 = nullptr;
     button_ctrl_toggle = nullptr;
-    colour = nullptr;
     speed = nullptr;
     button_open_morph = nullptr;
     effect_finalizer_switch = nullptr;
@@ -1746,7 +1701,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_ui_headline5 = nullptr;
     label_ui_headline6 = nullptr;
     button_values_toggle = nullptr;
-    reverb_width = nullptr;
     octave_offset = nullptr;
     label_ui_headline4 = nullptr;
     label_ui_headline7 = nullptr;
@@ -1788,12 +1742,11 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_edit_input_env_band_5 = nullptr;
     button_edit_input_env_band_6 = nullptr;
     button_edit_input_env_band_7 = nullptr;
-    button_edit_input_env_band_8 = nullptr;
-    button_edit_input_env_band_9 = nullptr;
     button_edit_env_chorus = nullptr;
     flt_pan_3 = nullptr;
     flt_pan_2 = nullptr;
     flt_pan_1 = nullptr;
+    bypass2 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2263,34 +2216,33 @@ void Monique_Ui_Mainwindow::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
+    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
+    chorus_modulation->setBounds (975 - 60, 750 - 130, 60, 130);
+    delay2->setBounds (885 - 60, 750 - 130, 60, 130);
+    reverb_dry->setBounds (795 - 60, 750 - 130, 60, 130);
+    reverb_width->setBounds (735 - 60, 750 - 130, 60, 130);
+    reverb_room->setBounds (675 - 60, 750 - 130, 60, 130);
+    colour->setBounds (585 - 60, 750 - 130, 60, 130);
     label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
     label_band_hz_2->setBounds (590, 745, 50, 30);
-    label_band_hz_3->setBounds (650, 745, 50, 30);
-    label_band_hz_4->setBounds (710, 745, 50, 30);
-    label_band_hz_5->setBounds (770, 745, 50, 30);
-    label_band_hz_6->setBounds (830, 745, 50, 30);
-    label_band_hz_7->setBounds (890, 745, 50, 30);
-    label_band_hz_8->setBounds (950, 745, 50, 30);
-    label_band_hz_9->setBounds (1010, 745, 50, 30);
+    label_band_hz_3->setBounds (665, 745, 50, 30);
+    label_band_hz_4->setBounds (725, 745, 50, 30);
+    label_band_hz_5->setBounds (785, 745, 50, 30);
+    label_band_hz_6->setBounds (860, 745, 50, 30);
+    label_band_hz_7->setBounds (920, 745, 50, 30);
     label_band_hz_1->setBounds (530, 745, 50, 30);
     speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
     morpher_4->setBounds (1345 - 60, 620, 60, 130);
     morpher_3->setBounds (1285 - 60, 620, 60, 130);
     morpher_2->setBounds (1225 - 60, 620, 60, 130);
     morpher_1->setBounds (1165 - 60, 620, 60, 130);
-    eq_9->setBounds (1065 - 60, 750 - 130, 60, 130);
-    eq_8->setBounds (1005 - 60, 750 - 130, 60, 130);
-    eq_7->setBounds (945 - 60, 750 - 130, 60, 130);
-    eq_6->setBounds (885 - 60, 750 - 130, 60, 130);
-    eq_5->setBounds (825 - 60, 750 - 130, 60, 130);
-    eq_4->setBounds (765 - 60, 750 - 130, 60, 130);
-    eq_3->setBounds (705 - 60, 750 - 130, 60, 130);
+    eq_7->setBounds (975 - 60, 750 - 130, 60, 130);
+    eq_6->setBounds (915 - 60, 750 - 130, 60, 130);
+    eq_5->setBounds (840 - 60, 750 - 130, 60, 130);
+    eq_4->setBounds (780 - 60, 750 - 130, 60, 130);
+    eq_3->setBounds (720 - 60, 750 - 130, 60, 130);
     eq_2->setBounds (645 - 60, 750 - 130, 60, 130);
     eq_1->setBounds (585 - 60, 750 - 130, 60, 130);
-    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
-    chorus_modulation->setBounds (975 - 60, 750 - 130, 60, 130);
-    reverb_dry->setBounds (795 - 60, 750 - 130, 60, 130);
-    reverb_room->setBounds (675 - 60, 750 - 130, 60, 130);
     osc_wave_3->setBounds (90 - 60, 550 - 130, 60, 130);
     keyboard->setBounds (0, 1055, 1465, 180);
     glide2->setBounds (100, 820, 60, 130);
@@ -2399,7 +2351,6 @@ void Monique_Ui_Mainwindow::resized()
     lfo_opt_3->setBounds (810 - 60, 550 - 130, 60, 130);
     button_sequence_1->setBounds (275 - 60, 840 - 20, 60, 20);
     flt_release_4->setBounds (455 - 60, 750 - 130, 60, 130);
-    delay2->setBounds (885 - 60, 750 - 130, 60, 130);
     volume->setBounds (1435 - 60, 750 - 130, 60, 130);
     flt_distortion_2->setBounds (1255 - 60, 370 - 130, 60, 130);
     flt_distortion_3->setBounds (1255 - 60, 550 - 130, 60, 130);
@@ -2414,7 +2365,6 @@ void Monique_Ui_Mainwindow::resized()
     filter_type_6_2->setBounds (985 - 60, 240, 60, 30);
     filter_type_6_3->setBounds (985 - 60, 420, 60, 30);
     button_ctrl_toggle->setBounds (100, 1000, 60, 30);
-    colour->setBounds (585 - 60, 750 - 130, 60, 130);
     speed->setBounds (1285 - 60, 950 - 130, 60, 130);
     button_open_morph->setBounds (1165 - 60, 715, 60, 33);
     effect_finalizer_switch->setBounds (520 - 25, 620, 25, 130);
@@ -2423,7 +2373,6 @@ void Monique_Ui_Mainwindow::resized()
     label_ui_headline5->setBounds (1225, 616, 60, 35);
     label_ui_headline6->setBounds (1285, 616, 60, 35);
     button_values_toggle->setBounds (30, 1000, 60, 30);
-    reverb_width->setBounds (735 - 60, 750 - 130, 60, 130);
     octave_offset->setBounds (1435 - 60, 950 - 130, 60, 130);
     label_ui_headline4->setBounds (245, 5, 120, 35);
     label_ui_headline7->setBounds (40, 5, 110, 35);
@@ -2460,17 +2409,16 @@ void Monique_Ui_Mainwindow::resized()
     button_edit_input_env_3_3->setBounds (335, 515, 60, 33);
     button_edit_input_env_band_1->setBounds (525, 715, 60, 33);
     button_edit_input_env_band_2->setBounds (585, 715, 60, 33);
-    button_edit_input_env_band_3->setBounds (645, 715, 60, 33);
-    button_edit_input_env_band_4->setBounds (705, 715, 60, 33);
-    button_edit_input_env_band_5->setBounds (765, 715, 60, 33);
-    button_edit_input_env_band_6->setBounds (825, 715, 60, 33);
-    button_edit_input_env_band_7->setBounds (885, 715, 60, 33);
-    button_edit_input_env_band_8->setBounds (945, 715, 60, 33);
-    button_edit_input_env_band_9->setBounds (1005, 715, 60, 33);
+    button_edit_input_env_band_3->setBounds (660, 715, 60, 33);
+    button_edit_input_env_band_4->setBounds (720, 715, 60, 33);
+    button_edit_input_env_band_5->setBounds (780, 715, 60, 33);
+    button_edit_input_env_band_6->setBounds (855, 715, 60, 33);
+    button_edit_input_env_band_7->setBounds (915, 715, 60, 33);
     button_edit_env_chorus->setBounds (915, 715, 60, 33);
     flt_pan_3->setBounds (1315 - 60, 550 - 130, 60, 130);
     flt_pan_2->setBounds (1315 - 60, 370 - 130, 60, 130);
     flt_pan_1->setBounds (1315 - 60, 190 - 130, 60, 130);
+    bypass2->setBounds (1065 - 60, 750 - 130, 60, 130);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3080,116 +3028,104 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_edit_input_env_1_1)
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], buttonThatWasClicked, false );
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2)
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], buttonThatWasClicked, false );
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked, false );
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1)
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2)
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3)
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1)
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2)
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1)
     {
         //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_2)
     {
         //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3)
     {
         //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_4)
     {
         //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_4]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_5)
     {
         //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_5]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_6)
     {
         //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_6]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_7)
     {
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked );
+        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked, true );
         //[/UserButtonCode_button_edit_input_env_band_7]
-    }
-    else if (buttonThatWasClicked == button_edit_input_env_band_8)
-    {
-        //[UserButtonCode_button_edit_input_env_band_8] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[7], &GET_DATA( eq_data ).velocity[7], buttonThatWasClicked );
-        //[/UserButtonCode_button_edit_input_env_band_8]
-    }
-    else if (buttonThatWasClicked == button_edit_input_env_band_9)
-    {
-        //[UserButtonCode_button_edit_input_env_band_9] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[8], &GET_DATA( eq_data ).velocity[8], buttonThatWasClicked );
-        //[/UserButtonCode_button_edit_input_env_band_9]
     }
     else if (buttonThatWasClicked == button_edit_env_chorus)
     {
         //[UserButtonCode_button_edit_env_chorus] -- add your button handler code here..
-        open_env_popup( GET_DATA( chorus_data ).env_data, &GET_DATA( chorus_data ).modulation, buttonThatWasClicked );
+        open_env_popup( GET_DATA( chorus_data ).env_data, &GET_DATA( chorus_data ).modulation, buttonThatWasClicked, false );
         //[/UserButtonCode_button_edit_env_chorus]
     }
 
@@ -3271,7 +3207,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 
         if( env_popup )
         {
-            open_env_popup( nullptr, nullptr, nullptr );
+            open_env_popup( nullptr, nullptr, nullptr, false );
         }
         else
         {
@@ -3426,7 +3362,7 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
         AppInstanceStore::getInstance()->kill_amp_painter();
     }
 }
-void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_ ) noexcept
+void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, bool has_negative_sustain_ ) noexcept
 {
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_off = colours.button_off_colour;
@@ -3447,15 +3383,13 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*c
     button_edit_input_env_band_5->setColour( TextButton::buttonColourId, button_off );
     button_edit_input_env_band_6->setColour( TextButton::buttonColourId, button_off );
     button_edit_input_env_band_7->setColour( TextButton::buttonColourId, button_off );
-    button_edit_input_env_band_8->setColour( TextButton::buttonColourId, button_off );
-    button_edit_input_env_band_9->setColour( TextButton::buttonColourId, button_off );
     button_edit_env_chorus->setColour( TextButton::buttonColourId, button_off );
 
     if( ! env_popup  )
     {
         if( env_data_ )
         {
-            addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2 ) );
+            addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2, has_negative_sustain_ ) );
             env_popup->set_element_to_show(for_comp_);
             for_comp_->setColour( TextButton::buttonColourId, button_on );
             resize_subeditors();
@@ -3470,7 +3404,7 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*c
         else
         {
             env_popup = nullptr;
-            open_env_popup( env_data_, sustain_, for_comp_ );
+            open_env_popup( env_data_, sustain_, for_comp_, has_negative_sustain_ );
         }
     }
 }
@@ -3554,7 +3488,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
                  parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
                  constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
@@ -3711,6 +3645,27 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1285 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1285 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new BypassConfig()"/>
+  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
+                    virtualName="" explicitFocusOrder="0" pos="975r 750r 60 130"
+                    class="Monique_Ui_DualSlider" params="new CModSlConfig()"/>
+  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
+                    explicitFocusOrder="0" pos="885r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new DelaySlConfig()"/>
+  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
+                    explicitFocusOrder="0" pos="795r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RDrySlConfig()"/>
+  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
+                    explicitFocusOrder="0" pos="735r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RWidthSlConfig()"/>
+  <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
+                    explicitFocusOrder="0" pos="675r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RRoomSlConfig()"/>
+  <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new FColourSlConfig()"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
          virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
@@ -3718,47 +3673,37 @@ BEGIN_JUCER_METADATA
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
          virtualName="" explicitFocusOrder="0" pos="590 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="62Hz" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="160Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="9e42519baddf946e" memberName="label_band_hz_3"
-         virtualName="" explicitFocusOrder="0" pos="650 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="125Hz" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="665 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="300Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ec2bcb9f1c216890" memberName="label_band_hz_4"
-         virtualName="" explicitFocusOrder="0" pos="710 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="250Hz" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="725 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="600Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
-         virtualName="" explicitFocusOrder="0" pos="770 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="500Hz" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="785 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="1.2kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="8a859696dca2f1f0" memberName="label_band_hz_6"
-         virtualName="" explicitFocusOrder="0" pos="830 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="1kHz" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="860 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ceab7b618b72215f" memberName="label_band_hz_7"
-         virtualName="" explicitFocusOrder="0" pos="890 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="2kHz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="5e71728c862154d0" memberName="label_band_hz_8"
-         virtualName="" explicitFocusOrder="0" pos="950 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="4kHz" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="9164d2fbcd48eee6" memberName="label_band_hz_9"
-         virtualName="" explicitFocusOrder="0" pos="1010 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="8kHz" editableSingleClick="0"
+         virtualName="" explicitFocusOrder="0" pos="920 745 50 30" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="&gt;2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="b8619ebb44316d58" memberName="label_band_hz_1"
          virtualName="" explicitFocusOrder="0" pos="530 745 50 30" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="31Hz" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="&lt;80Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
@@ -3776,26 +3721,20 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
                     explicitFocusOrder="0" pos="1165r 620 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(0)"/>
-  <GENERICCOMPONENT name="" id="6250362aea841eea" memberName="eq_9" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(8)"/>
-  <GENERICCOMPONENT name="" id="26ebe414133b55e7" memberName="eq_8" virtualName=""
-                    explicitFocusOrder="0" pos="1005r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="945r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="975r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="885r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="915r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="825r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="840r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="765r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="780r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="705r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="720r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
                     explicitFocusOrder="0" pos="645r 750r 60 130" class="Monique_Ui_DualSlider"
@@ -3803,18 +3742,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
                     explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(0)"/>
-  <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new BypassConfig()"/>
-  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="975r 750r 60 130"
-                    class="Monique_Ui_DualSlider" params="new CModSlConfig()"/>
-  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="795r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RDrySlConfig()"/>
-  <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="675r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RRoomSlConfig()"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
                     explicitFocusOrder="0" pos="90r 550r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(2)"/>
@@ -4184,9 +4111,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
                     explicitFocusOrder="0" pos="455r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig()"/>
-  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="885r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new DelaySlConfig()"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
                     explicitFocusOrder="0" pos="1435r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new VolumeConfig()"/>
@@ -4238,9 +4162,6 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FColourSlConfig()"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
                     explicitFocusOrder="0" pos="1285r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new BPMSlConfig()"/>
@@ -4276,9 +4197,6 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="735r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RWidthSlConfig()"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
                     explicitFocusOrder="0" pos="1435r 950r 60 130" class="Monique_Ui_DualSlider"
                     params="new OctaveOffsetSlConfig()"/>
@@ -4445,31 +4363,23 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c5b44a8882d48b9" memberName="button_edit_input_env_band_3"
-              virtualName="" explicitFocusOrder="0" pos="645 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="660 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="55e4c7770dd6c6a5" memberName="button_edit_input_env_band_4"
-              virtualName="" explicitFocusOrder="0" pos="705 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="720 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="325021dee5961ad1" memberName="button_edit_input_env_band_5"
-              virtualName="" explicitFocusOrder="0" pos="765 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="780 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7d42e1a02a42a873" memberName="button_edit_input_env_band_6"
-              virtualName="" explicitFocusOrder="0" pos="825 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="855 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ac8fdd08954a9d8" memberName="button_edit_input_env_band_7"
-              virtualName="" explicitFocusOrder="0" pos="885 715 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="cd8792a71aafa1ab" memberName="button_edit_input_env_band_8"
-              virtualName="" explicitFocusOrder="0" pos="945 715 60 33" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="83f0697e8cc1c77" memberName="button_edit_input_env_band_9"
-              virtualName="" explicitFocusOrder="0" pos="1005 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="915 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="88bbe8f41160cb4a" memberName="button_edit_env_chorus"
@@ -4485,6 +4395,9 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
                     explicitFocusOrder="0" pos="1315r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FPanSlConfig(0)"/>
+  <GENERICCOMPONENT name="" id="e70e5eb2f97176ca" memberName="bypass2" virtualName=""
+                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new BypassConfig()"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

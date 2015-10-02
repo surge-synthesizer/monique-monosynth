@@ -72,6 +72,8 @@ enum MONIQUE_SETUP
     FILTER_3 = 2,
 
     SUM_MORPHER_GROUPS = 4,
+    
+    SUM_EQ_BANDS = 7
 };
 
 //==============================================================================
@@ -93,32 +95,31 @@ public:
     // ==============================================================================
     // WORKERS
     // TODO REDUCE TO NEEDED
-    mono_AudioSampleBuffer<9> band_env_buffers;
-    mono_AudioSampleBuffer<9> band_in_buffers;
-    mono_AudioSampleBuffer<9> band_out_buffers;
+    mono_AudioSampleBuffer<SUM_EQ_BANDS> band_env_buffers;
+    mono_AudioSampleBuffer<SUM_EQ_BANDS> band_out_buffers;
     mono_AudioSampleBuffer<1> band_sum_out_buffer;
-    mono_AudioSampleBuffer<9> band_gain_buffers;
+    mono_AudioSampleBuffer<SUM_EQ_BANDS> band_gain_buffers;
     mono_AudioSampleBuffer<1> band_sum_gain_buffer;
-    
+
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
-    mono_AudioSampleBuffer<SUM_FILTERS*2> direct_filter_output_samples;
+    mono_AudioSampleBuffer<SUM_FILTERS*2> filter_output_samples_l_r;
     mono_AudioSampleBuffer<2> filter_stereo_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
     mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
     mono_AudioSampleBuffer<1> osc_sync_switchs;
     mono_AudioSampleBuffer<1> modulator_samples;
-    
+
     mono_AudioSampleBuffer<1> final_env;
     mono_AudioSampleBuffer<1> chorus_env;
 
     mono_AudioSampleBuffer<2> fx_tmp;
-    
+
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_env_amps;
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
-    
+
     mono_AudioSampleBuffer<1> tmp_buffer;
 
 private:
@@ -303,6 +304,7 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class ENV;
 class SmoothedParameter : public RuntimeListener
 {
     mono_AudioSampleBuffer<1> values;
@@ -323,25 +325,30 @@ class SmoothedParameter : public RuntimeListener
     {
         float samples_left_max;
         int samples_left;
-	float last_modulator;
 
     public:
         void reset( float sample_rate_ ) noexcept;
         float attack( float current_modulator_signal_ ) noexcept;
-        float release() noexcept;
+        float release_amount() noexcept;
         bool is_released() const noexcept;
-	
 
         COLD ModulatorSignalSmoother() noexcept;
         COLD ~ModulatorSignalSmoother() noexcept;
     } modulator_smoother;
+    float last_modulator;
     bool was_modulated_last_time;
+
+    float amp_switch_samples_left_max;
+    int amp_switch_samples_left;
+    float last_amp;
+    bool was_automated_last_time;
 
     COLD void block_size_changed() noexcept override;
 
 public:
     void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
     void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
+    void process_amp( bool use_env_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
 
     inline const float* get_smoothed_buffer() const noexcept
     {
@@ -472,7 +479,8 @@ struct FilterData : ParameterListener
 
     Parameter compressor;
     SmoothedParameter compressor_smoother;
-    Parameter pan;
+    ModulatedParameter pan;
+    SmoothedParameter pan_smoother;
     BoolParameter modulate_pan;
     ModulatedParameter output;
     SmoothedParameter output_smoother;
@@ -756,19 +764,32 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-enum BAND_FREQUENCYS
+static int get_low_pass_band_frequency( int band_id_ ) noexcept
 {
-    BAND_32,
-    BAND_625,
-    BAND_125,
-    BAND_250,
-    BAND_500,
-    BAND_1000,
-    BAND_2000,
-    BAND_4000,
-    BAND_8000,
-    SUM_EQ_BANDS,
-};
+  switch(band_id_)
+  {
+    case 0 : return 100; 
+    case 1 : return 170; 
+    case 2 : return 320; 
+    case 3 : return 650; 
+    case 4 : return 1250; 
+    case 5 : return 2550; 
+    default : return 22000; 
+  }
+}
+static int get_high_pass_band_frequency( int band_id_ ) noexcept
+{
+  switch(band_id_)
+  {
+    case 0 : return 0; 
+    case 1 : return 80; 
+    case 2 : return 150; 
+    case 3 : return 300; 
+    case 4 : return 600; 
+    case 5 : return 1200; 
+    default : return 2500; 
+  }
+}
 //==============================================================================
 struct EQData : ParameterListener
 {
@@ -868,7 +889,6 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter sync;
     Parameter speed;
 
-    // TODO private
     IntParameter glide_motor_time;
     IntParameter velocity_glide_time;
 

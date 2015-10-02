@@ -553,11 +553,13 @@ compressor_smoother(&compressor),
 pan
 (
     MIN_MAX( -1, 1 ),
-    id_ == 1 ? -0.33 : id_ == 2 ? 0.33 : 0,
+    0,
     2000,
-    generate_param_name(FILTER_NAME,id_,"pan2"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"pan")
+    generate_param_name(FILTER_NAME,id_,"pan"),
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"pan"),
+    0.0
 ),
+pan_smoother(&pan),
 modulate_pan
 (
     false,
@@ -659,7 +661,9 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
     dest_->output = src_->output;
     dest_->output_clipping = src_->output_clipping;
     dest_->modulate_output = src_->modulate_output;
-
+    dest_->pan = src_->pan;
+    dest_->modulate_pan = src_->modulate_pan;
+    
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
         dest_->input_holds[i] = src_->input_holds[i];
@@ -699,6 +703,9 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
 
     params_.add( &data_->output );
     params_.add( &data_->modulate_output );
+    
+    params_.add( &data_->pan );
+    params_.add( &data_->modulate_pan );
 }
 
 //==============================================================================
@@ -1716,7 +1723,7 @@ id( data_type ),
     ),
     velocity_glide_time
     (
-        MIN_MAX( 30, 999 ),
+        MIN_MAX( 1, 999 ),
         30,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
         generate_short_human_name("GLOB","velocity_glide")
@@ -2207,6 +2214,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->pan.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2252,6 +2260,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->pan.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
@@ -2297,6 +2306,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->pan.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {

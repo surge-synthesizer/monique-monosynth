@@ -43,7 +43,7 @@ class Monique_Ui_ENVPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_);
+    Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_);
     ~Monique_Ui_ENVPopup();
 
     //==============================================================================
@@ -67,6 +67,13 @@ private:
     Monique_Ui_Mainwindow*const parent;
     ENVData*const env_data;
     Parameter*const sustain;
+
+    float last_attack;
+    float last_sustain;
+    float last_decay;
+    float last_release;
+    float last_shape;
+    float sustain_time;
     //[/UserMethods]
 
     void paint (Graphics& g);

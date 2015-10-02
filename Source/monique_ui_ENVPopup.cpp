@@ -30,22 +30,40 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_ENVPopup::refresh() noexcept
 {
-    slider_attack->setValue( env_data->attack.get_value(), dontSendNotification );
-    label_attack->setText(String( MIN_ENV_TIMES + slider_attack->getValue()*20000 )+String("ms"), dontSendNotification);
+    if( last_attack != env_data->attack.get_value()
+    or last_sustain != env_data->sustain.get_value()
+    or last_decay != env_data->decay.get_value()
+    or sustain_time != env_data->sustain_time.get_value()
+    or last_release != env_data->release.get_value()
+    or last_shape != env_data->shape.get_value()
+      )
+    {
+        last_attack = env_data->attack.get_value();
+        last_sustain = env_data->sustain.get_value();
+        last_decay = env_data->decay.get_value();
+        sustain_time = env_data->sustain_time.get_value();
+        last_shape = env_data->shape.get_value();
+        last_release = env_data->release.get_value();
 
-    slider_decay->setValue( env_data->decay.get_value(), dontSendNotification );
-    label_decay->setText(String( MIN_ENV_TIMES + slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
+        slider_attack->setValue( env_data->attack.get_value(), dontSendNotification );
+        label_attack->setText(String( MIN_ENV_TIMES + slider_attack->getValue()*20000 )+String("ms"), dontSendNotification);
 
-    slider_sustain->setValue( sustain->get_value(), dontSendNotification );
-    label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
+        slider_decay->setValue( env_data->decay.get_value(), dontSendNotification );
+        label_decay->setText(String( slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
 
-    slider_sustain_time->setValue( env_data->sustain_time.get_value()*10000, dontSendNotification );
-    label_sustain_time->setText(String( round0(slider_sustain_time->getValue()) )+String("ms"), dontSendNotification);
+        slider_sustain->setValue( sustain->get_value(), dontSendNotification );
+        label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
 
-    slider_release->setValue( env_data->release.get_value(), dontSendNotification );
-    label_release->setText(String( MIN_ENV_TIMES + slider_release->getValue() *20000)+String("ms"), dontSendNotification);
-    // TODO update if changed
-    slider_env_shape->setValue( env_data->shape.get_value(), dontSendNotification );
+        slider_sustain_time->setValue( env_data->sustain_time.get_value()*10000, dontSendNotification );
+        label_sustain_time->setText(String( round0(slider_sustain_time->getValue()) )+String("ms"), dontSendNotification);
+
+        slider_release->setValue( env_data->release.get_value(), dontSendNotification );
+        label_release->setText(String( MIN_ENV_TIMES + slider_release->getValue() *20000)+String("ms"), dontSendNotification);
+
+        slider_env_shape->setValue( env_data->shape.get_value(), dontSendNotification );
+
+        repaint();
+    }
 }
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_ )
@@ -72,19 +90,27 @@ void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_ )
 void Monique_Ui_ENVPopup::update_positions(  )
 {
     if( related_to_comp )
+    {
         set_element_to_show( related_to_comp );
+    }
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_)
+Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_)
     : parent(parent_),env_data(env_data_),sustain(sustain_),original_w(710), original_h(190),left(left_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    last_attack = 0;
+    last_sustain= 0;
+    last_decay= 0;
+    last_release= 0;
+    last_shape= 0;
+    sustain_time= 0;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_attack_bottom = new Label (String::empty,
-                                                        TRANS("ATTACK")));
+            TRANS("ATTACK")));
     label_attack_bottom->setFont (Font (15.00f, Font::plain));
     label_attack_bottom->setJustificationType (Justification::centred);
     label_attack_bottom->setEditable (false, false, false);
@@ -103,7 +129,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     slider_attack->addListener (this);
 
     addAndMakeVisible (label_decay_bottom = new Label (String::empty,
-                                                       TRANS("DECAY")));
+            TRANS("DECAY")));
     label_decay_bottom->setFont (Font (15.00f, Font::plain));
     label_decay_bottom->setJustificationType (Justification::centred);
     label_decay_bottom->setEditable (false, false, false);
@@ -122,7 +148,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     slider_decay->addListener (this);
 
     addAndMakeVisible (label_release_bottom = new Label (String::empty,
-                                                         TRANS("RELEASE")));
+            TRANS("RELEASE")));
     label_release_bottom->setFont (Font (15.00f, Font::plain));
     label_release_bottom->setJustificationType (Justification::centred);
     label_release_bottom->setEditable (false, false, false);
@@ -151,7 +177,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     slider_sustain_time->addListener (this);
 
     addAndMakeVisible (label_sustain_time_bottom = new Label (String::empty,
-                                                              TRANS("SUS TIME")));
+            TRANS("SUS TIME")));
     label_sustain_time_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType (Justification::centred);
     label_sustain_time_bottom->setEditable (false, false, false);
@@ -160,7 +186,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     label_sustain_time_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack = new Label ("VL",
-                                                 TRANS("x\n")));
+            TRANS("x\n")));
     label_attack->setFont (Font (15.00f, Font::plain));
     label_attack->setJustificationType (Justification::centred);
     label_attack->setEditable (false, false, false);
@@ -169,7 +195,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     label_attack->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_decay = new Label ("VL",
-                                                TRANS("x\n")));
+            TRANS("x\n")));
     label_decay->setFont (Font (15.00f, Font::plain));
     label_decay->setJustificationType (Justification::centred);
     label_decay->setEditable (false, false, false);
@@ -178,7 +204,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     label_decay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain_time = new Label ("VL",
-                                                       TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time->setFont (Font (15.00f, Font::plain));
     label_sustain_time->setJustificationType (Justification::centred);
     label_sustain_time->setEditable (false, false, false);
@@ -187,7 +213,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     label_sustain_time->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_release = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_release->setFont (Font (15.00f, Font::plain));
     label_release->setJustificationType (Justification::centred);
     label_release->setEditable (false, false, false);
@@ -206,7 +232,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     slider_sustain->addListener (this);
 
     addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
-                                                         TRANS("(SUSTAIN)")));
+            TRANS("(SUSTAIN)")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
     label_sustain_bottom->setEditable (false, false, false);
@@ -215,7 +241,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     label_sustain_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain->setFont (Font (15.00f, Font::plain));
     label_sustain->setJustificationType (Justification::centred);
     label_sustain->setEditable (false, false, false);
@@ -237,7 +263,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+            TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -259,6 +285,11 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, E
             SET_SLIDER_STYLE( slider, VALUE_SLIDER );
             slider->setOpaque(true);
         }
+    }
+
+    if( has_negative_sustain_ )
+    {
+        slider_sustain->setRange (-1, 1, 0.0005);
     }
 
     //[/UserPreSize]
@@ -474,7 +505,6 @@ void Monique_Ui_ENVPopup::sliderValueChanged (Slider* sliderThatWasMoved)
     }
 
     //[UsersliderValueChanged_Post]
-    repaint();
     //[/UsersliderValueChanged_Post]
 }
 
@@ -495,7 +525,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_ENVPopup" componentName=""
                  parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_"
+                 constructorParams="Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_"
                  variableInitialisers="parent(parent_),env_data(env_data_),sustain(sustain_),original_w(710), original_h(190),left(left_)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="710" initialHeight="190">

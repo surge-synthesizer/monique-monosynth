@@ -2,44 +2,33 @@ DONE
 - remove adr presets and replace it with an individual env
 - fix: wrong step captions:  from 1; 1; 2;... to 1; 2; 3; -> funny bug -> i'm an idiot :D
 - force sync if tune is same as osc 1
+- add filter pan arangement
+- add full stereo processing (fx, eq after filters)
+- removed two bands of the eq and changed the frequencys of the others
+- fix osc sync problems
+- fix velocity glide!
 
 NOT DONE (but until friday):
-- reduces buffers -> tmp_multithread_band_buffer_9_4 (rename an take a look)
+reduce the smooth actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+open env popup when klick on the ENV turn on button
+- programm load loads bank (plugin bug)
 
 - add: panic
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - add: a layer with help information for the main ui (Also explain a dual slider quick)
-- osc square and saw going out of center on higher octaves
 
-- smooth values on block start
-- snap value smooths to the beat
+
 - remove switch option
-
-- add pan to morph and saveables
-- add switch smoother for modulation-smoother 
-pan für eq
-
 - audio unit build
 - asio suppoert
 - bypass
 
 - keyboard arp  -> nee -> der noob will das sehen
 - env hoch -> no more needed
-- pan effect
 - load save hoch -> yep
 - farbe borders grau 
 - slider
 - option->envelope->slider or rotary
-
-- create 256 and 128 and 512 optimized loops
-
-- programm load loads bank (plugin bug)
-
-- eq processor just process env one time
-
-
--> direct_filter_output_samples splitt
-
 
 isNoteOnOrOff
 isAllNotesOff
@@ -111,6 +100,12 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+
+- create 256 and 128 and 512 optimized loops
+- osc sync cycles
+- pan für eq
+- pan for reverb and other effects
+- snap value smooths to the beat
 - 3D pan
 - morph between filters
 - virtual port support

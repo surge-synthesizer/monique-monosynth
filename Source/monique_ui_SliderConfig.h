@@ -1606,11 +1606,11 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return sustain;
     }
-    /*
     int get_override_front_min_value() const noexcept override
     {
-    return DONT_OVERRIDE_SLIDER_VALUE;
+        return 0;
     }
+    /*
     int get_override_front_max_value() const noexcept override
     {
     return DONT_OVERRIDE_SLIDER_VALUE;
@@ -2809,7 +2809,7 @@ public:
 class FPanSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const pan;
-    BoolParameter*const modulate_volume;
+    BoolParameter*const modulate_pan;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2861,7 +2861,7 @@ class FPanSlConfig : public ModulationSliderConfigBase
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return modulate_volume;
+        return modulate_pan;
     }
     StringRef get_top_button_text() const noexcept override
     {
@@ -2910,7 +2910,7 @@ class FPanSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-     // TODO
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the filter output volume.\n"
@@ -2938,7 +2938,7 @@ public:
     FPanSlConfig( int id_ )
         :
         pan( &(GET_DATA(filter_datas[id_]).pan) ),
-        modulate_volume( &(GET_DATA(filter_datas[id_]).modulate_output) )
+        modulate_pan( &(GET_DATA(filter_datas[id_]).modulate_pan) )
     {}
 
     JUCE_LEAK_DETECTOR (FPanSlConfig)
@@ -4719,11 +4719,11 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-            return String( round01(chorus_data->modulation*100)  );
+        return String( round01(chorus_data->modulation*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
-            return "";
+        return "";
     }
 
     //==============================================================================
@@ -5246,12 +5246,12 @@ public:
         :
         id( id_ ),
         velocity( &(GET_DATA(eq_data).velocity[id_]) ),
-        hold( &(GET_DATA(eq_data).hold[id]) ),
-        
+        hold( &(GET_DATA(eq_data).hold[id_]) ),
+
         synth_data( GET_DATA_PTR( synth_data ) )
     {
-        const float frequency_low_pass = (62.5f/2) * pow(2,id_+1);
-        const float frequency_high_pass = frequency_low_pass / 2.0f;
+        const float frequency_low_pass = get_low_pass_band_frequency( id_ );
+        const float frequency_high_pass = get_high_pass_band_frequency( id_ );
         bottom_text = String( frequency_high_pass ) + String("Hz");
     }
 
