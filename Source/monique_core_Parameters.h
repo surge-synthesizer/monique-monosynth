@@ -249,7 +249,23 @@ public:
             notify_value_listeners_by_automation();
         }
     }
-
+    inline void set_value_on_load( float value_ ) noexcept
+    {
+        value_ = snap_to_zero(value_);
+        //if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+        }
+    }
+    
 public:
     // ==============================================================================
     // MODULATOR (OPTIONAL PARAMETER)
@@ -1027,10 +1043,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
     bool success = false;
     const ParameterInfo& info = param_->get_info();
     {
-        const float old_value = param_->get_value();
         float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
-
-        if( new_value != old_value )
         {
             const float max_value = info.max_value;
             if( new_value > max_value )
@@ -1042,7 +1055,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
                 new_value = info.min_value;
             }
 
-            param_->set_value_without_notification( new_value );
+            param_->set_value_on_load( new_value );
             success = true;
         }
     }

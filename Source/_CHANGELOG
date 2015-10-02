@@ -6,9 +6,27 @@ DONE
 - add full stereo processing (fx, eq after filters)
 - removed two bands of the eq and changed the frequencys of the others
 - fix osc sync problems
-- fix velocity glide!
+- fix velocity glide
+- fixed: aliasing bug in osc sync
+- fix: click in oscilators
+- add: values on global glide times
+
+
+
+
+osc wave is not smoothed
+ein hohes band mehr
+schatten für popup
+option: always start in ctrl mode
+bug: switch amp - sustain
+bug: create new programm and store it -> then change something and you get the parent program name
+
+
+
 
 NOT DONE (but until friday):
+- fix slider popup descriptions
+- font for tooltip misses top stripe
 reduce the smooth actions!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 open env popup when klick on the ENV turn on button
 - programm load loads bank (plugin bug)

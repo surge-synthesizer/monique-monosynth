@@ -663,7 +663,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
     dest_->modulate_output = src_->modulate_output;
     dest_->pan = src_->pan;
     dest_->modulate_pan = src_->modulate_pan;
-    
+
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
         dest_->input_holds[i] = src_->input_holds[i];
@@ -703,7 +703,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
 
     params_.add( &data_->output );
     params_.add( &data_->modulate_output );
-    
+
     params_.add( &data_->pan );
     params_.add( &data_->modulate_pan );
 }
@@ -721,6 +721,10 @@ void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
     }
 }
 void FilterData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+}
+void FilterData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
 }
@@ -867,8 +871,6 @@ hold
     "hold","env_ON", false
 )
 {
-
-
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
         ENVData* env_data = new ENVData( band_id+EQ_ENV_ID_OFFSET );
@@ -923,6 +925,10 @@ void EQData::parameter_value_changed( Parameter* param_ ) noexcept
     }
 }
 void EQData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+}
+void EQData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
 }
@@ -1036,6 +1042,10 @@ void ChorusData::parameter_value_changed( Parameter* param_ ) noexcept
     env_data->sustain.set_value_without_notification( param_->get_value() );
 }
 void ChorusData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
+{
+    parameter_value_changed( param_ );
+}
+void ChorusData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
 {
     parameter_value_changed( param_ );
 }
@@ -1717,7 +1727,7 @@ id( data_type ),
     glide_motor_time
     (
         MIN_MAX( 1, 1000 ),
-        5,
+        50,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
         generate_short_human_name("GLOB","smooth_motor_time")
     ),
@@ -2365,11 +2375,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
             {
                 morph_group_3->register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( eq_data->envs[band_id]->attack.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( eq_data->envs[band_id]->decay.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( eq_data->envs[band_id]->sustain_time.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->attack.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->decay.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->sustain_time.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
 
                 morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
@@ -2388,11 +2398,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
-            morph_group_2->register_parameter( chorus_data->env_data->attack.ptr(), data_type == MASTER  );
-            morph_group_2->register_parameter( chorus_data->env_data->decay.ptr(), data_type == MASTER  );
-            morph_group_2->register_parameter( chorus_data->env_data->sustain_time.ptr(), data_type == MASTER  );
-            morph_group_2->register_parameter( chorus_data->env_data->release.ptr(), data_type == MASTER  );
-            morph_group_2->register_parameter( chorus_data->env_data->shape.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->attack.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->decay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->sustain_time.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->release.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->shape.ptr(), data_type == MASTER  );
             morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
         }
 
@@ -3051,7 +3061,7 @@ bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
     if( success )
     {
         refresh_banks_and_programms();
-        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(name);
+        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_name_);
     }
 
     return success;

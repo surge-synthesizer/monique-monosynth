@@ -498,6 +498,7 @@ private:
     //==========================================================================
     void parameter_value_changed( Parameter* param_ ) noexcept override;
     void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
     void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
@@ -802,6 +803,7 @@ private:
     //==========================================================================
     void parameter_value_changed( Parameter* param_ ) noexcept override;
     void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
     void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
@@ -842,6 +844,7 @@ private:
     //==========================================================================
     void parameter_value_changed( Parameter* param_ ) noexcept override;
     void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
     void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:

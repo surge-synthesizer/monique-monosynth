@@ -34,7 +34,7 @@ values(block_size),
        min_value( param_to_smooth_->get_info().min_value ),
 
        last_value(param_to_smooth_->get_value()),
-       last_target(last_value),
+       last_target(-99),
        difference_per_sample(0),
        samples_left(0),
        buffer_is_linear_up_to_date_filled(false),
@@ -191,6 +191,8 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
                 target_buffer[i] = in + modulator_smoother.attack( (in-min_value) * modulator_buffer_[i]*target_modulation );
             }
         }
+
+        last_modulator = target_buffer[num_samples_-1];
     }
     else
     {
@@ -208,7 +210,8 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
             for( int i = 0 ; i != num_samples_ ; ++i )
             {
                 float in = source_buffer[i];
-                target_buffer[i] = in + last_modulator*modulator_smoother.release_amount();
+		float release_power = modulator_smoother.release_amount();
+                target_buffer[i] = in*(1.0f-release_power) + last_modulator*release_power;
             }
         }
         else
@@ -217,7 +220,6 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
         }
     }
 
-    last_modulator = modulator_buffer_[num_samples_-1];
     param_to_smooth->get_runtime_info().set_last_modulation_amount( modulator_buffer_[num_samples_-1]*target_modulation );
 }
 
@@ -494,8 +496,8 @@ public:
     {
         if( size_in_ms != size_in_ms_ or force_ )
         {
-	    float last_average = get_average();
-	  
+            float last_average = get_average();
+
             size_in_ms = size_in_ms_;
             size = jmax(int64(3),msToSamplesFast(size_in_ms_,sample_rate));
             buffer.setSize( size, true );
@@ -509,7 +511,7 @@ public:
             sum = 0;
             for( int i = 0 ; i != size ; ++i )
             {
-	        ptr_to_buffer[i] = last_average;
+                ptr_to_buffer[i] = last_average;
                 sum+=last_average;
             }
         }
@@ -717,19 +719,23 @@ class mono_BlitSaw : public RuntimeListener
 {
     float last_tick_value;
     float rate_;
-    float phase_;
+    double phase_;
     float p_;
     float C2_;
     float a_;
     float state_;
     unsigned int m_;
+    bool _isNewCylce;
 
 public:
     inline float lastOut( void ) const noexcept;
     inline float tick() noexcept;
     inline void reset() noexcept;
     inline void setFrequency( float frequency ) noexcept;
-    inline void setPhase( float phase ) noexcept;
+
+    // HACK FOR SYNC
+    inline bool isNewCylce() const noexcept;
+    inline void clearNewCycleState() noexcept;
 
 private:
     inline void updateHarmonics( void ) noexcept;
@@ -749,7 +755,8 @@ COLD mono_BlitSaw::mono_BlitSaw( float frequency )
     C2_(0),
     a_(0),
     state_(0),
-    m_(0)
+    m_(0),
+    _isNewCylce(true)
 {
     reset();
     setFrequency( frequency );
@@ -757,7 +764,8 @@ COLD mono_BlitSaw::mono_BlitSaw( float frequency )
 COLD mono_BlitSaw::~mono_BlitSaw() {}
 
 // -----------------------------------------------------------------
-inline float mono_BlitSaw::lastOut( void ) const noexcept {
+inline float mono_BlitSaw::lastOut( void ) const noexcept
+{
     return last_tick_value;
 }
 inline float mono_BlitSaw::tick() noexcept
@@ -779,17 +787,25 @@ inline float mono_BlitSaw::tick() noexcept
     state_ = tmp * 0.999f;
 
     phase_ += rate_;
-    if ( phase_ >= float_Pi )
+    if ( phase_ > float_Pi )
     {
         phase_ -= float_Pi;
+        _isNewCylce = true;
     }
+    else
+        _isNewCylce = false;
 
     return last_tick_value = tmp;
 }
 
 // -----------------------------------------------------------------
-inline void mono_BlitSaw::setPhase( float phase ) noexcept {
-    phase_ = float_Pi * phase;
+inline bool mono_BlitSaw::isNewCylce() const noexcept 
+{
+    return _isNewCylce;
+}
+inline void mono_BlitSaw::clearNewCycleState() noexcept 
+{
+    _isNewCylce = false;
 }
 inline void mono_BlitSaw::reset() noexcept
 {
@@ -824,20 +840,22 @@ class mono_BlitSquare : public RuntimeListener
 {
     float last_tick_value;
     float rate_;
-    float phase_;
+    double phase_;
     float p_;
     float a_;
     float lastBlitOutput_;
     float dcbState_;
 
     unsigned int m_;
+    bool _isNewCylce;
 
 public:
     inline float lastOut( void ) const noexcept;
     inline void reset() noexcept;
-    inline void setPhase( float phase ) noexcept;
 
-    inline float getPhase() const noexcept;
+    // HACK FOR SYNC
+    inline bool isNewCylce() const noexcept;
+    inline void clearNewCycleState() noexcept;
     inline void setFrequency( float frequency ) noexcept;
     inline float tick( void ) noexcept;
 
@@ -859,7 +877,8 @@ COLD mono_BlitSquare::mono_BlitSquare( float frequency )
     a_(0),
     lastBlitOutput_(0),
     dcbState_(0),
-    m_(0)
+    m_(0),
+    _isNewCylce(true)
 {
     setFrequency( frequency );
     reset();
@@ -869,7 +888,8 @@ COLD mono_BlitSquare::~mono_BlitSquare()
 }
 
 // -----------------------------------------------------------------
-inline float mono_BlitSquare::lastOut( void ) const noexcept {
+inline float mono_BlitSquare::lastOut( void ) const noexcept 
+{
     return last_tick_value;
 }
 inline float mono_BlitSquare::tick( void ) noexcept
@@ -882,29 +902,36 @@ inline float mono_BlitSquare::tick( void ) noexcept
     if ( std::fabs( denominator )  < std::numeric_limits<float>::epsilon() )
     {
         // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-        if ( phase_ < 0.1f || phase_ > (float_Pi*2) - 0.1f )
+        if ( float(phase_) < 0.01f || float(phase_) > (float_Pi*2) - 0.01f )
             lastBlitOutput_ = a_;
         else
             lastBlitOutput_ = -a_;
     }
     else
     {
-        lastBlitOutput_ = std::sin( float(m_ * phase_) ) / (p_ * denominator);
+        lastBlitOutput_ = std::sin( phase_*m_ ) / (p_ * denominator);
     }
 
     lastBlitOutput_ += temp;
 
     // Now apply DC blocker.
-    last_tick_value = lastBlitOutput_ - dcbState_ + 0.999f * last_tick_value;
+    float tmp = lastBlitOutput_ - dcbState_ + 0.999f * last_tick_value;
     dcbState_ = lastBlitOutput_;
 
     phase_ += rate_;
-    if ( phase_ >= (float_Pi*2) )
+    if ( phase_ > (float_Pi*2) )
     {
-        phase_ -= (float_Pi*2);
+       phase_ -= (float_Pi*2);
     }
 
-    return last_tick_value;
+    if( last_tick_value <= 0 and tmp >= 0 )
+    {
+        _isNewCylce = true;
+    }
+    else
+        _isNewCylce = false;
+
+    return last_tick_value = tmp;
 }
 
 // -----------------------------------------------------------------
@@ -915,14 +942,13 @@ inline void mono_BlitSquare::reset() noexcept
     dcbState_ = 0;
     lastBlitOutput_ = 0;
 }
-inline void mono_BlitSquare::setPhase( float phase ) noexcept
+inline bool mono_BlitSquare::isNewCylce() const noexcept
 {
-    phase_ = float_Pi * phase;
+    return _isNewCylce;
 }
-
-inline float mono_BlitSquare::getPhase() const noexcept
+inline void mono_BlitSquare::clearNewCycleState() noexcept
 {
-    return phase_ * ( 1.0f/float_Pi );
+    _isNewCylce = false;
 }
 inline void mono_BlitSquare::setFrequency( float frequency ) noexcept
 {
@@ -1001,15 +1027,13 @@ inline float mono_SineWave::tick() noexcept
     // TODO do the lookup unsave!
     float value = lookup_sine( current_angle );
     current_angle += delta;
-    if( current_angle >= (float_Pi*2) )
+    if( current_angle > (float_Pi * 2) )
     {
         _isNewCylce = true;
-        current_angle -= (float_Pi*2);
+        current_angle -= (float_Pi * 2);
     }
     else
-    {
         _isNewCylce = false;
-    }
 
     return last_tick_value = value;
 }
@@ -1685,7 +1709,7 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
 
             */
             // SINE - SQUARE
-            if( wave <= 1 )
+            if( wave < 1 )
             {
                 const float multi = wave;
                 const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
@@ -1721,7 +1745,21 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
         {
             // ENTER SYNC
             last_cycle_was_pulse_switch = false;
-            const bool is_wave_switch = sine_generator.isNewCylce();
+            bool is_wave_switch;
+            if(  wave == 0 )
+            {
+                is_wave_switch = sine_generator.isNewCylce();
+            }
+            else if( wave <= 2 )
+            {
+                is_wave_switch = square_generator.isNewCylce();
+            }
+            else /*if( wave <= 3 )*/
+            {
+                is_wave_switch = saw_generator.isNewCylce();
+            }
+            saw_generator.clearNewCycleState();
+            square_generator.clearNewCycleState();
             sine_generator.clearNewCycleState();
 
             if( is_wave_switch )
@@ -1814,7 +1852,9 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
 
                 // PROCESS MODULATOR
                 if( ! waiting_for_modulator_sync )
+		{
                     modulator_sample = modulator.tick();
+		}
 
                 // FM SYNC
                 if( master_sync )
@@ -1829,7 +1869,8 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
                         modulator_phase_switch *= -1;
                     }
 
-                    if( is_clean_switch ) {
+                    if( is_clean_switch ) 
+		    {
                         waiting_for_modulator_sync = false;
                         current_modulator_sync_cycle = 0;
                     }
@@ -1884,7 +1925,14 @@ inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_
                 sample = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
             }
 
-            output_buffer[sid] = sample * volume_multi;
+            if( ! waiting_for_sync )
+            {
+                output_buffer[sid] = sample * volume_multi;
+            }
+            else
+            {
+                output_buffer[sid] = 0;
+            }
         }
     }
 
@@ -2334,10 +2382,25 @@ void SmoothedParameter::process_amp( bool use_env_, ENV*env_, float*amp_buffer_,
     {
         if( not was_automated_last_time )
         {
-            env_->overwrite_current_value( last_value );
+            int current_stage = env_->get_current_stage();
+            if( current_stage == RELEASE or current_stage == END_ENV )
+            {
+                env_->overwrite_current_value( last_value );
+                env_->set_to_release();
+            }
+            else if( current_stage == ATTACK )
+            {
+                env_->overwrite_current_value( last_value );
+                env_->start_attack();
+            }
+            else if( current_stage == SUSTAIN or current_stage == DECAY )
+            {
+                env_->overwrite_current_value( last_value );
+            }
             was_automated_last_time = true;
         }
         env_->process( amp_buffer_, num_samples_ );
+        last_amp = amp_buffer_[num_samples_-1];
     }
     else
     {
@@ -2374,8 +2437,6 @@ void SmoothedParameter::process_amp( bool use_env_, ENV*env_, float*amp_buffer_,
             }
         }
     }
-
-    last_amp = amp_buffer_[num_samples_-1];
 }
 
 //==============================================================================
@@ -3728,7 +3789,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
             inline void exec() noexcept override
             {
                 // PROCESS
-                {
+                {            
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
@@ -3738,6 +3799,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                         const float normalized_sustain = (1.0f+raw_sustain)*0.5f;
                         // TODO
                         const float amp = hold_sustain ? normalized_sustain : env_buffer[sid];
+
 
                         // UPDATE FILTER
                         filter.update_with_calc( 0.2f*shape, filter_frequency, normalized_sustain );
@@ -3882,7 +3944,6 @@ left_processor( new EQProcessor(synth_data_) ),
     std::cout << "MONIQUE: init EQ" << std::endl;
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        //if( not hold_sustain )
         envs.add( new ENV( synth_data_, GET_DATA_PTR( eq_data )->envs.getUnchecked( band_id ) ) );
     }
 }
@@ -5538,5 +5599,7 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
+
 
 
