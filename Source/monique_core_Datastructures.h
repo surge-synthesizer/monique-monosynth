@@ -72,7 +72,7 @@ enum MONIQUE_SETUP
     FILTER_3 = 2,
 
     SUM_MORPHER_GROUPS = 4,
-    
+
     SUM_EQ_BANDS = 7
 };
 
@@ -392,27 +392,40 @@ struct LFOData
 //==============================================================================
 //==============================================================================
 //==============================================================================
+struct FMOscData
+{
+    Parameter fm_freq;
+    SmoothedParameter fm_freq_smoother;
+
+    BoolParameter fm_shot;
+    BoolParameter sync;
+    Parameter fm_swing;
+    SmoothedParameter fm_swing_smoother;
+
+    //==========================================================================
+    COLD FMOscData() noexcept;
+    COLD ~FMOscData() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMOscData)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 struct OSCData
 {
     const int id;
 
+    BoolParameter sync;
+    
     Parameter wave;
+    SmoothedParameter wave_smoother;
+    Parameter fm_amount;
+    SmoothedParameter fm_amount_smoother;
     ModulatedParameter tune;
     SmoothedParameter tune_smoother;
 
     BoolParameter is_lfo_modulated;
-
-    Parameter fm_freq;
-    Parameter fm_amount;
-    SmoothedParameter fm_amount_smoother;
-
-    BoolParameter fm_shot;
-    BoolParameter sync;
-    BoolParameter o_mod;
-
-    IntParameter puls_width;
-    Parameter fm_swing;
-    IntParameter osc_switch;
 
     // FOR UI FEEDBACK
     float last_modulation_value;
@@ -767,29 +780,43 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
 //==============================================================================
 static int get_low_pass_band_frequency( int band_id_ ) noexcept
 {
-  switch(band_id_)
-  {
-    case 0 : return 100; 
-    case 1 : return 170; 
-    case 2 : return 320; 
-    case 3 : return 650; 
-    case 4 : return 1250; 
-    case 5 : return 2550; 
-    default : return 22000; 
-  }
+    switch(band_id_)
+    {
+    case 0 :
+        return 80;
+    case 1 :
+        return 160;
+    case 2 :
+        return 320;
+    case 3 :
+        return 640;
+    case 4 :
+        return 1280;
+    case 5 :
+        return 2660;
+    default :
+        return 22000;
+    }
 }
 static int get_high_pass_band_frequency( int band_id_ ) noexcept
 {
-  switch(band_id_)
-  {
-    case 0 : return 0; 
-    case 1 : return 80; 
-    case 2 : return 150; 
-    case 3 : return 300; 
-    case 4 : return 600; 
-    case 5 : return 1200; 
-    default : return 2500; 
-  }
+    switch(band_id_)
+    {
+    case 0 :
+        return 0;
+    case 1 :
+        return 80;
+    case 2 :
+        return 160;
+    case 3 :
+        return 320;
+    case 4 :
+        return 640;
+    case 5 :
+        return 1280;
+    default :
+        return 2660;
+    }
 }
 //==============================================================================
 struct EQData : ParameterListener
@@ -929,6 +956,7 @@ struct MoniqueSynthData : ParameterListener
 
     OwnedArray< LFOData > lfo_datas;
     OwnedArray< OSCData > osc_datas;
+    ScopedPointer<FMOscData> fm_osc_data;
     OwnedArray< FilterData > filter_datas;
     ScopedPointer< EQData > eq_data;
     ScopedPointer< ArpSequencerData > arp_sequencer_data;
@@ -1102,6 +1130,7 @@ public:
 
     Array< LFOData* > lfo_datas;
     Array< OSCData* > osc_datas;
+    FMOscData* fm_osc_data;
     Array< FilterData* > filter_datas;
     EQData* eq_data;
     ArpSequencerData* arp_data;

@@ -177,6 +177,8 @@ StringRef get_tootip_bottom() const noexcept override \
 //==============================================================================
 class WAVESlConfig : public ModulationSliderConfigBase
 {
+    const int id;
+
     Parameter*const wave;
     Parameter*const fm_amount;
     BoolParameter*const top_parameter;
@@ -231,7 +233,10 @@ class WAVESlConfig : public ModulationSliderConfigBase
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return top_parameter;
+        if( id )
+            return top_parameter;
+        else
+            return nullptr;
     }
     StringRef get_top_button_text() const noexcept override
     {
@@ -314,10 +319,11 @@ class WAVESlConfig : public ModulationSliderConfigBase
 public:
     WAVESlConfig( int id_ )
         :
+        id(id_),
         wave( &(GET_DATA(osc_datas[id_]).wave) ),
         fm_amount( &(GET_DATA(osc_datas[id_]).fm_amount) ),
-        top_parameter( id_ == 0 ? &(GET_DATA(osc_datas[id_]).o_mod) : &(GET_DATA(osc_datas[id_]).sync) ),
-        top_text( id_ == 0 ? "O-MOD" : "SYNC" ),
+        top_parameter( &(GET_DATA(osc_datas[id_]).sync) ),
+        top_text( "SYNC" ),
         bottom_text( "WAV-" + String(id_+1) )
     {}
 
@@ -529,8 +535,7 @@ public:
 //==============================================================================
 class FMFreqSlConfig : public ModulationSliderConfigBase
 {
-    Parameter*const fm_multi;
-    Parameter*const fm_swing;
+    Parameter*const fm_freq;
     BoolParameter*const sync;
 
     //==============================================================================
@@ -548,7 +553,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     Parameter* get_front_parameter_base() const noexcept override
     {
-        return fm_multi;
+        return fm_freq;
     }
     /*
     int get_override_front_min_value() const noexcept override
@@ -563,6 +568,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -572,6 +578,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         return fm_swing;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -598,13 +605,13 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "F-TUNE";
+        return "TUNE";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "F-SWING";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -619,33 +626,16 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( fm_multi->midi_control->get_ctrl_mode() )
-        {
-            const float swing = fm_swing->get_value();
-            if( swing == 0 )
-            {
-                return "OFF";
-            }
-            else
-            {
-                return String( swing );
-            }
-        }
-        else
-        {
-            return String( fm_multi->get_value() );
-        }
+        return String( round01(fm_freq->get_value()*7 +1.1) );
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( fm_multi->midi_control->get_ctrl_mode() )
-            return "th";
-        else
-            return "";
+        return "O1*";
     }
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Detune the FM oscillator relative, upwards to the tune of OSC 1.\n"
@@ -679,9 +669,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig()
         :
-        fm_multi( &(GET_DATA(osc_datas[MASTER_OSC]).fm_freq) ),
-        fm_swing( &(GET_DATA(osc_datas[MASTER_OSC]).fm_swing) ),
-        sync( &(GET_DATA(osc_datas[MASTER_OSC]).sync) )
+        fm_freq( &(GET_DATA(fm_osc_data).fm_freq) ),
+        sync( &(GET_DATA(fm_osc_data).sync) )
     {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
@@ -698,9 +687,8 @@ public:
 //==============================================================================
 class FMAmountSlConfig : public ModulationSliderConfigBase
 {
-    Parameter*const puls_width;
-    Parameter*const osc_switch;
-    BoolParameter*const fm_wave;
+    Parameter*const fm_swing;
+    BoolParameter*const shot;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -719,7 +707,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     }
     Parameter* get_front_parameter_base() const noexcept override
     {
-        return puls_width;
+        return fm_swing;
     }
     /*
     int get_override_front_min_value() const noexcept override
@@ -734,6 +722,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -741,8 +730,9 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return osc_switch;
+        return fm_mix_algorythm;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -752,7 +742,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        return fm_wave;
+        return shot;
     }
     StringRef get_top_button_text() const noexcept override
     {
@@ -769,16 +759,18 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "O-PLUSE";
+        return "SWING";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "O-SWCH";
+        return "FM ALGOR";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
         return false;
     }
+    */
 
     //==============================================================================
     // CENTER LABEL
@@ -788,20 +780,16 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( puls_width->midi_control->get_ctrl_mode() )
-            return String( osc_switch->get_value() );
-        else
-            return String( puls_width->get_value() );
+        return String( round01(fm_swing->get_value()*20) );
     }
-    /*
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+    return "hz";
     }
-    */
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define pulses for each oscillator.\n"
@@ -875,9 +863,8 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig()
         :
-        puls_width( &(GET_DATA(osc_datas[MASTER_OSC]).puls_width) ),
-        osc_switch( &(GET_DATA(osc_datas[MASTER_OSC]).osc_switch) ),
-        fm_wave( &(GET_DATA(osc_datas[MASTER_OSC]).fm_shot) )
+        fm_swing( &(GET_DATA(fm_osc_data).fm_swing) ),
+        shot( &(GET_DATA(fm_osc_data).fm_shot) )
     {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)

@@ -163,12 +163,85 @@ static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Param
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
 #define OSC_NAME "OSC"
 #define FM_NAME "FM"
+COLD FMOscData::FMOscData() noexcept
+:
+fm_freq
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(OSC_NAME,MASTER_OSC,"fm_multi"),
+    generate_short_human_name(FM_NAME,"tune")
+),
+fm_freq_smoother(&fm_freq),
+fm_shot
+(
+    true,
+    generate_param_name(OSC_NAME,MASTER_OSC,"fm_wave"),
+    generate_short_human_name(FM_NAME,"shot_ON")
+),
+sync
+(
+    true,
+    generate_param_name(OSC_NAME,MASTER_OSC, "sync" ),
+    generate_short_human_name
+    (
+        FM_NAME,
+        "sync"
+    )
+),
+fm_swing
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(OSC_NAME,MASTER_OSC,"fm_swing"),
+    generate_short_human_name(FM_NAME,"fm_swing")
+),
+fm_swing_smoother(&fm_swing)
+{
+
+}
+COLD FMOscData::~FMOscData() noexcept {}
+
+//==============================================================================
+static inline void copy( FMOscData* dest_, const FMOscData* src_ ) noexcept
+{
+    dest_->fm_freq = src_->fm_freq;
+    dest_->fm_shot = src_->fm_shot;
+    dest_->sync = src_->sync;
+    dest_->fm_swing = src_->fm_swing;
+}
+static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Parameter* >& params_ ) noexcept
+{
+    {
+        params_.add( &osc_data_->fm_freq );
+        params_.add( &osc_data_->fm_shot );
+        params_.add( &osc_data_->sync );
+        params_.add( &osc_data_->fm_swing );
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 COLD OSCData::OSCData( int id_ ) noexcept
 :
 id(id_),
-
+sync
+(
+    true,
+    generate_param_name(OSC_NAME,id_, id_ == MASTER_OSC ? "spacer" : "sync" ),
+    generate_short_human_name
+    (
+        OSC_NAME,
+        id_,
+        "sync"
+    )
+),
 wave
 (
     MIN_MAX( SINE, NOICE ),
@@ -177,6 +250,16 @@ wave
     generate_param_name(OSC_NAME,id_,"wave"),
     generate_short_human_name(OSC_NAME,id_,"wave")
 ),
+wave_smoother(&wave),
+fm_amount
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(OSC_NAME,id_,"fm_power"),
+    generate_short_human_name(OSC_NAME,id_,"fm_mass")
+),
+fm_amount_smoother(&fm_amount),
 tune
 (
     MIN_MAX( -24, 24 ),
@@ -193,72 +276,6 @@ is_lfo_modulated
     generate_param_name(OSC_NAME,id_,"is_lfo_mod"),
     generate_short_human_name(OSC_NAME,id_,"l-mod_ON")
 ),
-
-// -------------------------------------------------------
-fm_freq
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(OSC_NAME,id_,"fm_multi"),
-    generate_short_human_name(FM_NAME,id_,"tune")
-),
-fm_amount
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(OSC_NAME,id_,"fm_power"),
-    generate_short_human_name(OSC_NAME,id_,"fm_mass")
-),
-fm_amount_smoother(&fm_amount),
-fm_shot
-(
-    true,
-    generate_param_name(OSC_NAME,id_,"fm_wave"),
-    generate_short_human_name(FM_NAME,id_,"shot_ON")
-),
-sync
-(
-    true,
-    generate_param_name(OSC_NAME,id_, "sync" ),
-    generate_short_human_name
-    (
-        id_ == MASTER_OSC ? FM_NAME : OSC_NAME ,
-        id_,
-        "sync"
-    )
-),
-o_mod
-(
-    false,
-    generate_param_name(OSC_NAME,id_,"mod_off"),
-    generate_short_human_name(OSC_NAME,id_,"o-mod_ON")
-),
-
-puls_width
-(
-    MIN_MAX( -12, 12 ),
-    0,
-    generate_param_name(OSC_NAME,id_,"puls_width"),
-    generate_short_human_name(FM_NAME,id_,"osc_pulse")
-),
-fm_swing
-(
-    MIN_MAX( 0, 1 ),
-    0,
-    1000,
-    generate_param_name(OSC_NAME,id_,"fm_swing"),
-    generate_short_human_name(FM_NAME,id_,"fm_swing")
-),
-osc_switch
-(
-    MIN_MAX( 0, 16 ),
-    0,
-    generate_param_name(OSC_NAME,id_,"osc_switch"),
-    generate_short_human_name(FM_NAME,id_,"osc_switch")
-),
-
 last_modulation_value( 0 )
 {}
 COLD OSCData::~OSCData() noexcept {}
@@ -266,59 +283,19 @@ COLD OSCData::~OSCData() noexcept {}
 //==============================================================================
 static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
 {
-    if( dest_->id == MASTER_OSC )
-    {
-        dest_->o_mod = src_->o_mod;
-        dest_->wave = src_->wave;
-        dest_->fm_amount = src_->fm_amount;
-        dest_->is_lfo_modulated = src_->is_lfo_modulated;
-        dest_->tune = src_->tune;
-
-        dest_->sync = src_->sync;
-        dest_->fm_freq = src_->fm_freq;
-        dest_->fm_swing = src_->fm_swing;
-        dest_->fm_shot = src_->fm_shot;
-        dest_->puls_width = src_->puls_width;
-        dest_->osc_switch = src_->osc_switch;
-    }
-    else
-    {
-        dest_->sync = src_->sync;
-        dest_->wave = src_->wave;
-        dest_->fm_amount = src_->fm_amount;
-        dest_->is_lfo_modulated = src_->is_lfo_modulated;
-        dest_->tune = src_->tune;
-    }
+    dest_->wave = src_->wave;
+    dest_->fm_amount = src_->fm_amount;
+    dest_->is_lfo_modulated = src_->is_lfo_modulated;
+    dest_->tune = src_->tune;
+    dest_->sync = src_->sync;
 }
 static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
-    if( osc_data_->id == MASTER_OSC )
-    {
-        params_.add( &osc_data_->o_mod );
-        params_.add( &osc_data_->wave );
-        params_.add( &osc_data_->fm_amount );
-        params_.add( &osc_data_->tune );
-        params_.add( &osc_data_->is_lfo_modulated );
-    }
-    else
-    {
-        params_.add( &osc_data_->sync );
-        params_.add( &osc_data_->wave );
-        params_.add( &osc_data_->fm_amount );
-        params_.add( &osc_data_->tune );
-        params_.add( &osc_data_->is_lfo_modulated );
-    }
-}
-static inline void collect_saveable_fm_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
-{
-    {
-        params_.add( &osc_data_->sync );
-        params_.add( &osc_data_->fm_freq );
-        params_.add( &osc_data_->fm_swing );
-        params_.add( &osc_data_->fm_shot );
-        params_.add( &osc_data_->puls_width );
-        params_.add( &osc_data_->osc_switch );
-    }
+    params_.add( &osc_data_->sync );
+    params_.add( &osc_data_->wave );
+    params_.add( &osc_data_->fm_amount );
+    params_.add( &osc_data_->tune );
+    params_.add( &osc_data_->is_lfo_modulated );
 }
 
 //==============================================================================
@@ -1416,6 +1393,7 @@ COLD void set_default_midi_assignments() noexcept
 
     MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     OSCData& master_osc_data( GET_DATA( osc_datas[MASTER_OSC] ) );
+    FMOscData& fm_osc_data( GET_DATA( fm_osc_data ) );
     OSCData& osc_data_2( GET_DATA( osc_datas[1] ) );
     OSCData& osc_data_3( GET_DATA( osc_datas[2] ) );
     LFOData& master_lfo_data( GET_DATA( lfo_datas[MASTER_OSC] ) );
@@ -1461,9 +1439,9 @@ COLD void set_default_midi_assignments() noexcept
     // 19
     synth_data.morhp_states[3].midi_control->train( 19, nullptr );
     // 20
-    master_osc_data.puls_width.midi_control->train( 20, nullptr );
+    // TODO fm_osc_data.puls_width.midi_control->train( 20, nullptr );
     // 21
-    master_osc_data.osc_switch.midi_control->train( 21, nullptr );
+    // TODO master_osc_data.fm_mix_algorythm.midi_control->train( 21, nullptr );
     // 22
     filter_data_1.input_sustains[0].midi_control->train( 22, nullptr );
     // 23
@@ -1553,7 +1531,7 @@ COLD void set_default_midi_assignments() noexcept
     // TODO synth_data.force_envs_to_zero.midi_control->train( 68, nullptr );
     // 69 UNUSED
     // 70
-    master_osc_data.fm_freq.midi_control->train( 70, nullptr );
+    fm_osc_data.fm_freq.midi_control->train( 70, nullptr );
     // 71
     main_env_data.decay.midi_control->train( 71, nullptr );
     // 72
@@ -1573,7 +1551,7 @@ COLD void set_default_midi_assignments() noexcept
     // 79
     osc_data_3.fm_amount.midi_control->train( 79, nullptr );
     // 80
-    master_osc_data.o_mod.midi_control->train( 80, nullptr );
+    // TODO master_osc_data.o_mod.midi_control->train( 80, nullptr );
     // 81
     osc_data_2.sync.midi_control->train( 81, nullptr );
     // 82
@@ -1956,6 +1934,8 @@ id( data_type ),
     }
 
     // OSCS DATA
+    fm_osc_data = new FMOscData();
+    mono_ParameterOwnerStore::getInstance()->fm_osc_data = fm_osc_data;
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
         OSCData* data = new OSCData(i);
@@ -2049,6 +2029,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
         copy( dest_->lfo_datas[i], src_->lfo_datas[i] );
     }
 
+    copy( dest_->fm_osc_data, src_->fm_osc_data );
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
         copy( dest_->osc_datas[i], src_->osc_datas[i] );
@@ -2076,7 +2057,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     {
         collect_saveable_parameters( osc_datas[i], saveable_parameters );
     }
-    collect_saveable_fm_parameters( osc_datas[MASTER_OSC], saveable_parameters );
+    collect_saveable_parameters( fm_osc_data, saveable_parameters );
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
         collect_saveable_parameters( lfo_datas[i], saveable_parameters );
@@ -2172,9 +2153,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
                 morph_group_1->register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
-
-                morph_group_1->register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( osc_datas[0]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
@@ -2184,9 +2162,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
                 morph_group_1->register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
-
-                morph_group_1->register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( osc_datas[1]->osc_switch.int_ptr(), data_type == MASTER );
             }
 
             {
@@ -2196,21 +2171,13 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 morph_group_1->register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
                 morph_group_1->register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
-
-                morph_group_1->register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( osc_datas[2]->osc_switch.int_ptr(), data_type == MASTER );
             }
         }
 
         // FM
         {
-            morph_group_1->register_parameter( osc_datas[MASTER_OSC]->fm_freq.ptr(), data_type == MASTER  );
-            morph_group_1->register_parameter( osc_datas[MASTER_OSC]->fm_swing.ptr(), data_type == MASTER  );
-
-            morph_group_1->register_switch_parameter( osc_datas[0]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[1]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[2]->puls_width.int_ptr(), data_type == MASTER  );
-            morph_group_1->register_switch_parameter( osc_datas[MASTER_OSC]->fm_shot.bool_ptr(), data_type == MASTER  );
+            morph_group_1->register_parameter( fm_osc_data->fm_freq.ptr(), data_type == MASTER );
+            morph_group_1->register_parameter( fm_osc_data->fm_swing.ptr(), data_type == MASTER );
         }
 
         // FILTERS

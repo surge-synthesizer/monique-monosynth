@@ -133,6 +133,10 @@ static inline double midiToFrequency (double midiNoteNumber) noexcept
 {
     return 440.0 * pow (2.0, (midiNoteNumber - 69.0) / 12.0);
 }
+static inline float midiToFrequencyFast (float midiNoteNumber) noexcept
+{
+    return 440.0f * pow ( 2.0f, ((midiNoteNumber - 69.0f) * (1.0f/12)) );
+}
 
 /** Converts a time in seconds to a timecode string.
  */

@@ -133,7 +133,24 @@ static inline float snap_to_zero( float x_ ) noexcept
 
     return x_;
 }
+static inline float snap_to_max( float x_, float max_ ) noexcept
+{
+    if( x_ > max_-SNAP_TO_ZERO_AMOUNT )
+    {
+        x_ = max_;
+    }
 
+    return x_;
+}
+static inline float snap_to_min( float x_, float min_ ) noexcept
+{
+    if( x_ < min_+SNAP_TO_ZERO_AMOUNT )
+    {
+        x_ = min_;
+    }
+
+    return x_;
+}
 
 // ==============================================================================
 // ==============================================================================
@@ -190,7 +207,7 @@ public:
     // SETTER
     inline void set_value( float value_ ) noexcept
     {
-        value_ = snap_to_zero(value_);
+        value_ = snap_to_min(snap_to_max(snap_to_zero(value_),info->max_value),info->min_value);
         if( value != value_ )
         {
             if( value_ > info->max_value )

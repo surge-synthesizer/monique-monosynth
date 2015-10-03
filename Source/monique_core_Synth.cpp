@@ -210,7 +210,7 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
             for( int i = 0 ; i != num_samples_ ; ++i )
             {
                 float in = source_buffer[i];
-		float release_power = modulator_smoother.release_amount();
+                float release_power = modulator_smoother.release_amount();
                 target_buffer[i] = in*(1.0f-release_power) + last_modulator*release_power;
             }
         }
@@ -717,9 +717,9 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
 //==============================================================================
 class mono_BlitSaw : public RuntimeListener
 {
+    double phase;
     float last_tick_value;
     float rate_;
-    double phase_;
     float p_;
     float C2_;
     float a_;
@@ -750,7 +750,7 @@ COLD mono_BlitSaw::mono_BlitSaw( float frequency )
     :
     last_tick_value(0),
     rate_(0),
-    phase_(0),
+    phase(0),
     p_(0),
     C2_(0),
     a_(0),
@@ -773,23 +773,23 @@ inline float mono_BlitSaw::tick() noexcept
     // Avoid a divide by zero, or use of a denormalized divisor
     // at the sinc peak, which has a limiting value of m_ / p_.
     float tmp;
-    float denominator = std::sin( phase_ );
+    float denominator = std::sin( phase );
     if ( std::fabs(denominator) <= std::numeric_limits<float>::epsilon() )
     {
         tmp = a_;
     }
     else
     {
-        tmp = std::sin( phase_*m_ ) / (p_ * denominator);
+        tmp = std::sin( phase*m_ ) / (p_ * denominator);
     }
 
     tmp +=( state_ - C2_ );
     state_ = tmp * 0.999f;
 
-    phase_ += rate_;
-    if ( phase_ > float_Pi )
+    phase += rate_;
+    if ( phase >= float_Pi )
     {
-        phase_ -= float_Pi;
+        phase -= float_Pi;
         _isNewCylce = true;
     }
     else
@@ -799,17 +799,17 @@ inline float mono_BlitSaw::tick() noexcept
 }
 
 // -----------------------------------------------------------------
-inline bool mono_BlitSaw::isNewCylce() const noexcept 
+inline bool mono_BlitSaw::isNewCylce() const noexcept
 {
     return _isNewCylce;
 }
-inline void mono_BlitSaw::clearNewCycleState() noexcept 
+inline void mono_BlitSaw::clearNewCycleState() noexcept
 {
     _isNewCylce = false;
 }
 inline void mono_BlitSaw::reset() noexcept
 {
-    phase_ = 0;
+    phase = 0;
     state_ = 0;
     last_tick_value = 0;
 }
@@ -847,15 +847,15 @@ class mono_BlitSquare : public RuntimeListener
     float dcbState_;
 
     unsigned int m_;
-    bool _isNewCylce;
+    bool next_is_new_cycle;
 
 public:
     inline float lastOut( void ) const noexcept;
     inline void reset() noexcept;
 
     // HACK FOR SYNC
-    inline bool isNewCylce() const noexcept;
-    inline void clearNewCycleState() noexcept;
+    inline bool is_next_a_new_cycle() const noexcept;
+    inline void clear_cycle_state() noexcept;
     inline void setFrequency( float frequency ) noexcept;
     inline float tick( void ) noexcept;
 
@@ -878,7 +878,7 @@ COLD mono_BlitSquare::mono_BlitSquare( float frequency )
     lastBlitOutput_(0),
     dcbState_(0),
     m_(0),
-    _isNewCylce(true)
+    next_is_new_cycle(true)
 {
     setFrequency( frequency );
     reset();
@@ -888,7 +888,7 @@ COLD mono_BlitSquare::~mono_BlitSquare()
 }
 
 // -----------------------------------------------------------------
-inline float mono_BlitSquare::lastOut( void ) const noexcept 
+inline float mono_BlitSquare::lastOut( void ) const noexcept
 {
     return last_tick_value;
 }
@@ -919,17 +919,11 @@ inline float mono_BlitSquare::tick( void ) noexcept
     dcbState_ = lastBlitOutput_;
 
     phase_ += rate_;
-    if ( phase_ > (float_Pi*2) )
+    if ( phase_ >= (float_Pi*2) )
     {
-       phase_ -= (float_Pi*2);
+        phase_ -= (float_Pi*2);
+        next_is_new_cycle = true;
     }
-
-    if( last_tick_value <= 0 and tmp >= 0 )
-    {
-        _isNewCylce = true;
-    }
-    else
-        _isNewCylce = false;
 
     return last_tick_value = tmp;
 }
@@ -942,13 +936,13 @@ inline void mono_BlitSquare::reset() noexcept
     dcbState_ = 0;
     lastBlitOutput_ = 0;
 }
-inline bool mono_BlitSquare::isNewCylce() const noexcept
+inline bool mono_BlitSquare::is_next_a_new_cycle() const noexcept
 {
-    return _isNewCylce;
+    return next_is_new_cycle;
 }
-inline void mono_BlitSquare::clearNewCycleState() noexcept
+inline void mono_BlitSquare::clear_cycle_state() noexcept
 {
-    _isNewCylce = false;
+    next_is_new_cycle = false;
 }
 inline void mono_BlitSquare::setFrequency( float frequency ) noexcept
 {
@@ -980,7 +974,7 @@ class mono_SineWave : public RuntimeListener
     float current_angle;
     float frequency;
 
-    bool _isNewCylce;
+    bool next_is_new_cycle;
 
 public:
     inline float lastOut() const noexcept;
@@ -988,11 +982,12 @@ public:
 
 public:
     inline void setFrequency( float frequency ) noexcept;
+    inline void set_angle( float angle_ ) noexcept;
     inline void reset() noexcept;
-    inline void reset_and_update_current_angle( int sample_pos_in_bar_ ) noexcept;
+    inline void force_new_cylce() noexcept;
 
-    inline bool isNewCylce() const noexcept;
-    inline void clearNewCycleState() noexcept;
+    inline bool is_next_a_new_cycle() const noexcept;
+    inline void clear_cycle_state() noexcept;
 
 private:
     COLD void sample_rate_changed( double old_sr_ ) noexcept override;
@@ -1010,7 +1005,7 @@ COLD mono_SineWave::mono_SineWave()
     current_angle(0),
     frequency(0),
 
-    _isNewCylce(0)
+    next_is_new_cycle(false)
 {
     setFrequency(440);
 }
@@ -1024,16 +1019,13 @@ inline float mono_SineWave::lastOut() const noexcept
 }
 inline float mono_SineWave::tick() noexcept
 {
-    // TODO do the lookup unsave!
     float value = lookup_sine( current_angle );
     current_angle += delta;
-    if( current_angle > (float_Pi * 2) )
+    if( current_angle >= (float_Pi * 2) )
     {
-        _isNewCylce = true;
+        next_is_new_cycle = true;
         current_angle -= (float_Pi * 2);
     }
-    else
-        _isNewCylce = false;
 
     return last_tick_value = value;
 }
@@ -1044,10 +1036,9 @@ inline void mono_SineWave::reset() noexcept
     current_angle = 0;
     last_tick_value = 0;
 }
-inline void mono_SineWave::reset_and_update_current_angle( int sample_pos_in_bar_ ) noexcept
+inline void mono_SineWave::force_new_cylce() noexcept
 {
     current_angle = 0;
-    last_tick_value = 0;
 }
 inline void mono_SineWave::setFrequency( float frequency_ ) noexcept
 {
@@ -1055,13 +1046,18 @@ inline void mono_SineWave::setFrequency( float frequency_ ) noexcept
     float cyclesPerSample = frequency_ * sample_rate_1ths;
     delta = cyclesPerSample * (float_Pi*2);
 }
-inline bool mono_SineWave::isNewCylce() const noexcept
+inline void mono_SineWave::set_angle( float angle_ ) noexcept
 {
-    return _isNewCylce;
+    current_angle = float_Pi*angle_;
 }
-inline void mono_SineWave::clearNewCycleState() noexcept
+
+inline bool mono_SineWave::is_next_a_new_cycle() const noexcept
 {
-    _isNewCylce = false;
+    return next_is_new_cycle;
+}
+inline void mono_SineWave::clear_cycle_state() noexcept
+{
+    next_is_new_cycle = false;
 }
 
 COLD void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept
@@ -1187,11 +1183,12 @@ inline void mono_OnePole::setGain( float gain_ ) noexcept
 class mono_Modulate : public RuntimeListener
 {
     mono_SineWave vibrato;
+    mono_SineWave swing;
     mono_OnePole filter;
     mono_Noise noise;
 
     float last_tick_value;
-    float vibratoGain;
+    float last_swing_frequency;
     unsigned int noiseRate;
     unsigned int noiseCounter;
 
@@ -1199,10 +1196,11 @@ public:
     inline void reset() noexcept;
     inline void setVibratoRate( float rate ) noexcept;
     inline void setVibratoGain( float gain ) noexcept;
+    inline void setSwingFrequency( float swing_ ) noexcept;
     inline float lastOut() const noexcept;
 
-    inline bool isNewCylce() const noexcept;
-    inline void clearNewCycleState() noexcept;
+    inline bool is_next_a_new_cycle() const noexcept;
+    inline void clear_cycle_state() noexcept;
 
     inline float tick() noexcept;
 
@@ -1219,11 +1217,13 @@ COLD mono_Modulate::mono_Modulate()
     noise(),
 
     last_tick_value(0),
-    vibratoGain(0.04),
+    last_swing_frequency(0),
     noiseRate(0),
     noiseCounter(0)
 {
     vibrato.setFrequency( 6.0 );
+    swing.setFrequency( 0 );
+    swing.set_angle(0.25);
 
     noiseRate = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
     noiseCounter = noiseRate;
@@ -1241,14 +1241,15 @@ inline float mono_Modulate::lastOut() const noexcept
 inline float mono_Modulate::tick() noexcept
 {
     // Compute periodic and random modulations.
-    last_tick_value = vibratoGain * vibrato.tick();
-    if ( noiseCounter++ > noiseRate ) {
+    last_tick_value = vibrato.tick();
+    if ( noiseCounter++ > noiseRate )
+    {
         noise.tick();
         noiseCounter = 0;
     }
     last_tick_value += filter.tick( noise.lastOut() );
 
-    return last_tick_value;
+    return last_tick_value * swing.tick();
 }
 
 // -----------------------------------------------------------------
@@ -1261,17 +1262,26 @@ inline void mono_Modulate::setVibratoRate( float rate ) noexcept
 {
     vibrato.setFrequency( rate );
 }
-inline void mono_Modulate::setVibratoGain( float gain ) noexcept
+inline void mono_Modulate::setSwingFrequency( float swing_ ) noexcept
 {
-    vibratoGain = gain;
+    if( last_swing_frequency != swing_ )
+    {
+        if( swing_ == 0 )
+        {
+            swing.set_angle( 0.5f );
+        }
+
+        last_swing_frequency = swing_;
+        swing.setFrequency( swing_ );
+    }
 }
-inline bool mono_Modulate::isNewCylce() const noexcept
+inline bool mono_Modulate::is_next_a_new_cycle() const noexcept
 {
-    return vibrato.isNewCylce();
+    return vibrato.is_next_a_new_cycle(); ;
 }
-inline void mono_Modulate::clearNewCycleState() noexcept
+inline void mono_Modulate::clear_cycle_state() noexcept
 {
-    vibrato.clearNewCycleState();
+    vibrato.clear_cycle_state();
 }
 
 //==============================================================================
@@ -1444,530 +1454,560 @@ float LFO::get_current_amp() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class OSC : public RuntimeListener
+class MasterOSC : public RuntimeListener
 {
-    const int id;
+    // RUNTIME
+    //==============================================================================
+    int freq_glide_samples_left;
+    float freq_glide_delta;
 
-    float last_frequency;
-    int glide_time_in_samples;
-    float glide_note_delta;
+    float root_note;
 
-    bool waiting_for_sync;
-
-    float _root_note;
-    float _last_root_note;
-
-    float last_modulator_multi;
-    float was_synced_by_tune;
+    float last_root_note;
     float last_tune;
-    bool synced_by_sync;
-    bool waiting_for_modulator_sync;
-    int modulator_sync_cycles;
-    int current_modulator_sync_cycle;
-    int modulator_phase_switch;
+    float last_frequency;
 
-    int puls_with_break_counter;
-    float current_puls_frequence_offset;
-    float puls_swing_amp;
-    float puls_swing_delta;
-    float puls_swing_multi;
-    int puls_swing_switch_counter;
-    bool last_puls_was_large;
-    bool last_cycle_was_pulse_switch;
+    float last_modulator_frequency;
+    int modulator_sync_cylces;
+    int modulator_run_circle;
+    bool modulator_waits_for_sync_cycle;
 
     // RAW OSCILATORS
     //==============================================================================
     mono_BlitSaw saw_generator;
     mono_BlitSquare square_generator;
     mono_SineWave sine_generator;
+    mono_Noise noise;
 
     mono_Modulate modulator;
-    mono_Noise noise;
 
     // DATA SOURCE
     //==============================================================================
     DataBuffer*const data_buffer;
     const MoniqueSynthData*const synth_data;
-    OSCData* osc_data;
-    const OSCData* master_osc_data;
+    FMOscData*const fm_osc_data;
+    OSCData*const osc_data;
 
 public:
     //==============================================================================
-    inline void process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept;
+    // TODO same frequency modulator sync
+    inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
     inline void update( float root_note_ ) noexcept;
-
     inline void reset() noexcept;
 
-private:
+public:
     //==============================================================================
-    friend class MoniqueSynthesiserVoice;
-    COLD OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept;
-    COLD ~OSC() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSC)
+    COLD MasterOSC(const MoniqueSynthData* synth_data_) noexcept;
+    COLD ~MasterOSC() noexcept;
 };
 
 //==============================================================================
-COLD OSC::OSC( const MoniqueSynthData* synth_data_, int id_ ) noexcept
+COLD MasterOSC::MasterOSC(const MoniqueSynthData* synth_data_) noexcept
 :
-id( id_ ),
-    last_frequency( 0 ),
-    glide_time_in_samples(0),
-    glide_note_delta(0),
-    waiting_for_sync(false),
-    _root_note( 60 ),
-    _last_root_note( -1 ),
-    was_synced_by_tune(-25),
-    synced_by_sync(false),
-    last_tune(0),
-    last_modulator_multi( 0 ),
-    waiting_for_modulator_sync( false ),
-    modulator_sync_cycles( 1 ),
-    current_modulator_sync_cycle( 0 ),
-    modulator_phase_switch( -1 ),
-    puls_with_break_counter(0),
-    current_puls_frequence_offset(0),
-    puls_swing_amp(1),
-    puls_swing_delta(0),
-    puls_swing_multi(1),
-    puls_swing_switch_counter(0),
-    last_puls_was_large(false),
-    last_cycle_was_pulse_switch(0),
+saw_generator(),
+              square_generator(),
+              sine_generator(),
+              noise(),
 
-    data_buffer( GET_DATA_PTR(data_buffer) ),
-    synth_data( synth_data_ ),
-    osc_data( GET_DATA_PTR( osc_datas[id_] ) ),
-    master_osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
+              modulator(),
+
+
+              freq_glide_samples_left(0),
+              freq_glide_delta(0),
+
+              root_note(60),
+
+              last_tune(-25),
+              last_frequency(0),
+
+              last_modulator_frequency(0),
+              modulator_sync_cylces(0),
+              modulator_waits_for_sync_cycle(false),
+
+
+              data_buffer( GET_DATA_PTR(data_buffer) ),
+              synth_data( synth_data_ ),
+              fm_osc_data( GET_DATA_PTR( fm_osc_data ) ),
+              osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
 {
-    modulator.setVibratoGain(1);
 }
-COLD OSC::~OSC() noexcept {}
+COLD MasterOSC::~MasterOSC() noexcept
+{}
 
 //==============================================================================
-inline void OSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept
+// TODO same frequency modulator sync
+inline void MasterOSC::process(DataBuffer* data_buffer_, const int num_samples_) noexcept
 {
-    float* const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
-    float* const switch_buffer( data_buffer->osc_switchs.getWritePointer(id) );
-    float* const osc_sync_switch_buffer( data_buffer->osc_sync_switchs.getWritePointer(MASTER_OSC) );
-    float* const osc_modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
-    const float* const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
+    float*const output_buffer( data_buffer->osc_samples.getWritePointer(MASTER_OSC) );
 
-    // SOSTENUTO
-    const float volume_multi = is_sostenuto_pedal_down_ ? 1.0f / (id+1) : 1;
+    float*const switch_buffer( data_buffer->osc_switchs.getWritePointer(MASTER_OSC) );
+    FloatVectorOperations::clear(switch_buffer,num_samples_);
+    float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
+    const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(MASTER_OSC) ) );
 
-    // FM SWING
-    const float master_fm_swing = master_osc_data->fm_swing;
-    const bool master_osc_modulation_is_on = id == MASTER_OSC ? master_osc_data->o_mod : true;
-    if( master_fm_swing != 0 )
-    {
-        const bool was_negative = puls_swing_delta < 0;
-        {
-            // TODO todo glide the delta!
-            puls_swing_delta = (1.0f + 30.0f * master_fm_swing)*sample_rate_1ths;
-            if( was_negative )
-            {
-                puls_swing_delta *=-1;
-            }
-        }
-    }
-    else
-    {
-        puls_swing_amp = 1;
-    }
-
-    const float* smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
-
-    const float wave = osc_data->wave;
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
-    const float master_osc_tune = master_osc_data->tune;
-    const bool is_same_freq_as_master = master_osc_tune == osc_data->tune;
-    const bool was_synced_by_current_tune = was_synced_by_tune == osc_data->tune;
-    const bool sync_by_freq_allowed = not is_lfo_modulated and not master_osc_data->is_lfo_modulated;
-    if( not is_same_freq_as_master )
-    {
-        was_synced_by_tune = -25;
-    }
-    const bool sync( osc_data->sync );
-    if( not sync )
-    {
-        synced_by_sync = false;
-    }
+    const bool fm_sync = fm_osc_data->sync;
+    const bool fm_shot = fm_osc_data->fm_shot;
 
-    const float master_fm_freq = master_osc_data->fm_freq;
-    const int master_pulse_width = master_osc_data->puls_width;
-    const bool master_sync = master_osc_data->sync;
-    const bool master_fm_shot = master_osc_data->fm_shot;
-    const int master_switch = master_osc_data->osc_switch;
     osc_data->tune_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
-    const float* smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
+    const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
+    const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
+    const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
+    const float*const smoothed_fm_freq_buffer( fm_osc_data->fm_freq_smoother.get_smoothed_buffer() );
+    const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_buffer() );
+
     for( int sid = 0 ; sid < num_samples_ ; ++sid )
     {
-        // UPDATE FREQUENCY - TODO after ticks
+        // SETUP TUNE
         {
-            bool change_modulator_frequency = false;
             const float tune = smoothed_tune_buffer[sid];
 
-            // GLIDE
-            bool is_glide_rest = false;
-            if( glide_time_in_samples > 0 )
+            // BASE FREQUENCY
+            bool base_frequency_changed = false;
+            if( freq_glide_samples_left > 0 or tune != last_tune or last_root_note != root_note )
             {
-                --glide_time_in_samples;
-                is_glide_rest = true;
-            }
-            if
-            (
-                _last_root_note != _root_note
-                or tune != last_tune
-                or is_glide_rest
-                or last_cycle_was_pulse_switch
-            )
-            {
-                float new_frequence;
+                if( freq_glide_samples_left > 0 )
                 {
-                    float floated_note = ( float(_root_note)
-                                           + tune
-                                           + glide_note_delta*glide_time_in_samples );
-                    const int note_low = mono_floor( floated_note );
-                    new_frequence = MidiMessage::getMidiNoteInHertz(note_low);
-                    if( note_low < floated_note )
-                    {
-                        const float frequence_range = MidiMessage::getMidiNoteInHertz(note_low+1) - new_frequence;
-                        const float frequence_rest_percent = floated_note-note_low;
-                        new_frequence += frequence_range*frequence_rest_percent;
-                    }
-                    // PULS
-                    if( current_puls_frequence_offset != 0 )
-                    {
-                        new_frequence*=current_puls_frequence_offset;
-                    }
-
-                    if( new_frequence < 1 )
-                        new_frequence = 1;
+                    --freq_glide_samples_left;
                 }
-                if( last_frequency != new_frequence )
+                last_tune = tune;
+                last_root_note = root_note;
+
                 {
-                    saw_generator.setFrequency(new_frequence);
-                    square_generator.setFrequency(new_frequence);
-                    sine_generator.setFrequency(new_frequence);
-
-                    change_modulator_frequency = true;
-
-                    last_frequency = new_frequence;
-
-                    // HERE THE SWING
-                    /*
+                    const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
+                    if( new_frequence != last_frequency )
                     {
-                                double samples_per_min = sample_rate*60;
-                                double beats_per_min = GET_DATA( runtime_info ).bpm;
-                                double beats_per_sample = beats_per_min/samples_per_min;
-                                float samples_per_swing_cylce = beats_per_sample / ArpSequencerData::shuffle_to_value( 17-master_fm_swing );
+                        square_generator.setFrequency(new_frequence);
+                        saw_generator.setFrequency(new_frequence);
+                        sine_generator.setFrequency(new_frequence);
 
-                                puls_swing_delta = samples_per_swing_cylce;
-
-                                debug_sample_print( ArpSequencerData::shuffle_to_value( 17-master_fm_swing), 2000 );
-                            }
-                    {
-                        puls_swing_delta = (last_frequency/master_fm_swing) * sample_rate_1ths;
-
-                        debug_sample_print( ArpSequencerData::shuffle_to_value( 17-master_fm_swing), 2000 );
+                        last_frequency = new_frequence;
                     }
-                            */
                 }
 
-                _last_root_note = _root_note;
+                base_frequency_changed = true;
             }
-            else if( master_fm_freq != last_modulator_multi )
-            {
-                change_modulator_frequency = true;
-            }
-            last_tune = tune;
 
-            // MODULATOR FREQUENCY TODO -> only osc 1
-            if( change_modulator_frequency )
+            // MODULATOR FREQUENCY
             {
-                last_modulator_multi = master_fm_freq;
-                const float modulator_frequency = last_frequency* (1.1f + 14.9f*last_modulator_multi);
-                modulator.setVibratoRate( modulator_frequency );
+                const float modulator_freq = smoothed_fm_freq_buffer[sid];
+                if( base_frequency_changed or modulator_freq != last_modulator_frequency )
+                {
+                    last_modulator_frequency = modulator_freq;
 
-                modulator_sync_cycles = mono_floor(modulator_frequency / last_frequency);
+                    modulator.setVibratoRate( last_frequency*(modulator_freq*7 +1.1) );
+
+                    modulator_sync_cylces = mono_floor(modulator_freq*7);
+                }
             }
         }
 
-        // PROCESS
-        float sample = 0;
-        if( ! waiting_for_sync )
+        // PROCESS OSC ITSELF
+        bool is_last_sample_of_cycle = false;
+        float sample;
         {
-            saw_generator.tick();
-            square_generator.tick();
-            sine_generator.tick();
-
-            /* MIX
-
-               0-1 SINE - SQUARE
-               1-2 SQARE - SAW
-               2-3 SAW - RAND
-
-            */
-            // SINE - SQUARE
-            if( wave < 1 )
+            // TICK ALL OSCILATTORS
             {
-                const float multi = wave;
-                const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
-                const float square_wave_powerd = square_generator.lastOut() * multi;
-                sample = sine_wave_powerd+square_wave_powerd;
+                square_generator.tick();
+                saw_generator.tick();
+                sine_generator.tick();
+
+                // FORCE SYNC OF THE SINE AT THE NEXT SID
+                if( square_generator.is_next_a_new_cycle() )
+                {
+                    sine_generator.force_new_cylce();
+                    square_generator.clear_cycle_state();
+
+                    // SET THE SWITCH
+                    is_last_sample_of_cycle = true;
+                    switch_buffer[sid] = true;
+                }
             }
-            // SQUARE - SAW
-            else if( wave <= 2 )
+
+            // CALC THE SAMPLE MIX
             {
-                const float multi = wave - 1;
-                const float square_wave_powerd = square_generator.lastOut() * (1.0f-multi);
-                const float saw_wave_powerd = saw_generator.lastOut() * multi;
-                sample = square_wave_powerd+saw_wave_powerd;
-            }
-            // SAW - RAND
-            else /*if( wave <= 3 )*/
-            {
-                const float multi = wave - 2;
-                const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
-                const float noice_powerd = noise.tick()* multi; // noice_generator.lastOut() * multi;
-                sample = saw_wave_powerd+noice_powerd;
+                const float wave_form = smoothed_wave_buffer[sid];
+
+                // SINE - SQUARE
+                if( wave_form <= 1 )
+                {
+                    const float multi = wave_form;
+                    const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
+                    const float square_wave_powerd = square_generator.lastOut() * multi;
+                    sample = sine_wave_powerd+square_wave_powerd;
+                }
+                // SQUARE - SAW
+                else if( wave_form <= 2 )
+                {
+                    const float multi = wave_form - 1;
+                    const float square_wave_powerd = square_generator.lastOut() * (1.0f-multi);
+                    const float saw_wave_powerd = saw_generator.lastOut() * multi;
+                    sample = square_wave_powerd+saw_wave_powerd;
+                }
+                // SAW - RAND
+                else /*if( wave_form <= 3 )*/
+                {
+                    const float multi = wave_form - 2;
+                    const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
+                    const float noice_powerd = noise.tick()* multi;
+                    sample = saw_wave_powerd+noice_powerd;
+                }
             }
         }
 
-        // SWITCHS
-        bool is_clean_switch;
-        {
-            is_clean_switch = sine_generator.isNewCylce();
-            switch_buffer[sid] = is_clean_switch;
-        }
-
-        // SYNC / PULS / SWING MULTI
-        {
-            // ENTER SYNC
-            last_cycle_was_pulse_switch = false;
-            bool is_wave_switch;
-            if(  wave == 0 )
-            {
-                is_wave_switch = sine_generator.isNewCylce();
-            }
-            else if( wave <= 2 )
-            {
-                is_wave_switch = square_generator.isNewCylce();
-            }
-            else /*if( wave <= 3 )*/
-            {
-                is_wave_switch = saw_generator.isNewCylce();
-            }
-            saw_generator.clearNewCycleState();
-            square_generator.clearNewCycleState();
-            sine_generator.clearNewCycleState();
-
-            if( is_wave_switch )
-            {
-                // TODO saw and square offset BLIT - HOW TO SOLVE???
-                // PULS |¯|_|¯¯¯|___|¯|_|¯¯¯|_
-                if( master_osc_modulation_is_on )
-                {
-                    if( master_pulse_width < 0 )
-                    {
-                        current_puls_frequence_offset = (1.0f/12.0f*master_pulse_width*-1.0f);
-                        if( last_puls_was_large )
-                            current_puls_frequence_offset = 1.0f + 1.0f*current_puls_frequence_offset;
-                        else
-                            current_puls_frequence_offset = 1.0f - 0.5f*current_puls_frequence_offset;
-
-                        last_cycle_was_pulse_switch = true;
-                        last_puls_was_large ^= true;
-                    }
-                    // PULS WITH _|¯|_  break  _|¯|_
-                    else if( master_pulse_width > 0 and puls_with_break_counter < 1 )
-                    {
-                        puls_with_break_counter = master_pulse_width;
-                        current_puls_frequence_offset = 0;
-                    }
-                    else
-                    {
-                        --puls_with_break_counter;
-                        current_puls_frequence_offset = 0;
-                    }
-                }
-
-                // SWING
-                if( master_switch > 0 )
-                {
-                    if( puls_swing_switch_counter <= 0 )
-                    {
-                        puls_swing_multi *= -1;
-                        puls_swing_switch_counter = master_switch;
-                    }
-                    --puls_swing_switch_counter;
-                }
-
-                if( id == MASTER_OSC )
-                {
-                    osc_sync_switch_buffer[sid] = true;
-                }
-                else if( sync and not is_same_freq_as_master )
-                {
-                    waiting_for_sync = true;
-                }
-                else if( is_same_freq_as_master and sync_by_freq_allowed )
-                {
-                    if( was_synced_by_tune != master_osc_tune )
-                    {
-                        waiting_for_sync = true;
-                        was_synced_by_tune = master_osc_tune;
-                    }
-                }
-            }
-            else if( id == MASTER_OSC )
-            {
-                osc_sync_switch_buffer[sid] = false;
-            }
-
-            // EXIT SYNC
-            if( ( sync or sync_by_freq_allowed ) and id != MASTER_OSC )
-            {
-                if( osc_sync_switch_buffer[sid] )
-                {
-                    waiting_for_sync = false;
-                }
-            }
-            else
-            {
-                waiting_for_sync = false;
-            }
-        }
-
-        // FMlfo_amplitudes
+        // PROCESS MODULATOR
         float modulator_sample = 0;
         {
-            if( id == MASTER_OSC )
+            // MODULATOR SYNC AND PROCESSING
+            if( not modulator_waits_for_sync_cycle )
             {
-                int used_sync_cycles = 1;
-                if( not master_fm_shot )
-                {
-                    used_sync_cycles = modulator_sync_cycles;
-                }
-
-                // PROCESS MODULATOR
-                if( ! waiting_for_modulator_sync )
-		{
-                    modulator_sample = modulator.tick();
-		}
-
-                // FM SYNC
-                if( master_sync )
-                {
-                    if( modulator.isNewCylce() )
-                    {
-                        ++current_modulator_sync_cycle;
-                    }
-                    if( !waiting_for_modulator_sync and current_modulator_sync_cycle >= used_sync_cycles )
-                    {
-                        waiting_for_modulator_sync = true;
-                        modulator_phase_switch *= -1;
-                    }
-
-                    if( is_clean_switch ) 
-		    {
-                        waiting_for_modulator_sync = false;
-                        current_modulator_sync_cycle = 0;
-                    }
-                }
-                else
-                {
-                    waiting_for_modulator_sync = false;
-                }
-                modulator.clearNewCycleState();
-
-                osc_modulator_buffer[sid] = modulator_sample*modulator_phase_switch;
+                modulator_sample = modulator.tick();
             }
-            else
-                modulator_sample = osc_modulator_buffer[sid];
+
+            const bool is_last_sample_of_modulator_cycle = modulator.is_next_a_new_cycle();
+            if( fm_shot and is_last_sample_of_modulator_cycle )
+            {
+                modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
+            }
+
+            // STOP THE MODULATOR IF IN SYNC // IGNORED IF SHOT IS ENABLED
+            if( modulator_run_circle > modulator_sync_cylces and fm_sync and not fm_shot  )
+            {
+                modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
+                modulator_run_circle = 0;
+            }
+            else if( is_last_sample_of_cycle and not fm_shot )
+            {
+                modulator_waits_for_sync_cycle = false;
+                modulator_run_circle = 0;
+            }
+
+            // COUNT CYCLES AND CLEAR STATE IF NOT WAITING FOR SYNC
+            if( is_last_sample_of_modulator_cycle and not modulator_waits_for_sync_cycle )
+            {
+                ++modulator_run_circle;
+            }
+
+            // COUNT CYCLES
+            if( not modulator_waits_for_sync_cycle )
+            {
+                modulator.clear_cycle_state();
+            }
+
+            // UPDATE SWING
+            if( is_last_sample_of_modulator_cycle )
+            {
+                modulator.setSwingFrequency( smoothed_fm_swing_buffer[sid]*20 );
+            }
         }
 
-        // OUTPUT // PULS FALL DOWN
+        // ADD FM TO THE OUTPUT
         {
-            // OVERWRITE WITH ZERO PULS?
-            if( puls_with_break_counter > 0 and master_osc_modulation_is_on )
-            {
-                sample = 0;
-            }
-
-            // AMP / FM SWING
-            {
-                puls_swing_amp += puls_swing_delta;
-                if( puls_swing_amp < -1 )
-                {
-                    puls_swing_amp = -1;
-                    puls_swing_delta *= -1;
-                }
-                else if( puls_swing_amp > 1 )
-                {
-                    puls_swing_amp = 1;
-                    puls_swing_delta *= -1;
-                }
-                {
-                    //if( master_osc_modulation_is_on )
-                    {
-                        if( master_fm_swing > 0 )
-                            modulator_sample *= puls_swing_amp;
-                        if( master_switch > 0 )
-                            sample *= puls_swing_multi;
-                    }
-                }
-            }
-
-            // OUT
             if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
             {
-                sample = sample*(1.0f-fm_amount) + ( (modulator_sample + sample)/2 )*fm_amount;
+                sample = sample*(1.0f-fm_amount) + ( (modulator_sample+sample)*0.5 )*fm_amount;
             }
 
-            if( ! waiting_for_sync )
-            {
-                output_buffer[sid] = sample * volume_multi;
-            }
-            else
-            {
-                output_buffer[sid] = 0;
-            }
+            output_buffer[sid] = sample;
+            modulator_buffer[sid] = modulator_sample;
         }
     }
-
-    _last_root_note = _root_note;
 }
-inline void OSC::update( float root_note_ ) noexcept
+
+inline void MasterOSC::update( float root_note_ ) noexcept
 {
     root_note_ += synth_data->octave_offset *12;
     const float glide = synth_data->glide;
-    if( glide != 0 and (_root_note != root_note_ || glide_time_in_samples > 0 ) )
+    if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
     {
-        // NOTE RANGE
         root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
 
-        const float rest_glide = glide_time_in_samples*glide_note_delta;
-        const float glide_notes_diverence = _root_note - root_note_;
-        glide_time_in_samples = (sample_rate/2) * glide;
-        glide_note_delta = (glide_notes_diverence+rest_glide) / glide_time_in_samples;
+        const float rest_glide = freq_glide_delta*freq_glide_samples_left;
+        const float glide_notes_diverence = root_note - root_note_;
+        freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
     }
     else
     {
-        glide_note_delta = 0;
-        glide_time_in_samples = 0;
+        freq_glide_samples_left = 0;
+        freq_glide_delta = 0;
     }
 
-    _root_note = root_note_;
+    root_note = root_note_;
 }
-//==============================================================================
-inline void OSC::reset() noexcept
+inline void MasterOSC::reset() noexcept
 {
     saw_generator.reset();
     square_generator.reset();
     sine_generator.reset();
 
     modulator.reset();
+}
+
+//===================================================================================
+//===================================================================================
+//===================================================================================
+class SecondOSC : public RuntimeListener
+{
+    const int id;
+
+    // RUNTIME
+    //==============================================================================
+    int freq_glide_samples_left;
+    float freq_glide_delta;
+
+    float root_note;
+    float last_root_note;
+    float last_tune;
+    float last_frequency;
+
+    bool wait_for_new_master_cycle;
+    float last_sync_was_to_tune;
+
+    // RAW OSCILATORS
+    //==============================================================================
+    mono_BlitSaw saw_generator;
+    mono_BlitSquare square_generator;
+    mono_SineWave sine_generator;
+    mono_Noise noise;
+
+    // DATA SOURCE
+    //==============================================================================
+    DataBuffer*const data_buffer;
+    const MoniqueSynthData*const synth_data;
+    OSCData*const osc_data;
+    OSCData*const master_osc_data;
+
+public:
+    //==============================================================================
+    // TODO same frequency sync
+    inline void process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept;
+
+    inline void update( float root_note_ ) noexcept;
+    inline void reset() noexcept;
+
+public:
+    //==============================================================================
+    COLD SecondOSC(const MoniqueSynthData* synth_data_, int id_) noexcept;
+    COLD ~SecondOSC() noexcept;
+};
+
+//==============================================================================
+COLD SecondOSC::SecondOSC(const MoniqueSynthData* synth_data_, int id_) noexcept
+:
+id(id_),
+
+   saw_generator(),
+   square_generator(),
+   sine_generator(),
+   noise(),
+
+   freq_glide_samples_left(0),
+   freq_glide_delta(0),
+
+   root_note(60),
+
+   last_tune(-25),
+   last_frequency(0),
+
+   wait_for_new_master_cycle(false),
+   last_sync_was_to_tune(-25),
+
+   data_buffer( GET_DATA_PTR(data_buffer) ),
+   synth_data( synth_data_ ),
+   osc_data( GET_DATA_PTR( osc_datas[id_] ) ),
+   master_osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
+{
+}
+COLD SecondOSC::~SecondOSC() noexcept
+{}
+
+inline const bool is_syncanble_by_tune( float tune_, float master_tune_ ) noexcept
+{
+    bool syncable = false;
+    if( tune_ == master_tune_ )
+    {
+        syncable = true;
+    }
+    else if( tune_ == master_tune_ +24 )
+    {
+        syncable = true;
+    }
+    else if( tune_ == master_tune_ -24 )
+    {
+        syncable = true;
+    }
+
+    return syncable;
+}
+
+//==============================================================================
+// TODO same frequency sync
+inline void SecondOSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept
+{
+    float*const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
+
+    const float*const switch_buffer( data_buffer->osc_switchs.getWritePointer(MASTER_OSC) );
+    const float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
+    const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
+
+    const float volume_multi = is_sostenuto_pedal_down_ ? 1.0f / (id) : 1;
+
+    const bool is_lfo_modulated = osc_data->is_lfo_modulated;
+    const bool master_osc_is_lfo_modulated = master_osc_data->is_lfo_modulated;
+
+    const bool sync_to_master = osc_data->sync;
+    osc_data->tune_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
+    const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
+    const float*const smoothed_master_tune_buffer( master_osc_data->tune_smoother.get_smoothed_modulated_buffer() );
+    const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
+    const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
+
+    for( int sid = 0 ; sid < num_samples_ ; ++sid )
+    {
+        // SETUP TUNE
+        const float tune = smoothed_tune_buffer[sid];
+        {
+            // FREQUENCY
+            if( freq_glide_samples_left > 0 or tune != last_tune or last_root_note != root_note )
+            {
+                if( freq_glide_samples_left > 0 )
+                {
+                    --freq_glide_samples_left;
+                }
+                last_tune = tune;
+                last_root_note = root_note;
+
+                {
+                    const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
+                    if( new_frequence != last_frequency )
+                    {
+                        square_generator.setFrequency(new_frequence);
+                        saw_generator.setFrequency(new_frequence);
+                        sine_generator.setFrequency(new_frequence);
+
+                        last_frequency = new_frequence;
+                    }
+                }
+            }
+        }
+
+        // PROCESS OSC AND SYNC IT TO THE MASTER
+        const bool is_last_sample_of_master_cycle = switch_buffer[sid];
+        float sample = 0;
+        {
+            // TICK ALL OSCILATTORS
+            if( not wait_for_new_master_cycle )
+            {
+                square_generator.tick();
+                saw_generator.tick();
+                sine_generator.tick();
+            }
+
+            // FORCE SYNC OF THE SINE AT THE NEXT SID
+            if( square_generator.is_next_a_new_cycle() )
+            {
+                sine_generator.force_new_cylce();
+                square_generator.clear_cycle_state();
+
+                const bool syncanble_by_tune = is_syncanble_by_tune(tune, smoothed_master_tune_buffer[sid]);
+                if( not syncanble_by_tune )
+                {
+                    last_sync_was_to_tune = -25;
+                }
+                if( not sync_to_master )
+                {
+                    if( not is_lfo_modulated and not master_osc_is_lfo_modulated and freq_glide_samples_left <= 0 )
+                    {
+                        if( syncanble_by_tune and last_sync_was_to_tune != tune )
+                        {
+                            wait_for_new_master_cycle = true;
+                            last_sync_was_to_tune = tune;
+                        }
+                    }
+                }
+                else
+                {
+                    if( not syncanble_by_tune or last_sync_was_to_tune != tune )
+                    {
+                        wait_for_new_master_cycle = true;
+                    }
+                }
+            }
+            if( is_last_sample_of_master_cycle )
+            {
+                wait_for_new_master_cycle = false;
+            }
+
+            // CALC THE SAMPLE MIX
+            if( not wait_for_new_master_cycle )
+            {
+                const float wave_form = smoothed_wave_buffer[sid];
+
+                // SINE - SQUARE
+                if( wave_form <= 1 )
+                {
+                    const float multi = wave_form;
+                    const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
+                    const float square_wave_powerd = square_generator.lastOut() * multi;
+                    sample = sine_wave_powerd+square_wave_powerd;
+                }
+                // SQUARE - SAW
+                else if( wave_form <= 2 )
+                {
+                    const float multi = wave_form - 1;
+                    const float square_wave_powerd = square_generator.lastOut() * (1.0f-multi);
+                    const float saw_wave_powerd = saw_generator.lastOut() * multi;
+                    sample = square_wave_powerd+saw_wave_powerd;
+                }
+                // SAW - RAND
+                else /*if( wave_form <= 3 )*/
+                {
+                    const float multi = wave_form - 2;
+                    const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
+                    const float noice_powerd = noise.tick()* multi;
+                    sample = saw_wave_powerd+noice_powerd;
+                }
+            }
+        }
+
+        // ADD FM TO THE OUTPUT
+        {
+            float modulator_sample = modulator_buffer[sid];
+            if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
+            {
+                sample = sample*(1.0f-fm_amount) + ( (modulator_sample+sample)*0.5 )*fm_amount;
+            }
+
+            output_buffer[sid] = sample * volume_multi;
+        }
+    }
+}
+
+inline void SecondOSC::update( float root_note_ ) noexcept
+{
+    root_note_ += synth_data->octave_offset *12;
+    const float glide = synth_data->glide;
+    if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
+    {
+        root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
+
+        const float rest_glide = freq_glide_delta*freq_glide_samples_left;
+        const float glide_notes_diverence = root_note - root_note_;
+        freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
+    }
+    else
+    {
+        freq_glide_samples_left = 0;
+        freq_glide_delta = 0;
+    }
+
+    root_note = root_note_;
+}
+inline void SecondOSC::reset() noexcept
+{
+    saw_generator.reset();
+    square_generator.reset();
+    sine_generator.reset();
 }
 
 //==============================================================================
@@ -3789,7 +3829,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
             inline void exec() noexcept override
             {
                 // PROCESS
-                {            
+                {
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
@@ -3812,7 +3852,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
 
                             const float input = high_pass_filter.processSingleSampleRaw( low_pass_filter.processSingleSampleRaw( filter_in_samples[sid] ) );
                             float output = filter.processLow( input );
-                            if( band_id == 0 )
+                            if( band_id != 1 )
                                 output*=-1;
                             output = output*fildered_amount + input*unfiltered_amount;
 
@@ -5024,11 +5064,9 @@ sample_position_for_restart_arp(-1)
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
-    oscs = new OSC*[SUM_OSCS];
-    for( int i = 0 ; i != SUM_OSCS ; ++i )
-    {
-        oscs[i] = new OSC( synth_data_, i );
-    }
+    master_osc = new MasterOSC( synth_data_ );
+    second_osc = new SecondOSC( synth_data_, 1 );
+    third_osc = new SecondOSC( synth_data_, 2 );
 
     std::cout << "MONIQUE: init LFO's" << std::endl;
     lfos = new LFO*[SUM_LFOS];
@@ -5056,10 +5094,9 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     {
         delete lfos[i];
     }
-    for( int i = SUM_OSCS-1 ; i > -1 ; --i )
-    {
-        delete oscs[i];
-    }
+    delete third_osc;
+    delete second_osc;
+    delete master_osc;
 
     delete arp_sequencer;
     delete eq_processor;
@@ -5088,10 +5125,11 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     // OSCS
     bool is_arp_on = synth_data->arp_sequencer_data->is_on;
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
-    for( int i = 0 ; i != SUM_OSCS ; ++i )
-    {
-        oscs[i]->update( current_note+arp_offset+pitch_offset );
-    }
+
+    float note = current_note+arp_offset+pitch_offset;
+    master_osc->update( note );
+    second_osc->update( note );
+    third_osc->update( note );
 
     // PROCESSORS
     bool start_up = true;
@@ -5288,7 +5326,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         // MAIN THREAD // NO DEPENCIES
         lfos[0]->process( step_number_, start_sample_, num_samples );
         filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
-        oscs[0]->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED LFO 0
+        master_osc->process( data_buffer, num_samples ); // NEED LFO 0
 
         // SUB THREAD
         // DEPENCIES OSC 0
@@ -5303,7 +5341,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             {
                 voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
                 voice->lfos[1]->process( step_number, start_sample, num_samples );
-                voice->oscs[1]->process( voice->data_buffer, was_soft_pedal_down_on_note_start, num_samples );
+                voice->second_osc->process( voice->data_buffer, was_soft_pedal_down_on_note_start, num_samples );
             }
             Executer(MoniqueSynthesiserVoice*const voice_,
             bool was_soft_pedal_down_on_note_start_,
@@ -5322,7 +5360,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
         lfos[2]->process( step_number_, start_sample_, num_samples );
         filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
-        oscs[2]->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED OSC 0 && LFO 2
+        third_osc->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED OSC 0 && LFO 2
 
         while( executer.isWorking() ) {}
     }
@@ -5363,10 +5401,9 @@ void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
 
     bool is_arp_on = synth_data->arp_sequencer_data->is_on;
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
-    for( int i = 0 ; i != SUM_OSCS ; ++i )
-    {
-        oscs[i]->update( current_note+arp_offset+pitch_offset );
-    }
+    master_osc->update( current_note+arp_offset+pitch_offset );
+    second_osc->update( current_note+arp_offset+pitch_offset );
+    third_osc->update( current_note+arp_offset+pitch_offset );
 }
 
 //==============================================================================
@@ -5388,10 +5425,10 @@ void MoniqueSynthesiserVoice::reset_internal() noexcept
     }
     eq_processor->reset();
     fx_processor->reset();
-    for( int osc_id = 0 ; osc_id != SUM_OSCS ; ++osc_id )
-    {
-        oscs[osc_id]->reset();
-    }
+
+    master_osc->reset();
+    second_osc->reset();
+    third_osc->reset();
 }
 void MoniqueSynthesiserVoice::handle_sustain_pedal( bool down_ ) noexcept
 {
@@ -5599,6 +5636,9 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
+
+
 
 
 

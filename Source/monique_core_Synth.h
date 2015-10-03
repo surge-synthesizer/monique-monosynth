@@ -26,7 +26,8 @@ class MoniqueAudioProcessor;
 class MoniqueSynthData;
 class RuntimeInfo;
 class LFO;
-class OSC;
+class SecondOSC;
+class MasterOSC;
 class ENV;
 class FilterProcessor;
 class EQProcessorStereo;
@@ -50,7 +51,9 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     FXProcessor*const fx_processor;
 
     //==============================================================================
-    OSC** oscs;
+    MasterOSC* master_osc;
+    SecondOSC* second_osc;
+    SecondOSC* third_osc;
     LFO** lfos;
     FilterProcessor** filter_processors;
 

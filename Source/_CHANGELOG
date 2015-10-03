@@ -10,10 +10,11 @@ DONE
 - fixed: aliasing bug in osc sync
 - fix: click in oscilators
 - add: values on global glide times
+- add: snap to min and max like to snap to zero
 
 
 
-
+check osc sync again
 osc wave is not smoothed
 ein hohes band mehr
 schatten für popup
@@ -21,6 +22,7 @@ option: always start in ctrl mode
 bug: switch amp - sustain
 bug: create new programm and store it -> then change something and you get the parent program name
 
+    und schau dir mal das chorus program an
 
 
 
@@ -118,7 +120,7 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
-
+- double precessission
 - create 256 and 128 and 512 optimized loops
 - osc sync cycles
 - pan für eq
