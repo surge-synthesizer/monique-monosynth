@@ -97,7 +97,6 @@ public:
     // TODO REDUCE TO NEEDED
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_env_buffers;
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_out_buffers;
-    mono_AudioSampleBuffer<SUM_EQ_BANDS> band_gain_buffers;
 
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS*2> filter_output_samples_l_r;
