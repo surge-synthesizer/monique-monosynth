@@ -262,7 +262,7 @@ public:
     Use this if you need fast processing of a single value, but be aware that
     this isn't thread-safe in the way that processSamples() is.
     */
-    float processSingleSampleRaw (const float in) noexcept;
+    float processSingleSampleRaw ( float in) noexcept;
 
     /** Applies a set of coefficients to this filter. */
     void setCoefficients (const IIRCoefficients& newCoefficients) noexcept;
@@ -323,7 +323,7 @@ inline void IIRFilter::setCoefficients (const IIRCoefficients& newCoefficients) 
     // active = true;
 }
 
-inline float IIRFilter::processSingleSampleRaw (const float in) noexcept
+inline float IIRFilter::processSingleSampleRaw ( float in) noexcept
 {
     // HACK DISABLED
     /*

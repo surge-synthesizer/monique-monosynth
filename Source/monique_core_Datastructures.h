@@ -97,9 +97,7 @@ public:
     // TODO REDUCE TO NEEDED
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_env_buffers;
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_out_buffers;
-    mono_AudioSampleBuffer<1> band_sum_out_buffer;
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_gain_buffers;
-    mono_AudioSampleBuffer<1> band_sum_gain_buffer;
 
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS*2> filter_output_samples_l_r;
@@ -340,7 +338,8 @@ class SmoothedParameter : public RuntimeListener
 
     float amp_switch_samples_left_max;
     int amp_switch_samples_left;
-    float last_amp;
+    float last_amp_automated;
+    float last_amp_valued;
     bool was_automated_last_time;
 
     COLD void block_size_changed() noexcept override;
@@ -489,16 +488,11 @@ struct FilterData : ParameterListener
     SmoothedParameter gain_smoother;
     BoolParameter modulate_gain;
 
-
-    Parameter compressor;
-    SmoothedParameter compressor_smoother;
     ModulatedParameter pan;
     SmoothedParameter pan_smoother;
     BoolParameter modulate_pan;
     ModulatedParameter output;
     SmoothedParameter output_smoother;
-    Parameter output_clipping;
-    SmoothedParameter output_clipping_smoother;
     BoolParameter modulate_output;
 
     ArrayOfParameters input_sustains;
@@ -803,7 +797,7 @@ static int get_high_pass_band_frequency( int band_id_ ) noexcept
     switch(band_id_)
     {
     case 0 :
-        return 0;
+        return 20;
     case 1 :
         return 80;
     case 2 :

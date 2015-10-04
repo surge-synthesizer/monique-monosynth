@@ -132,6 +132,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Monique_Ui_DualSlider> eq_1;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
     ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
     ScopedPointer<Monique_Ui_DualSlider> delay2;
@@ -158,7 +159,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> eq_4;
     ScopedPointer<Monique_Ui_DualSlider> eq_3;
     ScopedPointer<Monique_Ui_DualSlider> eq_2;
-    ScopedPointer<Monique_Ui_DualSlider> eq_1;
     ScopedPointer<Monique_Ui_DualSlider> osc_wave_3;
     ScopedPointer<MidiKeyboardComponent> keyboard;
     ScopedPointer<Monique_Ui_DualSlider> glide2;
@@ -243,16 +243,13 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_input_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_3;
-    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_distortion_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_6;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_7;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_8;
-    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_11;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_12;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_13;
-    ScopedPointer<Monique_Ui_DualSlider> flt_compressor_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_gain_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_2;
@@ -334,7 +331,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_1;
-    ScopedPointer<Monique_Ui_DualSlider> bypass2;
 
 
     //==============================================================================

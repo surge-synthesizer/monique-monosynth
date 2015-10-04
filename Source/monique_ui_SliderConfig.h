@@ -3521,157 +3521,6 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class FCompressorSlConfig : public ModulationSliderConfigBase
-{
-    const int id;
-
-    Parameter*const compressor;
-    Parameter*const clipping;
-
-    //==============================================================================
-    // BASIC SLIDER TYPE
-    /*
-    bool get_is_linear() const noexcept override
-    {
-    return false;
-    }
-    */
-
-    //==============================================================================
-    // FRONT SLIDER
-    SLIDER_STYLES get_front_slider_style() const noexcept override
-    {
-        return VALUE_SLIDER;
-    }
-    Parameter* get_front_parameter_base() const noexcept override
-    {
-        return compressor;
-    }
-    int get_override_front_min_value() const noexcept override
-    {
-        if( id == 0 )
-            return 0;
-        else
-            return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    /*
-    int get_override_front_max_value() const noexcept override
-    {
-    if( id == 0 )
-    return 0;
-    else
-    return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    */
-
-    //==============================================================================
-    // BACK SLIDER
-    SLIDER_STYLES get_back_slider_style() const noexcept override
-    {
-        return VALUE_SLIDER_2;
-    }
-    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    Parameter* get_back_parameter_base() const noexcept override
-    {
-        return clipping;
-    }
-
-    //==============================================================================
-    // TOP BUTTON
-    /*
-    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
-    {
-    return TOP_BUTTON_TYPE_IS_UNKNOWN;
-    }
-    BoolParameter* get_top_button_parameter_base() const noexcept override
-    {
-    return nullptr;
-    }
-    StringRef get_top_button_text() const noexcept override
-    {
-    return "";
-    }
-    float get_top_button_amp() const noexcept override
-    {
-    return NO_TOP_BUTTON_AMP;
-    }
-    */
-
-    //==============================================================================
-    // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override
-    {
-        return "BOOST";
-    }
-    StringRef get_bottom_button_switch_text() const noexcept override
-    {
-        return "CLIPP";
-    }
-    /*
-    bool get_is_bottom_button_text_dynamic() const noexcept override
-    {
-    return false;
-    }
-    */
-
-    //==============================================================================
-    // CENTER LABEL
-    /*
-    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
-    {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
-    }
-    String get_center_value() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_center_suffix() const noexcept override
-    {
-    return "";
-    }
-    */
-
-    //==============================================================================
-    // TOOLTIP
-    TOP_SLIDER_DESCIPTION
-    (
-        "Define the peak boost power of the filter output.\n"
-        "\n"
-        "FILTER 2 & 3: boosts or limits the filter ouput by peaks in the output of the filter before."
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "OUTPUT PEAK BOOST",
-        "OUTPUT SOFT CLIPPING"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the soft clipping amount of the filter output.\n"
-        "\n"
-        "Values greater than 0 clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
-        "Note: that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
-    )
-
-public:
-    FCompressorSlConfig( int id_ )
-        :
-        id( id_ ),
-        compressor( &(GET_DATA(filter_datas[id]).compressor) ),
-        clipping( &(GET_DATA(filter_datas[id]).output_clipping) )
-    {}
-
-    JUCE_LEAK_DETECTOR (FCompressorSlConfig)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
 class FColourSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const shape;
@@ -3745,7 +3594,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "SHAPE";
+        return "RESO";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -4522,7 +4371,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "CLIPP";
+        return "COMPR";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -4550,6 +4399,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the final output volume."

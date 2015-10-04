@@ -517,16 +517,6 @@ modulate_gain
 ),
 
 // ----
-compressor
-(
-    MIN_MAX( -1, 1 ),
-    0,
-    2000,
-    generate_param_name(FILTER_NAME,id_,"compressor"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"boost")
-),
-compressor_smoother(&compressor),
-
 pan
 (
     MIN_MAX( -1, 1 ),
@@ -554,15 +544,6 @@ output
     0.6
 ),
 output_smoother(&output),
-output_clipping
-(
-    MIN_MAX( 0, 1 ),
-    1,
-    1000,
-    generate_param_name(FILTER_NAME,id_,"output_clipping"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"clipping")
-),
-output_clipping_smoother(&output_clipping),
 
 modulate_output
 (
@@ -634,9 +615,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
     dest_->modulate_resonance = src_->modulate_resonance;
     dest_->gain = src_->gain;
     dest_->modulate_gain = src_->modulate_gain;
-    dest_->compressor = src_->compressor;
     dest_->output = src_->output;
-    dest_->output_clipping = src_->output_clipping;
     dest_->modulate_output = src_->modulate_output;
     dest_->pan = src_->pan;
     dest_->modulate_pan = src_->modulate_pan;
@@ -674,9 +653,6 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
 
     params_.add( &data_->distortion );
     params_.add( &data_->modulate_distortion );
-
-    params_.add( &data_->compressor );
-    params_.add( &data_->output_clipping );
 
     params_.add( &data_->output );
     params_.add( &data_->modulate_output );
@@ -896,7 +872,7 @@ void EQData::parameter_value_changed( Parameter* param_ ) noexcept
     {
         if( velocity[i].ptr() == param_ )
         {
-            envs[i]->sustain.set_value_without_notification( param_->get_value() );
+            envs[i]->sustain.set_value_without_notification( (param_->get_value()+1)*0.5 );
             break;
         }
     }
@@ -2190,9 +2166,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->pan.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
@@ -2236,9 +2210,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->pan.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
@@ -2282,9 +2254,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->output_clipping.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->pan.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->compressor.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );

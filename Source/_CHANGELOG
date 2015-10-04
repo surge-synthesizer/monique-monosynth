@@ -11,7 +11,38 @@ DONE
 - fix: click in oscilators
 - add: values on global glide times
 - add: snap to min and max like to snap to zero
+- fm freq max: x8 master osc
+- fm swing max: 20hz
+- removed osc pulse and switch options
+- improved: gain throug the whole synth
+- removed: filter boost and clipping and replaced with shape
+- bundled filter clipping and distoprtion in one dial
+- changed the effect "SHAPE" algorythm
+- reworked eq
+- reqorked filters
+- improved: filter input gain: the first input defines up to 100% gain, the second and third shares this amount and keep always max input sum : 1
+- optimize signal flow from filter before into the next
 
+
+
+- automate eq resoance
+- add another effect
+- bypass chorus
+
+- eq bypass
+mal von dem gainlimit hier abgesehen, die amp muss auf den oszilator ausgeführt werden, vor dem filter
+filter input links und rechts morphen in flter 1 und 2. -> button drüber on or off
+gleiches bei eq -> da die samples vor dem filter mit der amp verrechnen
+
+
+
+bug load or save wave
+
+
+
+sync problem on high octaves!
+-> check sync
+wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
 
 
 check osc sync again
@@ -120,6 +151,7 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+automate fm frequency
 - double precessission
 - create 256 and 128 and 512 optimized loops
 - osc sync cycles
