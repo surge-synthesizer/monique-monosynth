@@ -110,8 +110,6 @@ public:
     mono_AudioSampleBuffer<1> final_env;
     mono_AudioSampleBuffer<1> chorus_env;
 
-    mono_AudioSampleBuffer<2> fx_tmp;
-
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_samples;
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_input_env_amps;
     mono_AudioSampleBuffer<SUM_INPUTS_PER_FILTER*SUM_FILTERS> filter_output_samples;
@@ -364,6 +362,8 @@ public:
 
     COLD SmoothedParameter( Parameter*const param_to_smooth_ ) noexcept;
     COLD ~SmoothedParameter() noexcept;
+    
+    COLD void set_offline() noexcept;
 };
 
 //==============================================================================
@@ -399,6 +399,9 @@ struct FMOscData
     BoolParameter sync;
     Parameter fm_swing;
     SmoothedParameter fm_swing_smoother;
+    
+    ModulatedParameter master_shift;
+    SmoothedParameter master_shift_smoother;
 
     //==========================================================================
     COLD FMOscData() noexcept;
@@ -817,6 +820,9 @@ struct EQData : ParameterListener
 {
     ArrayOfParameters velocity;
     ArrayOfBoolParameters hold;
+    
+    Parameter bypass;
+    SmoothedParameter bypass_smoother;
 
     OwnedArray<ENVData> envs;
 

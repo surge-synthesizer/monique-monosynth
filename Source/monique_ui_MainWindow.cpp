@@ -358,6 +358,18 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     flash_counter = 0;
     //[/Constructor_pre]
 
+    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (new FXDistortionSlConfig()));
+
+    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
+
+    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
+
+    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
+
+    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
+
+    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
+
     addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (new EQSlConfig(1)));
 
     addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (new EQSlConfig(2)));
@@ -373,16 +385,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (new EQSlConfig(0)));
 
     addAndMakeVisible (bypass = new Monique_Ui_DualSlider (new BypassConfig()));
-
-    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
-
-    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
-
-    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
-
-    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
-
-    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
 
     addAndMakeVisible (colour = new Monique_Ui_DualSlider (new FColourSlConfig()));
 
@@ -1374,8 +1376,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (new FPanSlConfig(0)));
 
-    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (new FXDistortionSlConfig()));
-
 
     //[UserPreSize]
 #ifdef IS_PLUGIN
@@ -1539,6 +1539,12 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     _app_instance_store->audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    distortion = nullptr;
+    reverb_dry = nullptr;
+    reverb_width = nullptr;
+    reverb_room = nullptr;
+    delay2 = nullptr;
+    chorus_modulation = nullptr;
     eq_2 = nullptr;
     eq_3 = nullptr;
     eq_4 = nullptr;
@@ -1547,11 +1553,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     eq_5 = nullptr;
     eq_1 = nullptr;
     bypass = nullptr;
-    chorus_modulation = nullptr;
-    delay2 = nullptr;
-    reverb_dry = nullptr;
-    reverb_width = nullptr;
-    reverb_room = nullptr;
     colour = nullptr;
     label_effect_hider = nullptr;
     label_band_hz_2 = nullptr;
@@ -1738,7 +1739,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     flt_pan_3 = nullptr;
     flt_pan_2 = nullptr;
     flt_pan_1 = nullptr;
-    distortion = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2178,27 +2178,28 @@ void Monique_Ui_Mainwindow::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    eq_2->setBounds (645 - 60, 750 - 130, 60, 130);
-    eq_3->setBounds (720 - 60, 750 - 130, 60, 130);
-    eq_4->setBounds (780 - 60, 750 - 130, 60, 130);
-    eq_7->setBounds (975 - 60, 750 - 130, 60, 130);
-    eq_6->setBounds (915 - 60, 750 - 130, 60, 130);
-    eq_5->setBounds (840 - 60, 750 - 130, 60, 130);
-    eq_1->setBounds (585 - 60, 750 - 130, 60, 130);
-    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
-    chorus_modulation->setBounds (615, 750 - 130, 60, 130);
-    delay2->setBounds (765 - 60, 750 - 130, 60, 130);
+    distortion->setBounds (585 - 60, 750 - 130, 60, 130);
     reverb_dry->setBounds (975 - 60, 750 - 130, 60, 130);
     reverb_width->setBounds (915 - 60, 750 - 130, 60, 130);
     reverb_room->setBounds (855 - 60, 750 - 130, 60, 130);
+    delay2->setBounds (765 - 60, 750 - 130, 60, 130);
+    chorus_modulation->setBounds (615, 750 - 130, 60, 130);
+    eq_2->setBounds (645 - 60, 750 - 130, 60, 130);
+    eq_3->setBounds (720 - 60, 750 - 130, 60, 130);
+    eq_4->setBounds (780 - 60, 750 - 130, 60, 130);
+    eq_7->setBounds (980 - 60, 750 - 130, 60, 130);
+    eq_6->setBounds (910 - 60, 750 - 130, 60, 130);
+    eq_5->setBounds (850 - 60, 750 - 130, 60, 130);
+    eq_1->setBounds (585 - 60, 750 - 130, 60, 130);
+    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
     colour->setBounds (1065 - 60, 750 - 130, 60, 130);
     label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
     label_band_hz_2->setBounds (590, 745, 50, 30);
     label_band_hz_3->setBounds (665, 745, 50, 30);
     label_band_hz_4->setBounds (725, 745, 50, 30);
-    label_band_hz_5->setBounds (785, 745, 50, 30);
-    label_band_hz_6->setBounds (860, 745, 50, 30);
-    label_band_hz_7->setBounds (920, 745, 50, 30);
+    label_band_hz_5->setBounds (795, 745, 50, 30);
+    label_band_hz_6->setBounds (855, 745, 50, 30);
+    label_band_hz_7->setBounds (925, 745, 50, 30);
     label_band_hz_1->setBounds (530, 745, 50, 30);
     speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
     morpher_4->setBounds (1345 - 60, 620, 60, 130);
@@ -2370,14 +2371,13 @@ void Monique_Ui_Mainwindow::resized()
     button_edit_input_env_band_2->setBounds (585, 715, 60, 33);
     button_edit_input_env_band_3->setBounds (660, 715, 60, 33);
     button_edit_input_env_band_4->setBounds (720, 715, 60, 33);
-    button_edit_input_env_band_5->setBounds (780, 715, 60, 33);
-    button_edit_input_env_band_6->setBounds (855, 715, 60, 33);
-    button_edit_input_env_band_7->setBounds (915, 715, 60, 33);
+    button_edit_input_env_band_5->setBounds (790, 715, 60, 33);
+    button_edit_input_env_band_6->setBounds (850, 715, 60, 33);
+    button_edit_input_env_band_7->setBounds (920, 715, 60, 33);
     button_edit_env_chorus->setBounds (615, 715, 60, 33);
     flt_pan_3->setBounds (1335 - 60, 550 - 130, 60, 130);
     flt_pan_2->setBounds (1335 - 60, 370 - 130, 60, 130);
     flt_pan_1->setBounds (1335 - 60, 190 - 130, 60, 130);
-    distortion->setBounds (585 - 60, 750 - 130, 60, 130);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3596,6 +3596,24 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1305 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1305 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
+  <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
+                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new FXDistortionSlConfig()"/>
+  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
+                    explicitFocusOrder="0" pos="975r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RDrySlConfig()"/>
+  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
+                    explicitFocusOrder="0" pos="915r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RWidthSlConfig()"/>
+  <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
+                    explicitFocusOrder="0" pos="855r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new RRoomSlConfig()"/>
+  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
+                    explicitFocusOrder="0" pos="765r 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new DelaySlConfig()"/>
+  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
+                    virtualName="" explicitFocusOrder="0" pos="615 750r 60 130" class="Monique_Ui_DualSlider"
+                    params="new CModSlConfig()"/>
   <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
                     explicitFocusOrder="0" pos="645r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(1)"/>
@@ -3606,13 +3624,13 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="780r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="975r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="980r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="915r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="910r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="840r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="850r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
                     explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
@@ -3620,21 +3638,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
                     explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new BypassConfig()"/>
-  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="615 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new CModSlConfig()"/>
-  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="765r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new DelaySlConfig()"/>
-  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="975r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RDrySlConfig()"/>
-  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="915r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RWidthSlConfig()"/>
-  <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="855r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RRoomSlConfig()"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
                     explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
                     params="new FColourSlConfig()"/>
@@ -3659,17 +3662,17 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
-         virtualName="" explicitFocusOrder="0" pos="785 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="795 745 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="1.2kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="8a859696dca2f1f0" memberName="label_band_hz_6"
-         virtualName="" explicitFocusOrder="0" pos="860 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="855 745 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ceab7b618b72215f" memberName="label_band_hz_7"
-         virtualName="" explicitFocusOrder="0" pos="920 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="925 745 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="&gt;2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
@@ -4313,15 +4316,15 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="325021dee5961ad1" memberName="button_edit_input_env_band_5"
-              virtualName="" explicitFocusOrder="0" pos="780 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="790 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7d42e1a02a42a873" memberName="button_edit_input_env_band_6"
-              virtualName="" explicitFocusOrder="0" pos="855 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="850 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ac8fdd08954a9d8" memberName="button_edit_input_env_band_7"
-              virtualName="" explicitFocusOrder="0" pos="915 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="920 715 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="88bbe8f41160cb4a" memberName="button_edit_env_chorus"
@@ -4337,9 +4340,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
                     explicitFocusOrder="0" pos="1335r 190r 60 130" class="Monique_Ui_DualSlider"
                     params="new FPanSlConfig(0)"/>
-  <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FXDistortionSlConfig()"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

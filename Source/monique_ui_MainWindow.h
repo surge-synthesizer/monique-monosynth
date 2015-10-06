@@ -132,6 +132,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Monique_Ui_DualSlider> distortion;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_room;
+    ScopedPointer<Monique_Ui_DualSlider> delay2;
+    ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
     ScopedPointer<Monique_Ui_DualSlider> eq_2;
     ScopedPointer<Monique_Ui_DualSlider> eq_3;
     ScopedPointer<Monique_Ui_DualSlider> eq_4;
@@ -140,11 +146,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> eq_5;
     ScopedPointer<Monique_Ui_DualSlider> eq_1;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
-    ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
-    ScopedPointer<Monique_Ui_DualSlider> delay2;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_room;
     ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Label> label_effect_hider;
     ScopedPointer<Label> label_band_hz_2;
@@ -331,7 +332,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_1;
-    ScopedPointer<Monique_Ui_DualSlider> distortion;
 
 
     //==============================================================================

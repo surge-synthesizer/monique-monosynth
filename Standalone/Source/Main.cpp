@@ -107,8 +107,6 @@ bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
 //==============================================================================
 COLD void MoniqueSynthesizerApp::initialise (const String&)
 {
-    //run_test();
-
     standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
     {

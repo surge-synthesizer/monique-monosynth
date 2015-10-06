@@ -201,9 +201,18 @@ fm_swing
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_swing"),
     generate_short_human_name(FM_NAME,"fm_swing")
 ),
-fm_swing_smoother(&fm_swing)
+fm_swing_smoother(&fm_swing),
+master_shift
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(OSC_NAME,MASTER_OSC,"master_shift"),
+    generate_short_human_name(OSC_NAME,"master_phase"),
+    0
+),
+master_shift_smoother(&master_shift)
 {
-
 }
 COLD FMOscData::~FMOscData() noexcept {}
 
@@ -214,6 +223,7 @@ static inline void copy( FMOscData* dest_, const FMOscData* src_ ) noexcept
     dest_->fm_shot = src_->fm_shot;
     dest_->sync = src_->sync;
     dest_->fm_swing = src_->fm_swing;
+    dest_->master_shift = src_->master_shift;
 }
 static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -222,6 +232,7 @@ static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Par
         params_.add( &osc_data_->fm_shot );
         params_.add( &osc_data_->sync );
         params_.add( &osc_data_->fm_swing );
+        params_.add( &osc_data_->master_shift );
     }
 }
 
@@ -277,7 +288,12 @@ is_lfo_modulated
     generate_short_human_name(OSC_NAME,id_,"l-mod_ON")
 ),
 last_modulation_value( 0 )
-{}
+{
+    if( id_ == MASTER_OSC )
+    {
+        tune_smoother.set_offline();
+    }
+}
 COLD OSCData::~OSCData() noexcept {}
 
 //==============================================================================
@@ -286,7 +302,8 @@ static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
     dest_->wave = src_->wave;
     dest_->fm_amount = src_->fm_amount;
     dest_->is_lfo_modulated = src_->is_lfo_modulated;
-    dest_->tune = src_->tune;
+    if( dest_->id != MASTER_OSC )
+        dest_->tune = src_->tune;
     dest_->sync = src_->sync;
 }
 static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
@@ -294,7 +311,8 @@ static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Param
     params_.add( &osc_data_->sync );
     params_.add( &osc_data_->wave );
     params_.add( &osc_data_->fm_amount );
-    params_.add( &osc_data_->tune );
+    if( osc_data_->id != MASTER_OSC )
+        params_.add( &osc_data_->tune );
     params_.add( &osc_data_->is_lfo_modulated );
 }
 
@@ -822,7 +840,16 @@ hold
     EQ_NAME,EQ_NAME,
     id_,
     "hold","env_ON", false
-)
+),
+bypass
+(
+    MIN_MAX( 0, 1 ),
+    1.0f,
+    1000,
+    generate_param_name(EQ_NAME,id_,"mix"),
+    generate_short_human_name(EQ_NAME,"mix")
+),
+bypass_smoother(&bypass)
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
@@ -853,6 +880,8 @@ static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
 
         copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ), false );
     }
+
+    dest_->bypass = src_->bypass;
 }
 static inline void collect_saveable_parameters( EQData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -863,6 +892,8 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
 
         collect_saveable_parameters( data_->envs.getUnchecked( i ), params_, false );
     }
+
+    params_.add( &data_->bypass );
 }
 
 //==============================================================================
@@ -2135,7 +2166,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         {
             {
                 morph_group_1->register_parameter( osc_datas[0]->wave.ptr(), data_type == MASTER );
-                morph_group_1->register_parameter( osc_datas[0]->tune.ptr(), data_type == MASTER );
+                morph_group_1->register_parameter( fm_osc_data->master_shift.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
                 morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
@@ -2331,6 +2362,8 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
+
+            morph_group_3->register_parameter( eq_data->bypass.ptr(), data_type == MASTER  );
         }
 
         // FX

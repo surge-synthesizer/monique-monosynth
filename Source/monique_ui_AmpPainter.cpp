@@ -188,7 +188,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     {
         lock_for_reading();
 
-	ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+        ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
 
         g.fillAll (colours.bg);
 
@@ -213,6 +213,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
             g.setColour (colours.label_text_colour.withAlpha(0.3f));
             g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
+            g.setColour (Colours::red.withAlpha(0.1f));
+            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height*0.1), width, 1 );
+            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height*0.9), width, 1 );
         }
 
         struct Monique_Ui_AmpPainter
@@ -229,12 +232,19 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 const int height_,
 
                 const Colour& col_,
+                bool paint_errors_red,
 
                 EndlessBuffer& source_buffer_,
                 int num_samples_
             ) noexcept
             {
                 const Colour col_fill(col_.withAlpha(0.1f));
+                const Colour norm_col(col_);
+                Colour red_col(col_);
+                if( paint_errors_red )
+                    red_col = Colours::red;
+                Colour use_col(norm_col);
+
                 int last_x = -9999;
                 int last_y = -9999;
 
@@ -251,19 +261,31 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     {
                         if( y >= 0 )
                         {
+                            bool force_paint = false;
                             if( y > 1 )
-                                y = 1;
+                            {
+                                use_col = red_col;
+                                force_paint = true;
+                                if( y > 1.2 )
+                                {
+                                    y = 1.2;
+                                }
+                            }
+                            else
+                            {
+                                use_col = norm_col;
+                            }
 
-                            int h = mono_floor(y*height_)*0.5f;
+                            int h = mono_floor(y*height_)*0.4f;
 
-                            if( paint_line )
+                            if( paint_line  )
                             {
                                 g.setColour(col_fill);
                                 g.fillRect(x, y_center_ - h, 1, h);
                             }
-                            if( last_y != y || last_x == x )
+                            if( force_paint || last_y != y || last_x == x )
                             {
-                                g.setColour(col_);
+                                g.setColour(use_col);
                                 g.fillRect(x, y_center_ - h, 1, 1);
 
                                 last_y = y;
@@ -271,18 +293,30 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                         }
                         else
                         {
+                            bool force_paint = false;
                             if( y < -1 )
-                                y = -1;
+                            {
+                                use_col = red_col;
+                                force_paint = true;
+                                if( y < -1.2 )
+                                {
+                                    y = -1.2;
+                                }
+                            }
+                            else
+                            {
+                                use_col = norm_col;
+                            }
 
-                            int h = mono_floor(y*height_)*-0.5f;
+                            int h = mono_floor(y*height_)*-0.4f;
                             if( paint_line )
                             {
                                 g.setColour(col_fill);
                                 g.fillRect(x, y_center_, 1, h);
                             }
-                            if( last_y != y || last_x == x )
+                            if( force_paint || last_y != y || last_x == x )
                             {
-                                g.setColour(col_);
+                                g.setColour(use_col);
                                 g.fillRect(x, y_center_ + h, 1, 1);
 
                                 last_y = y;
@@ -303,7 +337,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const bool show_out = synth_data.osci_show_out;
         const bool show_out_env = synth_data.osci_show_out_env;
 
-	// OSC'S
+        // OSC'S
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
         {
             EndlessBuffer& values = *osc_values[osc_id];
@@ -329,6 +363,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     height,
 
                     col,
+                    false,
                     values,
 
                     samples_to_paint
@@ -353,6 +388,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 height,
 
                 col,
+                false,
                 eq_values,
 
                 samples_to_paint
@@ -385,7 +421,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     height,
 
                     col,
-
+                    false,
                     values,
 
                     samples_to_paint
@@ -407,7 +443,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     height,
 
                     col,
-
+                    false,
                     values_env,
 
                     samples_to_paint
@@ -431,7 +467,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 height,
 
                 colours.slider_track_colour,
-
+                true,
                 values,
 
                 samples_to_paint
@@ -453,7 +489,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 height,
 
                 colours.slider_track_colour.darker(),
-
+                false,
                 values_env,
 
                 samples_to_paint
@@ -658,7 +694,7 @@ COLD void EndlessBuffer::block_size_changed() noexcept
 }
 
 //==============================================================================
-inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept 
+inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept
 {
     for( int i = 0 ; i != buffers.size() ; ++i )
     {
@@ -677,7 +713,7 @@ inline float EndlessBuffer::get_next_and_count( int& pos_ ) const noexcept
 
     return sample_buffer.getReadPointer()[pos_];
 }
-inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept 
+inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept
 {
     for( int i = 0 ; i != buffers.size() ; ++i )
     {

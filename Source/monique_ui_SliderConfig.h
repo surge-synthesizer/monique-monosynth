@@ -341,7 +341,9 @@ public:
 //==============================================================================
 class OSCSlConfig : public ModulationSliderConfigBase
 {
-    ModulatedParameter*const octave;
+    const int id;
+
+    Parameter*const front_param;
     BoolParameter*const is_lfo_modulated;
 
     const String top_text;
@@ -366,7 +368,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     Parameter* get_front_parameter_base() const noexcept override
     {
-        return octave;
+        return front_param;
     }
     /*
     int get_override_front_min_value() const noexcept override
@@ -387,7 +389,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return octave;
+        return front_param;
     }
 
     //==============================================================================
@@ -411,7 +413,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
         {
             if( bool(is_lfo_modulated->get_value()) )
             {
-                value = get_last_modulation_amount(octave);
+                value = 0; // get_last_modulation_amount(front_param);
             }
             else
                 value = NO_TOP_BUTTON_AMP;
@@ -449,24 +451,30 @@ class OSCSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        const float value = octave->get_value();
-        if( octave->midi_control->get_ctrl_mode() )
+        const float value = front_param->get_value();
+        if( front_param->midi_control->get_ctrl_mode() )
         {
-            return String( round0(octave->get_modulation_amount() * 100) );
+            return String( round0(front_param->get_modulation_amount() * 100) );
         }
         else
         {
             if( value == 0 )
+            {
                 return String(0);
+            }
             else if( value < 10 and value > -10 )
+            {
                 return String(round001(value));
+            }
             else
+            {
                 return String(round01(value));
+            }
         }
     }
     StringRef get_center_suffix() const noexcept override
     {
-        if( octave->midi_control->get_ctrl_mode() )
+        if( front_param->midi_control->get_ctrl_mode() )
             return "%";
         else
             return "#";
@@ -513,10 +521,11 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( int id_ )
         :
-        octave( &(GET_DATA(osc_datas[id_]).tune) ),
+        id(id_),
+        front_param( id == 0 ? &(GET_DATA(fm_osc_data).master_shift ) : &(GET_DATA(osc_datas[id_]).tune) ),
         is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
         top_text( String("L-MOD") ),
-        bottom_text( String("TUNE-") + String(id_+1) ),
+        bottom_text( id_ == 0 ? String("PHASE") : String("TUNE-") + String(id_+1) ),
 
         synth_data( GET_DATA_PTR( synth_data ) )
     {}
@@ -784,7 +793,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "hz";
+        return "hz";
     }
 
     //==============================================================================
@@ -3654,6 +3663,7 @@ public:
 class FColourSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const shape;
+    Parameter*const bypass;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3687,17 +3697,15 @@ class FColourSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return clipping;
+        return bypass;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -3726,11 +3734,11 @@ class FColourSlConfig : public ModulationSliderConfigBase
     {
         return "RESO";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "MIX";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -3766,7 +3774,8 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig()
         :
-        shape( &(GET_DATA(synth_data).shape) )
+        shape( &(GET_DATA(synth_data).shape) ),
+        bypass( &(GET_DATA(eq_data).bypass) )
     {}
 
     JUCE_LEAK_DETECTOR (FColourSlConfig)

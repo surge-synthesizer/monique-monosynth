@@ -26,8 +26,32 @@ DONE
 - swap effect flow to chorus, delay, reverb
 
 
+// TODO neu 
+mouse double click navigates through all clean waveforms
+rundungsfehler popup position
+
+popup env schliessen wenn auf die benutzer
+pop env wechselt automatisch zum nächsten input wenn im gleichen filter
+pop option keep it open hacken
+popup option fixed position
+
+
+env ansicht propotional und zeitachse -> better feeling
+
+gainmeter von links nach rechts
+
+sequencer note reset to factory default
+
+
+
+info popup wenn input im filter drüber null, denn da liegt kein signal an.
+
+
+modulation slider: instead of percent, set the target value!
+
 TODO
 - automate eq resoance
+- add back global env shape
 - bypass chorus
 - eq bypass
 - fix slider popup descriptions
