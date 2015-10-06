@@ -574,12 +574,6 @@ static inline float soft_clipping( float input_and_worker_ ) noexcept
 }
 
 //==============================================================================
-static inline float shape_mix( float s1_, float shape_ ) noexcept
-{
-    return sample_mix( s1_*(1.0f-shape_), soft_clipping( s1_*5 )*1.33*(shape_) );
-}
-
-//==============================================================================
 static inline float lfo2amp( float sample_ ) noexcept
 {
     return (sample_ + 1.0f)*0.5f;
@@ -603,9 +597,13 @@ static inline float distortion( float input_and_worker_, float distortion_power_
 static inline float clipp_to_0_and_1( float input_and_worker_ ) noexcept
 {
     if( input_and_worker_ > 1 )
+    {
         input_and_worker_ = 1;
+    }
     else if( input_and_worker_ < 0 )
+    {
         input_and_worker_ = 0;
+    }
 
     return input_and_worker_;
 }
@@ -2206,7 +2204,7 @@ inline void ValueEnvelope::update( float end_value_, int time_in_samples, float 
     end_value = end_value_;
 
     // CALC
-    samples_to_target_left = msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate );
+    samples_to_target_left = jmax(int64(10),msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate ));
     if( samples_to_target_left <= 0 )
     {
         current_value = end_value;
@@ -3182,15 +3180,17 @@ inline void FilterProcessor::pre_process( const int input_id, const int num_samp
             input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp, num_samples );
             if( id == FILTER_1 )
             {
-                FloatVectorOperations::copy( filter_input_buffer, osc_input_buffer, num_samples );
+		for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    filter_input_buffer[sid] = osc_input_buffer[sid]*tmp_input_ar_amp[sid];
+                }
             }
             else
             {
                 const float* filter_before_buffer = data_buffer->filter_output_samples.getReadPointer( input_id + SUM_INPUTS_PER_FILTER*(id-1) );
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-
-                    filter_input_buffer[sid] = smoothed_sustain_buffer[sid] < 0 ? osc_input_buffer[sid] : sample_mix(osc_input_buffer[sid],filter_before_buffer[sid]);
+                    filter_input_buffer[sid] = smoothed_sustain_buffer[sid] < 0 ? osc_input_buffer[sid]*tmp_input_ar_amp[sid] : filter_before_buffer[sid]*tmp_input_ar_amp[sid];
                 }
             }
         }
@@ -3534,9 +3534,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         float*const out_buffer_1( data_buffer->filter_output_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * id ) );
         float*const out_buffer_2( data_buffer->filter_output_samples.getWritePointer( 1 + SUM_INPUTS_PER_FILTER * id ) );
         float*const out_buffer_3( data_buffer->filter_output_samples.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * id ) );
-        const float*const input_ar_amp_1( data_buffer->filter_input_env_amps.getReadPointer( 0 + SUM_INPUTS_PER_FILTER * id ) );
-        const float*const input_ar_amp_2( data_buffer->filter_input_env_amps.getReadPointer( 1 + SUM_INPUTS_PER_FILTER * id ) );
-        const float*const input_ar_amp_3( data_buffer->filter_input_env_amps.getReadPointer( 2 + SUM_INPUTS_PER_FILTER * id ) );
         const float*const smoothed_distortion_buffer( filter_data->distortion_smoother.get_smoothed_modulated_buffer() );
         {
             filter_data->output_smoother.process_modulation( filter_data->modulate_output, amp_mix, num_samples );
@@ -3546,13 +3543,10 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
                 // OUTPUT MIX AND DISTORTION
                 {
                     const float amp = smoothed_output_buffer[sid];
-                    const float gain_1 = input_ar_amp_1[sid];
-                    const float gain_2 = input_ar_amp_2[sid];
-                    const float gain_3 = input_ar_amp_3[sid];
                     float shape_power = smoothed_distortion_buffer[sid];
-                    const float result = sample_mix(sample_mix(out_buffer_1[sid]*gain_1, out_buffer_2[sid]*gain_2), out_buffer_3[sid]*gain_3) * amp;
+                    const float result = sample_mix(sample_mix(out_buffer_1[sid], out_buffer_2[sid]), out_buffer_3[sid]) * amp;
 
-                    this_filter_output_buffer[sid] = sample_mix( result*2.66*(1.0f-shape_power), soft_clipping( result*2 )*1.66*(shape_power) );
+                    this_filter_output_buffer[sid] = sample_mix( result*2.66*(1.0f-shape_power), soft_clipping( result*5 )*1.66*(shape_power) );
                 }
             }
         }
@@ -3590,10 +3584,15 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         const float* const right_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+1);
         const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
         const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
+        const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
         for( int sid = 0 ; sid != num_samples ; ++sid )
         {
-            master_left_output_buffer[sid]  = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
-            master_right_output_buffer[sid] = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
+            const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
+            const float right = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
+            const float distortion = smoothed_distortion[sid];
+
+            master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33*soft_clipping( left*10 )*(distortion);
+            master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33*soft_clipping( right*10 )*(distortion);
         }
     }
 }
@@ -3696,10 +3695,10 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                 {
                     const float shape = smoothed_shape_buffer[sid];
                     const float amp = env_buffer[sid];
-                    const float in = filter_in_samples[sid];
+                    const float in = filter_in_samples[sid] * amp;
                     filter.update_with_calc( shape*0.8, filter_frequency, amp );
                     float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
-                    band_out_buffer[sid] = filter_hard_clipper(output*amp*5);
+                    band_out_buffer[sid] = filter_hard_clipper(output*4);
                 }
             }
             BandExecuter(EQProcessor*const processor_, float*in_buffer_, int num_samples__, int band_id_) noexcept
@@ -3772,29 +3771,10 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
         const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
         const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
         const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
-	/*
-        const float*const gain_buffer_1( data_buffer->band_gain_buffers.getReadPointer(0) );
-        const float*const gain_buffer_2( data_buffer->band_gain_buffers.getReadPointer(1) );
-        const float*const gain_buffer_3( data_buffer->band_gain_buffers.getReadPointer(2) );
-        const float*const gain_buffer_4( data_buffer->band_gain_buffers.getReadPointer(3) );
-        const float*const gain_buffer_5( data_buffer->band_gain_buffers.getReadPointer(4) );
-        const float*const gain_buffer_6( data_buffer->band_gain_buffers.getReadPointer(5) );
-        const float*const gain_buffer_7( data_buffer->band_gain_buffers.getReadPointer(6) );
-
-        const float*const  smoothed_shape_buffer = synth_data->shape_smoother.get_smoothed_buffer();
-        */
+        const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-	  /*
-            const float shape = smoothed_shape_buffer[sid];
-
-            const float sum_gains = gain_buffer_1[sid]+gain_buffer_2[sid]+gain_buffer_3[sid]+gain_buffer_4[sid]+gain_buffer_5[sid]+gain_buffer_6[sid]+gain_buffer_7[sid];
-            const float sum_out = buffer_1[sid]+buffer_2[sid]+buffer_3[sid]+buffer_4[sid]+buffer_5[sid]+buffer_6[sid]+buffer_7[sid];
-            float added_sample = sum_out * (1.0f/jmax(1.0f,sum_gains));
-
-            float multi_sample
-            */
-            io_buffer_[sid] =
+            const float sum =
             sample_mix
             (
                 sample_mix
@@ -3807,21 +3787,22 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                             (
                                 sample_mix
                                 (
-                                    buffer_1[sid],
-                                    buffer_2[sid]
+                                    buffer_7[sid],
+                                    buffer_6[sid]
                                 ),
-                                buffer_3[sid]
+                                buffer_5[sid]
                             ),
                             buffer_4[sid]
                         ),
-                        buffer_5[sid]
+                        buffer_3[sid]
                     ),
-                    buffer_6[sid]
+                    buffer_2[sid]
                 ),
-                buffer_7[sid]
+                buffer_1[sid]
             );
 
-           // io_buffer_[sid] = added_sample*shape + multi_sample*(1.0f-shape );
+            const float distortion =  smoothed_distortion[sid];
+            io_buffer_[sid] = sum*(1.0f-distortion) + 1.33*soft_clipping( sum*5 )*(distortion);
         }
     }
 }
@@ -3904,6 +3885,10 @@ inline void EQProcessorStereo::process( int num_samples_ ) noexcept
         env_data->sustain_smoother.process_amp( not eq_data->hold[band_id], env, data_buffer->band_env_buffers.getWritePointer(band_id), num_samples_ );
     }
 
+    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+    {
+       // amp_painter->add_out( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
+    }
     left_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
     right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
 
@@ -4524,10 +4509,9 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
 
         float* const final_env_amp = data_buffer->final_env.getWritePointer();
         final_env->process( final_env_amp, num_samples_ );
-        const float* smoothed_volume_buffer( synth_data->volume_smoother.get_smoothed_buffer() );
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            const float gain = final_env_amp[sid]*smoothed_volume_buffer[sid]*velocity_smoother.add_and_get_average(velocity_);
+            const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_);
             left_input_buffer[sid] *= gain;
             right_input_buffer[sid] *= gain;
         }
@@ -4571,26 +4555,20 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
 
             const float* const smoothed_delay_buffer;
             const float* const smoothed_bypass;
-            const float* const smoothed_clipping;
+            const float* const smoothed_volume;
 
             float* const tmp_samples;
 
             // LEFT SIDE
             inline void exec() noexcept override
             {
-                // REVERB
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    tmp_samples[sid] = processor->reverb_l.processSingleSampleRaw( input_buffer[sid] );
-                }
-
                 // DELAY
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    const float in = tmp_samples[sid];
+                    const float in = input_buffer[sid];
                     const float delay_data_in = delay_data[delay_pos];
 
-                    tmp_samples[sid] = sample_mix(delay_data_in,tmp_samples[sid]);
+                    tmp_samples[sid] = delay_data_in+in;
 
                     delay_data[delay_pos] = (delay_data_in + in) * smoothed_delay_buffer[sid];
 
@@ -4600,33 +4578,32 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
                     }
                 }
 
+	      
+                // REVERB
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    tmp_samples[sid] = processor->reverb_l.processSingleSampleRaw( tmp_samples[sid] );
+                }
+
                 // BYPASS -> MIX
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
                     const float bypass = smoothed_bypass[sid];
                     float tmp = tmp_samples[sid];
                     tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
-
-                    const float clipping = smoothed_clipping[sid];
-                    final_output[sid] =  sample_mix( tmp*(1.0f-clipping), soft_clipping( tmp*5*1.5*1.5 )*1.33*(clipping) );
+                    final_output[sid] = tmp * smoothed_volume[sid];
                 }
             }
 
             inline void exec_right() noexcept
             {
-                // REVERB
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    tmp_samples[sid] = processor->reverb_r.processSingleSampleRaw( input_buffer[sid] );
-                }
-
                 // DELAY
                 for( int sid = 0 ; sid != num_samples ; ++sid )
                 {
-                    const float in = tmp_samples[sid];
+                    const float in = input_buffer[sid];
                     const float delay_data_in = delay_data[delay_pos];
 
-                    tmp_samples[sid] = sample_mix(delay_data_in,tmp_samples[sid]);
+                    tmp_samples[sid] = delay_data_in+in;
 
                     delay_data[delay_pos] = (delay_data_in + in) * smoothed_delay_buffer[sid];
 
@@ -4636,6 +4613,12 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
                     }
                 }
                 processor->delayPosition = delay_pos;
+	      
+                // REVERB
+                for( int sid = 0 ; sid != num_samples ; ++sid )
+                {
+                    tmp_samples[sid] = processor->reverb_r.processSingleSampleRaw( tmp_samples[sid] );
+                }
 
                 // BYPASS -> MIX
                 for( int sid = 0 ; sid != num_samples ; ++sid )
@@ -4644,8 +4627,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
                         const float bypass = smoothed_bypass[sid];
                         float tmp = tmp_samples[sid];
                         tmp = tmp*bypass + input_buffer[sid]*(1.0f-bypass);
-                        const float clipping = smoothed_clipping[sid];
-                        final_output[sid] =  sample_mix( tmp*(1.0f-clipping), soft_clipping( tmp*5*1.5*1.5 )*1.33*(clipping) );
+                        final_output[sid] = tmp * smoothed_volume[sid];
 
                         // FOR END ENV - RELEASE IF INACTIVE
                         processor->last_output_smoother.add( tmp );
@@ -4676,7 +4658,7 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
 
                        smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
                        smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() ),
-                       smoothed_clipping( fx_processor_->synth_data->final_clipping_smoother.get_smoothed_buffer() ),
+                       smoothed_volume( fx_processor_->synth_data->volume_smoother.get_smoothed_buffer() ),
 
                        tmp_samples( tmp_samples_ )
             {}
@@ -5504,6 +5486,7 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
 
 
 

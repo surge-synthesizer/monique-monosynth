@@ -132,6 +132,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Monique_Ui_DualSlider> eq_2;
+    ScopedPointer<Monique_Ui_DualSlider> eq_3;
+    ScopedPointer<Monique_Ui_DualSlider> eq_4;
+    ScopedPointer<Monique_Ui_DualSlider> eq_7;
+    ScopedPointer<Monique_Ui_DualSlider> eq_6;
+    ScopedPointer<Monique_Ui_DualSlider> eq_5;
     ScopedPointer<Monique_Ui_DualSlider> eq_1;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
     ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
@@ -153,12 +159,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> morpher_3;
     ScopedPointer<Monique_Ui_DualSlider> morpher_2;
     ScopedPointer<Monique_Ui_DualSlider> morpher_1;
-    ScopedPointer<Monique_Ui_DualSlider> eq_7;
-    ScopedPointer<Monique_Ui_DualSlider> eq_6;
-    ScopedPointer<Monique_Ui_DualSlider> eq_5;
-    ScopedPointer<Monique_Ui_DualSlider> eq_4;
-    ScopedPointer<Monique_Ui_DualSlider> eq_3;
-    ScopedPointer<Monique_Ui_DualSlider> eq_2;
     ScopedPointer<Monique_Ui_DualSlider> osc_wave_3;
     ScopedPointer<MidiKeyboardComponent> keyboard;
     ScopedPointer<Monique_Ui_DualSlider> glide2;
@@ -331,6 +331,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_1;
+    ScopedPointer<Monique_Ui_DualSlider> distortion;
 
 
     //==============================================================================

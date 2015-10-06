@@ -438,7 +438,7 @@ struct OSCData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define MIN_ENV_TIMES 10
+#define MIN_ENV_TIMES 1
 struct ENVData
 {
     const int id;
@@ -796,7 +796,7 @@ static int get_high_pass_band_frequency( int band_id_ ) noexcept
     switch(band_id_)
     {
     case 0 :
-        return 20;
+        return 15;
     case 1 :
         return 80;
     case 2 :
@@ -811,6 +811,7 @@ static int get_high_pass_band_frequency( int band_id_ ) noexcept
         return 2660;
     }
 }
+
 //==============================================================================
 struct EQData : ParameterListener
 {
@@ -906,6 +907,8 @@ struct MoniqueSynthData : ParameterListener
     SmoothedParameter final_clipping_smoother;
     Parameter shape;
     SmoothedParameter shape_smoother;
+    Parameter distortion;
+    SmoothedParameter distortion_smoother;
     IntParameter octave_offset;
     BoolParameter osc_retune;
 

@@ -3521,6 +3521,136 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class FXDistortionSlConfig : public ModulationSliderConfigBase
+{
+    Parameter*const distortion;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    Parameter* get_front_parameter_base() const noexcept override
+    {
+        return distortion;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+    return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    Parameter* get_back_parameter_base() const noexcept override
+    {
+    return clipping;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    BoolParameter* get_top_button_parameter_base() const noexcept override
+    {
+    return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+    return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+    return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "DESTROY";
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+    return "";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    /*
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+    }
+    String get_center_value() const noexcept override
+    {
+    return "";
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+    return "";
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    // TODO
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the shape amount of the FX input (after EQ bank).\n"
+        "\n"
+        "Shaping makes some details in the sound more 'visible'."
+    )
+
+public:
+    FXDistortionSlConfig()
+        :
+        distortion( &(GET_DATA(synth_data).distortion) )
+    {}
+
+    JUCE_LEAK_DETECTOR (FXDistortionSlConfig)
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 class FColourSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const shape;
@@ -4371,7 +4501,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "COMPR";
+        return "FORCE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override

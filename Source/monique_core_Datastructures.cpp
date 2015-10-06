@@ -1644,11 +1644,20 @@ id( data_type ),
     (
         MIN_MAX( 0, 1 ),
         0.05,
-        100,
+        1000,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
         generate_short_human_name("FX","shape")
     ),
     shape_smoother(&shape),
+    distortion
+    (
+        MIN_MAX( 0, 1 ),
+        0.6,
+        1000,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
+        generate_short_human_name("FX","distortion")
+    ),
+    distortion_smoother(&distortion),
     octave_offset
     (
         MIN_MAX( -2, 2 ),
@@ -1995,6 +2004,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->glide_motor_time = src_->glide_motor_time;
     dest_->velocity_glide_time = src_->velocity_glide_time;
     dest_->sync = src_->sync;
+    dest_->distortion = src_->distortion;
     dest_->shape = src_->shape;
     dest_->octave_offset = src_->octave_offset;
     dest_->osc_retune = src_->osc_retune;
@@ -2050,6 +2060,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     }
 
     saveable_parameters.add( &this->shape );
+    saveable_parameters.add( &this->distortion );
     saveable_parameters.add( &this->delay );
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
@@ -2325,6 +2336,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         // FX
         {
             // MAIN
+            morph_group_3->register_parameter( distortion.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( shape.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( effect_bypass.ptr(), data_type == MASTER  );
             // REVERB
