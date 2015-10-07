@@ -25,17 +25,17 @@ DONE
 - change the position of the final volume
 - swap effect flow to chorus, delay, reverb
 - removed: tune for osc1 and replace with a phase shift option
-- add note offset as second slider of octave offset and a reset button to send a midi note to pitch the arp
-- add buttons on top of the filter inputs to show possible inactive inputs
+- add: note offset as second slider of octave offset and a reset button to send a midi note to pitch the arp
+- add: buttons on top of the filter inputs to show possible inactive inputs
 - fix: env popup position
-- fix: oscilloscope shot mono mix of flt_1, flt_2, flt_3 and main output instead of only the left channel 
+- fix: oscilloscope show now a mono mix of flt_1, flt_2, flt_3 and main output instead of only the left channel
 - fix: fx bypass (the reverb was gaining the output by 2)
 - changed/fix: process envelopes on the inputs before the filter instead after filter
-- removed: option to retune oscs on soft pedal down -> this option is not always on if the softpedal is down
-- removed: softpedal changes the gain of an oscilator
-- change the num steps for envelope parameters to the maximum sum of ms (20000)
-- improve dial: wave, if you move the slider by mousewheel, you increase of decrease to the next clean wave (square, sine, saw or noise)
-- UI shows the most values with one number after the comma (coz this is the standard wheel move precessision)
+- removed: option to retune oscs on soft pedal down -> this option is now always on if the softpedal is down
+- removed: softpedal+notes changes the gain of an osc
+- change: num steps for envelope parameters to the maximum sum of ms (20000)
+- improve dial: wave, if you move the slider by mouse wheel, you increase or decrease to the next clean wave (square, sine, saw or noise)
+- UI shows the most values with one number after the comma (coz this is the standard wheel move precession)
 - change: linear env sliders movement no more absolute
 - improve: autoclose env popup, but keep it open if you edit another input of the same filter
 - add: auto switch and close options to the env popup
@@ -45,11 +45,16 @@ DONE
 
 miete martin
 
+****************************************************************************
+****************************************************************************
+****************************************************************************
 
 BUGS:
+****************************************************************************
 ulkige frage ob speichern beim wählen eines morph preset (r 4)
 
 UI
+****************************************************************************
 add esc option to the env popup
 env has no sustain level?
 mouse tribble click
@@ -66,6 +71,7 @@ add: a layer with help information for the main ui (Also explain a dual slider q
 welcome popup, if you like to disable the arp -> show the button
 
 ENGINE
+****************************************************************************
 filter modulation off cutoff cracklse (not smoothed?)
 lfo sync smoother
 phase modulation schwabbelt rum! square und saw -> limit the osc output to 1 and -1 
@@ -78,28 +84,48 @@ assertion on shutdow
 own lfos for tune and phase
 
 OPTIMIZE
+****************************************************************************
 - calculate glide on value change?
 
 LOAD SAVE
+****************************************************************************
 wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
 bug: create new programm and store it -> then change something and you get the parent program name
 - programm load loads bank (plugin bug)
 
 PROGRAMS
+****************************************************************************
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - make a starter for percussions
 
 BUILD:
+****************************************************************************
 - audio unit build
 - asio suppoert
 
 
-
 QUESTS:
+****************************************************************************
 - get your pro version free for an feature request which we will add to the pro version
 - load save hoch -> ???
 
--------------------------------------------------------------------
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+****************************************************************************
+
+
+
 
 mic rechner
 
