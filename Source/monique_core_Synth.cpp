@@ -637,7 +637,7 @@ static inline float soft_clipp_greater_1_2( float x ) noexcept
     {
         x = -1.0f + soft_clipping( x + 1.0f );
     }
-    
+
     if( x > 1.2 )
     {
         x = 1.2;
@@ -646,7 +646,7 @@ static inline float soft_clipp_greater_1_2( float x ) noexcept
     {
         x = -1.2;
     }
-    
+
 
     return x;
 }
@@ -1902,7 +1902,7 @@ class SecondOSC : public RuntimeListener
 public:
     //==============================================================================
     // TODO same frequency sync
-    inline void process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept;
+    inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
 
     inline void update( float root_note_ ) noexcept;
     inline void reset() noexcept;
@@ -1964,15 +1964,13 @@ inline const bool is_syncanble_by_tune( float tune_, float master_tune_ ) noexce
 
 //==============================================================================
 // TODO same frequency sync
-inline void SecondOSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal_down_, const int num_samples_) noexcept
+inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_) noexcept
 {
     float*const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
 
     const float*const switch_buffer( data_buffer->osc_switchs.getWritePointer(MASTER_OSC) );
     const float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
     const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
-
-    const float volume_multi = is_sostenuto_pedal_down_ ? 1.0f / (id) : 1;
 
     const bool is_lfo_modulated = osc_data->is_lfo_modulated;
 
@@ -2098,7 +2096,7 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal
                 sample = sample_mix(sample*(1.0f-fm_amount), ( (modulator_sample+sample)*0.5 )*fm_amount);
             }
 
-            output_buffer[sid] = sample * volume_multi;
+            output_buffer[sid] = sample;
         }
     }
 }
@@ -3062,7 +3060,7 @@ inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
         in_,
         out
     );
-    
+
 }
 
 // BAND
@@ -3719,13 +3717,6 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
         }
     }
 
-    // VISUALIZE
-    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-    {
-        amp_painter->add_filter_env( id, amp_mix, num_samples );
-        amp_painter->add_filter( id, this_filter_output_buffer, num_samples );
-    }
-
     // PAN & MIX
     {
         const float*const pan_buffer = filter_data->pan_smoother.get_smoothed_modulated_buffer();
@@ -3737,6 +3728,13 @@ inline void FilterProcessor::process( const int num_samples ) noexcept
             const float output_sample = left_and_input_output_buffer[sid];
             right_output_buffer[sid] = output_sample*jmin(1.0f,pan+1);
             left_and_input_output_buffer[sid] = output_sample*jmin(1.0f,pan*-1+1);
+        }
+
+        // VISUALIZE
+        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+        {
+            amp_painter->add_filter_env( id, amp_mix, num_samples );
+            amp_painter->add_filter( id, right_output_buffer, left_and_input_output_buffer, num_samples );
         }
     }
 
@@ -4851,13 +4849,13 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
                 left_buffer[sid] *= volume;
                 right_buffer[sid] *= volume;
             }
-        }
 
-        // VISUALIZE
-        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-        {
-            amp_painter->add_out( &output_buffer_.getReadPointer(LEFT)[start_sample_final_out_], num_samples_ );
-            amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
+            // VISUALIZE
+            if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+            {
+                amp_painter->add_out( left_buffer, right_buffer, num_samples_ );
+                amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
+            }
         }
     }
 }
@@ -5120,9 +5118,9 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 {
     stopped_and_sostenuto_pedal_was_down = false;
     stopped_and_sustain_pedal_was_down = false;
-    was_soft_pedal_down_on_note_start = is_soft_pedal_down and not synth_data->bind_sustain_and_sostenuto_pedal;
+    was_soft_pedal_down_on_note_start = is_soft_pedal_down;
 
-    current_note = synth_data->osc_retune and audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
+    current_note = audio_processor->are_more_than_one_key_down() ? current_note : midi_note_number_;
     current_note = midi_note_number_;
     current_velocity = velocity_;
 
@@ -5337,7 +5335,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         struct Executer : public mono_Thread
         {
             MoniqueSynthesiserVoice*const voice;
-            const bool was_soft_pedal_down_on_note_start;
             const int num_samples;
             const int start_sample;
             const int step_number;
@@ -5345,26 +5342,24 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             {
                 voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
                 voice->lfos[1]->process( step_number, start_sample, num_samples );
-                voice->second_osc->process( voice->data_buffer, was_soft_pedal_down_on_note_start, num_samples );
+                voice->second_osc->process( voice->data_buffer, num_samples );
             }
             Executer(MoniqueSynthesiserVoice*const voice_,
-            bool was_soft_pedal_down_on_note_start_,
             int num_samples_,
             int start_sample_,
             int step_number_)
                 : voice(voice_),
-                was_soft_pedal_down_on_note_start(was_soft_pedal_down_on_note_start_),
                 num_samples(num_samples_),
                 start_sample(start_sample_),
                 step_number(step_number_)
             {}
         };
-        Executer executer( this,  was_soft_pedal_down_on_note_start, num_samples, start_sample_, step_number_ );
+        Executer executer( this, num_samples, start_sample_, step_number_ );
         executer.try_run_paralel();
 
         lfos[2]->process( step_number_, start_sample_, num_samples );
         filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
-        third_osc->process( data_buffer, was_soft_pedal_down_on_note_start, num_samples ); // NEED OSC 0 && LFO 2
+        third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
 
         while( executer.isWorking() ) {}
     }

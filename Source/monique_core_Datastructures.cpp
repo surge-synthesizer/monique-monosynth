@@ -326,7 +326,7 @@ attack
 (
     MIN_MAX( 0, 1 ),
     0.05,
-    1000,
+    20000,
     generate_param_name(ENV_NAME,id,"attack"),
     generate_short_human_name(ENV_NAME,id_,"attack")
 ),
@@ -342,7 +342,7 @@ decay
 (
     MIN_MAX( 0, 1 ),
     0.02,
-    1000,
+    20000,
     generate_param_name(ENV_NAME,id,"decay"),
     generate_short_human_name(ENV_NAME,id_,"decay")
 ),
@@ -358,7 +358,7 @@ sustain
 (
     MIN_MAX( -1, 1 ),
     0.9,
-    2000,
+    20000*2,
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
@@ -367,7 +367,7 @@ sustain_time
 (
     MIN_MAX( 0.001, 1 ),
     1,
-    1000,
+    1.0f-0.001*20000,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -375,7 +375,7 @@ release
 (
     MIN_MAX( 0, 1 ),
     0.2,
-    1000,
+    20000,
     generate_param_name(ENV_NAME,id,"release"),
     generate_short_human_name(ENV_NAME,id_,"release")
 ),
@@ -391,7 +391,7 @@ shape
 (
     MIN_MAX( 0, 1 ),
     0.5,
-    1000,
+    20000,
     generate_param_name(ENV_NAME,id,"shape"),
     generate_short_human_name(ENV_NAME,id_,"shape")
 )
@@ -1701,13 +1701,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
         generate_short_human_name("GLOB","arp_note_offset")
     ),
-    osc_retune
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osc_retune"),
-        generate_short_human_name("GLOB","osc_retune")
-    ),
-
+    
     sync
     (
         true,
@@ -2046,7 +2040,6 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->distortion = src_->distortion;
     dest_->shape = src_->shape;
     dest_->octave_offset = src_->octave_offset;
-    dest_->osc_retune = src_->osc_retune;
     dest_->final_clipping = src_->final_clipping;
     dest_->note_offset = src_->note_offset;
 
@@ -2115,7 +2108,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters( arp_sequencer_data, saveable_parameters );
     saveable_parameters.add( &this->sync );
     saveable_parameters.add( &this->speed );
-    saveable_parameters.add( &this->osc_retune );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
 

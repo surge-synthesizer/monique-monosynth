@@ -18,6 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "monique_core_Datastructures.h"
 #include "monique_ui_LookAndFeel.h"
 //[/Headers]
 
@@ -32,6 +33,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     : original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    synth_data = GET_DATA_PTR( synth_data );
     //[/Constructor_pre]
 
     addAndMakeVisible (sl_show_range = new Slider (String::empty));
@@ -329,13 +331,12 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             }
         };
 
-        MoniqueSynthData& synth_data = GET_DATA( synth_data );
-        const bool show_osc[SUM_OSCS] = { synth_data.osci_show_osc_1, synth_data.osci_show_osc_2, synth_data.osci_show_osc_3 };
-        const bool show_flt[SUM_OSCS] = { synth_data.osci_show_flt_1, synth_data.osci_show_flt_2, synth_data.osci_show_flt_3 };
-        const bool show_flt_env[SUM_OSCS] = { synth_data.osci_show_flt_env_1, synth_data.osci_show_flt_env_2, synth_data.osci_show_flt_env_3 };
-        const bool show_eq = synth_data.osci_show_eq;
-        const bool show_out = synth_data.osci_show_out;
-        const bool show_out_env = synth_data.osci_show_out_env;
+        const bool show_osc[SUM_OSCS] = { synth_data->osci_show_osc_1, synth_data->osci_show_osc_2, synth_data->osci_show_osc_3 };
+        const bool show_flt[SUM_OSCS] = { synth_data->osci_show_flt_1, synth_data->osci_show_flt_2, synth_data->osci_show_flt_3 };
+        const bool show_flt_env[SUM_OSCS] = { synth_data->osci_show_flt_env_1, synth_data->osci_show_flt_env_2, synth_data->osci_show_flt_env_3 };
+        const bool show_eq = synth_data->osci_show_eq;
+        const bool show_out = synth_data->osci_show_out;
+        const bool show_out_env = synth_data->osci_show_out_env;
 
         // OSC'S
         for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
@@ -543,7 +544,7 @@ void Monique_Ui_AmpPainter::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == sl_show_range)
     {
         //[UserSliderCode_sl_show_range] -- add your slider handling code here..
-        GET_DATA( synth_data ).osci_show_range = sl_show_range->getValue();
+        synth_data->osci_show_range = sl_show_range->getValue();
         //[/UserSliderCode_sl_show_range]
     }
 
@@ -559,73 +560,73 @@ void Monique_Ui_AmpPainter::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == osc_1)
     {
         //[UserButtonCode_osc_1] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_osc_1 ^= true;
+        synth_data->osci_show_osc_1 ^= true;
         //[/UserButtonCode_osc_1]
     }
     else if (buttonThatWasClicked == osc_2)
     {
         //[UserButtonCode_osc_2] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_osc_2 ^= true;
+        synth_data->osci_show_osc_2 ^= true;
         //[/UserButtonCode_osc_2]
     }
     else if (buttonThatWasClicked == osc_3)
     {
         //[UserButtonCode_osc_3] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_osc_3 ^= true;
+        synth_data->osci_show_osc_3 ^= true;
         //[/UserButtonCode_osc_3]
     }
     else if (buttonThatWasClicked == eq)
     {
         //[UserButtonCode_eq] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_eq ^= true;
+        synth_data->osci_show_eq ^= true;
         //[/UserButtonCode_eq]
     }
     else if (buttonThatWasClicked == out)
     {
         //[UserButtonCode_out] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_out ^= true;
+        synth_data->osci_show_out ^= true;
         //[/UserButtonCode_out]
     }
     else if (buttonThatWasClicked == f_1)
     {
         //[UserButtonCode_f_1] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_1 ^= true;
+        synth_data->osci_show_flt_1 ^= true;
         //[/UserButtonCode_f_1]
     }
     else if (buttonThatWasClicked == f_2)
     {
         //[UserButtonCode_f_2] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_2 ^= true;
+        synth_data->osci_show_flt_2 ^= true;
         //[/UserButtonCode_f_2]
     }
     else if (buttonThatWasClicked == f_3)
     {
         //[UserButtonCode_f_3] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_3 ^= true;
+        synth_data->osci_show_flt_3 ^= true;
         //[/UserButtonCode_f_3]
     }
     else if (buttonThatWasClicked == f_env_1)
     {
         //[UserButtonCode_f_env_1] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_env_1 ^= true;
+        synth_data->osci_show_flt_env_1 ^= true;
         //[/UserButtonCode_f_env_1]
     }
     else if (buttonThatWasClicked == f_env_2)
     {
         //[UserButtonCode_f_env_2] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_env_2 ^= true;
+        synth_data->osci_show_flt_env_2 ^= true;
         //[/UserButtonCode_f_env_2]
     }
     else if (buttonThatWasClicked == f_env_3)
     {
         //[UserButtonCode_f_env_3] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_flt_env_3 ^= true;
+        synth_data->osci_show_flt_env_3 ^= true;
         //[/UserButtonCode_f_env_3]
     }
     else if (buttonThatWasClicked == out_env)
     {
         //[UserButtonCode_out_env] -- add your button handler code here..
-        GET_DATA( synth_data ).osci_show_out_env ^= true;
+        synth_data->osci_show_out_env ^= true;
         //[/UserButtonCode_out_env]
     }
 
@@ -651,26 +652,24 @@ void Monique_Ui_AmpPainter::refresh_buttons()
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
-    MoniqueSynthData& synth_data = GET_DATA( synth_data );
+    sl_show_range->setValue(synth_data->osci_show_range, dontSendNotification );
 
-    sl_show_range->setValue(synth_data.osci_show_range, dontSendNotification );
+    osc_1->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_1 ? Colours::lightblue : button_off );
+    osc_2->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_2 ? Colours::blueviolet : button_off );
+    osc_3->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_3 ? Colours::violet : button_off );
 
-    osc_1->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_1 ? Colours::lightblue : button_off );
-    osc_2->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_2 ? Colours::blueviolet : button_off );
-    osc_3->setColour( TextButton::buttonColourId, synth_data.osci_show_osc_3 ? Colours::violet : button_off );
+    eq->setColour( TextButton::buttonColourId, synth_data->osci_show_eq ? Colours::green : button_off );
 
-    eq->setColour( TextButton::buttonColourId, synth_data.osci_show_eq ? Colours::green : button_off );
+    f_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_1 ? Colours::red : button_off );
+    f_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_2 ? Colours::orangered : button_off );
+    f_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_3 ? Colours::orange : button_off );
 
-    f_1->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_1 ? Colours::red : button_off );
-    f_2->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_2 ? Colours::orangered : button_off );
-    f_3->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_3 ? Colours::orange : button_off );
+    f_env_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_1 ? Colours::red : button_off );
+    f_env_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_2 ? Colours::orangered : button_off );
+    f_env_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_3 ? Colours::orange : button_off );
 
-    f_env_1->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_1 ? Colours::red : button_off );
-    f_env_2->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_2 ? Colours::orangered : button_off );
-    f_env_3->setColour( TextButton::buttonColourId, synth_data.osci_show_flt_env_3 ? Colours::orange : button_off );
-
-    out->setColour( TextButton::buttonColourId, synth_data.osci_show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, synth_data.osci_show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
+    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
+    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
 }
 
 //==============================================================================

@@ -22,7 +22,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
-
 #include "monique_core_Datastructures.h"
 
 //==============================================================================
@@ -40,6 +39,7 @@ protected:
 
 public:
     inline void write( const float* samples_, int num_samples_ ) noexcept;
+    inline void write( const float* samples_, const float* samples_2_, int num_samples_ ) noexcept;
 
 public:
     inline void read_lock() noexcept;
@@ -65,7 +65,43 @@ inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noex
 
         tmp_position++;
         if( tmp_position >= current_size )
+        {
             tmp_position = 0;
+        }
+    }
+
+    reader_position = tmp_position;
+}
+static inline float sample_mix_ui( float s1_, float s2_ ) noexcept
+{
+    if ((s1_ > 0) && (s2_ > 0))
+    {
+        s1_ = s1_ + s2_ - (s1_ * s2_);
+    }
+    else if ((s1_ < 0) && (s2_ < 0))
+    {
+        s1_ = s1_ + s2_ + (s1_ * s2_);
+    }
+    else
+    {
+        s1_ = s1_ + s2_;
+    }
+
+    return s1_;
+}
+inline void EndlessBuffer::write( const float* samples_, const float* samples_2_, int num_samples_ ) noexcept
+{
+    float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
+    int tmp_position = reader_position;
+    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    {
+        tmp_sample_buffer[tmp_position] = sample_mix_ui(samples_[sid],samples_2_[sid]);
+
+        tmp_position++;
+        if( tmp_position >= current_size )
+        {
+            tmp_position = 0;
+        }
     }
 
     reader_position = tmp_position;
@@ -104,7 +140,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
 
         tmp_position++;
         if( tmp_position >= current_size )
+	{
             tmp_position = 0;
+	}
     }
 
     reader_position = tmp_position;
@@ -137,6 +175,7 @@ public:
     const float original_h;
 
 private:
+    MoniqueSynthData* synth_data;
     OwnedArray<EndlessBuffer> filter_values;
     OwnedArray<EndlessBuffer> filter_env_values;
     EndlessBuffer eq_values;
@@ -147,11 +186,11 @@ private:
     Array<EndlessBuffer*> buffers;
 
 public:
-    inline void add_filter( int id_, const float* values_, int num_samples_ ) noexcept;
+    inline void add_filter( int id_, const float* values_l_,const float* values_r_, int num_samples_ ) noexcept;
     inline void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
     inline void add_eq( const float* values_, int num_samples_ ) noexcept;
     inline void add_out_env( const float* values_, int num_samples_ ) noexcept;
-    inline void add_out( const float* values_, int num_samples_ ) noexcept;
+    inline void add_out( const float* values_l_, const float* values_r_, int num_samples_ ) noexcept;
     inline void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
 private:
     inline void lock_for_reading() noexcept;
@@ -198,44 +237,44 @@ private:
 //[EndFile] You can add extra defines here...
 inline void Monique_Ui_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
 {
-    //if( show_filter_env[id_] )
+    //if( id_ == 0 and synth_data->osci_show_flt_env_1 or id_ == 1 and synth_data->osci_show_flt_env_2 or id_ == 2 and synth_data->osci_show_flt_env_3 )
     {
         EndlessBuffer*const values = filter_env_values.getUnchecked(id_);
         values->write( values_, num_samples_ );
     }
 }
-inline void Monique_Ui_AmpPainter::add_filter(int id_, const float* values_, int num_samples_) noexcept
+inline void Monique_Ui_AmpPainter::add_filter(int id_, const float* values_l_, const float* values_r_, int num_samples_) noexcept
 {
-    //if( show_filter[id_] )
+    //if( id_ == 0 and synth_data->osci_show_flt_1 or id_ == 1 and synth_data->osci_show_flt_2 or id_ == 2 and synth_data->osci_show_flt_3 )
     {
         EndlessBuffer*const values = filter_values.getUnchecked(id_);
-        values->write( values_, num_samples_ );
+        values->write( values_l_, values_r_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_eq( const float* values_, int num_samples_ ) noexcept
 {
-    //if( show_eq )
+    //if( synth_data->osci_show_eq )
     {
         eq_values.write( values_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
 {
-    //if( show_out_env )
+    //if( synth_data->osci_show_out_env )
     {
         values_env.write( values_, num_samples_ );
     }
 }
-inline void Monique_Ui_AmpPainter::add_out( const float* values_, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_out( const float* values_l_, const float* values_r_, int num_samples_ ) noexcept
 {
-    //if( show_out )
+    //if( synth_data->osci_show_out )
     {
-        values.write( values_, num_samples_ );
+        values.write( values_l_, values_r_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
 {
-    //if( id_ == 0 || show_osc[id_] )
+    //if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and synth_data->osci_show_osc_3 )
     {
         EndlessSwitchBuffer*const values = osc_values.getUnchecked(id_);
         values->write( values_, is_switch_values, num_samples_ );

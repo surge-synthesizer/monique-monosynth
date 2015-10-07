@@ -191,7 +191,6 @@ void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
     MidiBuffer::Iterator message_iter( messages_ );
     MidiMessage input_midi_message;
     int sample_position = 0;
-    const bool retune_is_on = GET_DATA( synth_data ).osc_retune;
     while( message_iter.getNextEvent( input_midi_message, sample_position ) )
     {
         if( input_midi_message.isSoftPedalOn() )
@@ -206,7 +205,7 @@ void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
         {
             if( input_midi_message.isNoteOn() )
             {
-                if( retune_is_on and soft_is_down )
+                if( soft_is_down )
                 {
                     addNote( input_midi_message.getNoteNumber(), sample_position );
                 }
@@ -224,7 +223,7 @@ void NoteDownStore::handle_midi_messages( const MidiBuffer& messages_ ) noexcept
         }
     }
 
-    if( not retune_is_on )
+    if( not soft_is_down )
     {
         reset();
     }

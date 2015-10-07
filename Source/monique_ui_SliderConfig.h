@@ -3383,7 +3383,6 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 {
     IntParameter*const octave_offset;
     IntParameter*const note_offset;
-    BoolParameter*const osc_retune;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3525,8 +3524,7 @@ public:
     OctaveOffsetSlConfig()
         :
         octave_offset( &(GET_DATA(synth_data).octave_offset) ),
-        note_offset( &(GET_DATA(synth_data).note_offset) ),
-        osc_retune( &(GET_DATA(synth_data).osc_retune) )
+        note_offset( &(GET_DATA(synth_data).note_offset) )
     {}
 
     JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)

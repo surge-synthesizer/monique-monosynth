@@ -26,100 +26,70 @@ DONE
 - swap effect flow to chorus, delay, reverb
 - add note offset as second slider of octave offset and a reset button to send a midi note to pitch the arp
 - add buttons on top of the filter inputs to show possible inactive inputs
-- fix env popup position
+- fix: env popup position
+- fix: oscilloscope shot mono mix of flt_1, flt_2, flt_3 and main output instead of only the left channel 
+- fix: fx bypass (the reverb was gaining the output by 2)
+- changed/fix: process envelopes on the inputs before the filter instead after filter
+- removed: option to retune oscs on soft pedal down -> this option is not always on if the softpedal is down
+- removed: softpedal changes the gain of an oscilator
+- change the num steps for envelope parameters to the maximum sum of ms (20000)
 
 miete martin
 
 
-
+BUGS:
 ulkige frage ob speichern beim wählen eines morph preset (r 4)
 
-// TODO neu 
-allgemein aktive leiter markieren
-filter modulation off cutoff cracklse (not smoothed?)
+UI
 welcome popup, if you like to disable the arp -> show the button
-
-- show l-r mix in the oszi
-- lfo sync smoother
-- phase modulation schwabbelt rum! square und saw -> limit the osc output to 1 and -1 
 mouse double click navigates through all clean waveforms
-rundungsfehler popup position
-
 popup env schliessen wenn auf die benutzer
 pop env wechselt automatisch zum nächsten input wenn im gleichen filter
 pop option keep it open hacken
 popup option fixed position
-
-
 env ansicht propotional und zeitachse -> better feeling
-
 gainmeter von links nach rechts
-
-sequencer note reset to factory default
-
-
-
-info popup wenn input im filter drüber null, denn da liegt kein signal an.
-
-
-modulation slider: instead of percent, set the target value!
-
-TODO
-- automate eq resoance
-- add back global env shape
-- bypass chorus
-- eq bypass
-- fix slider popup descriptions
-- font for tooltip misses top stripe
-open env popup when klick on the ENV turn on button
-
-mal von dem gainlimit hier abgesehen, die amp muss auf den oszilator ausgeführt werden, vor dem filter
-filter input links und rechts morphen in flter 1 und 2. -> button drüber on or off
-
-
-
-bug load or save wave
-
-
-
-sync problem on high octaves!
--> check sync
-wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
+fix slider popup descriptions
+font for tooltip misses top stripe
 schatten für popup
 option: always start in ctrl mode
-bug: create new programm and store it -> then change something and you get the parent program name
+farbe borders grau 
+add: a layer with help information for the main ui (Also explain a dual slider quick)
+option->envelope->slider or rotary
+- improve oscilloscope performance
 
-NOT DONE (but until friday):
+ENGINE
+filter modulation off cutoff cracklse (not smoothed?)
+lfo sync smoother
+phase modulation schwabbelt rum! square und saw -> limit the osc output to 1 and -1 
+modulation slider: instead of percent, set the target value!
+add back global env shape
+bug load or save wave
+add: panic
+midi standard impl
+assertion on shutdow
+
+OPTIMIZE
+- calculate glide on value change?
+
+LOAD SAVE
+wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
+bug: create new programm and store it -> then change something and you get the parent program name
 - programm load loads bank (plugin bug)
-- add: panic
+
+PROGRAMS
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
-- add: a layer with help information for the main ui (Also explain a dual slider quick)
+- make a starter for percussions
+
+BUILD:
 - audio unit build
 - asio suppoert
-- bypass
 
-- keyboard arp  -> nee -> der noob will das sehen
-- env hoch -> no more needed
-- load save hoch -> yep
-- farbe borders grau 
-- slider
-- option->envelope->slider or rotary
-
-isNoteOnOrOff
-isAllNotesOff
-isProgramChange
-isSustainPedalOn
-isSustainPedalOff
-isSostenutoPedalOn
-isSostenutoPedalOff
-isSoftPedalOn
-isSoftPedalOff
-isPitchWheel
-isController
 
 
 QUESTS:
 - get your pro version free for an feature request which we will add to the pro version
+- load save hoch -> ???
 
 -------------------------------------------------------------------
 
@@ -157,10 +127,6 @@ bücher
 
 -------------------------------
 
-
-OPTIMIZE
-- do not process the unused bands
-- calculate glide on value change, about 5% of 25% percent usage
 
 
 PRRRRRROOOOOOOOOOOOOOO

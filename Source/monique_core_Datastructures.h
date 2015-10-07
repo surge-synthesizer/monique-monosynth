@@ -917,7 +917,6 @@ struct MoniqueSynthData : ParameterListener
     SmoothedParameter distortion_smoother;
     IntParameter octave_offset;
     IntParameter note_offset;
-    BoolParameter osc_retune;
 
     BoolParameter sync;
     Parameter speed;
