@@ -52,6 +52,10 @@ miete martin
 BUGS:
 ****************************************************************************
 ulkige frage ob speichern beim wählen eines morph preset (r 4)
+assertion on shutdow
+wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
+bug: create new programm and store it -> then change something and you get the parent program name
+- programm load loads bank (plugin bug)
 
 UI
 ****************************************************************************
@@ -80,18 +84,12 @@ add back global env shape
 bug load or save wave
 add: panic
 midi standard impl
-assertion on shutdow
 own lfos for tune and phase
 
 OPTIMIZE
 ****************************************************************************
 - calculate glide on value change?
 
-LOAD SAVE
-****************************************************************************
-wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
-bug: create new programm and store it -> then change something and you get the parent program name
-- programm load loads bank (plugin bug)
 
 PROGRAMS
 ****************************************************************************
