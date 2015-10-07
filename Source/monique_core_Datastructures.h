@@ -942,6 +942,9 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter osci_show_out;
     BoolParameter osci_show_out_env;
     Parameter osci_show_range;
+    
+    BoolParameter auto_close_env_popup;
+    BoolParameter auto_switch_env_popup;
 
     // MULTITHREADING
     IntParameter num_extra_threads;

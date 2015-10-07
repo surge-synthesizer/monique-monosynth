@@ -33,6 +33,14 @@ DONE
 - removed: option to retune oscs on soft pedal down -> this option is not always on if the softpedal is down
 - removed: softpedal changes the gain of an oscilator
 - change the num steps for envelope parameters to the maximum sum of ms (20000)
+- improve dial: wave, if you move the slider by mousewheel, you increase of decrease to the next clean wave (square, sine, saw or noise)
+- UI shows the most values with one number after the comma (coz this is the standard wheel move precessision)
+- change: linear sliders no more moved absolute
+- improve: autoclode env popup, but keep it open if you edit another input of the same filter
+- add: auto switch and close options to the env popup
+
+
+
 
 miete martin
 
@@ -41,10 +49,11 @@ BUGS:
 ulkige frage ob speichern beim wählen eines morph preset (r 4)
 
 UI
-welcome popup, if you like to disable the arp -> show the button
-mouse double click navigates through all clean waveforms
-popup env schliessen wenn auf die benutzer
-pop env wechselt automatisch zum nächsten input wenn im gleichen filter
+add esc option to the env popup
+env has no sustain level?
+
+mouse tribble click
+
 pop option keep it open hacken
 popup option fixed position
 env ansicht propotional und zeitachse -> better feeling
@@ -55,8 +64,9 @@ schatten für popup
 option: always start in ctrl mode
 farbe borders grau 
 add: a layer with help information for the main ui (Also explain a dual slider quick)
-option->envelope->slider or rotary
 - improve oscilloscope performance
+
+welcome popup, if you like to disable the arp -> show the button
 
 ENGINE
 filter modulation off cutoff cracklse (not smoothed?)

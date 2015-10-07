@@ -213,6 +213,10 @@ class WAVESlConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
+    virtual bool get_override_front_screw_value() const noexcept
+    {
+        return true;
+    }
 
     //==============================================================================
     // BACK SLIDER
@@ -380,6 +384,10 @@ class OSCSlConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
+    virtual bool get_override_front_screw_value() const noexcept
+    {
+        return true;
+    }
 
     //==============================================================================
     // BACK SLIDER
@@ -910,6 +918,17 @@ class InputSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    {
+        bool success = false;
+        FilterData*filter_data = GET_DATA_PTR( filter_datas[filter_id] );
+        if( env_ == filter_data->input_envs[0] or env_ == filter_data->input_envs[1] or env_ == filter_data->input_envs[2] )
+        {
+            success = true;
+        }
+
+        return success;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3451,11 +3470,11 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-    return "OCTAVE";
+        return "OCTAVE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "#-TUNE";
+        return "#-TUNE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -3473,25 +3492,25 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( not octave_offset->midi_control->get_ctrl_mode() )
-	{
-        switch( int(octave_offset->get_value()) )
         {
-        case 0 :
-            return "+/-";
-        case 1 :
-            return "+1";
-        case 2 :
-            return "+2";
-        case -1 :
-            return "-1";
-        default :
-            return "-2";
+            switch( int(octave_offset->get_value()) )
+            {
+            case 0 :
+                return "+/-";
+            case 1 :
+                return "+1";
+            case 2 :
+                return "+2";
+            case -1 :
+                return "-1";
+            default :
+                return "-2";
+            }
         }
-	}
-	else
-	{
-	  return MidiMessage::getMidiNoteName( 60+note_offset->get_value()+octave_offset->get_value()*12, true, true, 1 );
-	}
+        else
+        {
+            return MidiMessage::getMidiNoteName( 60+note_offset->get_value()+octave_offset->get_value()*12, true, true, 1 );
+        }
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -3693,6 +3712,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     {
         return shape;
     }
+
     /*
     int get_override_front_min_value() const noexcept override
     {
@@ -5081,6 +5101,23 @@ class EQSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    {
+        bool success = false;
+        EQData*eq_data = GET_DATA_PTR( eq_data );
+        if( env_ == eq_data->envs[0]
+                or env_ == eq_data->envs[1]
+                or env_ == eq_data->envs[2]
+                or env_ == eq_data->envs[3]
+                or env_ == eq_data->envs[4]
+                or env_ == eq_data->envs[5]
+                or env_ == eq_data->envs[6] )
+        {
+            success = true;
+        }
+
+        return success;
+    }
 
     //==============================================================================
     // FRONT SLIDER

@@ -255,7 +255,7 @@ wave
 (
     MIN_MAX( SINE, NOICE ),
     SINE,
-    1000,
+    3000,
     generate_param_name(OSC_NAME,id_,"wave"),
     generate_short_human_name(OSC_NAME,id_,"wave")
 ),
@@ -273,7 +273,7 @@ tune
 (
     MIN_MAX( -24, 24 ),
     0,
-    48*100,
+    1000*48,
     generate_param_name(OSC_NAME,id_,"octave"),
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
@@ -358,7 +358,7 @@ sustain
 (
     MIN_MAX( -1, 1 ),
     0.9,
-    20000*2,
+    2000,
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
@@ -367,7 +367,7 @@ sustain_time
 (
     MIN_MAX( 0.001, 1 ),
     1,
-    1.0f-0.001*20000,
+    20000,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -1701,7 +1701,7 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
         generate_short_human_name("GLOB","arp_note_offset")
     ),
-    
+
     sync
     (
         true,
@@ -1827,6 +1827,20 @@ id( data_type ),
         100,
         generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
         generate_short_human_name("GLOB","osci_show_range")
+    ),
+
+// -------------------------------------------------------------
+    auto_close_env_popup
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
+        generate_short_human_name("GLOB","auto_close_env_popup")
+    ),
+    auto_switch_env_popup
+    (
+        true,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
+        generate_short_human_name("GLOB","auto_switch_env_popup")
     ),
 
 // -------------------------------------------------------------
@@ -2131,6 +2145,9 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &osci_show_out_env );
     global_parameters.add( &osci_show_range );
     global_parameters.add( &num_extra_threads );
+    
+    global_parameters.add( &auto_close_env_popup );
+    global_parameters.add( &auto_switch_env_popup );
 
     global_parameters.add( &animate_envs );
     global_parameters.add( &show_tooltips );

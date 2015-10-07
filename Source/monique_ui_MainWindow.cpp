@@ -3252,104 +3252,104 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_edit_input_env_1_1)
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], buttonThatWasClicked, false );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], buttonThatWasClicked, flt_input_1, false );
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2)
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], buttonThatWasClicked, false );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], buttonThatWasClicked, flt_input_2, false );
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked, false );
+        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked, flt_input_3, false );
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1)
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked, flt_input_6, true );
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2)
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked, flt_input_7, true );
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3)
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked, flt_input_8, true );
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1)
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked, flt_input_11, true );
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2)
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked, flt_input_12, true );
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked, flt_input_13, true );
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1)
     {
         //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked, eq_1, true );
         //[/UserButtonCode_button_edit_input_env_band_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_2)
     {
         //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked, eq_2, true );
         //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3)
     {
         //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked, eq_3, true );
         //[/UserButtonCode_button_edit_input_env_band_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_4)
     {
         //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked, eq_4, true );
         //[/UserButtonCode_button_edit_input_env_band_4]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_5)
     {
         //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked, eq_5, true );
         //[/UserButtonCode_button_edit_input_env_band_5]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_6)
     {
         //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked, eq_6, true );
         //[/UserButtonCode_button_edit_input_env_band_6]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_7)
     {
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked, true );
+        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked, eq_7, true );
         //[/UserButtonCode_button_edit_input_env_band_7]
     }
     else if (buttonThatWasClicked == button_edit_env_chorus)
     {
         //[UserButtonCode_button_edit_env_chorus] -- add your button handler code here..
-        open_env_popup( GET_DATA( chorus_data ).env_data, &GET_DATA( chorus_data ).modulation, buttonThatWasClicked, false );
+        open_env_popup( GET_DATA( chorus_data ).env_data, &GET_DATA( chorus_data ).modulation, buttonThatWasClicked, chorus_modulation, false );
         //[/UserButtonCode_button_edit_env_chorus]
     }
     else if (buttonThatWasClicked == button_reset_arp_tune)
@@ -3440,7 +3440,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
 
         if( env_popup )
         {
-            open_env_popup( nullptr, nullptr, nullptr, false );
+            open_env_popup( nullptr, nullptr, nullptr, nullptr, false );
         }
         else
         {
@@ -3595,7 +3595,11 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
         AppInstanceStore::getInstance()->kill_amp_painter();
     }
 }
-void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, bool has_negative_sustain_ ) noexcept
+void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_,
+        Parameter*const sustain_,
+        Button*const for_comp_,
+        Monique_Ui_DualSlider*slider_,
+        bool has_negative_sustain_ ) noexcept
 {
     ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
     Colour button_off = colours.button_off_colour;
@@ -3622,8 +3626,17 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*c
     {
         if( env_data_ )
         {
+            Array<Component*> comps_to_observe;
+            for( int i = 0 ;  i != getNumChildComponents() ; ++i )
+            {
+                comps_to_observe.add( getChildComponent(i) );
+            }
+            comps_to_observe.removeFirstMatchingValue(for_comp_);
+            comps_to_observe.add(this);
+
             addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2, has_negative_sustain_ ) );
-            env_popup->set_element_to_show(for_comp_);
+            env_popup->set_element_to_show(for_comp_,slider_);
+            env_popup->set_clickable_components( comps_to_observe );
             for_comp_->setColour( TextButton::buttonColourId, button_on );
             resize_subeditors();
         }
@@ -3634,12 +3647,107 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_, Parameter*c
         {
             env_popup = nullptr;
         }
+        else if( env_data_ == nullptr )
+        {
+            env_popup = nullptr;
+        }
         else
         {
             env_popup = nullptr;
-            open_env_popup( env_data_, sustain_, for_comp_, has_negative_sustain_ );
+            open_env_popup( env_data_, sustain_, for_comp_, slider_, has_negative_sustain_ );
         }
     }
+}
+void Monique_Ui_Mainwindow::open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept
+{
+    if( dual_slider_ == flt_input_1 )
+    {
+        buttonClicked(button_edit_input_env_1_1);
+    }
+    else if( dual_slider_ == flt_input_2 )
+    {
+        buttonClicked(button_edit_input_env_1_2);
+    }
+    else if( dual_slider_ == flt_input_3 )
+    {
+        buttonClicked(button_edit_input_env_1_3);
+    }
+    else if( dual_slider_ == flt_input_6 )
+    {
+        buttonClicked(button_edit_input_env_2_1);
+    }
+    else if( dual_slider_ == flt_input_7 )
+    {
+        buttonClicked(button_edit_input_env_2_2);
+    }
+    else if( dual_slider_ == flt_input_8 )
+    {
+        buttonClicked(button_edit_input_env_2_3);
+    }
+    else if( dual_slider_ == flt_input_11 )
+    {
+        buttonClicked(button_edit_input_env_3_1);
+    }
+    else if( dual_slider_ == flt_input_12 )
+    {
+        buttonClicked(button_edit_input_env_3_2);
+    }
+    else if( dual_slider_ == flt_input_13 )
+    {
+        buttonClicked(button_edit_input_env_3_3);
+    }
+    else if( dual_slider_ == chorus_modulation )
+    {
+        buttonClicked(button_edit_env_chorus);
+    }
+    else if( dual_slider_ == eq_1 )
+    {
+        buttonClicked(button_edit_input_env_band_1);
+    }
+    else if( dual_slider_ == eq_2 )
+    {
+        buttonClicked(button_edit_input_env_band_2);
+    }
+    else if( dual_slider_ == eq_3 )
+    {
+        buttonClicked(button_edit_input_env_band_3);
+    }
+    else if( dual_slider_ == eq_4 )
+    {
+        buttonClicked(button_edit_input_env_band_4);
+    }
+    else if( dual_slider_ == eq_5 )
+    {
+        buttonClicked(button_edit_input_env_band_5);
+    }
+    else if( dual_slider_ == eq_6 )
+    {
+        buttonClicked(button_edit_input_env_band_6);
+    }
+    else if( dual_slider_ == eq_7 )
+    {
+        buttonClicked(button_edit_input_env_band_7);
+    }
+}
+bool Monique_Ui_Mainwindow::handle_keep_env_open( ModulationSliderConfigBase*const caller_config_ ) noexcept
+{
+    bool keeps_open = false;
+    if( env_popup )
+    {
+        if( not caller_config_->action_keep_env_pop_open_for( env_popup->is_open_for() ) )
+        {
+            if( GET_DATA( synth_data ).auto_close_env_popup )
+            {
+                open_env_popup(nullptr,nullptr,nullptr,nullptr,false);
+            }
+        }
+        else
+        {
+            keeps_open = true;
+        }
+    }
+
+    return keeps_open;
 }
 
 void Monique_Ui_Mainwindow::resize_subeditors()

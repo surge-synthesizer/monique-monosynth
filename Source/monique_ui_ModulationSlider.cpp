@@ -20,9 +20,13 @@
 //[Headers] You can add your own extra header files here...
 #include "monique_ui_LookAndFeel.h"
 #include "monique_ui_MainWindow.h"
+#include "monique_ui_ENVPopup.h"
 
 #include "monique_core_Synth.h"
 #include "monique_core_Datastructures.h"
+
+#define SET_MOUSE_WHEEL_SNAP_TO_1000() setIncDecButtonsMode(Slider::incDecButtonsDraggable_AutoDirection)
+#define SET_MOUSE_WHEEL_DOES_NOT_SNAP() setIncDecButtonsMode(Slider::incDecButtonsNotDraggable)
 //[/Headers]
 
 #include "monique_ui_ModulationSlider.h"
@@ -79,6 +83,15 @@ noexcept
             front_slider_->setDoubleClickReturnValue( true, init );
             front_slider_->setPopupMenuEnabled( true );
             front_slider_->setValue( front_parameter->get_value(), dontSendNotification );
+
+            if( slider_config_->get_override_front_screw_value() )
+            {
+                front_slider_->SET_MOUSE_WHEEL_SNAP_TO_1000();
+            }
+            else
+            {
+                front_slider_->SET_MOUSE_WHEEL_DOES_NOT_SNAP();
+            }
         }
 
         {
@@ -399,7 +412,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                             if( last_painted_mod_slider_val != modulation_value )
                             {
                                 last_painted_mod_slider_val = modulation_value;
-                                slider_modulation->SET_VALUE_TO_PAINT( String(mono_floor(modulation_value*100)) + String("@") + String("%") );
+                                slider_modulation->SET_VALUE_TO_PAINT( String(round01(modulation_value*100)) + String("@") + String("%") );
 
                                 is_repaint_required = true;
                             }
@@ -414,7 +427,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         if( last_painted_value_slider_val != value )
                         {
                             last_painted_value_slider_val = value;
-                            slider_value->SET_VALUE_TO_PAINT( String(mono_floor(value*100)) );
+                            slider_value->SET_VALUE_TO_PAINT( String(round01(value*100)) );
 
                             is_repaint_required = true;
                         }
@@ -460,6 +473,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     else
                     {
                         float value = slider_value->getValue();
+                        // TODO or switched!
                         if( last_painted_value_slider_val != value )
                         {
                             last_painted_value_slider_val = value;
@@ -469,7 +483,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         }
                         SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
                         if( slider_modulation )
+                        {
                             SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::JUST_HIDE_CENTER);
+                        }
                     }
                 }
             }
@@ -477,17 +493,23 @@ void Monique_Ui_DualSlider::refresh() noexcept
             {
                 SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
                 if( slider_modulation )
+                {
                     SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+                }
             }
         }
         else
         {
             SET_SLIDER_LABEL_STYLE(slider_value,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
             if( slider_modulation )
+            {
                 SET_SLIDER_LABEL_STYLE(slider_modulation,SLIDER_LABEL_STYLES::DONT_SHOW_TEXT);
+            }
 
             if( label_top )
+            {
                 label_top->setVisible(false);
+            }
         }
 
         // REPAINT
@@ -496,7 +518,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
             last_runtime_show_value_popup = show_popup;
 
             if( slider_modulation )
+            {
                 slider_modulation->repaint();
+            }
             slider_value->repaint();
         }
     }
@@ -576,7 +600,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (ModulationSliderConfigBase* config
     button_top->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_top = new Label (String::empty,
-                                              String::empty));
+            String::empty));
     label_top->setFont (Font (15.00f, Font::plain));
     label_top->setJustificationType (Justification::centred);
     label_top->setEditable (true, true, false);

@@ -24,6 +24,7 @@
 #include "App_h_includer.h"
 
 class Monique_Ui_Mainwindow;
+class Monique_Ui_DualSlider;
 class ENVData;
 //[/Headers]
 
@@ -39,7 +40,8 @@ class ENVData;
 */
 class Monique_Ui_ENVPopup  : public Component,
                              public Monique_Ui_Refreshable,
-                             public SliderListener
+                             public SliderListener,
+                             public ButtonListener
 {
 public:
     //==============================================================================
@@ -49,7 +51,8 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     Component* related_to_comp;
-    void set_element_to_show(Component*const);
+    Monique_Ui_DualSlider*owner_slider;
+    void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);
     void update_positions();
     void refresh() noexcept override;
 
@@ -57,6 +60,7 @@ public:
     {
       return env_data;
     }
+    void set_clickable_components( Array<Component*>& comps_ ) noexcept;
 
     const float original_w;
     const float original_h;
@@ -67,6 +71,7 @@ private:
     Monique_Ui_Mainwindow*const parent;
     ENVData*const env_data;
     Parameter*const sustain;
+    Array< Component* > observed_comps;
 
     float last_attack;
     float last_sustain;
@@ -74,11 +79,19 @@ private:
     float last_release;
     float last_shape;
     float sustain_time;
+
+    void mouseDown (const MouseEvent& event) override;
+    void mouseDrag (const MouseEvent& event) override;
+    void mouseUp (const MouseEvent& event) override;
+    void mouseDoubleClick (const MouseEvent& event) override;
+    void mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& ) override;
+    void mouseMagnify (const MouseEvent& event, float ) override;
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void buttonClicked (Button* buttonThatWasClicked);
 
 
 
@@ -105,6 +118,9 @@ private:
     ScopedPointer<Component> plotter;
     ScopedPointer<Slider> slider_env_shape;
     ScopedPointer<Label> label_shape;
+    ScopedPointer<TextButton> close;
+    ScopedPointer<TextButton> keep;
+    ScopedPointer<TextButton> auto_close;
     Path internalPath1;
 
 

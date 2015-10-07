@@ -38,6 +38,8 @@ class Monique_Ui_SegmentedMeter;
 class MIDIControl;
 class Monique_Ui_DualSlider;
 
+class ModulationSliderConfigBase;
+
 class ENVData;
 //[/Headers]
 
@@ -83,7 +85,9 @@ public:
     void show_ctrl_state();
     void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
     void close_all_subeditors();
-    void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, bool has_negative_sustain_ ) noexcept;
+    void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, bool has_negative_sustain_ ) noexcept;
+    void open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
+    bool handle_keep_env_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
     void open_setup_editor_if_closed() noexcept;

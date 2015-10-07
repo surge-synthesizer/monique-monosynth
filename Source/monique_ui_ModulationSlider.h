@@ -120,6 +120,10 @@ struct ModulationSliderConfigBase
     {
         return false;
     }
+    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    {
+        return false;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -135,6 +139,10 @@ struct ModulationSliderConfigBase
     virtual int get_override_front_max_value() const noexcept
     {
         return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    virtual bool get_override_front_screw_value() const noexcept
+    {
+        return false;
     }
 
     //==============================================================================
@@ -275,8 +283,9 @@ public:
 
     const float original_w;
     const float original_h;
-private:
+    
     ModulationSliderConfigBase*const _config;
+private:
     MoniqueSynthData* synth_data;
 
     Parameter* front_parameter;

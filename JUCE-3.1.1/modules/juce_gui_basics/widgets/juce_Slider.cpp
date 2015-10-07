@@ -360,7 +360,7 @@ public:
         Slider* slider = &owner; // (must use an intermediate variable here to avoid a VS2005 compiler bug)
         listeners.callChecked (checker, &SliderListener::sliderDragEnded, slider);
     }
-    
+
     void sendClicked()
     {
         Component::BailOutChecker checker (&owner);
@@ -641,7 +641,7 @@ public:
         //m.addSeparator();
 
         //if (isRotary())
-	if( false )
+        if( false )
         {
             PopupMenu rotaryMenu;
             rotaryMenu.addItem (2, TRANS ("Use circular dragging"),           true, style == Rotary);
@@ -773,6 +773,8 @@ public:
         if (style == RotaryHorizontalDrag
                 || style == RotaryVerticalDrag
                 || style == IncDecButtons
+                || style == LinearHorizontal 
+                || style == LinearVertical
                 || ((style == LinearHorizontal || style == LinearVertical || style == LinearBar || style == LinearBarVertical)
                     && ! snapsToMousePos))
         {
@@ -897,7 +899,7 @@ public:
                 mouseDrag (e);
             }
         }
-        
+
         sendClicked();
     }
 
@@ -1024,6 +1026,7 @@ public:
         return owner.proportionOfLengthToValue (jlimit (0.0, 1.0, currentPos + proportionDelta)) - value;
     }
 
+    // HEAVY HACK-ED
     bool mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel)
     {
         if (scrollWheelEnabled
@@ -1050,9 +1053,27 @@ public:
                         double newValue = value + jmax (0.1, std::abs (delta)) * (delta < 0 ? -1.0 : 1.0);
 
                         if( newValue > value )
-                            value+=interval;
+                        {
+                            if( incDecButtonMode != incDecButtonsNotDraggable )
+                            {
+                                value = floor(value)+interval*1000;
+                            }
+                            else
+                            {
+                                value+=interval;
+                            }
+                        }
                         else if( newValue < value )
-                            value-=interval;
+                        {
+                            if( incDecButtonMode != incDecButtonsNotDraggable )
+                            {
+                                value = floor(value+0.5)-interval*1000;
+                            }
+                            else
+                            {
+                                value-=interval;
+                            }
+                        }
 
                         DragInProgress drag (*this);
                         setValue (owner.snapValue (value, notDragging), sendNotificationSync);
@@ -1732,3 +1753,4 @@ void Slider::mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel
     if (! (isEnabled() && pimpl->mouseWheelMove (e, wheel)))
         Component::mouseWheelMove (e, wheel);
 }
+
