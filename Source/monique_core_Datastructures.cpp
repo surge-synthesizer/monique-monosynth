@@ -1569,6 +1569,7 @@ COLD void set_default_midi_assignments() noexcept
     // 86 UNUSED
     // 87 UNUSED
     // 88 UNUSED
+    main_env_data.sustain.midi_control->train( 1, nullptr );
     // 89 UNUSED
     // 90 UNUSED
     // 91 Reverb Level

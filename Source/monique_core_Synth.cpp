@@ -965,7 +965,7 @@ inline float mono_BlitSquare::tick( void ) noexcept
         if ( std::fabs( denominator ) < std::numeric_limits<float>::epsilon() )
         {
             // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-            if( working_phase_ < 0.001f or working_phase_ > (float_Pi*2) - 0.001f )
+            if( working_phase_ < 0.01f or working_phase_ > (float_Pi*2) - 0.01f )
             {
                 lastBlitOutput_ = a_;
             }
@@ -982,7 +982,7 @@ inline float mono_BlitSquare::tick( void ) noexcept
         lastBlitOutput_ += temp;
 
         // Now apply DC blocker.
-        out = lastBlitOutput_ - dcbState_ + 0.999f * last_tick_value;
+        out = lastBlitOutput_ - dcbState_ + 0.99f * last_tick_value;
         dcbState_ = lastBlitOutput_;
     }
 
@@ -996,7 +996,7 @@ inline float mono_BlitSquare::tick( void ) noexcept
         if ( std::fabs( denominator ) < std::numeric_limits<float>::epsilon() )
         {
             // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-            if( phase_ < 0.001f or phase_ > (float_Pi*2) - 0.001f )
+            if( phase_ < 0.00000001f or phase_ > (float_Pi*2) - 0.00000001f )
             {
                 lastBlitOutput_control = a_;
             }
@@ -1013,7 +1013,7 @@ inline float mono_BlitSquare::tick( void ) noexcept
         lastBlitOutput_control += temp_control;
 
         // Now apply DC blocker.
-        const float control = lastBlitOutput_control - dcbState_control + 0.999f * last_tick_value_control;
+        const float control = lastBlitOutput_control - dcbState_control + 0.99999999f * last_tick_value_control;
         dcbState_control = lastBlitOutput_control;
 
         {
@@ -1695,12 +1695,14 @@ inline void MasterOSC::process(DataBuffer* data_buffer_, const int num_samples_)
                 {
                     --freq_glide_samples_left;
                 }
-                last_root_note = root_note;
-
+                //if( square_generator.is_next_a_new_cycle() )
                 {
+                    last_root_note = root_note;
+
                     const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + freq_glide_delta*freq_glide_samples_left ) );
                     if( new_frequence != last_frequency )
                     {
+
                         square_generator.setFrequency(new_frequence);
                         saw_generator.setFrequency(new_frequence);
                         sine_generator.setFrequency(new_frequence);
@@ -1993,10 +1995,11 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_)
                 {
                     --freq_glide_samples_left;
                 }
-                last_tune = tune;
-                last_root_note = root_note;
-
+                //if( square_generator.is_next_a_new_cycle() )
                 {
+                    last_tune = tune;
+                    last_root_note = root_note;
+
                     const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
                     if( new_frequence != last_frequency )
                     {
