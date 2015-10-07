@@ -773,7 +773,6 @@ public:
         if (style == RotaryHorizontalDrag
                 || style == RotaryVerticalDrag
                 || style == IncDecButtons
-                || style == LinearHorizontal 
                 || style == LinearVertical
                 || ((style == LinearHorizontal || style == LinearVertical || style == LinearBar || style == LinearBarVertical)
                     && ! snapsToMousePos))

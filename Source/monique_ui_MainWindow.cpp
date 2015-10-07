@@ -1718,6 +1718,19 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_edit_input_env_band_7->setColour( TextButton::buttonColourId, button_off );
     button_edit_env_chorus->setColour( TextButton::buttonColourId, button_off );
     button_reset_arp_tune->setColour( TextButton::buttonColourId, button_off );
+    
+    button_show_active_input_r_2_3->setEnabled(false);
+    button_show_active_input_l_2_3->setEnabled(false);
+    button_show_active_input_r_2_2->setEnabled(false);
+    button_show_active_input_l_2_2->setEnabled(false);
+    button_show_active_input_r_2_1->setEnabled(false);
+    button_show_active_input_l_2_1->setEnabled(false);
+    button_show_active_input_r_3_3->setEnabled(false);
+    button_show_active_input_l_3_3->setEnabled(false);
+    button_show_active_input_r_3_2->setEnabled(false);
+    button_show_active_input_l_3_2->setEnabled(false);
+    button_show_active_input_r_3_1->setEnabled(false);
+    button_show_active_input_l_3_1->setEnabled(false);
 
 
     setOpaque(true);

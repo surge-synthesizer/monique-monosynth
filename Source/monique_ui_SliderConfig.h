@@ -386,7 +386,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
     */
     virtual bool get_override_front_screw_value() const noexcept
     {
-        return true;
+        return id > 0;
     }
 
     //==============================================================================
