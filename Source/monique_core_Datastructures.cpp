@@ -1415,6 +1415,7 @@ COLD void set_default_midi_assignments() noexcept
     // 1
     synth_data.glide.midi_control->train( 1, nullptr );
     // 2 UNUSED
+    main_env_data.sustain.midi_control->train( 1, nullptr );
     // 3 UNUSED
     // 4
     synth_data.ctrl.midi_control->train( 4, nullptr );
@@ -1544,7 +1545,7 @@ COLD void set_default_midi_assignments() noexcept
     // 73
     main_env_data.attack.midi_control->train( 73, nullptr );
     // 74
-    main_env_data.sustain.midi_control->train( 74, nullptr );
+    // DISABLED FOR EWIND: main_env_data.sustain.midi_control->train( 74, nullptr );
     // 75
     master_osc_data.fm_amount.midi_control->train( 75, nullptr );
     // 76
