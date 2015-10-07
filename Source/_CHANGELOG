@@ -24,9 +24,24 @@ DONE
 - optimize signal flow from filter before into the next
 - change the position of the final volume
 - swap effect flow to chorus, delay, reverb
+- add note offset as second slider of octave offset and a reset button to send a midi note to pitch the arp
+- add buttons on top of the filter inputs to show possible inactive inputs
+- fix env popup position
 
+miete martin
+
+
+
+ulkige frage ob speichern beim wählen eines morph preset (r 4)
 
 // TODO neu 
+allgemein aktive leiter markieren
+filter modulation off cutoff cracklse (not smoothed?)
+welcome popup, if you like to disable the arp -> show the button
+
+- show l-r mix in the oszi
+- lfo sync smoother
+- phase modulation schwabbelt rum! square und saw -> limit the osc output to 1 and -1 
 mouse double click navigates through all clean waveforms
 rundungsfehler popup position
 
@@ -149,6 +164,8 @@ OPTIMIZE
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- automatisieren von fm frequence!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> super geil
+
 - scala für sequencer
 automate fm frequency
 - double precessission

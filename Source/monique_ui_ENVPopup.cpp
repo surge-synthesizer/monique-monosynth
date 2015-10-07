@@ -71,7 +71,7 @@ void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_ )
     related_to_comp = comp_;
     Component* parent = comp_->getParentComponent();
     int x = comp_->getX();
-    int y = comp_->getY()+comp_->getHeight();
+    int y = comp_->getY();
 
     while( parent )
     {
@@ -85,7 +85,7 @@ void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_ )
     const float width_scale = 1.0f/original_w*getWidth();
     const float height_scale = 1.0f/original_h*getHeight();
     const int left_move = not left ? getWidth() - (width_scale*80) + (width_scale*10) : (width_scale*10);
-    setBounds( x-left_move, y-(30.0f*height_scale), getWidth(), getHeight() );
+    setBounds( x-left_move, y, getWidth(), getHeight() );
 }
 void Monique_Ui_ENVPopup::update_positions(  )
 {

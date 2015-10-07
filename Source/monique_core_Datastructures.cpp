@@ -227,13 +227,11 @@ static inline void copy( FMOscData* dest_, const FMOscData* src_ ) noexcept
 }
 static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
-    {
-        params_.add( &osc_data_->fm_freq );
-        params_.add( &osc_data_->fm_shot );
-        params_.add( &osc_data_->sync );
-        params_.add( &osc_data_->fm_swing );
-        params_.add( &osc_data_->master_shift );
-    }
+    params_.add( &osc_data_->fm_freq );
+    params_.add( &osc_data_->fm_shot );
+    params_.add( &osc_data_->sync );
+    params_.add( &osc_data_->fm_swing );
+    params_.add( &osc_data_->master_shift );
 }
 
 //==============================================================================
@@ -1696,6 +1694,13 @@ id( data_type ),
         generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
         generate_short_human_name("GLOB","octave")
     ),
+    note_offset
+    (
+        MIN_MAX( 0, 12 ),
+        0,
+        generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
+        generate_short_human_name("GLOB","arp_note_offset")
+    ),
     osc_retune
     (
         false,
@@ -1951,7 +1956,10 @@ id( data_type ),
 
     // OSCS DATA
     fm_osc_data = new FMOscData();
-    mono_ParameterOwnerStore::getInstance()->fm_osc_data = fm_osc_data;
+    if( data_type == MASTER )
+    {
+        mono_ParameterOwnerStore::getInstance()->fm_osc_data = fm_osc_data;
+    }
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
         OSCData* data = new OSCData(i);
@@ -2040,6 +2048,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->octave_offset = src_->octave_offset;
     dest_->osc_retune = src_->osc_retune;
     dest_->final_clipping = src_->final_clipping;
+    dest_->note_offset = src_->note_offset;
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -2108,6 +2117,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->osc_retune );
     saveable_parameters.add( &this->octave_offset );
+    saveable_parameters.add( &this->note_offset );
 
 
     saveable_parameters.minimiseStorageOverheads();
@@ -2172,7 +2182,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
                 morph_group_1->register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
             }
-
             {
                 morph_group_1->register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->tune.ptr(), data_type == MASTER );
@@ -2181,7 +2190,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
                 morph_group_1->register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
             }
-
             {
                 morph_group_1->register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->tune.ptr(), data_type == MASTER  );

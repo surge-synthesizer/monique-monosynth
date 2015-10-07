@@ -192,6 +192,7 @@ bool SmoothedParameter::ModulatorSignalSmoother::is_released() const noexcept
 inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept
 {
     const float target_modulation = param_to_smooth->get_modulation_amount();
+    // TODO SMOOTH MODULATION AMOUNT
     if( is_modulated_ and target_modulation != 0 )
     {
         if( not was_modulated_last_time )
@@ -628,14 +629,24 @@ static inline float positive_sustain( float x ) noexcept
 //==============================================================================
 static inline float soft_clipp_greater_1_2( float x ) noexcept
 {
+    if( x > 1 )
+    {
+        x = 1.0f + soft_clipping( x - 1.0f );
+    }
+    else if( x < -1 )
+    {
+        x = -1.0f + soft_clipping( x + 1.0f );
+    }
+    
     if( x > 1.2 )
     {
-        x = 1.2f + soft_clipping( x - 1.2f );
+        x = 1.2;
     }
     else if( x < -1.2 )
     {
-        x = -1.2f + soft_clipping( x + 1.2f );
+        x = -1.2;
     }
+    
 
     return x;
 }
@@ -2025,19 +2036,18 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, bool is_sostenuto_pedal
                 }
                 if( sync_to_master )
                 {
-                    if( not syncanble_by_tune and last_sync_was_to_tune != tune )
+                    if( not is_lfo_modulated and not syncanble_by_tune and last_sync_was_to_tune != tune )
                     {
                         wait_for_new_master_cycle = true;
                     }
                 }
                 else
                 {
-                    if( freq_glide_samples_left <= 0 )
+                    if( not is_lfo_modulated and freq_glide_samples_left <= 0 )
                     {
                         if( syncanble_by_tune and last_sync_was_to_tune != tune )
                         {
                             wait_for_new_master_cycle = true;
-                            std::cout << "sync" << std::endl;
                             last_sync_was_to_tune = tune;
                         }
                     }
@@ -2823,7 +2833,6 @@ inline void AnalogFilter::copy_state_from( const AnalogFilter& other_ ) noexcept
 inline float AnalogFilter::processLow(float input_and_worker_) noexcept
 {
     // process input
-    //input_and_worker_ = filter_hard_clipper( input_and_worker_ );
     input_and_worker_ -= r*y4;
 
     //Four cascaded onepole filters (bilinear transform)
@@ -2840,7 +2849,7 @@ inline float AnalogFilter::processLow(float input_and_worker_) noexcept
     oldy2 = y2;
     oldy3 = y3;
 
-    return y4;
+    return soft_clipp_greater_1_2(y4);
 }
 inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
 {
@@ -2862,7 +2871,7 @@ inline float AnalogFilter::processLowResonance(float input_and_worker_) noexcept
     oldy3 = y3;
 
     // Add band resonance
-    return sample_mix( y4 , y3 * res );
+    return soft_clipp_greater_1_2(sample_mix( y4 , y3 * res ));
 }
 inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcept
 {
@@ -2884,7 +2893,7 @@ inline float AnalogFilter::processHighResonance(float input_and_worker_) noexcep
     oldy3 = y3;
 
     // RESONANCE
-    return input_and_worker_-y4;
+    return soft_clipp_greater_1_2(input_and_worker_-y4);
 }
 
 //==============================================================================
@@ -3053,6 +3062,7 @@ inline float DoubleAnalogFilter::processHigh2Pass(float in_) noexcept
         in_,
         out
     );
+    
 }
 
 // BAND
@@ -5630,6 +5640,10 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
+
+
+
 
 
 

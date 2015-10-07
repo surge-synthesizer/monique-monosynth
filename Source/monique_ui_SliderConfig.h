@@ -482,6 +482,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Detune this oscillator in semitones.\n"
@@ -3381,6 +3382,7 @@ public:
 class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 {
     IntParameter*const octave_offset;
+    IntParameter*const note_offset;
     BoolParameter*const osc_retune;
 
     //==============================================================================
@@ -3415,20 +3417,19 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return MODULATION_SLIDER;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return speed_multi;
+        return note_offset;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
+    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
         return TOP_BUTTON_IS_ON_OFF;
@@ -3445,18 +3446,19 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     {
         return NO_TOP_BUTTON_AMP;
     }
+    */
 
     //==============================================================================
     // BOTTOM BUTTON
-    /*
     StringRef get_bottom_button_text() const noexcept override
     {
-    return speed_multi_to_text( speed_multi->get_scaled_value() );
+    return "OCTAVE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+    return "#-TUNE";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return true;
@@ -3471,6 +3473,8 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
+        if( not octave_offset->midi_control->get_ctrl_mode() )
+	{
         switch( int(octave_offset->get_value()) )
         {
         case 0 :
@@ -3484,6 +3488,11 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
         default :
             return "-2";
         }
+	}
+	else
+	{
+	  return MidiMessage::getMidiNoteName( 60+note_offset->get_value()+octave_offset->get_value()*12, true, true, 1 );
+	}
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -3494,6 +3503,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the octave offset related to the current root note (e.g. pressed on the keyboard).\n"
@@ -3515,6 +3525,7 @@ public:
     OctaveOffsetSlConfig()
         :
         octave_offset( &(GET_DATA(synth_data).octave_offset) ),
+        note_offset( &(GET_DATA(synth_data).note_offset) ),
         osc_retune( &(GET_DATA(synth_data).osc_retune) )
     {}
 

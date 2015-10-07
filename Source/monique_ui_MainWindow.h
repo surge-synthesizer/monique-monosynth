@@ -332,6 +332,19 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_pan_1;
+    ScopedPointer<TextButton> button_reset_arp_tune;
+    ScopedPointer<TextButton> button_show_active_input_r_2_3;
+    ScopedPointer<TextButton> button_show_active_input_l_2_3;
+    ScopedPointer<TextButton> button_show_active_input_r_2_2;
+    ScopedPointer<TextButton> button_show_active_input_l_2_2;
+    ScopedPointer<TextButton> button_show_active_input_r_2_1;
+    ScopedPointer<TextButton> button_show_active_input_l_2_1;
+    ScopedPointer<TextButton> button_show_active_input_r_3_3;
+    ScopedPointer<TextButton> button_show_active_input_l_3_3;
+    ScopedPointer<TextButton> button_show_active_input_r_3_2;
+    ScopedPointer<TextButton> button_show_active_input_l_3_2;
+    ScopedPointer<TextButton> button_show_active_input_r_3_1;
+    ScopedPointer<TextButton> button_show_active_input_l_3_1;
 
 
     //==============================================================================
