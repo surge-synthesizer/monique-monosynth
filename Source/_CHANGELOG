@@ -40,8 +40,9 @@ DONE
 - improve: autoclose env popup, but keep it open if you edit another input of the same filter
 - add: auto switch and close options to the env popup
 - fix: osc goes out of center on very fast frequence changes
-
-
+- improved: fm does no more generate aliasing, shifted the phase to get a smooth flow of both sequencys
+- fixed: sync problems of the amp painter
+- fixed: amp painter stops working
 
 
 miete martin
@@ -51,7 +52,9 @@ miete martin
 
 aus dem ewi ergibt sich natürlich auch noch die notwendikeit den arp nur zu pitchen
 
-
+Hm. Jetzt fängts an zu klicken. Ich hab nen fetzen Code drin, der die Retun values beim ProgrammLoad setzt. Das fand ich aber nervig, ich wollte auch oft die FactoryDefaults haben.
+Hey aber über CTRL oder ALT kann man ja da noch ein paar Optionen anbieten. SEHR GEIL! Danke! Wird eingebaut!
+Mögliche Returns: FactoryDefault; StateOnProgrammLoad; UserReturn (right mouse) -> so kann man ich auch Werte aus einem Programm in ein anderes "schleppen". Gefällt mir, konnte mich für keines der 3 entscheiden!
 
 
 
@@ -64,6 +67,7 @@ EWIND / Breath Contoller: enable all steps of the arp, turn on the arp and use t
 
 BUGS:
 ****************************************************************************
+- oci lags: ganz neu
 - sustain für main adsr dard nicht kleiner null sein! das heist parameter die kleiner 0 sind und wir den wert von extern überschreiben, gibt es probleme
 - sustain muss wirklich unendlich sein!!!!!!!
 - ulkige frage ob speichern beim wählen eines morph preset (r 4)
@@ -72,7 +76,6 @@ BUGS:
 - bug: create new programm and store it -> then change something and you get the parent program name
 - programm load loads bank (plugin bug)
 - MIDI sagt das ein neues gerät da ist, welches wir aber eben verbunden haben (also eines welches irgendwann schonmal dran war)
-- oci lags: ganz neu
 
 UI
 ****************************************************************************

@@ -34,6 +34,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
 {
     //[Constructor_pre] You can add your own custom stuff here..
     synth_data = GET_DATA_PTR( synth_data );
+    is_currently_painting = false;
     //[/Constructor_pre]
 
     addAndMakeVisible (sl_show_range = new Slider (String::empty));
@@ -112,7 +113,6 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     //[UserPreSize]
     osc_values.add( new EndlessSwitchBuffer() );
     osc_values.add( new EndlessSwitchBuffer() );
-    osc_values.add( new EndlessSwitchBuffer() );
     filter_values.add( new EndlessBuffer() );
     filter_values.add( new EndlessBuffer() );
     filter_values.add( new EndlessBuffer() );
@@ -120,9 +120,9 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     filter_env_values.add( new EndlessBuffer() );
     filter_env_values.add( new EndlessBuffer() );
 
+    buffers.add( &master_osc_values );
     buffers.add( osc_values[0] );
     buffers.add( osc_values[1] );
-    buffers.add( osc_values[2] );
     buffers.add( filter_values[0] );
     buffers.add( filter_values[1] );
     buffers.add( filter_values[2] );
@@ -131,6 +131,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     buffers.add( filter_env_values[2] );
     buffers.add( &values );
     buffers.add( &values_env );
+    buffers.add( &eq_values );
 
     refresh_buttons();
 
@@ -187,8 +188,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
 
     // TODO paint all or only values
+    if( not is_currently_painting )
     {
-        lock_for_reading();
+        is_currently_painting = true;
 
         ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
 
@@ -203,7 +205,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const float height = drawing_area->getHeight()-3;
         const int line_center = paint_start_offset_y + height/2;
 
-        const int current_position = osc_values.getUnchecked(0)->get_new_reader_start_position(samples_to_paint);
+        const int current_size = master_osc_values.get_size();
+        const int current_position = master_osc_values.get_new_reader_start_position(samples_to_paint);
         {
             Colour colour = Colour(0xff222222 );
             g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
@@ -227,6 +230,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 Graphics& g,
 
                 const int buffer_start_pos_,
+                const int buffer_size_,
                 const float scale_,
 
                 const int x_offset_,
@@ -254,7 +258,15 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 for( int sid = 0 ; sid < num_samples_ ; ++sid )
                 {
                     const int x = mono_floor((scale_*sid)+x_offset_);
-                    float y = source_buffer_.get_next_and_count(pos_counter);
+
+                    if( pos_counter++ >= buffer_size_ )
+                    {
+                        pos_counter = 0;
+                    }
+                    float y = source_buffer_.get(pos_counter);
+
+
+
                     bool paint_line = true;
                     if( last_x == x )
                     {
@@ -338,16 +350,38 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const bool show_out = synth_data->osci_show_out;
         const bool show_out_env = synth_data->osci_show_out_env;
 
+        // MASTER OSC'S
+        if( show_osc[0] )
+        {
+            Colour col = Colours::lightblue;
+            Monique_Ui_AmpPainter::exec
+            (
+                g,
+
+                current_position,
+                current_size,
+                scale,
+
+                paint_start_offset_x,
+                line_center,
+                height,
+
+                col,
+                false,
+                master_osc_values,
+
+                samples_to_paint
+            );
+        }
+
         // OSC'S
-        for( int osc_id = 0 ; osc_id != osc_values.size() ; ++osc_id )
+        for( int osc_id = 0 ; osc_id != 2 ; ++osc_id )
         {
             EndlessBuffer& values = *osc_values[osc_id];
-            if( show_osc[osc_id] )
+            if( show_osc[osc_id+1] )
             {
                 Colour col;
-                if( osc_id == 0 )
-                    col = Colours::lightblue;
-                else if( osc_id == 1 )
+		if( osc_id == 0 )
                     col = Colours::blueviolet;
                 else
                     col = Colours::violet;
@@ -357,6 +391,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     g,
 
                     current_position,
+                    current_size,
                     scale,
 
                     paint_start_offset_x,
@@ -382,6 +417,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 g,
 
                 current_position,
+                current_size,
+
                 scale,
 
                 paint_start_offset_x,
@@ -415,6 +452,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     g,
 
                     current_position,
+                    current_size,
+
                     scale,
 
                     paint_start_offset_x,
@@ -437,6 +476,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                     g,
 
                     current_position,
+                    current_size,
+
                     scale,
 
                     paint_start_offset_x,
@@ -461,6 +502,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 g,
 
                 current_position,
+                current_size,
+
                 scale,
 
                 paint_start_offset_x,
@@ -483,6 +526,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 g,
 
                 current_position,
+                current_size,
+
                 scale,
 
                 paint_start_offset_x,
@@ -497,7 +542,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             );
         }
 
-        unlock_for_reading();
+        is_currently_painting = false;
     }
 
     /*
@@ -681,8 +726,6 @@ COLD EndlessBuffer::~EndlessBuffer() {}
 //==============================================================================
 COLD void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
-    ScopedLock locked(writer_lock);
-    ScopedLock locked2(reader_lock);
     reader_position = 0;
     current_size = sample_rate * 2 + block_size;
     sample_buffer.setSize( current_size );
@@ -693,48 +736,22 @@ COLD void EndlessBuffer::block_size_changed() noexcept
 }
 
 //==============================================================================
-inline void Monique_Ui_AmpPainter::lock_for_reading() noexcept
+inline float EndlessBuffer::get( int pos_ ) const noexcept
 {
-    for( int i = 0 ; i != buffers.size() ; ++i )
-    {
-        buffers.getUnchecked(i)->read_lock();
-    }
-}
-inline void EndlessBuffer::read_lock() noexcept
-{
-    reader_lock.enter();
-}
-inline float EndlessBuffer::get_next_and_count( int& pos_ ) const noexcept
-{
-    pos_++;
-    if( pos_ >= current_size )
-        pos_ = 0;
-
     return sample_buffer.getReadPointer()[pos_];
 }
-inline void Monique_Ui_AmpPainter::unlock_for_reading() noexcept
-{
-    for( int i = 0 ; i != buffers.size() ; ++i )
-    {
-        buffers.getUnchecked(i)->read_unlock();
-    }
-}
-inline void EndlessBuffer::read_unlock() noexcept
-{
-    reader_lock.enter();
-}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {}
+COLD EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {
+    sample_rate_changed(0);
+}
 COLD EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
 
 //==============================================================================
 COLD void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
 {
-    ScopedLock locked(writer_lock);
-    ScopedLock locked2(reader_lock);
     reader_position = 0;
     current_size = sample_rate * 2 + block_size;
     sample_buffer.setSize( current_size );
@@ -750,27 +767,32 @@ int EndlessSwitchBuffer::get_new_reader_start_position( int samples_to_paint_ ) 
 {
     int start_position = reader_position - samples_to_paint_;
     if( start_position < 0 )
+    {
         start_position = current_size - (start_position*-1);
+    }
+
+    start_position = jmin(current_size,jmax(0,start_position));
 
     const float*const tmp_switch_buffer = switch_buffer.getReadPointer();
-    // GO TO PAST AN FIND THE LAST SWICH
+    int value = 0;
     for( int i = 0 ; i != current_size ; ++i )
     {
-        if( tmp_switch_buffer[start_position] == 1 )
+        if( tmp_switch_buffer[start_position] != 0 )
         {
-            return start_position;
+            value = start_position;
+            break;
         }
         else
         {
-            start_position--;
-            if( start_position < 0 )
+            if( start_position-- < 0 )
             {
                 start_position = current_size-1;
             }
         }
     }
 
-    return 0;
+
+    return value;
 }
 //[/MiscUserCode]
 

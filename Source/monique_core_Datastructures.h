@@ -103,7 +103,7 @@ public:
     mono_AudioSampleBuffer<2> filter_stereo_output_samples;
 
     mono_AudioSampleBuffer<SUM_OSCS> osc_samples;
-    mono_AudioSampleBuffer<SUM_OSCS> osc_switchs;
+    mono_AudioSampleBuffer<1> osc_switchs;
     mono_AudioSampleBuffer<1> osc_sync_switchs;
     mono_AudioSampleBuffer<1> modulator_samples;
 

@@ -288,8 +288,8 @@ class mono_MultiThreaded
 {
 public:
     //==============================================================================
-    inline mono_MultiThreaded() noexcept;
-    inline ~mono_MultiThreaded() noexcept;
+    inline mono_MultiThreaded() noexcept {}
+    inline ~mono_MultiThreaded() noexcept {}
 
 private:
     //==============================================================================
@@ -303,30 +303,23 @@ public:
 
 public:
     //==============================================================================
-    inline bool isWorking() const noexcept;
+    inline bool isWorking() const noexcept
+    {
+        bool is_working;
+        if( thread )
+        {
+            is_working = thread->isThreadRunning();
+        }
+        else
+        {
+            is_working = false;
+        }
+
+        return is_working;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_MultiThreaded)
 };
-
-//==============================================================================
-inline mono_MultiThreaded::mono_MultiThreaded() noexcept {}
-inline mono_MultiThreaded::~mono_MultiThreaded() noexcept {}
-
-//==============================================================================
-inline bool mono_MultiThreaded::isWorking() const noexcept
-{
-    bool is_working;
-    if( thread )
-    {
-        is_working = thread->isThreadRunning();
-    }
-    else
-    {
-        is_working = false;
-    }
-
-    return is_working;
-}
 
 //==============================================================================
 //==============================================================================
@@ -337,26 +330,22 @@ class mono_ExecuterThread : protected Thread
     mono_MultiThreaded* executeable;
 
     //==============================================================================
-    void run() override
+    inline void run() override
     {
         executeable->exec();
     }
 
 private:
     //==============================================================================
-    COLD mono_ExecuterThread() noexcept;
+COLD mono_ExecuterThread() noexcept :
+    Thread("monique_engine_WorkerThread") {}
 
 public:
     //==============================================================================
-    COLD ~mono_ExecuterThread() noexcept;
+    COLD ~mono_ExecuterThread() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ExecuterThread)
 };
-
-//==============================================================================
-COLD mono_ExecuterThread::mono_ExecuterThread() noexcept :
-Thread("monique_engine_WorkerThread") {}
-COLD mono_ExecuterThread::~mono_ExecuterThread() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -371,12 +360,58 @@ class mono_ThreadManager
 private:
     //==============================================================================
     friend class mono_Thread;
-    inline void execute_me( mono_MultiThreaded*const executer_ ) noexcept;
+    inline void execute_me( mono_MultiThreaded*const executer_ ) noexcept
+    {
+        const int num_threads = synth_data->num_extra_threads;
+        if( num_threads > 0 )
+        {
+            // IF NO THREAD IS AVAILABLE, THE CALLER EXECUTES
+            if( cs.tryEnter() )
+            {
+                for( int i = 0 ; i < num_threads ; ++i )
+                {
+                    mono_ExecuterThread*thread( threads[i] );
+                    if( not thread->isThreadRunning() )
+                    {
+                        thread->executeable = executer_;
+                        executer_->thread = thread;
+                        thread->startThread();
+                        cs.exit();
+                        return;
+                    }
+                }
+                cs.exit();
+            }
+        }
+
+        executer_->thread = nullptr;
+        executer_->exec();
+    }
 
 private:
     //==============================================================================
-    COLD mono_ThreadManager() noexcept;
-    COLD ~mono_ThreadManager() noexcept;
+    COLD mono_ThreadManager() noexcept
+:
+    synth_data( GET_DATA_PTR( synth_data ) )
+    {
+        for( int i = 0 ; i < THREAD_LIMIT ; ++i )
+        {
+            mono_ExecuterThread*thread( new mono_ExecuterThread() );
+            thread->setPriority(10);
+            threads.add( thread );
+        }
+        threads.minimiseStorageOverheads();
+    }
+    COLD ~mono_ThreadManager() noexcept
+    {
+        for( int i = 0 ; i < THREAD_LIMIT ; ++i )
+        {
+            threads[i]->signalThreadShouldExit();
+            threads[i]->waitForThreadToExit(200);
+            delete threads[i];
+        }
+        clearSingletonInstance();
+    }
 
 public:
     juce_DeclareSingleton (mono_ThreadManager,false)
@@ -386,57 +421,6 @@ public:
 
 //==============================================================================
 juce_ImplementSingleton (mono_ThreadManager)
-COLD mono_ThreadManager::mono_ThreadManager() noexcept
-:
-synth_data( GET_DATA_PTR( synth_data ) )
-{
-    for( int i = 0 ; i < THREAD_LIMIT ; ++i )
-    {
-        mono_ExecuterThread*thread( new mono_ExecuterThread() );
-        thread->setPriority(10);
-        threads.add( thread );
-    }
-    threads.minimiseStorageOverheads();
-}
-COLD mono_ThreadManager::~mono_ThreadManager() noexcept
-{
-    for( int i = 0 ; i < THREAD_LIMIT ; ++i )
-    {
-        threads[i]->signalThreadShouldExit();
-        threads[i]->waitForThreadToExit(200);
-        delete threads[i];
-    }
-    clearSingletonInstance();
-}
-
-//==============================================================================
-inline void mono_ThreadManager::execute_me( mono_MultiThreaded*const executer_ ) noexcept
-{
-    const int num_threads = synth_data->num_extra_threads;
-    if( num_threads > 0 )
-    {
-        // IF NO THREAD IS AVAILABLE, THE CALLER EXECUTES
-        if( cs.tryEnter() )
-        {
-            for( int i = 0 ; i < num_threads ; ++i )
-            {
-                mono_ExecuterThread*thread( threads[i] );
-                if( not thread->isThreadRunning() )
-                {
-                    thread->executeable = executer_;
-                    executer_->thread = thread;
-                    thread->startThread();
-                    cs.exit();
-                    return;
-                }
-            }
-            cs.exit();
-        }
-    }
-
-    executer_->thread = nullptr;
-    executer_->exec();
-}
 
 //==============================================================================
 //==============================================================================
@@ -444,8 +428,8 @@ inline void mono_ThreadManager::execute_me( mono_MultiThreaded*const executer_ )
 struct mono_Thread : public mono_MultiThreaded
 {
     //==============================================================================
-    inline mono_Thread() noexcept;
-    inline ~mono_Thread() noexcept;
+    inline mono_Thread() noexcept {}
+    inline ~mono_Thread() noexcept {}
 
     //==============================================================================
     // IT CHECKS FOR FREE THREADS, OTHERWISE IT RUNS FROM THE CALLER THREAD
@@ -456,10 +440,6 @@ struct mono_Thread : public mono_MultiThreaded
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Thread)
 };
-
-//==============================================================================
-inline mono_Thread::mono_Thread() noexcept {}
-inline mono_Thread::~mono_Thread() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -493,6 +473,7 @@ class Smoother : RuntimeListener
     float sum;
 
 public:
+    //==========================================================================
     inline void add( float val_ ) noexcept
     {
         sum-=ptr_to_buffer[pos];
@@ -554,6 +535,7 @@ private:
     };
 
 public:
+    //==========================================================================
 COLD Smoother( int init_size_in_ms_ ) noexcept :
     pos(0),
         sum(0),
@@ -659,27 +641,25 @@ static inline float soft_clipp_greater_1_2( float x ) noexcept
 float* SINE_LOOKUP_TABLE;
 class SIN_LOOKUP
 {
-    COLD SIN_LOOKUP();
-    COLD ~SIN_LOOKUP();
+    COLD SIN_LOOKUP() noexcept
+    {
+        SINE_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
+        {
+            SINE_LOOKUP_TABLE[i] = std::sin( double(i) / TABLESIZE_MULTI );
+        }
+    }
+    COLD ~SIN_LOOKUP() noexcept
+    {
+        delete[] SINE_LOOKUP_TABLE;
+        clearSingletonInstance();
+    }
 
 public:
     juce_DeclareSingleton (SIN_LOOKUP,false)
 };
 juce_ImplementSingleton (SIN_LOOKUP)
 SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
-
-COLD SIN_LOOKUP::SIN_LOOKUP()
-{
-    SINE_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
-    for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
-        SINE_LOOKUP_TABLE[i] = std::sin( double(i) / TABLESIZE_MULTI );
-}
-COLD SIN_LOOKUP::~SIN_LOOKUP()
-{
-    delete[] SINE_LOOKUP_TABLE;
-
-    clearSingletonInstance();
-}
 
 static float inline lookup_sine(float x) noexcept
 {
@@ -748,6 +728,83 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
     }
 }
 
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class PerfectCycleCounter : RuntimeListener
+{
+    //==========================================================================
+    double frequency;
+
+    double delta;
+    double angle;
+
+    double rate;
+    double phase;
+
+    double cylces_per_sec;
+
+    bool new_cycle;
+
+public:
+    //==========================================================================
+    inline void set_frequency( double frequency_ ) noexcept
+    {
+        if( frequency != frequency_ )
+        {
+            frequency = frequency_;
+            cylces_per_sec = sample_rate/frequency_;
+
+            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+            rate = (1.0 / cylces_per_sec) * double_Pi;
+        }
+    }
+    inline void tick() noexcept
+    {
+        new_cycle = false;
+
+        angle+=delta;
+        phase+=rate;
+        if( angle >= (double_Pi+double_Pi) )
+        {
+            angle -= (double_Pi+double_Pi);
+            phase -= (double_Pi+double_Pi);
+            new_cycle = true;
+        }
+    }
+    inline double get_last_angle() const noexcept
+    {
+        return angle;
+    }
+    inline double get_last_phase() const noexcept
+    {
+        return phase;
+    }
+
+    inline double get_cylces_per_sec() const noexcept
+    {
+        return cylces_per_sec;
+    }
+    inline bool is_new_cycle() const noexcept
+    {
+        return new_cycle;
+    }
+
+public:
+    //==========================================================================
+COLD PerfectCycleCounter() noexcept :
+    frequency(0), delta(0), angle(0), rate(0), phase(0), cylces_per_sec(0), new_cycle(true) {}
+    COLD ~PerfectCycleCounter() noexcept {}
+};
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -760,113 +817,86 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
 //==============================================================================
 class mono_BlitSaw : public RuntimeListener
 {
-    float frequency;
-    double phase;
     float phase_offset;
-    float last_tick_value;
-    float rate_;
-    float p_;
-    float C2_;
-    float a_;
-    float state_;
+    double last_tick_value;
+    double p_;
+    double C2_;
+    double phase_correction;
+    double a_;
+    double state_;
+
     unsigned int m_;
 
 public:
-    inline float lastOut( void ) const noexcept;
-    inline float tick() noexcept;
-    inline void reset() noexcept;
-    inline void setFrequency( float frequency ) noexcept;
-    inline float set_phase_offset( float offset_ ) noexcept;
+    //==========================================================================
+    inline float tick( double phase_ ) noexcept
+    {
+        double tmp;
+        {
+            const double working_phase_ = (phase_ + phase_offset) - phase_correction;
 
-private:
-    inline void updateHarmonics( void ) noexcept;
+            // Avoid a divide by zero, or use of a denormalized divisor
+            // at the sinc peak, which has a limiting value of m_ / p_.
+            const double denominator = std::sin( working_phase_ );
+            if ( std::fabs(denominator) <= std::numeric_limits<double>::epsilon() )
+            {
+                tmp = a_;
+            }
+            else
+            {
+                tmp = std::sin( working_phase_*m_ ) / (p_ * denominator);
+            }
+        }
+
+        tmp += ( state_ - C2_ );
+        state_ = tmp * 0.995;
+
+        return last_tick_value = tmp;
+    }
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
+
+    //==========================================================================
+    inline float set_phase_offset( float offset_ ) noexcept
+    {
+        phase_offset = offset_*float_Pi;
+    }
+    inline void updateHarmonics( double p ) noexcept
+    {
+        p_ = p;
+        C2_ = 1.0 / p;
+        phase_correction = C2_*(double_Pi*0.5) / 0.9;
+        m_ = 2 * floor( 0.5 * p ) + 1;
+        a_ = p / p;
+    }
+
+    //==========================================================================
+    inline void reset() noexcept
+    {
+        state_ = 0;
+        last_tick_value = 0;
+    }
 
 public:
-    COLD mono_BlitSaw( float frequency = 220.0f );
-    COLD ~mono_BlitSaw();
+    //==========================================================================
+    COLD mono_BlitSaw() noexcept
+:
+    last_tick_value(0),
+                    phase_offset(0),
+                    p_(0),
+                    C2_(0),
+                    phase_correction(0),
+                    a_(0),
+                    state_(0),
+                    m_(0)
+    {
+    }
+    COLD ~mono_BlitSaw() noexcept {}
 };
 
-// -----------------------------------------------------------------
-COLD mono_BlitSaw::mono_BlitSaw( float frequency )
-    :
-    frequency(0),
-    last_tick_value(0),
-    rate_(0),
-    phase(0),
-    phase_offset(0),
-    p_(0),
-    C2_(0),
-    a_(0),
-    state_(0),
-    m_(0)
-{
-    reset();
-    setFrequency( frequency );
-}
-COLD mono_BlitSaw::~mono_BlitSaw() {}
-
-// -----------------------------------------------------------------
-inline float mono_BlitSaw::lastOut( void ) const noexcept
-{
-    return last_tick_value;
-}
-inline float mono_BlitSaw::tick() noexcept
-{
-    const double working_phase_ = phase + phase_offset;
-
-    // Avoid a divide by zero, or use of a denormalized divisor
-    // at the sinc peak, which has a limiting value of m_ / p_.
-    float tmp;
-    float denominator = std::sin( working_phase_ );
-    if ( std::fabs(denominator) <= std::numeric_limits<float>::epsilon() )
-    {
-        tmp = a_;
-    }
-    else
-    {
-        tmp = std::sin( working_phase_*m_ ) / (p_ * denominator);
-    }
-
-    tmp +=( state_ - C2_ );
-    state_ = tmp * 0.999f;
-
-    phase += rate_;
-    if ( phase >= float_Pi )
-    {
-        phase -= float_Pi;
-    }
-
-    return last_tick_value = tmp;
-}
-
-// -----------------------------------------------------------------
-inline void mono_BlitSaw::reset() noexcept
-{
-    phase = 0;
-    state_ = 0;
-    last_tick_value = 0;
-}
-inline void mono_BlitSaw::setFrequency( float frequency_ ) noexcept
-{
-    if( frequency != frequency_ )
-    {
-        frequency = frequency_;
-
-        p_ = sample_rate / frequency_;
-        C2_ = 1.0f / p_;
-        rate_ = float_Pi * C2_;
-        updateHarmonics();
-    }
-}
-inline float mono_BlitSaw::set_phase_offset( float offset_ ) noexcept
-{
-    phase_offset = offset_*float_Pi;
-}
-inline void mono_BlitSaw::updateHarmonics( void ) noexcept
-{
-    m_ = 2 * mono_floor( 0.5f * p_ ) + 1;
-    a_ = m_ / p_;
-}
+//==============================================================================
 
 //==============================================================================
 //==============================================================================
@@ -880,197 +910,104 @@ inline void mono_BlitSaw::updateHarmonics( void ) noexcept
 //==============================================================================
 class mono_BlitSquare : public RuntimeListener
 {
-    float frequency;
     float last_tick_value;
-    float rate_;
-    double phase_;
     float phase_offset;
-    float p_;
-    float a_;
-    float lastBlitOutput_;
-    float dcbState_;
-
-
-    float last_tick_value_control;
-    double phase_control;
-    double lastBlitOutput_control;
-    double dcbState_control;
+    double a_;
+    double p_;
+    double phase_correction;
+    double lastBlitOutput_;
+    double dcbState_;
 
     unsigned int m_;
-    bool next_is_new_cycle;
 
 public:
-    inline float lastOut( void ) const noexcept;
-    inline void reset() noexcept;
+    //==========================================================================
+    inline float tick( double phase_ ) noexcept
+    {
+        // OUTPUT PROCESS
+        float out;
+        {
+            const double temp = lastBlitOutput_;
+            {
+                const double working_phase_ = (phase_ + phase_offset) - phase_correction;
 
-    // HACK FOR SYNC
-    inline bool is_next_a_new_cycle() const noexcept;
-    inline void setFrequency( float frequency ) noexcept;
-    inline float set_phase_offset( float offset_ ) noexcept;
-    inline float tick( void ) noexcept;
+                // Avoid a divide by zero, or use of a denomralized divisor
+                // at the sinc peak, which has a limiting value of 1.0.
+                {
+                    const double denominator = std::sin( working_phase_ );
+                    if ( std::fabs( denominator ) < std::numeric_limits<double>::epsilon() )
+                    {
+                        // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
+                        if( working_phase_ < 0.0001 or working_phase_ > (double_Pi+double_Pi) -0.0001 )
+                        {
+                            lastBlitOutput_ = a_;
+                        }
+                        else
+                        {
+                            lastBlitOutput_ = -a_;
+                        }
+                    }
+                    else
+                    {
+                        lastBlitOutput_ = std::sin( working_phase_*m_ ) / (p_ * denominator);
+                    }
+                }
+            }
 
-private:
-    inline void updateHarmonics( void ) noexcept;
+            lastBlitOutput_ += temp;
+
+            // Now apply DC blocker.
+            out = lastBlitOutput_ - dcbState_ + 0.999 * last_tick_value;
+            dcbState_ = lastBlitOutput_;
+        }
+
+        return last_tick_value = out;
+    }
+    inline float lastOut( void ) const noexcept
+    {
+        return last_tick_value;
+    }
+
+    //==========================================================================
+    inline float set_phase_offset( float offset_ ) noexcept
+    {
+        phase_offset = offset_*float_Pi;
+    }
+    inline void updateHarmonics( double p ) noexcept
+    {
+        p_ = p * 0.5;
+        m_ = (floor( 0.5 * p_ ) + 1) * 2;
+        a_ = p / p;
+
+        phase_correction = (1.0 / p) * double_Pi;
+    }
+
+    //==========================================================================
+    inline void reset() noexcept
+    {
+        last_tick_value = 0;
+        dcbState_ = 0;
+        lastBlitOutput_ = 0;
+    }
 
 public:
-    COLD mono_BlitSquare( float frequency = 220.0f );
-    COLD ~mono_BlitSquare();
-};
-
-// -----------------------------------------------------------------
-COLD mono_BlitSquare::mono_BlitSquare( float frequency )
-    :
-    frequency(0),
+    //==========================================================================
+    COLD mono_BlitSquare() noexcept
+:
     last_tick_value(0),
-    rate_(0),
-    phase_(0),
-    phase_offset(0),
-    p_(0),
-    a_(0),
-    lastBlitOutput_(0),
-    dcbState_(0),
-    m_(0),
-    next_is_new_cycle(true),
-
-    last_tick_value_control(0),
-    phase_control(0),
-    lastBlitOutput_control(0),
-    dcbState_control(0)
-{
-    setFrequency( frequency );
-    reset();
-}
-COLD mono_BlitSquare::~mono_BlitSquare()
-{
-}
-
-// -----------------------------------------------------------------
-inline float mono_BlitSquare::lastOut( void ) const noexcept
-{
-    return last_tick_value;
-}
-inline float mono_BlitSquare::tick( void ) noexcept
-{
-    next_is_new_cycle = false;
-
-    // OUTPUT PROCESS
-    float out;
+                    phase_offset(0),
+                    a_(0),
+                    p_(0),
+                    phase_correction(0),
+                    lastBlitOutput_(0),
+                    dcbState_(0),
+                    m_(0)
     {
-        const float temp = lastBlitOutput_;
-        const double working_phase_ = phase_ + phase_offset;
-
-        // Avoid a divide by zero, or use of a denomralized divisor
-        // at the sinc peak, which has a limiting value of 1.0.
-        const float denominator = std::sin( working_phase_ );
-        if ( std::fabs( denominator ) < std::numeric_limits<float>::epsilon() )
-        {
-            // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-            if( working_phase_ < 0.01f or working_phase_ > (float_Pi*2) - 0.01f )
-            {
-                lastBlitOutput_ = a_;
-            }
-            else
-            {
-                lastBlitOutput_ = -a_;
-            }
-        }
-        else
-        {
-            lastBlitOutput_ = std::sin( working_phase_*m_ ) / (p_ * denominator);
-        }
-
-        lastBlitOutput_ += temp;
-
-        // Now apply DC blocker.
-        out = lastBlitOutput_ - dcbState_ + 0.99f * last_tick_value;
-        dcbState_ = lastBlitOutput_;
     }
-
-    // CONTROLL PROCESS
+    COLD ~mono_BlitSquare() noexcept
     {
-        const float temp_control = lastBlitOutput_control;
-
-        // Avoid a divide by zero, or use of a denomralized divisor
-        // at the sinc peak, which has a limiting value of 1.0.
-        const float denominator = std::sin( phase_ );
-        if ( std::fabs( denominator ) < std::numeric_limits<float>::epsilon() )
-        {
-            // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-            if( phase_ < 0.00000001f or phase_ > (float_Pi*2) - 0.00000001f )
-            {
-                lastBlitOutput_control = a_;
-            }
-            else
-            {
-                lastBlitOutput_control = -a_;
-            }
-        }
-        else
-        {
-            lastBlitOutput_control = std::sin( phase_*m_ ) / (p_ * denominator);
-        }
-
-        lastBlitOutput_control += temp_control;
-
-        // Now apply DC blocker.
-        const float control = lastBlitOutput_control - dcbState_control + 0.99999999f * last_tick_value_control;
-        dcbState_control = lastBlitOutput_control;
-
-        {
-            phase_ += rate_;
-            if( phase_ >= (float_Pi*2) )
-            {
-                phase_ -= (float_Pi*2);
-            }
-
-            if( last_tick_value_control <= 0 and control >= 0 )
-            {
-                next_is_new_cycle = true;
-            }
-            last_tick_value_control = control;
-        }
     }
-
-    return last_tick_value = out;
-}
-
-// -----------------------------------------------------------------
-inline void mono_BlitSquare::reset() noexcept
-{
-    phase_ = 0;
-    last_tick_value = 0;
-    dcbState_ = 0;
-    lastBlitOutput_ = 0;
-
-    last_tick_value_control = 0;
-    dcbState_control = 0;
-    lastBlitOutput_control = 0;
-}
-inline bool mono_BlitSquare::is_next_a_new_cycle() const noexcept
-{
-    return next_is_new_cycle;
-}
-inline void mono_BlitSquare::setFrequency( float frequency_ ) noexcept
-{
-    if( frequency != frequency_ )
-    {
-        frequency = frequency_;
-
-        p_ = 0.5f * sample_rate / frequency_;
-        rate_ = float_Pi / p_;
-        updateHarmonics();
-    }
-}
-inline float mono_BlitSquare::set_phase_offset( float offset_ ) noexcept
-{
-    phase_offset = offset_*float_Pi;
-}
-inline void mono_BlitSquare::updateHarmonics( void ) noexcept
-{
-    m_ = (mono_floor( 0.5f * p_ ) + 1) * 2;
-
-    a_ = m_ / p_;
-}
+};
 
 //==============================================================================
 //==============================================================================
@@ -1085,118 +1022,180 @@ inline void mono_BlitSquare::updateHarmonics( void ) noexcept
 class mono_SineWave : public RuntimeListener
 {
     float last_tick_value;
-    double delta;
     float phase_offset;
-    float current_angle;
-    float frequency;
-
-    bool next_is_new_cycle;
 
 public:
-    inline float lastOut() const noexcept;
-    inline float tick() noexcept;
+    //==========================================================================
+    inline float tick( double angle_ ) noexcept
+    {
+        return last_tick_value = lookup_sine( angle_+phase_offset );
+    }
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
+
+    //==========================================================================
+    inline float set_phase_offset( float offset_ ) noexcept
+    {
+        phase_offset = offset_ * float_Pi;
+    }
 
 public:
-    inline void setFrequency( double frequency ) noexcept;
-    inline float set_phase_offset( float offset_ ) noexcept;
-    inline void set_angle( float angle_ ) noexcept;
-    inline void reset() noexcept;
-    inline void force_new_cylce() noexcept;
-
-    inline bool is_next_a_new_cycle() const noexcept;
-
-private:
-    COLD void sample_rate_changed( double old_sr_ ) noexcept override;
-
-public:
-    COLD mono_SineWave();
-    COLD ~mono_SineWave();
+    //==========================================================================
+COLD mono_SineWave() noexcept :
+    last_tick_value(0), phase_offset(0) {}
+    COLD ~mono_SineWave() noexcept {}
 };
 
-// -----------------------------------------------------------------
-COLD mono_SineWave::mono_SineWave()
-    :
-    last_tick_value(0),
-    delta(0),
-    current_angle(0),
-    frequency(0),
-    phase_offset(0),
-
-    next_is_new_cycle(false)
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_SineWaveAutonom : public RuntimeListener
 {
-    setFrequency(440);
-}
+    double frequency;
 
-COLD mono_SineWave::~mono_SineWave() {}
+    double delta;
+    double angle;
 
-// -----------------------------------------------------------------
-inline float mono_SineWave::lastOut() const noexcept
-{
-    return last_tick_value;
-}
-inline float mono_SineWave::tick() noexcept
-{
-    const double working_angle_ = current_angle + phase_offset;
+    bool new_cycle;
 
-    float value = lookup_sine( working_angle_ );
+    float last_tick_value;
 
-    // WAS NEW
-    if( next_is_new_cycle )
+public:
+    //==========================================================================
+    inline float tick() noexcept
     {
-        if( value < 0 )
+        new_cycle = false;
+
+        angle+=delta;
+        if( angle >= (double_Pi+double_Pi) )
         {
-            value = 0;
+            angle -= (double_Pi+double_Pi);
+            new_cycle = true;
         }
-        next_is_new_cycle = false;
-    }
 
-    current_angle += delta;
-    if( current_angle >= (float_Pi * 2) )
+        return last_tick_value = lookup_sine( angle );
+    }
+    inline float lastOut() const noexcept
     {
-        next_is_new_cycle = true;
-        current_angle -= (float_Pi * 2);
+        return last_tick_value;
     }
 
-    return last_tick_value = value;
-}
-
-// -----------------------------------------------------------------
-inline void mono_SineWave::reset() noexcept
-{
-    current_angle = 0;
-    last_tick_value = 0;
-}
-inline void mono_SineWave::force_new_cylce() noexcept
-{
-    current_angle = 0;
-}
-inline void mono_SineWave::setFrequency( double frequency_ ) noexcept
-{
-    if( frequency != frequency_ )
+    //==========================================================================
+    inline void set_frequency( double frequency_ ) noexcept
     {
-        frequency = frequency_;
-        const double cyclesPerSample = frequency_ / sample_rate;
-        delta = cyclesPerSample * (double_Pi*2);
+        if( frequency != frequency_ )
+        {
+            frequency = frequency_;
+            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+        }
     }
-}
-inline float mono_SineWave::set_phase_offset( float offset_ ) noexcept
-{
-    phase_offset = offset_*float_Pi;
-}
-inline void mono_SineWave::set_angle( float angle_ ) noexcept
-{
-    current_angle = float_Pi*angle_;
-}
+    inline void overwrite_angle( float angle_ ) noexcept
+    {
+        angle = angle_;
+    }
+    
+    //==========================================================================
+    inline bool is_new_cycle() const noexcept
+    {
+        return new_cycle;
+    }
 
-inline bool mono_SineWave::is_next_a_new_cycle() const noexcept
-{
-    return next_is_new_cycle;
-}
+public:
+    //==========================================================================
+COLD mono_SineWaveAutonom() noexcept :
+    frequency(0),
 
-COLD void mono_SineWave::sample_rate_changed( double /*old_sr_*/ ) noexcept
+              delta(0),
+              angle(0),
+
+              new_cycle(0),
+
+              last_tick_value(0)
+    {}
+    COLD ~mono_SineWaveAutonom() noexcept {}
+};
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_SineWaveAutonomShifted : public RuntimeListener
 {
-    setFrequency(frequency);
-}
+    double frequency;
+
+    double delta;
+    double angle;
+
+    bool new_cycle;
+
+    float last_tick_value;
+
+public:
+    //==========================================================================
+    inline float tick() noexcept
+    {
+        new_cycle = false;
+
+        angle+=delta;
+        if( angle-(double_Pi*0.5) >= (double_Pi+double_Pi) )
+        {
+            angle -= (double_Pi+double_Pi);
+            new_cycle = true;
+        }
+
+        return last_tick_value = (lookup_sine( angle ) * -1 + 1)*0.5;
+    }
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
+
+    //==========================================================================
+    inline void set_frequency( double frequency_ ) noexcept
+    {
+        if( frequency != frequency_ )
+        {
+            frequency = frequency_;
+            delta = frequency_/sample_rate * (double_Pi+double_Pi);
+        }
+    }
+    
+    //==========================================================================
+    inline bool is_new_cycle() const noexcept
+    {
+        return new_cycle;
+    }
+
+public:
+    //==========================================================================
+COLD mono_SineWaveAutonomShifted() noexcept :
+    frequency(0),
+
+              delta(0),
+              angle(double_Pi*0.5),
+
+              new_cycle(0),
+
+              last_tick_value(0)
+    {}
+    COLD ~mono_SineWaveAutonomShifted() noexcept {}
+};
 
 //==============================================================================
 //==============================================================================
@@ -1214,27 +1213,22 @@ class mono_Noise
     float last_tick_value;
 
 public:
-    inline float lastOut() const noexcept;
-    inline float tick() noexcept;
+    //==========================================================================
+    inline float tick() noexcept
+    {
+        return last_tick_value = random.nextFloat() * 2 - 1;
+    }
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
 
 public:
-    COLD mono_Noise();
-    COLD ~mono_Noise();
+    //==========================================================================
+COLD mono_Noise() noexcept :
+    last_tick_value(0) {}
+    COLD ~mono_Noise() noexcept {}
 };
-
-// -----------------------------------------------------------------
-COLD mono_Noise::mono_Noise() : last_tick_value(0) {}
-COLD mono_Noise::~mono_Noise() {}
-
-// -----------------------------------------------------------------
-inline float mono_Noise::lastOut() const noexcept
-{
-    return last_tick_value;
-}
-inline float mono_Noise::tick() noexcept
-{
-    return last_tick_value = random.nextFloat() * 2 - 1;
-}
 
 //==============================================================================
 //==============================================================================
@@ -1253,55 +1247,47 @@ class mono_OnePole
     float a1, b;
 
 public:
-    void setPole( float thePole ) noexcept;
-    void setGain( float gain_ ) noexcept;
+    //==========================================================================
+    inline float tick( float input ) noexcept
+    {
+        return last_tick_value = b*gain*input - a1*last_tick_value;
+    }
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
 
-    float lastOut( void ) const noexcept;
-    float tick( float input ) noexcept;
+    //==========================================================================
+    inline void setPole( float thePole ) noexcept
+    {
+        if ( thePole > 0 )
+        {
+            b = 1.0f - thePole;
+        }
+        else
+        {
+            b = 1.0f + thePole;
+        }
+
+        a1 = -thePole;
+    }
+    inline void setGain( float gain_ ) noexcept
+    {
+        gain = gain_;
+    }
 
 public:
-    COLD mono_OnePole( float thePole = 0.9 );
-    COLD ~mono_OnePole();
-
-};
-
-// -----------------------------------------------------------------
-mono_OnePole::mono_OnePole( float thePole ) :
+    //==========================================================================
+COLD mono_OnePole( float thePole = 0.9 ) noexcept:
     last_tick_value(0),
-    gain(0),
-    a1(0),
-    b(0)
-{
-    this->setPole( thePole );
-}
-
-mono_OnePole::~mono_OnePole() {}
-
-// -----------------------------------------------------------------
-inline float mono_OnePole::lastOut() const noexcept
-{
-    return last_tick_value;
-}
-
-inline float mono_OnePole::tick( float input ) noexcept
-{
-    return last_tick_value = b*gain*input - a1*last_tick_value;
-}
-
-// -----------------------------------------------------------------
-inline void mono_OnePole::setPole( float thePole ) noexcept
-{
-    if ( thePole > 0 )
-        b = 1.0f - thePole;
-    else
-        b = 1.0f + thePole;
-
-    a1 = -thePole;
-}
-inline void mono_OnePole::setGain( float gain_ ) noexcept
-{
-    gain = gain_;
-}
+                    gain(0),
+                    a1(0),
+                    b(0)
+    {
+        this->setPole( thePole );
+    }
+    COLD ~mono_OnePole() noexcept {}
+};
 
 //==============================================================================
 //==============================================================================
@@ -1315,8 +1301,8 @@ inline void mono_OnePole::setGain( float gain_ ) noexcept
 //==============================================================================
 class mono_Modulate : public RuntimeListener
 {
-    mono_SineWave vibrato;
-    mono_SineWave swing;
+    mono_SineWaveAutonomShifted vibrato;
+    mono_SineWaveAutonom swing;
     mono_OnePole filter;
     mono_Noise noise;
 
@@ -1326,155 +1312,89 @@ class mono_Modulate : public RuntimeListener
     unsigned int noiseCounter;
 
 public:
-    inline void reset() noexcept;
-    inline void setVibratoRate( float rate ) noexcept;
-    inline void setVibratoGain( float gain ) noexcept;
-    inline void setSwingFrequency( float swing_ ) noexcept;
-    inline float lastOut() const noexcept;
-
-    inline bool is_next_a_new_cycle() const noexcept;
-
-    inline float tick() noexcept;
-
-public:
-    COLD mono_Modulate();
-    COLD ~mono_Modulate();
-};
-
-// -----------------------------------------------------------------
-COLD mono_Modulate::mono_Modulate()
-    :
-    vibrato(),
-    filter(),
-    noise(),
-
-    last_tick_value(0),
-    last_swing_frequency(0),
-    noiseRate(0),
-    noiseCounter(0)
-{
-    vibrato.setFrequency( 6.0 );
-    swing.setFrequency( 0 );
-    swing.set_angle(0.25);
-
-    noiseRate = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
-    noiseCounter = noiseRate;
-
-    filter.setPole( 0.999 );
-    filter.setGain( 0.05 );
-}
-COLD mono_Modulate::~mono_Modulate() {}
-
-// -----------------------------------------------------------------
-inline float mono_Modulate::lastOut() const noexcept
-{
-    return last_tick_value;
-}
-inline float mono_Modulate::tick() noexcept
-{
-    // Compute periodic and random modulations.
-    last_tick_value = vibrato.tick();
-    if ( noiseCounter++ > noiseRate )
+    //==========================================================================
+    inline float tick() noexcept
     {
-        noise.tick();
-        noiseCounter = 0;
-    }
-    last_tick_value += filter.tick( noise.lastOut() );
-
-    return last_tick_value * swing.tick();
-}
-
-// -----------------------------------------------------------------
-inline void mono_Modulate::reset() noexcept
-{
-    last_tick_value = 0;
-    vibrato.reset();
-}
-inline void mono_Modulate::setVibratoRate( float rate ) noexcept
-{
-    vibrato.setFrequency( rate );
-}
-inline void mono_Modulate::setSwingFrequency( float swing_ ) noexcept
-{
-    if( last_swing_frequency != swing_ )
-    {
-        if( swing_ == 0 )
+        // Compute periodic and random modulations.
+        last_tick_value = vibrato.tick();
+        if ( noiseCounter++ > noiseRate )
         {
-            swing.set_angle( 0.5f );
+            noise.tick();
+            noiseCounter = 0;
         }
+        last_tick_value += filter.tick( noise.lastOut() );
 
-        last_swing_frequency = swing_;
-        swing.setFrequency( swing_ );
+        return last_tick_value * swing.tick();
     }
-}
-inline bool mono_Modulate::is_next_a_new_cycle() const noexcept
-{
-    return vibrato.is_next_a_new_cycle(); ;
-}
+    inline float lastOut() const noexcept
+    {
+        return last_tick_value;
+    }
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class LFO : public RuntimeListener
-{
-    mono_SineWave sine_generator;
+    //==========================================================================
+    inline void set_vibrato_frequency( float frequency_ ) noexcept
+    {
+        vibrato.set_frequency( frequency_ );
+    }
+    inline void set_swing_frequency( float frequency_ ) noexcept
+    {
+        if( last_swing_frequency != frequency_ )
+        {
+            if( frequency_ == 0 )
+            {
+                swing.overwrite_angle( float_Pi*0.5 );
+            }
 
-    float last_speed;
-    float samples_per_cylce;
-    float last_out;
+            last_swing_frequency = frequency_;
+            swing.set_frequency( frequency_ );
+        }
+    }
+    inline bool is_next_a_new_cycle() const noexcept
+    {
+        return vibrato.is_new_cycle();
+    }
 
-    int glide_counter;
-    float glide_value;
-
-    const int id;
-
-    DataBuffer*const data_buffer;
-    const LFOData*const lfo_data;
-    const RuntimeInfo*const runtime_info;
+    //==========================================================================
+    inline void reset() noexcept
+    {
+        last_tick_value = 0;
+    }
 
 public:
-    //==============================================================================
-    inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept;
-    COLD void sample_rate_changed( double ) noexcept;
+    //==========================================================================
+    COLD mono_Modulate() noexcept
+:
+    vibrato(),
+            filter(),
+            noise(),
 
-    //==============================================================================
-    float get_current_amp() const noexcept;
+            last_tick_value(0),
+            last_swing_frequency(0),
+            noiseRate(0),
+            noiseCounter(0)
+    {
+        vibrato.set_frequency( 6.0 );
+        swing.set_frequency( 0 );
+        swing.overwrite_angle( float_Pi*0.5 );
 
-private:
-    //==============================================================================
-    friend class MoniqueSynthesiserVoice;
-    COLD LFO( int id_ ) noexcept;
-    COLD ~LFO() noexcept;
+        noiseRate = (unsigned int) ( 330.0 * sample_rate / 22050.0 );
+        noiseCounter = noiseRate;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
+        filter.setPole( 0.999 );
+        filter.setGain( 0.05 );
+    }
+    COLD ~mono_Modulate() noexcept {}
 };
 
 //==============================================================================
-COLD LFO::LFO( int id_ ) noexcept
-:
-sine_generator(),
-
-               last_speed(0),
-               samples_per_cylce(100),
-               last_out(0),
-
-               glide_counter(0),
-
-               id( id_ ),
-
-               data_buffer( GET_DATA_PTR(data_buffer) ),
-               lfo_data( GET_DATA_PTR( lfo_datas[id_] ) ),
-               runtime_info( GET_DATA_PTR( runtime_info ) )
-{}
-COLD LFO::~LFO() noexcept {}
-
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 float get_lfo_speed_multi( float speed_ ) noexcept
 {
@@ -1524,53 +1444,96 @@ float get_lfo_speed_multi( float speed_ ) noexcept
 
     return factor;
 }
+class LFO : public RuntimeListener
+{
+    mono_SineWave sine_generator;
+
+    float last_speed;
+    float samples_per_cylce;
+    float last_out;
+
+    int glide_counter;
+    float glide_value;
+
+    const int id;
+
+    DataBuffer*const data_buffer;
+    const LFOData*const lfo_data;
+    const RuntimeInfo*const runtime_info;
+
+public:
+    //==============================================================================
 #define LFO_GLIDE_SAMPLES 100.0f
-inline void LFO::process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
-{
-    const float speed( lfo_data->speed );
-    if( speed != last_speed )
+    inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
     {
-        const float bars_per_sec = runtime_info->bpm/4/60;
-        if( speed <= 17 )
+        const float speed( lfo_data->speed );
+        if( speed != last_speed )
         {
-            const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( lfo_data->speed );
-            samples_per_cylce = sample_rate / cycles_per_sec;
-        }
-        else
-        {
-            samples_per_cylce = sample_rate * (1.0f/midiToFrequency(33+speed-18));
+            const float bars_per_sec = runtime_info->bpm/4/60;
+            if( speed <= 17 )
+            {
+                const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( lfo_data->speed );
+                samples_per_cylce = sample_rate / cycles_per_sec;
+            }
+            else
+            {
+                samples_per_cylce = sample_rate * (1.0f/midiToFrequency(33+speed-18));
+            }
+
+            glide_counter = LFO_GLIDE_SAMPLES;
+            glide_value = last_out;
+            last_speed = speed;
         }
 
-        glide_counter = LFO_GLIDE_SAMPLES;
-        glide_value = last_out;
-        last_speed = speed;
+        int64 sync_sample_pos = runtime_info->samples_since_start+start_pos_in_buffer_;
+        float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
+            float amp = lfo2amp( std::sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+            if( --glide_counter > 0 )
+            {
+                float glide = (1.0f/LFO_GLIDE_SAMPLES*glide_counter);
+                amp = amp*(1.0f-glide) + glide_value*glide;
+            }
+            process_buffer[sid] = amp;
+        }
+        last_out = process_buffer[num_samples_-1];
+    }
+    void sample_rate_changed( double ) noexcept
+    {
+        last_speed = -1;
     }
 
-    int64 sync_sample_pos = runtime_info->samples_since_start+start_pos_in_buffer_;
-    float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+    //==========================================================================
+    float get_current_amp() const noexcept
     {
-        const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
-        float amp = lfo2amp( std::sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
-        if( --glide_counter > 0 )
-        {
-            float glide = (1.0f/LFO_GLIDE_SAMPLES*glide_counter);
-            amp = amp*(1.0f-glide) + glide_value*glide;
-        }
-        process_buffer[sid] = amp;
+        return last_out;
     }
-    last_out = process_buffer[num_samples_-1];
-}
-void LFO::sample_rate_changed( double ) noexcept
-{
-    last_speed = -1;
-}
 
-//==============================================================================
-float LFO::get_current_amp() const noexcept
-{
-    return last_out;
-}
+private:
+    //==========================================================================
+    friend class MoniqueSynthesiserVoice;
+    COLD LFO( int id_ ) noexcept
+:
+    sine_generator(),
+
+                   last_speed(0),
+                   samples_per_cylce(100),
+                   last_out(0),
+
+                   glide_counter(0),
+
+                   id( id_ ),
+
+                   data_buffer( GET_DATA_PTR(data_buffer) ),
+                   lfo_data( GET_DATA_PTR( lfo_datas[id_] ) ),
+                   runtime_info( GET_DATA_PTR( runtime_info ) )
+    {}
+    COLD ~LFO() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
+};
 
 //==============================================================================
 //==============================================================================
@@ -1601,6 +1564,7 @@ class MasterOSC : public RuntimeListener
 
     // RAW OSCILATORS
     //==============================================================================
+    PerfectCycleCounter cycle_counter;
     mono_BlitSaw saw_generator;
     mono_BlitSquare square_generator;
     mono_SineWave sine_generator;
@@ -1617,255 +1581,245 @@ class MasterOSC : public RuntimeListener
 
 public:
     //==============================================================================
-    // TODO same frequency modulator sync
-    inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept;
-    inline void update( float root_note_ ) noexcept;
-    inline void reset() noexcept;
-
-public:
-    //==============================================================================
-    COLD MasterOSC(const MoniqueSynthData* synth_data_) noexcept;
-    COLD ~MasterOSC() noexcept;
-};
-
-//==============================================================================
-COLD MasterOSC::MasterOSC(const MoniqueSynthData* synth_data_) noexcept
-:
-saw_generator(),
-              square_generator(),
-              sine_generator(),
-              noise(),
-
-              modulator(),
-
-
-              freq_glide_samples_left(0),
-              freq_glide_delta(0),
-
-              root_note(60),
-
-              last_frequency(0),
-
-              last_modulator_frequency(0),
-              modulator_sync_cylces(0),
-              modulator_waits_for_sync_cycle(false),
-
-
-              data_buffer( GET_DATA_PTR(data_buffer) ),
-              synth_data( synth_data_ ),
-              fm_osc_data( GET_DATA_PTR( fm_osc_data ) ),
-              osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
-{
-}
-COLD MasterOSC::~MasterOSC() noexcept
-{}
-
-//==============================================================================
-// TODO same frequency modulator sync
-inline void MasterOSC::process(DataBuffer* data_buffer_, const int num_samples_) noexcept
-{
-    float*const output_buffer( data_buffer->osc_samples.getWritePointer(MASTER_OSC) );
-
-    float*const switch_buffer( data_buffer->osc_switchs.getWritePointer(MASTER_OSC) );
-    FloatVectorOperations::clear(switch_buffer,num_samples_);
-    float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
-    const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(MASTER_OSC) ) );
-
-    const bool is_lfo_modulated = osc_data->is_lfo_modulated;
-    const bool fm_sync = fm_osc_data->sync;
-    const bool fm_shot = fm_osc_data->fm_shot;
-
-    fm_osc_data->master_shift_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
-    const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
-    const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
-    const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
-    const float*const smoothed_fm_freq_buffer( fm_osc_data->fm_freq_smoother.get_smoothed_buffer() );
-    const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_buffer() );
-    const float*const smoothed_phase_offset( fm_osc_data->master_shift_smoother.get_smoothed_modulated_buffer() );
-
-    for( int sid = 0 ; sid < num_samples_ ; ++sid )
+    inline void process(DataBuffer* data_buffer_, const int num_samples_) noexcept
     {
-        // SETUP TUNE
+        float*const output_buffer( data_buffer->osc_samples.getWritePointer(MASTER_OSC) );
+
+        float*const switch_buffer( data_buffer->osc_switchs.getWritePointer() );
+        FloatVectorOperations::clear(switch_buffer,num_samples_);
+        float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
+        const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(MASTER_OSC) ) );
+
+        const bool is_lfo_modulated = osc_data->is_lfo_modulated;
+        const bool fm_sync = fm_osc_data->sync;
+        const bool fm_shot = fm_osc_data->fm_shot;
+
+        fm_osc_data->master_shift_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
+        const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
+        const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
+        const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
+        const float*const smoothed_fm_freq_buffer( fm_osc_data->fm_freq_smoother.get_smoothed_buffer() );
+        const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_buffer() );
+        const float*const smoothed_phase_offset( fm_osc_data->master_shift_smoother.get_smoothed_modulated_buffer() );
+
+        for( int sid = 0 ; sid < num_samples_ ; ++sid )
         {
-            // BASE FREQUENCY
-            bool base_frequency_changed = false;
-            if( freq_glide_samples_left > 0 or last_root_note != root_note )
+            // SETUP TUNE
             {
-                if( freq_glide_samples_left > 0 )
+                // BASE FREQUENCY
+                bool base_frequency_changed = false;
+                if( freq_glide_samples_left > 0 or last_root_note != root_note )
                 {
-                    --freq_glide_samples_left;
-                }
-                //if( square_generator.is_next_a_new_cycle() )
-                {
-                    last_root_note = root_note;
-
-                    const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + freq_glide_delta*freq_glide_samples_left ) );
-                    if( new_frequence != last_frequency )
+                    if( freq_glide_samples_left > 0 )
                     {
+                        --freq_glide_samples_left;
+                    }
+                    //if( square_generator.is_next_a_new_cycle() )
+                    {
+                        last_root_note = root_note;
 
-                        square_generator.setFrequency(new_frequence);
-                        saw_generator.setFrequency(new_frequence);
-                        sine_generator.setFrequency(new_frequence);
+                        const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + freq_glide_delta*freq_glide_samples_left ) );
+                        if( new_frequence != last_frequency )
+                        {
+                            cycle_counter.set_frequency( new_frequence );
+                            square_generator.updateHarmonics( cycle_counter.get_cylces_per_sec() );
+                            saw_generator.updateHarmonics( cycle_counter.get_cylces_per_sec() );
 
-                        last_frequency = new_frequence;
+
+                            last_frequency = new_frequence;
+                        }
+                    }
+
+                    base_frequency_changed = true;
+                }
+
+                // MODULATOR FREQUENCY
+                {
+                    const float modulator_freq = smoothed_fm_freq_buffer[sid];
+                    if( base_frequency_changed or modulator_freq != last_modulator_frequency )
+                    {
+                        last_modulator_frequency = modulator_freq;
+
+                        modulator.set_vibrato_frequency( last_frequency*(modulator_freq*7 +1.1) );
+
+                        modulator_sync_cylces = mono_floor(modulator_freq*7);
                     }
                 }
 
-                base_frequency_changed = true;
+                // ADD PHASE SHIFT
+                square_generator.set_phase_offset(smoothed_phase_offset[sid]);
+                saw_generator.set_phase_offset(smoothed_phase_offset[sid]);
+                sine_generator.set_phase_offset(smoothed_phase_offset[sid]);
             }
 
-            // MODULATOR FREQUENCY
+            // PROCESS OSC ITSELF
+            bool is_last_sample_of_cycle = false;
+            float sample;
             {
-                const float modulator_freq = smoothed_fm_freq_buffer[sid];
-                if( base_frequency_changed or modulator_freq != last_modulator_frequency )
+                // TICK ALL OSCILATTORS
                 {
-                    last_modulator_frequency = modulator_freq;
+                    cycle_counter.tick();
+                    saw_generator.tick( cycle_counter.get_last_phase() );
+                    {
+                        double angle = cycle_counter.get_last_angle();
+                        square_generator.tick( angle );
+                        sine_generator.tick( angle );
+                    }
 
-                    modulator.setVibratoRate( last_frequency*(modulator_freq*7 +1.1) );
+                    // FORCE SYNC OF THE SINE AT THE NEXT SID
+                    if( cycle_counter.is_new_cycle() )
+                    {
+                        // SET THE SWITCH
+                        is_last_sample_of_cycle = true;
+                        switch_buffer[sid] = true;
+                    }
+                }
 
-                    modulator_sync_cylces = mono_floor(modulator_freq*7);
+                // CALC THE SAMPLE MIX
+                {
+                    const float wave_form = smoothed_wave_buffer[sid];
+
+                    // SINE - SQUARE
+                    if( wave_form <= 1 )
+                    {
+                        const float multi = wave_form;
+                        const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
+                        const float square_wave_powerd = square_generator.lastOut() * multi;
+                        sample = sine_wave_powerd+square_wave_powerd;
+                    }
+                    // SQUARE - SAW
+                    else if( wave_form <= 2 )
+                    {
+                        const float multi = wave_form - 1;
+                        const float square_wave_powerd = square_generator.lastOut() * (1.0f-multi);
+                        const float saw_wave_powerd = saw_generator.lastOut() * multi;
+                        sample = square_wave_powerd+saw_wave_powerd;
+                    }
+                    // SAW - RAND
+                    else /*if( wave_form <= 3 )*/
+                    {
+                        const float multi = wave_form - 2;
+                        const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
+                        const float noice_powerd = noise.tick()* multi;
+                        sample = saw_wave_powerd+noice_powerd;
+                    }
                 }
             }
 
-            // ADD PHASE SHIFT
-            square_generator.set_phase_offset(smoothed_phase_offset[sid]);
-            saw_generator.set_phase_offset(smoothed_phase_offset[sid]);
-            sine_generator.set_phase_offset(smoothed_phase_offset[sid]);
-        }
-
-        // PROCESS OSC ITSELF
-        bool is_last_sample_of_cycle = false;
-        float sample;
-        {
-            // TICK ALL OSCILATTORS
+            // PROCESS MODULATOR
+            float modulator_sample = 0;
             {
-                square_generator.tick();
-                saw_generator.tick();
-                sine_generator.tick();
-
-                // FORCE SYNC OF THE SINE AT THE NEXT SID
-                if( square_generator.is_next_a_new_cycle() )
+                // MODULATOR SYNC AND PROCESSING
+                if( not modulator_waits_for_sync_cycle )
                 {
-                    sine_generator.force_new_cylce();
+                    modulator_sample = modulator.tick();
+                }
 
-                    // SET THE SWITCH
-                    is_last_sample_of_cycle = true;
-                    switch_buffer[sid] = true;
+                const bool is_last_sample_of_modulator_cycle = modulator.is_next_a_new_cycle();
+                if( fm_shot and is_last_sample_of_modulator_cycle )
+                {
+                    modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
+                }
+
+                // STOP THE MODULATOR IF IN SYNC // IGNORED IF SHOT IS ENABLED
+                if( modulator_run_circle > modulator_sync_cylces and fm_sync and not fm_shot  )
+                {
+                    modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
+                    modulator_run_circle = 0;
+                }
+                else if( is_last_sample_of_cycle and not fm_shot )
+                {
+                    modulator_waits_for_sync_cycle = false;
+                    modulator_run_circle = 0;
+                }
+
+                // COUNT CYCLES AND CLEAR STATE IF NOT WAITING FOR SYNC
+                if( is_last_sample_of_modulator_cycle and not modulator_waits_for_sync_cycle )
+                {
+                    ++modulator_run_circle;
+                }
+
+                // UPDATE SWING
+                if( is_last_sample_of_modulator_cycle )
+                {
+                    modulator.set_swing_frequency( smoothed_fm_swing_buffer[sid]*20 );
                 }
             }
 
-            // CALC THE SAMPLE MIX
+            // ADD FM TO THE OUTPUT
             {
-                const float wave_form = smoothed_wave_buffer[sid];
-
-                // SINE - SQUARE
-                if( wave_form <= 1 )
+                if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
                 {
-                    const float multi = wave_form;
-                    const float sine_wave_powerd = sine_generator.lastOut() * (1.0f-multi);
-                    const float square_wave_powerd = square_generator.lastOut() * multi;
-                    sample = sine_wave_powerd+square_wave_powerd;
+                    sample = sample*(1.0f-fm_amount) + ( (modulator_sample+sample)*0.5 )*fm_amount;
                 }
-                // SQUARE - SAW
-                else if( wave_form <= 2 )
-                {
-                    const float multi = wave_form - 1;
-                    const float square_wave_powerd = square_generator.lastOut() * (1.0f-multi);
-                    const float saw_wave_powerd = saw_generator.lastOut() * multi;
-                    sample = square_wave_powerd+saw_wave_powerd;
-                }
-                // SAW - RAND
-                else /*if( wave_form <= 3 )*/
-                {
-                    const float multi = wave_form - 2;
-                    const float saw_wave_powerd = saw_generator.lastOut() * (1.0f-multi);
-                    const float noice_powerd = noise.tick()* multi;
-                    sample = saw_wave_powerd+noice_powerd;
-                }
-            }
-        }
 
-        // PROCESS MODULATOR
-        float modulator_sample = 0;
-        {
-            // MODULATOR SYNC AND PROCESSING
-            if( not modulator_waits_for_sync_cycle )
-            {
-                modulator_sample = modulator.tick();
+                output_buffer[sid] = sample;
+                modulator_buffer[sid] = modulator_sample;
             }
-
-            const bool is_last_sample_of_modulator_cycle = modulator.is_next_a_new_cycle();
-            if( fm_shot and is_last_sample_of_modulator_cycle )
-            {
-                modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
-            }
-
-            // STOP THE MODULATOR IF IN SYNC // IGNORED IF SHOT IS ENABLED
-            if( modulator_run_circle > modulator_sync_cylces and fm_sync and not fm_shot  )
-            {
-                modulator_waits_for_sync_cycle = not is_last_sample_of_cycle;
-                modulator_run_circle = 0;
-            }
-            else if( is_last_sample_of_cycle and not fm_shot )
-            {
-                modulator_waits_for_sync_cycle = false;
-                modulator_run_circle = 0;
-            }
-
-            // COUNT CYCLES AND CLEAR STATE IF NOT WAITING FOR SYNC
-            if( is_last_sample_of_modulator_cycle and not modulator_waits_for_sync_cycle )
-            {
-                ++modulator_run_circle;
-            }
-
-            // UPDATE SWING
-            if( is_last_sample_of_modulator_cycle )
-            {
-                modulator.setSwingFrequency( smoothed_fm_swing_buffer[sid]*20 );
-            }
-        }
-
-        // ADD FM TO THE OUTPUT
-        {
-            if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
-            {
-                sample = sample*(1.0f-fm_amount) + ( (modulator_sample+sample)*0.5 )*fm_amount;
-            }
-
-            output_buffer[sid] = sample;
-            modulator_buffer[sid] = modulator_sample;
         }
     }
-}
 
-inline void MasterOSC::update( float root_note_ ) noexcept
-{
-    root_note_ += synth_data->octave_offset *12;
-    const float glide = synth_data->glide;
-    if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
+    //==============================================================================
+    inline void update( float root_note_ ) noexcept
     {
-        root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
+        root_note_ += synth_data->octave_offset *12;
+        const float glide = synth_data->glide;
+        if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
+        {
+            root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
 
-        const float rest_glide = freq_glide_delta*freq_glide_samples_left;
-        const float glide_notes_diverence = root_note - root_note_;
-        freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
+            const float rest_glide = freq_glide_delta*freq_glide_samples_left;
+            const float glide_notes_diverence = root_note - root_note_;
+            freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
+        }
+        else
+        {
+            freq_glide_samples_left = 0;
+            freq_glide_delta = 0;
+        }
+
+        root_note = root_note_;
     }
-    else
+    inline void reset() noexcept
     {
-        freq_glide_samples_left = 0;
-        freq_glide_delta = 0;
+        saw_generator.reset();
+        square_generator.reset();
+
+        modulator.reset();
     }
 
-    root_note = root_note_;
-}
-inline void MasterOSC::reset() noexcept
-{
-    saw_generator.reset();
-    square_generator.reset();
-    sine_generator.reset();
+public:
+    //==============================================================================
+    COLD MasterOSC(const MoniqueSynthData* synth_data_) noexcept
+:
+    cycle_counter(),
+                  saw_generator(),
+                  square_generator(),
+                  sine_generator(),
+                  noise(),
 
-    modulator.reset();
-}
+                  modulator(),
+
+
+                  freq_glide_samples_left(0),
+                  freq_glide_delta(0),
+
+                  root_note(60),
+
+                  last_frequency(0),
+
+                  last_modulator_frequency(0),
+                  modulator_sync_cylces(0),
+                  modulator_waits_for_sync_cycle(false),
+
+
+                  data_buffer( GET_DATA_PTR(data_buffer) ),
+                  synth_data( synth_data_ ),
+                  fm_osc_data( GET_DATA_PTR( fm_osc_data ) ),
+                  osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
+    {}
+    COLD ~MasterOSC() noexcept {}
+};
 
 //===================================================================================
 //===================================================================================
@@ -1889,6 +1843,7 @@ class SecondOSC : public RuntimeListener
 
     // RAW OSCILATORS
     //==============================================================================
+    PerfectCycleCounter cycle_counter;
     mono_BlitSaw saw_generator;
     mono_BlitSquare square_generator;
     mono_SineWave sine_generator;
@@ -1970,7 +1925,7 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_)
 {
     float*const output_buffer( data_buffer->osc_samples.getWritePointer(id) );
 
-    const float*const switch_buffer( data_buffer->osc_switchs.getWritePointer(MASTER_OSC) );
+    const float*const switch_buffer( data_buffer->osc_switchs.getWritePointer() );
     const float*const modulator_buffer( data_buffer->modulator_samples.getWritePointer(MASTER_OSC) );
     const float*const lfo_amps( ( data_buffer->lfo_amplitudes.getReadPointer(id) ) );
 
@@ -2003,11 +1958,9 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_)
                     const float new_frequence = jmax( 5.0f, midiToFrequencyFast( root_note + tune + freq_glide_delta*freq_glide_samples_left ) );
                     if( new_frequence != last_frequency )
                     {
-                        square_generator.setFrequency(new_frequence);
-                        saw_generator.setFrequency(new_frequence);
-                        sine_generator.setFrequency(new_frequence);
-
-                        last_frequency = new_frequence;
+                        cycle_counter.set_frequency(new_frequence);
+                        square_generator.updateHarmonics( cycle_counter.get_cylces_per_sec() );
+                        saw_generator.updateHarmonics( cycle_counter.get_cylces_per_sec() );
                     }
                 }
             }
@@ -2020,16 +1973,18 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_)
             // TICK ALL OSCILATTORS
             if( not wait_for_new_master_cycle )
             {
-                square_generator.tick();
-                saw_generator.tick();
-                sine_generator.tick();
+                cycle_counter.tick();
+                saw_generator.tick( cycle_counter.get_last_phase() );
+                {
+                    double angle = cycle_counter.get_last_angle();
+                    square_generator.tick( angle );
+                    sine_generator.tick( angle );
+                }
             }
 
             // FORCE SYNC OF THE SINE AT THE NEXT SID
-            if( square_generator.is_next_a_new_cycle() )
+            if( cycle_counter.is_new_cycle() )
             {
-                sine_generator.force_new_cylce();
-
                 const bool syncanble_by_tune = is_syncanble_by_tune(tune, smoothed_master_tune_buffer[sid]);
                 if( not syncanble_by_tune )
                 {
@@ -2096,7 +2051,7 @@ inline void SecondOSC::process(DataBuffer* data_buffer_, const int num_samples_)
             float modulator_sample = modulator_buffer[sid];
             if( const float fm_amount = smoothed_fm_amount_buffer[sid] )
             {
-                sample = sample_mix(sample*(1.0f-fm_amount), ( (modulator_sample+sample)*0.5 )*fm_amount);
+                sample = sample*(1.0f-fm_amount) + ( (modulator_sample+sample)*0.5 )*fm_amount;
             }
 
             output_buffer[sid] = sample;
@@ -2128,7 +2083,6 @@ inline void SecondOSC::reset() noexcept
 {
     saw_generator.reset();
     square_generator.reset();
-    sine_generator.reset();
 }
 
 //==============================================================================
@@ -5385,9 +5339,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // VISUALIZE
     if( amp_painter )
     {
-        amp_painter->add_osc( 0, data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
-        amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), data_buffer->osc_switchs.getReadPointer(1), num_samples_ );
-        amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), data_buffer->osc_switchs.getReadPointer(2), num_samples_ );
+        amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
+        amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
+        amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
     }
 
     // UI INFORMATIONS

@@ -30,8 +30,6 @@
 class EndlessBuffer : public RuntimeListener
 {
 protected:
-    CriticalSection writer_lock;
-    CriticalSection reader_lock;
     mono_AudioSampleBuffer<1> sample_buffer;
 
     int current_size;
@@ -42,9 +40,12 @@ public:
     inline void write( const float* samples_, const float* samples_2_, int num_samples_ ) noexcept;
 
 public:
-    inline void read_lock() noexcept;
-    inline float get_next_and_count( int& pos_ ) const noexcept;
-    inline void read_unlock() noexcept;
+    // TODO you can improve it by coounting the pos one time by a master and not for each painting: also you have it in sync
+    inline float get( int pos_ ) const noexcept;
+    inline float get_size() const noexcept
+    {
+        return current_size;
+    }
 
 private:
     COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
@@ -59,14 +60,22 @@ inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noex
 {
     float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
     int tmp_position = reader_position;
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
-    {
-        tmp_sample_buffer[tmp_position] = samples_[sid];
 
-        tmp_position++;
-        if( tmp_position >= current_size )
+    if( tmp_position + num_samples_ < current_size )
+    {
+        FloatVectorOperations::copy( &tmp_sample_buffer[tmp_position], samples_, num_samples_ );
+        tmp_position+=num_samples_;
+    }
+    else
+    {
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            tmp_position = 0;
+            if( tmp_position++ >= current_size )
+            {
+                tmp_position = 0;
+            }
+
+            tmp_sample_buffer[tmp_position] = samples_[sid];
         }
     }
 
@@ -93,14 +102,22 @@ inline void EndlessBuffer::write( const float* samples_, const float* samples_2_
 {
     float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
     int tmp_position = reader_position;
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
-    {
-        tmp_sample_buffer[tmp_position] = sample_mix_ui(samples_[sid],samples_2_[sid]);
 
-        tmp_position++;
-        if( tmp_position >= current_size )
+    if( tmp_position + num_samples_ < current_size )
+    {
+        FloatVectorOperations::copy( &tmp_sample_buffer[tmp_position], samples_, num_samples_ );
+        tmp_position+=num_samples_;
+    }
+    else
+    {
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            tmp_position = 0;
+            if( tmp_position++ >= current_size )
+            {
+                tmp_position = 0;
+            }
+
+            tmp_sample_buffer[tmp_position] = samples_[sid];//sample_mix_ui(samples_[sid],samples_2_[sid]);
         }
     }
 
@@ -133,17 +150,27 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
     float*const tmp_sample_buffer = sample_buffer.getWritePointer();
     float*const tmp_switch_buffer = switch_buffer.getWritePointer();
     int tmp_position = reader_position;
-    for( int sid = 0 ; sid != num_samples_ ; ++sid )
-    {
-        tmp_sample_buffer[tmp_position] = samples_[sid];
-        tmp_switch_buffer[tmp_position] = switchs_[sid];
 
-        tmp_position++;
-        if( tmp_position >= current_size )
-	{
-            tmp_position = 0;
-	}
+    if( tmp_position + num_samples_ < current_size )
+    {
+        FloatVectorOperations::copy( &tmp_sample_buffer[tmp_position], samples_, num_samples_ );
+        FloatVectorOperations::copy( &tmp_switch_buffer[tmp_position], switchs_, num_samples_ );
+        tmp_position+=num_samples_;
     }
+    else
+    {
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            if( tmp_position++ >= current_size )
+            {
+                tmp_position = 0;
+            }
+
+            tmp_sample_buffer[tmp_position] = samples_[sid];
+            tmp_switch_buffer[tmp_position] = switchs_[sid];
+        }
+    }
+
 
     reader_position = tmp_position;
 }
@@ -160,9 +187,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class Monique_Ui_AmpPainter  : public Component,
-    public Timer,
-    public SliderListener,
-    public ButtonListener
+                               public Timer,
+                               public SliderListener,
+                               public ButtonListener
 {
 public:
     //==============================================================================
@@ -181,7 +208,8 @@ private:
     EndlessBuffer eq_values;
     EndlessBuffer values_env;
     EndlessBuffer values;
-    OwnedArray<EndlessSwitchBuffer> osc_values;
+    EndlessSwitchBuffer master_osc_values;
+    OwnedArray<EndlessBuffer> osc_values;
 
     Array<EndlessBuffer*> buffers;
 
@@ -191,15 +219,15 @@ public:
     inline void add_eq( const float* values_, int num_samples_ ) noexcept;
     inline void add_out_env( const float* values_, int num_samples_ ) noexcept;
     inline void add_out( const float* values_l_, const float* values_r_, int num_samples_ ) noexcept;
-    inline void add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
-private:
-    inline void lock_for_reading() noexcept;
-    inline void unlock_for_reading() noexcept;
+    inline void add_master_osc( const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
+    inline void add_osc( int id_, const float* values_, int num_samples_ ) noexcept;
 
 private:
     void timerCallback() override;
 
     void refresh_buttons();
+
+    bool is_currently_painting;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -272,14 +300,21 @@ inline void Monique_Ui_AmpPainter::add_out( const float* values_l_, const float*
         values.write( values_l_, values_r_, num_samples_ );
     }
 }
-inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
+inline void Monique_Ui_AmpPainter::add_master_osc( const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
 {
     //if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and synth_data->osci_show_osc_3 )
     {
-        EndlessSwitchBuffer*const values = osc_values.getUnchecked(id_);
-        values->write( values_, is_switch_values, num_samples_ );
+        master_osc_values.write( values_, is_switch_values, num_samples_ );
     }
-};
+}
+inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, int num_samples_ ) noexcept
+{
+    //if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and synth_data->osci_show_osc_3 )
+    {
+        EndlessBuffer*const osc_values_ = osc_values.getUnchecked(id_-1);
+        osc_values_->write( values_, num_samples_ );
+    }
+}
 //[/EndFile]
 
 #endif   // __JUCE_HEADER_15EBFFC85DA080CA__
