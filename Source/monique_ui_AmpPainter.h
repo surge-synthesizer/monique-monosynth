@@ -103,12 +103,6 @@ inline void EndlessBuffer::write( const float* samples_, const float* samples_2_
     float*const tmp_sample_buffer = sample_buffer.getWritePointer(0);
     int tmp_position = reader_position;
 
-    if( tmp_position + num_samples_ < current_size )
-    {
-        FloatVectorOperations::copy( &tmp_sample_buffer[tmp_position], samples_, num_samples_ );
-        tmp_position+=num_samples_;
-    }
-    else
     {
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
@@ -117,7 +111,7 @@ inline void EndlessBuffer::write( const float* samples_, const float* samples_2_
                 tmp_position = 0;
             }
 
-            tmp_sample_buffer[tmp_position] = samples_[sid];//sample_mix_ui(samples_[sid],samples_2_[sid]);
+            tmp_sample_buffer[tmp_position] = sample_mix_ui(samples_[sid],samples_2_[sid]);
         }
     }
 
