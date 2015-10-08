@@ -789,7 +789,7 @@ public:
 
         angle+=delta;
         phase+=rate;
-        if( angle >= (double_Pi+double_Pi) )
+        if( angle > (double_Pi+double_Pi) )
         {
             angle -= (double_Pi+double_Pi);
             phase -= (double_Pi+double_Pi);
@@ -1092,7 +1092,7 @@ public:
         new_cycle = false;
 
         angle+=delta;
-        if( angle >= (double_Pi+double_Pi) )
+        if( angle > (double_Pi+double_Pi) )
         {
             angle -= (double_Pi+double_Pi);
             new_cycle = true;
@@ -1169,7 +1169,7 @@ public:
         new_cycle = false;
 
         angle+=delta;
-        if( angle-(double_Pi*0.5) >= (double_Pi+double_Pi) )
+        if( angle-(double_Pi*0.5) > (double_Pi+double_Pi) )
         {
             angle -= (double_Pi+double_Pi);
             new_cycle = true;
