@@ -284,6 +284,7 @@ peak_meter(nullptr)
     {
         synth_data->load_settings();
         synth_data->read_midi();
+	synth_data->load_default();
 #ifdef IS_STANDALONE
         synth_data->load();
 #endif
@@ -593,13 +594,6 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     note_down_store->handle_midi_messages( midi_messages_ );
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
-
-                    // VISUALIZE
-                    if( peak_meter )
-                    {
-                        ScopedLock locked(peak_meter_lock);
-                        peak_meter->process( buffer_.getReadPointer(0), num_samples );
-                    }
                 }
                 AppInstanceStore::getInstance()->unlock_amp_painter();
 #ifdef IS_STANDALONE
@@ -897,11 +891,10 @@ int MoniqueAudioProcessor::getNumPrograms()
 }
 int MoniqueAudioProcessor::getCurrentProgram()
 {
-    return synth_data->get_current_programm_id_abs();
+    return jmax(0,synth_data->get_current_programm_id_abs());
 }
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
-    std::cout << "setCurrentProgram" << std::endl;
     synth_data->set_current_program_abs(id_);
     synth_data->load(true,true);
 }

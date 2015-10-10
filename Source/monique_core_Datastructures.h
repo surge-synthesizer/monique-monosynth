@@ -441,7 +441,7 @@ struct OSCData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define MIN_ENV_TIMES 1
+#define MIN_ENV_TIMES 1 // 15
 struct ENVData
 {
     const int id;
@@ -724,7 +724,7 @@ inline float ArpSequencerData::shuffle_to_value( int suffle_ ) noexcept
         return 6.0f/8;
     case 15 :
         return 7.0f/8;
-    case 16 :
+    default :
         return 1;
     }
 }
@@ -774,7 +774,7 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static int get_low_pass_band_frequency( int band_id_ ) noexcept
+static inline int get_low_pass_band_frequency( int band_id_ ) noexcept
 {
     switch(band_id_)
     {
@@ -794,7 +794,7 @@ static int get_low_pass_band_frequency( int band_id_ ) noexcept
         return 22000;
     }
 }
-static int get_high_pass_band_frequency( int band_id_ ) noexcept
+static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
 {
     switch(band_id_)
     {
@@ -909,8 +909,6 @@ struct MoniqueSynthData : ParameterListener
     SmoothedParameter delay_smoother;
     Parameter effect_bypass;
     SmoothedParameter effect_bypass_smoother;
-    Parameter final_clipping;
-    SmoothedParameter final_clipping_smoother;
     Parameter shape;
     SmoothedParameter shape_smoother;
     Parameter distortion;
@@ -1096,6 +1094,7 @@ private:
 
 public:
     // ==============================================================================
+    void load_default() noexcept;
     void save_to( XmlElement* xml ) noexcept;
     void read_from( const XmlElement* xml ) noexcept;
 

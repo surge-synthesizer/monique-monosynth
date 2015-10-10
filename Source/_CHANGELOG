@@ -43,12 +43,33 @@ DONE
 - improved: fm does no more generate aliasing, shifted the phase to get a smooth flow of both sequencys
 - fixed: sync problems of the amp painter
 - fixed: amp painter stops working
+- plugin: loads the last session as new program -> will be the factory default program soon
+- change: min env times to 1ms
+- reworked envelopes and the shaping algorythm
+- improve distortion
+- fixed: load save plugin
+- fixed: a lot of wrong initalized params in the plugin 
+
+----
+
+- fixed brocken distortion
+- add a auto soft clipping > 0.9 and clipp > 1...
+- change back to 10 ms attack 
+- fixed led on top of the filter input
+- removed the force option of the main output 
+- filter 3 ist leiser
+
 
 
 miete martin
-
-
-
+-------aller zwei werte einen zyklus und den davor als scnhnitt der zwei nehmen
+-------a marker on the keyboard for the current program note if not C1!
+-------lp pass switch knackt
+-------copy option env
+-------main env sustain cracksl, have stored program 
+-------add a soft clipping back to the main out
+-------add more final gain (by 5?) - check without distortion
+------- manorame gesmooth atormatisieren
 
 aus dem ewi ergibt sich natürlich auch noch die notwendikeit den arp nur zu pitchen
 
@@ -56,6 +77,8 @@ Hm. Jetzt fängts an zu klicken. Ich hab nen fetzen Code drin, der die Retun val
 Hey aber über CTRL oder ALT kann man ja da noch ein paar Optionen anbieten. SEHR GEIL! Danke! Wird eingebaut!
 Mögliche Returns: FactoryDefault; StateOnProgrammLoad; UserReturn (right mouse) -> so kann man ich auch Werte aus einem Programm in ein anderes "schleppen". Gefällt mir, konnte mich für keines der 3 entscheiden!
 
+Es gibt so einige Klassiker, die mit einem System-Default immer gut kommen, damit du aus "neutral" heraus arbeiten kannst, z.B. Gain 0, Cutoff max., Reso 0, OSC Level (hier ab Sektion 2, wegen Filter und Generator auf 0), sonst frickelst du dir den Parameter immer erst hin. Manchmal ist es halt flott, denn Parameter mit einem Klick auf den typischen Defaultwert zu fahren, und das kombiniert man mit einer Sondertaste. Es geht ja nicht darum, sofort und sämtliche Parameter via Default-Reset zu versehen.
+FactoryDefault, StateOnProgramm oder User Return sind dann noch die user-freundlichen Konzepte, die nicht nur den Spaß an der Kiste vergrößern, sondern eine lockere Arbeitsweise ermöglichen. Interessant ist auch ein selektiver Reset ausgewählter Parameter.
 
 
 ****************************************************************************
@@ -67,7 +90,6 @@ EWIND / Breath Contoller: enable all steps of the arp, turn on the arp and use t
 
 BUGS:
 ****************************************************************************
-- oci lags: ganz neu
 - sustain für main adsr dard nicht kleiner null sein! das heist parameter die kleiner 0 sind und wir den wert von extern überschreiben, gibt es probleme
 - sustain muss wirklich unendlich sein!!!!!!!
 - ulkige frage ob speichern beim wählen eines morph preset (r 4)
@@ -119,7 +141,6 @@ BUILD:
 ****************************************************************************
 - audio unit build
 - asio suppoert
-
 
 QUESTS:
 ****************************************************************************

@@ -282,7 +282,7 @@ public:
             value = value_;
         }
     }
-    
+
 public:
     // ==============================================================================
     // MODULATOR (OPTIONAL PARAMETER)
@@ -1079,14 +1079,10 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
 
     if( has_modulation( param_ ) )
     {
-        const float old_modulation_amount = param_->get_modulation_amount();
         const float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
 
-        if( old_modulation_amount != new_modulation_amount )
-        {
-            param_->set_modulation_amount_without_notification( new_modulation_amount );
-            success = true;
-        }
+        param_->set_modulation_amount_without_notification( new_modulation_amount );
+        success = true;
     }
 
     if( success )

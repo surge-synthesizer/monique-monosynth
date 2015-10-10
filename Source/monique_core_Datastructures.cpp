@@ -391,7 +391,7 @@ shape
 (
     MIN_MAX( 0, 1 ),
     0.5,
-    20000,
+    1000,
     generate_param_name(ENV_NAME,id,"shape"),
     generate_short_human_name(ENV_NAME,id_,"shape")
 )
@@ -1662,15 +1662,6 @@ id( data_type ),
         generate_short_human_name("FX","mix")
     ),
     effect_bypass_smoother(&effect_bypass),
-    final_clipping
-    (
-        MIN_MAX( 0, 1 ),
-        0.7,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"final_compression"),
-        generate_short_human_name("MAIN","clipping")
-    ),
-    final_clipping_smoother(&final_clipping),
     shape
     (
         MIN_MAX( 0, 1 ),
@@ -2056,7 +2047,6 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->distortion = src_->distortion;
     dest_->shape = src_->shape;
     dest_->octave_offset = src_->octave_offset;
-    dest_->final_clipping = src_->final_clipping;
     dest_->note_offset = src_->note_offset;
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
@@ -2116,7 +2106,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->effect_bypass );
     collect_saveable_parameters( env_data, saveable_parameters, true );
     collect_saveable_parameters( eq_data, saveable_parameters );
-    saveable_parameters.add( &this->final_clipping );
     saveable_parameters.add( &this->volume );
 
     saveable_parameters.add( &this->glide );
@@ -2147,7 +2136,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &osci_show_out_env );
     global_parameters.add( &osci_show_range );
     global_parameters.add( &num_extra_threads );
-    
+
     global_parameters.add( &auto_close_env_popup );
     global_parameters.add( &auto_switch_env_popup );
 
@@ -2355,7 +2344,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         // MAIN
         {
             morph_group_3->register_parameter( volume.ptr(), data_type == MASTER );
-            morph_group_3->register_parameter( final_clipping.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( env_data->attack.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->decay.ptr(), data_type == MASTER  );
@@ -2755,15 +2743,14 @@ void MoniqueSynthData::refresh_banks_and_programms() noexcept
 
     // PROGRAMMS PER BANK
     synth_data.program_names_per_bank.clearQuick();
-    synth_data.program_names_per_bank.add( StringArray() );
-    synth_data.program_names_per_bank.add( StringArray() );
-    synth_data.program_names_per_bank.add( StringArray() );
-    synth_data.program_names_per_bank.add( StringArray() );
-
-    update_bank_programms( 0, synth_data.program_names_per_bank.getReference(0) );
-    update_bank_programms( 1, synth_data.program_names_per_bank.getReference(1) );
-    update_bank_programms( 2, synth_data.program_names_per_bank.getReference(2) );
-    update_bank_programms( 3, synth_data.program_names_per_bank.getReference(3) );
+    for( int i = 0 ; i != 26 ; ++i )
+    {
+        synth_data.program_names_per_bank.add( StringArray() );
+    }
+    for( int i = 0 ; i != 26 ; ++i )
+    {
+        update_bank_programms( i, synth_data.program_names_per_bank.getReference(i) );
+    }
 
     synth_data.calc_current_program_abs();
 }
@@ -2972,9 +2959,13 @@ const String& MoniqueSynthData::get_program_name_abs(int id_) const noexcept
     {
         const int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
         if( id_ < bank_size )
+        {
             return synth_data.program_names_per_bank.getReference(bank_id)[id_];
+        }
         else
+        {
             id_ -= bank_size;
+        }
     }
 
     return error_string;
@@ -3209,6 +3200,12 @@ bool MoniqueSynthData::load( const String& bank_name_, const String& program_nam
 }
 
 // ==============================================================================
+void MoniqueSynthData::load_default() noexcept
+{
+    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::INITER_mlprog );
+    read_from( xml );
+}
+// ==============================================================================
 void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 {
     if( xml_ )
@@ -3332,8 +3329,10 @@ void MoniqueSynthData::load_settings() noexcept
                 read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
             }
         }
+#ifdef IS_STANDALONE
         current_bank = xml->getIntAttribute( "BANK", 0 );
         current_program = xml->getIntAttribute( "PROG", -1 );
+#endif
 
         UiLookAndFeel::getInstance()->colours.read_from( xml );
     }

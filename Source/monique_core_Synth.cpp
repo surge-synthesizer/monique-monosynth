@@ -5,6 +5,8 @@
 #include "monique_ui_AmpPainter.h"
 #include "monique_core_Processor.h"
 
+#include "monique_ui_SegmentedMeter.h"
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -289,7 +291,7 @@ class mono_MultiThreaded
 public:
     //==============================================================================
     inline mono_MultiThreaded() noexcept {}
-    inline ~mono_MultiThreaded() noexcept {}
+    inline virtual ~mono_MultiThreaded() noexcept {}
 
 private:
     //==============================================================================
@@ -632,6 +634,32 @@ static inline float soft_clipp_greater_1_2( float x ) noexcept
 
     return x;
 }
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float soft_clipp_greater_0_9( float x ) noexcept
+{
+    if( x > 0.9f )
+    {
+        x = 0.9f + soft_clipping( x - 0.9f );
+    }
+    else if( x < -0.9f )
+    {
+        x = -0.9f + soft_clipping( x + 0.9f );
+    }
+
+    if( x > 1 )
+    {
+        x = 1;
+    }
+    else if( x < -1 )
+    {
+        x = -1;
+    }
+
+
+    return x;
+}
 
 //==============================================================================
 //==============================================================================
@@ -680,6 +708,36 @@ SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
 static float inline lookup_sine(float x) noexcept
 {
     return SINE_LOOKUP_TABLE[ int(int64(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE) ];
+}
+//==============================================================================
+//==============================================================================
+//==============================================================================
+float* COS_LOOKUP_TABLE;
+class COS_LOOKUP
+{
+    COLD COS_LOOKUP() noexcept
+    {
+        COS_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
+        {
+            COS_LOOKUP_TABLE[i] = std::cos( double(i) / TABLESIZE_MULTI );
+        }
+    }
+    COLD ~COS_LOOKUP() noexcept
+    {
+        delete[] COS_LOOKUP_TABLE;
+        clearSingletonInstance();
+    }
+
+public:
+    juce_DeclareSingleton (COS_LOOKUP,false)
+};
+juce_ImplementSingleton (COS_LOOKUP)
+COS_LOOKUP*const cos_lookup_self_init = COS_LOOKUP::getInstance();
+
+static float inline lookup_cos(float x) noexcept
+{
+    return COS_LOOKUP_TABLE[ int(int64(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE) ];
 }
 
 //==============================================================================
@@ -875,7 +933,7 @@ public:
     }
 
     //==========================================================================
-    inline float set_phase_offset( float offset_ ) noexcept
+    inline void set_phase_offset( float offset_ ) noexcept
     {
         phase_offset = offset_*float_Pi;
     }
@@ -985,7 +1043,7 @@ public:
     }
 
     //==========================================================================
-    inline float set_phase_offset( float offset_ ) noexcept
+    inline void set_phase_offset( float offset_ ) noexcept
     {
         phase_offset = offset_*float_Pi;
     }
@@ -1052,7 +1110,7 @@ public:
     }
 
     //==========================================================================
-    inline float set_phase_offset( float offset_ ) noexcept
+    inline void set_phase_offset( float offset_ ) noexcept
     {
         phase_offset = offset_ * float_Pi;
     }
@@ -1333,7 +1391,7 @@ public:
     {
         // Compute periodic and random modulations.
         last_tick_value = vibrato.tick();
-        if ( noiseCounter++ > noiseRate )
+        if( ++noiseCounter > noiseRate )
         {
             noise.tick();
             noiseCounter = 0;
@@ -1632,7 +1690,7 @@ public:
                     {
                         --freq_glide_samples_left;
                     }
-                    //if( square_generator.is_next_a_new_cycle() )
+
                     {
                         last_root_note = root_note;
 
@@ -2103,7 +2161,170 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define FORCE_ZERO_SAMPLES 50
+class mono_ENVOsccilator : public RuntimeListener
+{
+    float start_amp;
+    float out_amp;
+    float target_amp;
+    enum TYPE
+    {
+        ATTACK,
+        RELEASE,
+        KEEP
+    };
+    TYPE type;
+
+    float delta;
+    float angle;
+    float sine_angle_start;
+
+    float shape;
+    float time_in_samples;
+    int sample_counter;
+    bool is_unlimited;
+
+public:
+    //==========================================================================
+    // SHAPE 0 - sine-, 1 - linear, 2 - sine+
+    inline void set_process_values( float start_value_, float end_value_, float shape_, float time_in_ms_ ) noexcept
+    {
+        start_amp = start_value_;
+        target_amp = end_value_;
+        shape = shape_;
+        time_in_samples = msToSamplesFast( time_in_ms_, sample_rate );
+    }
+    inline void calculate_attack_coeffecients() noexcept
+    {
+        sample_counter = time_in_samples;
+        angle = 0;
+        sine_angle_start = float_Pi*1.5f;
+        type = TYPE::ATTACK;
+        is_unlimited = false;
+        delta = float_Pi / sample_counter;
+    }
+    inline void calculate_release_coeffecients() noexcept
+    {
+        sample_counter = time_in_samples;
+        angle = 0;
+        sine_angle_start = float_Pi*1.5f;
+        type = TYPE::RELEASE;
+        is_unlimited = false;
+        delta = float_Pi / sample_counter;
+    }
+    inline void calculate_keep_coeffecients() noexcept
+    {
+        sample_counter = time_in_samples;
+        delta = 0;
+        angle = 0;
+        type = TYPE::KEEP;
+        is_unlimited = false;
+    }
+    inline void calculate_unlimited_coeffecients() noexcept
+    {
+        sample_counter = 0;
+        delta = 0;
+        angle = 0;
+        type = TYPE::KEEP;
+        is_unlimited = true;
+    }
+    inline void only_calculate_new_target( float target_ ) noexcept
+    {
+        start_amp = out_amp;
+        target_amp = target_;
+        sample_counter = time_in_samples;
+        angle = 0;
+        delta = float_Pi / sample_counter;
+    }
+
+public:
+#define EXP_PI_05_CORRECTION 4.81048f
+#define EXP_PI_1_CORRECTION 23.1407f
+#define LOG_PI_1_CORRECTION 1.42108f
+
+    //==========================================================================
+    inline float tick() noexcept
+    {
+        if( --sample_counter > 0 )
+        {
+            angle += delta;
+            // const float exp_pi_for_angle = (exp(angle)/EXP_PI_1_CORRECTION);
+            const float cos_for_angle = lookup_cos(angle+sine_angle_start);
+            const float angle_drift = shape*(angle-cos_for_angle) /* exp_pi_for_angle*angle*shape*/ + (angle+cos_for_angle)*(1.0f-shape);
+            if( type == TYPE::ATTACK )
+            {
+                float change = (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5) * (target_amp-start_amp);
+                out_amp = start_amp + change;
+            }
+            else if( type == TYPE::RELEASE )
+            {
+                out_amp = start_amp - (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5) * (start_amp-target_amp);
+            }
+        }
+        return out_amp;
+    }
+
+public:
+    //==========================================================================
+    inline float last_out() const noexcept
+    {
+        return out_amp;
+    }
+    inline void overwrite_current_value(float amp_) noexcept
+    {
+        out_amp = amp_;
+    }
+
+    //==========================================================================
+    inline bool is_finished() const noexcept
+    {
+        return not is_unlimited and sample_counter <= 0;
+    }
+
+    //==========================================================================
+    inline void reset() noexcept
+    {
+        sample_counter = 0;
+        start_amp = 0;
+        out_amp = 0;
+        type = KEEP;
+        target_amp = 0;
+        delta = 0;
+        angle = 0;
+        time_in_samples = 0;
+        sample_counter = 0;
+        is_unlimited = false;
+    }
+public:
+    //==========================================================================
+COLD mono_ENVOsccilator() noexcept :
+    start_amp(0),
+              out_amp(0),
+              target_amp(0),
+              type(KEEP),
+
+              delta(0),
+              angle(0),
+              sine_angle_start(0),
+
+              shape(0),
+
+              time_in_samples(0),
+              sample_counter(0),
+              is_unlimited(false)
+    {}
+    COLD ~mono_ENVOsccilator() noexcept {}
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 enum STAGES
 {
     END_ENV = false,
@@ -2113,378 +2334,209 @@ enum STAGES
     RELEASE,
     TRIGGER_START
 };
-enum OPTIONS
-{
-    WORK_FROM_CURRENT_VALUE = -1
-};
-class ValueEnvelope : public RuntimeListener
-{
-    int samples_to_target_left;
-    float current_value;
-    float last_value;
-    float end_value;
-
-public:
-    inline float tick( float shape_, float shape_factor_ ) noexcept;
-    inline void sustain_tick( float sustain_ ) noexcept;
-    inline void update( float end_value_, int time_in_samples, float start_value_ = WORK_FROM_CURRENT_VALUE ) noexcept;
-    inline bool end_reached() const noexcept;
-    inline void replace_current_value( float value_ ) noexcept;
-
-    inline void reset() noexcept;
-
-    //==============================================================================
-    // FOR UI PURPOSES
-    float get_current_amp() const noexcept;
-
-    //==============================================================================
-    COLD ValueEnvelope() noexcept;
-    COLD ~ValueEnvelope() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ValueEnvelope)
-};
-
-COLD ValueEnvelope::ValueEnvelope() noexcept
-:
-samples_to_target_left(0),
-                       current_value(0),
-                       last_value(0),
-                       end_value(0)
-{
-}
-COLD ValueEnvelope::~ValueEnvelope() noexcept {}
-
-//==============================================================================
-#define EXP_MULTI 1
-#define EXP_DIV 1.71828f
-//6.38906f;
-// TODO if sustain only call if sustain is endless!
-inline float ValueEnvelope::tick( float shape_, float shape_factor_ ) noexcept
-{
-    --samples_to_target_left;
-    {
-        if( samples_to_target_left > 0 )
-        {
-            if( samples_to_target_left == 0 )
-                current_value = end_value;
-            else
-            {
-                if( shape_ < 0.25f )
-                {
-                    float delta_ = (end_value-current_value)/samples_to_target_left;
-                    if( delta_ >= 0 )
-                        current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
-                    else
-                    {
-                        delta_ *= -1;
-                        float shape_factor_release = shape_*4;
-
-                        current_value -= (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_release) + delta_*shape_factor_release);
-                    }
-                }
-                else if( shape_ < 0.5f )
-                {
-                    float delta_ = (end_value-current_value)/samples_to_target_left;
-                    if( delta_ >= 0 )
-                        current_value += (((log(delta_*5.0f + 1))/1.79176f)*(1.0f-shape_factor_) + delta_*shape_factor_);
-                    else
-                    {
-                        delta_ *= -1;
-                        float shape_factor_release = (shape_-0.25f)*8;
-                        if( shape_factor_release >= 1.0f )
-                            shape_factor_release = 1.0f - (shape_factor_release - 1);
-
-                        current_value -= (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                    }
-                }
-                else if( shape_ > 0.75f )
-                {
-                    float delta_ = (end_value-current_value)/samples_to_target_left;
-                    if( delta_ >= 0 )
-                    {
-                        current_value += (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_ + delta_*(1.0f-shape_factor_));
-                    }
-                    else
-                    {
-                        delta_ *= -1;
-                        float shape_factor_release = (shape_-0.75f)*4;
-                        current_value -= (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                    }
-                }
-                else if( shape_ > 0.5f )
-                {
-                    float delta_ = (end_value-current_value)/samples_to_target_left;
-                    if( delta_ >= 0 )
-                        current_value += (((exp(delta_*EXP_MULTI)-1.0f)/EXP_DIV)*shape_factor_ + delta_*(1.0f-shape_factor_));
-                    else
-                    {
-                        delta_ *= -1;
-                        float shape_factor_release = (shape_-0.5f)*8;
-                        if( shape_factor_release >= 1.0f )
-                            shape_factor_release = 1.0f - (shape_factor_release - 1);
-
-                        current_value -= (((log(delta_*5.0f + 1))/1.79176f)*shape_factor_release + delta_*(1.0f-shape_factor_release));
-                    }
-                }
-                else
-                {
-                    float delta_ = (end_value-current_value)/samples_to_target_left;
-                    current_value+=delta_;
-                }
-            }
-
-            if( current_value > 1 )
-            {
-                current_value = 1;
-            }
-            else if( current_value < 0 )
-            {
-                current_value = 0;
-            }
-        }
-        else
-        {
-            current_value = end_value;
-        }
-    }
-
-    return current_value;
-}
-inline void ValueEnvelope::sustain_tick( float sustain_ ) noexcept
-{
-    --samples_to_target_left;
-    current_value = sustain_;
-}
-
-inline void ValueEnvelope::update( float end_value_, int time_in_samples, float start_value_ ) noexcept
-{
-    // UPDATE INTERNALS
-    if( start_value_ != WORK_FROM_CURRENT_VALUE )
-    {
-        current_value = start_value_;
-    }
-
-    end_value = end_value_;
-
-    // CALC
-    samples_to_target_left = jmax(int64(10),msToSamplesFast( time_in_samples + MIN_ENV_TIMES, sample_rate ));
-    if( samples_to_target_left <= 0 )
-    {
-        current_value = end_value;
-    }
-}
-
-//==============================================================================
-inline bool ValueEnvelope::end_reached() const noexcept
-{
-    return samples_to_target_left <= 0;
-}
-inline void ValueEnvelope::replace_current_value( float value_ ) noexcept
-{
-    current_value = value_;
-}
-inline void ValueEnvelope::reset() noexcept
-{
-    samples_to_target_left = 0;
-    current_value = 0;
-    end_value = 0;
-}
-
-//==============================================================================
-float ValueEnvelope::get_current_amp() const noexcept
-{
-    return current_value;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
 class ENV
 {
-    ValueEnvelope envelop;
+    mono_ENVOsccilator env_osc;
 
     STAGES current_stage;
 
     const MoniqueSynthData*const synth_data;
+    float last_sustain;
+    bool goes_to_or_is_sustain;
 
 public:
     ENVData*const env_data;
 
 public:
-    //==============================================================================
-    inline void process( float* dest_, const int num_samples_ ) noexcept;
+    //==========================================================================
+    inline void process( float* dest_, const int num_samples_ ) noexcept
+    {
+        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
+        for( int sid = 0 ; sid < num_samples_ ; ++sid )
+        {
+            if( last_sustain != smoothed_sustain_buffer[sid] )
+            {
+                last_sustain = smoothed_sustain_buffer[sid];
+                if( goes_to_or_is_sustain )
+                {
+                    env_osc.only_calculate_new_target(positive(last_sustain));
+                }
+            }
+            dest_[sid]  = env_osc.tick();
+
+            if( env_osc.is_finished() )
+            {
+                update_stage( sid );
+            }
+        }
+    }
+
 private:
-    inline void update_stage( int sid_ ) noexcept;
+    inline void update_stage( int sid_ ) noexcept
+    {
+        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
+        switch( current_stage )
+        {
+        case TRIGGER_START : // --> ATTACK
+        {
+            {
+                if( env_data->decay > 0 )
+                {
+                    env_osc.set_process_values
+                    (
+                        env_osc.last_out(), 1,
+                        env_data->shape,
+                        env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES
+                    );
+                    goes_to_or_is_sustain = false;
+                }
+                else
+                {
+                    env_osc.set_process_values
+                    (
+                        env_osc.last_out(), positive_sustain(smoothed_sustain_buffer[sid_]),
+                        env_data->shape,
+                        env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES
+                    );
+                    goes_to_or_is_sustain = true;
+                }
+                env_osc.calculate_attack_coeffecients();
+            }
+            current_stage = ATTACK;
+
+            break;
+        }
+        case ATTACK : // --> DECAY
+        {
+            if( env_data->decay > 0 )
+            {
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), positive_sustain(smoothed_sustain_buffer[sid_]),
+                    env_data->shape,
+                    env_data->decay*env_data->max_decay_time
+                );
+                goes_to_or_is_sustain = true;
+                env_osc.calculate_release_coeffecients();
+
+                current_stage = DECAY;
+
+                break;
+            }
+            // ELSE FALL TO DECAY AN START SUSTAIN LEVEL
+        }
+        case DECAY : // --> SUSTAIN
+        {
+            float sustain_time = env_data->sustain_time;
+            if( sustain_time >= 1.0f )
+            {
+                env_osc.calculate_unlimited_coeffecients();
+            }
+            else
+            {
+                float sustain_level = positive_sustain(smoothed_sustain_buffer[sid_]);
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), sustain_level,
+                    env_data->shape,
+                    sustain_time
+                );
+                goes_to_or_is_sustain = true;
+
+                env_osc.calculate_keep_coeffecients();
+            }
+
+            current_stage = SUSTAIN;
+
+            break;
+        }
+        case SUSTAIN : // --> RELEASE
+        {
+            env_osc.set_process_values
+            (
+                env_osc.last_out(), 0,
+                env_data->shape,
+                env_data->release*env_data->max_release_time+MIN_ENV_TIMES
+            );
+            goes_to_or_is_sustain = false;
+            env_osc.calculate_release_coeffecients();
+
+            current_stage = RELEASE;
+
+            break;
+        }
+        case RELEASE : // --> RELEASE
+        {
+            goes_to_or_is_sustain = false;
+            current_stage = END_ENV;
+
+            break;
+        }
+        default:
+        {
+            goes_to_or_is_sustain = false;
+            current_stage = END_ENV;
+        }
+        }
+    }
+
+public:
+    //==========================================================================
+    inline void start_attack() noexcept
+    {
+        current_stage = TRIGGER_START;
+        update_stage( 0 );
+    }
+    inline void set_to_release() noexcept
+    {
+        current_stage = SUSTAIN;
+        update_stage( 0 );
+    }
+    inline void reset() noexcept
+    {
+        current_stage = END_ENV;
+        env_osc.reset();
+    }
+
+    //==============================================================================
+    inline STAGES get_current_stage() const noexcept
+    {
+        return current_stage;
+    }
+    inline void set_current_stage( STAGES current_stage_ ) noexcept
+    {
+        current_stage = current_stage_;
+    }
+    inline void overwrite_current_value( float amp_ ) noexcept
+    {
+        env_osc.overwrite_current_value( amp_ );
+    }
+
+    //==============================================================================
+    inline float get_amp() const noexcept
+    {
+        return env_osc.last_out();
+    }
 
 public:
     //==============================================================================
-    inline void start_attack() noexcept;
-    inline void set_to_release() noexcept;
-    inline void reset() noexcept;
+    inline ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ ) noexcept
+:
+    env_osc(),
 
-public:
-    inline STAGES get_current_stage() const noexcept;
-    inline void set_current_stage( STAGES current_stage_ ) noexcept;
-    inline void overwrite_current_value( float amp_ ) noexcept;
-    inline float get_amp() const noexcept;
+            current_stage(END_ENV),
 
-public:
-    //==============================================================================
-    ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ );
-    ~ENV();
+            synth_data( synth_data_ ),
+            env_data( env_data_ ),
+
+            last_sustain(0),
+            goes_to_or_is_sustain(false)
+    {
+    }
+    inline ~ENV() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENV)
 };
-
-//==============================================================================
-ENV::ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ )
-    :
-    envelop(),
-
-    current_stage(END_ENV),
-
-    synth_data( synth_data_ ),
-    env_data( env_data_ )
-{
-}
-ENV::~ENV() {}
-
-//==============================================================================
-inline void ENV::process( float* dest_, const int num_samples_ ) noexcept
-{
-    const float shape = env_data->shape;
-    float shape_factor = 1;
-    if( shape < 0.5f )
-    {
-        shape_factor = shape * 2;
-    }
-    else if( shape > 0.5f )
-    {
-        shape_factor = (shape-0.5f) * 2;
-    }
-
-    const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
-    for( int sid = 0 ; sid < num_samples_ ; ++sid )
-    {
-        float result;
-        if( current_stage == SUSTAIN )
-        {
-            result = positive_sustain(smoothed_sustain_buffer[sid]);
-            envelop.sustain_tick( result );
-        }
-        else
-        {
-            result = envelop.tick( shape, shape_factor );
-        }
-        dest_[sid]  = result;
-
-        if( envelop.end_reached() )
-        {
-            update_stage( sid );
-        }
-    }
-}
-inline void ENV::update_stage( int sid_ ) noexcept
-{
-    const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
-    switch( current_stage )
-    {
-    case TRIGGER_START :
-    {
-        if( env_data->decay > 0 )
-        {
-            envelop.update( 1, env_data->attack*env_data->max_attack_time );
-        }
-        else
-        {
-            envelop.update( positive_sustain(smoothed_sustain_buffer[sid_]), env_data->attack*env_data->max_attack_time );
-        }
-
-        current_stage = ATTACK;
-        break;
-    }
-    case ATTACK :
-    {
-        if( env_data->decay > 0 )
-        {
-            envelop.update( positive_sustain(smoothed_sustain_buffer[sid_]), env_data->decay*env_data->max_decay_time );
-            current_stage = DECAY;
-            break;
-        }
-    }
-    case DECAY :
-    {
-        float sustain_time = env_data->sustain_time;
-        if( sustain_time == 1.0f )
-        {
-            sustain_time = sustain_time*100000;
-        }
-        else
-        {
-            sustain_time = sustain_time*10000;
-        }
-
-        envelop.update( positive_sustain(smoothed_sustain_buffer[sid_]), sustain_time, WORK_FROM_CURRENT_VALUE );
-        current_stage = SUSTAIN;
-    }
-    break;
-    case SUSTAIN :
-    {
-        envelop.update( 0, env_data->release*env_data->max_release_time );
-        current_stage = RELEASE;
-    }
-    break;
-    case RELEASE :
-    {
-        current_stage = END_ENV;
-    }
-    break;
-    default:
-        ;
-    }
-}
-inline void ENV::start_attack() noexcept
-{
-    current_stage = TRIGGER_START;
-    update_stage( 0 );
-}
-inline void ENV::set_to_release() noexcept
-{
-    current_stage = SUSTAIN;
-    update_stage( 0 );
-}
-inline void ENV::reset() noexcept
-{
-    current_stage = END_ENV;
-    envelop.reset();
-}
-
-//==============================================================================
-inline STAGES ENV::get_current_stage() const noexcept
-{
-    return current_stage;
-}
-inline void ENV::set_current_stage( STAGES current_stage_ ) noexcept
-{
-    current_stage = current_stage_;
-}
-inline void ENV::overwrite_current_value( float amp_ ) noexcept
-{
-    envelop.replace_current_value( amp_ );
-}
-
-//==============================================================================
-inline float ENV::get_amp() const noexcept
-{
-    return envelop.get_current_amp();
-}
 
 //==============================================================================
 //==============================================================================
@@ -2896,8 +2948,6 @@ public:
     }
     inline float processLow2Pass(float in_) noexcept
     {
-        return flt_2.processLowResonance( in_ );
-
         const float out = flt_2.processLowResonance( in_ );
         const float gain = flt_1.gain;
         const float low = flt_1.processLowResonance( out );
@@ -3138,14 +3188,128 @@ public:
         double_filter[2].reset();
     }
 
+private:
+    //==========================================================================
+    inline void pre_process( const int input_id, const int num_samples ) noexcept
+    {
+        // CALCULATE INPUTS AND ENVELOPS
+        {
+            {
+                if( id == FILTER_1 )
+                {
+                    float* tmp_input_ar_amp = data_buffer->filter_input_env_amps.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * FILTER_1 );
+                    ENV*const input_env( input_envs.getUnchecked(input_id) );
+                    input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp, num_samples );
+
+                    float* filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( input_id );
+                    const float* const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
+                    for( int sid = 0 ; sid != num_samples ; ++sid )
+                    {
+                        filter_input_buffer[sid] = osc_input_buffer[sid]*tmp_input_ar_amp[sid];
+                    }
+                }
+                else if( id == FILTER_2 )
+                {
+                    const float*const smoothed_sustain_buffer( input_env_datas[input_id]->sustain_smoother.get_smoothed_buffer() );
+                    float* tmp_input_ar_amp = data_buffer->filter_input_env_amps.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * FILTER_2 );
+                    ENV*const input_env( input_envs.getUnchecked(input_id) );
+                    input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp, num_samples );
+
+                    float*const filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER*FILTER_2 );
+                    const float*const filter_before_buffer = data_buffer->filter_output_samples.getReadPointer( input_id + SUM_INPUTS_PER_FILTER*FILTER_1 );
+                    const float*const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
+                    for( int sid = 0 ; sid != num_samples ; ++sid )
+                    {
+                        filter_input_buffer[sid] = smoothed_sustain_buffer[sid] < 0 ? osc_input_buffer[sid]*tmp_input_ar_amp[sid] : filter_before_buffer[sid]*tmp_input_ar_amp[sid];
+                    }
+                }
+                else
+                {
+                    float* tmp_input_ar_amp_1 = data_buffer->filter_input_env_amps.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * FILTER_3 );
+                    float* tmp_input_ar_amp_2 = data_buffer->filter_input_env_amps.getWritePointer( 1 + SUM_INPUTS_PER_FILTER * FILTER_3 );
+                    float* tmp_input_ar_amp_3 = data_buffer->filter_input_env_amps.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * FILTER_3 );
+                    {
+                        ENV*const input_env( input_envs.getUnchecked(0) );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_1, num_samples );
+                    }
+                    {
+                        ENV*const input_env( input_envs.getUnchecked(1) );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_2, num_samples );
+                    }
+                    {
+                        ENV*const input_env( input_envs.getUnchecked(2) );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_3, num_samples );
+                    }
+
+                    float*const filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * FILTER_3 );
+                    const float*const smoothed_sustain_buffer_1( input_env_datas[0]->sustain_smoother.get_smoothed_buffer() );
+                    const float*const smoothed_sustain_buffer_2( input_env_datas[1]->sustain_smoother.get_smoothed_buffer() );
+                    const float*const smoothed_sustain_buffer_3( input_env_datas[2]->sustain_smoother.get_smoothed_buffer() );
+                    const float*const filter_before_buffer_1 = data_buffer->filter_output_samples.getReadPointer( 0 + SUM_INPUTS_PER_FILTER*FILTER_2 );
+                    const float*const filter_before_buffer_2 = data_buffer->filter_output_samples.getReadPointer( 1 + SUM_INPUTS_PER_FILTER*FILTER_2 );
+                    const float*const filter_before_buffer_3 = data_buffer->filter_output_samples.getReadPointer( 2 + SUM_INPUTS_PER_FILTER*FILTER_2 );
+                    const float*const osc_input_buffer_1 = data_buffer->osc_samples.getReadPointer(0);
+                    const float*const osc_input_buffer_2 = data_buffer->osc_samples.getReadPointer(1);
+                    const float*const osc_input_buffer_3 = data_buffer->osc_samples.getReadPointer(2);
+
+                    FloatVectorOperations::clear(filter_input_buffer,num_samples);
+                    for( int sid = 0 ; sid != num_samples ; ++sid )
+                    {
+                        filter_input_buffer[sid]
+                        = sample_mix
+                        (
+                            sample_mix
+                            (
+                                smoothed_sustain_buffer_1[sid] < 0 ? osc_input_buffer_1[sid]*tmp_input_ar_amp_1[sid] : filter_before_buffer_1[sid]*tmp_input_ar_amp_1[sid],
+                                smoothed_sustain_buffer_2[sid] < 0 ? osc_input_buffer_2[sid]*tmp_input_ar_amp_2[sid] : filter_before_buffer_2[sid]*tmp_input_ar_amp_2[sid]
+                            ),
+                            smoothed_sustain_buffer_3[sid] < 0 ? osc_input_buffer_3[sid]*tmp_input_ar_amp_3[sid] : filter_before_buffer_3[sid]*tmp_input_ar_amp_3[sid]
+                        );
+                    }
+                }
+            }
+        }
+    }
+    inline void process_amp_mix( const int num_samples ) noexcept
+    {
+        // ADSTR - LFO MIX
+        float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
+        const float* smoothed_mix_buffer( filter_data->adsr_lfo_mix_smoother.get_smoothed_buffer() );
+        {
+            const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
+            const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
+            for( int sid = 0 ; sid != num_samples ; ++sid )
+            {
+                // LFO ADSR MIX - HERE TO SAVE ONE LOOP
+                const float mix = (1.0f+smoothed_mix_buffer[sid]) * 0.5f;
+                amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
+            }
+        }
+    }
+
+    static float distortion__( float x_, float distortion_power_ ) noexcept
+    {
+        if( distortion_power_ != 0 )
+        {
+            //const float distortion_add_on = distortion_power_*0.9f;
+            //x_ = ((1.0f+distortion_add_on)*x_) - (x_*x_*x_)*distortion_add_on;
+            // (std::atan(input_and_worker_)*(1.0f/float_Pi))*
+            //x_ = x_*(1.0f-distortion_power_) + 0.5f*soft_clipping( x_*10 )*(distortion_power_);
+            x_ = x_*(1.0f-distortion_power_) + (std::atan( x_*10 )/10)*distortion_power_;
+        }
+
+        return x_;
+    }
+
+public:
     //==========================================================================
     inline void process( const int num_samples ) noexcept
     {
         float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
         // PROCESS FILTER
         {
-#define DISTORTION_IN(x) distortion(x,filter_distortion)
-#define DISTORTION_OUT(x) distortion(x,filter_distortion)
+#define DISTORTION_IN(x) distortion__(x,filter_distortion)
+#define DISTORTION_OUT(x) distortion__(x,filter_distortion)
 
 #define MAX_CUTOFF 8000.0f
 #define MIN_CUTOFF 40.0f
@@ -3529,110 +3693,12 @@ public:
             {
                 const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
                 const float right = sample_mix(sample_mix(right_output_buffer_flt1[sid], right_output_buffer_flt2[sid]), right_output_buffer_flt3[sid]);
+                const float left_add = left_output_buffer_flt1[sid] + left_output_buffer_flt2[sid] + left_output_buffer_flt3[sid];
+                const float right_add = right_output_buffer_flt1[sid] + right_output_buffer_flt2[sid] + right_output_buffer_flt3[sid];
                 const float distortion = smoothed_distortion[sid];
 
-                master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left*10 )*(distortion);
-                master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right*10 )*(distortion);
-            }
-        }
-    }
-
-private:
-    //==========================================================================
-    inline void pre_process( const int input_id, const int num_samples ) noexcept
-    {
-        // CALCULATE INPUTS AND ENVELOPS
-        {
-            {
-                if( id == FILTER_1 )
-                {
-                    const float*const smoothed_sustain_buffer( input_env_datas[input_id]->sustain_smoother.get_smoothed_buffer() );
-                    float* tmp_input_ar_amp = data_buffer->filter_input_env_amps.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * FILTER_1 );
-                    ENV*const input_env( input_envs.getUnchecked(input_id) );
-                    input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp, num_samples );
-
-                    float* filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( input_id );
-                    const float* const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        filter_input_buffer[sid] = osc_input_buffer[sid]*tmp_input_ar_amp[sid];
-                    }
-                }
-                else if( id == FILTER_2 )
-                {
-                    const float*const smoothed_sustain_buffer( input_env_datas[input_id]->sustain_smoother.get_smoothed_buffer() );
-                    float* tmp_input_ar_amp = data_buffer->filter_input_env_amps.getWritePointer( input_id + SUM_INPUTS_PER_FILTER * FILTER_2 );
-                    ENV*const input_env( input_envs.getUnchecked(input_id) );
-                    input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp, num_samples );
-
-                    float*const filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( input_id + SUM_INPUTS_PER_FILTER*FILTER_2 );
-                    const float*const filter_before_buffer = data_buffer->filter_output_samples.getReadPointer( input_id + SUM_INPUTS_PER_FILTER*FILTER_1 );
-                    const float*const osc_input_buffer = data_buffer->osc_samples.getReadPointer(input_id);
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        filter_input_buffer[sid] = smoothed_sustain_buffer[sid] < 0 ? osc_input_buffer[sid]*tmp_input_ar_amp[sid] : filter_before_buffer[sid]*tmp_input_ar_amp[sid];
-                    }
-                }
-                else
-                {
-                    float* tmp_input_ar_amp_1 = data_buffer->filter_input_env_amps.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * FILTER_3 );
-                    float* tmp_input_ar_amp_2 = data_buffer->filter_input_env_amps.getWritePointer( 1 + SUM_INPUTS_PER_FILTER * FILTER_3 );
-                    float* tmp_input_ar_amp_3 = data_buffer->filter_input_env_amps.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * FILTER_3 );
-                    {
-                        ENV*const input_env( input_envs.getUnchecked(0) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_1, num_samples );
-                    }
-                    {
-                        ENV*const input_env( input_envs.getUnchecked(1) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_2, num_samples );
-                    }
-                    {
-                        ENV*const input_env( input_envs.getUnchecked(2) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_3, num_samples );
-                    }
-
-                    float*const filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * FILTER_3 );
-                    const float*const smoothed_sustain_buffer_1( input_env_datas[0]->sustain_smoother.get_smoothed_buffer() );
-                    const float*const smoothed_sustain_buffer_2( input_env_datas[1]->sustain_smoother.get_smoothed_buffer() );
-                    const float*const smoothed_sustain_buffer_3( input_env_datas[2]->sustain_smoother.get_smoothed_buffer() );
-                    const float*const filter_before_buffer_1 = data_buffer->filter_output_samples.getReadPointer( 0 + SUM_INPUTS_PER_FILTER*FILTER_2 );
-                    const float*const filter_before_buffer_2 = data_buffer->filter_output_samples.getReadPointer( 1 + SUM_INPUTS_PER_FILTER*FILTER_2 );
-                    const float*const filter_before_buffer_3 = data_buffer->filter_output_samples.getReadPointer( 2 + SUM_INPUTS_PER_FILTER*FILTER_2 );
-                    const float*const osc_input_buffer_1 = data_buffer->osc_samples.getReadPointer(0);
-                    const float*const osc_input_buffer_2 = data_buffer->osc_samples.getReadPointer(1);
-                    const float*const osc_input_buffer_3 = data_buffer->osc_samples.getReadPointer(2);
-
-                    FloatVectorOperations::clear(filter_input_buffer,num_samples);
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        filter_input_buffer[sid]
-                        = sample_mix
-                        (
-                            sample_mix
-                            (
-                                smoothed_sustain_buffer_1[sid] < 0 ? osc_input_buffer_1[sid]*tmp_input_ar_amp_1[sid] : filter_before_buffer_1[sid]*tmp_input_ar_amp_1[sid],
-                                smoothed_sustain_buffer_2[sid] < 0 ? osc_input_buffer_2[sid]*tmp_input_ar_amp_2[sid] : filter_before_buffer_2[sid]*tmp_input_ar_amp_2[sid]
-                            ),
-                            smoothed_sustain_buffer_3[sid] < 0 ? osc_input_buffer_3[sid]*tmp_input_ar_amp_3[sid] : filter_before_buffer_3[sid]*tmp_input_ar_amp_3[sid]
-                        );
-                    }
-                }
-            }
-        }
-    }
-    inline void process_amp_mix( const int num_samples ) noexcept
-    {
-	// ADSTR - LFO MIX
-        float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
-        const float* smoothed_mix_buffer( filter_data->adsr_lfo_mix_smoother.get_smoothed_buffer() );
-        {
-            const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
-            const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
-            for( int sid = 0 ; sid != num_samples ; ++sid )
-            {
-                // LFO ADSR MIX - HERE TO SAVE ONE LOOP
-                const float mix = (1.0f+smoothed_mix_buffer[sid]) * 0.5f;
-                amp_mix[sid] = env_amps[sid]*(1.0f-mix) + lfo_amplitudes[sid]*mix;
+                master_left_output_buffer[sid] = left*(1.0f-distortion) + 1.33f*soft_clipping( left_add*10 )*(distortion);
+                master_right_output_buffer[sid] = right*(1.0f-distortion) + 1.33f*soft_clipping( right_add*10 )*(distortion);
             }
         }
     }
@@ -3761,7 +3827,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                     const float shape = smoothed_shape_buffer[sid];
                     const float amp = env_buffer[sid];
                     const float in = filter_in_samples[sid] * amp;
-                    filter.update_with_calc( shape*0.8, filter_frequency, 0 );
+                    filter.update_with_calc( shape*0.8f, filter_frequency, 0 );
                     float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
                     band_out_buffer[sid] = output*4;
                 }
@@ -3836,7 +3902,8 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
         const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
         const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
         const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
-        const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
+        //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
+        const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
         const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_buffer();
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
@@ -3844,7 +3911,7 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
             const float bypass = smoothed_bypass[sid];
             if( bypass > 0 )
             {
-                float sum =
+                const float sum =
                 sample_mix
                 (
                     sample_mix
@@ -3872,12 +3939,12 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                 );
 
                 float mix = sum*bypass + io_buffer_[sid]*(1.0f-bypass);
-                io_buffer_[sid] = soft_clipp_greater_1_2(sample_mix(mix*(1.0f-distortion), 1.33f*soft_clipping( mix*5 )*(distortion)));
+                io_buffer_[sid] = soft_clipp_greater_1_2(mix*(1.0f-distortion) + (std::atan( mix*10 )*0.7f)*distortion);
                 //io_buffer_[sid] = soft_clipp_greater_1_2(sample_mix(mix*(1.0f-distortion), sample_mix( mix, mix )*distortion));
             }
             else
             {
-                io_buffer_[sid] = soft_clipp_greater_1_2(io_buffer_[sid]*(1.0f-distortion) + 1.33f*soft_clipping( io_buffer_[sid]*5 )*(distortion));
+                io_buffer_[sid] = soft_clipp_greater_1_2(io_buffer_[sid]*(1.0f-distortion) + (std::atan( io_buffer_[sid]*10 )*0.7f)*distortion);
             }
         }
     }
@@ -4738,18 +4805,31 @@ inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float veloc
         while( left_executer.isWorking() ) {}
         // FINAL MIX
         {
-
+            const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
             float*const left_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
             float*const right_buffer = &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_];
-            const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 const float volume = smoothed_volume_buffer[sid];
 
-                left_buffer[sid] *= volume;
-                right_buffer[sid] *= volume;
+                left_buffer[sid] *= volume*2;
+                right_buffer[sid] *= volume*2;
             }
 
+            // VISUALIZE BEFORE FONAL OUT
+            if( Monique_Ui_SegmentedMeter*meter = AppInstanceStore::getInstance()->audio_processor->peak_meter )
+            {
+                ScopedLock locked(AppInstanceStore::getInstance()->audio_processor->peak_meter_lock);
+                meter->process( left_buffer, num_samples_ );
+            }
+
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float volume = smoothed_volume_buffer[sid];
+
+                left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
+                right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
+            }
             // VISUALIZE
             if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
             {
@@ -5515,7 +5595,7 @@ COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
 //==============================================================================
 void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float >& curve ) noexcept
 {
-    mono_ParameterOwnerStore* store = mono_ParameterOwnerStore::getInstanceWithoutCreating();
+    mono_ParameterOwnerStore::getInstanceWithoutCreating();
     ENV env( &GET_DATA( synth_data ), &env_data_ );
     env.start_attack();
     int count_sustain = -1;
@@ -5535,6 +5615,9 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
+
+
 
 
 

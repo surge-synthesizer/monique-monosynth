@@ -56,6 +56,7 @@ private:
 
     // ==============================================================================
     // UI
+public:
     Monique_Ui_SegmentedMeter* peak_meter;
     CriticalSection peak_meter_lock;
 public:

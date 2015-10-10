@@ -4466,7 +4466,6 @@ public:
 class VolumeConfig : public ModulationSliderConfigBase
 {
     Parameter*const volume;
-    Parameter*const final_clipping;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4500,6 +4499,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -4512,7 +4512,6 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOP BUTTON
-    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
     return TOP_BUTTON_TYPE_IS_UNKNOWN;
@@ -4537,11 +4536,11 @@ class VolumeConfig : public ModulationSliderConfigBase
     {
         return "VOLUME";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "FORCE";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4588,8 +4587,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 public:
     VolumeConfig()
         :
-        volume( &(GET_DATA(synth_data).volume) ),
-        final_clipping( &(GET_DATA(synth_data).final_clipping) )
+        volume( &(GET_DATA(synth_data).volume) )
     {}
 
     JUCE_LEAK_DETECTOR (VolumeConfig)

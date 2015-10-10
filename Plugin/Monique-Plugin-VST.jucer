@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="Monique" projectType="audioplug" version="0.7"
+<JUCERPROJECT id="MhT8v8" name="Monique" projectType="audioplug" version="0.8"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               buildVST="1" buildAU="0" pluginName="Monique" pluginDesc="Monophonic Lead and Bass Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
@@ -104,6 +104,7 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="TaK0Ch" name="INITER.mlprog" compile="0" resource="1" file="../Files/INITER.mlprog"/>
       <FILE id="qjoJmS" name="DroidSansMono.ttf" compile="0" resource="1"
             file="../Fonts/DroidSansMono.ttf"/>
       <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"

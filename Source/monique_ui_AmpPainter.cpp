@@ -218,9 +218,6 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
             g.setColour (colours.label_text_colour.withAlpha(0.3f));
             g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
-            g.setColour (Colours::red.withAlpha(0.1f));
-            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height*0.1), width, 1 );
-            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height*0.9), width, 1 );
         }
 
         struct Monique_Ui_AmpPainter
@@ -246,10 +243,6 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             {
                 const Colour col_fill(col_.withAlpha(0.1f));
                 const Colour norm_col(col_);
-                Colour red_col(col_);
-                if( paint_errors_red )
-                    red_col = Colours::red;
-                Colour use_col(norm_col);
 
                 int last_x = -9999;
                 int last_y = -9999;
@@ -278,20 +271,10 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                             bool force_paint = false;
                             if( y > 1 )
                             {
-                                use_col = red_col;
-                                force_paint = true;
-                                if( y > 1.2 )
-                                {
-                                    y = 1.2;
-                                }
-                            }
-                            else
-                            {
-                                use_col = norm_col;
+                                y = 1;
                             }
 
-                            int h = mono_floor(y*height_)*0.4f;
-
+                            int h = mono_floor(y*height_)*0.5f;
                             if( paint_line  )
                             {
                                 g.setColour(col_fill);
@@ -299,7 +282,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                             }
                             if( force_paint || last_y != y || last_x == x )
                             {
-                                g.setColour(use_col);
+                                g.setColour(norm_col);
                                 g.fillRect(x, y_center_ - h, 1, 1);
 
                                 last_y = y;
@@ -307,30 +290,20 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                         }
                         else
                         {
-                            bool force_paint = false;
                             if( y < -1 )
                             {
-                                use_col = red_col;
-                                force_paint = true;
-                                if( y < -1.2 )
-                                {
-                                    y = -1.2;
-                                }
-                            }
-                            else
-                            {
-                                use_col = norm_col;
+                                y = -1;
                             }
 
-                            int h = mono_floor(y*height_)*-0.4f;
+                            int h = mono_floor(y*height_)*-0.5f;
                             if( paint_line )
                             {
                                 g.setColour(col_fill);
                                 g.fillRect(x, y_center_, 1, h);
                             }
-                            if( force_paint || last_y != y || last_x == x )
+                            if( last_y != y || last_x == x )
                             {
-                                g.setColour(use_col);
+                                g.setColour(norm_col);
                                 g.fillRect(x, y_center_ + h, 1, 1);
 
                                 last_y = y;
@@ -381,7 +354,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             if( show_osc[osc_id+1] )
             {
                 Colour col;
-		if( osc_id == 0 )
+                if( osc_id == 0 )
                     col = Colours::blueviolet;
                 else
                     col = Colours::violet;

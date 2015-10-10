@@ -219,7 +219,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             float filter_2_3_sustain = filter_2_data->input_envs[2]->sustain.get_value();
 
             // FILTER 2 INPUT 1
-            if( filter_2_1_sustain > 0 or not filter_2_data->input_holds[0].get_value() )
+            if( filter_2_1_sustain > 0 or (not filter_2_data->input_holds[0].get_value() and filter_2_1_sustain < 0) )
             {
                 button_show_active_input_l_2_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_1_sustain )
@@ -243,7 +243,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 2
-            if( filter_2_2_sustain > 0 or not filter_2_data->input_holds[1].get_value() )
+            if( filter_2_2_sustain > 0 and not (filter_2_data->input_holds[1].get_value() and filter_2_2_sustain < 0) )
             {
                 button_show_active_input_l_2_2->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_2_sustain )
@@ -267,7 +267,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 3
-            if( filter_2_3_sustain > 0 or not filter_2_data->input_holds[2].get_value() )
+            if( filter_2_3_sustain > 0 and not (filter_2_data->input_holds[2].get_value() and filter_2_3_sustain < 0) )
             {
                 button_show_active_input_l_2_3->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_3_sustain )
@@ -298,7 +298,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             float filter_3_3_sustain = filter_3_data->input_envs[2]->sustain.get_value();
 
             // FILTER 3 INPUT 1
-            if( filter_3_1_sustain > 0 or not filter_3_data->input_holds[0].get_value() )
+            if( filter_3_1_sustain > 0 and not (filter_3_data->input_holds[0].get_value() and filter_3_1_sustain < 0) )
             {
                 button_show_active_input_l_3_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_1_sustain )
@@ -322,7 +322,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 3 INPUT 2
-            if( filter_3_2_sustain > 0 or not filter_3_data->input_holds[1].get_value() )
+            if( filter_3_2_sustain > 0 and not (filter_3_data->input_holds[1].get_value() and filter_3_2_sustain < 0) )
             {
                 button_show_active_input_l_3_2->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_2_sustain )
@@ -346,7 +346,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 3 INPUT 3
-            if( filter_3_3_sustain > 0 or not filter_3_data->input_holds[2].get_value() )
+            if( filter_3_3_sustain > 0 and not (filter_3_data->input_holds[2].get_value()  and filter_3_3_sustain < 0) )
             {
                 button_show_active_input_l_3_3->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_3_sustain )
