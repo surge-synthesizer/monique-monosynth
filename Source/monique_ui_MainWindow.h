@@ -109,6 +109,16 @@ public:
     const float original_h;
     int last_bank;
     int last_programm;
+    enum EDIT_TYPES
+    {
+      LOAD,
+      REPLACE,
+      CREATE,
+      RENAME,
+      REMOVE,
+      NOT_SET
+    };
+    EDIT_TYPES program_edit_type;
     void sliderClicked (Slider*s_) override;
 
     bool is_ctrl_down;
@@ -349,6 +359,7 @@ private:
     ScopedPointer<TextButton> button_show_active_input_l_3_2;
     ScopedPointer<TextButton> button_show_active_input_r_3_1;
     ScopedPointer<TextButton> button_show_active_input_l_3_1;
+    ScopedPointer<TextButton> button_programm_rename;
 
 
     //==============================================================================

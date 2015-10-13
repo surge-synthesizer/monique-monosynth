@@ -294,6 +294,7 @@ public:
 
 public:
     juce_DeclareSingleton (SmoothManager,false)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothManager)
 };
 
 //==============================================================================
@@ -364,6 +365,8 @@ public:
     COLD ~SmoothedParameter() noexcept;
     
     COLD void set_offline() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
 };
 
 //==============================================================================
@@ -464,6 +467,22 @@ struct ENVData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
+static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
+{
+    dest_->attack = src_->attack;
+    dest_->decay = src_->decay;
+    if( include_sustain_ )
+    {
+        dest_->sustain = src_->sustain;
+        dest_->max_attack_time = src_->max_attack_time;
+        dest_->max_decay_time = src_->max_decay_time;
+        dest_->max_release_time = src_->max_release_time;
+    }
+    dest_->sustain_time = src_->sustain_time;
+    dest_->release = src_->release;
+
+    dest_->shape = src_->shape;
+}
 
 //==============================================================================
 //==============================================================================
@@ -1143,6 +1162,8 @@ public:
     MoniqueSynthData* synth_data;
 
     MoniqueSynthesiserVoice* voice;
+    
+    ScopedPointer< ENVData > env_clipboard;
 
     // ==============================================================================
     static void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;

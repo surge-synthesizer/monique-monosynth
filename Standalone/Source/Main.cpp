@@ -107,33 +107,6 @@ bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
 //==============================================================================
 COLD void MoniqueSynthesizerApp::initialise (const String&)
 {  
-    std::cout << exp(float_Pi*0)<< std::endl;
-    std::cout << exp(float_Pi*0.25)<< std::endl;
-    std::cout << exp(float_Pi*0.5)<< std::endl;
-    std::cout << exp(float_Pi)<< std::endl;
-  
-    std::cout << log10(1.0f+float_Pi*0.0001)<< std::endl;
-    std::cout << log10(1.0f+float_Pi*0.25)<< std::endl;
-    std::cout << log10(1.0f+float_Pi*0.5)<< std::endl;
-    std::cout << log10(1.0f+float_Pi)<< std::endl;
-    
-    double cycles = 20;
-  
-    double kreis = double_Pi;
-    double d = kreis / cycles;
-    
-    float d2_ = pow(double_Pi, 1.0/cycles);
-    
-    double a = 0;
-    double pow_end = pow(cycles,d);
-    std::cout << pow_end<< std::endl;
-    for( int i = 0 ; i != cycles+1 ; ++i )
-    {
-    std::cout << i << "  a:" << sin(a) << " explog:" << sin(a*sin(a)) << std::endl;
-    a += d;
-    }
-   //std::cout << "pow end:" pow(i,d) << std::endl;
-   
     standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
     {

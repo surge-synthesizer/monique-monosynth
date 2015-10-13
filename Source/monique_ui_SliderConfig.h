@@ -347,7 +347,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
 {
     const int id;
 
-    Parameter*const front_param;
+    ModulatedParameter*const front_param;
     BoolParameter*const is_lfo_modulated;
 
     const String top_text;
@@ -421,10 +421,12 @@ class OSCSlConfig : public ModulationSliderConfigBase
         {
             if( bool(is_lfo_modulated->get_value()) )
             {
-                value = 0; // get_last_modulation_amount(front_param);
+                value = get_last_modulation_amount(front_param);
             }
             else
+	    {
                 value = NO_TOP_BUTTON_AMP;
+	    }
         }
         else
         {

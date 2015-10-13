@@ -47,7 +47,7 @@ inline void Monique_Ui_SegmentedMeter::process( const float* values, int num_sam
         if (sample > sampleMax)
             sampleMax = sample;
 
-        if (++sampleCount == 1024) // 1024 == release/decay
+        if (++sampleCount == 2048) // 1024 == release/decay
         {
             if (sampleMax > level)
                 level = sampleMax;

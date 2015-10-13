@@ -367,7 +367,7 @@ sustain_time
 (
     MIN_MAX( 0.001, 1 ),
     1,
-    20000,
+    10000,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -400,22 +400,6 @@ shape
 COLD ENVData::~ENVData() noexcept {}
 
 //==============================================================================
-static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
-{
-    dest_->attack = src_->attack;
-    dest_->decay = src_->decay;
-    if( include_sustain_ )
-    {
-        dest_->sustain = src_->sustain;
-        dest_->max_attack_time = src_->max_attack_time;
-        dest_->max_decay_time = src_->max_decay_time;
-        dest_->max_release_time = src_->max_release_time;
-    }
-    dest_->sustain_time = src_->sustain_time;
-    dest_->release = src_->release;
-
-    dest_->shape = src_->shape;
-}
 static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_sustain_ ) noexcept
 {
     params_.add( &data_->attack );

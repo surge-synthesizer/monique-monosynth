@@ -321,6 +321,7 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 
     delete synth;
     delete synth_data;
+    SmoothManager::deleteInstance();
 }
 
 //==============================================================================

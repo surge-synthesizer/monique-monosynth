@@ -56,8 +56,9 @@ void Monique_Ui_SegmentedMeter::resized()
     Graphics gOn (onImage);
     Graphics gOff (offImage);
 
-    const float segmentWidth = (w-1) / TOTAL_NUM_SEG;
 
+
+    const float segmentWidth = (w-1) / TOTAL_NUM_SEG;
     for (int i = 1; i <= TOTAL_NUM_SEG; ++i)
     {
         Colour colour_on;
@@ -82,15 +83,14 @@ void Monique_Ui_SegmentedMeter::resized()
         float x = w - (i*segmentWidth);
         float x2 = w - ((i+1.0f)*segmentWidth);
 
-
         gOn.setGradientFill (ColourGradient (colour_on, x, 0, Colour (0xff333333), x2, 0, false));
         gOn.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
-
 
         gOff.setGradientFill (ColourGradient (colour_off.darker(0.3), x, 0, Colour (0xff161616), x2, 0, false));
         gOff.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
         gOff.setColour (colour_off.darker (0.6f));
         gOff.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0, 1);
+
     }
 
     needsRepaint = true;
@@ -109,6 +109,14 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
     const int h = getHeight();
 
     g.fillAll(Colour(0xff050505));
+    
+    g.addTransform( AffineTransform::rotation
+                      (
+                          (float) (180.0f / (180.0 / double_Pi)),
+                          0.5*w,
+                          0.5*h
+                      )
+                    );
 
     if (onImage.isValid())
     {

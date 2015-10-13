@@ -121,6 +121,8 @@ private:
     ScopedPointer<TextButton> close;
     ScopedPointer<TextButton> keep;
     ScopedPointer<TextButton> auto_close;
+    ScopedPointer<TextButton> copy;
+    ScopedPointer<TextButton> past;
     Path internalPath1;
 
 

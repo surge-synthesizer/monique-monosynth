@@ -549,6 +549,8 @@ COLD Smoother( int init_size_in_ms_ ) noexcept :
         reset(0);
     }
     COLD ~Smoother() {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Smoother)
 };
 
 //==============================================================================
@@ -701,13 +703,14 @@ class SIN_LOOKUP
 
 public:
     juce_DeclareSingleton (SIN_LOOKUP,false)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SIN_LOOKUP)
 };
 juce_ImplementSingleton (SIN_LOOKUP)
 SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
 
 static float inline lookup_sine(float x) noexcept
 {
-    return SINE_LOOKUP_TABLE[ int(int64(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE) ];
+    return SINE_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
 }
 //==============================================================================
 //==============================================================================
@@ -731,13 +734,48 @@ class COS_LOOKUP
 
 public:
     juce_DeclareSingleton (COS_LOOKUP,false)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (COS_LOOKUP)
 };
 juce_ImplementSingleton (COS_LOOKUP)
 COS_LOOKUP*const cos_lookup_self_init = COS_LOOKUP::getInstance();
 
 static float inline lookup_cos(float x) noexcept
 {
-    return COS_LOOKUP_TABLE[ int(int64(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE) ];
+    return COS_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
+}
+//==============================================================================
+//==============================================================================
+//==============================================================================
+float* EXP_LOOKUP_TABLE;
+class EXP_LOOKUP
+{
+    COLD EXP_LOOKUP() noexcept
+    {
+        EXP_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
+        {
+#define EXP_PI_05_CORRECTION 4.81048f
+#define LOG_PI_1_CORRECTION 1.42108f
+#define EXP_PI_1_CORRECTION 23.1407f
+            EXP_LOOKUP_TABLE[i] = (std::exp( double(i) / TABLESIZE_MULTI ) / EXP_PI_1_CORRECTION);
+        }
+    }
+    COLD ~EXP_LOOKUP() noexcept
+    {
+        delete[] EXP_LOOKUP_TABLE;
+        clearSingletonInstance();
+    }
+
+public:
+    juce_DeclareSingleton (EXP_LOOKUP,false)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EXP_LOOKUP)
+};
+juce_ImplementSingleton (EXP_LOOKUP)
+EXP_LOOKUP*const exp_lookup_self_init = EXP_LOOKUP::getInstance();
+
+static float inline lookup_exp(float x) noexcept
+{
+    return EXP_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
 }
 
 //==============================================================================
@@ -877,6 +915,8 @@ public:
 COLD PerfectCycleCounter() noexcept :
     frequency(0), delta(0), angle(0), rate(0), phase(0), cylces_per_sec(0), new_cycle(true) {}
     COLD ~PerfectCycleCounter() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PerfectCycleCounter)
 };
 
 //==============================================================================
@@ -918,7 +958,7 @@ public:
             }
             else
             {
-                tmp = std::sin( working_phase_*m_ ) / (p_ * denominator);
+                tmp = sin( working_phase_*m_ ) / (p_ * denominator);
             }
         }
 
@@ -968,6 +1008,8 @@ public:
     {
     }
     COLD ~mono_BlitSaw() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_BlitSaw)
 };
 
 //==============================================================================
@@ -1078,9 +1120,9 @@ public:
                     m_(0)
     {
     }
-    COLD ~mono_BlitSquare() noexcept
-    {
-    }
+    COLD ~mono_BlitSquare() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_BlitSquare)
 };
 
 //==============================================================================
@@ -1120,6 +1162,8 @@ public:
 COLD mono_SineWave() noexcept :
     last_tick_value(0), phase_offset(0) {}
     COLD ~mono_SineWave() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_SineWave)
 };
 
 //==============================================================================
@@ -1196,6 +1240,8 @@ COLD mono_SineWaveAutonom() noexcept :
               last_tick_value(0)
     {}
     COLD ~mono_SineWaveAutonom() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_SineWaveAutonom)
 };
 
 
@@ -1269,6 +1315,8 @@ COLD mono_SineWaveAutonomShifted() noexcept :
               last_tick_value(0)
     {}
     COLD ~mono_SineWaveAutonomShifted() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_SineWaveAutonomShifted)
 };
 
 //==============================================================================
@@ -1302,6 +1350,8 @@ public:
 COLD mono_Noise() noexcept :
     last_tick_value(0) {}
     COLD ~mono_Noise() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Noise)
 };
 
 //==============================================================================
@@ -1361,6 +1411,8 @@ COLD mono_OnePole( float thePole = 0.9 ) noexcept:
         this->setPole( thePole );
     }
     COLD ~mono_OnePole() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_OnePole)
 };
 
 //==============================================================================
@@ -1458,6 +1510,8 @@ public:
         filter.setGain( 0.05 );
     }
     COLD ~mono_Modulate() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Modulate)
 };
 
 //==============================================================================
@@ -1478,6 +1532,7 @@ class LFO : public RuntimeListener
     float samples_per_cylce;
     float last_out;
 
+    float glide_samples;
     int glide_counter;
     float glide_value;
 
@@ -1489,7 +1544,6 @@ class LFO : public RuntimeListener
 
 public:
     //==============================================================================
-#define LFO_GLIDE_SAMPLES 100.0f
     inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
     {
         const float speed( lfo_data->speed );
@@ -1506,7 +1560,7 @@ public:
                 samples_per_cylce = sample_rate * (1.0f/midiToFrequency(33+speed-18));
             }
 
-            glide_counter = LFO_GLIDE_SAMPLES;
+            glide_samples = glide_counter = sample_rate/10;
             glide_value = last_out;
             last_speed = speed;
         }
@@ -1516,10 +1570,10 @@ public:
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
-            float amp = lfo2amp( std::sin((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+            float amp = lfo2amp( lookup_sine((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
             if( --glide_counter > 0 )
             {
-                float glide = (1.0f/LFO_GLIDE_SAMPLES*glide_counter);
+                float glide = (1.0f/glide_samples*glide_counter);
                 amp = amp*(1.0f-glide) + glide_value*glide;
             }
             process_buffer[sid] = amp;
@@ -1598,7 +1652,9 @@ private:
                    samples_per_cylce(100),
                    last_out(0),
 
+                   glide_samples(0),
                    glide_counter(0),
+                   glide_value(0),
 
                    id( id_ ),
 
@@ -1845,13 +1901,9 @@ public:
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
 
             const float rest_glide = freq_glide_delta*freq_glide_samples_left;
+            freq_glide_samples_left = (sample_rate*0.5) * glide;
             const float glide_notes_diverence = root_note - root_note_;
-            freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
-        }
-        else
-        {
-            freq_glide_samples_left = 0;
-            freq_glide_delta = 0;
+            freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
         }
 
         root_note = root_note_;
@@ -1895,6 +1947,8 @@ public:
                   osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
     {}
     COLD ~MasterOSC() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MasterOSC)
 };
 
 //===================================================================================
@@ -2102,13 +2156,9 @@ public:
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
 
             const float rest_glide = freq_glide_delta*freq_glide_samples_left;
+            freq_glide_samples_left = (sample_rate*0.5) * glide;
             const float glide_notes_diverence = root_note - root_note_;
-            freq_glide_delta = (glide_notes_diverence+rest_glide) / (sample_rate*0.5) * glide;
-        }
-        else
-        {
-            freq_glide_samples_left = 0;
-            freq_glide_delta = 0;
+            freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
         }
 
         root_note = root_note_;
@@ -2149,6 +2199,8 @@ public:
     }
     COLD ~SecondOSC() noexcept
     {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SecondOSC)
 };
 
 //==============================================================================
@@ -2178,7 +2230,7 @@ class mono_ENVOsccilator : public RuntimeListener
     float angle;
     float sine_angle_start;
 
-    float shape;
+    float shape;    
     float time_in_samples;
     int sample_counter;
     bool is_unlimited;
@@ -2237,27 +2289,24 @@ public:
     }
 
 public:
-#define EXP_PI_05_CORRECTION 4.81048f
-#define EXP_PI_1_CORRECTION 23.1407f
-#define LOG_PI_1_CORRECTION 1.42108f
-
     //==========================================================================
     inline float tick() noexcept
     {
         if( --sample_counter > 0 )
         {
-            angle += delta;
-            // const float exp_pi_for_angle = (exp(angle)/EXP_PI_1_CORRECTION);
-            const float cos_for_angle = lookup_cos(angle+sine_angle_start);
-            const float angle_drift = shape*(angle-cos_for_angle) /* exp_pi_for_angle*angle*shape*/ + (angle+cos_for_angle)*(1.0f-shape);
-            if( type == TYPE::ATTACK )
+            if( delta != 0 )
             {
-                float change = (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5) * (target_amp-start_amp);
-                out_amp = start_amp + change;
-            }
-            else if( type == TYPE::RELEASE )
-            {
-                out_amp = start_amp - (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5) * (start_amp-target_amp);
+                angle += delta;
+                /*shape*(angle-cos_for_angle)*/
+                const float angle_drift = lookup_exp(angle)*angle*shape + (angle+lookup_cos(angle+sine_angle_start))*(1.0f-shape);
+                if( type == TYPE::ATTACK )
+                {
+                    out_amp = start_amp + (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5f) * (target_amp-start_amp);
+                }
+                else if( type == TYPE::RELEASE )
+                {
+                    out_amp = start_amp - (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5f) * (start_amp-target_amp);
+                }
             }
         }
         return out_amp;
@@ -2277,7 +2326,11 @@ public:
     //==========================================================================
     inline bool is_finished() const noexcept
     {
-        return not is_unlimited and sample_counter <= 0;
+        return is_endless() and sample_counter <= 0;
+    }
+    inline bool is_endless() const noexcept
+    {
+        return not is_unlimited;
     }
 
     //==========================================================================
@@ -2313,6 +2366,8 @@ COLD mono_ENVOsccilator() noexcept :
               is_unlimited(false)
     {}
     COLD ~mono_ENVOsccilator() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ENVOsccilator)
 };
 
 //==============================================================================
@@ -2342,7 +2397,8 @@ class ENV
 
     const MoniqueSynthData*const synth_data;
     float last_sustain;
-    bool goes_to_or_is_sustain;
+    bool goes_to_sustain;
+    bool is_sustain;
 
 public:
     ENVData*const env_data;
@@ -2357,9 +2413,13 @@ public:
             if( last_sustain != smoothed_sustain_buffer[sid] )
             {
                 last_sustain = smoothed_sustain_buffer[sid];
-                if( goes_to_or_is_sustain )
+                if( goes_to_sustain )
                 {
                     env_osc.only_calculate_new_target(positive(last_sustain));
+                }
+                else if( is_sustain )
+                {
+                    env_osc.overwrite_current_value(positive(last_sustain));
                 }
             }
             dest_[sid]  = env_osc.tick();
@@ -2388,7 +2448,8 @@ private:
                         env_data->shape,
                         env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES
                     );
-                    goes_to_or_is_sustain = false;
+                    goes_to_sustain = false;
+                    is_sustain = false;
                 }
                 else
                 {
@@ -2398,7 +2459,8 @@ private:
                         env_data->shape,
                         env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES
                     );
-                    goes_to_or_is_sustain = true;
+                    goes_to_sustain = true;
+                    is_sustain = false;
                 }
                 env_osc.calculate_attack_coeffecients();
             }
@@ -2416,7 +2478,8 @@ private:
                     env_data->shape,
                     env_data->decay*env_data->max_decay_time
                 );
-                goes_to_or_is_sustain = true;
+                goes_to_sustain = true;
+                is_sustain = false;
                 env_osc.calculate_release_coeffecients();
 
                 current_stage = DECAY;
@@ -2428,24 +2491,23 @@ private:
         case DECAY : // --> SUSTAIN
         {
             float sustain_time = env_data->sustain_time;
+            float sustain_level = positive_sustain(smoothed_sustain_buffer[sid_]);
+            env_osc.set_process_values
+            (
+                env_osc.last_out(), sustain_level,
+                env_data->shape,
+                sustain_time*10000
+            );
             if( sustain_time >= 1.0f )
             {
                 env_osc.calculate_unlimited_coeffecients();
             }
             else
             {
-                float sustain_level = positive_sustain(smoothed_sustain_buffer[sid_]);
-                env_osc.set_process_values
-                (
-                    env_osc.last_out(), sustain_level,
-                    env_data->shape,
-                    sustain_time
-                );
-                goes_to_or_is_sustain = true;
-
                 env_osc.calculate_keep_coeffecients();
             }
-
+            goes_to_sustain = false;
+            is_sustain = true;
             current_stage = SUSTAIN;
 
             break;
@@ -2458,7 +2520,8 @@ private:
                 env_data->shape,
                 env_data->release*env_data->max_release_time+MIN_ENV_TIMES
             );
-            goes_to_or_is_sustain = false;
+            goes_to_sustain = false;
+            is_sustain = false;
             env_osc.calculate_release_coeffecients();
 
             current_stage = RELEASE;
@@ -2467,14 +2530,16 @@ private:
         }
         case RELEASE : // --> RELEASE
         {
-            goes_to_or_is_sustain = false;
+            goes_to_sustain = false;
+            is_sustain = false;
             current_stage = END_ENV;
 
             break;
         }
         default:
         {
-            goes_to_or_is_sustain = false;
+            goes_to_sustain = false;
+            is_sustain = false;
             current_stage = END_ENV;
         }
         }
@@ -2511,6 +2576,10 @@ public:
     {
         env_osc.overwrite_current_value( amp_ );
     }
+    inline bool is_endless() noexcept
+    {
+        return env_osc.is_endless();
+    }
 
     //==============================================================================
     inline float get_amp() const noexcept
@@ -2530,7 +2599,8 @@ public:
             env_data( env_data_ ),
 
             last_sustain(0),
-            goes_to_or_is_sustain(false)
+            goes_to_sustain(false),
+            is_sustain(false)
     {
     }
     inline ~ENV() noexcept {}
@@ -3230,15 +3300,15 @@ private:
                     float* tmp_input_ar_amp_3 = data_buffer->filter_input_env_amps.getWritePointer( 2 + SUM_INPUTS_PER_FILTER * FILTER_3 );
                     {
                         ENV*const input_env( input_envs.getUnchecked(0) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_1, num_samples );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[0], input_env, tmp_input_ar_amp_1, num_samples );
                     }
                     {
                         ENV*const input_env( input_envs.getUnchecked(1) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_2, num_samples );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[1], input_env, tmp_input_ar_amp_2, num_samples );
                     }
                     {
                         ENV*const input_env( input_envs.getUnchecked(2) );
-                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[input_id], input_env, tmp_input_ar_amp_3, num_samples );
+                        input_env->env_data->sustain_smoother.process_amp( not filter_data->input_holds[2], input_env, tmp_input_ar_amp_3, num_samples );
                     }
 
                     float*const filter_input_buffer = data_buffer->filter_input_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * FILTER_3 );
@@ -3754,166 +3824,136 @@ class EQProcessor : public RuntimeListener
     const EQData*const eq_data;
     DataBuffer*const data_buffer;
 
-    inline void reset() noexcept;
-    inline void process( float* io_buffer_, int num_samples_  ) noexcept;
-
+public:
     //==============================================================================
-    COLD EQProcessor( MoniqueSynthData* synth_data_ ) noexcept;
-    COLD ~EQProcessor() noexcept;
-
-    COLD void sample_rate_changed( double old_sr_ ) noexcept override;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessor)
-};
-//==============================================================================
-COLD EQProcessor::EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
-:
-synth_data( synth_data_ ),
-            eq_data( GET_DATA_PTR( eq_data ) ),
-            data_buffer( GET_DATA_PTR( data_buffer ) )
-{
-    std::cout << "MONIQUE: init EQ L OR R" << std::endl;
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    inline void reset() noexcept
     {
-        frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id );
-        frequency_high_pass[band_id] = get_high_pass_band_frequency( band_id );
-    }
-
-    sample_rate_changed(0);
-}
-COLD EQProcessor::~EQProcessor() noexcept {}
-
-//==============================================================================
-inline void EQProcessor::reset() noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        filters[band_id].reset();
-        high_pass_filters[band_id].reset();
-    }
-}
-
-void EQProcessor::sample_rate_changed(double) noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        high_pass_filters[band_id].setCoefficients( IIRCoefficients::makeHighPass( sample_rate, frequency_high_pass[band_id] ) );
-    }
-}
-
-// -----------------------------------------------------------------
-inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
-{
-    // MULTITHREADED PER BAND
-    {
-        struct BandExecuter : public mono_Thread
-        {
-            const int num_samples_;
-            const float* const smoothed_shape_buffer;
-
-            const float filter_frequency;
-            IIRFilter& high_pass_filter;
-            AnalogFilter& filter;
-
-            const float* const filter_in_samples;
-            float* const band_out_buffer;
-            const float* const env_buffer;
-
-            inline void exec() noexcept override
-            {
-                // PROCESS
-                for( int sid = 0 ; sid != num_samples_ ; ++sid )
-                {
-                    const float shape = smoothed_shape_buffer[sid];
-                    const float amp = env_buffer[sid];
-                    const float in = filter_in_samples[sid] * amp;
-                    filter.update_with_calc( shape*0.8f, filter_frequency, 0 );
-                    float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
-                    band_out_buffer[sid] = output*4;
-                }
-            }
-            BandExecuter(EQProcessor*const processor_, float*in_buffer_, int num_samples__, int band_id_) noexcept
-:
-            num_samples_(num_samples__),
-            smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_buffer() ),
-
-            filter_frequency( processor_->frequency_low_pass[band_id_] ),
-            high_pass_filter(processor_->high_pass_filters[band_id_]),
-            filter(processor_->filters[band_id_]),
-
-            filter_in_samples( in_buffer_ ),
-            band_out_buffer( processor_->data_buffer->band_out_buffers.getWritePointer(band_id_) ),
-            env_buffer( processor_->data_buffer->band_env_buffers.getWritePointer(band_id_) )
-            {}
-        };
-
-        Array<BandExecuter*> running_threads;
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
-            // TRY TO FREE SOME MEMORY
-            Array<BandExecuter*> copy_of_running_thereads = running_threads;
-            for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
-            {
-                BandExecuter* executer( copy_of_running_thereads[i] );
-                if( not executer->isWorking() )
-                {
-                    running_threads.removeFirstMatchingValue(executer);
-                    delete executer;
-                }
-            }
-
-            BandExecuter* executer = new BandExecuter(this, io_buffer_, num_samples_, band_id);
-            executer->try_run_paralel();
-            if( executer->isWorking() )
-            {
-                running_threads.add( executer );
-            }
-            else
-            {
-                delete executer;
-            }
-        }
-
-        bool all_done = running_threads.size() == 0;
-                        while( not all_done )
-        {
-            Array<BandExecuter*> copy_of_running_thereads = running_threads;
-            for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
-            {
-                BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
-                if( not executer->isWorking() )
-                {
-                    running_threads.removeFirstMatchingValue(executer);
-                    delete executer;
-                }
-            }
-
-            all_done = running_threads.size() == 0;
+            filters[band_id].reset();
+            high_pass_filters[band_id].reset();
         }
     }
-    // EO MULTITHREADED
 
-    // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
+    void sample_rate_changed(double) noexcept
     {
-        const float*const buffer_1( data_buffer->band_out_buffers.getReadPointer(0) );
-        const float*const buffer_2( data_buffer->band_out_buffers.getReadPointer(1) );
-        const float*const buffer_3( data_buffer->band_out_buffers.getReadPointer(2) );
-        const float*const buffer_4( data_buffer->band_out_buffers.getReadPointer(3) );
-        const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
-        const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
-        const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
-        //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
-        const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
-        const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_buffer();
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
-            const float distortion =  smoothed_distortion[sid];
-            const float bypass = smoothed_bypass[sid];
-            if( bypass > 0 )
+            high_pass_filters[band_id].setCoefficients( IIRCoefficients::makeHighPass( sample_rate, frequency_high_pass[band_id] ) );
+        }
+    }
+
+    //==============================================================================
+    inline void process( float* io_buffer_, int num_samples_ ) noexcept
+    {
+        // MULTITHREADED PER BAND
+        {
+            struct BandExecuter : public mono_Thread
             {
-                const float sum =
-                sample_mix
-                (
+                const int num_samples_;
+                const float* const smoothed_shape_buffer;
+
+                const float filter_frequency;
+                IIRFilter& high_pass_filter;
+                AnalogFilter& filter;
+
+                const float* const filter_in_samples;
+                float* const band_out_buffer;
+                const float* const env_buffer;
+
+                inline void exec() noexcept override
+                {
+                    // PROCESS
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        const float shape = smoothed_shape_buffer[sid];
+                        const float amp = env_buffer[sid];
+                        const float in = filter_in_samples[sid] * amp;
+                        filter.update_with_calc( shape*0.8f, filter_frequency, 0 );
+                        float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
+                        band_out_buffer[sid] = output*4;
+                    }
+                }
+                BandExecuter(EQProcessor*const processor_, float*in_buffer_, int num_samples__, int band_id_) noexcept
+:
+                num_samples_(num_samples__),
+                smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_buffer() ),
+
+                filter_frequency( processor_->frequency_low_pass[band_id_] ),
+                high_pass_filter(processor_->high_pass_filters[band_id_]),
+                filter(processor_->filters[band_id_]),
+
+                filter_in_samples( in_buffer_ ),
+                band_out_buffer( processor_->data_buffer->band_out_buffers.getWritePointer(band_id_) ),
+                env_buffer( processor_->data_buffer->band_env_buffers.getWritePointer(band_id_) )
+                {}
+            };
+
+            Array<BandExecuter*> running_threads;
+            for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+            {
+                // TRY TO FREE SOME MEMORY
+                Array<BandExecuter*> copy_of_running_thereads = running_threads;
+                for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
+                {
+                    BandExecuter* executer( copy_of_running_thereads[i] );
+                    if( not executer->isWorking() )
+                    {
+                        running_threads.removeFirstMatchingValue(executer);
+                        delete executer;
+                    }
+                }
+
+                BandExecuter* executer = new BandExecuter(this, io_buffer_, num_samples_, band_id);
+                executer->try_run_paralel();
+                if( executer->isWorking() )
+                {
+                    running_threads.add( executer );
+                }
+                else
+                {
+                    delete executer;
+                }
+            }
+
+            bool all_done = running_threads.size() == 0;
+            while( not all_done )
+            {
+                Array<BandExecuter*> copy_of_running_thereads = running_threads;
+                for( int i = 0 ; i != copy_of_running_thereads.size() ; ++i )
+                {
+                    BandExecuter* executer( copy_of_running_thereads.getUnchecked(i) );
+                    if( not executer->isWorking() )
+                    {
+                        running_threads.removeFirstMatchingValue(executer);
+                        delete executer;
+                    }
+                }
+
+                all_done = running_threads.size() == 0;
+            }
+        }
+        // EO MULTITHREADED
+
+        // FINAL MIX - SINGLE THREADED ( NO REALY OPTIMIZED )
+        {
+            const float*const buffer_1( data_buffer->band_out_buffers.getReadPointer(0) );
+            const float*const buffer_2( data_buffer->band_out_buffers.getReadPointer(1) );
+            const float*const buffer_3( data_buffer->band_out_buffers.getReadPointer(2) );
+            const float*const buffer_4( data_buffer->band_out_buffers.getReadPointer(3) );
+            const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
+            const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
+            const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
+            //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
+            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
+            const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_buffer();
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float distortion =  smoothed_distortion[sid];
+                const float bypass = smoothed_bypass[sid];
+                if( bypass > 0 )
+                {
+                    const float sum =
                     sample_mix
                     (
                         sample_mix
@@ -3924,31 +3964,55 @@ inline void EQProcessor::process( float* io_buffer_, int num_samples_ ) noexcept
                                 (
                                     sample_mix
                                     (
-                                        buffer_7[sid],
-                                        buffer_6[sid]
+                                        sample_mix
+                                        (
+                                            buffer_7[sid],
+                                            buffer_6[sid]
+                                        ),
+                                        buffer_5[sid]
                                     ),
-                                    buffer_5[sid]
+                                    buffer_4[sid]
                                 ),
-                                buffer_4[sid]
+                                buffer_3[sid]
                             ),
-                            buffer_3[sid]
+                            buffer_2[sid]
                         ),
-                        buffer_2[sid]
-                    ),
-                    buffer_1[sid]*-1
-                );
+                        buffer_1[sid]*-1
+                    );
 
-                float mix = sum*bypass + io_buffer_[sid]*(1.0f-bypass);
-                io_buffer_[sid] = soft_clipp_greater_1_2(mix*(1.0f-distortion) + (std::atan( mix*10 )*0.7f)*distortion);
-                //io_buffer_[sid] = soft_clipp_greater_1_2(sample_mix(mix*(1.0f-distortion), sample_mix( mix, mix )*distortion));
-            }
-            else
-            {
-                io_buffer_[sid] = soft_clipp_greater_1_2(io_buffer_[sid]*(1.0f-distortion) + (std::atan( io_buffer_[sid]*10 )*0.7f)*distortion);
+                    float mix = sum*bypass + io_buffer_[sid]*(1.0f-bypass);
+                    io_buffer_[sid] = soft_clipp_greater_1_2(mix*(1.0f-distortion) + (std::atan( mix*10 )*0.7f)*distortion);
+                    //io_buffer_[sid] = soft_clipp_greater_1_2(sample_mix(mix*(1.0f-distortion), sample_mix( mix, mix )*distortion));
+                }
+                else
+                {
+                    io_buffer_[sid] = soft_clipp_greater_1_2(io_buffer_[sid]*(1.0f-distortion) + (std::atan( io_buffer_[sid]*10 )*0.7f)*distortion);
+                }
             }
         }
     }
-}
+
+public:
+    //==============================================================================
+    COLD EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
+:
+    synth_data( synth_data_ ),
+                eq_data( GET_DATA_PTR( eq_data ) ),
+                data_buffer( GET_DATA_PTR( data_buffer ) )
+    {
+        std::cout << "MONIQUE: init EQ L OR R" << std::endl;
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id );
+            frequency_high_pass[band_id] = get_high_pass_band_frequency( band_id );
+        }
+
+        sample_rate_changed(0);
+    }
+    COLD ~EQProcessor() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessor)
+};
 
 //==============================================================================
 //==============================================================================
@@ -3964,82 +4028,79 @@ class EQProcessorStereo
 public:
     OwnedArray< ENV > envs;
 
-    inline void start_attack() noexcept;
-    inline void start_release() noexcept;
-    inline void reset() noexcept;
-    inline void process( int num_samples_ ) noexcept;
+public:
+    //==============================================================================
+    inline void start_attack() noexcept
+    {
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            envs.getUnchecked(band_id)->start_attack();
+        }
+    }
+    inline void start_release() noexcept
+    {
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            envs.getUnchecked(band_id)->set_to_release();
+        }
+    }
+    inline void reset() noexcept
+    {
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            envs.getUnchecked(band_id)->reset();
+        }
+        left_processor->reset();
+        right_processor->reset();
+    }
 
-    COLD EQProcessorStereo( MoniqueSynthData* synth_data_ ) noexcept;
-    COLD ~EQProcessorStereo() noexcept;
-};
+    //==============================================================================
+    inline void process( int num_samples_ ) noexcept
+    {
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            ENV* env( envs.getUnchecked(band_id) );
+            ENVData* env_data( env->env_data );
 
-//==============================================================================
-COLD EQProcessorStereo::EQProcessorStereo( MoniqueSynthData* synth_data_ ) noexcept
+            env_data->sustain_smoother.process_amp( not eq_data->hold[band_id], env, data_buffer->band_env_buffers.getWritePointer(band_id), num_samples_ );
+        }
+
+        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+        {
+            //amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
+        }
+        left_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
+        right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
+
+        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+        {
+            amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
+        }
+    }
+
+public:
+    //==========================================================================
+    COLD EQProcessorStereo( MoniqueSynthData* synth_data_ ) noexcept
 :
-left_processor( new EQProcessor(synth_data_) ),
-                right_processor( new EQProcessor(synth_data_) ),
-                eq_data( synth_data_->eq_data ),
-                data_buffer( GET_DATA_PTR( data_buffer ) )
-{
-    std::cout << "MONIQUE: init EQ" << std::endl;
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    left_processor( new EQProcessor(synth_data_) ),
+                    right_processor( new EQProcessor(synth_data_) ),
+                    eq_data( synth_data_->eq_data ),
+                    data_buffer( GET_DATA_PTR( data_buffer ) )
     {
-        envs.add( new ENV( synth_data_, GET_DATA_PTR( eq_data )->envs.getUnchecked( band_id ) ) );
+        std::cout << "MONIQUE: init EQ" << std::endl;
+        for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+        {
+            envs.add( new ENV( synth_data_, GET_DATA_PTR( eq_data )->envs.getUnchecked( band_id ) ) );
+        }
     }
-}
-COLD EQProcessorStereo::~EQProcessorStereo() noexcept
-{
-    delete right_processor;
-    delete left_processor;
-}
-
-//==============================================================================
-inline void EQProcessorStereo::start_attack() noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
+    COLD ~EQProcessorStereo() noexcept
     {
-        envs.getUnchecked(band_id)->start_attack();
-    }
-}
-inline void EQProcessorStereo::start_release() noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        envs.getUnchecked(band_id)->set_to_release();
-    }
-}
-inline void EQProcessorStereo::reset() noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        envs.getUnchecked(band_id)->reset();
-    }
-    left_processor->reset();
-    right_processor->reset();
-}
-
-inline void EQProcessorStereo::process( int num_samples_ ) noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        ENV* env( envs.getUnchecked(band_id) );
-        ENVData* env_data( env->env_data );
-
-        env_data->sustain_smoother.process_amp( not eq_data->hold[band_id], env, data_buffer->band_env_buffers.getWritePointer(band_id), num_samples_ );
+        delete right_processor;
+        delete left_processor;
     }
 
-    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-    {
-        //amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
-    }
-    left_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
-    right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
-
-    if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-    {
-        amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
-    }
-}
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQProcessorStereo)
+};
 
 //==============================================================================
 //==============================================================================
@@ -4059,89 +4120,79 @@ class Chorus : public RuntimeListener
     float* buffer;
 
 public:
-    inline void fill(float sample_) noexcept;
-    inline float tick(float delay_) noexcept;
-    inline void reset() noexcept;
+    //==============================================================================
+    inline void fill(float sample_) noexcept
+    {
+        index = index % buffer_size;
+        buffer[index] = sample_;
+        index++;
+    }
+#define DELAY_GLIDE 0.01f
+    inline float tick(float delay_ ) noexcept
+    {
+        if( delay_ < last_delay - DELAY_GLIDE)
+            delay_ = last_delay - DELAY_GLIDE;
+        else if( delay_ > last_delay + DELAY_GLIDE )
+            delay_ = last_delay + DELAY_GLIDE;
 
-private:
-    COLD void sample_rate_changed( double ) noexcept override;
+        last_delay = delay_;
+
+        float i = float(index) - delay_;
+        if(i >= buffer_size)
+            i -= buffer_size;
+        else if(i < 0)
+            i += buffer_size;
+
+        int ia = mono_floor(i);
+        if (ia >= buffer_size)
+            ia = 0;
+        int ib = ia + 1;
+        if (ib >= buffer_size)
+            ib = 0;
+
+        float delta = i-ia;
+        if( delta > 1 )
+            delta = 0;
+        return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
+    }
+    inline void reset() noexcept
+    {
+        index = 0;
+        last_delay = 210;
+        sample_rate_changed(0);
+    }
+    //==============================================================================
+    COLD void sample_rate_changed( double ) noexcept override
+    {
+        buffer_size = sample_rate/10;
+        if( buffer )
+            delete[] buffer;
+        buffer = new float[buffer_size];
+        for( int i = 0 ; i != buffer_size ; ++i )
+        {
+            buffer[i] = 0;
+        }
+    }
 
 public:
     //==============================================================================
-    COLD Chorus() noexcept;
-    COLD ~Chorus() noexcept;
+COLD Chorus() noexcept :
+    buffer_size(0)
+    {
+        index = 0;
+        last_delay = 210;
+
+        buffer = nullptr;
+
+        sample_rate_changed(0);
+    }
+    COLD ~Chorus() noexcept
+    {
+        delete [] buffer;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
 };
-
-//==============================================================================
-COLD Chorus::Chorus() noexcept :
-buffer_size(0)
-{
-    index = 0;
-    last_delay = 210;
-
-    buffer = nullptr;
-
-    sample_rate_changed(0);
-}
-COLD Chorus::~Chorus() noexcept
-{
-    delete [] buffer;
-}
-
-//==============================================================================
-inline void Chorus::fill(float sample_) noexcept
-{
-    index = index % buffer_size;
-    buffer[index] = sample_;
-    index++;
-}
-#define DELAY_GLIDE 0.01f
-inline float Chorus::tick(float delay_ ) noexcept
-{
-    if( delay_ < last_delay - DELAY_GLIDE)
-        delay_ = last_delay - DELAY_GLIDE;
-    else if( delay_ > last_delay + DELAY_GLIDE )
-        delay_ = last_delay + DELAY_GLIDE;
-
-    last_delay = delay_;
-
-    float i = float(index) - delay_;
-    if(i >= buffer_size)
-        i -= buffer_size;
-    else if(i < 0)
-        i += buffer_size;
-
-    int ia = mono_floor(i);
-    if (ia >= buffer_size)
-        ia = 0;
-    int ib = ia + 1;
-    if (ib >= buffer_size)
-        ib = 0;
-
-    float delta = i-ia;
-    if( delta > 1 )
-        delta = 0;
-    return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
-}
-inline void Chorus::reset() noexcept
-{
-    index = 0;
-    last_delay = 210;
-    sample_rate_changed(0);
-}
-//==============================================================================
-COLD void Chorus::sample_rate_changed( double ) noexcept {
-    buffer_size = sample_rate/10;
-    if( buffer )
-        delete[] buffer;
-    buffer = new float[buffer_size];
-    for( int i = 0 ; i != buffer_size ; ++i )
-    {
-        buffer[i] = 0;
-    }
-}
 
 //==============================================================================
 //==============================================================================
@@ -4160,60 +4211,52 @@ class CombFilter
     int bufferSize, bufferIndex;
 
 public:
-    inline float process (const float input, const float feedbackLevel) noexcept;
+    //==============================================================================
+    inline float process (const float input, const float feedbackLevel) noexcept
+    {
+#define REVERB_DAMP 0.0f
+        const float output = buffer[bufferIndex];
+        last = (output * (1.0f - REVERB_DAMP)) + (last * REVERB_DAMP);
+        JUCE_UNDENORMALISE (last);
 
-    COLD void setSize (const int size);
-    COLD void clear() noexcept;
+        float temp = input + (last * feedbackLevel);
+        JUCE_UNDENORMALISE (temp);
+        buffer[bufferIndex] = temp;
+        bufferIndex = (bufferIndex + 1) % bufferSize;
+
+        return output;
+    }
 
     //==============================================================================
-    COLD CombFilter() noexcept;
-    COLD ~CombFilter() noexcept;
+    COLD void setSize (const int size)
+    {
+        if (size != bufferSize)
+        {
+            bufferIndex = 0;
+            buffer.malloc ((size_t) size);
+            bufferSize = size;
+        }
+
+        clear();
+    }
+    COLD void clear() noexcept
+    {
+        last = 0;
+        buffer.clear ((size_t) bufferSize);
+    }
+
+public:
+    //==============================================================================
+    COLD CombFilter() noexcept
+:
+    last(0),
+         bufferSize (0),
+         bufferIndex(0)
+    {}
+    COLD ~CombFilter() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CombFilter)
 };
-
-//==============================================================================
-COLD CombFilter::CombFilter() noexcept
-:
-last(0),
-     bufferSize (0),
-     bufferIndex(0)
-{}
-COLD CombFilter::~CombFilter() noexcept {}
-
-//==============================================================================
-inline float CombFilter::process (const float input, const float feedbackLevel) noexcept
-{
-#define REVERB_DAMP 0.0f
-    const float output = buffer[bufferIndex];
-    last = (output * (1.0f - REVERB_DAMP)) + (last * REVERB_DAMP);
-    JUCE_UNDENORMALISE (last);
-
-    float temp = input + (last * feedbackLevel);
-    JUCE_UNDENORMALISE (temp);
-    buffer[bufferIndex] = temp;
-    bufferIndex = (bufferIndex + 1) % bufferSize;
-
-    return output;
-}
-
-//==============================================================================
-COLD void CombFilter::setSize (const int size)
-{
-    if (size != bufferSize)
-    {
-        bufferIndex = 0;
-        buffer.malloc ((size_t) size);
-        bufferSize = size;
-    }
-
-    clear();
-}
-COLD void CombFilter::clear() noexcept
-{
-    last = 0;
-    buffer.clear ((size_t) bufferSize);
-}
 
 //==============================================================================
 //==============================================================================
@@ -4223,54 +4266,46 @@ class AllPassFilter
     HeapBlock<float> buffer;
     int bufferSize, bufferIndex;
 public:
-    inline float process (const float input) noexcept;
+    //==============================================================================
+    inline float process (const float input) noexcept
+    {
+        const float bufferedValue = buffer [bufferIndex];
+        float temp = input + (bufferedValue * 0.5f);
+        JUCE_UNDENORMALISE (temp);
+        buffer[bufferIndex] = temp;
+        bufferIndex = (bufferIndex + 1) % bufferSize;
 
-    COLD void setSize (const int size);
-    COLD void clear() noexcept;
+        return bufferedValue - input;
+    }
 
     //==============================================================================
-    COLD AllPassFilter() noexcept;
-    COLD ~AllPassFilter() noexcept;
+    COLD void setSize (const int size)
+    {
+        if (size != bufferSize)
+        {
+            bufferIndex = 0;
+            buffer.malloc ((size_t) size);
+            bufferSize = size;
+        }
+
+        clear();
+    }
+    COLD void clear() noexcept
+    {
+        buffer.clear ((size_t) bufferSize);
+    }
+
+public:
+    //==============================================================================
+    COLD AllPassFilter() noexcept
+:
+    bufferSize(0),
+               bufferIndex(0)
+    {}
+    COLD ~AllPassFilter() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
 };
-
-//==============================================================================
-COLD AllPassFilter::AllPassFilter() noexcept
-:
-bufferSize(0),
-           bufferIndex(0)
-{}
-COLD AllPassFilter::~AllPassFilter() noexcept {}
-
-//==============================================================================
-inline float AllPassFilter::process (const float input) noexcept
-{
-    const float bufferedValue = buffer [bufferIndex];
-    float temp = input + (bufferedValue * 0.5f);
-    JUCE_UNDENORMALISE (temp);
-    buffer[bufferIndex] = temp;
-    bufferIndex = (bufferIndex + 1) % bufferSize;
-
-    return bufferedValue - input;
-}
-
-//==============================================================================
-COLD void AllPassFilter::setSize (const int size)
-{
-    if (size != bufferSize)
-    {
-        bufferIndex = 0;
-        buffer.malloc ((size_t) size);
-        bufferSize = size;
-    }
-
-    clear();
-}
-COLD void AllPassFilter::clear() noexcept
-{
-    buffer.clear ((size_t) bufferSize);
-}
 
 //==============================================================================
 //==============================================================================
@@ -4281,75 +4316,66 @@ class LinearSmoothedValue
     int countdown, stepsToTarget;
 
 public:
-    inline float getNextValue() noexcept;
-    inline float getLastValue() noexcept;
-    inline void setValue (float newValue) noexcept;
+    //==========================================================================
+    inline float getNextValue() noexcept
+    {
+        if (countdown <= 0)
+        {
+            lastValue = target;
+        }
+        else
+        {
+            --countdown;
+            currentValue += step;
 
-    COLD void reset (float sampleRate, float fadeLengthSeconds) noexcept;
+            lastValue = currentValue;
+        }
+
+        return lastValue;
+    }
+    //==========================================================================
+    inline float getLastValue() noexcept
+    {
+        return lastValue;
+    }
+
+    inline void setValue (float newValue) noexcept
+    {
+        if (target != newValue)
+        {
+            target = newValue;
+            countdown = stepsToTarget;
+
+            if (countdown <= 0)
+                currentValue = target;
+            else
+                step = (target - currentValue) / countdown;
+        }
+    }
 
     //==============================================================================
-    COLD LinearSmoothedValue() noexcept;
-    COLD ~LinearSmoothedValue() noexcept;
+    COLD void reset (float sampleRate, float fadeLengthSeconds) noexcept
+    {
+        stepsToTarget = mono_floor (fadeLengthSeconds * sampleRate);
+        currentValue = target;
+        countdown = 0;
+    }
+
+public:
+    //==============================================================================
+    COLD LinearSmoothedValue() noexcept
+:
+    currentValue(0),
+                 target(0),
+                 step(0),
+                 countdown(0),
+                 stepsToTarget(0)
+    {}
+
+    COLD ~LinearSmoothedValue() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoothedValue)
 };
-
-//==============================================================================
-COLD LinearSmoothedValue::LinearSmoothedValue() noexcept
-:
-currentValue(0),
-             target(0),
-             step(0),
-             countdown(0),
-             stepsToTarget(0)
-{}
-
-COLD LinearSmoothedValue::~LinearSmoothedValue() noexcept {}
-
-//==============================================================================
-inline float LinearSmoothedValue::getNextValue() noexcept
-{
-    if (countdown <= 0)
-    {
-        lastValue = target;
-    }
-    else
-    {
-        --countdown;
-        currentValue += step;
-
-        lastValue = currentValue;
-    }
-
-    return lastValue;
-}
-//==============================================================================
-inline float LinearSmoothedValue::getLastValue() noexcept
-{
-    return lastValue;
-}
-
-inline void LinearSmoothedValue::setValue (float newValue) noexcept
-{
-    if (target != newValue)
-    {
-        target = newValue;
-        countdown = stepsToTarget;
-
-        if (countdown <= 0)
-            currentValue = target;
-        else
-            step = (target - currentValue) / countdown;
-    }
-}
-
-//==============================================================================
-COLD void LinearSmoothedValue::reset (float sampleRate, float fadeLengthSeconds) noexcept
-{
-    stepsToTarget = mono_floor (fadeLengthSeconds * sampleRate);
-    currentValue = target;
-    countdown = 0;
-}
 
 //==============================================================================
 //==============================================================================
@@ -4365,21 +4391,17 @@ struct ReverbParameters
 private:
     //==============================================================================
     friend class mono_Reverb;
-    COLD ReverbParameters() noexcept;
-    COLD ~ReverbParameters() noexcept;
+    COLD ReverbParameters() noexcept
+:
+    roomSize   (0.5f),
+               wetLevel   (0.33f),
+               dryLevel   (0.4f),
+               width      (1.0f)
+    {}
+    COLD ~ReverbParameters() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbParameters)
 };
-
-//==============================================================================
-COLD ReverbParameters::ReverbParameters() noexcept
-:
-roomSize   (0.5f),
-           wetLevel   (0.33f),
-           dryLevel   (0.4f),
-           width      (1.0f)
-{}
-COLD ReverbParameters::~ReverbParameters() noexcept {}
 
 //==============================================================================
 //==============================================================================
@@ -4397,100 +4419,90 @@ class mono_Reverb : RuntimeListener
     LinearSmoothedValue feedback, dryGain, wetGain1, wetGain2;
 
 public:
-    inline float processSingleSampleRaw ( float in_ ) noexcept;
-
-    inline ReverbParameters& get_parameters() noexcept;
-    inline void update_parameters() noexcept;
-
-    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    COLD void reset() noexcept;
-
-    //==============================================================================
-    COLD mono_Reverb() noexcept;
-    COLD ~mono_Reverb() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Reverb)
-};
-
-//==============================================================================
-COLD mono_Reverb::mono_Reverb() noexcept
-{
-    update_parameters();
-    sample_rate_changed(0);
-}
-COLD mono_Reverb::~mono_Reverb() noexcept {}
-
-//==============================================================================
-inline float mono_Reverb::processSingleSampleRaw ( float in ) noexcept
-{
-    float out = 0;
+    //==========================================================================
+    inline float processSingleSampleRaw ( float in ) noexcept
     {
-        const float input = in * REVERB_GAIN;
-        const float feedbck = feedback.getNextValue();
-        for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
+        float out = 0;
         {
-            out += comb[j].process (input, feedbck);
+            const float input = in * REVERB_GAIN;
+            const float feedbck = feedback.getNextValue();
+            for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
+            {
+                out += comb[j].process (input, feedbck);
+            }
         }
+        for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
+        {
+            out = allPass[j].process (out);
+        }
+
+        return out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + in * dryGain.getNextValue();
     }
-    for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
+
+    //==========================================================================
+    inline ReverbParameters& get_parameters() noexcept
     {
-        out = allPass[j].process (out);
+        return parameters;
     }
-
-    return out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + in * dryGain.getNextValue();
-}
-
-//==============================================================================
-inline ReverbParameters& mono_Reverb::get_parameters() noexcept {
-    return parameters;
-}
-inline void mono_Reverb::update_parameters() noexcept
-{
+    inline void update_parameters() noexcept
+    {
 #define WET_SCALE_FACTOR 3.0f
 #define DRY_SCALE_FACTOR 1.0f
 #define ROOM_SCALE_FACTOR 0.28f
 #define ROOM_OFFSET 0.7f
-    const float wet = parameters.wetLevel * WET_SCALE_FACTOR;
-    dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
-    wetGain1.setValue (0.5f * wet * (1.0f + parameters.width));
-    wetGain2.setValue (0.5f * wet * (1.0f - parameters.width));
-    feedback.setValue (parameters.roomSize * ROOM_SCALE_FACTOR + ROOM_OFFSET);
-}
-
-//==============================================================================
-COLD void mono_Reverb::sample_rate_changed (double) noexcept
-{
-    static const int combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
-    static const int allPassTunings[] = { 556, 441, 341, 225 };
-    const int stereoSpread = 23;
-    const int intSampleRate = (int) sample_rate;
-
-    for (int i = 0; i < numCombs; ++i)
-    {
-        comb[i].setSize ((intSampleRate * combTunings[i]) / 44100);
-        comb[i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
+        const float wet = parameters.wetLevel * WET_SCALE_FACTOR;
+        dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
+        wetGain1.setValue (0.5f * wet * (1.0f + parameters.width));
+        wetGain2.setValue (0.5f * wet * (1.0f - parameters.width));
+        feedback.setValue (parameters.roomSize * ROOM_SCALE_FACTOR + ROOM_OFFSET);
     }
 
-    for (int i = 0; i < numAllPasses; ++i)
+    //==============================================================================
+    COLD void sample_rate_changed (double) noexcept
     {
-        allPass[i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
-        allPass[i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
+        static const int combTunings[] = { 1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617 }; // (at 44100Hz)
+        static const int allPassTunings[] = { 556, 441, 341, 225 };
+        const int stereoSpread = 23;
+        const int intSampleRate = (int) sample_rate;
+
+        for (int i = 0; i < numCombs; ++i)
+        {
+            comb[i].setSize ((intSampleRate * combTunings[i]) / 44100);
+            comb[i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
+        }
+
+        for (int i = 0; i < numAllPasses; ++i)
+        {
+            allPass[i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
+            allPass[i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
+        }
+
+        const float smoothTime = 0.01f;
+        feedback.reset (sample_rate, smoothTime);
+        dryGain.reset (sample_rate, smoothTime);
+        wetGain1.reset (sample_rate, smoothTime);
+        wetGain2.reset (sample_rate, smoothTime);
+    }
+    COLD void reset() noexcept
+    {
+        for (int i = 0; i < numCombs; ++i)
+            comb[i].clear();
+
+        for (int i = 0; i < numAllPasses; ++i)
+            allPass[i].clear();
     }
 
-    const float smoothTime = 0.01f;
-    feedback.reset (sample_rate, smoothTime);
-    dryGain.reset (sample_rate, smoothTime);
-    wetGain1.reset (sample_rate, smoothTime);
-    wetGain2.reset (sample_rate, smoothTime);
-}
-COLD void mono_Reverb::reset() noexcept
-{
-    for (int i = 0; i < numCombs; ++i)
-        comb[i].clear();
+public:
+    //==========================================================================
+    COLD mono_Reverb() noexcept
+    {
+        update_parameters();
+        sample_rate_changed(0);
+    }
+    COLD ~mono_Reverb() noexcept {}
 
-    for (int i = 0; i < numAllPasses; ++i)
-        allPass[i].clear();
-}
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Reverb)
+};
 
 //==============================================================================
 //==============================================================================
@@ -4534,8 +4546,243 @@ private:
     const ChorusData*const chorus_data;
 
 public:
-    inline void process( AudioSampleBuffer& output_buffer_, float velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept;
+    //==========================================================================
+    inline void process( AudioSampleBuffer& output_buffer_, float velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
+    {
+        velocity_smoother.set_size_in_ms( synth_data->velocity_glide_time );
 
+        // COLLECT BUFFERS
+        float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
+        float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
+
+        // PREPARE REVERB
+        const float reverb_room = reverb_data->room;
+        const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
+        const float reverb_width = reverb_data->width;
+        ReverbParameters& rever_params_l = reverb_l.get_parameters();
+        if(
+            rever_params_l.roomSize != reverb_room
+            || rever_params_l.dryLevel != reverb_dry_wet_mix
+            // current_params.wetLevel != r_params.wetLevel
+            || rever_params_l.width != reverb_width
+        )
+        {
+            rever_params_l.roomSize = reverb_room;
+            rever_params_l.dryLevel = reverb_dry_wet_mix;
+            rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+            rever_params_l.width = reverb_width;
+
+            ReverbParameters& rever_params_r = reverb_r.get_parameters();
+            rever_params_r.roomSize = rever_params_l.roomSize;
+            rever_params_r.dryLevel = rever_params_l.dryLevel;
+            rever_params_r.wetLevel = rever_params_l.wetLevel;
+            rever_params_r.width = rever_params_l.width;
+
+            reverb_l.update_parameters();
+            reverb_r.update_parameters();
+        }
+
+        // PREPARE
+        {
+            chorus_modulation_env->env_data->sustain_smoother.process_amp
+            (
+                not chorus_data->hold_modulation,
+                chorus_modulation_env,
+                data_buffer->chorus_env.getWritePointer(),
+                num_samples_
+            );
+
+            float* const final_env_amp = data_buffer->final_env.getWritePointer();
+            final_env->process( final_env_amp, num_samples_ );
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_);
+                left_input_buffer[sid] *= gain;
+                right_input_buffer[sid] *= gain;
+            }
+        }
+
+        // STEREO CHORUS
+        {
+            // CHORUS
+            const float* const chorus_env_buffer( data_buffer->chorus_env.getReadPointer() );
+            const float* const smoothed_bypass = synth_data->effect_bypass_smoother.get_smoothed_buffer();
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float in_l = left_input_buffer[sid];
+                const float in_r = right_input_buffer[sid];
+
+                const float modulation_amp = chorus_env_buffer[sid];
+                const float feedback = modulation_amp*0.85f;
+
+                float tmp_sample_l  = chorus_l.tick((modulation_amp * 220) + 1.51f);
+                float tmp_sample_r = chorus_r.tick((modulation_amp * 200) + 1.56f);
+                chorus_l.fill( sample_mix (in_l, tmp_sample_r * feedback ) );
+                chorus_r.fill( sample_mix (in_r, tmp_sample_l * feedback ) );
+
+                const float bypass = smoothed_bypass[sid];
+                left_input_buffer[sid] = sample_mix(tmp_sample_l*bypass, in_l*(1.0f-bypass));
+                right_input_buffer[sid] = sample_mix(tmp_sample_r*bypass, in_r*(1.0f-bypass));
+            }
+        }
+
+        // PROCESS
+        {
+            struct LeftRightExecuter : public mono_Thread
+            {
+                FXProcessor*const processor;
+
+                const int num_samples;
+
+                int delay_pos;
+
+                const float* const input_buffer;
+                float* const delay_data;
+                float* const final_output;
+
+                const float* const smoothed_delay_buffer;
+                const float* const smoothed_bypass;
+
+                // LEFT SIDE
+                inline void exec() noexcept override
+                {
+                    // DELAY
+                    for( int sid = 0 ; sid != num_samples ; ++sid )
+                    {
+                        const float in = input_buffer[sid];
+                        const float delay_data_in = delay_data[delay_pos];
+                        float sample = delay_data_in+in;
+                        delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
+                        if ( ++delay_pos >= DELAY_BUFFER_SIZE )
+                        {
+                            delay_pos = 0;
+                        }
+
+                        const float bypass = smoothed_bypass[sid];
+                        final_output[sid] = sample_mix(processor->reverb_l.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
+                    }
+                }
+
+                inline void exec_right() noexcept
+                {
+                    // DELAY / REVERB / MIX
+                    for( int sid = 0 ; sid != num_samples ; ++sid )
+                    {
+                        // DELAY
+                        const float in = input_buffer[sid];
+                        const float delay_data_in = delay_data[delay_pos];
+                        float sample = delay_data_in+in;
+                        delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
+                        if (++delay_pos >= DELAY_BUFFER_SIZE)
+                        {
+                            delay_pos = 0;
+                        }
+
+                        // REVERB
+                        // MIX
+                        const float bypass = smoothed_bypass[sid];
+                        sample = sample_mix(processor->reverb_r.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
+                        final_output[sid] = sample;
+                        processor->last_output_smoother.add( sample );
+                    }
+                    processor->delayPosition = delay_pos;
+                }
+
+                LeftRightExecuter( FXProcessor*const fx_processor_,
+
+                                   const int num_samples_,
+                                   const int delay_pos_,
+
+                                   const float* input_buffer_,
+
+                                   float* delay_data_,
+                                   float* final_output_
+                                 ) noexcept
+:
+                processor( fx_processor_ ),
+
+                           num_samples( num_samples_ ),
+                           delay_pos( delay_pos_ ),
+
+                           input_buffer(input_buffer_),
+                           delay_data(delay_data_),
+                           final_output(final_output_),
+
+                           smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
+                           smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() )
+                {}
+            };
+
+            const int delay_pos = delayPosition;
+            LeftRightExecuter left_executer( this,
+
+                                             num_samples_,
+                                             delay_pos,
+
+                                             left_input_buffer,
+
+                                             delayBuffer.getWritePointer (LEFT),
+
+                                             &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
+                                           ) ;
+            left_executer.try_run_paralel();
+
+            {
+                LeftRightExecuter right_executer
+                (
+                    this,
+
+                    num_samples_,
+                    delay_pos,
+
+                    right_input_buffer,
+
+                    delayBuffer.getWritePointer (RIGHT),
+
+                    &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_]
+                ) ;
+                right_executer.exec_right();
+            }
+
+            while( left_executer.isWorking() ) {}
+            // FINAL MIX
+            {
+                const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
+                float*const left_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
+                float*const right_buffer = &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_];
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    const float volume = smoothed_volume_buffer[sid];
+
+                    left_buffer[sid] *= volume*2;
+                    right_buffer[sid] *= volume*2;
+                }
+
+                // VISUALIZE BEFORE FONAL OUT
+                if( Monique_Ui_SegmentedMeter*meter = AppInstanceStore::getInstance()->audio_processor->peak_meter )
+                {
+                    ScopedLock locked(AppInstanceStore::getInstance()->audio_processor->peak_meter_lock);
+                    meter->process( left_buffer, num_samples_ );
+                }
+
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    const float volume = smoothed_volume_buffer[sid];
+
+                    left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
+                    right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
+                }
+                // VISUALIZE
+                if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+                {
+                    amp_painter->add_out( left_buffer, right_buffer, num_samples_ );
+                    amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
+                }
+            }
+        }
+    }
+
+    //==========================================================================
     void start_attack() noexcept
     {
         chorus_modulation_env->start_attack();
@@ -4567,279 +4814,36 @@ public:
 
 public:
     //==============================================================================
-    COLD FXProcessor( MoniqueSynthData* synth_data_) noexcept;
-    COLD ~FXProcessor() noexcept;
+    COLD FXProcessor( MoniqueSynthData* synth_data_ ) noexcept
+:
+    reverb_l(),
+             reverb_r(),
+
+             chorus_l(),
+             chorus_r(),
+
+             chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).env_data ) ),
+
+             delayPosition( 0 ),
+             delayBuffer ( DELAY_BUFFER_SIZE ),
+
+             final_env( new ENV( synth_data_, synth_data_->env_data ) ),
+
+             velocity_smoother( synth_data_->velocity_glide_time ),
+             last_output_smoother( 50 ),
+
+             synth_data( synth_data_ ),
+             data_buffer( GET_DATA_PTR( data_buffer ) ),
+             reverb_data( GET_DATA_PTR( reverb_data ) ),
+             chorus_data( GET_DATA_PTR( chorus_data ) )
+    {
+        std::cout << "MONIQUE: init FX" << std::endl;
+    }
+
+    COLD ~FXProcessor() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FXProcessor)
 };
-
-// -----------------------------------------------------------------
-COLD FXProcessor::FXProcessor( MoniqueSynthData* synth_data_ ) noexcept
-:
-reverb_l(),
-         reverb_r(),
-
-         chorus_l(),
-         chorus_r(),
-
-         chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).env_data ) ),
-
-         delayPosition( 0 ),
-         delayBuffer ( DELAY_BUFFER_SIZE ),
-
-         final_env( new ENV( synth_data_, synth_data_->env_data ) ),
-
-         velocity_smoother( synth_data_->velocity_glide_time ),
-         last_output_smoother( 50 ),
-
-         synth_data( synth_data_ ),
-         data_buffer( GET_DATA_PTR( data_buffer ) ),
-         reverb_data( GET_DATA_PTR( reverb_data ) ),
-         chorus_data( GET_DATA_PTR( chorus_data ) )
-{
-    //delayBuffer.clear();
-
-    std::cout << "MONIQUE: init FX" << std::endl;
-}
-
-COLD FXProcessor::~FXProcessor() noexcept {}
-
-// -----------------------------------------------------------------
-inline void FXProcessor::process( AudioSampleBuffer& output_buffer_, float velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
-{
-    velocity_smoother.set_size_in_ms( synth_data->velocity_glide_time );
-
-    // COLLECT BUFFERS
-    float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
-    float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
-
-    // PREPARE REVERB
-    const float reverb_room = reverb_data->room;
-    const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
-    const float reverb_width = reverb_data->width;
-    ReverbParameters& rever_params_l = reverb_l.get_parameters();
-    if(
-        rever_params_l.roomSize != reverb_room
-        || rever_params_l.dryLevel != reverb_dry_wet_mix
-        // current_params.wetLevel != r_params.wetLevel
-        || rever_params_l.width != reverb_width
-    )
-    {
-        rever_params_l.roomSize = reverb_room;
-        rever_params_l.dryLevel = reverb_dry_wet_mix;
-        rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
-        rever_params_l.width = reverb_width;
-
-        ReverbParameters& rever_params_r = reverb_r.get_parameters();
-        rever_params_r.roomSize = rever_params_l.roomSize;
-        rever_params_r.dryLevel = rever_params_l.dryLevel;
-        rever_params_r.wetLevel = rever_params_l.wetLevel;
-        rever_params_r.width = rever_params_l.width;
-
-        reverb_l.update_parameters();
-        reverb_r.update_parameters();
-    }
-
-    // PREPARE
-    {
-        chorus_modulation_env->env_data->sustain_smoother.process_amp
-        (
-            not chorus_data->hold_modulation,
-            chorus_modulation_env,
-            data_buffer->chorus_env.getWritePointer(),
-            num_samples_
-        );
-
-        float* const final_env_amp = data_buffer->final_env.getWritePointer();
-        final_env->process( final_env_amp, num_samples_ );
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
-        {
-            const float gain = final_env_amp[sid]*velocity_smoother.add_and_get_average(velocity_);
-            left_input_buffer[sid] *= gain;
-            right_input_buffer[sid] *= gain;
-        }
-    }
-
-    // STEREO CHORUS
-    {
-        // CHORUS
-        const float* const chorus_env_buffer( data_buffer->chorus_env.getReadPointer() );
-        const float* const smoothed_bypass = synth_data->effect_bypass_smoother.get_smoothed_buffer();
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
-        {
-            const float in_l = left_input_buffer[sid];
-            const float in_r = right_input_buffer[sid];
-
-            const float modulation_amp = chorus_env_buffer[sid];
-            const float feedback = modulation_amp*0.85f;
-
-            float tmp_sample_l  = chorus_l.tick((modulation_amp * 220) + 1.51f);
-            float tmp_sample_r = chorus_r.tick((modulation_amp * 200) + 1.56f);
-            chorus_l.fill( sample_mix (in_l, tmp_sample_r * feedback ) );
-            chorus_r.fill( sample_mix (in_r, tmp_sample_l * feedback ) );
-
-            const float bypass = smoothed_bypass[sid];
-            left_input_buffer[sid] = sample_mix(tmp_sample_l*bypass, in_l*(1.0f-bypass));
-            right_input_buffer[sid] = sample_mix(tmp_sample_r*bypass, in_r*(1.0f-bypass));
-        }
-    }
-
-    // PROCESS
-    {
-        struct LeftRightExecuter : public mono_Thread
-        {
-            FXProcessor*const processor;
-
-            const int num_samples;
-
-            int delay_pos;
-
-            const float* const input_buffer;
-            float* const delay_data;
-            float* const final_output;
-
-            const float* const smoothed_delay_buffer;
-            const float* const smoothed_bypass;
-
-            // LEFT SIDE
-            inline void exec() noexcept override
-            {
-                // DELAY
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    const float in = input_buffer[sid];
-                    const float delay_data_in = delay_data[delay_pos];
-                    float sample = delay_data_in+in;
-                    delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
-                    if ( ++delay_pos >= DELAY_BUFFER_SIZE )
-                    {
-                        delay_pos = 0;
-                    }
-
-                    const float bypass = smoothed_bypass[sid];
-                    final_output[sid] = sample_mix(processor->reverb_l.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
-                }
-            }
-
-            inline void exec_right() noexcept
-            {
-                // DELAY / REVERB / MIX
-                for( int sid = 0 ; sid != num_samples ; ++sid )
-                {
-                    // DELAY
-                    const float in = input_buffer[sid];
-                    const float delay_data_in = delay_data[delay_pos];
-                    float sample = delay_data_in+in;
-                    delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
-                    if (++delay_pos >= DELAY_BUFFER_SIZE)
-                    {
-                        delay_pos = 0;
-                    }
-
-                    // REVERB
-                    // MIX
-                    const float bypass = smoothed_bypass[sid];
-                    sample = sample_mix(processor->reverb_r.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
-                    final_output[sid] = sample;
-                    processor->last_output_smoother.add( sample );
-                }
-                processor->delayPosition = delay_pos;
-            }
-
-            LeftRightExecuter( FXProcessor*const fx_processor_,
-
-                               const int num_samples_,
-                               const int delay_pos_,
-
-                               const float* input_buffer_,
-
-                               float* delay_data_,
-                               float* final_output_
-                             ) noexcept
-:
-            processor( fx_processor_ ),
-
-                       num_samples( num_samples_ ),
-                       delay_pos( delay_pos_ ),
-
-                       input_buffer(input_buffer_),
-                       delay_data(delay_data_),
-                       final_output(final_output_),
-
-                       smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
-                       smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() )
-            {}
-        };
-
-        const int delay_pos = delayPosition;
-        LeftRightExecuter left_executer( this,
-
-                                         num_samples_,
-                                         delay_pos,
-
-                                         left_input_buffer,
-
-                                         delayBuffer.getWritePointer (LEFT),
-
-                                         &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
-                                       ) ;
-        left_executer.try_run_paralel();
-
-        {
-            LeftRightExecuter right_executer
-            (
-                this,
-
-                num_samples_,
-                delay_pos,
-
-                right_input_buffer,
-
-                delayBuffer.getWritePointer (RIGHT),
-
-                &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_]
-            ) ;
-            right_executer.exec_right();
-        }
-
-        while( left_executer.isWorking() ) {}
-        // FINAL MIX
-        {
-            const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
-            float*const left_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
-            float*const right_buffer = &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_];
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float volume = smoothed_volume_buffer[sid];
-
-                left_buffer[sid] *= volume*2;
-                right_buffer[sid] *= volume*2;
-            }
-
-            // VISUALIZE BEFORE FONAL OUT
-            if( Monique_Ui_SegmentedMeter*meter = AppInstanceStore::getInstance()->audio_processor->peak_meter )
-            {
-                ScopedLock locked(AppInstanceStore::getInstance()->audio_processor->peak_meter_lock);
-                meter->process( left_buffer, num_samples_ );
-            }
-
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float volume = smoothed_volume_buffer[sid];
-
-                left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
-                right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
-            }
-            // VISUALIZE
-            if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-            {
-                amp_painter->add_out( left_buffer, right_buffer, num_samples_ );
-                amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
-            }
-        }
-    }
-}
-
 
 //==============================================================================
 //==============================================================================
@@ -4868,140 +4872,126 @@ class ArpSequencer : public RuntimeListener
 public:
     //==============================================================================
     // RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
-    inline int process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept;
+    // RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
+    inline int process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept
+    {
+        double samples_per_min = sample_rate*60;
+        double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
+        double steps_per_min = info->bpm*4/1.0 * speed_multi;
+        double steps_per_sample = steps_per_min/samples_per_min;
+        int64 sync_sample_pos = info->samples_since_start+start_sample_;
+        int64 step = next_step_on_hold;
+        step_at_sample_current_buffer = -1;
 
-    inline int get_current_step() const noexcept;
-    inline int get_step_before() const noexcept;
-    inline float get_current_tune() const noexcept;
-    inline bool found_last_process_a_step() const noexcept;
-    inline bool last_found_step_is_enabled() const noexcept;
-    inline void reset() noexcept;
+        double samples_per_step = samples_per_min/steps_per_min; // WILL BE OVERRIDDEN IN STANDALONE!
+        for( int i = 0 ; i < num_samples_; ++i )
+        {
+#ifdef IS_STANDALONE
+            if( info->is_extern_synced )
+            {
+                OwnedArray< RuntimeInfo::Step >& steps_in_block( info->steps_in_block );
+                if( steps_in_block.size() )
+                {
+                    RuntimeInfo::Step& step__( *steps_in_block.getFirst() );
+                    if( step__.at_absolute_sample == sync_sample_pos )
+                    {
+                        step = step__.step_id;
+                        samples_per_step = step__.samples_per_step;
+                        steps_in_block.remove(0,true);
+                    }
+                }
+            }
+            else
+#endif
+            {
+                step = mono_floor(steps_per_sample*sync_sample_pos)+1; // +1 for future processing
+            }
+
+            --shuffle_to_back_counter;
+
+            if( step != next_step_on_hold )
+            {
+                next_step_on_hold = step;
+
+                if( current_step % 2 == 0 )
+                    shuffle_to_back_counter = mono_floor(samples_per_step * ArpSequencerData::shuffle_to_value( data->shuffle ));
+                else
+                    shuffle_to_back_counter = 0;
+
+                found_a_step = true;
+            }
+
+            if( found_a_step and shuffle_to_back_counter == 0 )
+            {
+                step_at_sample_current_buffer = i;
+                current_step = next_step_on_hold;
+                return i;
+            }
+
+            sync_sample_pos++;
+        }
+
+        return num_samples_;
+    }
 
     //==============================================================================
-    COLD ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept;
-    COLD ~ArpSequencer() noexcept;
+    inline int get_current_step() const noexcept
+    {
+        return current_step % SUM_ENV_ARP_STEPS;
+    }
+    inline int get_step_before() const noexcept
+    {
+        if( current_step > 0 )
+            return (current_step-1) % SUM_ENV_ARP_STEPS;
+        else
+            return 0;
+    }
+    inline float get_current_tune() const noexcept
+    {
+        return data->tune[get_current_step()].get_value();
+    }
+    inline bool found_last_process_a_step() const noexcept
+    {
+        return step_at_sample_current_buffer != -1;
+    }
+    inline bool last_found_step_is_enabled() const noexcept
+    {
+        bool success = false;
+        if( found_last_process_a_step() )
+        {
+            if( data->step[get_current_step()] )
+            {
+                success = true;
+            }
+        }
+
+        return success;
+    }
+    inline void reset() noexcept
+    {
+        current_step = 0;
+    }
+
+public:
+    //==============================================================================
+    COLD ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
+:
+    info(info_),
+         data(data_),
+         current_step(0),
+         next_step_on_hold(0),
+         step_at_sample_current_buffer(-1),
+
+         shuffle_to_back_counter(0),
+         found_a_step(false)
+    {
+        std::cout << "MONIQUE: init SEQUENCER" << std::endl;
+    }
+
+    COLD ~ArpSequencer() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArpSequencer)
 };
-
-//==============================================================================
-COLD ArpSequencer::ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
-:
-info(info_),
-     data(data_),
-     current_step(0),
-     next_step_on_hold(0),
-     step_at_sample_current_buffer(-1),
-
-     shuffle_to_back_counter(0),
-     found_a_step(false)
-{
-    std::cout << "MONIQUE: init SEQUENCER" << std::endl;
-}
-
-COLD ArpSequencer::~ArpSequencer() noexcept {}
-
-//==============================================================================
-// RETURNS THE NUMBER OF SAMPLES TO THE NEXT STEP
-// RETURN NUM SAMPLES IF THERE IS NO STEP IN THE BUFFER
-inline int ArpSequencer::process_samples_to_next_step( int start_sample_, int num_samples_ ) noexcept
-{
-    double samples_per_min = sample_rate*60;
-    double speed_multi = ArpSequencerData::speed_multi_to_value(data->speed_multi);
-    double steps_per_min = info->bpm*4/1.0 * speed_multi;
-    double steps_per_sample = steps_per_min/samples_per_min;
-    int64 sync_sample_pos = info->samples_since_start+start_sample_;
-    int64 step = next_step_on_hold;
-    step_at_sample_current_buffer = -1;
-
-    double samples_per_step = samples_per_min/steps_per_min; // WILL BE OVERRIDDEN IN STANDALONE!
-    for( int i = 0 ; i < num_samples_; ++i )
-    {
-#ifdef IS_STANDALONE
-        if( info->is_extern_synced )
-        {
-            OwnedArray< RuntimeInfo::Step >& steps_in_block( info->steps_in_block );
-            if( steps_in_block.size() )
-            {
-                RuntimeInfo::Step& step__( *steps_in_block.getFirst() );
-                if( step__.at_absolute_sample == sync_sample_pos )
-                {
-                    step = step__.step_id;
-                    samples_per_step = step__.samples_per_step;
-                    steps_in_block.remove(0,true);
-                }
-            }
-        }
-        else
-#endif
-        {
-            step = mono_floor(steps_per_sample*sync_sample_pos)+1; // +1 for future processing
-        }
-
-        --shuffle_to_back_counter;
-
-        if( step != next_step_on_hold )
-        {
-            next_step_on_hold = step;
-
-            if( current_step % 2 == 0 )
-                shuffle_to_back_counter = mono_floor(samples_per_step * ArpSequencerData::shuffle_to_value( data->shuffle ));
-            else
-                shuffle_to_back_counter = 0;
-
-            found_a_step = true;
-        }
-
-        if( found_a_step and shuffle_to_back_counter == 0 )
-        {
-            step_at_sample_current_buffer = i;
-            current_step = next_step_on_hold;
-            return i;
-        }
-
-        sync_sample_pos++;
-    }
-
-    return num_samples_;
-}
-
-//==============================================================================
-inline int ArpSequencer::get_current_step() const noexcept
-{
-    return current_step % SUM_ENV_ARP_STEPS;
-}
-inline int ArpSequencer::get_step_before() const noexcept
-{
-    if( current_step > 0 )
-        return (current_step-1) % SUM_ENV_ARP_STEPS;
-    else
-        return 0;
-}
-inline float ArpSequencer::get_current_tune() const noexcept
-{
-    return data->tune[get_current_step()].get_value();
-}
-inline bool ArpSequencer::found_last_process_a_step() const noexcept
-{
-    return step_at_sample_current_buffer != -1;
-}
-inline bool ArpSequencer::last_found_step_is_enabled() const noexcept
-{
-    bool success = false;
-    if( found_last_process_a_step() )
-    {
-        if( data->step[get_current_step()] )
-        {
-            success = true;
-        }
-    }
-
-    return success;
-}
-inline void ArpSequencer::reset() noexcept
-{
-    current_step = 0;
-}
 
 //==============================================================================
 //==============================================================================
@@ -5016,29 +5006,29 @@ inline void ArpSequencer::reset() noexcept
 COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept
 :
 audio_processor( audio_processor_ ),
-synth_data( synth_data_ ),
+                 synth_data( synth_data_ ),
 
-info( new RuntimeInfo() ),
-data_buffer( new DataBuffer(1024) ),
+                 info( new RuntimeInfo() ),
+                 data_buffer( new DataBuffer(1024) ),
 
-arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
-eq_processor( new EQProcessorStereo( synth_data_ ) ),
-fx_processor( new FXProcessor( synth_data_ ) ),
+                 arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
+                 eq_processor( new EQProcessorStereo( synth_data_ ) ),
+                 fx_processor( new FXProcessor( synth_data_ ) ),
 
-current_note(-1),
-pitch_offset(0),
+                 current_note(-1),
+                 pitch_offset(0),
 
-is_sostenuto_pedal_down(false),
-stopped_and_sostenuto_pedal_was_down(false),
-is_soft_pedal_down(false),
-was_soft_pedal_down_on_note_start(false),
-is_sustain_pedal_down(false),
-stopped_and_sustain_pedal_was_down(false),
+                 is_sostenuto_pedal_down(false),
+                 stopped_and_sostenuto_pedal_was_down(false),
+                 is_soft_pedal_down(false),
+                 was_soft_pedal_down_on_note_start(false),
+                 is_sustain_pedal_down(false),
+                 stopped_and_sustain_pedal_was_down(false),
 
-current_velocity(0),
-current_step(0),
-an_arp_note_is_already_running(false),
-sample_position_for_restart_arp(-1)
+                 current_velocity(0),
+                 current_step(0),
+                 an_arp_note_is_already_running(false),
+                 sample_position_for_restart_arp(-1)
 {
     mono_ThreadManager::getInstance();
     mono_ParameterOwnerStore::getInstance()->voice = this;
@@ -5087,6 +5077,9 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     delete info;
 
     mono_ThreadManager::deleteInstance();
+    COS_LOOKUP::deleteInstance();
+    EXP_LOOKUP::deleteInstance();
+    SIN_LOOKUP::deleteInstance();
 }
 
 //==============================================================================
@@ -5598,7 +5591,9 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
     mono_ParameterOwnerStore::getInstanceWithoutCreating();
     ENV env( &GET_DATA( synth_data ), &env_data_ );
     env.start_attack();
-    int count_sustain = -1;
+    const float sample_rate = RuntimeNotifyer::getInstance()->get_sample_rate();
+    const float sustain = env_data_.sustain;
+    int count_sustain = msToSamplesFast( env_data_.sustain_time*10000, sample_rate );
     while( env.get_current_stage() != END_ENV )
     {
         float sample;
@@ -5607,31 +5602,14 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
 
         if( env.get_current_stage() == SUSTAIN )
         {
-            count_sustain++;
-            if( count_sustain == 10000 )
+            //if( not env.is_endless() )
             {
-                env.set_to_release();
+                if( --count_sustain <= 0 )
+                {
+                    env.set_to_release();
+                }
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

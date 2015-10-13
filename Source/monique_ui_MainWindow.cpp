@@ -219,7 +219,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             float filter_2_3_sustain = filter_2_data->input_envs[2]->sustain.get_value();
 
             // FILTER 2 INPUT 1
-            if( filter_2_1_sustain > 0 or (not filter_2_data->input_holds[0].get_value() and filter_2_1_sustain < 0) )
+            if( filter_2_1_sustain > 0 or ( not filter_2_data->input_holds[0].get_value() and filter_2_1_sustain == 0 ) )
             {
                 button_show_active_input_l_2_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_1_sustain )
@@ -243,7 +243,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 2
-            if( filter_2_2_sustain > 0 and not (filter_2_data->input_holds[1].get_value() and filter_2_2_sustain < 0) )
+            if( filter_2_2_sustain > 0 or ( not filter_2_data->input_holds[1].get_value() and filter_2_2_sustain == 0) )
             {
                 button_show_active_input_l_2_2->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_2_sustain )
@@ -267,7 +267,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 3
-            if( filter_2_3_sustain > 0 and not (filter_2_data->input_holds[2].get_value() and filter_2_3_sustain < 0) )
+            if( filter_2_3_sustain > 0 or ( not filter_2_data->input_holds[2].get_value() and filter_2_3_sustain == 0) )
             {
                 button_show_active_input_l_2_3->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_3_sustain )
@@ -298,7 +298,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             float filter_3_3_sustain = filter_3_data->input_envs[2]->sustain.get_value();
 
             // FILTER 3 INPUT 1
-            if( filter_3_1_sustain > 0 and not (filter_3_data->input_holds[0].get_value() and filter_3_1_sustain < 0) )
+            if( filter_3_1_sustain > 0 or ( not filter_3_data->input_holds[0].get_value() and filter_3_1_sustain == 0) )
             {
                 button_show_active_input_l_3_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_1_sustain )
@@ -322,7 +322,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 3 INPUT 2
-            if( filter_3_2_sustain > 0 and not (filter_3_data->input_holds[1].get_value() and filter_3_2_sustain < 0) )
+            if( filter_3_2_sustain > 0 or ( not filter_3_data->input_holds[1].get_value() and filter_3_2_sustain == 0) )
             {
                 button_show_active_input_l_3_2->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_2_sustain )
@@ -346,7 +346,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 3 INPUT 3
-            if( filter_3_3_sustain > 0 and not (filter_3_data->input_holds[2].get_value()  and filter_3_3_sustain < 0) )
+            if( filter_3_3_sustain > 0 or ( not filter_3_data->input_holds[2].get_value()  and filter_3_3_sustain == 0) )
             {
                 button_show_active_input_l_3_3->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_3_sustain )
@@ -529,6 +529,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     //[Constructor_pre] You can add your own custom stuff here..
     is_ctrl_down = false;
     flash_counter = 0;
+    program_edit_type = NOT_SET;
     //[/Constructor_pre]
 
     addAndMakeVisible (distortion = new Monique_Ui_DualSlider (new FXDistortionSlConfig()));
@@ -723,7 +724,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     addAndMakeVisible (label_monolisa = new Label (String::empty,
             TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
-    label_monolisa->setJustificationType (Justification::centredRight);
+    label_monolisa->setJustificationType (Justification::centred);
     label_monolisa->setEditable (false, false, false);
     label_monolisa->setColour (Label::textColourId, Colour (0xffff3b00));
     label_monolisa->setColour (TextEditor::textColourId, Colour (0xffff3b00));
@@ -1287,7 +1288,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("DL",
-            TRANS("SHAPE")));
+            TRANS("DISTORTION")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -1617,6 +1618,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_show_active_input_l_3_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_show_active_input_l_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
+    addAndMakeVisible (button_programm_rename = new TextButton (String::empty));
+    button_programm_rename->setTooltip (TRANS("Replaces the selected program."));
+    button_programm_rename->setButtonText (TRANS("RENAME"));
+    button_programm_rename->addListener (this);
+    button_programm_rename->setColour (TextButton::buttonColourId, Colours::black);
+    button_programm_rename->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_programm_rename->setColour (TextButton::textColourOffId, Colours::yellow);
+
 
     //[UserPreSize]
 #ifdef IS_PLUGIN
@@ -1696,6 +1705,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_load->setColour(TextButton::buttonColourId, button_off);
     button_programm_left->setColour(TextButton::buttonColourId, button_off);
     button_programm_right->setColour(TextButton::buttonColourId, button_off);
+    button_programm_rename->setColour(TextButton::buttonColourId, button_off);
     button_open_oszi->setColour(TextButton::buttonColourId, button_off);
     button_open_midi_io_settings->setColour(TextButton::buttonColourId, button_off);
     effect_finalizer_switch->setColour(TextButton::buttonColourId, button_off);
@@ -1776,6 +1786,12 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    env_popup = nullptr;
+    editor_midiio = nullptr;
+    editor_morph = nullptr;
+    editor_global_settings = nullptr;
+    popup = nullptr;
+
     Monique_Ui_Refresher::getInstance()->stopTimer();
     Monique_Ui_Refresher::getInstance()->remove_all();
     //Thread::sleep(100);
@@ -2005,6 +2021,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_show_active_input_l_3_2 = nullptr;
     button_show_active_input_r_3_1 = nullptr;
     button_show_active_input_l_3_1 = nullptr;
+    button_programm_rename = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2022,418 +2039,418 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillAll (Colour (0xff050505));
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (480.0f, 595.0f, 605.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (480.0f, 645.0f, 605.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (480.0f, 595.0f, 605.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (480.0f, 645.0f, 605.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (10.0f, 795.0f, 1445.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (10.0f, 845.0f, 1445.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (10.0f, 795.0f, 1445.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (10.0f, 845.0f, 1445.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (195.0f, 20.0f, 1260.0f, 195.0f, 6.000f);
+    g.fillRoundedRectangle (195.0f, 70.0f, 1260.0f, 195.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (195.0f, 20.0f, 1260.0f, 195.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (195.0f, 70.0f, 1260.0f, 195.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (10.0f, 20.0f, 170.0f, 754.0f, 6.000f);
+    g.fillRoundedRectangle (10.0f, 70.0f, 170.0f, 754.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (10.0f, 20.0f, 170.0f, 754.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (10.0f, 70.0f, 170.0f, 754.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (175, 44, 25, 3);
+    g.fillRect (175, 94, 25, 3);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (175, 49, 25, 3);
+    g.fillRect (175, 99, 25, 3);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (170.0f, 50.0f, 181.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (170.0f, 100.0f, 181.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (175, 39, 25, 3);
+    g.fillRect (175, 89, 25, 3);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (195.0f, 395.0f, 1260.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (195.0f, 445.0f, 1260.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (195.0f, 395.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (195.0f, 445.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (195.0f, 215.0f, 1260.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (195.0f, 265.0f, 1260.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (195.0f, 215.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (195.0f, 265.0f, 1260.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (195.0f, 595.0f, 285.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (195.0f, 645.0f, 285.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (195.0f, 595.0f, 285.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (195.0f, 645.0f, 285.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 60.0f, 1.0f, 541.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 110.0f, 1.0f, 541.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 50.0f, 196.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 100.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 600.0f, 76.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 650.0f, 76.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (165.0f, 830.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (165.0f, 880.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (90.0f, 830.0f, 10.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (90.0f, 880.0f, 10.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (435.0f, 55.0f, 280.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (435.0f, 105.0f, 280.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (40.0f, 605.0f, 110.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (40.0f, 655.0f, 110.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 600.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 650.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (850.0f, 55.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 105.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (770.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (615.0f, 760.0f, 421.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (615.0f, 810.0f, 421.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (970.0f, 755.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (970.0f, 805.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (615.0f, 755.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (615.0f, 805.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1035.0f, 755.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (1035.0f, 805.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1015.0f, 755.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (1015.0f, 805.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 45.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 95.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (870.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 50.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 100.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 45.0f, 626.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 95.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 635.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 685.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 630.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 680.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1260.0f, 720.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (1260.0f, 770.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1265.0f, 715.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1265.0f, 765.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1035.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1035.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1095.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1095.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1155.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1155.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1405.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1405.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1245.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1245.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (300.0f, 200.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (300.0f, 250.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (240.0f, 200.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (240.0f, 250.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (360.0f, 200.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (360.0f, 250.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (40.0f, 415.0f, 110.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (40.0f, 465.0f, 110.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 410.0f, 76.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 460.0f, 76.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 410.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 460.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 240.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 290.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 60.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 110.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 185.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 235.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 365.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 415.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 420.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 470.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (20.0f, 545.0f, 5.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (20.0f, 595.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (40.0f, 55.0f, 110.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (40.0f, 105.0f, 110.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 40.0f, 1.0f, 16.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 90.0f, 1.0f, 16.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (165.0f, 45.0f, 1.0f, 185.0f, 1.000f);
+    g.fillRoundedRectangle (165.0f, 95.0f, 1.0f, 185.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (170.0f, 50.0f, 1.0f, 360.0f, 1.000f);
+    g.fillRoundedRectangle (170.0f, 100.0f, 1.0f, 360.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (40.0f, 235.0f, 110.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (40.0f, 285.0f, 110.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 230.0f, 71.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 280.0f, 71.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 230.0f, 1.0f, 6.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 280.0f, 1.0f, 6.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (289, 45, 3, 10);
+    g.fillRect (289, 95, 3, 10);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (290.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (290.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (165.0f, 45.0f, 126.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (165.0f, 95.0f, 126.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (350.0f, 50.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (350.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (229, 40, 3, 16);
+    g.fillRect (229, 90, 3, 16);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (230.0f, 40.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (230.0f, 90.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 40.0f, 136.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (95.0f, 90.0f, 136.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (259, 205, 3, 20);
+    g.fillRect (259, 255, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (319, 205, 3, 20);
+    g.fillRect (319, 255, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (379, 205, 3, 20);
+    g.fillRect (379, 255, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (229, 195, 3, 30);
+    g.fillRect (229, 245, 3, 30);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (289, 195, 3, 30);
+    g.fillRect (289, 245, 3, 30);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (349, 195, 3, 30);
+    g.fillRect (349, 245, 3, 30);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (350.0f, 195.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (350.0f, 245.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (290.0f, 195.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (290.0f, 245.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (230.0f, 195.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (230.0f, 245.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (380.0f, 200.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (380.0f, 250.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (320.0f, 200.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (320.0f, 250.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (260.0f, 200.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (260.0f, 250.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (1085.0f, 595.0f, 270.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (1085.0f, 645.0f, 270.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (1085.0f, 595.0f, 270.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (1085.0f, 645.0f, 270.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f);
+    g.fillRoundedRectangle (1355.0f, 645.0f, 100.0f, 180.0f, 6.000f);
 
     g.setColour (Colour (0xff1111ff));
-    g.drawRoundedRectangle (1355.0f, 595.0f, 100.0f, 180.0f, 6.000f, 1.000f);
+    g.drawRoundedRectangle (1355.0f, 645.0f, 100.0f, 180.0f, 6.000f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 230.0f, 196.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 280.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (435.0f, 235.0f, 280.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (435.0f, 285.0f, 280.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (850.0f, 235.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 285.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (770.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 280.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 225.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 275.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (870.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 280.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 230.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 280.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 225.0f, 626.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 275.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 280.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 230.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 280.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1035.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1035.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1095.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1095.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1155.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1155.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1405.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1405.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1245.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1245.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 410.0f, 196.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 460.0f, 196.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (435.0f, 415.0f, 280.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (435.0f, 465.0f, 280.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (850.0f, 415.0f, 40.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (850.0f, 465.0f, 40.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (770.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (770.0f, 460.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 405.0f, 1.0f, 15.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 455.0f, 1.0f, 15.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (870.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (870.0f, 460.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 410.0f, 81.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 460.0f, 81.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (780.0f, 405.0f, 626.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (780.0f, 455.0f, 626.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (790.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (790.0f, 460.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (575.0f, 410.0f, 1.0f, 5.0f, 1.000f);
+    g.fillRoundedRectangle (575.0f, 460.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1035.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1035.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1095.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1095.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1155.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1155.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1405.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1405.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1245.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1245.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (300.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (300.0f, 430.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (240.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (240.0f, 430.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (360.0f, 380.0f, 25.0f, 1.0f, 1.000f);
+    g.fillRoundedRectangle (360.0f, 430.0f, 25.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (259, 385, 3, 20);
+    g.fillRect (259, 435, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (319, 385, 3, 20);
+    g.fillRect (319, 435, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (379, 385, 3, 20);
+    g.fillRect (379, 435, 3, 20);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (229, 375, 3, 30);
+    g.fillRect (229, 425, 3, 30);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (289, 375, 3, 30);
+    g.fillRect (289, 425, 3, 30);
 
     g.setColour (Colour (0xff050505));
-    g.fillRect (349, 375, 3, 30);
+    g.fillRect (349, 425, 3, 30);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (350.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (350.0f, 425.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (290.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (290.0f, 425.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (230.0f, 375.0f, 1.0f, 40.0f, 1.000f);
+    g.fillRoundedRectangle (230.0f, 425.0f, 1.0f, 40.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (380.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (380.0f, 430.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (320.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (320.0f, 430.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (260.0f, 380.0f, 1.0f, 35.0f, 1.000f);
+    g.fillRoundedRectangle (260.0f, 430.0f, 1.0f, 35.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1305.0f, 225.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1305.0f, 275.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1305.0f, 45.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1305.0f, 95.0f, 1.0f, 10.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (1305.0f, 405.0f, 1.0f, 10.0f, 1.000f);
+    g.fillRoundedRectangle (1305.0f, 455.0f, 1.0f, 10.0f, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -2444,219 +2461,220 @@ void Monique_Ui_Mainwindow::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    distortion->setBounds (585 - 60, 750 - 130, 60, 130);
-    reverb_dry->setBounds (975 - 60, 750 - 130, 60, 130);
-    reverb_width->setBounds (915 - 60, 750 - 130, 60, 130);
-    reverb_room->setBounds (855 - 60, 750 - 130, 60, 130);
-    delay2->setBounds (765 - 60, 750 - 130, 60, 130);
-    chorus_modulation->setBounds (615, 750 - 130, 60, 130);
-    eq_2->setBounds (645 - 60, 750 - 130, 60, 130);
-    eq_3->setBounds (720 - 60, 750 - 130, 60, 130);
-    eq_4->setBounds (780 - 60, 750 - 130, 60, 130);
-    eq_7->setBounds (980 - 60, 750 - 130, 60, 130);
-    eq_6->setBounds (910 - 60, 750 - 130, 60, 130);
-    eq_5->setBounds (850 - 60, 750 - 130, 60, 130);
-    eq_1->setBounds (585 - 60, 750 - 130, 60, 130);
-    bypass->setBounds (1065 - 60, 750 - 130, 60, 130);
-    colour->setBounds (1065 - 60, 750 - 130, 60, 130);
-    label_effect_hider->setBounds (1065 - 540, 765 - 15, 540, 15);
-    label_band_hz_2->setBounds (590, 745, 50, 30);
-    label_band_hz_3->setBounds (665, 745, 50, 30);
-    label_band_hz_4->setBounds (725, 745, 50, 30);
-    label_band_hz_5->setBounds (795, 745, 50, 30);
-    label_band_hz_6->setBounds (855, 745, 50, 30);
-    label_band_hz_7->setBounds (925, 745, 50, 30);
-    label_band_hz_1->setBounds (530, 745, 50, 30);
-    speed_multi->setBounds (1355 - 60, 950 - 130, 60, 130);
-    morpher_4->setBounds (1345 - 60, 620, 60, 130);
-    morpher_3->setBounds (1285 - 60, 620, 60, 130);
-    morpher_2->setBounds (1225 - 60, 620, 60, 130);
-    morpher_1->setBounds (1165 - 60, 620, 60, 130);
-    osc_wave_3->setBounds (90 - 60, 550 - 130, 60, 130);
+    distortion->setBounds (585 - 60, 800 - 130, 60, 130);
+    reverb_dry->setBounds (975 - 60, 800 - 130, 60, 130);
+    reverb_width->setBounds (915 - 60, 800 - 130, 60, 130);
+    reverb_room->setBounds (855 - 60, 800 - 130, 60, 130);
+    delay2->setBounds (765 - 60, 800 - 130, 60, 130);
+    chorus_modulation->setBounds (615, 800 - 130, 60, 130);
+    eq_2->setBounds (645 - 60, 800 - 130, 60, 130);
+    eq_3->setBounds (720 - 60, 800 - 130, 60, 130);
+    eq_4->setBounds (780 - 60, 800 - 130, 60, 130);
+    eq_7->setBounds (980 - 60, 800 - 130, 60, 130);
+    eq_6->setBounds (910 - 60, 800 - 130, 60, 130);
+    eq_5->setBounds (850 - 60, 800 - 130, 60, 130);
+    eq_1->setBounds (585 - 60, 800 - 130, 60, 130);
+    bypass->setBounds (1065 - 60, 800 - 130, 60, 130);
+    colour->setBounds (1065 - 60, 800 - 130, 60, 130);
+    label_effect_hider->setBounds (1065 - 540, 815 - 15, 540, 15);
+    label_band_hz_2->setBounds (590, 795, 50, 30);
+    label_band_hz_3->setBounds (665, 795, 50, 30);
+    label_band_hz_4->setBounds (725, 795, 50, 30);
+    label_band_hz_5->setBounds (795, 795, 50, 30);
+    label_band_hz_6->setBounds (855, 795, 50, 30);
+    label_band_hz_7->setBounds (925, 795, 50, 30);
+    label_band_hz_1->setBounds (530, 795, 50, 30);
+    speed_multi->setBounds (1355 - 60, 1000 - 130, 60, 130);
+    morpher_4->setBounds (1345 - 60, 670, 60, 130);
+    morpher_3->setBounds (1285 - 60, 670, 60, 130);
+    morpher_2->setBounds (1225 - 60, 670, 60, 130);
+    morpher_1->setBounds (1165 - 60, 670, 60, 130);
+    osc_wave_3->setBounds (90 - 60, 600 - 130, 60, 130);
     keyboard->setBounds (0, 1055, 1465, 180);
-    glide2->setBounds (100, 820, 60, 130);
-    arp_step_16->setBounds (1205 - 60, 950 - 130, 60, 130);
-    arp_step_15->setBounds (1145 - 60, 950 - 130, 60, 130);
-    arp_step_14->setBounds (1085 - 60, 950 - 130, 60, 130);
-    arp_step_13->setBounds (965, 820, 60, 130);
-    arp_step_12->setBounds (955 - 60, 950 - 130, 60, 130);
-    arp_step_11->setBounds (895 - 60, 950 - 130, 60, 130);
-    arp_step_10->setBounds (835 - 60, 950 - 130, 60, 130);
-    arp_step_9->setBounds (775 - 60, 950 - 130, 60, 130);
-    arp_step_8->setBounds (705 - 60, 950 - 130, 60, 130);
-    arp_step_7->setBounds (645 - 60, 950 - 130, 60, 130);
-    arp_step_6->setBounds (585 - 60, 950 - 130, 60, 130);
-    arp_step_5->setBounds (525 - 60, 950 - 130, 60, 130);
-    arp_step_4->setBounds (455 - 60, 950 - 130, 60, 130);
-    arp_step_3->setBounds (395 - 60, 950 - 130, 60, 130);
-    arp_step_2->setBounds (335 - 60, 950 - 130, 60, 130);
-    arp_step_1->setBounds (275 - 60, 950 - 130, 60, 130);
-    shuffle->setBounds (30, 820, 60, 130);
-    flt_sustain_4->setBounds (395 - 60, 750 - 130, 60, 130);
-    flt_decay_4->setBounds (335 - 60, 750 - 130, 60, 130);
-    flt_attack_4->setBounds (275 - 60, 750 - 130, 60, 130);
-    flt_release_3->setBounds (725 - 60, 550 - 130, 60, 130);
-    flt_sustain_time_3->setBounds (665 - 60, 550 - 130, 60, 130);
-    flt_sustain_3->setBounds (605 - 60, 550 - 130, 60, 130);
-    flt_decay_3->setBounds (545 - 60, 550 - 130, 60, 130);
-    flt_attack_3->setBounds (485 - 60, 550 - 130, 60, 130);
-    flt_release_2->setBounds (725 - 60, 370 - 130, 60, 130);
-    flt_sustain_time_2->setBounds (665 - 60, 370 - 130, 60, 130);
-    flt_sustain_2->setBounds (605 - 60, 370 - 130, 60, 130);
-    flt_decay_2->setBounds (545 - 60, 370 - 130, 60, 130);
-    flt_attack_2->setBounds (485 - 60, 370 - 130, 60, 130);
-    flt_release_1->setBounds (725 - 60, 190 - 130, 60, 130);
-    flt_sustain_time_1->setBounds (665 - 60, 190 - 130, 60, 130);
-    flt_sustain_1->setBounds (605 - 60, 190 - 130, 60, 130);
-    flt_decay_1->setBounds (545 - 60, 190 - 130, 60, 130);
-    flt_attack_1->setBounds (425, 190 - 130, 60, 130);
-    label_monolisa->setBounds (1440 - 205, 1055 - 85, 205, 85);
-    filter_type_2_1->setBounds (995 - 60, 90, 60, 30);
-    filter_type_3_1->setBounds (995 - 60, 120, 60, 30);
-    filter_type_2_2->setBounds (995 - 60, 270, 60, 30);
-    filter_type_3_2->setBounds (995 - 60, 327 - 30, 60, 30);
-    filter_type_2_3->setBounds (995 - 60, 450, 60, 30);
-    filter_type_3_3->setBounds (995 - 60, 480, 60, 30);
-    filter_type_5_1->setBounds (995 - 60, 155, 60, 33);
-    filter_type_5_2->setBounds (995 - 60, 335, 60, 33);
-    filter_type_5_3->setBounds (995 - 60, 515, 60, 33);
-    button_sequence_2->setBounds (335 - 60, 840 - 20, 60, 20);
-    button_sequence_3->setBounds (395 - 60, 840 - 20, 60, 20);
-    button_sequence_4->setBounds (455 - 60, 840 - 20, 60, 20);
-    button_sequence_5->setBounds (525 - 60, 840 - 20, 60, 20);
-    button_sequence_6->setBounds (585 - 60, 840 - 20, 60, 20);
-    button_sequence_7->setBounds (645 - 60, 840 - 20, 60, 20);
-    button_sequence_8->setBounds (705 - 60, 840 - 20, 60, 20);
-    button_sequence_9->setBounds (775 - 60, 840 - 20, 60, 20);
-    button_sequence_10->setBounds (835 - 60, 840 - 20, 60, 20);
-    button_sequence_11->setBounds (895 - 60, 840 - 20, 60, 20);
-    button_sequence_12->setBounds (955 - 60, 840 - 20, 60, 20);
-    button_sequence_13->setBounds (1025 - 60, 840 - 20, 60, 20);
-    button_sequence_14->setBounds (1085 - 60, 840 - 20, 60, 20);
-    button_sequence_15->setBounds (1145 - 60, 840 - 20, 60, 20);
-    button_sequence_16->setBounds (1205 - 60, 840 - 20, 60, 20);
-    combo_programm->setBounds (645 - 310, 1030 - 30, 310, 30);
-    button_programm_left->setBounds (275 - 60, 1030 - 30, 60, 30);
-    button_programm_right->setBounds (705 - 60, 1030 - 30, 60, 30);
-    button_programm_replace->setBounds (835 - 60, 1030 - 30, 60, 30);
-    button_programm_new->setBounds (775 - 60, 1030 - 30, 60, 30);
-    button_open_oszi->setBounds (965, 1000, 60, 30);
-    button_open_midi_io_settings->setBounds (1205 - 60, 1030 - 30, 60, 30);
-    combo_bank->setBounds (335 - 60, 1030 - 30, 60, 30);
-    button_programm_load->setBounds (955 - 60, 1030 - 30, 60, 30);
-    osc_1->setBounds (160 - 60, 190 - 130, 60, 130);
-    osc_2->setBounds (160 - 60, 370 - 130, 60, 130);
-    osc_3->setBounds (160 - 60, 550 - 130, 60, 130);
-    lfo_1->setBounds (900 - 60, 190 - 130, 60, 130);
-    flt_cutoff_1->setBounds (1065 - 60, 190 - 130, 60, 130);
-    lfo_2->setBounds (900 - 60, 370 - 130, 60, 130);
-    lfo_3->setBounds (900 - 60, 550 - 130, 60, 130);
-    flt_cutoff_2->setBounds (1065 - 60, 370 - 130, 60, 130);
-    flt_cutoff_3->setBounds (1065 - 60, 550 - 130, 60, 130);
-    flt_input_1->setBounds (215, 60, 60, 130);
-    flt_input_2->setBounds (335 - 60, 190 - 130, 60, 130);
-    flt_input_3->setBounds (395 - 60, 190 - 130, 60, 130);
-    flt_distortion_1->setBounds (1275 - 60, 190 - 130, 60, 130);
-    flt_input_6->setBounds (275 - 60, 370 - 130, 60, 130);
-    flt_input_7->setBounds (335 - 60, 370 - 130, 60, 130);
-    flt_input_8->setBounds (395 - 60, 370 - 130, 60, 130);
-    flt_input_11->setBounds (275 - 60, 550 - 130, 60, 130);
-    flt_input_12->setBounds (335 - 60, 550 - 130, 60, 130);
-    flt_input_13->setBounds (395 - 60, 550 - 130, 60, 130);
-    flt_resonance_1->setBounds (1125 - 60, 190 - 130, 60, 130);
-    flt_gain_1->setBounds (1185 - 60, 190 - 130, 60, 130);
-    flt_resonance_2->setBounds (1125 - 60, 370 - 130, 60, 130);
-    flt_gain_2->setBounds (1185 - 60, 370 - 130, 60, 130);
-    flt_resonance_3->setBounds (1125 - 60, 550 - 130, 60, 130);
-    flt_gain_3->setBounds (1185 - 60, 550 - 130, 60, 130);
-    flt_volume_1->setBounds (1435 - 60, 190 - 130, 60, 130);
-    flt_volume_2->setBounds (1435 - 60, 370 - 130, 60, 130);
-    flt_volume_3->setBounds (1435 - 60, 550 - 130, 60, 130);
-    adsr_lfo_mix->setBounds (810 - 60, 190 - 130, 60, 130);
-    lfo_opt_2->setBounds (810 - 60, 370 - 130, 60, 130);
-    lfo_opt_3->setBounds (810 - 60, 550 - 130, 60, 130);
-    button_sequence_1->setBounds (275 - 60, 840 - 20, 60, 20);
-    flt_release_4->setBounds (455 - 60, 750 - 130, 60, 130);
-    volume->setBounds (1435 - 60, 750 - 130, 60, 130);
-    flt_distortion_2->setBounds (1275 - 60, 370 - 130, 60, 130);
-    flt_distortion_3->setBounds (1275 - 60, 550 - 130, 60, 130);
-    button_arp_speed_XNORM->setBounds (1295, 820, 60, 27);
-    flt_attack_5->setBounds (90 - 60, 755 - 130, 60, 130);
-    flt_attack_6->setBounds (160 - 60, 755 - 130, 60, 130);
-    osc_wave_1->setBounds (30, 60, 60, 130);
-    osc_wave_2->setBounds (90 - 60, 370 - 130, 60, 130);
-    sl_morhp_mix->setBounds (1165, 715, 180, 33);
-    button_programm_delete->setBounds (895 - 60, 1030 - 30, 60, 30);
-    filter_type_6_1->setBounds (995 - 60, 60, 60, 30);
-    filter_type_6_2->setBounds (995 - 60, 240, 60, 30);
-    filter_type_6_3->setBounds (995 - 60, 420, 60, 30);
-    button_ctrl_toggle->setBounds (100, 1000, 60, 30);
-    speed->setBounds (1285 - 60, 950 - 130, 60, 130);
-    button_open_morph->setBounds (1165 - 60, 715, 60, 33);
-    effect_finalizer_switch->setBounds (520 - 25, 620, 25, 130);
-    label_ui_headline2->setBounds (1105, 616, 60, 35);
-    label_ui_headline3->setBounds (1165, 616, 60, 35);
-    label_ui_headline5->setBounds (1225, 616, 60, 35);
-    label_ui_headline6->setBounds (1285, 616, 60, 35);
-    button_values_toggle->setBounds (30, 1000, 60, 30);
-    octave_offset->setBounds (1435 - 60, 820, 60, 130);
-    label_ui_headline4->setBounds (245, 5, 120, 35);
-    label_ui_headline7->setBounds (40, 5, 110, 35);
-    label_ui_headline8->setBounds (510, 5, 130, 35);
-    label_ui_headline9->setBounds (850, 5, 50, 35);
-    label_ui_headline10->setBounds (975, 5, 190, 35);
-    label_ui_headline11->setBounds (1220, 5, 110, 35);
-    label_ui_headline12->setBounds (1375, 5, 60, 35);
-    label_ui_headline13->setBounds (270, 580, 130, 35);
-    label_shape->setBounds (525, 580, 60, 35);
-    label_reverb->setBounds (665, 580, 80, 35);
-    label_delay->setBounds (825, 580, 60, 35);
-    label_chorus->setBounds (910, 580, 70, 35);
-    label_fx_mix->setBounds (1005, 580, 60, 35);
-    label_ui_headline19->setBounds (1135, 580, 180, 35);
-    label_ui_headline20->setBounds (615, 780, 190, 35);
-    label_ui_headline21->setBounds (100, 780, 60, 35);
-    label_ui_headline22->setBounds (1260, 780, 60, 35);
-    label_ui_headline23->setBounds (1375, 580, 60, 35);
-    label_ui_headline24->setBounds (1375, 780, 60, 35);
-    label_ui_headline25->setBounds (35, 563, 120, 35);
-    volume_master_meter->setBounds (1375, 620, 60, 27);
-    label_eq->setBounds (740, 580, 90, 35);
-    button_open_config2->setBounds (1145 - 60, 1030 - 30, 60, 30);
-    label_ui_headline14->setBounds (745, 5, 80, 35);
-    button_edit_input_env_1_1->setBounds (215, 155, 60, 33);
-    button_edit_input_env_1_2->setBounds (275, 155, 60, 33);
-    button_edit_input_env_1_3->setBounds (335, 155, 60, 33);
-    button_edit_input_env_2_1->setBounds (215, 335, 60, 33);
-    button_edit_input_env_2_2->setBounds (275, 335, 60, 33);
-    button_edit_input_env_2_3->setBounds (335, 335, 60, 33);
-    button_edit_input_env_3_1->setBounds (215, 515, 60, 33);
-    button_edit_input_env_3_2->setBounds (275, 515, 60, 33);
-    button_edit_input_env_3_3->setBounds (335, 515, 60, 33);
-    button_edit_input_env_band_1->setBounds (525, 715, 60, 33);
-    button_edit_input_env_band_2->setBounds (585, 715, 60, 33);
-    button_edit_input_env_band_3->setBounds (660, 715, 60, 33);
-    button_edit_input_env_band_4->setBounds (720, 715, 60, 33);
-    button_edit_input_env_band_5->setBounds (790, 715, 60, 33);
-    button_edit_input_env_band_6->setBounds (850, 715, 60, 33);
-    button_edit_input_env_band_7->setBounds (920, 715, 60, 33);
-    button_edit_env_chorus->setBounds (615, 715, 60, 33);
-    flt_pan_3->setBounds (1335 - 60, 550 - 130, 60, 130);
-    flt_pan_2->setBounds (1335 - 60, 370 - 130, 60, 130);
-    flt_pan_1->setBounds (1335 - 60, 190 - 130, 60, 130);
-    button_reset_arp_tune->setBounds (1435 - 60, 820, 60, 27);
-    button_show_active_input_r_2_3->setBounds (376, 229, 10, 10);
-    button_show_active_input_l_2_3->setBounds (346, 229, 10, 10);
-    button_show_active_input_r_2_2->setBounds (316, 229, 10, 10);
-    button_show_active_input_l_2_2->setBounds (286, 229, 10, 10);
-    button_show_active_input_r_2_1->setBounds (256, 229, 10, 10);
-    button_show_active_input_l_2_1->setBounds (226, 229, 10, 10);
-    button_show_active_input_r_3_3->setBounds (376, 409, 10, 10);
-    button_show_active_input_l_3_3->setBounds (346, 409, 10, 10);
-    button_show_active_input_r_3_2->setBounds (316, 409, 10, 10);
-    button_show_active_input_l_3_2->setBounds (286, 409, 10, 10);
-    button_show_active_input_r_3_1->setBounds (256, 409, 10, 10);
-    button_show_active_input_l_3_1->setBounds (225, 409, 10, 10);
+    glide2->setBounds (100, 870, 60, 130);
+    arp_step_16->setBounds (1205 - 60, 1000 - 130, 60, 130);
+    arp_step_15->setBounds (1145 - 60, 1000 - 130, 60, 130);
+    arp_step_14->setBounds (1085 - 60, 1000 - 130, 60, 130);
+    arp_step_13->setBounds (965, 870, 60, 130);
+    arp_step_12->setBounds (955 - 60, 1000 - 130, 60, 130);
+    arp_step_11->setBounds (895 - 60, 1000 - 130, 60, 130);
+    arp_step_10->setBounds (835 - 60, 1000 - 130, 60, 130);
+    arp_step_9->setBounds (775 - 60, 1000 - 130, 60, 130);
+    arp_step_8->setBounds (705 - 60, 1000 - 130, 60, 130);
+    arp_step_7->setBounds (645 - 60, 1000 - 130, 60, 130);
+    arp_step_6->setBounds (585 - 60, 1000 - 130, 60, 130);
+    arp_step_5->setBounds (525 - 60, 1000 - 130, 60, 130);
+    arp_step_4->setBounds (455 - 60, 1000 - 130, 60, 130);
+    arp_step_3->setBounds (395 - 60, 1000 - 130, 60, 130);
+    arp_step_2->setBounds (335 - 60, 1000 - 130, 60, 130);
+    arp_step_1->setBounds (275 - 60, 1000 - 130, 60, 130);
+    shuffle->setBounds (30, 870, 60, 130);
+    flt_sustain_4->setBounds (395 - 60, 800 - 130, 60, 130);
+    flt_decay_4->setBounds (335 - 60, 800 - 130, 60, 130);
+    flt_attack_4->setBounds (275 - 60, 800 - 130, 60, 130);
+    flt_release_3->setBounds (725 - 60, 600 - 130, 60, 130);
+    flt_sustain_time_3->setBounds (665 - 60, 600 - 130, 60, 130);
+    flt_sustain_3->setBounds (605 - 60, 600 - 130, 60, 130);
+    flt_decay_3->setBounds (545 - 60, 600 - 130, 60, 130);
+    flt_attack_3->setBounds (485 - 60, 600 - 130, 60, 130);
+    flt_release_2->setBounds (725 - 60, 420 - 130, 60, 130);
+    flt_sustain_time_2->setBounds (665 - 60, 420 - 130, 60, 130);
+    flt_sustain_2->setBounds (605 - 60, 420 - 130, 60, 130);
+    flt_decay_2->setBounds (545 - 60, 420 - 130, 60, 130);
+    flt_attack_2->setBounds (485 - 60, 420 - 130, 60, 130);
+    flt_release_1->setBounds (725 - 60, 240 - 130, 60, 130);
+    flt_sustain_time_1->setBounds (665 - 60, 240 - 130, 60, 130);
+    flt_sustain_1->setBounds (605 - 60, 240 - 130, 60, 130);
+    flt_decay_1->setBounds (545 - 60, 240 - 130, 60, 130);
+    flt_attack_1->setBounds (425, 240 - 130, 60, 130);
+    label_monolisa->setBounds (1220 - 190, 50 - 50, 190, 50);
+    filter_type_2_1->setBounds (995 - 60, 140, 60, 30);
+    filter_type_3_1->setBounds (995 - 60, 170, 60, 30);
+    filter_type_2_2->setBounds (995 - 60, 320, 60, 30);
+    filter_type_3_2->setBounds (995 - 60, 377 - 30, 60, 30);
+    filter_type_2_3->setBounds (995 - 60, 500, 60, 30);
+    filter_type_3_3->setBounds (995 - 60, 530, 60, 30);
+    filter_type_5_1->setBounds (995 - 60, 205, 60, 33);
+    filter_type_5_2->setBounds (995 - 60, 385, 60, 33);
+    filter_type_5_3->setBounds (995 - 60, 565, 60, 33);
+    button_sequence_2->setBounds (335 - 60, 890 - 20, 60, 20);
+    button_sequence_3->setBounds (395 - 60, 890 - 20, 60, 20);
+    button_sequence_4->setBounds (455 - 60, 890 - 20, 60, 20);
+    button_sequence_5->setBounds (525 - 60, 890 - 20, 60, 20);
+    button_sequence_6->setBounds (585 - 60, 890 - 20, 60, 20);
+    button_sequence_7->setBounds (645 - 60, 890 - 20, 60, 20);
+    button_sequence_8->setBounds (705 - 60, 890 - 20, 60, 20);
+    button_sequence_9->setBounds (775 - 60, 890 - 20, 60, 20);
+    button_sequence_10->setBounds (835 - 60, 890 - 20, 60, 20);
+    button_sequence_11->setBounds (895 - 60, 890 - 20, 60, 20);
+    button_sequence_12->setBounds (955 - 60, 890 - 20, 60, 20);
+    button_sequence_13->setBounds (1025 - 60, 890 - 20, 60, 20);
+    button_sequence_14->setBounds (1085 - 60, 890 - 20, 60, 20);
+    button_sequence_15->setBounds (1145 - 60, 890 - 20, 60, 20);
+    button_sequence_16->setBounds (1205 - 60, 890 - 20, 60, 20);
+    combo_programm->setBounds (335, 10, 310, 25);
+    button_programm_left->setBounds (215, 10, 60, 25);
+    button_programm_right->setBounds (710 - 60, 10, 60, 25);
+    button_programm_replace->setBounds (910 - 60, 10, 60, 25);
+    button_programm_new->setBounds (850 - 60, 10, 60, 25);
+    button_open_oszi->setBounds (1375, 10, 60, 30);
+    button_open_midi_io_settings->setBounds (1280 - 60, 40 - 30, 60, 30);
+    combo_bank->setBounds (275, 10, 60, 25);
+    button_programm_load->setBounds (770 - 60, 10, 60, 25);
+    osc_1->setBounds (160 - 60, 240 - 130, 60, 130);
+    osc_2->setBounds (160 - 60, 420 - 130, 60, 130);
+    osc_3->setBounds (160 - 60, 600 - 130, 60, 130);
+    lfo_1->setBounds (900 - 60, 240 - 130, 60, 130);
+    flt_cutoff_1->setBounds (1065 - 60, 240 - 130, 60, 130);
+    lfo_2->setBounds (900 - 60, 420 - 130, 60, 130);
+    lfo_3->setBounds (900 - 60, 600 - 130, 60, 130);
+    flt_cutoff_2->setBounds (1065 - 60, 420 - 130, 60, 130);
+    flt_cutoff_3->setBounds (1065 - 60, 600 - 130, 60, 130);
+    flt_input_1->setBounds (215, 110, 60, 130);
+    flt_input_2->setBounds (335 - 60, 240 - 130, 60, 130);
+    flt_input_3->setBounds (395 - 60, 240 - 130, 60, 130);
+    flt_distortion_1->setBounds (1275 - 60, 240 - 130, 60, 130);
+    flt_input_6->setBounds (275 - 60, 420 - 130, 60, 130);
+    flt_input_7->setBounds (335 - 60, 420 - 130, 60, 130);
+    flt_input_8->setBounds (395 - 60, 420 - 130, 60, 130);
+    flt_input_11->setBounds (275 - 60, 600 - 130, 60, 130);
+    flt_input_12->setBounds (335 - 60, 600 - 130, 60, 130);
+    flt_input_13->setBounds (395 - 60, 600 - 130, 60, 130);
+    flt_resonance_1->setBounds (1125 - 60, 240 - 130, 60, 130);
+    flt_gain_1->setBounds (1185 - 60, 240 - 130, 60, 130);
+    flt_resonance_2->setBounds (1125 - 60, 420 - 130, 60, 130);
+    flt_gain_2->setBounds (1185 - 60, 420 - 130, 60, 130);
+    flt_resonance_3->setBounds (1125 - 60, 600 - 130, 60, 130);
+    flt_gain_3->setBounds (1185 - 60, 600 - 130, 60, 130);
+    flt_volume_1->setBounds (1375, 110, 60, 130);
+    flt_volume_2->setBounds (1435 - 60, 420 - 130, 60, 130);
+    flt_volume_3->setBounds (1435 - 60, 600 - 130, 60, 130);
+    adsr_lfo_mix->setBounds (810 - 60, 240 - 130, 60, 130);
+    lfo_opt_2->setBounds (810 - 60, 420 - 130, 60, 130);
+    lfo_opt_3->setBounds (810 - 60, 600 - 130, 60, 130);
+    button_sequence_1->setBounds (275 - 60, 890 - 20, 60, 20);
+    flt_release_4->setBounds (455 - 60, 800 - 130, 60, 130);
+    volume->setBounds (1435 - 60, 800 - 130, 60, 130);
+    flt_distortion_2->setBounds (1275 - 60, 420 - 130, 60, 130);
+    flt_distortion_3->setBounds (1275 - 60, 600 - 130, 60, 130);
+    button_arp_speed_XNORM->setBounds (1295, 870, 60, 27);
+    flt_attack_5->setBounds (90 - 60, 805 - 130, 60, 130);
+    flt_attack_6->setBounds (160 - 60, 805 - 130, 60, 130);
+    osc_wave_1->setBounds (30, 110, 60, 130);
+    osc_wave_2->setBounds (90 - 60, 420 - 130, 60, 130);
+    sl_morhp_mix->setBounds (1165, 765, 180, 33);
+    button_programm_delete->setBounds (1030 - 60, 10, 60, 25);
+    filter_type_6_1->setBounds (995 - 60, 110, 60, 30);
+    filter_type_6_2->setBounds (995 - 60, 290, 60, 30);
+    filter_type_6_3->setBounds (995 - 60, 470, 60, 30);
+    button_ctrl_toggle->setBounds (100, 10, 60, 25);
+    speed->setBounds (1285 - 60, 1000 - 130, 60, 130);
+    button_open_morph->setBounds (1165 - 60, 765, 60, 33);
+    effect_finalizer_switch->setBounds (520 - 25, 670, 25, 130);
+    label_ui_headline2->setBounds (1105, 666, 60, 35);
+    label_ui_headline3->setBounds (1165, 666, 60, 35);
+    label_ui_headline5->setBounds (1225, 666, 60, 35);
+    label_ui_headline6->setBounds (1285, 666, 60, 35);
+    button_values_toggle->setBounds (30, 10, 60, 25);
+    octave_offset->setBounds (1435 - 60, 870, 60, 130);
+    label_ui_headline4->setBounds (245, 55, 120, 35);
+    label_ui_headline7->setBounds (40, 55, 110, 35);
+    label_ui_headline8->setBounds (510, 55, 130, 35);
+    label_ui_headline9->setBounds (850, 55, 50, 35);
+    label_ui_headline10->setBounds (975, 55, 190, 35);
+    label_ui_headline11->setBounds (1220, 55, 110, 35);
+    label_ui_headline12->setBounds (1375, 55, 60, 35);
+    label_ui_headline13->setBounds (270, 630, 130, 35);
+    label_shape->setBounds (525, 630, 60, 35);
+    label_reverb->setBounds (840, 630, 80, 35);
+    label_delay->setBounds (705, 630, 60, 35);
+    label_chorus->setBounds (610, 630, 70, 35);
+    label_fx_mix->setBounds (1005, 630, 60, 35);
+    label_ui_headline19->setBounds (1135, 630, 180, 35);
+    label_ui_headline20->setBounds (615, 830, 190, 35);
+    label_ui_headline21->setBounds (100, 830, 60, 35);
+    label_ui_headline22->setBounds (1260, 830, 60, 35);
+    label_ui_headline23->setBounds (1375, 630, 60, 35);
+    label_ui_headline24->setBounds (1375, 830, 60, 35);
+    label_ui_headline25->setBounds (35, 613, 120, 35);
+    volume_master_meter->setBounds (1375, 670, 60, 27);
+    label_eq->setBounds (740, 630, 90, 35);
+    button_open_config2->setBounds (1335 - 60, 40 - 30, 60, 30);
+    label_ui_headline14->setBounds (745, 55, 80, 35);
+    button_edit_input_env_1_1->setBounds (215, 205, 60, 33);
+    button_edit_input_env_1_2->setBounds (275, 205, 60, 33);
+    button_edit_input_env_1_3->setBounds (335, 205, 60, 33);
+    button_edit_input_env_2_1->setBounds (215, 385, 60, 33);
+    button_edit_input_env_2_2->setBounds (275, 385, 60, 33);
+    button_edit_input_env_2_3->setBounds (335, 385, 60, 33);
+    button_edit_input_env_3_1->setBounds (215, 565, 60, 33);
+    button_edit_input_env_3_2->setBounds (275, 565, 60, 33);
+    button_edit_input_env_3_3->setBounds (335, 565, 60, 33);
+    button_edit_input_env_band_1->setBounds (525, 765, 60, 33);
+    button_edit_input_env_band_2->setBounds (585, 765, 60, 33);
+    button_edit_input_env_band_3->setBounds (660, 765, 60, 33);
+    button_edit_input_env_band_4->setBounds (720, 765, 60, 33);
+    button_edit_input_env_band_5->setBounds (790, 765, 60, 33);
+    button_edit_input_env_band_6->setBounds (850, 765, 60, 33);
+    button_edit_input_env_band_7->setBounds (920, 765, 60, 33);
+    button_edit_env_chorus->setBounds (615, 765, 60, 33);
+    flt_pan_3->setBounds (1335 - 60, 600 - 130, 60, 130);
+    flt_pan_2->setBounds (1335 - 60, 420 - 130, 60, 130);
+    flt_pan_1->setBounds (1335 - 60, 240 - 130, 60, 130);
+    button_reset_arp_tune->setBounds (1435 - 60, 870, 60, 27);
+    button_show_active_input_r_2_3->setBounds (376, 279, 10, 10);
+    button_show_active_input_l_2_3->setBounds (346, 279, 10, 10);
+    button_show_active_input_r_2_2->setBounds (316, 279, 10, 10);
+    button_show_active_input_l_2_2->setBounds (286, 279, 10, 10);
+    button_show_active_input_r_2_1->setBounds (256, 279, 10, 10);
+    button_show_active_input_l_2_1->setBounds (226, 279, 10, 10);
+    button_show_active_input_r_3_3->setBounds (376, 459, 10, 10);
+    button_show_active_input_l_3_3->setBounds (346, 459, 10, 10);
+    button_show_active_input_r_3_2->setBounds (316, 459, 10, 10);
+    button_show_active_input_l_3_2->setBounds (286, 459, 10, 10);
+    button_show_active_input_r_3_1->setBounds (256, 459, 10, 10);
+    button_show_active_input_l_3_1->setBounds (225, 459, 10, 10);
+    button_programm_rename->setBounds (970 - 60, 10, 60, 25);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3055,6 +3073,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_left)
     {
         //[UserButtonCode_button_programm_left] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::LOAD;
         synth_data->load_prev();
         show_programs_and_select();
         //[/UserButtonCode_button_programm_left]
@@ -3062,6 +3081,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_right)
     {
         //[UserButtonCode_button_programm_right] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::LOAD;
         synth_data->load_next();
         show_programs_and_select();
         //[/UserButtonCode_button_programm_right]
@@ -3069,6 +3089,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_replace)
     {
         //[UserButtonCode_button_programm_replace] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::REPLACE;
         synth_data->replace();
         show_programs_and_select();
         //[/UserButtonCode_button_programm_replace]
@@ -3076,6 +3097,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_new)
     {
         //[UserButtonCode_button_programm_new] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::CREATE;
         combo_programm->setEditableText(true);
         combo_programm->showEditor();
         //[/UserButtonCode_button_programm_new]
@@ -3114,6 +3136,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_load)
     {
         //[UserButtonCode_button_programm_load] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::LOAD;
         synth_data->load();
         show_programs_and_select();
         //[/UserButtonCode_button_programm_load]
@@ -3151,6 +3174,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_programm_delete)
     {
         //[UserButtonCode_button_programm_delete] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::REMOVE;
         if( synth_data->remove() )
         {
             show_programs_and_select();
@@ -3373,6 +3397,14 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         _app_instance_store->audio_processor->noteOff( 1, 60+synth_data->note_offset.get_value()-24 );
         //[/UserButtonCode_button_reset_arp_tune]
     }
+    else if (buttonThatWasClicked == button_programm_rename)
+    {
+        //[UserButtonCode_button_programm_rename] -- add your button handler code here..
+        program_edit_type = EDIT_TYPES::RENAME;
+        combo_programm->setEditableText(true);
+        combo_programm->showEditor();
+        //[/UserButtonCode_button_programm_rename]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -3392,7 +3424,14 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         String old_name = combo_programm->getItemText(combo_programm->getSelectedItemIndex());
         if( old_name != new_name && combo_programm->getSelectedItemIndex() == -1 )
         {
-            if( synth_data->create_new() )
+            if( program_edit_type == CREATE )
+            {
+                if( synth_data->create_new() )
+                {
+                    synth_data->rename( new_name );
+                }
+            }
+            else if( program_edit_type = RENAME )
             {
                 synth_data->rename( new_name );
             }
@@ -3403,6 +3442,7 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
             synth_data->set_current_program( combo_programm->getSelectedItemIndex() );
             synth_data->load();
         }
+        program_edit_type = NOT_SET;
         //[/UserComboBoxCode_combo_programm]
     }
     else if (comboBoxThatHasChanged == combo_bank)
@@ -3843,7 +3883,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
                  parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
                  constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
     <METHOD name="modifierKeysChanged (const ModifierKeys&amp; modifiers)"/>
@@ -3851,941 +3891,937 @@ BEGIN_JUCER_METADATA
     <METHOD name="keyStateChanged (const bool isKeyDown)"/>
   </METHODS>
   <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="480 595 605 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="480 645 605 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="10 795 1445 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="10 845 1445 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="195 20 1260 195" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="195 70 1260 195" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="10 20 170 754" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="10 70 170 754" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <RECT pos="175 44 25 3" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="175 49 25 3" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="170 50 181 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="175 39 25 3" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="195 395 1260 180" cornerSize="6" fill="solid: ff050505"
+    <RECT pos="175 94 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="175 99 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="170 100 181 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="175 89 25 3" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="195 445 1260 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="195 215 1260 180" cornerSize="6" fill="solid: ff050505"
+    <ROUNDRECT pos="195 265 1260 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="195 595 285 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
+    <ROUNDRECT pos="195 645 285 180" cornerSize="6" fill="solid: ff050505" hasStroke="1"
                stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="20 60 1 541" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 50 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 600 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="165 830 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="90 830 10 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="435 55 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="40 605 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 600 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="850 55 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="770 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="615 760 421 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="970 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="615 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1035 755 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1015 755 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 45 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="870 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 50 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 45 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 635 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 630 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1260 720 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1265 715 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1035 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1095 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1155 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1405 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1245 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="300 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="240 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="360 200 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="40 415 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 410 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 410 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 240 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 60 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 185 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 365 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 420 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="20 545 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="40 55 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 40 1 16" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="165 45 1 185" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="170 50 1 360" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="40 235 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 230 71 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 230 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="289 45 3 10" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="290 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="165 45 126 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="350 50 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="229 40 3 16" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="230 40 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 40 136 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="259 205 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="319 205 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="379 205 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="229 195 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="289 195 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="349 195 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="350 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="290 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="230 195 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="380 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="320 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="260 200 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1085 595 270 180" cornerSize="6" fill="solid: ff050505"
+    <ROUNDRECT pos="20 110 1 541" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 100 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 650 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 880 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="90 880 10 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 105 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 655 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 650 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 105 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="615 810 421 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="970 805 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="615 805 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1035 805 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1015 805 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 95 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 100 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 95 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 685 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 680 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1260 770 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1265 765 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1035 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1095 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1155 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1245 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="300 250 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="240 250 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="360 250 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 465 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 460 76 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 460 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 290 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 110 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 235 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 415 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 470 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="20 595 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 105 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 90 1 16" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 95 1 185" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="170 100 1 360" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="40 285 110 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 280 71 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 280 1 6" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="289 95 3 10" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="290 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="165 95 126 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="350 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="229 90 3 16" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="230 90 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="95 90 136 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="259 255 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="319 255 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="379 255 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="229 245 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="289 245 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="349 245 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="350 245 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="290 245 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="230 245 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="380 250 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="320 250 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="260 250 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1085 645 270 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="1355 595 100 180" cornerSize="6" fill="solid: ff050505"
+    <ROUNDRECT pos="1355 645 100 180" cornerSize="6" fill="solid: ff050505"
                hasStroke="1" stroke="1, mitered, butt" strokeColour="solid: ff1111ff"/>
-    <ROUNDRECT pos="575 230 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="435 235 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="850 235 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="770 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 225 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="870 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 230 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 225 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 230 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1035 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1095 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1155 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1405 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1245 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 410 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="435 415 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="850 415 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="770 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 405 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="870 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 410 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="780 405 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="790 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="575 410 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1035 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1095 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1155 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1405 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1245 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="300 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="240 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="360 380 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <RECT pos="259 385 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="319 385 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="379 385 3 20" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="229 375 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="289 375 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <RECT pos="349 375 3 30" fill="solid: ff050505" hasStroke="0"/>
-    <ROUNDRECT pos="350 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="290 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="230 375 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="380 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="320 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="260 380 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1305 225 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1305 45 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="1305 405 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 280 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 285 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 285 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 280 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 275 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 280 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 280 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 275 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 280 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 280 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1035 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1095 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1155 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1245 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 460 196 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="435 465 280 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="850 465 40 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="770 460 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 455 1 15" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="870 460 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 460 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="780 455 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="790 460 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="575 460 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1035 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1095 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1155 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1405 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1245 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="300 430 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="240 430 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="360 430 25 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <RECT pos="259 435 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="319 435 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="379 435 3 20" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="229 425 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="289 425 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <RECT pos="349 425 3 30" fill="solid: ff050505" hasStroke="0"/>
+    <ROUNDRECT pos="350 425 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="290 425 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="230 425 1 40" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="380 430 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="320 430 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="260 430 1 35" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1305 275 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1305 95 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
+    <ROUNDRECT pos="1305 455 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="585r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FXDistortionSlConfig()"/>
   <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="975r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="975r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new RDrySlConfig()"/>
   <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="915r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="915r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new RWidthSlConfig()"/>
   <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="855r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="855r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new RRoomSlConfig()"/>
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="765r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="765r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new DelaySlConfig()"/>
   <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="615 750r 60 130" class="Monique_Ui_DualSlider"
+                    virtualName="" explicitFocusOrder="0" pos="615 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new CModSlConfig()"/>
   <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="645r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="645r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="720r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="720r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="780r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="780r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="980r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="980r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="910r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="910r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="850r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="850r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="585r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="585r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new EQSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1065r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new BypassConfig()"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1065r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FColourSlConfig()"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
-         virtualName="" explicitFocusOrder="0" pos="1065r 765r 540 15"
+         virtualName="" explicitFocusOrder="0" pos="1065r 815r 540 15"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
-         virtualName="" explicitFocusOrder="0" pos="590 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="590 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="160Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="9e42519baddf946e" memberName="label_band_hz_3"
-         virtualName="" explicitFocusOrder="0" pos="665 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="665 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="300Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ec2bcb9f1c216890" memberName="label_band_hz_4"
-         virtualName="" explicitFocusOrder="0" pos="725 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="725 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="600Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
-         virtualName="" explicitFocusOrder="0" pos="795 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="795 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="1.2kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="8a859696dca2f1f0" memberName="label_band_hz_6"
-         virtualName="" explicitFocusOrder="0" pos="855 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="855 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ceab7b618b72215f" memberName="label_band_hz_7"
-         virtualName="" explicitFocusOrder="0" pos="925 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="925 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="&gt;2.5kHz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="b8619ebb44316d58" memberName="label_band_hz_1"
-         virtualName="" explicitFocusOrder="0" pos="530 745 50 30" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="530 795 50 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="&lt;80Hz" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
-                    explicitFocusOrder="0" pos="1355r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1355r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new SpeedMultiSlConfig()"/>
   <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 620 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1345r 670 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(3)"/>
   <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 620 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1285r 670 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
-                    explicitFocusOrder="0" pos="1225r 620 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1225r 670 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
-                    explicitFocusOrder="0" pos="1165r 620 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1165r 670 60 130" class="Monique_Ui_DualSlider"
                     params="new MorphSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
-                    explicitFocusOrder="0" pos="90r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="90r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a8343a0b5df2dc06" memberName="keyboard" virtualName="MidiKeyboardComponent"
                     explicitFocusOrder="0" pos="0 1055 1465 180" class="Component"
                     params="*_app_instance_store-&gt;audio_processor, MidiKeyboardComponent::horizontalKeyboard"/>
   <GENERICCOMPONENT name="" id="35003b6b21577713" memberName="glide2" virtualName=""
-                    explicitFocusOrder="0" pos="100 820 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="100 870 60 130" class="Monique_Ui_DualSlider"
                     params="new GlideConfig()"/>
   <GENERICCOMPONENT name="" id="d8ef93ac038fadca" memberName="arp_step_16" virtualName=""
-                    explicitFocusOrder="0" pos="1205r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1205r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(15)"/>
   <GENERICCOMPONENT name="" id="7761deb0276debbd" memberName="arp_step_15" virtualName=""
-                    explicitFocusOrder="0" pos="1145r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1145r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(14)"/>
   <GENERICCOMPONENT name="" id="20a9ed6504a039e2" memberName="arp_step_14" virtualName=""
-                    explicitFocusOrder="0" pos="1085r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1085r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(13)"/>
   <GENERICCOMPONENT name="" id="791739ade4aee5df" memberName="arp_step_13" virtualName=""
-                    explicitFocusOrder="0" pos="965 820 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="965 870 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(12)"/>
   <GENERICCOMPONENT name="" id="1e3ef8bba1be4b28" memberName="arp_step_12" virtualName=""
-                    explicitFocusOrder="0" pos="955r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="955r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(11)"/>
   <GENERICCOMPONENT name="" id="fe823ea88a7a2471" memberName="arp_step_11" virtualName=""
-                    explicitFocusOrder="0" pos="895r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="895r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(10)"/>
   <GENERICCOMPONENT name="" id="ee7d6057133dde55" memberName="arp_step_10" virtualName=""
-                    explicitFocusOrder="0" pos="835r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="835r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(9)"/>
   <GENERICCOMPONENT name="" id="b4852f8bf0385747" memberName="arp_step_9" virtualName=""
-                    explicitFocusOrder="0" pos="775r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="775r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(8)"/>
   <GENERICCOMPONENT name="" id="fd84ed45f47ab8b9" memberName="arp_step_8" virtualName=""
-                    explicitFocusOrder="0" pos="705r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="705r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(7)"/>
   <GENERICCOMPONENT name="" id="cf5a0e63bd7f558a" memberName="arp_step_7" virtualName=""
-                    explicitFocusOrder="0" pos="645r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="645r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(6)"/>
   <GENERICCOMPONENT name="" id="31712e752afeb9b5" memberName="arp_step_6" virtualName=""
-                    explicitFocusOrder="0" pos="585r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="585r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(5)"/>
   <GENERICCOMPONENT name="" id="a729cce2b51e5737" memberName="arp_step_5" virtualName=""
-                    explicitFocusOrder="0" pos="525r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="525r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(4)"/>
   <GENERICCOMPONENT name="" id="4ea4b03b58657c40" memberName="arp_step_4" virtualName=""
-                    explicitFocusOrder="0" pos="455r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="455r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(3)"/>
   <GENERICCOMPONENT name="" id="b45b0bde6cb27e9d" memberName="arp_step_3" virtualName=""
-                    explicitFocusOrder="0" pos="395r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="395r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="be72c3cee3e34864" memberName="arp_step_2" virtualName=""
-                    explicitFocusOrder="0" pos="335r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="335r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="6665063ca7bdff41" memberName="arp_step_1" virtualName=""
-                    explicitFocusOrder="0" pos="275r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="275r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new ArpStepSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="bb9c66366ce375c" memberName="shuffle" virtualName=""
-                    explicitFocusOrder="0" pos="30 820 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="30 870 60 130" class="Monique_Ui_DualSlider"
                     params="new ShuffleConfig()"/>
   <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
-                    explicitFocusOrder="0" pos="395r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="395r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig()"/>
   <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
-                    explicitFocusOrder="0" pos="335r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="335r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig()&#10;"/>
   <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
-                    explicitFocusOrder="0" pos="275r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="275r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig()"/>
   <GENERICCOMPONENT name="" id="ca4537ccb809ca96" memberName="flt_release_3" virtualName=""
-                    explicitFocusOrder="0" pos="725r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="725r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="a60fcd747c533a26" memberName="flt_sustain_time_3"
-                    virtualName="" explicitFocusOrder="0" pos="665r 550r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 600r 60 130"
                     class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="78d4de9e0ffe3029" memberName="flt_sustain_3" virtualName=""
-                    explicitFocusOrder="0" pos="605r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="605r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="e8b49d00205726e6" memberName="flt_decay_3" virtualName=""
-                    explicitFocusOrder="0" pos="545r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="545r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(2)"/>
   <GENERICCOMPONENT name="" id="638e13e96c94deb1" memberName="flt_attack_3" virtualName=""
-                    explicitFocusOrder="0" pos="485r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="485r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="4e206df1142d5f1d" memberName="flt_release_2" virtualName=""
-                    explicitFocusOrder="0" pos="725r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="725r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b2e468ddbdcb0be8" memberName="flt_sustain_time_2"
-                    virtualName="" explicitFocusOrder="0" pos="665r 370r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 420r 60 130"
                     class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa6aa381eebdd61" memberName="flt_sustain_2" virtualName=""
-                    explicitFocusOrder="0" pos="605r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="605r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="140fc1e77383e0f9" memberName="flt_decay_2" virtualName=""
-                    explicitFocusOrder="0" pos="545r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="545r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(1)"/>
   <GENERICCOMPONENT name="" id="8a6f21a1f4a86dd" memberName="flt_attack_2" virtualName=""
-                    explicitFocusOrder="0" pos="485r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="485r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="b17b21322ed6df73" memberName="flt_release_1" virtualName=""
-                    explicitFocusOrder="0" pos="725r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="725r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1460533da718423d" memberName="flt_sustain_time_1"
-                    virtualName="" explicitFocusOrder="0" pos="665r 190r 60 130"
+                    virtualName="" explicitFocusOrder="0" pos="665r 240r 60 130"
                     class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="16f83a5a025850d0" memberName="flt_sustain_1" virtualName=""
-                    explicitFocusOrder="0" pos="605r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="605r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FSustainSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="dc67a284425c81d9" memberName="flt_decay_1" virtualName=""
-                    explicitFocusOrder="0" pos="545r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="545r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FDecaySlConfig(0)"/>
   <GENERICCOMPONENT name="" id="1a64935d9407f5bb" memberName="flt_attack_1" virtualName=""
-                    explicitFocusOrder="0" pos="425 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="425 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FAttackSlConfig(0)"/>
   <LABEL name="" id="39e8fb50cf1d668d" memberName="label_monolisa" virtualName=""
-         explicitFocusOrder="0" pos="1440r 1055r 205 85" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1220r 50r 190 50" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M O N I Q U E" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="34"/>
+         fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="VOICE 1" id="ab74fcbdb09aa48f" memberName="filter_type_2_1"
-              virtualName="" explicitFocusOrder="0" pos="995r 90 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 140 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="cf1d3ce65d7cdcdc" memberName="filter_type_3_1"
-              virtualName="" explicitFocusOrder="0" pos="995r 120 60 30" tooltip="Set the filter type to BAND PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 170 60 30" tooltip="Set the filter type to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="121af38bc5254d57" memberName="filter_type_2_2"
-              virtualName="" explicitFocusOrder="0" pos="995r 270 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 320 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="43c53216b803243b" memberName="filter_type_3_2"
-              virtualName="" explicitFocusOrder="0" pos="995r 327r 60 30" tooltip="Set the filter type to BAND PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 377r 60 30" tooltip="Set the filter type to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="e53892e80132f60c" memberName="filter_type_2_3"
-              virtualName="" explicitFocusOrder="0" pos="995r 450 60 30" tooltip="Set the filter type to HIGH PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 500 60 30" tooltip="Set the filter type to HIGH PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="HP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="f44bd17c008d0db3" memberName="filter_type_3_3"
-              virtualName="" explicitFocusOrder="0" pos="995r 480 60 30" tooltip="Set the filter type to BAND PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 530 60 30" tooltip="Set the filter type to BAND PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="BAND"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c1a5cea82178d7f1" memberName="filter_type_5_1"
-              virtualName="" explicitFocusOrder="0" pos="995r 155 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="995r 205 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="375699baffcdc070" memberName="filter_type_5_2"
-              virtualName="" explicitFocusOrder="0" pos="995r 335 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="995r 385 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="74deee6f861b7bf5" memberName="filter_type_5_3"
-              virtualName="" explicitFocusOrder="0" pos="995r 515 60 33" tooltip="Set the filter type to PASS (not filtered)."
+              virtualName="" explicitFocusOrder="0" pos="995r 565 60 33" tooltip="Set the filter type to PASS (not filtered)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="PASS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7a60e9dcf8b32a0a" memberName="button_sequence_2"
-              virtualName="" explicitFocusOrder="0" pos="335r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="335r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="17704b0ee658c01b" memberName="button_sequence_3"
-              virtualName="" explicitFocusOrder="0" pos="395r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="395r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="70bcd1e56b41c2c6" memberName="button_sequence_4"
-              virtualName="" explicitFocusOrder="0" pos="455r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="455r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e835074126c3a82d" memberName="button_sequence_5"
-              virtualName="" explicitFocusOrder="0" pos="525r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="525r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7ebcf311504b804b" memberName="button_sequence_6"
-              virtualName="" explicitFocusOrder="0" pos="585r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="585r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7964742ab1d9d236" memberName="button_sequence_7"
-              virtualName="" explicitFocusOrder="0" pos="645r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="645r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="290ac159e50889a3" memberName="button_sequence_8"
-              virtualName="" explicitFocusOrder="0" pos="705r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="705r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="444c07bec0f97ff4" memberName="button_sequence_9"
-              virtualName="" explicitFocusOrder="0" pos="775r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="775r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d8ad414b935f59d8" memberName="button_sequence_10"
-              virtualName="" explicitFocusOrder="0" pos="835r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="835r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="af5f2477751cef2c" memberName="button_sequence_11"
-              virtualName="" explicitFocusOrder="0" pos="895r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="895r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="d3687d6b28982234" memberName="button_sequence_12"
-              virtualName="" explicitFocusOrder="0" pos="955r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="955r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="804115318ad213c1" memberName="button_sequence_13"
-              virtualName="" explicitFocusOrder="0" pos="1025r 840r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1025r 890r 60 20"
               tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="13d758647984d5d5" memberName="button_sequence_14"
-              virtualName="" explicitFocusOrder="0" pos="1085r 840r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1085r 890r 60 20"
               tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8cbd35271097248c" memberName="button_sequence_15"
-              virtualName="" explicitFocusOrder="0" pos="1145r 840r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1145r 890r 60 20"
               tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="2370645873984939" memberName="button_sequence_16"
-              virtualName="" explicitFocusOrder="0" pos="1205r 840r 60 20"
+              virtualName="" explicitFocusOrder="0" pos="1205r 890r 60 20"
               tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
-            explicitFocusOrder="0" pos="645r 1030r 310 30" tooltip="Select and load a program of the selected bank (one box left)."
+            explicitFocusOrder="0" pos="335 10 310 25" tooltip="Select and load a program of the selected bank (one box left)."
             editable="1" layout="33" items="" textWhenNonSelected="SELECT PROGRAM"
             textWhenNoItems="EMPTY BANK"/>
   <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
-              virtualName="" explicitFocusOrder="0" pos="275r 1030r 60 30"
-              tooltip="Load the program before of the selected bank (right of this button)."
+              virtualName="" explicitFocusOrder="0" pos="215 10 60 25" tooltip="Load the program before of the selected bank (right of this button)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
-              virtualName="" explicitFocusOrder="0" pos="705r 1030r 60 30"
-              tooltip="Load the next program of the selected bank." bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="710r 10 60 25" tooltip="Load the next program of the selected bank."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b91a29c51d2d93f1" memberName="button_programm_replace"
-              virtualName="" explicitFocusOrder="0" pos="835r 1030r 60 30"
-              tooltip="Replaces the selected program." bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
+              virtualName="" explicitFocusOrder="0" pos="910r 10 60 25" tooltip="Replaces the selected program."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="9481aeac211cafc0" memberName="button_programm_new"
-              virtualName="" explicitFocusOrder="0" pos="775r 1030r 60 30"
-              tooltip="Create a new program in the selected bank." bgColOff="ff000000"
-              textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW" connectedEdges="0"
-              needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="850r 10 60 25" tooltip="Create a new program in the selected bank."
+              bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
-              explicitFocusOrder="0" pos="965 1000 60 30" tooltip="Open/Close the oscilloscope.&#10;&#10;Note: press ESC to close editors."
+              explicitFocusOrder="0" pos="1375 10 60 30" tooltip="Open/Close the oscilloscope.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="OSCI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="57c6c986fc98dac" memberName="button_open_midi_io_settings"
-              virtualName="" explicitFocusOrder="0" pos="1205r 1030r 60 30"
-              tooltip="Open/Close the MIDI settings.&#10;&#10;Note: press ESC to close editors."
+              virtualName="" explicitFocusOrder="0" pos="1280r 40r 60 30" tooltip="Open/Close the MIDI settings.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_bank" virtualName=""
-            explicitFocusOrder="0" pos="335r 1030r 60 30" tooltip="Select the current program bank."
+            explicitFocusOrder="0" pos="275 10 60 25" tooltip="Select the current program bank."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="aa7c44443637097c" memberName="button_programm_load"
-              virtualName="" explicitFocusOrder="0" pos="955r 1030r 60 30"
-              tooltip="Load the selected program." bgColOff="ff000000" textCol="ffff3b00"
-              textColOn="ffffff00" buttonText="LOAD" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="770r 10 60 25" tooltip="Load the selected program."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
-                    explicitFocusOrder="0" pos="160r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="160r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="308060a72bcb3066" memberName="osc_2" virtualName=""
-                    explicitFocusOrder="0" pos="160r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="160r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
-                    explicitFocusOrder="0" pos="160r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="160r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new OSCSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="900r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1065r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="900r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="900r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="900r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new LFOSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1065r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
-                    explicitFocusOrder="0" pos="1065r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1065r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FCutoffSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
-                    explicitFocusOrder="0" pos="215 60 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="215 110 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,0)"/>
   <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
-                    explicitFocusOrder="0" pos="335r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="335r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,1)"/>
   <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
-                    explicitFocusOrder="0" pos="395r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="395r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(0,2)"/>
   <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
-                    explicitFocusOrder="0" pos="1275r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1275r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
-                    explicitFocusOrder="0" pos="275r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="275r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,0)"/>
   <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
-                    explicitFocusOrder="0" pos="335r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="335r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,1)"/>
   <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
-                    explicitFocusOrder="0" pos="395r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="395r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(1,2)"/>
   <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
-                    explicitFocusOrder="0" pos="275r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="275r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,0)"/>
   <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
-                    explicitFocusOrder="0" pos="335r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="335r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,1)"/>
   <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
-                    explicitFocusOrder="0" pos="395r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="395r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new InputSlConfig(2,2)"/>
   <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
-                    explicitFocusOrder="0" pos="1125r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1125r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="8e9c871f56bec21b" memberName="flt_gain_1" virtualName=""
-                    explicitFocusOrder="0" pos="1185r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1185r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(0)"/>
   <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
-                    explicitFocusOrder="0" pos="1125r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1125r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="577a04755f6e3eca" memberName="flt_gain_2" virtualName=""
-                    explicitFocusOrder="0" pos="1185r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1185r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(1)"/>
   <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
-                    explicitFocusOrder="0" pos="1125r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1125r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FResonanceSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="5d7a48dcb59f2814" memberName="flt_gain_3" virtualName=""
-                    explicitFocusOrder="0" pos="1185r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1185r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FGainSLConfig(2)"/>
   <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1375 110 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1435r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1435r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FVolumeSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
-                    explicitFocusOrder="0" pos="810r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(0)"/>
   <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
-                    explicitFocusOrder="0" pos="810r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
-                    explicitFocusOrder="0" pos="810r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="810r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new EnvLfoSlConfig(2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
-              virtualName="" explicitFocusOrder="0" pos="275r 840r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
+              virtualName="" explicitFocusOrder="0" pos="275r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
-                    explicitFocusOrder="0" pos="455r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="455r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new FReleaseSlConfig()"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 750r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1435r 800r 60 130" class="Monique_Ui_DualSlider"
                     params="new VolumeConfig()"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
-                    explicitFocusOrder="0" pos="1275r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1275r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
-                    explicitFocusOrder="0" pos="1275r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1275r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new GForceSlConfig(2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1295 820 60 27" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
+              virtualName="" explicitFocusOrder="0" pos="1295 870 60 27" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x1"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
-                    explicitFocusOrder="0" pos="90r 755r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="90r 805r 60 130" class="Monique_Ui_DualSlider"
                     params="new FMFreqSlConfig()"/>
   <GENERICCOMPONENT name="" id="53fd0bab31e1ce" memberName="flt_attack_6" virtualName=""
-                    explicitFocusOrder="0" pos="160r 755r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="160r 805r 60 130" class="Monique_Ui_DualSlider"
                     params="new FMAmountSlConfig()"/>
   <GENERICCOMPONENT name="" id="7abd69d58b16456c" memberName="osc_wave_1" virtualName=""
-                    explicitFocusOrder="0" pos="30 60 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="30 110 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(0)"/>
   <GENERICCOMPONENT name="" id="289652ee3553683c" memberName="osc_wave_2" virtualName=""
-                    explicitFocusOrder="0" pos="90r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="90r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new WAVESlConfig(1)"/>
   <SLIDER name="new slider" id="20de89a2be986cc1" memberName="sl_morhp_mix"
-          virtualName="" explicitFocusOrder="0" pos="1165 715 180 33" tooltip="Morph between the morph sliders. &#10;&#10;Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."
+          virtualName="" explicitFocusOrder="0" pos="1165 765 180 33" tooltip="Morph between the morph sliders. &#10;&#10;Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."
           min="0" max="3000" int="0.010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="" id="87db63f1017ff04b" memberName="button_programm_delete"
-              virtualName="" explicitFocusOrder="0" pos="895r 1030r 60 30"
-              tooltip="Delete the selected program." bgColOff="ff000000" textCol="ffff0000"
-              textColOn="ffff7900" buttonText="DELETE" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1030r 10 60 25" tooltip="Delete the selected program."
+              bgColOff="ff000000" textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
-              virtualName="" explicitFocusOrder="0" pos="995r 60 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 110 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="78dd95fdf1cece7e" memberName="filter_type_6_2"
-              virtualName="" explicitFocusOrder="0" pos="995r 240 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 290 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="c642f9acf4b813ef" memberName="filter_type_6_3"
-              virtualName="" explicitFocusOrder="0" pos="995r 420 60 30" tooltip="Set the filter type to LOW PASS."
+              virtualName="" explicitFocusOrder="0" pos="995r 470 60 30" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
-              virtualName="" explicitFocusOrder="0" pos="100 1000 60 30" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
+              virtualName="" explicitFocusOrder="0" pos="100 10 60 25" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
-                    explicitFocusOrder="0" pos="1285r 950r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1285r 1000r 60 130" class="Monique_Ui_DualSlider"
                     params="new BPMSlConfig()"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
-              virtualName="" explicitFocusOrder="0" pos="1165r 715 60 33" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
+              virtualName="" explicitFocusOrder="0" pos="1165r 765 60 33" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
-              virtualName="" explicitFocusOrder="0" pos="520r 620 25 130" tooltip="Switch between FX and EQ bank section."
+              virtualName="" explicitFocusOrder="0" pos="520r 670 25 130" tooltip="Switch between FX and EQ bank section."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="F X"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="af640d06672c6a96" memberName="label_ui_headline2"
-         virtualName="" explicitFocusOrder="0" pos="1105 616 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1105 666 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="6cf55c2697d84492" memberName="label_ui_headline3"
-         virtualName="" explicitFocusOrder="0" pos="1165 616 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1165 666 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FLT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="31349ce13448848e" memberName="label_ui_headline5"
-         virtualName="" explicitFocusOrder="0" pos="1225 616 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1225 666 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="1e86fc07c2fe9e40" memberName="label_ui_headline6"
-         virtualName="" explicitFocusOrder="0" pos="1285 616 60 35" textCol="ffff3b00"
+         virtualName="" explicitFocusOrder="0" pos="1285 666 60 35" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ARP" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 1000 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
+              virtualName="" explicitFocusOrder="0" pos="30 10 60 25" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 820 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1435r 870 60 130" class="Monique_Ui_DualSlider"
                     params="new OctaveOffsetSlConfig()"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline4"
-         virtualName="" explicitFocusOrder="0" pos="245 5 120 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="245 55 120 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER INPUTS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="706628ef52338a3" memberName="label_ui_headline7"
-         virtualName="" explicitFocusOrder="0" pos="40 5 110 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="40 55 110 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSCILLATORS (O)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="40822f39512f59ee" memberName="label_ui_headline8"
-         virtualName="" explicitFocusOrder="0" pos="510 5 130 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="510 55 130 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER ENVELOPE"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="4a296c8c1b36d5b5" memberName="label_ui_headline9"
-         virtualName="" explicitFocusOrder="0" pos="850 5 50 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="850 55 50 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LFO (L)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="8dfe8598a2227d6" memberName="label_ui_headline10"
-         virtualName="" explicitFocusOrder="0" pos="975 5 190 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="975 55 190 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER CONFIGURATION"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="624597a6e0fd4f43" memberName="label_ui_headline11"
-         virtualName="" explicitFocusOrder="0" pos="1220 5 110 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1220 55 110 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER FX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="d111f7d6b78091bd" memberName="label_ui_headline12"
-         virtualName="" explicitFocusOrder="0" pos="1375 5 60 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1375 55 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OUTPUT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="cc8c514c76739c41" memberName="label_ui_headline13"
-         virtualName="" explicitFocusOrder="0" pos="270 580 130 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="270 630 130 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MAIN ENVELOPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="c10833d7ab234ea1" memberName="label_shape" virtualName=""
-         explicitFocusOrder="0" pos="525 580 60 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
+         explicitFocusOrder="0" pos="525 630 60 35" textCol="ff1111ff"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="DISTORTION" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="bfabeb8da43f3421" memberName="label_reverb" virtualName=""
-         explicitFocusOrder="0" pos="665 580 80 35" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="840 630 80 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="7a6e3d75d5abc4de" memberName="label_delay" virtualName=""
-         explicitFocusOrder="0" pos="825 580 60 35" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="705 630 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="a4b6cc975d476069" memberName="label_chorus" virtualName=""
-         explicitFocusOrder="0" pos="910 580 70 35" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="610 630 70 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="fcb9d931dfbdfa5d" memberName="label_fx_mix" virtualName=""
-         explicitFocusOrder="0" pos="1005 580 60 35" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="1005 630 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX MIX" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="660b9ead77642f4f" memberName="label_ui_headline19"
-         virtualName="" explicitFocusOrder="0" pos="1135 580 180 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1135 630 180 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MORPH (MO) SECTION"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="c72f149b5e4ef3a1" memberName="label_ui_headline20"
-         virtualName="" explicitFocusOrder="0" pos="615 780 190 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="615 830 190 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ARPEGGIATOR" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="365d9d273db6db3a" memberName="label_ui_headline21"
-         virtualName="" explicitFocusOrder="0" pos="100 780 60 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="100 830 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="GLIDE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="9b0c123898785ff8" memberName="label_ui_headline22"
-         virtualName="" explicitFocusOrder="0" pos="1260 780 60 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1260 830 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="3dc587f677ecc27f" memberName="label_ui_headline23"
-         virtualName="" explicitFocusOrder="0" pos="1375 580 60 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1375 630 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MASTER" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="de3bbc3ac23fc36a" memberName="label_ui_headline24"
-         virtualName="" explicitFocusOrder="0" pos="1375 780 60 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1375 830 60 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OCTAVE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ecf3af4d030b7b19" memberName="label_ui_headline25"
-         virtualName="" explicitFocusOrder="0" pos="35 563 120 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="35 613 120 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FM (F)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
                     virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0"
-                    pos="1375 620 60 27" class="Component" params=""/>
+                    pos="1375 670 60 27" class="Component" params=""/>
   <LABEL name="DL" id="ad887653d405d154" memberName="label_eq" virtualName=""
-         explicitFocusOrder="0" pos="740 580 90 35" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="740 630 90 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="EQUALIZER" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="30ecdded1d4d2622" memberName="button_open_config2"
-              virtualName="" explicitFocusOrder="0" pos="1145r 1030r 60 30"
-              tooltip="Open/Close the setup.&#10;&#10;Note: press ESC to close editors."
+              virtualName="" explicitFocusOrder="0" pos="1335r 40r 60 30" tooltip="Open/Close the setup.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SETUP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="DL" id="657dea65d9f85585" memberName="label_ui_headline14"
-         virtualName="" explicitFocusOrder="0" pos="745 5 80 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="745 55 80 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MOD MIX (X)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="b915f30bfb983dc7" memberName="button_edit_input_env_1_1"
-              virtualName="" explicitFocusOrder="0" pos="215 155 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="215 205 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="cfad8aa44907e8cf" memberName="button_edit_input_env_1_2"
-              virtualName="" explicitFocusOrder="0" pos="275 155 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="275 205 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f7dd0a8e5d005547" memberName="button_edit_input_env_1_3"
-              virtualName="" explicitFocusOrder="0" pos="335 155 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="335 205 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6c31c6d826c76bfd" memberName="button_edit_input_env_2_1"
-              virtualName="" explicitFocusOrder="0" pos="215 335 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="215 385 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="283cd78e11cc7a6e" memberName="button_edit_input_env_2_2"
-              virtualName="" explicitFocusOrder="0" pos="275 335 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="275 385 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="47db5d103cbca51f" memberName="button_edit_input_env_2_3"
-              virtualName="" explicitFocusOrder="0" pos="335 335 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="335 385 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="1d4a552f9f250c90" memberName="button_edit_input_env_3_1"
-              virtualName="" explicitFocusOrder="0" pos="215 515 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="215 565 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="1d93900dcb94156f" memberName="button_edit_input_env_3_2"
-              virtualName="" explicitFocusOrder="0" pos="275 515 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="275 565 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4ed4547628245141" memberName="button_edit_input_env_3_3"
-              virtualName="" explicitFocusOrder="0" pos="335 515 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="335 565 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="972bb72707bb206b" memberName="button_edit_input_env_band_1"
-              virtualName="" explicitFocusOrder="0" pos="525 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="525 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e4790e6c91bf6fec" memberName="button_edit_input_env_band_2"
-              virtualName="" explicitFocusOrder="0" pos="585 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="585 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c5b44a8882d48b9" memberName="button_edit_input_env_band_3"
-              virtualName="" explicitFocusOrder="0" pos="660 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="660 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="55e4c7770dd6c6a5" memberName="button_edit_input_env_band_4"
-              virtualName="" explicitFocusOrder="0" pos="720 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="720 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="325021dee5961ad1" memberName="button_edit_input_env_band_5"
-              virtualName="" explicitFocusOrder="0" pos="790 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="790 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="7d42e1a02a42a873" memberName="button_edit_input_env_band_6"
-              virtualName="" explicitFocusOrder="0" pos="850 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="850 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="ac8fdd08954a9d8" memberName="button_edit_input_env_band_7"
-              virtualName="" explicitFocusOrder="0" pos="920 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="920 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="88bbe8f41160cb4a" memberName="button_edit_env_chorus"
-              virtualName="" explicitFocusOrder="0" pos="615 715 60 33" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="615 765 60 33" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="fa465a4afae26fc7" memberName="flt_pan_3" virtualName=""
-                    explicitFocusOrder="0" pos="1335r 550r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1335r 600r 60 130" class="Monique_Ui_DualSlider"
                     params="new FPanSlConfig(2)"/>
   <GENERICCOMPONENT name="" id="6397e9617b7dcaf9" memberName="flt_pan_2" virtualName=""
-                    explicitFocusOrder="0" pos="1335r 370r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1335r 420r 60 130" class="Monique_Ui_DualSlider"
                     params="new FPanSlConfig(1)"/>
   <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
-                    explicitFocusOrder="0" pos="1335r 190r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1335r 240r 60 130" class="Monique_Ui_DualSlider"
                     params="new FPanSlConfig(0)"/>
   <TEXTBUTTON name="" id="db06e124f1fcbf4d" memberName="button_reset_arp_tune"
-              virtualName="" explicitFocusOrder="0" pos="1435r 820 60 27" tooltip="Reset the currently used note for the arpegiator to the defined note offset. (Triggers a note: semitones offset (back slider))"
+              virtualName="" explicitFocusOrder="0" pos="1435r 870 60 27" tooltip="Reset the currently used note for the arpegiator to the defined note offset. (Triggers a note: semitones offset (back slider))"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RESET"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="bcf2554ab289ccda" memberName="button_show_active_input_r_2_3"
-              virtualName="" explicitFocusOrder="0" pos="376 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="376 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e67decdf6ffaf352" memberName="button_show_active_input_l_2_3"
-              virtualName="" explicitFocusOrder="0" pos="346 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="346 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="327a90a8c4ed5aa9" memberName="button_show_active_input_r_2_2"
-              virtualName="" explicitFocusOrder="0" pos="316 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="316 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6d0f49fc4b55f79e" memberName="button_show_active_input_l_2_2"
-              virtualName="" explicitFocusOrder="0" pos="286 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="286 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8be6e66ece9ca751" memberName="button_show_active_input_r_2_1"
-              virtualName="" explicitFocusOrder="0" pos="256 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="256 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="69acf26b6e8a591e" memberName="button_show_active_input_l_2_1"
-              virtualName="" explicitFocusOrder="0" pos="226 229 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="226 279 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c04afcf396fb5173" memberName="button_show_active_input_r_3_3"
-              virtualName="" explicitFocusOrder="0" pos="376 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="376 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="73aa09a176276d09" memberName="button_show_active_input_l_3_3"
-              virtualName="" explicitFocusOrder="0" pos="346 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="346 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="bf707b726ad7a93b" memberName="button_show_active_input_r_3_2"
-              virtualName="" explicitFocusOrder="0" pos="316 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="316 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c895ade2dcdf51aa" memberName="button_show_active_input_l_3_2"
-              virtualName="" explicitFocusOrder="0" pos="286 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="286 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="a84a66eefd216154" memberName="button_show_active_input_r_3_1"
-              virtualName="" explicitFocusOrder="0" pos="256 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="256 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="aab3f66b90ddf6" memberName="button_show_active_input_l_3_1"
-              virtualName="" explicitFocusOrder="0" pos="225 409 10 10" bgColOff="ff000000"
+              virtualName="" explicitFocusOrder="0" pos="225 459 10 10" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="5e29190ea95f8441" memberName="button_programm_rename"
+              virtualName="" explicitFocusOrder="0" pos="970r 10 60 25" tooltip="Replaces the selected program."
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RENAME"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

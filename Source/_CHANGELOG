@@ -1,151 +1,71 @@
-DONE
-- remove adr presets and replace it with an individual env
-- fix: wrong step captions:  from 1; 1; 2;... to 1; 2; 3; -> funny bug -> i'm an idiot :D
-- force sync if tune is same as osc 1
-- add filter pan arangement
-- add full stereo processing (fx, eq after filters)
-- removed two bands of the eq and changed the frequencys of the others
-- fix osc sync problems
-- fix velocity glide
-- fixed: aliasing bug in osc sync
-- fix: click in oscilators
-- add: values on global glide times
-- add: snap to min and max like to snap to zero
-- fm freq max: x8 master osc
-- fm swing max: 20hz
-- removed osc pulse and switch options
-- improved: gain throug the whole synth
-- removed: filter boost and clipping and replaced with shape
-- bundled filter clipping and distoprtion in one dial
-- changed the effect "SHAPE" algorythm
-- reworked eq
-- reworked filters
-- improved: filter input gain: the first input defines up to 100% gain, the second and third shares this amount and keep always max input sum : 1
-- optimize signal flow from filter before into the next
-- change the position of the final volume
-- swap effect flow to chorus, delay, reverb
-- removed: tune for osc1 and replace with a phase shift option
-- add: note offset as second slider of octave offset and a reset button to send a midi note to pitch the arp
-- add: buttons on top of the filter inputs to show possible inactive inputs
-- fix: env popup position
-- fix: oscilloscope show now a mono mix of flt_1, flt_2, flt_3 and main output instead of only the left channel
-- fix: fx bypass (the reverb was gaining the output by 2)
-- changed/fix: process envelopes on the inputs before the filter instead after filter
-- removed: option to retune oscs on soft pedal down -> this option is now always on if the softpedal is down
-- removed: softpedal+notes changes the gain of an osc
-- change: num steps for envelope parameters to the maximum sum of ms (20000)
-- improve dial: wave, if you move the slider by mouse wheel, you increase or decrease to the next clean wave (square, sine, saw or noise)
-- UI shows the most values with one number after the comma (coz this is the standard wheel move precession)
-- change: linear env sliders movement no more absolute
-- improve: autoclose env popup, but keep it open if you edit another input of the same filter
-- add: auto switch and close options to the env popup
-- fix: osc goes out of center on very fast frequence changes
-- improved: fm does no more generate aliasing, shifted the phase to get a smooth flow of both sequencys
-- fixed: sync problems of the amp painter
-- fixed: amp painter stops working
-- plugin: loads the last session as new program -> will be the factory default program soon
-- change: min env times to 1ms
-- reworked envelopes and the shaping algorythm
-- improve distortion
-- fixed: load save plugin
-- fixed: a lot of wrong initalized params in the plugin 
-
-----
-
-- fixed brocken distortion
-- add a auto soft clipping > 0.9 and clipp > 1...
-- change back to 10 ms attack 
-- fixed led on top of the filter input
-- removed the force option of the main output 
-- filter 3 ist leiser
-
-
-
-miete martin
--------aller zwei werte einen zyklus und den davor als scnhnitt der zwei nehmen
--------a marker on the keyboard for the current program note if not C1!
--------lp pass switch knackt
--------copy option env
--------main env sustain cracksl, have stored program 
--------add a soft clipping back to the main out
--------add more final gain (by 5?) - check without distortion
-------- manorame gesmooth atormatisieren
-
-aus dem ewi ergibt sich natürlich auch noch die notwendikeit den arp nur zu pitchen
-
-Hm. Jetzt fängts an zu klicken. Ich hab nen fetzen Code drin, der die Retun values beim ProgrammLoad setzt. Das fand ich aber nervig, ich wollte auch oft die FactoryDefaults haben.
-Hey aber über CTRL oder ALT kann man ja da noch ein paar Optionen anbieten. SEHR GEIL! Danke! Wird eingebaut!
-Mögliche Returns: FactoryDefault; StateOnProgrammLoad; UserReturn (right mouse) -> so kann man ich auch Werte aus einem Programm in ein anderes "schleppen". Gefällt mir, konnte mich für keines der 3 entscheiden!
-
-Es gibt so einige Klassiker, die mit einem System-Default immer gut kommen, damit du aus "neutral" heraus arbeiten kannst, z.B. Gain 0, Cutoff max., Reso 0, OSC Level (hier ab Sektion 2, wegen Filter und Generator auf 0), sonst frickelst du dir den Parameter immer erst hin. Manchmal ist es halt flott, denn Parameter mit einem Klick auf den typischen Defaultwert zu fahren, und das kombiniert man mit einer Sondertaste. Es geht ja nicht darum, sofort und sämtliche Parameter via Default-Reset zu versehen.
-FactoryDefault, StateOnProgramm oder User Return sind dann noch die user-freundlichen Konzepte, die nicht nur den Spaß an der Kiste vergrößern, sondern eine lockere Arbeitsweise ermöglichen. Interessant ist auch ein selektiver Reset ausgewählter Parameter.
-
-
+DONE:
 ****************************************************************************
-****************************************************************************
-****************************************************************************
-NOTES:
-EWIND / Breath Contoller: enable all steps of the arp, turn on the arp and use the ewind input at the midi note input, also you can smooth you input with glide time!
--> the same you can do with filter envelopes by train the sustain of an filter envelop to your ewind input: go midi train and select the sustain of the filter -> breath into your controller
+- fix: broken note glide
+- fix: crash on shutdon if the env popup was open
+- fix: a memory leak on shutdown
+- fix: sustain was not adjustable if it was already at the sustain stage
+- fix: filter input leds (was incorrect for some edge cases)
+- fix: sustain time was brocken
+- add: copy&past to the env editor popup (does not copy the sustain)
+- fix: captions chorus, reverb, deleay...
+- fix: rotate the gain meter by 180°...
+- fix: wrong processed input envs (filter 3)
+- fix: brocken lfo animation (phase and tune)
+- improved: lfo switch smooth
+- moved: load save and editor section to the top
+- add: rename option for patches
 
-BUGS:
+TODO
+controll linear sliders without mouse pointerr!
+
+KNOWN BUGS:
 ****************************************************************************
-- sustain für main adsr dard nicht kleiner null sein! das heist parameter die kleiner 0 sind und wir den wert von extern überschreiben, gibt es probleme
-- sustain muss wirklich unendlich sein!!!!!!!
-- ulkige frage ob speichern beim wählen eines morph preset (r 4)
+- sustain for main env and can be negative if you control it by automation param or midi cc
+- some load save questions if you load a morph group
 - assertion on shutdow
-- wenn ein knopf gedrückt wird, wird das backup nicht aktualisiert (test - SHOT)
-- bug: create new programm and store it -> then change something and you get the parent program name
-- programm load loads bank (plugin bug)
-- MIDI sagt das ein neues gerät da ist, welches wir aber eben verbunden haben (also eines welches irgendwann schonmal dran war)
+- buttons are not updating the backup -> if you now switch to another program you wont get a "do you like to store question"
+- create new program and store it -> then change something and you get the parent program name for "do you like to store before close"
+- asks if you like to reconnect a old midi devices on a raw edge case
 
 UI
 ****************************************************************************
-add esc option to the env popup
-env has no sustain level?
-mouse tribble click
-env ansicht propotional und zeitachse -> better feeling
-gainmeter von links nach rechts
-fix slider popup descriptions
+add: a good background which explains the signal flow
+a lot of tooltips are not updated in 0.8
 font for tooltip misses top stripe
-schatten für popup
+shadow for env popup
 option: always start in ctrl mode
-farbe borders grau
-add: a layer with help information for the main ui (Also explain a dual slider quick)
-- improve oscilloscope performance
-
-welcome popup, if you like to disable the arp -> show the button
+welcome popup, if you like to disable the arp -> press this "holly button"
+a marker on the keyboard for the current program note if not C1
 
 ENGINE
 ****************************************************************************
-filter modulation off cutoff cracklse (not smoothed?)
-lfo sync smoother
-modulation slider: instead of percent, set the target value!
-add back global env shape
-bug load or save wave
+changing modulation sliders can make some crackls
+modulation slider: instead of percent, set the target value (not sure - have to play around with)
+add: env shape slider for main and filter env's
 add: panic
-midi standard impl
-own lfos for tune and phase
+midi standard impl isn't complete
+add: own lfos for tune and phase
+midi: pitchwheel to osc
 
 OPTIMIZE
 ****************************************************************************
-- calculate glide on value change?
-
+- calculate glide on values on change
+- faster glide and lfos (CPU power)
 
 PROGRAMS
 ****************************************************************************
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - make a starter for percussions
+- add factory programs to the binary
 
 BUILD:
 ****************************************************************************
 - audio unit build
-- asio suppoert
+- asio support
 
 QUESTS:
 ****************************************************************************
 - get your pro version free for an feature request which we will add to the pro version
-- load save hoch -> ???
 
 ****************************************************************************
 ****************************************************************************
