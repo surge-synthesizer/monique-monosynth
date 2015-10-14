@@ -4,38 +4,71 @@
 #include "App_h_includer.h"
 
 //==============================================================================
+class MoniqueAudioProcessor;
+class Monique_Ui_Refresher;
+class UiLookAndFeel;
+class MIDIControlHandler;
+class MoniqueSynthData;
+class Monique_Ui_Mainwindow;
+class MoniqueSynthesiserVoice;
+
 class Monique_Ui_Refreshable
 {
+protected:
+    // CLASSES NEEDED BY THE UI CLASSES
+    Monique_Ui_Refresher*const ui_refresher;
+    UiLookAndFeel*const look_and_feel;
+    MIDIControlHandler*const midi_control_handler;
+    MoniqueSynthData*const synth_data;
+    MoniqueSynthesiserVoice*const voice;
+    
+    Monique_Ui_Mainwindow*get_editor() noexcept;
+    
 public:
     virtual void refresh() noexcept = 0;
 
 protected:
-    COLD Monique_Ui_Refreshable() noexcept;
-    COLD ~Monique_Ui_Refreshable() noexcept;
+    Monique_Ui_Refreshable( Monique_Ui_Refresher*ui_refresher_ ) noexcept;
+    ~Monique_Ui_Refreshable() noexcept;
 };
 
 //==============================================================================
-class Monique_Ui_Refresher : public Timer 
+class Monique_Ui_Refresher : public Timer
 {
+public:
+    MoniqueAudioProcessor*const audio_processor;
+    UiLookAndFeel*const look_and_feel;
+    MIDIControlHandler*const midi_control_handler;
+    MoniqueSynthData*const synth_data;
+    MoniqueSynthesiserVoice*const voice;
+    Monique_Ui_Mainwindow* editor; // WILL BE SET BY THE MAINWINDOW 
+  
     CriticalSection lock;
     Array<Monique_Ui_Refreshable*> refreshables;
 
     void timerCallback() override;
 
 private:
+    //==========================================================================
     friend class Monique_Ui_Refreshable;
-    COLD void add(Monique_Ui_Refreshable*const) noexcept;
-    COLD void remove(Monique_Ui_Refreshable*const) noexcept;
+    void add(Monique_Ui_Refreshable*const) noexcept;
+    void remove(Monique_Ui_Refreshable*const) noexcept;
 
 public:
-    COLD void remove_all() noexcept;
+    //==========================================================================
+    void remove_all() noexcept;
 
 private:
-    COLD Monique_Ui_Refresher() noexcept;
-    COLD ~Monique_Ui_Refresher() noexcept;
-
-public:
-    juce_DeclareSingleton_SingleThreaded_Minimal (Monique_Ui_Refresher)
+    //==========================================================================
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< Monique_Ui_Refresher >;
+    Monique_Ui_Refresher( MoniqueAudioProcessor*const audio_processor,
+                          UiLookAndFeel*const look_and_feel_, 
+			  MIDIControlHandler*const midi_control_handler_, 
+			  MoniqueSynthData*const synth_data_,
+			  MoniqueSynthesiserVoice*const voice_
+			) noexcept;
+    ~Monique_Ui_Refresher() noexcept;
 };
 
 #endif

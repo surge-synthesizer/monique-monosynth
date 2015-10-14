@@ -379,10 +379,9 @@ void MIDIControl::clear()
     is_ctrl_version_of_name = "";
 }
 
-bool MIDIControl::read_from_if_you_listen( int controller_number_, int controller_value_ ) noexcept
+bool MIDIControl::read_from_if_you_listen( int controller_number_, int controller_value_, float pickup_offset_ ) noexcept
 {
     bool success = false;
-    const float pickup = GET_DATA( synth_data ).midi_pickup_offset;
     {
         if( midi_number == controller_number_ )
         {
@@ -408,7 +407,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                     {
                         float current_value = get_percent_value( owner );
                         // PICKUP
-                        if( current_value + pickup >= value && current_value - pickup <= value )
+                        if( current_value + pickup_offset_ >= value && current_value - pickup_offset_ <= value )
                         {
                             set_percent_value( owner, value );
                             success = true;
@@ -419,7 +418,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                         float current_modulation = owner->get_modulation_amount();
                         float new_modulation = value*2.0f - 1.0f;
                         // PICKUP
-                        if( current_modulation + pickup > new_modulation && current_modulation - pickup < new_modulation )
+                        if( current_modulation + pickup_offset_ > new_modulation && current_modulation - pickup_offset_ < new_modulation )
                         {
                             owner->set_modulation_amount( new_modulation );
                             success = true;
@@ -433,7 +432,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 
                         float current_value = get_percent_value( owner );
                         // PICKUP
-                        if( current_value + pickup >= value && current_value - pickup <= value )
+                        if( current_value + pickup_offset_ >= value && current_value - pickup_offset_ <= value )
                         {
                             set_percent_value( owner, value );
                             success = true;
@@ -507,10 +506,15 @@ inline void MIDIControl::stop_listen_for_feedback() noexcept
 
 void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
 {
+  // TODO
+  /*
     const bool is_ctrl_version_of = is_ctrl_version_of_name != "";
     if( type_of( param_ ) == IS_BOOL )
     {
-        bool do_send = ( ! is_ctrl_version_of && ! is_in_ctrl_mode) || ( (is_ctrl_version_of && is_in_ctrl_mode) || &(GET_DATA( synth_data ).ctrl) == param_ );
+        bool do_send
+        = ( ! is_ctrl_version_of && ! is_in_ctrl_mode)
+        || ( (is_ctrl_version_of && is_in_ctrl_mode)
+        || &(GET_DATA( synth_data ).ctrl) == param_ );
         if( do_send )
         {
             send_standard_feedback();
@@ -523,6 +527,7 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
             send_standard_feedback();
         }
     }
+    */
 }
 void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
@@ -559,7 +564,8 @@ void MIDIControl::send_clear_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
-        AppInstanceStore::getInstance()->audio_processor->clear_feedback_message( midi_number );
+        // TODO
+        // AppInstanceStore::getInstance()->audio_processor->clear_feedback_message( midi_number );
     }
 }
 
@@ -571,20 +577,19 @@ void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept
 }
 
 inline void MIDIControl::send_standard_feedback() const noexcept
-{
-    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
+{   // TODO
+    //AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
 }
 inline void MIDIControl::send_modulation_feedback() const noexcept
-{
-    AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
+{   // TODO
+    //AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
 }
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
-juce_ImplementSingleton (MIDIControlHandler)
-
-COLD MIDIControlHandler::MIDIControlHandler() noexcept
+COLD MIDIControlHandler::MIDIControlHandler( UiLookAndFeel*look_and_feel_ ) noexcept :
+ui_look_and_feel(look_and_feel_)
 {
     clear();
 }
@@ -592,7 +597,6 @@ COLD MIDIControlHandler::MIDIControlHandler() noexcept
 COLD MIDIControlHandler::~MIDIControlHandler() noexcept
 {
     clear();
-    clearSingletonInstance();
 }
 
 // ==============================================================================
@@ -618,7 +622,7 @@ void MIDIControlHandler::set_learn_width_ctrl_param( Parameter* param_, Paramete
     learning_ctrl_param = ctrl_param_;
 
     learning_comps.add( comp_ );
-    SET_COMPONENT_TO_MIDI_LEARN( comp_ )
+    SET_COMPONENT_TO_MIDI_LEARN( comp_, ui_look_and_feel )
 }
 void MIDIControlHandler::set_learn_param( Parameter* param_, Component* comp_ ) noexcept
 {
@@ -627,7 +631,7 @@ void MIDIControlHandler::set_learn_param( Parameter* param_, Component* comp_ ) 
     learning_param = param_;
 
     learning_comps.add( comp_ );
-    SET_COMPONENT_TO_MIDI_LEARN( comp_ )
+    SET_COMPONENT_TO_MIDI_LEARN( comp_, ui_look_and_feel )
 }
 void MIDIControlHandler::set_learn_param( Parameter* param_, Array< Component* > comps_ ) noexcept
 {
@@ -638,7 +642,7 @@ void MIDIControlHandler::set_learn_param( Parameter* param_, Array< Component* >
     learning_comps = comps_;
     for( int i = 0 ; i != learning_comps.size() ; ++i )
     {
-        SET_COMPONENT_TO_MIDI_LEARN( learning_comps[i] );
+        SET_COMPONENT_TO_MIDI_LEARN( learning_comps[i], ui_look_and_feel );
     }
 }
 Parameter* MIDIControlHandler::is_learning() const noexcept
@@ -673,7 +677,7 @@ void MIDIControlHandler::clear() noexcept
 
     for( int i = 0 ; i != learning_comps.size() ; ++i )
     {
-        UNSET_COMPONENT_MIDI_LEARN( learning_comps[i] )
+        UNSET_COMPONENT_MIDI_LEARN( learning_comps[i], ui_look_and_feel )
     }
     learning_comps.clearQuick();
 }

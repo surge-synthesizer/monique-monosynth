@@ -98,7 +98,7 @@ enum SLIDER_LABEL_STYLES
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class UiLookAndFeel  : public LookAndFeel_V2, public DeletedAtShutdown
+class UiLookAndFeel  : public LookAndFeel_V2 
 {
 public:
     ComponentColours colours;
@@ -108,11 +108,12 @@ public:
     Font defaultFont;
 
 private:
-    UiLookAndFeel();
-    ~UiLookAndFeel();
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< UiLookAndFeel >;
+    UiLookAndFeel() noexcept;
+    ~UiLookAndFeel() noexcept;
 
 public:
-    juce_DeclareSingleton (UiLookAndFeel,false)
     //==============================================================================
     void drawButtonBackground (Graphics&, Button& button, const Colour& backgroundColour,
                                bool isMouseOverButton, bool isButtonDown) override;

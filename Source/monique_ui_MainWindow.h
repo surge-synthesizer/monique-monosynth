@@ -25,11 +25,14 @@
 
 class AppInstanceStore;
 
+class Monique_Ui_Refresher;
+
 class Monique_Ui_MainwindowPopup;
 class Monique_Ui_MidiIO;
 class Monique_Ui_MorphConfig;
 class Monique_Ui_GlobalSettings;
 class Monique_Ui_ENVPopup;
+class Monique_Ui_AmpPainter;
 
 class MoniqueSynthesiserVoice;
 class MoniqueSynthData;
@@ -61,14 +64,13 @@ class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
 {
 public:
     //==============================================================================
-    Monique_Ui_Mainwindow ();
+    Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_);
     ~Monique_Ui_Mainwindow();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    AppInstanceStore*const _app_instance_store;
-    MoniqueSynthesiserVoice*voice;
-    MoniqueSynthData* synth_data;
+    MoniqueAudioProcessor* audio_processor;
+    MoniqueSynthesiserVoice* voice;
 
     ScopedPointer<Monique_Ui_MainwindowPopup> popup;
     bool last_ctrl_mode;
@@ -77,6 +79,7 @@ public:
     ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
     ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
+    Monique_Ui_AmpPainter*amp_painter;
 
     void refresh() noexcept override;
     void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
@@ -147,20 +150,20 @@ private:
 
     //==============================================================================
     ScopedPointer<Monique_Ui_DualSlider> distortion;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
     ScopedPointer<Monique_Ui_DualSlider> reverb_room;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
+    ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
+    ScopedPointer<Monique_Ui_DualSlider> bypass;
+    ScopedPointer<Monique_Ui_DualSlider> eq_1;
+    ScopedPointer<Monique_Ui_DualSlider> eq_3;
+    ScopedPointer<Monique_Ui_DualSlider> eq_4;
+    ScopedPointer<Monique_Ui_DualSlider> eq_5;
+    ScopedPointer<Monique_Ui_DualSlider> eq_6;
+    ScopedPointer<Monique_Ui_DualSlider> eq_7;
+    ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Monique_Ui_DualSlider> delay2;
     ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
     ScopedPointer<Monique_Ui_DualSlider> eq_2;
-    ScopedPointer<Monique_Ui_DualSlider> eq_3;
-    ScopedPointer<Monique_Ui_DualSlider> eq_4;
-    ScopedPointer<Monique_Ui_DualSlider> eq_7;
-    ScopedPointer<Monique_Ui_DualSlider> eq_6;
-    ScopedPointer<Monique_Ui_DualSlider> eq_5;
-    ScopedPointer<Monique_Ui_DualSlider> eq_1;
-    ScopedPointer<Monique_Ui_DualSlider> bypass;
-    ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Label> label_effect_hider;
     ScopedPointer<Label> label_band_hz_2;
     ScopedPointer<Label> label_band_hz_3;

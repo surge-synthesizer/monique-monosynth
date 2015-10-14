@@ -1,15 +1,23 @@
 #include "monique_ui_Refresher.h"
 
 //==============================================================================
-juce_ImplementSingleton_SingleThreaded (Monique_Ui_Refresher)
-COLD Monique_Ui_Refresher::Monique_Ui_Refresher() noexcept {}
-COLD Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept 
-{
-    clearSingletonInstance();
-}
+Monique_Ui_Refresher::Monique_Ui_Refresher(
+    MoniqueAudioProcessor*audio_processor_,
+    UiLookAndFeel*const look_and_feel_,
+    MIDIControlHandler*const midi_control_handler_,
+    MoniqueSynthData*const synth_data_, 
+    MoniqueSynthesiserVoice*const voice_ ) noexcept :
+audio_processor(audio_processor_),
+                look_and_feel(look_and_feel_),
+                midi_control_handler(midi_control_handler_),
+                synth_data( synth_data_ ),
+                voice(voice_),
+                editor(nullptr)
+{}
+Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept {}
 
 //==============================================================================
-void Monique_Ui_Refresher::timerCallback() 
+void Monique_Ui_Refresher::timerCallback()
 {
     for( int i = 0 ; i != refreshables.size() ; ++i )
     {
@@ -17,23 +25,41 @@ void Monique_Ui_Refresher::timerCallback()
     }
 }
 
-COLD void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept {
+void Monique_Ui_Refresher::add(Monique_Ui_Refreshable*const r_) noexcept
+{
     ScopedLock locked(lock);
     refreshables.add(r_);
 }
-COLD void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable*const r_) noexcept {
-    ScopedLock locked(lock);
-    refreshables.removeFirstMatchingValue(r_);
+void Monique_Ui_Refresher::remove(Monique_Ui_Refreshable*const r_) noexcept
+{
+    if( refreshables.size() > 0 )
+    {
+        ScopedLock locked(lock);
+        refreshables.removeFirstMatchingValue(r_);
+    }
 }
-COLD void Monique_Ui_Refresher::remove_all() noexcept {
+void Monique_Ui_Refresher::remove_all() noexcept
+{
     ScopedLock locked(lock);
     refreshables.clearQuick();
 }
 
 //==============================================================================
-Monique_Ui_Refreshable::Monique_Ui_Refreshable() noexcept {
-    Monique_Ui_Refresher::getInstance()->add(this);
+Monique_Ui_Refreshable::Monique_Ui_Refreshable( Monique_Ui_Refresher*ui_refresher_ ) noexcept :
+ui_refresher( ui_refresher_ ),
+look_and_feel( ui_refresher_->look_and_feel ),
+midi_control_handler( ui_refresher_->midi_control_handler ),
+synth_data( ui_refresher_->synth_data ),
+voice( ui_refresher_->voice )
+{
+    ui_refresher_->add(this);
 }
-Monique_Ui_Refreshable::~Monique_Ui_Refreshable() noexcept {
-    Monique_Ui_Refresher::getInstance()->remove( this );
+Monique_Ui_Refreshable::~Monique_Ui_Refreshable() noexcept
+{
+    ui_refresher->remove( this );
+}
+
+Monique_Ui_Mainwindow*Monique_Ui_Refreshable::get_editor() noexcept
+{
+    return ui_refresher->editor;
 }

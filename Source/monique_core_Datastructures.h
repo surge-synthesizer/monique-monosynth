@@ -130,15 +130,13 @@ public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DataBuffer)
 };
 
-#define GET_DATA(_X_) (*mono_ParameterOwnerStore::getInstance()->_X_)
-#define GET_DATA_PTR(_X_) mono_ParameterOwnerStore::getInstance()->_X_
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
 class RuntimeNotifyer;
 class RuntimeListener
 {
+    RuntimeNotifyer*const notifyer;
 protected:
     //==========================================================================
     double sample_rate;
@@ -155,7 +153,7 @@ private:
 
 protected:
     //==========================================================================
-    COLD RuntimeListener() noexcept;
+    COLD RuntimeListener( RuntimeNotifyer*const notifyer_ ) noexcept;
     COLD ~RuntimeListener() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeListener)
@@ -164,7 +162,7 @@ protected:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class RuntimeNotifyer : public DeletedAtShutdown
+class RuntimeNotifyer
 {
     //==========================================================================
     friend class RuntimeListener;
@@ -180,13 +178,19 @@ public:
     void set_sample_rate( double sr_ ) noexcept;
     void set_block_size( int bs_ ) noexcept;
 
-    double get_sample_rate() const noexcept;
-    int get_block_size() const noexcept;
+    double get_sample_rate() const noexcept
+    {
+        return sample_rate;
+    }
+    int get_block_size() const noexcept
+    {
+        return block_size;
+    }
 
-public:
+private:
     //==========================================================================
-    juce_DeclareSingleton (RuntimeNotifyer,false)
-
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< RuntimeNotifyer >;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
 };
@@ -243,31 +247,26 @@ struct RuntimeInfo
         const int64 at_absolute_sample;
         const int samples_per_step;
 
-        inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept;
-        inline ~Step() noexcept;
+        inline Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
+:
+        step_id( step_id_ ),
+                 at_absolute_sample( at_absolute_sample_ ),
+                 samples_per_step( samples_per_step_ )
+        {}
+        inline ~Step() noexcept {}
     };
     OwnedArray<Step> steps_in_block;
 #endif
 
 private:
     //==========================================================================
-    friend class MoniqueSynthesiserVoice;
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< RuntimeInfo >;
     COLD RuntimeInfo() noexcept;
     COLD ~RuntimeInfo() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RuntimeInfo)
 };
-
-//==============================================================================
-#ifdef IS_STANDALONE
-inline RuntimeInfo::Step::Step( int step_id_, int64 at_absolute_sample_, int64 samples_per_step_ ) noexcept
-:
-step_id( step_id_ ),
-         at_absolute_sample( at_absolute_sample_ ),
-         samples_per_step( samples_per_step_ )
-{}
-inline RuntimeInfo::Step::~Step() noexcept {}
-#endif
 
 //==============================================================================
 //==============================================================================
@@ -284,16 +283,19 @@ class SmoothManager : public RuntimeListener
 {
     friend class SmoothedParameter;
     Array< SmoothedParameter* > smoothers;
+    RuntimeNotifyer*const notifyer;
 
-    COLD SmoothManager() noexcept;
+    //==========================================================================
+    friend class MoniqueSynthData;
+    friend class ContainerDeletePolicy< SmoothManager >;
+    COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept;
     COLD ~SmoothManager() noexcept;
 
 public:
-    void smooth( int num_samples_ ) noexcept;
+    void smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept;
     void reset() noexcept;
 
 public:
-    juce_DeclareSingleton (SmoothManager,false)
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothManager)
 };
 
@@ -303,6 +305,8 @@ public:
 class ENV;
 class SmoothedParameter : public RuntimeListener
 {
+    SmoothManager*const smooth_manager;
+
     mono_AudioSampleBuffer<1> values;
     mono_AudioSampleBuffer<1> values_modulated;
 
@@ -361,9 +365,9 @@ public:
     }
     void reset() noexcept {}
 
-    COLD SmoothedParameter( Parameter*const param_to_smooth_ ) noexcept;
+    COLD SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept;
     COLD ~SmoothedParameter() noexcept;
-    
+
     COLD void set_offline() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
@@ -402,12 +406,12 @@ struct FMOscData
     BoolParameter sync;
     Parameter fm_swing;
     SmoothedParameter fm_swing_smoother;
-    
+
     ModulatedParameter master_shift;
     SmoothedParameter master_shift_smoother;
 
     //==========================================================================
-    COLD FMOscData() noexcept;
+    COLD FMOscData( SmoothManager*const smooth_manager_ ) noexcept;
     COLD ~FMOscData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMOscData)
@@ -421,7 +425,7 @@ struct OSCData
     const int id;
 
     BoolParameter sync;
-    
+
     Parameter wave;
     SmoothedParameter wave_smoother;
     Parameter fm_amount;
@@ -435,7 +439,7 @@ struct OSCData
     float last_modulation_value;
 
     //==========================================================================
-    COLD OSCData( int id_ ) noexcept;
+    COLD OSCData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~OSCData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OSCData)
@@ -462,7 +466,7 @@ struct ENVData
     Parameter shape;
 
     //==========================================================================
-    COLD ENVData( int id_ ) noexcept;
+    COLD ENVData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~ENVData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
@@ -531,7 +535,7 @@ private:
 
 public:
     //==========================================================================
-    COLD FilterData( int id_ ) noexcept;
+    COLD FilterData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~FilterData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
@@ -839,7 +843,7 @@ struct EQData : ParameterListener
 {
     ArrayOfParameters velocity;
     ArrayOfBoolParameters hold;
-    
+
     Parameter bypass;
     SmoothedParameter bypass_smoother;
 
@@ -854,7 +858,7 @@ private:
 
 public:
     //==========================================================================
-    COLD EQData( int id_ ) noexcept;
+    COLD EQData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~EQData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( EQData )
@@ -895,7 +899,7 @@ private:
 
 public:
     //==========================================================================
-    COLD ChorusData( int id_ ) noexcept;
+    COLD ChorusData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~ChorusData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ChorusData )
@@ -917,8 +921,24 @@ public:
 #endif
 
 class MorphGroup;
+class MoniqueSynthesiserVoice;
+
 struct MoniqueSynthData : ParameterListener
 {
+    UiLookAndFeel*const ui_look_and_feel; // WILL BE NULL FOR MORPH DATA
+    MoniqueAudioProcessor*const audio_processor; // WILL BE NULL FOR MORPH DATA
+
+    SmoothManager*const smooth_manager;
+    RuntimeNotifyer*const runtime_notifyer;
+    RuntimeInfo*const runtime_info;
+    DataBuffer*const data_buffer;
+    MoniqueSynthesiserVoice*voice; // WILL BE SET BY THE PROCESSOR
+
+    //==============================================================================
+    const float*const sine_lookup;
+    const float*const cos_lookup;
+    const float*const exp_lookup;
+
     const int id;
 
     Parameter volume;
@@ -959,7 +979,7 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter osci_show_out;
     BoolParameter osci_show_out_env;
     Parameter osci_show_range;
-    
+
     BoolParameter auto_close_env_popup;
     BoolParameter auto_switch_env_popup;
 
@@ -1010,7 +1030,15 @@ public:
     }
 
     // ==============================================================================
-    COLD MoniqueSynthData( DATA_TYPES data_type ) noexcept;
+private:
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< MoniqueSynthData >;
+    COLD MoniqueSynthData( DATA_TYPES data_type,
+                           UiLookAndFeel*look_and_feel_,
+                           MoniqueAudioProcessor*const audio_processor_,
+                           RuntimeNotifyer*const runtime_notifyer_,
+                           RuntimeInfo*const info_,
+                           DataBuffer*data_buffer_ ) noexcept;
     COLD ~MoniqueSynthData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( MoniqueSynthData )
@@ -1072,12 +1100,12 @@ private:
 
 public:
     // ==============================================================================
-    static void refresh_banks_and_programms() noexcept;
+    static void refresh_banks_and_programms( MoniqueSynthData& synth_data ) noexcept;
 private:
     void calc_current_program_abs() noexcept;
 
     static void update_banks( StringArray& ) noexcept;
-    static void update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept;
+    static void update_bank_programms( MoniqueSynthData& synth_data, int bank_id_, StringArray& program_names_ ) noexcept;
 
 public:
     // ==============================================================================
@@ -1099,8 +1127,8 @@ public:
     const String& get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
-    void create_internal_backup() noexcept;
-    bool create_new() noexcept;
+    void create_internal_backup( const String& programm_name_, const String& bank_name_ ) noexcept;
+    bool create_new( const String& new_name_ ) noexcept;
     bool rename( const String& new_name_ ) noexcept;
     bool replace() noexcept;
     bool remove() noexcept;
@@ -1129,52 +1157,21 @@ public:
     // ==============================================================================
     void save_midi() const noexcept;
     void read_midi() noexcept;
-};
 
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-// NOTE: IMPL IN SYNTH.CPP
-class ENV;
-class MoniqueSynthesiserVoice;
-class DataBuffer;
-class mono_ParameterOwnerStore : public DeletedAtShutdown
-{
 public:
-    RuntimeInfo* runtime_info;
-
-    DataBuffer* data_buffer;
-
-    Array< LFOData* > lfo_datas;
-    Array< OSCData* > osc_datas;
-    FMOscData* fm_osc_data;
-    Array< FilterData* > filter_datas;
-    EQData* eq_data;
-    ArpSequencerData* arp_data;
-    ReverbData* reverb_data;
-    ChorusData* chorus_data;
-    MoniqueSynthData* synth_data;
-
-    MoniqueSynthesiserVoice* voice;
-    
-    ScopedPointer< ENVData > env_clipboard;
-
     // ==============================================================================
-    static void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
-
-    // ==============================================================================
-    COLD mono_ParameterOwnerStore() noexcept;
-    COLD ~mono_ParameterOwnerStore() noexcept;
-
-    juce_DeclareSingleton (mono_ParameterOwnerStore,false)
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ParameterOwnerStore)
+    void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
 };
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static ScopedPointer< ENVData > env_clipboard;
 
 #endif

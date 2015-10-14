@@ -16,9 +16,9 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline void show_feedback() noexcept
+static inline void show_feedback( MoniqueSynthData*synth_data_ ) noexcept
 {
-    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    Array< Parameter* >& parameters = synth_data_->get_all_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
     {
         parameters.getUnchecked(i)->midi_control->send_feedback_only();
@@ -26,7 +26,7 @@ static inline void show_feedback() noexcept
 }
 void mono_AudioDeviceManager::clear_feedback() noexcept
 {
-    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    Array< Parameter* >& parameters = get_synth_data()->get_all_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
     {
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();
@@ -58,52 +58,55 @@ COLD mono_AudioDeviceManager::MidiInputCallback_NOTES::~MidiInputCallback_NOTES(
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
+COLD mono_AudioDeviceManager::mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept
 :
-main_input_thru
-(
-    false,
-    generate_param_name("MIDI",1,"main_thru"),
-    generate_short_human_name("MIDI_main_thru")
-),
-cc_input_thru
-(
-    false,
-    generate_param_name("MIDI",1,"cc_thru"),
-    generate_short_human_name("MIDI_cc_thru")
-),
-use_main_input_as_cc
-(
-    true,
-    generate_param_name("MIDI",1,"cc_via_main"),
-    generate_short_human_name("MIDI_cc_via_main")
-),
-input_channel
-(
-    MIN_MAX( 0, 16 ),
-    0, // OMNI
-    generate_param_name("MIDI",1,"input_channel"),
-    generate_short_human_name("MIDI_input_channel")
-),
+RuntimeListener( runtime_notifyer_ ),
+                 runtime_notifyer( runtime_notifyer_ ),
+                 
+                 main_input_thru
+                 (
+                     false,
+                     generate_param_name("MIDI",1,"main_thru"),
+                     generate_short_human_name("MIDI_main_thru")
+                 ),
+                 cc_input_thru
+                 (
+                     false,
+                     generate_param_name("MIDI",1,"cc_thru"),
+                     generate_short_human_name("MIDI_cc_thru")
+                 ),
+                 use_main_input_as_cc
+                 (
+                     true,
+                     generate_param_name("MIDI",1,"cc_via_main"),
+                     generate_short_human_name("MIDI_cc_via_main")
+                 ),
+                 input_channel
+                 (
+                     MIN_MAX( 0, 16 ),
+                     0, // OMNI
+                     generate_param_name("MIDI",1,"input_channel"),
+                     generate_short_human_name("MIDI_input_channel")
+                 ),
 
-cc_input_callback( new MidiInputCallback_CC(this) ),
-note_input_callback( new MidiInputCallback_NOTES(this) ),
-note_input_state(CLOSED),
-cc_input_state(CLOSED),
+                 cc_input_callback( new MidiInputCallback_CC(this) ),
+                 note_input_callback( new MidiInputCallback_NOTES(this) ),
+                 note_input_state(CLOSED),
+                 cc_input_state(CLOSED),
 
-midi_thru_output(nullptr),
-midi_feedback_output(nullptr),
-midi_thru_output_state(CLOSED),
-midi_feedback_output_state(CLOSED),
+                 midi_thru_output(nullptr),
+                 midi_feedback_output(nullptr),
+                 midi_thru_output_state(CLOSED),
+                 midi_feedback_output_state(CLOSED),
 
-open_state_checker(this),
-state_change_counter(0),
+                 open_state_checker(this),
+                 state_change_counter(0),
 
-restored_all_devices(true),
-its_your_first_time(true),
+                 restored_all_devices(true),
+                 its_your_first_time(true),
 
-restored_audio_devices(true),
-init_first_time_audio_device(true)
+                 restored_audio_devices(true),
+                 init_first_time_audio_device(true)
 {
     sample_rate_changed(0);
 }
@@ -448,7 +451,7 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
             {
                 note_input_collector.addMessageToQueue( midi_message_ );
                 // BIND PEDALS OPTION
-                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
                 {
                     note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
                 }
@@ -457,7 +460,7 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
             {
                 note_input_collector.addMessageToQueue( midi_message_ );
                 // BIND PEDALS OPTION
-                if( GET_DATA( synth_data ).bind_sustain_and_sostenuto_pedal )
+                if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
                 {
                     note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
                 }
@@ -721,7 +724,7 @@ bool mono_AudioDeviceManager::open_out_port(mono_AudioDeviceManager::OUTPUT_ID o
             if( output )
             {
                 output->startBackgroundThread();
-                show_feedback();
+                show_feedback( get_synth_data() );
                 midi_feedback_output_state = OPEN;
             }
             else if( device_name_ == CLOSED_PORT )
@@ -841,7 +844,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 {
     stopTimer();
 
-    Monique_Ui_Mainwindow*const editor( AppInstanceStore::getInstance()->editor );
+    Monique_Ui_Mainwindow*const editor = manager->get_editor();
 
     StringArray in_devices = manager->get_available_in_ports();
     if( last_in_devices != in_devices )
@@ -849,7 +852,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         last_in_devices = in_devices;
         manager->state_change_counter++;
 
-        AppInstanceStore::getInstance()->editor->flash_midi_editor_button();
+        if( editor )
+        {
+            editor->flash_midi_editor_button();
+        }
 
         if( manager->its_your_first_time )
         {
@@ -1029,7 +1035,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         last_out_devices = out_devices;
         manager->state_change_counter++;
 
-        AppInstanceStore::getInstance()->editor->flash_midi_editor_button();
+        if( editor )
+        {
+            editor->flash_midi_editor_button();
+        }
     }
 
     // THRU OUT

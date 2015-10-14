@@ -34,7 +34,7 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
     for( int i = 0 ; i != morph_combos.size() ; ++i )
     {
         ComboBox* box = morph_combos.getUnchecked(i);
-	
+
         for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
         {
             String bank = bank_id == 0 ? "A" : bank_id == 1 ? "B" : bank_id == 2 ? "C" : "D";
@@ -46,7 +46,7 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
             {
                 box->addSectionHeading(String("Load preset to RIGHT from bank: ")+bank);
             }
-            StringArray morph_program_names( GET_DATA( synth_data ).get_programms( bank_id ) );
+            StringArray morph_program_names( synth_data->get_programms( bank_id ) );
 
             int start_index = box->getNumItems()+1+1;
             box->addItemList( morph_program_names, start_index );
@@ -57,20 +57,24 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
             }
         }
 
-	box->setText(  GET_DATA( synth_data ).get_morph_source_name(i), dontSendNotification );
+	box->setText(  synth_data->get_morph_source_name(i), dontSendNotification );
     }
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
-    : original_w(1465), original_h(180)
+Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_refresher_, UiLookAndFeel*const look_and_feel_)
+    : ui_refresher(ui_refresher_),
+      look_and_feel(look_and_feel_),
+      original_w(1465),
+      original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    synth_data = ui_refresher_->synth_data;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_31 = new Label (String::empty,
-            TRANS("FILTER (R)")));
+                                             TRANS("FILTER (R)")));
     label_31->setFont (Font (30.00f, Font::plain));
     label_31->setJustificationType (Justification::centredRight);
     label_31->setEditable (false, false, false);
@@ -79,7 +83,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_31->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_32 = new Label (String::empty,
-            TRANS("ARP (R)")));
+                                             TRANS("ARP (R)")));
     label_32->setFont (Font (30.00f, Font::plain));
     label_32->setJustificationType (Justification::centredRight);
     label_32->setEditable (false, false, false);
@@ -88,7 +92,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_32->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_33 = new Label (String::empty,
-            TRANS("FX (R)")));
+                                             TRANS("FX (R)")));
     label_33->setFont (Font (30.00f, Font::plain));
     label_33->setJustificationType (Justification::centredLeft);
     label_33->setEditable (false, false, false);
@@ -97,7 +101,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_33->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_30 = new Label (String::empty,
-            TRANS("OSC (R)")));
+                                             TRANS("OSC (R)")));
     label_30->setFont (Font (30.00f, Font::plain));
     label_30->setJustificationType (Justification::centredLeft);
     label_30->setEditable (false, false, false);
@@ -106,7 +110,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_30->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_34 = new Label (String::empty,
-            TRANS("ALL (L)")));
+                                             TRANS("ALL (L)")));
     label_34->setFont (Font (30.00f, Font::plain));
     label_34->setJustificationType (Justification::centred);
     label_34->setEditable (false, false, false);
@@ -116,8 +120,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_1 = new ComboBox (String::empty));
     combo_morph_group_1->setTooltip (TRANS("Load a program to the RIGHT side of the OSC morph group.\n"
-                                           "\n"
-                                           "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_1->setEditableText (false);
     combo_morph_group_1->setJustificationType (Justification::centredLeft);
     combo_morph_group_1->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -126,8 +130,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_2 = new ComboBox (String::empty));
     combo_morph_group_2->setTooltip (TRANS("Load a program to the RIGHT side of the FILTER morph group.\n"
-                                           "\n"
-                                           "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_2->setEditableText (false);
     combo_morph_group_2->setJustificationType (Justification::centredLeft);
     combo_morph_group_2->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -136,8 +140,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_3 = new ComboBox (String::empty));
     combo_morph_group_3->setTooltip (TRANS("Load a program to the RIGHT side of the FX morph group.\n"
-                                           "\n"
-                                           "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_3->setEditableText (false);
     combo_morph_group_3->setJustificationType (Justification::centredLeft);
     combo_morph_group_3->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -146,8 +150,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_4 = new ComboBox (String::empty));
     combo_morph_group_4->setTooltip (TRANS("Load a program to the RIGHT side of the ARPEGGIATOR morph group.\n"
-                                           "\n"
-                                           "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_4->setEditableText (false);
     combo_morph_group_4->setJustificationType (Justification::centredLeft);
     combo_morph_group_4->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -156,8 +160,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_5 = new ComboBox (String::empty));
     combo_morph_group_5->setTooltip (TRANS("Load a program to the LEFT side of the OSC morph group.\n"
-                                           "\n"
-                                           "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_5->setEditableText (false);
     combo_morph_group_5->setJustificationType (Justification::centredLeft);
     combo_morph_group_5->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -166,8 +170,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_6 = new ComboBox (String::empty));
     combo_morph_group_6->setTooltip (TRANS("Load a program to the LEFT side of the FILTER morph group.\n"
-                                           "\n"
-                                           "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_6->setEditableText (false);
     combo_morph_group_6->setJustificationType (Justification::centredLeft);
     combo_morph_group_6->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -176,8 +180,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_7 = new ComboBox (String::empty));
     combo_morph_group_7->setTooltip (TRANS("Load a program to the LEFT side of the FX morph group.\n"
-                                           "\n"
-                                           "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_7->setEditableText (false);
     combo_morph_group_7->setJustificationType (Justification::centredLeft);
     combo_morph_group_7->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -186,8 +190,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (combo_morph_group_8 = new ComboBox (String::empty));
     combo_morph_group_8->setTooltip (TRANS("Load a program to the LEFT side of the ARPEGGIATOR morph group.\n"
-                                           "\n"
-                                           "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     combo_morph_group_8->setEditableText (false);
     combo_morph_group_8->setJustificationType (Justification::centredLeft);
     combo_morph_group_8->setTextWhenNothingSelected (TRANS("PRESET"));
@@ -195,7 +199,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     combo_morph_group_8->addListener (this);
 
     addAndMakeVisible (label_19 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_19->setFont (Font (30.00f, Font::plain));
     label_19->setJustificationType (Justification::centredRight);
     label_19->setEditable (false, false, false);
@@ -205,8 +209,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_left_1 = new TextButton (String::empty));
     button_set_left_1->setTooltip (TRANS("Set the current state as the LEFT side of the OSC morph group.\n"
-                                         "\n"
-                                         "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_1->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_1->addListener (this);
     button_set_left_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -215,8 +219,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_left_2 = new TextButton (String::empty));
     button_set_left_2->setTooltip (TRANS("Set the current state as the LEFT side of the FILTER morph group.\n"
-                                         "\n"
-                                         "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_2->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_2->addListener (this);
     button_set_left_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -225,8 +229,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_left_3 = new TextButton (String::empty));
     button_set_left_3->setTooltip (TRANS("Set the current state as the LEFT side of the FX morph group.\n"
-                                         "\n"
-                                         "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_3->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_3->addListener (this);
     button_set_left_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -235,8 +239,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_left_4 = new TextButton (String::empty));
     button_set_left_4->setTooltip (TRANS("Set the current state as the LEFT side of the ARPEGGIATOR morph group.\n"
-                                         "\n"
-                                         "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_left_4->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_left_4->addListener (this);
     button_set_left_4->setColour (TextButton::buttonColourId, Colours::black);
@@ -245,8 +249,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_right_1 = new TextButton (String::empty));
     button_set_right_1->setTooltip (TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
-                                          "\n"
-                                          "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_1->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_1->addListener (this);
     button_set_right_1->setColour (TextButton::buttonColourId, Colours::black);
@@ -255,8 +259,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_right_2 = new TextButton (String::empty));
     button_set_right_2->setTooltip (TRANS("Set the current state as the RIGHT side of the FILTER morph group.\n"
-                                          "\n"
-                                          "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_2->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_2->addListener (this);
     button_set_right_2->setColour (TextButton::buttonColourId, Colours::black);
@@ -265,8 +269,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_right_3 = new TextButton (String::empty));
     button_set_right_3->setTooltip (TRANS("Set the current state as the RIGHT side of the FX morph group.\n"
-                                          "\n"
-                                          "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_3->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_3->addListener (this);
     button_set_right_3->setColour (TextButton::buttonColourId, Colours::black);
@@ -275,8 +279,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
 
     addAndMakeVisible (button_set_right_4 = new TextButton (String::empty));
     button_set_right_4->setTooltip (TRANS("Set the current state as the RIGHT side of the ARPEGGIATOR morph group.\n"
-                                          "\n"
-                                          "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
     button_set_right_4->setButtonText (TRANS("SET FROM CURRENT"));
     button_set_right_4->addListener (this);
     button_set_right_4->setColour (TextButton::buttonColourId, Colours::black);
@@ -291,7 +295,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     button_set_all_from_current->setColour (TextButton::textColourOffId, Colour (0xffffff11));
 
     addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-            TRANS("OSC MORPH (GROUP 1)")));
+                                                        TRANS("OSC MORPH (GROUP 1)")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
@@ -300,7 +304,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
-            TRANS("FILTER MORPH (GROUP 2)")));
+                                                        TRANS("FILTER MORPH (GROUP 2)")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
@@ -309,7 +313,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_3 = new Label ("DL",
-            TRANS("FX MORPH (GROUP 3)")));
+                                                        TRANS("FX MORPH (GROUP 3)")));
     label_ui_headline_3->setFont (Font (30.00f, Font::plain));
     label_ui_headline_3->setJustificationType (Justification::centred);
     label_ui_headline_3->setEditable (false, false, false);
@@ -318,7 +322,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_ui_headline_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
-            TRANS("ARP MORPH (GROUP 4)")));
+                                                        TRANS("ARP MORPH (GROUP 4)")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
@@ -345,7 +349,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_25 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_25->setFont (Font (30.00f, Font::plain));
     label_25->setJustificationType (Justification::centredRight);
     label_25->setEditable (false, false, false);
@@ -354,7 +358,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_26 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_26->setFont (Font (30.00f, Font::plain));
     label_26->setJustificationType (Justification::centredRight);
     label_26->setEditable (false, false, false);
@@ -363,7 +367,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_26->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_27 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_27->setFont (Font (30.00f, Font::plain));
     label_27->setJustificationType (Justification::centredRight);
     label_27->setEditable (false, false, false);
@@ -372,7 +376,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_27->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_28 = new Label (String::empty,
-            TRANS("LEFT PRESET")));
+                                             TRANS("LEFT PRESET")));
     label_28->setFont (Font (30.00f, Font::plain));
     label_28->setJustificationType (Justification::centredRight);
     label_28->setEditable (false, false, false);
@@ -381,7 +385,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_28->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_29 = new Label (String::empty,
-            TRANS("RIGHT PRESET")));
+                                             TRANS("RIGHT PRESET")));
     label_29->setFont (Font (30.00f, Font::plain));
     label_29->setJustificationType (Justification::centredRight);
     label_29->setEditable (false, false, false);
@@ -390,7 +394,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_29->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
-            TRANS("MORPH PAD (DRAG IT!)")));
+                                                        TRANS("MORPH PAD (DRAG IT!)")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
@@ -399,7 +403,7 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_35 = new Label (String::empty,
-            TRANS("(DOUBLE CLICK)")));
+                                             TRANS("(DOUBLE CLICK)")));
     label_35->setFont (Font (30.00f, Font::plain));
     label_35->setJustificationType (Justification::centred);
     label_35->setEditable (false, false, false);
@@ -407,11 +411,11 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig ()
     label_35->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_35->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (drag_pad = new Monique_Ui_DragPad());
+    addAndMakeVisible (drag_pad = new Monique_Ui_DragPad (ui_refresher));
 
 
     //[UserPreSize]
-    Colour button_off = UiLookAndFeel::getInstance()->colours.button_off_colour;
+    Colour button_off = look_and_feel_->colours.button_off_colour;
     button_set_left_1->setColour( TextButton::buttonColourId, button_off );
     button_set_left_2->setColour( TextButton::buttonColourId, button_off );
     button_set_left_3->setColour( TextButton::buttonColourId, button_off );
@@ -592,49 +596,49 @@ void Monique_Ui_MorphConfig::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == combo_morph_group_1)
     {
         //[UserComboBoxCode_combo_morph_group_1] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_right_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_1]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_2)
     {
         //[UserComboBoxCode_combo_morph_group_2] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_right_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_2]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_3)
     {
         //[UserComboBoxCode_combo_morph_group_3] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_right_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_3]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_4)
     {
         //[UserComboBoxCode_combo_morph_group_4] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_right_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_right_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_4]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_5)
     {
         //[UserComboBoxCode_combo_morph_group_5] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_left_side( 0, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_5]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_6)
     {
         //[UserComboBoxCode_combo_morph_group_6] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_left_side( 1, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_6]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_7)
     {
         //[UserComboBoxCode_combo_morph_group_7] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_left_side( 2, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_7]
     }
     else if (comboBoxThatHasChanged == combo_morph_group_8)
     {
         //[UserComboBoxCode_combo_morph_group_8] -- add your combo box handling code here..
-        GET_DATA( synth_data ).try_to_load_programm_to_left_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
+        synth_data->try_to_load_programm_to_left_side( 3, bank, comboBoxThatHasChanged->getSelectedId()-bank_start_indexs[bank] );
         //[/UserComboBoxCode_combo_morph_group_8]
     }
 
@@ -650,62 +654,62 @@ void Monique_Ui_MorphConfig::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_set_left_1)
     {
         //[UserButtonCode_button_set_left_1] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, LEFT );
+        synth_data->set_morph_source_data_from_current( 0, LEFT );
         //[/UserButtonCode_button_set_left_1]
     }
     else if (buttonThatWasClicked == button_set_left_2)
     {
         //[UserButtonCode_button_set_left_2] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, LEFT );
+        synth_data->set_morph_source_data_from_current( 1, LEFT );
         //[/UserButtonCode_button_set_left_2]
     }
     else if (buttonThatWasClicked == button_set_left_3)
     {
         //[UserButtonCode_button_set_left_3] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, LEFT );
+        synth_data->set_morph_source_data_from_current( 2, LEFT );
         //[/UserButtonCode_button_set_left_3]
     }
     else if (buttonThatWasClicked == button_set_left_4)
     {
         //[UserButtonCode_button_set_left_4] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, LEFT );
+        synth_data->set_morph_source_data_from_current( 3, LEFT );
         //[/UserButtonCode_button_set_left_4]
     }
     else if (buttonThatWasClicked == button_set_right_1)
     {
         //[UserButtonCode_button_set_right_1] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, RIGHT );
+        synth_data->set_morph_source_data_from_current( 0, RIGHT );
         //[/UserButtonCode_button_set_right_1]
     }
     else if (buttonThatWasClicked == button_set_right_2)
     {
         //[UserButtonCode_button_set_right_2] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, RIGHT );
+        synth_data->set_morph_source_data_from_current( 1, RIGHT );
         //[/UserButtonCode_button_set_right_2]
     }
     else if (buttonThatWasClicked == button_set_right_3)
     {
         //[UserButtonCode_button_set_right_3] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, RIGHT );
+        synth_data->set_morph_source_data_from_current( 2, RIGHT );
         //[/UserButtonCode_button_set_right_3]
     }
     else if (buttonThatWasClicked == button_set_right_4)
     {
         //[UserButtonCode_button_set_right_4] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, RIGHT );
+        synth_data->set_morph_source_data_from_current( 3, RIGHT );
         //[/UserButtonCode_button_set_right_4]
     }
     else if (buttonThatWasClicked == button_set_all_from_current)
     {
         //[UserButtonCode_button_set_all_from_current] -- add your button handler code here..
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, LEFT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, LEFT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, LEFT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, LEFT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 0, RIGHT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 1, RIGHT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 2, RIGHT );
-        GET_DATA( synth_data ).set_morph_source_data_from_current( 3, RIGHT );
+        synth_data->set_morph_source_data_from_current( 0, LEFT );
+        synth_data->set_morph_source_data_from_current( 1, LEFT );
+        synth_data->set_morph_source_data_from_current( 2, LEFT );
+        synth_data->set_morph_source_data_from_current( 3, LEFT );
+        synth_data->set_morph_source_data_from_current( 0, RIGHT );
+        synth_data->set_morph_source_data_from_current( 1, RIGHT );
+        synth_data->set_morph_source_data_from_current( 2, RIGHT );
+        synth_data->set_morph_source_data_from_current( 3, RIGHT );
         //[/UserButtonCode_button_set_all_from_current]
     }
 
@@ -730,7 +734,8 @@ void Monique_Ui_MorphConfig::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MorphConfig" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers="original_w(1465), original_h(180)"
+                 parentClasses="public Component" constructorParams="Monique_Ui_Refresher*const ui_refresher_, UiLookAndFeel*const look_and_feel_"
+                 variableInitialisers="ui_refresher(ui_refresher_),&#10;look_and_feel(look_and_feel_),&#10;original_w(1465), &#10;original_h(180)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="720">
   <BACKGROUND backgroundColour="ff050505">
@@ -912,7 +917,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="Monique_Ui_DragPad"
                     explicitFocusOrder="0" pos="1050 10 405 150" class="Component"
-                    params=""/>
+                    params="ui_refresher"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

@@ -45,7 +45,7 @@ class Monique_Ui_ENVPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_ENVPopup (Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_);
+    Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_);
     ~Monique_Ui_ENVPopup();
 
     //==============================================================================

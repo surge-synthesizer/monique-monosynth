@@ -262,14 +262,14 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-    public Monique_Ui_Refreshable,
-    public SliderListener,
-    public ButtonListener,
-    public LabelListener
+                               public Monique_Ui_Refreshable,
+                               public SliderListener,
+                               public ButtonListener,
+                               public LabelListener
 {
 public:
     //==============================================================================
-    Monique_Ui_DualSlider (ModulationSliderConfigBase* config_);
+    Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_, ModulationSliderConfigBase* config_);
     ~Monique_Ui_DualSlider();
 
     //==============================================================================
@@ -283,11 +283,10 @@ public:
 
     const float original_w;
     const float original_h;
-    
-    ModulationSliderConfigBase*const _config;
-private:
-    MoniqueSynthData* synth_data;
 
+    ModulationSliderConfigBase*const _config;
+    
+private:
     Parameter* front_parameter;
     Parameter* modulation_parameter;
     Parameter* back_parameter;

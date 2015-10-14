@@ -9,20 +9,21 @@
 #define DB_PER_SEC 3.0f
 #define SAMPLES_TO_COUNT 2048
 
-COLD Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter() noexcept
+COLD Monique_Ui_SegmentedMeter::Monique_Ui_SegmentedMeter( Monique_Ui_Refresher*const ui_refresher_ ) noexcept
 :
-sampleMax     (0.0f),
-              level         (0.0f),
+Monique_Ui_Refreshable(ui_refresher_),
+                       sampleMax     (0.0f),
+                       level         (0.0f),
 
-              numSegs       (0),
-              last_numSeg   (-1),
-              sampleCount   (0),
+                       numSegs       (0),
+                       last_numSeg   (-1),
+                       sampleCount   (0),
 
-              my_red( Colours::red.getARGB() ),
-              my_yellow( UiLookAndFeel::getInstance()->colours.button_on_colour.getARGB()),
-              my_green( UiLookAndFeel::getInstance()->colours.slider_track_colour.getARGB() ),
+                       my_red( Colours::red.getARGB() ),
+                       my_yellow( look_and_feel->colours.button_on_colour.getARGB()),
+                       my_green( look_and_feel->colours.slider_track_colour.getARGB() ),
 
-              needsRepaint  (true)
+                       needsRepaint  (true)
 {
     setOpaque (true);
 }
@@ -109,14 +110,14 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
     const int h = getHeight();
 
     g.fillAll(Colour(0xff050505));
-    
+
     g.addTransform( AffineTransform::rotation
-                      (
-                          (float) (180.0f / (180.0 / double_Pi)),
-                          0.5*w,
-                          0.5*h
-                      )
-                    );
+                    (
+                        (float) (180.0f / (180.0 / double_Pi)),
+                        0.5*w,
+                        0.5*h
+                    )
+                  );
 
     if (onImage.isValid())
     {

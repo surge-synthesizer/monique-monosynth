@@ -18,7 +18,7 @@ ifeq ($(CONFIG),DEVEL)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.8" -D "JUCE_APP_VERSION_HEX=0x800" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "IS_PLUGIN" -D "DEBUG" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.9" -D "JUCE_APP_VERSION_HEX=0x900" -I /usr/include -I /usr/include/freetype2 -I ../../../vstsdk2.4 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -fPIC -O0 -std=c++11 -Wall
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -Wl,--no-undefined -shared -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -30,7 +30,6 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
-  $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
   $(OBJDIR)/monique_core_Processor_aa317247.o \
@@ -84,11 +83,6 @@ strip:
 $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o: ../../../Source/monique_ui_ENVPopup.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_ENVPopup.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_AppInstanceStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_Datastructures.cpp

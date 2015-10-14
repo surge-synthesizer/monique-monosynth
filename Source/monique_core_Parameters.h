@@ -1174,7 +1174,7 @@ public:
     {
         return controller_number_ == midi_number;
     }
-    bool read_from_if_you_listen( int controller_number_, int controller_value_ ) noexcept;
+    bool read_from_if_you_listen( int controller_number_, int controller_value_, float pickup_offset_ ) noexcept;
     bool train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept;
     bool train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept;
     bool is_valid_trained() const noexcept
@@ -1206,8 +1206,12 @@ public:
 
     void clear();
 };
+
+class UiLookAndFeel;
 class MIDIControlHandler
 {
+    UiLookAndFeel*const ui_look_and_feel;
+  
     bool is_activated_and_waiting_for_param;
     Parameter* learning_param;
     Parameter* learning_ctrl_param;
@@ -1227,11 +1231,10 @@ public:
     void clear() noexcept;
 
 private:
-    COLD MIDIControlHandler() noexcept;
+    friend class MoniqueAudioProcessor;
+    friend class ContainerDeletePolicy< MIDIControlHandler >;
+    COLD MIDIControlHandler( UiLookAndFeel*look_and_feel_ ) noexcept;
     COLD ~MIDIControlHandler() noexcept;
-
-public:
-    juce_DeclareSingleton (MIDIControlHandler,false)
 };
 
 inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
@@ -1241,28 +1244,28 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
 
 #include "monique_ui_LookAndFeel.h"
 #define IF_MIDI_LEARN__HANDLE( param ) \
-        if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() ) \
+        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
         { \
-            MIDIControlHandler::getInstance()->set_learn_param( param ); \
+            midi_control_handler->set_learn_param( param ); \
         }
 #define IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT( param, component_ ) \
-        if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() ) \
+        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
         { \
-            MIDIControlHandler::getInstance()->set_learn_param( param, component_ ); \
+            midi_control_handler->set_learn_param( param, component_ ); \
         }
 #define IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT( param, param_ctrl, component_ ) \
-        if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() ) \
+        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
         { \
-            MIDIControlHandler::getInstance()->set_learn_width_ctrl_param( param, param_ctrl, component_ ); \
+            midi_control_handler->set_learn_width_ctrl_param( param, param_ctrl, component_ ); \
         }
-#define SET_COMPONENT_TO_MIDI_LEARN( comp ) \
+#define SET_COMPONENT_TO_MIDI_LEARN( comp, ui_look_and_feel_ ) \
         { \
-	  UiLookAndFeel::getInstance()->midi_learn_comp = comp; \
+	  ui_look_and_feel_->midi_learn_comp = comp; \
 	  comp->repaint(); \
 	}
-#define UNSET_COMPONENT_MIDI_LEARN( comp ) \
+#define UNSET_COMPONENT_MIDI_LEARN( comp, ui_look_and_feel_ ) \
         { \
-	  UiLookAndFeel::getInstance()->midi_learn_comp = nullptr; \
+	  ui_look_and_feel_->midi_learn_comp = nullptr; \
 	  comp->repaint(); \
 	}
 

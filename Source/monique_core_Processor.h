@@ -14,13 +14,18 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MIDIControlHandler;
 class MoniqueSynthData;
 class Monique_Ui_SegmentedMeter;
+class Monique_Ui_Refresher;
 class MoniqueSynthesiserVoice;
 class ClockSmoothBuffer;
 class ArpInfo;
 class NoteDownStore;
 class MoniqueSynthesizer;
+class AppInstanceStore;
+class Monique_Ui_AmpPainter;
+class Monique_Ui_Mainwindow;
 
 class MoniqueAudioProcessor :
     public AudioProcessor,
@@ -50,7 +55,9 @@ private:
 
     // ==============================================================================
     // DATA & SYNTH PROCESSOR
+public:
     MoniqueSynthData* synth_data;
+    virtual MoniqueSynthData*get_synth_data() noexcept override { return synth_data; }
     MoniqueSynthesiserVoice* voice;
     MoniqueSynthesizer* synth;
 
@@ -140,7 +147,19 @@ private:
     //==========================================================================
     // BOOT UI
     COLD AudioProcessorEditor* createEditor()  override;
+    Monique_Ui_Mainwindow*get_editor() noexcept override { return reinterpret_cast< Monique_Ui_Mainwindow* >( getActiveEditor() ); }
 
+    //==========================================================================
+    // GLOBAL CLASSES
+public:
+    ScopedPointer<UiLookAndFeel> ui_look_and_feel;
+    ScopedPointer<MIDIControlHandler> midi_control_handler;
+    ScopedPointer<Monique_Ui_Refresher> ui_refresher;
+    ScopedPointer<DataBuffer> data_buffer;
+    ScopedPointer<RuntimeInfo> info;
+    Monique_Ui_AmpPainter* amp_painter;
+
+protected:
     //==========================================================================
     friend AudioProcessor* JUCE_CALLTYPE createPluginFilter();
     friend class ContainerDeletePolicy< MoniqueAudioProcessor >;

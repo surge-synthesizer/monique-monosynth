@@ -68,8 +68,11 @@ void Monique_Ui_MainwindowPopup::update_positions( )
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
-    : parent(parent_),_midi_control(midi_control_), original_w(80), original_h(95)
+Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
+    : Monique_Ui_Refreshable(ui_refresher_),
+      parent(parent_),
+      _midi_control(midi_control_),
+      original_w(80), original_h(95)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
@@ -188,7 +191,7 @@ void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == close)
     {
         //[UserButtonCode_close] -- add your button handler code here..
-        MIDIControlHandler::getInstance()->clear();
+        midi_control_handler->clear();
         parent->popup = nullptr;
         return;
         //[/UserButtonCode_close]
@@ -215,8 +218,8 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MainwindowPopup"
                  componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
-                 variableInitialisers="parent(parent_),_midi_control(midi_control_), original_w(80), original_h(95)"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
+                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;parent(parent_),&#10;_midi_control(midi_control_),&#10;original_w(80), original_h(95)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="95">
   <BACKGROUND backgroundColour="ffffff">

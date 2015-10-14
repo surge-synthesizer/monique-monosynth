@@ -46,41 +46,54 @@ static inline float sample_mix( float s1_, float s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD SmoothedParameter::SmoothedParameter( Parameter*const param_to_smooth_ ) noexcept
+COLD SmoothedParameter::SmoothedParameter( SmoothManager*const smooth_manager_,
+        Parameter*const param_to_smooth_ ) noexcept
 :
-values(block_size),
-       values_modulated(block_size),
+RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
+                 smooth_manager(smooth_manager_),
 
-       param_to_smooth(param_to_smooth_),
+                 values(block_size),
+                 values_modulated(block_size),
 
-       max_value( param_to_smooth_->get_info().max_value ),
-       min_value( param_to_smooth_->get_info().min_value ),
+                 param_to_smooth(param_to_smooth_),
 
-       last_value(param_to_smooth_->get_value()),
-       last_target(-99),
-       difference_per_sample(0),
-       samples_left(0),
-       buffer_is_linear_up_to_date_filled(false),
+                 max_value( param_to_smooth_->get_info().max_value ),
+                 min_value( param_to_smooth_->get_info().min_value ),
 
-       last_modulator(0),
-       was_modulated_last_time(false),
+                 last_value(param_to_smooth_->get_value()),
+                 last_target(-99),
+                 difference_per_sample(0),
+                 samples_left(0),
+                 buffer_is_linear_up_to_date_filled(false),
 
-       amp_switch_samples_left_max(1),
-       amp_switch_samples_left(0),
-       last_amp_automated(0),
-       last_amp_valued(0),
-       was_automated_last_time(false)
+                 last_modulator(0),
+                 was_modulated_last_time(false),
+
+                 amp_switch_samples_left_max(1),
+                 amp_switch_samples_left(0),
+                 last_amp_automated(0),
+                 last_amp_valued(0),
+                 was_automated_last_time(false)
 {
-    SmoothManager::getInstance()->smoothers.add(this);
+    if( smooth_manager )
+    {
+        smooth_manager->smoothers.add(this);
+    }
 }
 COLD SmoothedParameter::~SmoothedParameter() noexcept
 {
-    SmoothManager::getInstance()->smoothers.removeFirstMatchingValue(this);
+    if( smooth_manager )
+    {
+        smooth_manager->smoothers.removeFirstMatchingValue(this);
+    }
 }
 
 COLD void SmoothedParameter::set_offline() noexcept
 {
-    SmoothManager::getInstance()->smoothers.removeFirstMatchingValue(this);
+    if( smooth_manager )
+    {
+        smooth_manager->smoothers.removeFirstMatchingValue(this);
+    }
 }
 
 //==============================================================================
@@ -256,18 +269,14 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
 //==============================================================================
 //==============================================================================
 //==============================================================================
-juce_ImplementSingleton (SmoothManager)
-
-COLD SmoothManager::SmoothManager() noexcept {}
-COLD SmoothManager::~SmoothManager() noexcept
-{
-    clearSingletonInstance();
-}
+COLD SmoothManager::SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
+RuntimeListener(notifyer_), notifyer(notifyer_) {}
+COLD SmoothManager::~SmoothManager() noexcept {}
 
 //==============================================================================
-inline void SmoothManager::smooth( int num_samples_ ) noexcept
+inline void SmoothManager::smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept
 {
-    int glide_motor_time_in_samples( msToSamplesFast(GET_DATA(synth_data).glide_motor_time.get_value(), sample_rate) );
+    int glide_motor_time_in_samples( msToSamplesFast(glide_motor_time_in_ms_, sample_rate) );
     for( int i = 0 ; i != smoothers.size() ; ++i )
     {
         smoothers.getUnchecked(i)->smooth( glide_motor_time_in_samples, num_samples_ );
@@ -392,9 +401,10 @@ private:
 
 private:
     //==============================================================================
-    COLD mono_ThreadManager() noexcept
+    friend class MoniqueSynthesiserVoice;
+    COLD mono_ThreadManager( MoniqueSynthData*const synth_data_ ) noexcept
 :
-    synth_data( GET_DATA_PTR( synth_data ) )
+    synth_data( synth_data_ )
     {
         for( int i = 0 ; i < THREAD_LIMIT ; ++i )
         {
@@ -412,48 +422,33 @@ private:
             threads[i]->waitForThreadToExit(200);
             delete threads[i];
         }
-        clearSingletonInstance();
     }
 
 public:
-    juce_DeclareSingleton (mono_ThreadManager,false)
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_ThreadManager)
 };
-
-//==============================================================================
-juce_ImplementSingleton (mono_ThreadManager)
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 struct mono_Thread : public mono_MultiThreaded
 {
+    mono_ThreadManager*const thread_manager;
+
     //==============================================================================
-    inline mono_Thread() noexcept {}
+inline mono_Thread( mono_ThreadManager*const thread_manager_ ) noexcept :
+    thread_manager(thread_manager_) {}
     inline ~mono_Thread() noexcept {}
 
     //==============================================================================
     // IT CHECKS FOR FREE THREADS, OTHERWISE IT RUNS FROM THE CALLER THREAD
     inline void try_run_paralel() noexcept
     {
-        mono_ThreadManager::getInstanceWithoutCreating()->execute_me(this);
+        thread_manager->execute_me(this);
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Thread)
 };
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-juce_ImplementSingleton (mono_ParameterOwnerStore)
 
 //==============================================================================
 //==============================================================================
@@ -538,13 +533,14 @@ private:
 
 public:
     //==========================================================================
-COLD Smoother( int init_size_in_ms_ ) noexcept :
-    pos(0),
-        sum(0),
-        size_in_ms(init_size_in_ms_),
-        size( jmax(int64(3),msToSamplesFast(init_size_in_ms_,sample_rate)) ),
-        buffer( size ),
-        ptr_to_buffer( buffer.getWritePointer() )
+COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept :
+    RuntimeListener(notifyer_),
+                    pos(0),
+                    sum(0),
+                    size_in_ms(init_size_in_ms_),
+                    size( jmax(int64(3),msToSamplesFast(init_size_in_ms_,sample_rate)) ),
+                    buffer( size ),
+                    ptr_to_buffer( buffer.getWritePointer() )
     {
         reset(0);
     }
@@ -679,105 +675,14 @@ static inline float hard_clipper_1( float x ) noexcept
 
     return x;
 }
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#define TABLESIZE_MULTI 1000
-#define SIN_LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
-float* SINE_LOOKUP_TABLE;
-class SIN_LOOKUP
-{
-    COLD SIN_LOOKUP() noexcept
-    {
-        SINE_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
-        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
-        {
-            SINE_LOOKUP_TABLE[i] = std::sin( double(i) / TABLESIZE_MULTI );
-        }
-    }
-    COLD ~SIN_LOOKUP() noexcept
-    {
-        delete[] SINE_LOOKUP_TABLE;
-        clearSingletonInstance();
-    }
 
-public:
-    juce_DeclareSingleton (SIN_LOOKUP,false)
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SIN_LOOKUP)
-};
-juce_ImplementSingleton (SIN_LOOKUP)
-SIN_LOOKUP*const sine_lookup_self_init = SIN_LOOKUP::getInstance();
-
-static float inline lookup_sine(float x) noexcept
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static float inline lookup(const float*table_, float x) noexcept
 {
-    return SINE_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
+    return table_[ int(x*TABLESIZE_MULTI) % LOOKUP_TABLE_SIZE ];
 }
-//==============================================================================
-//==============================================================================
-//==============================================================================
-float* COS_LOOKUP_TABLE;
-class COS_LOOKUP
-{
-    COLD COS_LOOKUP() noexcept
-    {
-        COS_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
-        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
-        {
-            COS_LOOKUP_TABLE[i] = std::cos( double(i) / TABLESIZE_MULTI );
-        }
-    }
-    COLD ~COS_LOOKUP() noexcept
-    {
-        delete[] COS_LOOKUP_TABLE;
-        clearSingletonInstance();
-    }
-
-public:
-    juce_DeclareSingleton (COS_LOOKUP,false)
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (COS_LOOKUP)
-};
-juce_ImplementSingleton (COS_LOOKUP)
-COS_LOOKUP*const cos_lookup_self_init = COS_LOOKUP::getInstance();
-
-static float inline lookup_cos(float x) noexcept
-{
-    return COS_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
-}
-//==============================================================================
-//==============================================================================
-//==============================================================================
-float* EXP_LOOKUP_TABLE;
-class EXP_LOOKUP
-{
-    COLD EXP_LOOKUP() noexcept
-    {
-        EXP_LOOKUP_TABLE = new float[SIN_LOOKUP_TABLE_SIZE+1];
-        for(int i = 0; i < SIN_LOOKUP_TABLE_SIZE; i++)
-        {
-#define EXP_PI_05_CORRECTION 4.81048f
-#define LOG_PI_1_CORRECTION 1.42108f
-#define EXP_PI_1_CORRECTION 23.1407f
-            EXP_LOOKUP_TABLE[i] = (std::exp( double(i) / TABLESIZE_MULTI ) / EXP_PI_1_CORRECTION);
-        }
-    }
-    COLD ~EXP_LOOKUP() noexcept
-    {
-        delete[] EXP_LOOKUP_TABLE;
-        clearSingletonInstance();
-    }
-
-public:
-    juce_DeclareSingleton (EXP_LOOKUP,false)
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EXP_LOOKUP)
-};
-juce_ImplementSingleton (EXP_LOOKUP)
-EXP_LOOKUP*const exp_lookup_self_init = EXP_LOOKUP::getInstance();
-
-static float inline lookup_exp(float x) noexcept
-{
-    return EXP_LOOKUP_TABLE[ int(x*TABLESIZE_MULTI) % SIN_LOOKUP_TABLE_SIZE ];
-}
-
 //==============================================================================
 COLD DataBuffer::DataBuffer( int init_buffer_size_ ) noexcept
 :
@@ -805,7 +710,6 @@ size( init_buffer_size_ ),
 
       tmp_buffer( init_buffer_size_ )
 {
-    mono_ParameterOwnerStore::getInstance()->data_buffer = this;
 }
 COLD DataBuffer::~DataBuffer() noexcept {}
 
@@ -912,7 +816,9 @@ public:
 
 public:
     //==========================================================================
-COLD PerfectCycleCounter() noexcept :
+    COLD PerfectCycleCounter( RuntimeNotifyer*const notifyer_ ) noexcept
+:
+    RuntimeListener(notifyer_),
     frequency(0), delta(0), angle(0), rate(0), phase(0), cylces_per_sec(0), new_cycle(true) {}
     COLD ~PerfectCycleCounter() noexcept {}
 
@@ -995,9 +901,10 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_BlitSaw() noexcept
+    COLD mono_BlitSaw( RuntimeNotifyer*const notifyer_ ) noexcept
 :
-    last_tick_value(0),
+    RuntimeListener(notifyer_),
+                    last_tick_value(0),
                     phase_offset(0),
                     p_(0),
                     C2_(0),
@@ -1108,9 +1015,10 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_BlitSquare() noexcept
+    COLD mono_BlitSquare(RuntimeNotifyer*const notifyer_) noexcept
 :
-    last_tick_value(0),
+    RuntimeListener(notifyer_),
+                    last_tick_value(0),
                     phase_offset(0),
                     a_(0),
                     p_(0),
@@ -1137,6 +1045,8 @@ public:
 //==============================================================================
 class mono_SineWave : public RuntimeListener
 {
+    const float*const sine_lookup;
+
     float last_tick_value;
     float phase_offset;
 
@@ -1144,7 +1054,7 @@ public:
     //==========================================================================
     inline float tick( double angle_ ) noexcept
     {
-        return last_tick_value = lookup_sine( angle_+phase_offset );
+        return last_tick_value = lookup( sine_lookup, angle_+phase_offset );
     }
     inline float lastOut() const noexcept
     {
@@ -1159,8 +1069,12 @@ public:
 
 public:
     //==========================================================================
-COLD mono_SineWave() noexcept :
-    last_tick_value(0), phase_offset(0) {}
+COLD mono_SineWave( RuntimeNotifyer*const notifyer_, const float* sine_lookup_ ) noexcept :
+    RuntimeListener(notifyer_),
+                    sine_lookup(sine_lookup_),
+                    last_tick_value(0),
+                    phase_offset(0)
+    {}
     COLD ~mono_SineWave() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_SineWave)
@@ -1178,6 +1092,8 @@ COLD mono_SineWave() noexcept :
 //==============================================================================
 class mono_SineWaveAutonom : public RuntimeListener
 {
+    const float*const sine_lookup;
+
     double frequency;
 
     double delta;
@@ -1200,7 +1116,7 @@ public:
             new_cycle = true;
         }
 
-        return last_tick_value = lookup_sine( angle );
+        return last_tick_value = lookup( sine_lookup, angle );
     }
     inline float lastOut() const noexcept
     {
@@ -1229,15 +1145,19 @@ public:
 
 public:
     //==========================================================================
-COLD mono_SineWaveAutonom() noexcept :
-    frequency(0),
+    COLD mono_SineWaveAutonom( RuntimeNotifyer*const notifyer_, const float*const sine_lookup_ ) noexcept
+:
+    RuntimeListener( notifyer_ ),
 
-              delta(0),
-              angle(0),
+                     sine_lookup(sine_lookup_),
+                     frequency(0),
 
-              new_cycle(0),
+                     delta(0),
+                     angle(0),
 
-              last_tick_value(0)
+                     new_cycle(0),
+
+                     last_tick_value(0)
     {}
     COLD ~mono_SineWaveAutonom() noexcept {}
 
@@ -1257,6 +1177,8 @@ COLD mono_SineWaveAutonom() noexcept :
 //==============================================================================
 class mono_SineWaveAutonomShifted : public RuntimeListener
 {
+    const float*const sine_lookup;
+
     double frequency;
 
     double delta;
@@ -1279,7 +1201,7 @@ public:
             new_cycle = true;
         }
 
-        return last_tick_value = (lookup_sine( angle ) * -1 + 1)*0.5;
+        return last_tick_value = (lookup( sine_lookup, angle ) * -1 + 1)*0.5;
     }
     inline float lastOut() const noexcept
     {
@@ -1304,15 +1226,19 @@ public:
 
 public:
     //==========================================================================
-COLD mono_SineWaveAutonomShifted() noexcept :
-    frequency(0),
+    COLD mono_SineWaveAutonomShifted( RuntimeNotifyer*const notifyer_, const float*const sine_lookup_ ) noexcept
+:
+    RuntimeListener(notifyer_),
 
-              delta(0),
-              angle(double_Pi*0.5),
+                    sine_lookup(sine_lookup_),
+                    frequency(0),
 
-              new_cycle(0),
+                    delta(0),
+                    angle(double_Pi*0.5),
 
-              last_tick_value(0)
+                    new_cycle(0),
+
+                    last_tick_value(0)
     {}
     COLD ~mono_SineWaveAutonomShifted() noexcept {}
 
@@ -1427,6 +1353,8 @@ COLD mono_OnePole( float thePole = 0.9 ) noexcept:
 //==============================================================================
 class mono_Modulate : public RuntimeListener
 {
+    const float*const sine_lookup;
+
     mono_SineWaveAutonomShifted vibrato;
     mono_SineWaveAutonom swing;
     mono_OnePole filter;
@@ -1488,16 +1416,22 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_Modulate() noexcept
+    COLD mono_Modulate( RuntimeNotifyer*const notifyer_, const float*const sine_lookup_ ) noexcept
 :
-    vibrato(),
-            filter(),
-            noise(),
+    RuntimeListener(notifyer_),
 
-            last_tick_value(0),
-            last_swing_frequency(0),
-            noiseRate(0),
-            noiseCounter(0)
+                    sine_lookup(sine_lookup_),
+
+                    vibrato(notifyer_,sine_lookup_),
+                    swing(notifyer_,sine_lookup_),
+
+                    filter(),
+                    noise(),
+
+                    last_tick_value(0),
+                    last_swing_frequency(0),
+                    noiseRate(0),
+                    noiseCounter(0)
     {
         vibrato.set_frequency( 6.0 );
         swing.set_frequency( 0 );
@@ -1526,6 +1460,8 @@ public:
 //==============================================================================
 class LFO : public RuntimeListener
 {
+    const float*const sine_lookup;
+
     mono_SineWave sine_generator;
 
     float last_speed;
@@ -1570,7 +1506,7 @@ public:
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
-            float amp = lfo2amp( lookup_sine((2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+            float amp = lfo2amp( lookup( sine_lookup, (2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
             if( --glide_counter > 0 )
             {
                 float glide = (1.0f/glide_samples*glide_counter);
@@ -1644,23 +1580,26 @@ public:
 private:
     //==========================================================================
     friend class MoniqueSynthesiserVoice;
-    COLD LFO( int id_ ) noexcept
+    COLD LFO( RuntimeNotifyer*const notifyer_, MoniqueSynthData*synth_data_, int id_, const float*const sine_lookup_ ) noexcept
 :
-    sine_generator(),
+    RuntimeListener(notifyer_),
 
-                   last_speed(0),
-                   samples_per_cylce(100),
-                   last_out(0),
+                    sine_lookup( sine_lookup_ ),
+                    sine_generator( notifyer_, sine_lookup_ ),
 
-                   glide_samples(0),
-                   glide_counter(0),
-                   glide_value(0),
+                    last_speed(0),
+                    samples_per_cylce(100),
+                    last_out(0),
 
-                   id( id_ ),
+                    glide_samples(0),
+                    glide_counter(0),
+                    glide_value(0),
 
-                   data_buffer( GET_DATA_PTR(data_buffer) ),
-                   lfo_data( GET_DATA_PTR( lfo_datas[id_] ) ),
-                   runtime_info( GET_DATA_PTR( runtime_info ) )
+                    id( id_ ),
+
+                    data_buffer( synth_data_->data_buffer ),
+                    lfo_data( synth_data_->lfo_datas[id_] ),
+                    runtime_info( synth_data_->runtime_info )
     {}
     COLD ~LFO() noexcept {}
 
@@ -1918,33 +1857,34 @@ public:
 
 public:
     //==============================================================================
-    COLD MasterOSC(const MoniqueSynthData* synth_data_) noexcept
+    COLD MasterOSC( RuntimeNotifyer*const notifyer_, const MoniqueSynthData* synth_data_, const float*const sine_lookup_ ) noexcept
 :
-    cycle_counter(),
-                  saw_generator(),
-                  square_generator(),
-                  sine_generator(),
-                  noise(),
+    RuntimeListener( notifyer_ ),
 
-                  modulator(),
+                     cycle_counter( notifyer_ ),
+                     saw_generator( notifyer_ ),
+                     square_generator( notifyer_ ),
+                     sine_generator( notifyer_, sine_lookup_ ),
+                     noise(),
+
+                     modulator( notifyer_, sine_lookup_ ),
+
+                     freq_glide_samples_left(0),
+                     freq_glide_delta(0),
+
+                     root_note(60),
+
+                     last_frequency(0),
+
+                     last_modulator_frequency(0),
+                     modulator_sync_cylces(0),
+                     modulator_waits_for_sync_cycle(false),
 
 
-                  freq_glide_samples_left(0),
-                  freq_glide_delta(0),
-
-                  root_note(60),
-
-                  last_frequency(0),
-
-                  last_modulator_frequency(0),
-                  modulator_sync_cylces(0),
-                  modulator_waits_for_sync_cycle(false),
-
-
-                  data_buffer( GET_DATA_PTR(data_buffer) ),
-                  synth_data( synth_data_ ),
-                  fm_osc_data( GET_DATA_PTR( fm_osc_data ) ),
-                  osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
+                     data_buffer( synth_data_->data_buffer ),
+                     synth_data( synth_data_ ),
+                     fm_osc_data( synth_data_->fm_osc_data ),
+                     osc_data( synth_data_->osc_datas[MASTER_OSC] )
     {}
     COLD ~MasterOSC() noexcept {}
 
@@ -2171,30 +2111,33 @@ public:
 
 public:
     //==============================================================================
-    COLD SecondOSC(const MoniqueSynthData* synth_data_, int id_) noexcept
+    COLD SecondOSC( RuntimeNotifyer*const notifyer_, const MoniqueSynthData* synth_data_, int id_, const float*const sine_lookup_) noexcept
 :
-    id(id_),
+    RuntimeListener( notifyer_ ),
 
-       saw_generator(),
-       square_generator(),
-       sine_generator(),
-       noise(),
+                     id(id_),
 
-       freq_glide_samples_left(0),
-       freq_glide_delta(0),
+                     cycle_counter( notifyer_ ),
+                     saw_generator( notifyer_ ),
+                     square_generator( notifyer_ ),
+                     sine_generator( notifyer_, sine_lookup_ ),
+                     noise(),
 
-       root_note(60),
+                     freq_glide_samples_left(0),
+                     freq_glide_delta(0),
 
-       last_tune(-25),
-       last_frequency(0),
+                     root_note(60),
 
-       wait_for_new_master_cycle(false),
-       last_sync_was_to_tune(-25),
+                     last_tune(-25),
+                     last_frequency(0),
 
-       data_buffer( GET_DATA_PTR(data_buffer) ),
-       synth_data( synth_data_ ),
-       osc_data( GET_DATA_PTR( osc_datas[id_] ) ),
-       master_osc_data( GET_DATA_PTR( osc_datas[MASTER_OSC] ) )
+                     wait_for_new_master_cycle(false),
+                     last_sync_was_to_tune(-25),
+
+                     data_buffer( synth_data_->data_buffer ),
+                     synth_data( synth_data_ ),
+                     osc_data( synth_data_->osc_datas[id_] ),
+                     master_osc_data( synth_data_->osc_datas[MASTER_OSC] )
     {
     }
     COLD ~SecondOSC() noexcept
@@ -2215,6 +2158,10 @@ public:
 //==============================================================================
 class mono_ENVOsccilator : public RuntimeListener
 {
+    const float*const sine_lookup;
+    const float*const cos_lookup;
+    const float*const exp_lookup;
+
     float start_amp;
     float out_amp;
     float target_amp;
@@ -2230,7 +2177,7 @@ class mono_ENVOsccilator : public RuntimeListener
     float angle;
     float sine_angle_start;
 
-    float shape;    
+    float shape;
     float time_in_samples;
     int sample_counter;
     bool is_unlimited;
@@ -2298,14 +2245,14 @@ public:
             {
                 angle += delta;
                 /*shape*(angle-cos_for_angle)*/
-                const float angle_drift = lookup_exp(angle)*angle*shape + (angle+lookup_cos(angle+sine_angle_start))*(1.0f-shape);
+                const float angle_drift = lookup(exp_lookup, angle)*angle*shape + (angle+lookup(cos_lookup, angle+sine_angle_start))*(1.0f-shape);
                 if( type == TYPE::ATTACK )
                 {
-                    out_amp = start_amp + (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5f) * (target_amp-start_amp);
+                    out_amp = start_amp + (( lookup(sine_lookup, angle_drift+sine_angle_start) + 1 ) * 0.5f) * (target_amp-start_amp);
                 }
                 else if( type == TYPE::RELEASE )
                 {
-                    out_amp = start_amp - (( lookup_sine(angle_drift+sine_angle_start) + 1 ) * 0.5f) * (start_amp-target_amp);
+                    out_amp = start_amp - (( lookup(sine_lookup, angle_drift+sine_angle_start) + 1 ) * 0.5f) * (start_amp-target_amp);
                 }
             }
         }
@@ -2349,21 +2296,31 @@ public:
     }
 public:
     //==========================================================================
-COLD mono_ENVOsccilator() noexcept :
-    start_amp(0),
-              out_amp(0),
-              target_amp(0),
-              type(KEEP),
+    COLD mono_ENVOsccilator( RuntimeNotifyer*const notifyer_,
+                             const float*const sine_lookup_,
+                             const float*const cos_lookup_,
+                             const float*const exp_lookup_ ) noexcept
 
-              delta(0),
-              angle(0),
-              sine_angle_start(0),
+:
+    RuntimeListener( notifyer_ ),
+                     sine_lookup( sine_lookup_ ),
+                     cos_lookup( cos_lookup_ ),
+                     exp_lookup( exp_lookup_ ),
 
-              shape(0),
+                     start_amp(0),
+                     out_amp(0),
+                     target_amp(0),
+                     type(KEEP),
 
-              time_in_samples(0),
-              sample_counter(0),
-              is_unlimited(false)
+                     delta(0),
+                     angle(0),
+                     sine_angle_start(0),
+
+                     shape(0),
+
+                     time_in_samples(0),
+                     sample_counter(0),
+                     is_unlimited(false)
     {}
     COLD ~mono_ENVOsccilator() noexcept {}
 
@@ -2589,18 +2546,23 @@ public:
 
 public:
     //==============================================================================
-    inline ENV( const MoniqueSynthData* synth_data_, ENVData* env_data_ ) noexcept
+    inline ENV( RuntimeNotifyer*const notifyer_,
+                const MoniqueSynthData* synth_data_,
+                ENVData* env_data_,
+                const float*const sine_lookup_,
+                const float*const cos_lookup_,
+                const float*const exp_lookup_ ) noexcept
 :
-    env_osc(),
+    env_osc( notifyer_, sine_lookup_, cos_lookup_, exp_lookup_ ),
 
-            current_stage(END_ENV),
+             current_stage(END_ENV),
 
-            synth_data( synth_data_ ),
-            env_data( env_data_ ),
+             synth_data( synth_data_ ),
+             env_data( env_data_ ),
 
-            last_sustain(0),
-            goes_to_sustain(false),
-            is_sustain(false)
+             last_sustain(0),
+             goes_to_sustain(false),
+             is_sustain(false)
     {
     }
     inline ~ENV() noexcept {}
@@ -2972,15 +2934,17 @@ private:
 
 public:
     //==========================================================================
-    COLD AnalogFilter() noexcept
+    COLD AnalogFilter( RuntimeNotifyer*const notifyer_ ) noexcept
 :
-    p(1),k(1),r(1),gain(1),
-      y1(1),y2(1),y3(1),y4(1),
-      oldx(1),oldy1(1),oldy2(1),oldy3(1),
+    RuntimeListener( notifyer_ ),
 
-      cutoff(1000), res(1),
+                     p(1),k(1),r(1),gain(1),
+                     y1(1),y2(1),y3(1),y4(1),
+                     oldx(1),oldy1(1),oldy2(1),oldy3(1),
 
-      force_update(true)
+                     cutoff(1000), res(1),
+
+                     force_update(true)
     {
         sample_rate_changed(0);
     }
@@ -3169,27 +3133,29 @@ public:
 
 public:
     //==============================================================================
-    COLD DoubleAnalogFilter(bool create_smooth_filter = true) noexcept
+    COLD DoubleAnalogFilter( RuntimeNotifyer*const notifyer_, bool create_smooth_filter = true) noexcept
 :
-    flt_1(),
-          flt_2(),
+    flt_1( notifyer_ ),
+           flt_2( notifyer_ ),
 
-          smooth_filter( nullptr ),
+           smooth_filter( nullptr ),
 
-          last_filter_type(UNKNOWN),
-          smooth_filter_type(UNKNOWN),
+           last_filter_type(UNKNOWN),
+           smooth_filter_type(UNKNOWN),
 
-          glide_time_4_filters(0)
+           glide_time_4_filters(0)
     {
         if( create_smooth_filter )
         {
-            smooth_filter = new DoubleAnalogFilter(false);
+            smooth_filter = new DoubleAnalogFilter(notifyer_,false);
         }
     }
     COLD ~DoubleAnalogFilter() noexcept
     {
         if( smooth_filter )
+        {
             delete smooth_filter;
+        }
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DoubleAnalogFilter)
@@ -3208,7 +3174,9 @@ public:
 //==============================================================================
 class FilterProcessor
 {
-    DoubleAnalogFilter double_filter[SUM_INPUTS_PER_FILTER];
+    mono_ThreadManager*const thread_manager;
+
+    OwnedArray<DoubleAnalogFilter> double_filter;
     friend class mono_ParameterOwnerStore;
 
 public:
@@ -3253,9 +3221,9 @@ public:
             input_envs.getUnchecked(input_id)->reset();
         }
 
-        double_filter[0].reset();
-        double_filter[1].reset();
-        double_filter[2].reset();
+        double_filter[0]->reset();
+        double_filter[1]->reset();
+        double_filter[2]->reset();
     }
 
 private:
@@ -3424,9 +3392,7 @@ public:
                     {
                         processor->pre_process(input_id,num_samples_);
 
-                        DoubleAnalogFilter& filter(processor->double_filter[input_id]);
                         filter.update_filter_to(LPF_2_PASS);
-
                         for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
                             const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3441,18 +3407,19 @@ public:
                     }
                     LP2PassExecuter( FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    processor( processor_ ),
-                               filter( processor_->double_filter[input_id_] ),
-                               input_id( input_id_ ),
-                               num_samples_( num_samples__ ),
+                    mono_Thread( processor_->thread_manager ),
+                                 processor( processor_ ),
+                                 filter( *processor_->double_filter.getUnchecked(input_id_) ),
+                                 input_id( input_id_ ),
+                                 num_samples_( num_samples__ ),
 
-                               tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
-                               input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
-                               out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                                 input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
+                                 out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                     {}
                 };
                 {
@@ -3494,7 +3461,6 @@ public:
                         processor->pre_process(input_id,num_samples_);
 
                         filter.update_filter_to(HIGH_2_PASS);
-
                         for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
                             const float filter_distortion = tmp_distortion_buffer[sid];
@@ -3509,18 +3475,19 @@ public:
                     }
                     HP2PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    processor( processor_ ),
-                               filter( processor_->double_filter[input_id_] ),
-                               input_id(input_id_),
-                               num_samples_(num_samples__),
+                    mono_Thread( processor_->thread_manager ),
+                                 processor( processor_ ),
+                                 filter( *processor_->double_filter.getUnchecked(input_id_) ),
+                                 input_id(input_id_),
+                                 num_samples_(num_samples__),
 
-                               tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
-                               input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
-                               out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                                 input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
+                                 out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                     {}
                 };
                 {
@@ -3576,18 +3543,19 @@ public:
                     }
                     BandExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    processor( processor_ ),
-                               filter( processor_->double_filter[input_id_] ),
-                               input_id(input_id_),
-                               num_samples_(num_samples__),
+                    mono_Thread( processor_->thread_manager ),
+                                 processor( processor_ ),
+                                 filter( *processor_->double_filter.getUnchecked(input_id_) ),
+                                 input_id(input_id_),
+                                 num_samples_(num_samples__),
 
-                               tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
-                               input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
-                               out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                                 input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
+                                 out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                     {}
                 };
                 {
@@ -3635,16 +3603,17 @@ public:
                     }
                     PassExecuter(FilterProcessor*const processor_, int num_samples__, int input_id_) noexcept
 :
-                    processor( processor_ ),
-                               filter( processor_->double_filter[input_id_] ),
-                               input_id(input_id_),
-                               num_samples_(num_samples__),
+                    mono_Thread( processor_->thread_manager ),
+                                 processor( processor_ ),
+                                 filter( *processor_->double_filter.getUnchecked(input_id_) ),
+                                 input_id(input_id_),
+                                 num_samples_(num_samples__),
 
-                               tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
-                               tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
-                               input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
-                               out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
+                                 input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
+                                 out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
                     {}
                 };
                 {
@@ -3740,7 +3709,7 @@ public:
             }
 
             // VISUALIZE
-            if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+            if( Monique_Ui_AmpPainter*const amp_painter = synth_data->audio_processor->amp_painter )
             {
                 amp_painter->add_filter_env( id, amp_mix, num_samples );
                 amp_painter->add_filter( id, right_output_buffer, left_and_input_output_buffer, num_samples );
@@ -3775,22 +3744,32 @@ public:
 
 public:
     //==============================================================================
-    COLD FilterProcessor( const MoniqueSynthData* synth_data_, int id_ ) noexcept
+    COLD FilterProcessor( RuntimeNotifyer*const notifyer_,
+                          const MoniqueSynthData* synth_data_,
+                          mono_ThreadManager*const thread_manager,
+                          int id_,
+                          const float*const sine_lookup_,
+                          const float*const cos_lookup_,
+                          const float*const exp_lookup_ ) noexcept
 :
-    env( new ENV( synth_data_, GET_DATA( filter_datas[id_] ).env_data ) ),
-         input_envs(),
+    thread_manager(thread_manager),
 
-         id(id_),
+                   env( new ENV( notifyer_, synth_data_, synth_data_->filter_datas[id_]->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
+                   input_envs(),
 
-         synth_data( synth_data_ ),
-         filter_data( GET_DATA_PTR( filter_datas[id_] ) ),
-         data_buffer( GET_DATA_PTR( data_buffer ) )
+                   id(id_),
+
+                   synth_data( synth_data_ ),
+                   filter_data( synth_data_->filter_datas[id_] ),
+                   data_buffer( synth_data_->data_buffer )
     {
         for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         {
-            ENVData*input_env_data(GET_DATA( filter_datas[id_] ).input_envs[i]);
+            double_filter.add( new DoubleAnalogFilter(notifyer_) );
+
+            ENVData*input_env_data(synth_data_->filter_datas[id_]->input_envs[i]);
             input_env_datas.add( input_env_data );
-            input_envs.add( new ENV( synth_data_, input_env_data ) );
+            input_envs.add( new ENV( notifyer_, synth_data_, input_env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) );
         }
     }
     COLD ~FilterProcessor() noexcept {}
@@ -3810,12 +3789,14 @@ public:
 //==============================================================================
 class EQProcessor : public RuntimeListener
 {
+    mono_ThreadManager*const thread_manager;
+
     friend class EQProcessorStereo;
 
     float frequency_low_pass[SUM_EQ_BANDS];
     float frequency_high_pass[SUM_EQ_BANDS];
 
-    AnalogFilter filters[SUM_EQ_BANDS];
+    OwnedArray<AnalogFilter> filters;
     IIRFilter high_pass_filters[SUM_EQ_BANDS];
 
     friend class mono_ParameterOwnerStore;
@@ -3830,7 +3811,7 @@ public:
     {
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
-            filters[band_id].reset();
+            filters[band_id]->reset();
             high_pass_filters[band_id].reset();
         }
     }
@@ -3876,12 +3857,13 @@ public:
                 }
                 BandExecuter(EQProcessor*const processor_, float*in_buffer_, int num_samples__, int band_id_) noexcept
 :
+                mono_Thread( processor_->thread_manager ),
                 num_samples_(num_samples__),
                 smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_buffer() ),
 
                 filter_frequency( processor_->frequency_low_pass[band_id_] ),
                 high_pass_filter(processor_->high_pass_filters[band_id_]),
-                filter(processor_->filters[band_id_]),
+                filter(*processor_->filters.getUnchecked(band_id_)),
 
                 filter_in_samples( in_buffer_ ),
                 band_out_buffer( processor_->data_buffer->band_out_buffers.getWritePointer(band_id_) ),
@@ -3994,15 +3976,20 @@ public:
 
 public:
     //==============================================================================
-    COLD EQProcessor( MoniqueSynthData* synth_data_ ) noexcept
+    COLD EQProcessor( RuntimeNotifyer*const notifyer_, MoniqueSynthData* synth_data_, mono_ThreadManager*const thread_manager_ ) noexcept
 :
-    synth_data( synth_data_ ),
-                eq_data( GET_DATA_PTR( eq_data ) ),
-                data_buffer( GET_DATA_PTR( data_buffer ) )
+    RuntimeListener(notifyer_),
+
+                    thread_manager(thread_manager_),
+                    synth_data( synth_data_ ),
+                    eq_data( synth_data_->eq_data ),
+                    data_buffer( synth_data_->data_buffer )
     {
         std::cout << "MONIQUE: init EQ L OR R" << std::endl;
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
+            filters.add( new AnalogFilter(notifyer_) );
+
             frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id );
             frequency_high_pass[band_id] = get_high_pass_band_frequency( band_id );
         }
@@ -4019,6 +4006,8 @@ public:
 //==============================================================================
 class EQProcessorStereo
 {
+    MoniqueSynthData*const synth_data;
+
     EQProcessor*const left_processor;
     EQProcessor*const right_processor;
 
@@ -4065,14 +4054,10 @@ public:
             env_data->sustain_smoother.process_amp( not eq_data->hold[band_id], env, data_buffer->band_env_buffers.getWritePointer(band_id), num_samples_ );
         }
 
-        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
-        {
-            //amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
-        }
         left_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
         right_processor->process( data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT), num_samples_ );
 
-        if( Monique_Ui_AmpPainter*const amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+        if( Monique_Ui_AmpPainter*const amp_painter = synth_data->audio_processor->amp_painter )
         {
             amp_painter->add_eq( data_buffer->filter_stereo_output_samples.getWritePointer(LEFT), num_samples_ );
         }
@@ -4080,17 +4065,23 @@ public:
 
 public:
     //==========================================================================
-    COLD EQProcessorStereo( MoniqueSynthData* synth_data_ ) noexcept
+    COLD EQProcessorStereo( RuntimeNotifyer*const notifyer_,
+                            MoniqueSynthData* synth_data_,
+                            mono_ThreadManager*const thread_manager_,
+                            const float*const sine_lookup_,
+                            const float*const cos_lookup_,
+                            const float*const exp_lookup_ ) noexcept
 :
-    left_processor( new EQProcessor(synth_data_) ),
-                    right_processor( new EQProcessor(synth_data_) ),
-                    eq_data( synth_data_->eq_data ),
-                    data_buffer( GET_DATA_PTR( data_buffer ) )
+    synth_data( synth_data_ ),
+                left_processor( new EQProcessor(notifyer_, synth_data_, thread_manager_) ),
+                right_processor( new EQProcessor(notifyer_, synth_data_, thread_manager_) ),
+                eq_data( synth_data_->eq_data ),
+                data_buffer( synth_data_->data_buffer )
     {
         std::cout << "MONIQUE: init EQ" << std::endl;
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
-            envs.add( new ENV( synth_data_, GET_DATA_PTR( eq_data )->envs.getUnchecked( band_id ) ) );
+            envs.add( new ENV( notifyer_, synth_data_, synth_data_->eq_data->envs.getUnchecked( band_id ), sine_lookup_, cos_lookup_, exp_lookup_ ) );
         }
     }
     COLD ~EQProcessorStereo() noexcept
@@ -4176,8 +4167,11 @@ public:
 
 public:
     //==============================================================================
-COLD Chorus() noexcept :
-    buffer_size(0)
+    COLD Chorus( RuntimeNotifyer*const notifyer_ ) noexcept
+:
+    RuntimeListener( notifyer_ ),
+
+                     buffer_size(0)
     {
         index = 0;
         last_delay = 210;
@@ -4494,7 +4488,8 @@ public:
 
 public:
     //==========================================================================
-    COLD mono_Reverb() noexcept
+COLD mono_Reverb( RuntimeNotifyer*const notifyer_ ) noexcept :
+    RuntimeListener( notifyer_ )
     {
         update_parameters();
         sample_rate_changed(0);
@@ -4516,6 +4511,8 @@ public:
 //==============================================================================
 class FXProcessor
 {
+    mono_ThreadManager*const thread_manager;
+
     // REVERB
     mono_Reverb reverb_l;
     mono_Reverb reverb_r;
@@ -4699,17 +4696,18 @@ public:
                                    float* final_output_
                                  ) noexcept
 :
-                processor( fx_processor_ ),
+                mono_Thread( fx_processor_->thread_manager ),
+                             processor( fx_processor_ ),
 
-                           num_samples( num_samples_ ),
-                           delay_pos( delay_pos_ ),
+                             num_samples( num_samples_ ),
+                             delay_pos( delay_pos_ ),
 
-                           input_buffer(input_buffer_),
-                           delay_data(delay_data_),
-                           final_output(final_output_),
+                             input_buffer(input_buffer_),
+                             delay_data(delay_data_),
+                             final_output(final_output_),
 
-                           smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
-                           smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() )
+                             smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
+                             smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() )
                 {}
             };
 
@@ -4759,9 +4757,9 @@ public:
                 }
 
                 // VISUALIZE BEFORE FONAL OUT
-                if( Monique_Ui_SegmentedMeter*meter = AppInstanceStore::getInstance()->audio_processor->peak_meter )
+                if( Monique_Ui_SegmentedMeter*meter = synth_data->audio_processor->peak_meter )
                 {
-                    ScopedLock locked(AppInstanceStore::getInstance()->audio_processor->peak_meter_lock);
+                    ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
                     meter->process( left_buffer, num_samples_ );
                 }
 
@@ -4773,7 +4771,7 @@ public:
                     right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
                 }
                 // VISUALIZE
-                if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave() )
+                if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
                 {
                     amp_painter->add_out( left_buffer, right_buffer, num_samples_ );
                     amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
@@ -4814,28 +4812,35 @@ public:
 
 public:
     //==============================================================================
-    COLD FXProcessor( MoniqueSynthData* synth_data_ ) noexcept
+    COLD FXProcessor( RuntimeNotifyer*const notifyer_,
+                      MoniqueSynthData* synth_data_,
+                      mono_ThreadManager*const thread_manager_,
+                      const float*const sine_lookup_,
+                      const float*const cos_lookup_,
+                      const float*const exp_lookup_ ) noexcept
 :
-    reverb_l(),
-             reverb_r(),
+    thread_manager(thread_manager_),
 
-             chorus_l(),
-             chorus_r(),
+                   reverb_l(notifyer_),
+                   reverb_r(notifyer_),
 
-             chorus_modulation_env( new ENV( synth_data_, GET_DATA( chorus_data ).env_data ) ),
+                   chorus_l(notifyer_),
+                   chorus_r(notifyer_),
 
-             delayPosition( 0 ),
-             delayBuffer ( DELAY_BUFFER_SIZE ),
+                   chorus_modulation_env( new ENV( notifyer_, synth_data_, synth_data_->chorus_data->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
-             final_env( new ENV( synth_data_, synth_data_->env_data ) ),
+                   delayPosition( 0 ),
+                   delayBuffer ( DELAY_BUFFER_SIZE ),
 
-             velocity_smoother( synth_data_->velocity_glide_time ),
-             last_output_smoother( 50 ),
+                   final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
-             synth_data( synth_data_ ),
-             data_buffer( GET_DATA_PTR( data_buffer ) ),
-             reverb_data( GET_DATA_PTR( reverb_data ) ),
-             chorus_data( GET_DATA_PTR( chorus_data ) )
+                   velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
+                   last_output_smoother( notifyer_, 50 ),
+
+                   synth_data( synth_data_ ),
+                   data_buffer( synth_data_->data_buffer ),
+                   reverb_data( synth_data_->reverb_data ),
+                   chorus_data( synth_data_->chorus_data )
     {
         std::cout << "MONIQUE: init FX" << std::endl;
     }
@@ -4974,16 +4979,18 @@ public:
 
 public:
     //==============================================================================
-    COLD ArpSequencer( RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
+    COLD ArpSequencer( RuntimeNotifyer*const notifyer_, RuntimeInfo* info_, const ArpSequencerData* data_ ) noexcept
 :
-    info(info_),
-         data(data_),
-         current_step(0),
-         next_step_on_hold(0),
-         step_at_sample_current_buffer(-1),
+    RuntimeListener( notifyer_ ),
 
-         shuffle_to_back_counter(0),
-         found_a_step(false)
+                     info(info_),
+                     data(data_),
+                     current_step(0),
+                     next_step_on_hold(0),
+                     step_at_sample_current_buffer(-1),
+
+                     shuffle_to_back_counter(0),
+                     found_a_step(false)
     {
         std::cout << "MONIQUE: init SEQUENCER" << std::endl;
     }
@@ -5003,17 +5010,22 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept
+COLD MoniqueSynthesiserVoice::MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_,
+        MoniqueSynthData*const synth_data_,
+        RuntimeNotifyer*const notifyer_,
+        RuntimeInfo*const info_,
+        DataBuffer*data_buffer_ ) noexcept
 :
 audio_processor( audio_processor_ ),
                  synth_data( synth_data_ ),
+                 thread_manager( new mono_ThreadManager( synth_data_ ) ),
 
-                 info( new RuntimeInfo() ),
-                 data_buffer( new DataBuffer(1024) ),
+                 info( info_ ),
+                 data_buffer( data_buffer_ ),
 
-                 arp_sequencer( new ArpSequencer( info, synth_data_->arp_sequencer_data ) ),
-                 eq_processor( new EQProcessorStereo( synth_data_ ) ),
-                 fx_processor( new FXProcessor( synth_data_ ) ),
+                 arp_sequencer( new ArpSequencer( notifyer_, info, synth_data_->arp_sequencer_data ) ),
+                 eq_processor( new EQProcessorStereo( notifyer_, synth_data_, thread_manager, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
+                 fx_processor( new FXProcessor( notifyer_, synth_data_, thread_manager, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
 
                  current_note(-1),
                  pitch_offset(0),
@@ -5030,34 +5042,29 @@ audio_processor( audio_processor_ ),
                  an_arp_note_is_already_running(false),
                  sample_position_for_restart_arp(-1)
 {
-    mono_ThreadManager::getInstance();
-    mono_ParameterOwnerStore::getInstance()->voice = this;
-
     std::cout << "MONIQUE: init BUFFERS's" << std::endl;
 
     std::cout << "MONIQUE: init OSC's" << std::endl;
-    master_osc = new MasterOSC( synth_data_ );
-    second_osc = new SecondOSC( synth_data_, 1 );
-    third_osc = new SecondOSC( synth_data_, 2 );
+    master_osc = new MasterOSC( notifyer_, synth_data_, synth_data_->sine_lookup  );
+    second_osc = new SecondOSC( notifyer_, synth_data_, 1, synth_data_->sine_lookup );
+    third_osc = new SecondOSC( notifyer_, synth_data_, 2, synth_data_->sine_lookup );
 
     std::cout << "MONIQUE: init LFO's" << std::endl;
     lfos = new LFO*[SUM_LFOS];
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        lfos[i] = new LFO( i );
+        lfos[i] = new LFO( notifyer_, synth_data_, i, synth_data_->sine_lookup );
     }
 
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
     filter_processors = new FilterProcessor*[SUM_FILTERS];
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        filter_processors[i] = new FilterProcessor( synth_data_, i );
+        filter_processors[i] = new FilterProcessor( notifyer_, synth_data_, thread_manager, i, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup );
     }
 }
 COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 {
-    mono_ParameterOwnerStore::getInstance()->voice = nullptr;
-
     for( int i = SUM_FILTERS-1 ; i > -1 ; --i )
     {
         delete filter_processors[i];
@@ -5073,13 +5080,8 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     delete arp_sequencer;
     delete eq_processor;
     delete fx_processor;
-    delete data_buffer;
-    delete info;
 
-    mono_ThreadManager::deleteInstance();
-    COS_LOOKUP::deleteInstance();
-    EXP_LOOKUP::deleteInstance();
-    SIN_LOOKUP::deleteInstance();
+    delete thread_manager;
 }
 
 //==============================================================================
@@ -5185,7 +5187,7 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 {
-    if( not GET_DATA_PTR( arp_data )->is_on and fx_processor->final_env->get_current_stage() == END_ENV )
+    if( not synth_data->arp_sequencer_data->is_on and fx_processor->final_env->get_current_stage() == END_ENV )
     {
         const float last_out_average = fx_processor->last_output_smoother.get_average();
         if( last_out_average < 0.0000001f and last_out_average > -0.0000001f )
@@ -5280,7 +5282,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     if( current_note == -1 )
         return;
 
-    Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstanceWithoutCreating()->get_amp_painter_unsave();
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )
@@ -5294,7 +5295,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     }
 
     // SMOOTH PARAMETERS
-    SmoothManager::getInstance()->smooth(num_samples_);
+    synth_data->smooth_manager->smooth(num_samples_, synth_data->glide_motor_time );
 
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
@@ -5321,7 +5322,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             int num_samples_,
             int start_sample_,
             int step_number_)
-                : voice(voice_),
+                :
+                mono_Thread( voice_->thread_manager ),
+                voice(voice_),
                 num_samples(num_samples_),
                 start_sample(start_sample_),
                 step_number(step_number_)
@@ -5353,7 +5356,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // OSCs - THREAD 1 ?
 
     // VISUALIZE
-    if( amp_painter )
+    if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
     {
         amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
@@ -5481,16 +5484,16 @@ void MoniqueSynthesizer::handleSoftPedal(int, bool isDown)
 }
 void MoniqueSynthesizer::handleBankSelect (int controllerValue) noexcept
 {
-    GET_DATA( synth_data ).set_current_bank( jmin(26,controllerValue) );
+    synth_data->set_current_bank( jmin(26,controllerValue) );
 }
 void MoniqueSynthesizer::handleProgramChange (int midiChannel, int programNumber)
 {
-    if( programNumber != GET_DATA( synth_data ).get_current_program() )
+    if( programNumber != synth_data->get_current_program() )
     {
-        GET_DATA( synth_data ).set_current_program( programNumber );
-        if( programNumber == GET_DATA( synth_data ).get_current_program() )
+        synth_data->set_current_program( programNumber );
+        if( programNumber == synth_data->get_current_program() )
         {
-            GET_DATA( synth_data ).load(true,true);
+            synth_data->load(true,true);
         }
     }
 }
@@ -5512,9 +5515,8 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         break;
     default :
     {
-        MIDIControlHandler*const midi_learn_handler = MIDIControlHandler::getInstance();
-        Parameter*const learing_param = midi_learn_handler->is_learning();
-        Array< Parameter* >& paramters = GET_DATA(synth_data).get_all_parameters();
+        Parameter*const learing_param = midi_control_handler->is_learning();
+        Array< Parameter* >& paramters = synth_data->get_all_parameters();
 
         // CONTROLL
         if( not learing_param )
@@ -5522,7 +5524,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
             for( int i = 0 ; i != paramters.size() ; ++ i )
             {
                 Parameter*const param = paramters.getUnchecked(i);
-                if( param->midi_control->read_from_if_you_listen( cc_number_, cc_value_ ) )
+                if( param->midi_control->read_from_if_you_listen( cc_number_, cc_value_, synth_data->midi_pickup_offset ) )
                 {
                     break;
                 }
@@ -5531,7 +5533,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         // TRAIN
         else
         {
-            if( midi_learn_handler->handle_incoming_message( cc_number_ ) )
+            if( midi_control_handler->handle_incoming_message( cc_number_ ) )
             {
                 // CLEAR SIBLINGS IF WE HAVE SOMETHING SUCCESSFUL TRAINED
                 String learning_param_name = learing_param->get_info().name;
@@ -5572,26 +5574,11 @@ bool MoniqueSynthesiserSound::appliesToChannel(int)
 }
 
 //==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-COLD mono_ParameterOwnerStore::mono_ParameterOwnerStore() noexcept {}
-COLD mono_ParameterOwnerStore::~mono_ParameterOwnerStore() noexcept
+void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve ) noexcept
 {
-    clearSingletonInstance();
-}
-//==============================================================================
-void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float >& curve ) noexcept
-{
-    mono_ParameterOwnerStore::getInstanceWithoutCreating();
-    ENV env( &GET_DATA( synth_data ), &env_data_ );
+    ENV env( runtime_notifyer, this, &env_data_, sine_lookup, cos_lookup, exp_lookup );
     env.start_attack();
-    const float sample_rate = RuntimeNotifyer::getInstance()->get_sample_rate();
+    const float sample_rate = runtime_notifyer->get_sample_rate();
     const float sustain = env_data_.sustain;
     int count_sustain = msToSamplesFast( env_data_.sustain_time*10000, sample_rate );
     while( env.get_current_stage() != END_ENV )
@@ -5612,4 +5599,5 @@ void mono_ParameterOwnerStore::get_full_adstr(  ENVData&env_data_, Array< float 
         }
     }
 }
+
 

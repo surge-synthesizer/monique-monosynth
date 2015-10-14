@@ -38,29 +38,29 @@
 //==============================================================================
 class DragPad : public Component
 {
+    MoniqueSynthData*const synth_data;
+
     Monique_Ui_DragPad*const parent;
     void mouseDoubleClick (const MouseEvent&) override;
     void mouseDrag(const MouseEvent& event) override;
 
 public:
-    COLD DragPad( Monique_Ui_DragPad*const parent_ );
+    COLD DragPad( MoniqueSynthData*const synth_data_, Monique_Ui_DragPad*const parent_ );
     COLD ~DragPad();
 };
 
 //==============================================================================
-COLD DragPad::DragPad( Monique_Ui_DragPad*const parent_ ) : parent( parent_ ) {}
+COLD DragPad::DragPad( MoniqueSynthData*const synth_data_, Monique_Ui_DragPad*const parent_ ) : synth_data(synth_data_), parent( parent_ ) {}
 COLD DragPad::~DragPad() {}
 
 //==============================================================================
 void DragPad::mouseDoubleClick (const MouseEvent&)
 {
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-
-    const int morph_motor_time( synth_data.morph_motor_time );
-    ChangeParamOverTime::execute( synth_data.morhp_states[0], 0, morph_motor_time );
-    ChangeParamOverTime::execute( synth_data.morhp_states[1], 0, morph_motor_time );
-    ChangeParamOverTime::execute( synth_data.morhp_states[2], 0, morph_motor_time );
-    ChangeParamOverTime::execute( synth_data.morhp_states[3], 0, morph_motor_time );
+    const int morph_motor_time( synth_data->morph_motor_time );
+    ChangeParamOverTime::execute( synth_data->morhp_states[0], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data->morhp_states[1], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data->morhp_states[2], 0, morph_motor_time );
+    ChangeParamOverTime::execute( synth_data->morhp_states[3], 0, morph_motor_time );
 
     parent->set_left_to_right_states( 0.5f, 0.5f );
 }
@@ -101,8 +101,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
     }
 
     {
-        MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-        const int morph_motor_time( synth_data.morph_motor_time );
+        const int morph_motor_time( synth_data->morph_motor_time );
 
         float morph_top_left = 1.0f-left2right_state-top2bottom_state;
         {
@@ -110,7 +109,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_top_left = 0;
             else if( morph_top_left > 1 )
                 morph_top_left = 1;
-            ChangeParamOverTime::execute( synth_data.morhp_states[0], morph_top_left, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data->morhp_states[0], morph_top_left, morph_motor_time );
         }
 
         float morph_top_right = left2right_state-top2bottom_state;
@@ -119,7 +118,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_top_right = 0;
             else if( morph_top_right > 1 )
                 morph_top_right = 1;
-            ChangeParamOverTime::execute( synth_data.morhp_states[1], morph_top_right, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data->morhp_states[1], morph_top_right, morph_motor_time );
         }
 
         float morph_bottom_left = top2bottom_state-left2right_state;
@@ -128,7 +127,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_bottom_left = 0;
             else if( morph_bottom_left > 1 )
                 morph_bottom_left = 1;
-            ChangeParamOverTime::execute( synth_data.morhp_states[2], morph_bottom_left, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data->morhp_states[2], morph_bottom_left, morph_motor_time );
         }
 
         float morph_bottom_right = top2bottom_state-(1.0f-left2right_state);
@@ -137,7 +136,7 @@ void DragPad::mouseDrag(const MouseEvent& event)
                 morph_bottom_right = 0;
             else if( morph_bottom_right > 1 )
                 morph_bottom_right = 1;
-            ChangeParamOverTime::execute( synth_data.morhp_states[3], morph_bottom_right, morph_motor_time );
+            ChangeParamOverTime::execute( synth_data->morhp_states[3], morph_bottom_right, morph_motor_time );
         }
 
         parent->set_left_to_right_states( left2right_state, top2bottom_state );
@@ -146,16 +145,18 @@ void DragPad::mouseDrag(const MouseEvent& event)
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_DragPad::Monique_Ui_DragPad ()
-    : left2right_state(0.5),
+Monique_Ui_DragPad::Monique_Ui_DragPad (Monique_Ui_Refresher*ui_refresher_)
+    : ui_refresher(ui_refresher_),
+      left2right_state(0.5),
       top2bottom_state(0.5),
       current_position(0,0),
       original_w(80), original_h(130)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    look_and_feel = ui_refresher->look_and_feel;
     //[/Constructor_pre]
 
-    addAndMakeVisible (track_area = new DragPad (this));
+    addAndMakeVisible (track_area = new DragPad (ui_refresher_->synth_data, this));
 
 
     //[UserPreSize]
@@ -196,7 +197,7 @@ Monique_Ui_DragPad::~Monique_Ui_DragPad()
 void Monique_Ui_DragPad::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    ComponentColours& colours_ = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours_ = look_and_feel->colours;
 
     const float w_h = 15;
     const float x = track_area->getX()+1;
@@ -204,7 +205,7 @@ void Monique_Ui_DragPad::paint (Graphics& g)
     const float w = track_area->getWidth()-w_h-2;
     const float h = track_area->getHeight()-w_h-2;
 
-    UiLookAndFeel::getInstance()->drawGlassSphere
+    look_and_feel->drawGlassSphere
     (
         g,
         x+w*left2right_state,
@@ -260,7 +261,8 @@ void Monique_Ui_DragPad::set_left_to_right_states( float left2right_state_, floa
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_DragPad" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers="left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
+                 parentClasses="public Component" constructorParams="Monique_Ui_Refresher*ui_refresher_"
+                 variableInitialisers="ui_refresher(ui_refresher_),&#10;left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="130">
   <BACKGROUND backgroundColour="50505">
@@ -268,7 +270,7 @@ BEGIN_JUCER_METADATA
              strokeColour="solid: ffff3b00"/>
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="c0cbef1abd65e74c" memberName="track_area" virtualName="DragPad"
-                    explicitFocusOrder="0" pos="0 0 80 130" class="Component" params="this"/>
+                    explicitFocusOrder="0" pos="0 0 80 130" class="Component" params="ui_refresher_-&gt;synth_data, this"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

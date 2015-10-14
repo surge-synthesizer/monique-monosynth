@@ -17,6 +17,10 @@
 //==============================================================================
 class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListener
 {
+public:
+    RuntimeNotifyer*const runtime_notifyer;
+  
+private:
     bool restored_all_devices;
     bool restored_audio_devices;
     bool its_your_first_time;
@@ -191,6 +195,9 @@ private:
     friend class OpenStateChecker;
 
     int state_change_counter;
+    
+    virtual Monique_Ui_Mainwindow*get_editor() noexcept = 0;
+    virtual MoniqueSynthData*get_synth_data() noexcept = 0;
 
 public:
     int get_state_change_counter() const noexcept;
@@ -199,7 +206,7 @@ public:
     bool init_first_time_audio_devices_successfully() const noexcept;
 
 protected:
-    COLD mono_AudioDeviceManager() noexcept;
+    COLD mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
     void clear_feedback() noexcept;
     void clear_feedback_and_shutdown() noexcept;

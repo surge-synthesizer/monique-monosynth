@@ -40,7 +40,8 @@ public:
 private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
-
+    Monique_Ui_Mainwindow* main_window;
+    
     COLD void deleteFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow)
@@ -59,9 +60,8 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
         JUCEApplicationBase::quit();
     }
 
-#ifndef PROFILE
-    setContentOwned(reinterpret_cast<Monique_Ui_Mainwindow*>( filter->createEditorIfNeeded()), true );
-#endif
+    main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded());
+    setContentOwned( main_window, true );
 }
 COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 {
@@ -79,11 +79,11 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
             "Monique was not able to open an audio device by default.\n"
             "\n"
             "Please choose an audio driver and device by yourself.\n"
-	    "(Press OK to open the setup (after see bottom right in the setup (DEVICE AND DRIVER)).)",
+            "(Press OK to open the setup (after see bottom right in the setup (DEVICE AND DRIVER)).)",
             false
         );
 
-        AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+        main_window->open_setup_editor_if_closed();
     }
     else
     {
@@ -102,7 +102,7 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
             {
                 String error = filter->restore_audio_device(true);
 
-                AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+                main_window->open_setup_editor_if_closed();
 
                 if( error == "" )
                 {
@@ -125,7 +125,7 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
             }
             else
             {
-                AppInstanceStore::getInstance()->editor->open_setup_editor_if_closed();
+                main_window->open_setup_editor_if_closed();
             }
         }
         if( not filter->restored_all_devices_successfully() )
@@ -138,7 +138,7 @@ COLD void StandaloneFilterWindow::handleAsyncUpdate()
                 false
             );
 
-            AppInstanceStore::getInstance()->editor->open_midi_editor_if_closed();
+            main_window->open_midi_editor_if_closed();
         }
     }
 }
@@ -167,7 +167,7 @@ COLD void StandaloneFilterWindow::resetFilter() noexcept
 //==============================================================================
 COLD void StandaloneFilterWindow::closeButtonPressed()
 {
-    GET_DATA( synth_data ).ask_and_save_if_changed();
+    filter->synth_data->ask_and_save_if_changed();
     JUCEApplicationBase::quit();
 }
 COLD void StandaloneFilterWindow::maximiseButtonPressed()
@@ -190,11 +190,17 @@ COLD void StandaloneFilterWindow::resized()
 
 COLD void StandaloneFilterWindow::suspended() noexcept
 {
-    Monique_Ui_Refresher::getInstance()->stopTimer();
+    if( filter->ui_refresher )
+    {
+        filter->ui_refresher->stopTimer();
+    }
 }
 COLD void StandaloneFilterWindow::resumed() noexcept
 {
-    Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
+    if( filter->ui_refresher )
+    {
+        filter->ui_refresher->startTimer( UI_REFRESH_RATE );
+    }
 }
 COLD void StandaloneFilterWindow::visibilityChanged()
 {

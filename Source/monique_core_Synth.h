@@ -34,12 +34,18 @@ class EQProcessorStereo;
 class FXProcessor;
 class DataBuffer;
 class ArpSequencer;
+class mono_ThreadManager;
+class SmoothManager;
+class RuntimeNotifyer;
 
+#define TABLESIZE_MULTI 1000
+#define LOOKUP_TABLE_SIZE int(float_Pi*TABLESIZE_MULTI*2)
 class MoniqueSynthesiserVoice : public SynthesiserVoice
 {
     //==============================================================================
     MoniqueAudioProcessor*const audio_processor;
     MoniqueSynthData*const synth_data;
+    mono_ThreadManager*const thread_manager;
 
     //==============================================================================
     RuntimeInfo*const info;
@@ -118,7 +124,11 @@ public:
 
 public:
     //==============================================================================
-    COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_, MoniqueSynthData*const synth_data_ ) noexcept;
+    COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_,
+                                  MoniqueSynthData*const synth_data_,
+                                  RuntimeNotifyer*const notifyer_,
+				  RuntimeInfo*const info_,
+				  DataBuffer*data_buffer_ ) noexcept;
     COLD ~MoniqueSynthesiserVoice() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)
@@ -138,24 +148,34 @@ inline float MoniqueSynthesiserVoice::get_current_velocity() const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MIDIControlHandler;
+class MoniqueSynthData;
 class MoniqueSynthesizer : public Synthesiser
 {
+    MIDIControlHandler*const midi_control_handler;
+
+    MoniqueSynthData*const synth_data;
     MoniqueSynthesiserVoice*const voice;
 
     void handleSustainPedal (int midiChannel, bool isDown) override;
     void handleSostenutoPedal (int midiChannel, bool isDown) override;
     void handleSoftPedal (int midiChannel, bool isDown) override;
-    
+
     void handleBankSelect (int controllerValue) noexcept;
     void handleProgramChange (int midiChannel, int programNumber) override;
-    void handleController (int midiChannel, int controllerNumber, int controllerValue) override;    
+    void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
     COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;
 
 public:
-COLD MoniqueSynthesizer( MoniqueSynthesiserVoice*voice_, const SynthesiserSound::Ptr& sound_ ) noexcept :
-    voice( voice_ )
+    COLD MoniqueSynthesizer( MoniqueSynthData*const synth_data_,
+                             MoniqueSynthesiserVoice*voice_,
+                             const SynthesiserSound::Ptr& sound_,
+                         MIDIControlHandler*const midi_control_handler_ ) noexcept :
+    midi_control_handler(midi_control_handler_),
+                         synth_data(synth_data_),
+                         voice( voice_ )
     {
         Synthesiser::addVoice(voice_);
         Synthesiser::addSound(sound_);

@@ -29,12 +29,17 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
-    : original_w(1465), original_h(180)
+Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiLookAndFeel*look_and_feel_)
+    : synth_data(synth_data_), look_and_feel(look_and_feel_),
+      original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-    synth_data = GET_DATA_PTR( synth_data );
     is_currently_painting = false;
+
+    eq_values = new EndlessBuffer( synth_data_->runtime_notifyer );
+    values_env = new EndlessBuffer( synth_data_->runtime_notifyer );
+    values = new EndlessBuffer( synth_data_->runtime_notifyer );
+    master_osc_values = new EndlessSwitchBuffer( synth_data_->runtime_notifyer );
     //[/Constructor_pre]
 
     addAndMakeVisible (sl_show_range = new Slider (String::empty));
@@ -111,16 +116,16 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
 
 
     //[UserPreSize]
-    osc_values.add( new EndlessSwitchBuffer() );
-    osc_values.add( new EndlessSwitchBuffer() );
-    filter_values.add( new EndlessBuffer() );
-    filter_values.add( new EndlessBuffer() );
-    filter_values.add( new EndlessBuffer() );
-    filter_env_values.add( new EndlessBuffer() );
-    filter_env_values.add( new EndlessBuffer() );
-    filter_env_values.add( new EndlessBuffer() );
+    osc_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    osc_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_env_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_env_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
+    filter_env_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
 
-    buffers.add( &master_osc_values );
+    buffers.add( master_osc_values );
     buffers.add( osc_values[0] );
     buffers.add( osc_values[1] );
     buffers.add( filter_values[0] );
@@ -129,9 +134,9 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter ()
     buffers.add( filter_env_values[0] );
     buffers.add( filter_env_values[1] );
     buffers.add( filter_env_values[2] );
-    buffers.add( &values );
-    buffers.add( &values_env );
-    buffers.add( &eq_values );
+    buffers.add( values );
+    buffers.add( values_env );
+    buffers.add( eq_values );
 
     refresh_buttons();
 
@@ -192,12 +197,12 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     {
         is_currently_painting = true;
 
-        ComponentColours& colours( UiLookAndFeel::getInstance()->colours );
+        ComponentColours& colours( look_and_feel->colours );
 
         g.fillAll (colours.bg);
 
         // TODO MAKE INTS!
-        const int samples_to_paint = sl_show_range->getValue()*RuntimeNotifyer::getInstance()->get_sample_rate()*0.5;
+        const int samples_to_paint = sl_show_range->getValue()* synth_data->runtime_notifyer->get_sample_rate()*0.5;
         int width = drawing_area->getWidth();
         float scale = float(width)/samples_to_paint;
         const int paint_start_offset_x = drawing_area->getX();
@@ -205,8 +210,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const float height = drawing_area->getHeight()-3;
         const int line_center = paint_start_offset_y + height/2;
 
-        const int current_size = master_osc_values.get_size();
-        const int current_position = master_osc_values.get_new_reader_start_position(samples_to_paint);
+        const int current_size = master_osc_values->get_size();
+        const int current_position = master_osc_values->get_new_reader_start_position(samples_to_paint);
         {
             Colour colour = Colour(0xff222222 );
             g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
@@ -341,7 +346,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
                 col,
                 false,
-                master_osc_values,
+                *master_osc_values,
 
                 samples_to_paint
             );
@@ -400,7 +405,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
                 col,
                 false,
-                eq_values,
+                *eq_values,
 
                 samples_to_paint
             );
@@ -485,7 +490,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
                 colours.slider_track_colour,
                 true,
-                values,
+                *values,
 
                 samples_to_paint
             );
@@ -509,7 +514,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
                 colours.slider_track_colour.darker(),
                 false,
-                values_env,
+                *values_env,
 
                 samples_to_paint
             );
@@ -666,7 +671,7 @@ void Monique_Ui_AmpPainter::timerCallback()
 
 void Monique_Ui_AmpPainter::refresh_buttons()
 {
-    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = look_and_feel->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
@@ -686,15 +691,20 @@ void Monique_Ui_AmpPainter::refresh_buttons()
     f_env_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_2 ? Colours::orangered : button_off );
     f_env_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_3 ? Colours::orange : button_off );
 
-    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? UiLookAndFeel::getInstance()->colours.slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? UiLookAndFeel::getInstance()->colours.slider_track_colour.darker() : button_off );
+    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? look_and_feel->colours.slider_track_colour : button_off );
+    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? look_and_feel->colours.slider_track_colour.darker() : button_off );
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD EndlessBuffer::EndlessBuffer() : current_size(sample_rate * 2 + block_size), sample_buffer( sample_rate * 2 + block_size ), reader_position(0) {}
-COLD EndlessBuffer::~EndlessBuffer() {}
+COLD EndlessBuffer::EndlessBuffer( RuntimeNotifyer*const notifyer_ ) noexcept
+    :
+    RuntimeListener(notifyer_),
+    current_size(sample_rate * 2 + block_size),
+    sample_buffer( sample_rate * 2 + block_size ),
+    reader_position(0) {}
+COLD EndlessBuffer::~EndlessBuffer() noexcept {}
 
 //==============================================================================
 COLD void EndlessBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
@@ -717,10 +727,14 @@ inline float EndlessBuffer::get( int pos_ ) const noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD EndlessSwitchBuffer::EndlessSwitchBuffer() : switch_buffer( sample_rate * 2 + block_size ) {
+COLD EndlessSwitchBuffer::EndlessSwitchBuffer( RuntimeNotifyer*const notifyer_ ) noexcept
+    :
+    EndlessBuffer(notifyer_),
+    switch_buffer( sample_rate * 2 + block_size )
+{
     sample_rate_changed(0);
 }
-COLD EndlessSwitchBuffer::~EndlessSwitchBuffer() {}
+COLD EndlessSwitchBuffer::~EndlessSwitchBuffer() noexcept {}
 
 //==============================================================================
 COLD void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexcept
@@ -780,10 +794,10 @@ int EndlessSwitchBuffer::get_new_reader_start_position( int samples_to_paint_ ) 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_AmpPainter" componentName=""
-                 parentClasses="public Component, public Timer" constructorParams=""
-                 variableInitialisers="original_w(1465), original_h(180)" snapPixels="5"
-                 snapActive="1" snapShown="1" overlayOpacity="0.330" fixedSize="1"
-                 initialWidth="1465" initialHeight="180">
+                 parentClasses="public Component, public Timer" constructorParams="MoniqueSynthData* synth_data_, UiLookAndFeel*look_and_feel_"
+                 variableInitialisers="synth_data(synth_data_), look_and_feel(look_and_feel_),&#10;original_w(1465), original_h(180)"
+                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="1" initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505"/>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
           explicitFocusOrder="0" pos="215 150 1240 20" tooltip="Define the drawed time (max = 1 second)."

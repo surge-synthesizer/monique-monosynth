@@ -42,11 +42,15 @@ class Monique_Ui_MorphConfig  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_MorphConfig ();
+    Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_refresher_, UiLookAndFeel*const look_and_feel_);
     ~Monique_Ui_MorphConfig();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    Monique_Ui_Refresher*const ui_refresher;
+    MoniqueSynthData* synth_data;
+    UiLookAndFeel*const look_and_feel;
+
     const float original_w;
     const float original_h;
 

@@ -32,8 +32,8 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MidiIO::refresh() noexcept
 {
-    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
-    button_midi_learn->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? Colours::red : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
+    ComponentColours& colours = look_and_feel->colours;
+    button_midi_learn->setColour( TextButton::buttonColourId, midi_control_handler->is_waiting_for_param() ? Colours::red : midi_control_handler->is_learning() ? Colours::red : colours.button_off_colour );
 
     toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
     toggle_input_main_cc->setToggleState( _audio_device_manager->use_main_input_as_cc, dontSendNotification );
@@ -197,8 +197,10 @@ void Monique_Ui_MidiIO::update_combo_boxed()
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device_manager_)
-    : _audio_device_manager(audio_device_manager_), original_w(1465), original_h(180)
+Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_)
+    : Monique_Ui_Refreshable(ui_refresher_),
+      _audio_device_manager(audio_device_manager_),
+      original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     last_state_change = -1;
@@ -215,9 +217,9 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_main = new ComboBox ("RECIEVE_MIDI_MAIN"));
     combo_input_main->setTooltip (TRANS("Select a MIDI device as input for notes.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
-    "STANDALONE: MIDI-Clock will be received at this input."));
+                                        "\n"
+                                        "PLUGIN: normaly you should keep \"Receive from host\" here.\n"
+                                        "STANDALONE: MIDI-Clock will be received at this input."));
     combo_input_main->setEditableText (false);
     combo_input_main->setJustificationType (Justification::centredLeft);
     combo_input_main->setTextWhenNothingSelected (String::empty);
@@ -226,7 +228,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_main_channel = new ComboBox (String::empty));
     combo_input_main_channel->setTooltip (TRANS("Select a the MIDI channel there you like to listen to notes.\n"
-    "(Kepp OMNI if you are not familiar with MIDI)"));
+                                          "(Kepp OMNI if you are not familiar with MIDI)"));
     combo_input_main_channel->setEditableText (false);
     combo_input_main_channel->setJustificationType (Justification::centredLeft);
     combo_input_main_channel->setTextWhenNothingSelected (TRANS("CH"));
@@ -257,8 +259,8 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_output_thru = new ComboBox ("SEND_MIDI_THRU"));
     combo_output_thru->setTooltip (TRANS("Select a MIDI device there you like to forward incoming MIDI messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Send to host\" here."));
+                                         "\n"
+                                         "PLUGIN: normaly you should keep \"Send to host\" here."));
     combo_output_thru->setEditableText (false);
     combo_output_thru->setJustificationType (Justification::centredLeft);
     combo_output_thru->setTextWhenNothingSelected (String::empty);
@@ -276,10 +278,10 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (combo_input_cc = new ComboBox ("RECIEVE_CC"));
     combo_input_cc->setTooltip (TRANS("Select a MIDI device as input for CC messages.\n"
-    "\n"
-    "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
-    "\n"
-    "See: MIDI TRAIN (right)"));
+                                      "\n"
+                                      "PLUGIN: normaly you should keep \"Receive from host\" here, but if the routing of your host isn\'t the best, you can directly select a MIDI controller device here.\n"
+                                      "\n"
+                                      "See: MIDI TRAIN (right)"));
     combo_input_cc->setEditableText (false);
     combo_input_cc->setJustificationType (Justification::centredLeft);
     combo_input_cc->setTextWhenNothingSelected (String::empty);
@@ -313,13 +315,13 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (slider_midi_pickup = new Slider ("0"));
     slider_midi_pickup->setTooltip (TRANS("Define the CC PICKUP in percent. \n"
-    "\n"
-    "Example:\n"
-    "A listen sliders value is 50 (MIN:0, MAX:100).\n"
-    "The current position of your MIDI controller slider is 0% or 0.\n"
-    "The PICKUP offset is about 50% (middle).\n"
-    "\n"
-    "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
+                                          "\n"
+                                          "Example:\n"
+                                          "A listen sliders value is 50 (MIN:0, MAX:100).\n"
+                                          "The current position of your MIDI controller slider is 0% or 0.\n"
+                                          "The PICKUP offset is about 50% (middle).\n"
+                                          "\n"
+                                          "If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."));
     slider_midi_pickup->setRange (0, 1000, 1);
     slider_midi_pickup->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_midi_pickup->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -349,10 +351,10 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
 
     addAndMakeVisible (button_midi_learn = new TextButton (String::empty));
     button_midi_learn->setTooltip (TRANS("Enables the MIDI train/learn mode.\n"
-    "\n"
-    "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
-    "\n"
-    "Shortcut: CTRL + m"));
+                                         "\n"
+                                         "Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).\n"
+                                         "\n"
+                                         "Shortcut: CTRL + m"));
     button_midi_learn->setButtonText (TRANS("TRAIN"));
     button_midi_learn->addListener (this);
     button_midi_learn->setColour (TextButton::buttonColourId, Colours::black);
@@ -371,7 +373,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device
         }
     }
 
-    slider_midi_pickup->setValue( GET_DATA(synth_data).midi_pickup_offset*1000, dontSendNotification );
+    slider_midi_pickup->setValue( synth_data->midi_pickup_offset*1000, dontSendNotification );
     update_combo_boxed();
 
     has_grabbed_focus = false;
@@ -547,8 +549,8 @@ void Monique_Ui_MidiIO::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_midi_learn)
     {
         //[UserButtonCode_button_midi_learn] -- add your button handler code here..
-        MIDIControlHandler::getInstance()->toggle_midi_learn();
-        AppInstanceStore::getInstance()->editor->show_info_popup(nullptr,nullptr);
+        midi_control_handler->toggle_midi_learn();
+        get_editor()->show_info_popup(nullptr,nullptr);
         //[/UserButtonCode_button_midi_learn]
     }
 
@@ -564,7 +566,7 @@ void Monique_Ui_MidiIO::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_midi_pickup)
     {
         //[UserSliderCode_slider_midi_pickup] -- add your slider handling code here..
-        GET_DATA(synth_data).midi_pickup_offset = slider_midi_pickup->getValue()/1000;
+        synth_data->midi_pickup_offset = slider_midi_pickup->getValue()/1000;
         //[/UserSliderCode_slider_midi_pickup]
     }
 
@@ -589,8 +591,8 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MidiIO" componentName=""
                  parentClasses="public Component, public Monique_Ui_Refreshable"
-                 constructorParams="mono_AudioDeviceManager*const audio_device_manager_"
-                 variableInitialisers="_audio_device_manager(audio_device_manager_), original_w(1465), original_h(180)"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_"
+                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;_audio_device_manager(audio_device_manager_),&#10;original_w(1465), original_h(180)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="180">
   <BACKGROUND backgroundColour="ff050505">

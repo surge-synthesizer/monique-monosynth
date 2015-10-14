@@ -18,7 +18,7 @@ ifeq ($(CONFIG),x32)
     TARGET_ARCH := -m32
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.8" -D "JUCE_APP_VERSION_HEX=0x800" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9" -D "JUCE_APP_VERSION_HEX=0x900" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -38,7 +38,7 @@ ifeq ($(CONFIG),x64)
     TARGET_ARCH := -m64
   endif
 
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.8" -D "JUCE_APP_VERSION_HEX=0x800" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG" -D "IS_STANDALONE" -D "JUCER_LINUX_MAKE_7337D22A=1" -D "JUCE_APP_VERSION=0.9" -D "JUCE_APP_VERSION_HEX=0x900" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-3.1.1/modules
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Ofast -flto
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -fvisibility=hidden -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
@@ -50,7 +50,6 @@ endif
 
 OBJECTS := \
   $(OBJDIR)/Main_90ebc5c2.o \
-  $(OBJDIR)/monique_AppInstanceStore_ee3002c0.o \
   $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
   $(OBJDIR)/monique_core_Processor_aa317247.o \
@@ -101,11 +100,6 @@ strip:
 $(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Main.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/monique_AppInstanceStore_ee3002c0.o: ../../../Source/monique_AppInstanceStore.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_AppInstanceStore.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_Datastructures.cpp

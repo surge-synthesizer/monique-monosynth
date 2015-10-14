@@ -118,15 +118,15 @@ void Monique_Ui_Mainwindow::show_ctrl_state()
 void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ )
 {
     popup = nullptr;
-    if( MIDIControlHandler::getInstance()->is_learning() && midi_conrtrol_ )
+    if( midi_control_handler->is_learning() && midi_conrtrol_ )
     {
-        addAndMakeVisible( popup = new Monique_Ui_MainwindowPopup(this,midi_conrtrol_) );
+        addAndMakeVisible( popup = new Monique_Ui_MainwindowPopup(ui_refresher,this,midi_conrtrol_) );
         popup->set_element_to_show( comp_ );
     }
 }
 void Monique_Ui_Mainwindow::show_current_voice_data()
 {
-    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = look_and_feel->colours;
     Colour button_on = colours.button_on_colour;
     Colour button_off = colours.button_off_colour;
 
@@ -190,13 +190,13 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
         button_open_midi_io_settings->setColour( TextButton::buttonColourId, editor_midiio ? Colours::lightblue : button_off );
     }
 #else
-    button_open_midi_io_settings->setColour( TextButton::buttonColourId, MIDIControlHandler::getInstance()->is_waiting_for_param() ? Colours::red : MIDIControlHandler::getInstance()->is_learning() ? Colours::red : colours.button_off_colour );
+    button_open_midi_io_settings->setColour( TextButton::buttonColourId, midi_control_handler->is_waiting_for_param() ? Colours::red : midi_control_handler->is_learning() ? Colours::red : colours.button_off_colour );
 #endif
     button_open_morph->setColour( TextButton::buttonColourId, editor_morph ? Colours::lightblue:button_off );
-    button_open_oszi->setColour( TextButton::buttonColourId, AppInstanceStore::getInstance()->get_amp_painter_unsave() ? Colours::lightblue : button_off );
+    button_open_oszi->setColour( TextButton::buttonColourId, amp_painter ? Colours::lightblue : button_off );
     button_open_config2->setColour( TextButton::buttonColourId, editor_global_settings ? Colours::lightblue:button_off );
 
-    button_values_toggle->setColour( TextButton::buttonColourId, UiLookAndFeel::getInstance()->show_values_always ? Colours::lightblue : button_off );
+    button_values_toggle->setColour( TextButton::buttonColourId, look_and_feel->show_values_always ? Colours::lightblue : button_off );
 
     // ACTIVE FILTER INPUTS
     {
@@ -447,10 +447,10 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab()
 
     !state_switch ? effect_finalizer_switch->setButtonText ("E Q") : effect_finalizer_switch->setButtonText ("F X");
 }
-static inline void update_slider_handling_( Component*parent_ )
+static inline void update_slider_handling_( MoniqueSynthData*synth_data_, Component*parent_ )
 {
-    const bool is_in_rotary_mode = GET_DATA( synth_data ).sliders_in_rotary_mode;
-    const int sensitivity = GET_DATA( synth_data ).sliders_sensitivity;
+    const bool is_in_rotary_mode = synth_data_->sliders_in_rotary_mode;
+    const int sensitivity = synth_data_->sliders_sensitivity;
     for( int i = 0 ; i != parent_->getNumChildComponents() ; ++i )
     {
         if( Slider*const slider = dynamic_cast< Slider* >( parent_->getChildComponent(i) ) )
@@ -471,14 +471,14 @@ static inline void update_slider_handling_( Component*parent_ )
         else
         {
             // RECURSIVE
-            update_slider_handling_(parent_->getChildComponent(i));
+            update_slider_handling_( synth_data_, parent_->getChildComponent(i) );
         }
     }
 }
 
 void Monique_Ui_Mainwindow::update_slider_handling()
 {
-    update_slider_handling_(this);
+    update_slider_handling_( synth_data, this );
 }
 /*
 void Monique_Ui_Mainwindow::update_slider_return_values()
@@ -517,53 +517,73 @@ void Monique_Ui_Mainwindow::update_size()
 }
 void Monique_Ui_Mainwindow::sliderClicked (Slider*s_)
 {
-    if( MIDIControlHandler::getInstance()->is_waiting_for_param() || MIDIControlHandler::getInstance()->is_learning() )
+    if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() )
         sliderValueChanged(s_);
 }
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
-    : AudioProcessorEditor(AppInstanceStore::getInstance()->audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)
+Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_)
+    : Monique_Ui_Refreshable(ui_refresher_),
+      AudioProcessorEditor(ui_refresher_->audio_processor),
+      original_w(1465), original_h(1235)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    audio_processor = reinterpret_cast< MoniqueAudioProcessor* >( &processor );
+    amp_painter = nullptr;
     is_ctrl_down = false;
     flash_counter = 0;
     program_edit_type = NOT_SET;
+    ui_refresher_->editor = this;
     //[/Constructor_pre]
 
-    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (new FXDistortionSlConfig()));
+    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new FXDistortionSlConfig(synth_data)));
 
-    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (new RDrySlConfig()));
+    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new RRoomSlConfig(synth_data)));
 
-    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (new RWidthSlConfig()));
+    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new RWidthSlConfig(synth_data)));
 
-    addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (new RRoomSlConfig()));
+    addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new RDrySlConfig(synth_data)));
 
-    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (new DelaySlConfig()));
+    addAndMakeVisible (bypass = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new BypassConfig(synth_data)));
 
-    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (new CModSlConfig()));
+    addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,0)));
 
-    addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (new EQSlConfig(1)));
+    addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,2)));
 
-    addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (new EQSlConfig(2)));
+    addAndMakeVisible (eq_4 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,3)));
 
-    addAndMakeVisible (eq_4 = new Monique_Ui_DualSlider (new EQSlConfig(3)));
+    addAndMakeVisible (eq_5 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,4)));
 
-    addAndMakeVisible (eq_7 = new Monique_Ui_DualSlider (new EQSlConfig(6)));
+    addAndMakeVisible (eq_6 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,5)));
 
-    addAndMakeVisible (eq_6 = new Monique_Ui_DualSlider (new EQSlConfig(5)));
+    addAndMakeVisible (eq_7 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,6)));
 
-    addAndMakeVisible (eq_5 = new Monique_Ui_DualSlider (new EQSlConfig(4)));
+    addAndMakeVisible (colour = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new FColourSlConfig(synth_data)));
 
-    addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (new EQSlConfig(0)));
+    addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new DelaySlConfig(synth_data)));
 
-    addAndMakeVisible (bypass = new Monique_Ui_DualSlider (new BypassConfig()));
+    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (ui_refresher,
+                                                                      new CModSlConfig(synth_data)));
 
-    addAndMakeVisible (colour = new Monique_Ui_DualSlider (new FColourSlConfig()));
+    addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,1)));
 
     addAndMakeVisible (label_effect_hider = new Label (String::empty,
-            String::empty));
+                                                       String::empty));
     label_effect_hider->setFont (Font (30.00f, Font::plain));
     label_effect_hider->setJustificationType (Justification::centredLeft);
     label_effect_hider->setEditable (false, false, false);
@@ -572,7 +592,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_effect_hider->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_2 = new Label ("DL",
-            TRANS("160Hz")));
+                                                    TRANS("160Hz")));
     label_band_hz_2->setFont (Font (30.00f, Font::plain));
     label_band_hz_2->setJustificationType (Justification::centred);
     label_band_hz_2->setEditable (false, false, false);
@@ -581,7 +601,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_3 = new Label ("DL",
-            TRANS("300Hz")));
+                                                    TRANS("300Hz")));
     label_band_hz_3->setFont (Font (30.00f, Font::plain));
     label_band_hz_3->setJustificationType (Justification::centred);
     label_band_hz_3->setEditable (false, false, false);
@@ -590,7 +610,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_4 = new Label ("DL",
-            TRANS("600Hz")));
+                                                    TRANS("600Hz")));
     label_band_hz_4->setFont (Font (30.00f, Font::plain));
     label_band_hz_4->setJustificationType (Justification::centred);
     label_band_hz_4->setEditable (false, false, false);
@@ -599,7 +619,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_5 = new Label ("DL",
-            TRANS("1.2kHz")));
+                                                    TRANS("1.2kHz")));
     label_band_hz_5->setFont (Font (30.00f, Font::plain));
     label_band_hz_5->setJustificationType (Justification::centred);
     label_band_hz_5->setEditable (false, false, false);
@@ -608,7 +628,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_6 = new Label ("DL",
-            TRANS("2.5kHz")));
+                                                    TRANS("2.5kHz")));
     label_band_hz_6->setFont (Font (30.00f, Font::plain));
     label_band_hz_6->setJustificationType (Justification::centred);
     label_band_hz_6->setEditable (false, false, false);
@@ -617,7 +637,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_7 = new Label ("DL",
-            TRANS(">2.5kHz")));
+                                                    TRANS(">2.5kHz")));
     label_band_hz_7->setFont (Font (30.00f, Font::plain));
     label_band_hz_7->setJustificationType (Justification::centred);
     label_band_hz_7->setEditable (false, false, false);
@@ -626,7 +646,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_band_hz_1 = new Label ("DL",
-            TRANS("<80Hz")));
+                                                    TRANS("<80Hz")));
     label_band_hz_1->setFont (Font (30.00f, Font::plain));
     label_band_hz_1->setJustificationType (Justification::centred);
     label_band_hz_1->setEditable (false, false, false);
@@ -634,95 +654,134 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_band_hz_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_band_hz_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (new SpeedMultiSlConfig()));
+    addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new SpeedMultiSlConfig(synth_data)));
 
-    addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (new MorphSLConfig(3)));
+    addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,3)));
 
-    addAndMakeVisible (morpher_3 = new Monique_Ui_DualSlider (new MorphSLConfig(2)));
+    addAndMakeVisible (morpher_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,2)));
 
-    addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (new MorphSLConfig(1)));
+    addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,1)));
 
-    addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (new MorphSLConfig(0)));
+    addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,0)));
 
-    addAndMakeVisible (osc_wave_3 = new Monique_Ui_DualSlider (new WAVESlConfig(2)));
+    addAndMakeVisible (osc_wave_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new WAVESlConfig(synth_data,2)));
 
-    addAndMakeVisible (keyboard = new MidiKeyboardComponent (*_app_instance_store->audio_processor, MidiKeyboardComponent::horizontalKeyboard));
+    addAndMakeVisible (keyboard = new MidiKeyboardComponent (*reinterpret_cast< MoniqueAudioProcessor* >( &processor ), MidiKeyboardComponent::horizontalKeyboard));
 
-    addAndMakeVisible (glide2 = new Monique_Ui_DualSlider (new GlideConfig()));
+    addAndMakeVisible (glide2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new GlideConfig(synth_data)));
 
-    addAndMakeVisible (arp_step_16 = new Monique_Ui_DualSlider (new ArpStepSlConfig(15)));
+    addAndMakeVisible (arp_step_16 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,15)));
 
-    addAndMakeVisible (arp_step_15 = new Monique_Ui_DualSlider (new ArpStepSlConfig(14)));
+    addAndMakeVisible (arp_step_15 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,14)));
 
-    addAndMakeVisible (arp_step_14 = new Monique_Ui_DualSlider (new ArpStepSlConfig(13)));
+    addAndMakeVisible (arp_step_14 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,13)));
 
-    addAndMakeVisible (arp_step_13 = new Monique_Ui_DualSlider (new ArpStepSlConfig(12)));
+    addAndMakeVisible (arp_step_13 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,12)));
 
-    addAndMakeVisible (arp_step_12 = new Monique_Ui_DualSlider (new ArpStepSlConfig(11)));
+    addAndMakeVisible (arp_step_12 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,11)));
 
-    addAndMakeVisible (arp_step_11 = new Monique_Ui_DualSlider (new ArpStepSlConfig(10)));
+    addAndMakeVisible (arp_step_11 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,10)));
 
-    addAndMakeVisible (arp_step_10 = new Monique_Ui_DualSlider (new ArpStepSlConfig(9)));
+    addAndMakeVisible (arp_step_10 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new ArpStepSlConfig(synth_data,9)));
 
-    addAndMakeVisible (arp_step_9 = new Monique_Ui_DualSlider (new ArpStepSlConfig(8)));
+    addAndMakeVisible (arp_step_9 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,8)));
 
-    addAndMakeVisible (arp_step_8 = new Monique_Ui_DualSlider (new ArpStepSlConfig(7)));
+    addAndMakeVisible (arp_step_8 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,7)));
 
-    addAndMakeVisible (arp_step_7 = new Monique_Ui_DualSlider (new ArpStepSlConfig(6)));
+    addAndMakeVisible (arp_step_7 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,6)));
 
-    addAndMakeVisible (arp_step_6 = new Monique_Ui_DualSlider (new ArpStepSlConfig(5)));
+    addAndMakeVisible (arp_step_6 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,5)));
 
-    addAndMakeVisible (arp_step_5 = new Monique_Ui_DualSlider (new ArpStepSlConfig(4)));
+    addAndMakeVisible (arp_step_5 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,4)));
 
-    addAndMakeVisible (arp_step_4 = new Monique_Ui_DualSlider (new ArpStepSlConfig(3)));
+    addAndMakeVisible (arp_step_4 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,3)));
 
-    addAndMakeVisible (arp_step_3 = new Monique_Ui_DualSlider (new ArpStepSlConfig(2)));
+    addAndMakeVisible (arp_step_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,2)));
 
-    addAndMakeVisible (arp_step_2 = new Monique_Ui_DualSlider (new ArpStepSlConfig(1)));
+    addAndMakeVisible (arp_step_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,1)));
 
-    addAndMakeVisible (arp_step_1 = new Monique_Ui_DualSlider (new ArpStepSlConfig(0)));
+    addAndMakeVisible (arp_step_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new ArpStepSlConfig(synth_data,0)));
 
-    addAndMakeVisible (shuffle = new Monique_Ui_DualSlider (new ShuffleConfig()));
+    addAndMakeVisible (shuffle = new Monique_Ui_DualSlider (ui_refresher,
+                                                            new ShuffleConfig(synth_data)));
 
-    addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (new FSustainSlConfig()));
+    addAndMakeVisible (flt_sustain_4 = new Monique_Ui_DualSlider (ui_refresher, new FSustainSlConfig(synth_data)));
 
-    addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (new FDecaySlConfig()
-                                                               ));
+    addAndMakeVisible (flt_decay_4 = new Monique_Ui_DualSlider (ui_refresher, new FDecaySlConfig(synth_data)
+                                                                ));
 
-    addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (new FAttackSlConfig()));
+    addAndMakeVisible (flt_attack_4 = new Monique_Ui_DualSlider (ui_refresher, new FAttackSlConfig(synth_data)));
 
-    addAndMakeVisible (flt_release_3 = new Monique_Ui_DualSlider (new FReleaseSlConfig(2)));
+    addAndMakeVisible (flt_release_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FReleaseSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_sustain_time_3 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(2)));
+    addAndMakeVisible (flt_sustain_time_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                       new FSustainTimeSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_sustain_3 = new Monique_Ui_DualSlider (new FSustainSlConfig(2)));
+    addAndMakeVisible (flt_sustain_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FSustainSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_decay_3 = new Monique_Ui_DualSlider (new FDecaySlConfig(2)));
+    addAndMakeVisible (flt_decay_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new FDecaySlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_attack_3 = new Monique_Ui_DualSlider (new FAttackSlConfig(2)));
+    addAndMakeVisible (flt_attack_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FAttackSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_release_2 = new Monique_Ui_DualSlider (new FReleaseSlConfig(1)));
+    addAndMakeVisible (flt_release_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FReleaseSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_sustain_time_2 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(1)));
+    addAndMakeVisible (flt_sustain_time_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                       new FSustainTimeSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_sustain_2 = new Monique_Ui_DualSlider (new FSustainSlConfig(1)));
+    addAndMakeVisible (flt_sustain_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FSustainSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_decay_2 = new Monique_Ui_DualSlider (new FDecaySlConfig(1)));
+    addAndMakeVisible (flt_decay_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new FDecaySlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_attack_2 = new Monique_Ui_DualSlider (new FAttackSlConfig(1)));
+    addAndMakeVisible (flt_attack_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FAttackSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_release_1 = new Monique_Ui_DualSlider (new FReleaseSlConfig(0)));
+    addAndMakeVisible (flt_release_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FReleaseSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_sustain_time_1 = new Monique_Ui_DualSlider (new FSustainTimeSlConfig(0)));
+    addAndMakeVisible (flt_sustain_time_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                       new FSustainTimeSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_sustain_1 = new Monique_Ui_DualSlider (new FSustainSlConfig(0)));
+    addAndMakeVisible (flt_sustain_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new FSustainSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_decay_1 = new Monique_Ui_DualSlider (new FDecaySlConfig(0)));
+    addAndMakeVisible (flt_decay_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new FDecaySlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (new FAttackSlConfig(0)));
+    addAndMakeVisible (flt_attack_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FAttackSlConfig(synth_data,0)));
 
     addAndMakeVisible (label_monolisa = new Label (String::empty,
-            TRANS("M O N I Q U E")));
+                                                   TRANS("M O N I Q U E")));
     label_monolisa->setFont (Font (30.00f, Font::plain));
     label_monolisa->setJustificationType (Justification::centred);
     label_monolisa->setEditable (false, false, false);
@@ -804,7 +863,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_2 = new TextButton (String::empty));
     button_sequence_2->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_2->addListener (this);
     button_sequence_2->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -812,7 +871,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_3 = new TextButton (String::empty));
     button_sequence_3->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_3->addListener (this);
     button_sequence_3->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -820,7 +879,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_4 = new TextButton (String::empty));
     button_sequence_4->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_4->addListener (this);
     button_sequence_4->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -828,7 +887,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_5 = new TextButton (String::empty));
     button_sequence_5->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_5->addListener (this);
     button_sequence_5->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_5->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -836,7 +895,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_6 = new TextButton (String::empty));
     button_sequence_6->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_6->addListener (this);
     button_sequence_6->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_6->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -844,7 +903,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_7 = new TextButton (String::empty));
     button_sequence_7->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_7->addListener (this);
     button_sequence_7->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_7->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -852,7 +911,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_8 = new TextButton (String::empty));
     button_sequence_8->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_8->addListener (this);
     button_sequence_8->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_8->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -860,7 +919,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_9 = new TextButton (String::empty));
     button_sequence_9->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_9->addListener (this);
     button_sequence_9->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_9->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -868,7 +927,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_10 = new TextButton (String::empty));
     button_sequence_10->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_10->addListener (this);
     button_sequence_10->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_10->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -876,7 +935,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_11 = new TextButton (String::empty));
     button_sequence_11->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_11->addListener (this);
     button_sequence_11->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_11->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -884,7 +943,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_12 = new TextButton (String::empty));
     button_sequence_12->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_12->addListener (this);
     button_sequence_12->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_12->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -892,7 +951,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_13 = new TextButton (String::empty));
     button_sequence_13->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_13->addListener (this);
     button_sequence_13->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_13->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -900,7 +959,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_14 = new TextButton (String::empty));
     button_sequence_14->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_14->addListener (this);
     button_sequence_14->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_14->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -908,7 +967,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_15 = new TextButton (String::empty));
     button_sequence_15->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_15->addListener (this);
     button_sequence_15->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_15->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -916,7 +975,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_sequence_16 = new TextButton (String::empty));
     button_sequence_16->setTooltip (TRANS("Turns this step on or off.\n"
-                                          "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_16->addListener (this);
     button_sequence_16->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_16->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
@@ -964,8 +1023,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_oszi = new TextButton (String::empty));
     button_open_oszi->setTooltip (TRANS("Open/Close the oscilloscope.\n"
-                                        "\n"
-                                        "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_oszi->setButtonText (TRANS("OSCI"));
     button_open_oszi->addListener (this);
     button_open_oszi->setColour (TextButton::buttonColourId, Colours::black);
@@ -974,8 +1033,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_midi_io_settings = new TextButton (String::empty));
     button_open_midi_io_settings->setTooltip (TRANS("Open/Close the MIDI settings.\n"
-            "\n"
-            "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_midi_io_settings->setButtonText (TRANS("MIDI"));
     button_open_midi_io_settings->addListener (this);
     button_open_midi_io_settings->setColour (TextButton::buttonColourId, Colours::black);
@@ -998,83 +1057,117 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_programm_load->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_programm_load->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (osc_1 = new Monique_Ui_DualSlider (new OSCSlConfig(0)));
+    addAndMakeVisible (osc_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new OSCSlConfig(synth_data,0)));
 
-    addAndMakeVisible (osc_2 = new Monique_Ui_DualSlider (new OSCSlConfig(1)));
+    addAndMakeVisible (osc_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new OSCSlConfig(synth_data,1)));
 
-    addAndMakeVisible (osc_3 = new Monique_Ui_DualSlider (new OSCSlConfig(2)));
+    addAndMakeVisible (osc_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new OSCSlConfig(synth_data,2)));
 
-    addAndMakeVisible (lfo_1 = new Monique_Ui_DualSlider (new LFOSlConfig(0)));
+    addAndMakeVisible (lfo_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_cutoff_1 = new Monique_Ui_DualSlider (new FCutoffSLConfig(0)));
+    addAndMakeVisible (flt_cutoff_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FCutoffSLConfig(synth_data,0)));
 
-    addAndMakeVisible (lfo_2 = new Monique_Ui_DualSlider (new LFOSlConfig(1)));
+    addAndMakeVisible (lfo_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,1)));
 
-    addAndMakeVisible (lfo_3 = new Monique_Ui_DualSlider (new LFOSlConfig(2)));
+    addAndMakeVisible (lfo_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_cutoff_2 = new Monique_Ui_DualSlider (new FCutoffSLConfig(1)));
+    addAndMakeVisible (flt_cutoff_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FCutoffSLConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_cutoff_3 = new Monique_Ui_DualSlider (new FCutoffSLConfig(2)));
+    addAndMakeVisible (flt_cutoff_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FCutoffSLConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (new InputSlConfig(0,0)));
+    addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,0)));
 
-    addAndMakeVisible (flt_input_2 = new Monique_Ui_DualSlider (new InputSlConfig(0,1)));
+    addAndMakeVisible (flt_input_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,1)));
 
-    addAndMakeVisible (flt_input_3 = new Monique_Ui_DualSlider (new InputSlConfig(0,2)));
+    addAndMakeVisible (flt_input_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,2)));
 
-    addAndMakeVisible (flt_distortion_1 = new Monique_Ui_DualSlider (new GForceSlConfig(0)));
+    addAndMakeVisible (flt_distortion_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                     new GForceSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_input_6 = new Monique_Ui_DualSlider (new InputSlConfig(1,0)));
+    addAndMakeVisible (flt_input_6 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,0)));
 
-    addAndMakeVisible (flt_input_7 = new Monique_Ui_DualSlider (new InputSlConfig(1,1)));
+    addAndMakeVisible (flt_input_7 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,1)));
 
-    addAndMakeVisible (flt_input_8 = new Monique_Ui_DualSlider (new InputSlConfig(1,2)));
+    addAndMakeVisible (flt_input_8 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,2)));
 
-    addAndMakeVisible (flt_input_11 = new Monique_Ui_DualSlider (new InputSlConfig(2,0)));
+    addAndMakeVisible (flt_input_11 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,0)));
 
-    addAndMakeVisible (flt_input_12 = new Monique_Ui_DualSlider (new InputSlConfig(2,1)));
+    addAndMakeVisible (flt_input_12 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,1)));
 
-    addAndMakeVisible (flt_input_13 = new Monique_Ui_DualSlider (new InputSlConfig(2,2)));
+    addAndMakeVisible (flt_input_13 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,2)));
 
-    addAndMakeVisible (flt_resonance_1 = new Monique_Ui_DualSlider (new FResonanceSLConfig(0)));
+    addAndMakeVisible (flt_resonance_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                    new FResonanceSLConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_gain_1 = new Monique_Ui_DualSlider (new FGainSLConfig(0)));
+    addAndMakeVisible (flt_gain_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new FGainSLConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_resonance_2 = new Monique_Ui_DualSlider (new FResonanceSLConfig(1)));
+    addAndMakeVisible (flt_resonance_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                    new FResonanceSLConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_gain_2 = new Monique_Ui_DualSlider (new FGainSLConfig(1)));
+    addAndMakeVisible (flt_gain_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new FGainSLConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_resonance_3 = new Monique_Ui_DualSlider (new FResonanceSLConfig(2)));
+    addAndMakeVisible (flt_resonance_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                    new FResonanceSLConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_gain_3 = new Monique_Ui_DualSlider (new FGainSLConfig(2)));
+    addAndMakeVisible (flt_gain_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new FGainSLConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_volume_1 = new Monique_Ui_DualSlider (new FVolumeSlConfig(0)));
+    addAndMakeVisible (flt_volume_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FVolumeSlConfig(synth_data,0)));
 
-    addAndMakeVisible (flt_volume_2 = new Monique_Ui_DualSlider (new FVolumeSlConfig(1)));
+    addAndMakeVisible (flt_volume_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FVolumeSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_volume_3 = new Monique_Ui_DualSlider (new FVolumeSlConfig(2)));
+    addAndMakeVisible (flt_volume_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FVolumeSlConfig(synth_data,2)));
 
-    addAndMakeVisible (adsr_lfo_mix = new Monique_Ui_DualSlider (new EnvLfoSlConfig(0)));
+    addAndMakeVisible (adsr_lfo_mix = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new EnvLfoSlConfig(synth_data,0)));
 
-    addAndMakeVisible (lfo_opt_2 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(1)));
+    addAndMakeVisible (lfo_opt_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new EnvLfoSlConfig(synth_data,1)));
 
-    addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (new EnvLfoSlConfig(2)));
+    addAndMakeVisible (lfo_opt_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new EnvLfoSlConfig(synth_data,2)));
 
     addAndMakeVisible (button_sequence_1 = new TextButton (String::empty));
     button_sequence_1->setTooltip (TRANS("Turns this step on or off.\n"
-                                         "(Has no effect if the arpeggiator (ARP) is turned off)"));
+    "(Has no effect if the arpeggiator (ARP) is turned off)"));
     button_sequence_1->addListener (this);
     button_sequence_1->setColour (TextButton::buttonColourId, Colours::black);
     button_sequence_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_sequence_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_release_4 = new Monique_Ui_DualSlider (new FReleaseSlConfig()));
+    addAndMakeVisible (flt_release_4 = new Monique_Ui_DualSlider (ui_refresher, new FReleaseSlConfig(synth_data)));
 
-    addAndMakeVisible (volume = new Monique_Ui_DualSlider (new VolumeConfig()));
+    addAndMakeVisible (volume = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new VolumeConfig(synth_data)));
 
-    addAndMakeVisible (flt_distortion_2 = new Monique_Ui_DualSlider (new GForceSlConfig(1)));
+    addAndMakeVisible (flt_distortion_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                     new GForceSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_distortion_3 = new Monique_Ui_DualSlider (new GForceSlConfig(2)));
+    addAndMakeVisible (flt_distortion_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                     new GForceSlConfig(synth_data,2)));
 
     addAndMakeVisible (button_arp_speed_XNORM = new TextButton (String::empty));
     button_arp_speed_XNORM->setTooltip (TRANS("Shortcut to set the speed multiplier back to 1x (in sync)."));
@@ -1084,18 +1177,22 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_arp_speed_XNORM->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_arp_speed_XNORM->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_attack_5 = new Monique_Ui_DualSlider (new FMFreqSlConfig()));
+    addAndMakeVisible (flt_attack_5 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FMFreqSlConfig(synth_data)));
 
-    addAndMakeVisible (flt_attack_6 = new Monique_Ui_DualSlider (new FMAmountSlConfig()));
+    addAndMakeVisible (flt_attack_6 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new FMAmountSlConfig(synth_data)));
 
-    addAndMakeVisible (osc_wave_1 = new Monique_Ui_DualSlider (new WAVESlConfig(0)));
+    addAndMakeVisible (osc_wave_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new WAVESlConfig(synth_data,0)));
 
-    addAndMakeVisible (osc_wave_2 = new Monique_Ui_DualSlider (new WAVESlConfig(1)));
+    addAndMakeVisible (osc_wave_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new WAVESlConfig(synth_data,1)));
 
     addAndMakeVisible (sl_morhp_mix = new Slider ("new slider"));
     sl_morhp_mix->setTooltip (TRANS("Morph between the morph sliders. \n"
-                                    "\n"
-                                    "Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."));
+    "\n"
+    "Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."));
     sl_morhp_mix->setRange (0, 3000, 0.01);
     sl_morhp_mix->setSliderStyle (Slider::LinearHorizontal);
     sl_morhp_mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -1135,20 +1232,21 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_ctrl_toggle = new TextButton (String::empty));
     button_ctrl_toggle->setTooltip (TRANS("Turns the SHIFT mode on or off.\n"
-                                          "\n"
-                                          "The shift mode moves all back sliders to front and front sliders to back."));
+    "\n"
+    "The shift mode moves all back sliders to front and front sliders to back."));
     button_ctrl_toggle->setButtonText (TRANS("SHIFT"));
     button_ctrl_toggle->addListener (this);
     button_ctrl_toggle->setColour (TextButton::buttonColourId, Colours::black);
     button_ctrl_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_ctrl_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (speed = new Monique_Ui_DualSlider (new BPMSlConfig()));
+    addAndMakeVisible (speed = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new BPMSlConfig(synth_data)));
 
     addAndMakeVisible (button_open_morph = new TextButton (String::empty));
     button_open_morph->setTooltip (TRANS("Open/Close the morph editor.\n"
-                                         "\n"
-                                         "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_morph->setButtonText (TRANS("EDIT"));
     button_open_morph->addListener (this);
     button_open_morph->setColour (TextButton::buttonColourId, Colours::black);
@@ -1164,7 +1262,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline2 = new Label (String::empty,
-            TRANS("OSC")));
+                                                       TRANS("OSC")));
     label_ui_headline2->setFont (Font (30.00f, Font::plain));
     label_ui_headline2->setJustificationType (Justification::centred);
     label_ui_headline2->setEditable (false, false, false);
@@ -1173,7 +1271,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline3 = new Label (String::empty,
-            TRANS("FLT")));
+                                                       TRANS("FLT")));
     label_ui_headline3->setFont (Font (30.00f, Font::plain));
     label_ui_headline3->setJustificationType (Justification::centred);
     label_ui_headline3->setEditable (false, false, false);
@@ -1182,7 +1280,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline5 = new Label (String::empty,
-            TRANS("FX")));
+                                                       TRANS("FX")));
     label_ui_headline5->setFont (Font (30.00f, Font::plain));
     label_ui_headline5->setJustificationType (Justification::centred);
     label_ui_headline5->setEditable (false, false, false);
@@ -1191,7 +1289,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline6 = new Label (String::empty,
-            TRANS("ARP")));
+                                                       TRANS("ARP")));
     label_ui_headline6->setFont (Font (30.00f, Font::plain));
     label_ui_headline6->setJustificationType (Justification::centred);
     label_ui_headline6->setEditable (false, false, false);
@@ -1201,22 +1299,23 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
     button_values_toggle->setTooltip (TRANS("Turns the CTRL mode on or off.\n"
-                                            "\n"
-                                            "In CTRL mode are all values visble.\n"
-                                            "\n"
-                                            "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
-                                            "\n"
-                                            "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."));
+    "\n"
+    "In CTRL mode are all values visble.\n"
+    "\n"
+    "Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.\n"
+    "\n"
+    "Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."));
     button_values_toggle->setButtonText (TRANS("CTRL"));
     button_values_toggle->addListener (this);
     button_values_toggle->setColour (TextButton::buttonColourId, Colours::black);
     button_values_toggle->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_values_toggle->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (new OctaveOffsetSlConfig()));
+    addAndMakeVisible (octave_offset = new Monique_Ui_DualSlider (ui_refresher,
+                                                                  new OctaveOffsetSlConfig(synth_data)));
 
     addAndMakeVisible (label_ui_headline4 = new Label ("DL",
-            TRANS("FILTER INPUTS")));
+                                                       TRANS("FILTER INPUTS")));
     label_ui_headline4->setFont (Font (30.00f, Font::plain));
     label_ui_headline4->setJustificationType (Justification::centred);
     label_ui_headline4->setEditable (false, false, false);
@@ -1225,7 +1324,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline7 = new Label ("DL",
-            TRANS("OSCILLATORS (O)")));
+                                                       TRANS("OSCILLATORS (O)")));
     label_ui_headline7->setFont (Font (30.00f, Font::plain));
     label_ui_headline7->setJustificationType (Justification::centred);
     label_ui_headline7->setEditable (false, false, false);
@@ -1234,7 +1333,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline8 = new Label ("DL",
-            TRANS("FILTER ENVELOPE")));
+                                                       TRANS("FILTER ENVELOPE")));
     label_ui_headline8->setFont (Font (30.00f, Font::plain));
     label_ui_headline8->setJustificationType (Justification::centred);
     label_ui_headline8->setEditable (false, false, false);
@@ -1243,7 +1342,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline9 = new Label ("DL",
-            TRANS("LFO (L)")));
+                                                       TRANS("LFO (L)")));
     label_ui_headline9->setFont (Font (30.00f, Font::plain));
     label_ui_headline9->setJustificationType (Justification::centred);
     label_ui_headline9->setEditable (false, false, false);
@@ -1252,7 +1351,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline10 = new Label ("DL",
-            TRANS("FILTER CONFIGURATION")));
+                                                        TRANS("FILTER CONFIGURATION")));
     label_ui_headline10->setFont (Font (30.00f, Font::plain));
     label_ui_headline10->setJustificationType (Justification::centred);
     label_ui_headline10->setEditable (false, false, false);
@@ -1261,7 +1360,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline10->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline11 = new Label ("DL",
-            TRANS("FILTER FX")));
+                                                        TRANS("FILTER FX")));
     label_ui_headline11->setFont (Font (30.00f, Font::plain));
     label_ui_headline11->setJustificationType (Justification::centred);
     label_ui_headline11->setEditable (false, false, false);
@@ -1270,7 +1369,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline12 = new Label ("DL",
-            TRANS("OUTPUT")));
+                                                        TRANS("OUTPUT")));
     label_ui_headline12->setFont (Font (30.00f, Font::plain));
     label_ui_headline12->setJustificationType (Justification::centred);
     label_ui_headline12->setEditable (false, false, false);
@@ -1279,7 +1378,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label ("DL",
-            TRANS("MAIN ENVELOPE")));
+                                                        TRANS("MAIN ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -1288,7 +1387,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("DL",
-            TRANS("DISTORTION")));
+                                                TRANS("DISTORTION")));
     label_shape->setFont (Font (30.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -1297,7 +1396,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_reverb = new Label ("DL",
-            TRANS("REVERB")));
+                                                 TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
     label_reverb->setJustificationType (Justification::centred);
     label_reverb->setEditable (false, false, false);
@@ -1306,7 +1405,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_delay = new Label ("DL",
-            TRANS("DELAY")));
+                                                TRANS("DELAY")));
     label_delay->setFont (Font (30.00f, Font::plain));
     label_delay->setJustificationType (Justification::centred);
     label_delay->setEditable (false, false, false);
@@ -1315,7 +1414,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_chorus = new Label ("DL",
-            TRANS("CHORUS")));
+                                                 TRANS("CHORUS")));
     label_chorus->setFont (Font (30.00f, Font::plain));
     label_chorus->setJustificationType (Justification::centred);
     label_chorus->setEditable (false, false, false);
@@ -1324,7 +1423,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_fx_mix = new Label ("DL",
-            TRANS("FX MIX")));
+                                                 TRANS("FX MIX")));
     label_fx_mix->setFont (Font (30.00f, Font::plain));
     label_fx_mix->setJustificationType (Justification::centred);
     label_fx_mix->setEditable (false, false, false);
@@ -1333,7 +1432,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_fx_mix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline19 = new Label ("DL",
-            TRANS("MORPH (MO) SECTION")));
+                                                        TRANS("MORPH (MO) SECTION")));
     label_ui_headline19->setFont (Font (30.00f, Font::plain));
     label_ui_headline19->setJustificationType (Justification::centred);
     label_ui_headline19->setEditable (false, false, false);
@@ -1342,7 +1441,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline19->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline20 = new Label ("DL",
-            TRANS("ARPEGGIATOR")));
+                                                        TRANS("ARPEGGIATOR")));
     label_ui_headline20->setFont (Font (30.00f, Font::plain));
     label_ui_headline20->setJustificationType (Justification::centred);
     label_ui_headline20->setEditable (false, false, false);
@@ -1351,7 +1450,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline20->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline21 = new Label ("DL",
-            TRANS("GLIDE")));
+                                                        TRANS("GLIDE")));
     label_ui_headline21->setFont (Font (30.00f, Font::plain));
     label_ui_headline21->setJustificationType (Justification::centred);
     label_ui_headline21->setEditable (false, false, false);
@@ -1360,7 +1459,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline21->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline22 = new Label ("DL",
-            TRANS("SPEED")));
+                                                        TRANS("SPEED")));
     label_ui_headline22->setFont (Font (30.00f, Font::plain));
     label_ui_headline22->setJustificationType (Justification::centred);
     label_ui_headline22->setEditable (false, false, false);
@@ -1369,7 +1468,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline22->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline23 = new Label ("DL",
-            TRANS("MASTER")));
+                                                        TRANS("MASTER")));
     label_ui_headline23->setFont (Font (30.00f, Font::plain));
     label_ui_headline23->setJustificationType (Justification::centred);
     label_ui_headline23->setEditable (false, false, false);
@@ -1378,7 +1477,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline23->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline24 = new Label ("DL",
-            TRANS("OCTAVE")));
+                                                        TRANS("TUNE")));
     label_ui_headline24->setFont (Font (30.00f, Font::plain));
     label_ui_headline24->setJustificationType (Justification::centred);
     label_ui_headline24->setEditable (false, false, false);
@@ -1387,7 +1486,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline24->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline25 = new Label ("DL",
-            TRANS("FM (F)")));
+                                                        TRANS("FM (F)")));
     label_ui_headline25->setFont (Font (30.00f, Font::plain));
     label_ui_headline25->setJustificationType (Justification::centred);
     label_ui_headline25->setEditable (false, false, false);
@@ -1395,10 +1494,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     label_ui_headline25->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline25->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter());
+    addAndMakeVisible (volume_master_meter = new Monique_Ui_SegmentedMeter (ui_refresher));
 
     addAndMakeVisible (label_eq = new Label ("DL",
-            TRANS("EQUALIZER")));
+                                             TRANS("EQUALIZER")));
     label_eq->setFont (Font (30.00f, Font::plain));
     label_eq->setJustificationType (Justification::centred);
     label_eq->setEditable (false, false, false);
@@ -1408,8 +1507,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     addAndMakeVisible (button_open_config2 = new TextButton (String::empty));
     button_open_config2->setTooltip (TRANS("Open/Close the setup.\n"
-                                           "\n"
-                                           "Note: press ESC to close editors."));
+    "\n"
+    "Note: press ESC to close editors."));
     button_open_config2->setButtonText (TRANS("SETUP"));
     button_open_config2->addListener (this);
     button_open_config2->setColour (TextButton::buttonColourId, Colours::black);
@@ -1417,7 +1516,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_open_config2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_ui_headline14 = new Label ("DL",
-            TRANS("MOD MIX (X)")));
+                                                        TRANS("MOD MIX (X)")));
     label_ui_headline14->setFont (Font (30.00f, Font::plain));
     label_ui_headline14->setJustificationType (Justification::centred);
     label_ui_headline14->setEditable (false, false, false);
@@ -1544,14 +1643,18 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_edit_env_chorus->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     button_edit_env_chorus->setColour (TextButton::textColourOffId, Colours::yellow);
 
-    addAndMakeVisible (flt_pan_3 = new Monique_Ui_DualSlider (new FPanSlConfig(2)));
+    addAndMakeVisible (flt_pan_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new FPanSlConfig(synth_data,2)));
 
-    addAndMakeVisible (flt_pan_2 = new Monique_Ui_DualSlider (new FPanSlConfig(1)));
+    addAndMakeVisible (flt_pan_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new FPanSlConfig(synth_data,1)));
 
-    addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (new FPanSlConfig(0)));
+    addAndMakeVisible (flt_pan_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new FPanSlConfig(synth_data,0)));
 
     addAndMakeVisible (button_reset_arp_tune = new TextButton (String::empty));
-    button_reset_arp_tune->setTooltip (TRANS("Reset the currently used note for the arpegiator to the defined note offset. (Triggers a note: semitones offset (back slider))"));
+    button_reset_arp_tune->setTooltip (TRANS("Resets the arpeggiator to the defined program note.\n"
+    "(Triggers a note which is defineable by the note dial (back dial))"));
     button_reset_arp_tune->setButtonText (TRANS("RESET"));
     button_reset_arp_tune->addListener (this);
     button_reset_arp_tune->setColour (TextButton::buttonColourId, Colours::black);
@@ -1619,7 +1722,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     button_show_active_input_l_3_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_programm_rename = new TextButton (String::empty));
-    button_programm_rename->setTooltip (TRANS("Replaces the selected program."));
+    button_programm_rename->setTooltip (TRANS("Rename the selected program."));
     button_programm_rename->setButtonText (TRANS("RENAME"));
     button_programm_rename->addListener (this);
     button_programm_rename->setColour (TextButton::buttonColourId, Colours::black);
@@ -1647,8 +1750,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     last_programm = -1;
     is_in_help_mode = false;
 
-    voice = reinterpret_cast< MoniqueSynthesiserVoice* >( GET_DATA_PTR( voice ) );
-    synth_data = GET_DATA_PTR( synth_data );
+    voice = audio_processor->voice;
     last_ctrl_mode = synth_data->ctrl = false;
 
     last_shuffle = -1;
@@ -1696,7 +1798,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
     switch_finalizer_tab();
 
-    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = look_and_feel->colours;
     Colour button_off = colours.button_off_colour;
 
     button_programm_new->setColour(TextButton::buttonColourId, button_off);
@@ -1769,9 +1871,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
 
 
     //setVisible(true);
-    AppInstanceStore::getInstance()->editor = this;
-    _app_instance_store->audio_processor->set_peak_meter( volume_master_meter );
-    Monique_Ui_Refresher::getInstance()->startTimer( UI_REFRESH_RATE );
+    audio_processor->set_peak_meter( volume_master_meter );
+    ui_refresher->startTimer( UI_REFRESH_RATE );
 
     update_size();
     keyboard->setLowestVisibleKey(24);
@@ -1779,50 +1880,48 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow ()
     keyboard->setKeyWidth(45);
 
     // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
-    //UiLookAndFeel::getInstance()->colours.edit();
+    //look_and_feel->colours.edit();
     //[/Constructor]
 }
 
 Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    ui_refresher->editor = nullptr;
+    if( amp_painter )
+    {
+        audio_processor->amp_painter = nullptr;
+        delete amp_painter;
+        amp_painter = nullptr;
+    }
+
+    ui_refresher->stopTimer();
+    ui_refresher->remove_all();
+
     env_popup = nullptr;
     editor_midiio = nullptr;
     editor_morph = nullptr;
     editor_global_settings = nullptr;
     popup = nullptr;
 
-    Monique_Ui_Refresher::getInstance()->stopTimer();
-    Monique_Ui_Refresher::getInstance()->remove_all();
-    //Thread::sleep(100);
-
-    AppInstanceStore::getInstance()->editor = nullptr;
-    //Thread::sleep(500); // to be sure we are no more in a update run
-
-    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
-    {
-        removeChildComponent( amp_painter );
-        AppInstanceStore::getInstance()->kill_amp_painter();
-    }
-
-    _app_instance_store->audio_processor->clear_preak_meter();
+    audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
     distortion = nullptr;
-    reverb_dry = nullptr;
-    reverb_width = nullptr;
     reverb_room = nullptr;
+    reverb_width = nullptr;
+    reverb_dry = nullptr;
+    bypass = nullptr;
+    eq_1 = nullptr;
+    eq_3 = nullptr;
+    eq_4 = nullptr;
+    eq_5 = nullptr;
+    eq_6 = nullptr;
+    eq_7 = nullptr;
+    colour = nullptr;
     delay2 = nullptr;
     chorus_modulation = nullptr;
     eq_2 = nullptr;
-    eq_3 = nullptr;
-    eq_4 = nullptr;
-    eq_7 = nullptr;
-    eq_6 = nullptr;
-    eq_5 = nullptr;
-    eq_1 = nullptr;
-    bypass = nullptr;
-    colour = nullptr;
     label_effect_hider = nullptr;
     label_band_hz_2 = nullptr;
     label_band_hz_3 = nullptr;
@@ -2462,20 +2561,20 @@ void Monique_Ui_Mainwindow::resized()
     //[/UserPreResize]
 
     distortion->setBounds (585 - 60, 800 - 130, 60, 130);
-    reverb_dry->setBounds (975 - 60, 800 - 130, 60, 130);
-    reverb_width->setBounds (915 - 60, 800 - 130, 60, 130);
     reverb_room->setBounds (855 - 60, 800 - 130, 60, 130);
+    reverb_width->setBounds (915 - 60, 800 - 130, 60, 130);
+    reverb_dry->setBounds (975 - 60, 800 - 130, 60, 130);
+    bypass->setBounds (1065 - 60, 800 - 130, 60, 130);
+    eq_1->setBounds (585 - 60, 800 - 130, 60, 130);
+    eq_3->setBounds (720 - 60, 800 - 130, 60, 130);
+    eq_4->setBounds (780 - 60, 800 - 130, 60, 130);
+    eq_5->setBounds (850 - 60, 800 - 130, 60, 130);
+    eq_6->setBounds (910 - 60, 800 - 130, 60, 130);
+    eq_7->setBounds (980 - 60, 800 - 130, 60, 130);
+    colour->setBounds (1065 - 60, 800 - 130, 60, 130);
     delay2->setBounds (765 - 60, 800 - 130, 60, 130);
     chorus_modulation->setBounds (615, 800 - 130, 60, 130);
     eq_2->setBounds (645 - 60, 800 - 130, 60, 130);
-    eq_3->setBounds (720 - 60, 800 - 130, 60, 130);
-    eq_4->setBounds (780 - 60, 800 - 130, 60, 130);
-    eq_7->setBounds (980 - 60, 800 - 130, 60, 130);
-    eq_6->setBounds (910 - 60, 800 - 130, 60, 130);
-    eq_5->setBounds (850 - 60, 800 - 130, 60, 130);
-    eq_1->setBounds (585 - 60, 800 - 130, 60, 130);
-    bypass->setBounds (1065 - 60, 800 - 130, 60, 130);
-    colour->setBounds (1065 - 60, 800 - 130, 60, 130);
     label_effect_hider->setBounds (1065 - 540, 815 - 15, 540, 15);
     label_band_hz_2->setBounds (590, 795, 50, 30);
     label_band_hz_3->setBounds (665, 795, 50, 30);
@@ -2552,16 +2651,16 @@ void Monique_Ui_Mainwindow::resized()
     button_sequence_14->setBounds (1085 - 60, 890 - 20, 60, 20);
     button_sequence_15->setBounds (1145 - 60, 890 - 20, 60, 20);
     button_sequence_16->setBounds (1205 - 60, 890 - 20, 60, 20);
-    combo_programm->setBounds (335, 10, 310, 25);
-    button_programm_left->setBounds (215, 10, 60, 25);
-    button_programm_right->setBounds (710 - 60, 10, 60, 25);
-    button_programm_replace->setBounds (910 - 60, 10, 60, 25);
-    button_programm_new->setBounds (850 - 60, 10, 60, 25);
+    combo_programm->setBounds (335, 10, 315, 27);
+    button_programm_left->setBounds (215, 10, 60, 27);
+    button_programm_right->setBounds (710 - 60, 10, 60, 27);
+    button_programm_replace->setBounds (910 - 60, 10, 60, 27);
+    button_programm_new->setBounds (850 - 60, 10, 60, 27);
     button_open_oszi->setBounds (1375, 10, 60, 30);
     button_open_midi_io_settings->setBounds (1280 - 60, 40 - 30, 60, 30);
-    combo_bank->setBounds (275, 10, 60, 25);
-    button_programm_load->setBounds (770 - 60, 10, 60, 25);
-    osc_1->setBounds (160 - 60, 240 - 130, 60, 130);
+    combo_bank->setBounds (275, 10, 60, 27);
+    button_programm_load->setBounds (770 - 60, 10, 60, 27);
+    osc_1->setBounds (100, 240 - 130, 60, 130);
     osc_2->setBounds (160 - 60, 420 - 130, 60, 130);
     osc_3->setBounds (160 - 60, 600 - 130, 60, 130);
     lfo_1->setBounds (900 - 60, 240 - 130, 60, 130);
@@ -2603,11 +2702,11 @@ void Monique_Ui_Mainwindow::resized()
     osc_wave_1->setBounds (30, 110, 60, 130);
     osc_wave_2->setBounds (90 - 60, 420 - 130, 60, 130);
     sl_morhp_mix->setBounds (1165, 765, 180, 33);
-    button_programm_delete->setBounds (1030 - 60, 10, 60, 25);
+    button_programm_delete->setBounds (1030 - 60, 10, 60, 27);
     filter_type_6_1->setBounds (995 - 60, 110, 60, 30);
     filter_type_6_2->setBounds (995 - 60, 290, 60, 30);
     filter_type_6_3->setBounds (995 - 60, 470, 60, 30);
-    button_ctrl_toggle->setBounds (100, 10, 60, 25);
+    button_ctrl_toggle->setBounds (100, 10, 60, 30);
     speed->setBounds (1285 - 60, 1000 - 130, 60, 130);
     button_open_morph->setBounds (1165 - 60, 765, 60, 33);
     effect_finalizer_switch->setBounds (520 - 25, 670, 25, 130);
@@ -2615,7 +2714,7 @@ void Monique_Ui_Mainwindow::resized()
     label_ui_headline3->setBounds (1165, 666, 60, 35);
     label_ui_headline5->setBounds (1225, 666, 60, 35);
     label_ui_headline6->setBounds (1285, 666, 60, 35);
-    button_values_toggle->setBounds (30, 10, 60, 25);
+    button_values_toggle->setBounds (30, 10, 60, 30);
     octave_offset->setBounds (1435 - 60, 870, 60, 130);
     label_ui_headline4->setBounds (245, 55, 120, 35);
     label_ui_headline7->setBounds (40, 55, 110, 35);
@@ -2674,7 +2773,7 @@ void Monique_Ui_Mainwindow::resized()
     button_show_active_input_l_3_2->setBounds (286, 459, 10, 10);
     button_show_active_input_r_3_1->setBounds (256, 459, 10, 10);
     button_show_active_input_l_3_1->setBounds (225, 459, 10, 10);
-    button_programm_rename->setBounds (970 - 60, 10, 60, 25);
+    button_programm_rename->setBounds (970 - 60, 10, 60, 27);
     //[UserResized] Add your own custom resize handling here..
     if( resizer )
         resizer->setBounds (original_w - 16, original_h - 16, 16, 16);
@@ -3105,20 +3204,27 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_open_oszi)
     {
         //[UserButtonCode_button_open_oszi] -- add your button handler code here..
-        if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+        if( amp_painter )
         {
+            audio_processor->amp_painter = nullptr;
             removeChildComponent( amp_painter );
-            AppInstanceStore::getInstance()->kill_amp_painter();
+            delete amp_painter;
+	    amp_painter = nullptr;
         }
-        else if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_create_amp_painter() )
+        else
         {
             editor_midiio = nullptr;
             editor_morph = nullptr;
             editor_global_settings = nullptr;
             popup = nullptr;
 
+            amp_painter = new Monique_Ui_AmpPainter(synth_data,look_and_feel);
+
             addAndMakeVisible( amp_painter );
             resize_subeditors();
+
+
+            audio_processor->amp_painter = amp_painter;
         }
         //[/UserButtonCode_button_open_oszi]
     }
@@ -3254,7 +3360,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_morph = new Monique_Ui_MorphConfig() );
+            addAndMakeVisible( editor_morph = new Monique_Ui_MorphConfig( ui_refresher, look_and_feel ) );
             resize_subeditors();
         }
         else
@@ -3270,7 +3376,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_values_toggle)
     {
         //[UserButtonCode_button_values_toggle] -- add your button handler code here..
-        UiLookAndFeel::getInstance()->show_values_always ^= true;
+        look_and_feel->show_values_always ^= true;
         //[/UserButtonCode_button_values_toggle]
     }
     else if (buttonThatWasClicked == button_open_config2)
@@ -3280,7 +3386,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         {
             close_all_subeditors();
 
-            addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings() );
+            addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher) );
             resize_subeditors();
         }
         else
@@ -3290,111 +3396,111 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_edit_input_env_1_1)
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[0], &GET_DATA( filter_datas[0] ).input_sustains[0], buttonThatWasClicked, flt_input_1, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[0], &synth_data->filter_datas[0]->input_sustains[0], buttonThatWasClicked, flt_input_1, false );
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2)
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[1], &GET_DATA( filter_datas[0] ).input_sustains[1], buttonThatWasClicked, flt_input_2, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[1], &synth_data->filter_datas[0]->input_sustains[1], buttonThatWasClicked, flt_input_2, false );
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[0] ).input_envs[2], &GET_DATA( filter_datas[0] ).input_sustains[2], buttonThatWasClicked, flt_input_3, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_sustains[2], buttonThatWasClicked, flt_input_3, false );
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1)
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[0], &GET_DATA( filter_datas[1] ).input_sustains[0], buttonThatWasClicked, flt_input_6, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[0], &synth_data->filter_datas[1]->input_sustains[0], buttonThatWasClicked, flt_input_6, true );
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2)
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[1], &GET_DATA( filter_datas[1] ).input_sustains[1], buttonThatWasClicked, flt_input_7, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[1], &synth_data->filter_datas[1]->input_sustains[1], buttonThatWasClicked, flt_input_7, true );
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3)
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[1] ).input_envs[2], &GET_DATA( filter_datas[1] ).input_sustains[2], buttonThatWasClicked, flt_input_8, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[2], &synth_data->filter_datas[1]->input_sustains[2], buttonThatWasClicked, flt_input_8, true );
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1)
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[0], &GET_DATA( filter_datas[2] ).input_sustains[0], buttonThatWasClicked, flt_input_11, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[0], &synth_data->filter_datas[2]->input_sustains[0], buttonThatWasClicked, flt_input_11, true );
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2)
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[1], &GET_DATA( filter_datas[2] ).input_sustains[1], buttonThatWasClicked, flt_input_12, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[1], &synth_data->filter_datas[2]->input_sustains[1], buttonThatWasClicked, flt_input_12, true );
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( filter_datas[2] ).input_envs[2], &GET_DATA( filter_datas[2] ).input_sustains[2], buttonThatWasClicked, flt_input_13, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[2], &synth_data->filter_datas[2]->input_sustains[2], buttonThatWasClicked, flt_input_13, true );
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1)
     {
         //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[0], &GET_DATA( eq_data ).velocity[0], buttonThatWasClicked, eq_1, true );
+        open_env_popup( synth_data->eq_data->envs[0], &synth_data->eq_data->velocity[0], buttonThatWasClicked, eq_1, true );
         //[/UserButtonCode_button_edit_input_env_band_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_2)
     {
         //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[1], &GET_DATA( eq_data ).velocity[1], buttonThatWasClicked, eq_2, true );
+        open_env_popup( synth_data->eq_data->envs[1], &synth_data->eq_data->velocity[1], buttonThatWasClicked, eq_2, true );
         //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3)
     {
         //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[2], &GET_DATA( eq_data ).velocity[2], buttonThatWasClicked, eq_3, true );
+        open_env_popup( synth_data->eq_data->envs[2], &synth_data->eq_data->velocity[2], buttonThatWasClicked, eq_3, true );
         //[/UserButtonCode_button_edit_input_env_band_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_4)
     {
         //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[3], &GET_DATA( eq_data ).velocity[3], buttonThatWasClicked, eq_4, true );
+        open_env_popup( synth_data->eq_data->envs[3], &synth_data->eq_data->velocity[3], buttonThatWasClicked, eq_4, true );
         //[/UserButtonCode_button_edit_input_env_band_4]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_5)
     {
         //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[4], &GET_DATA( eq_data ).velocity[4], buttonThatWasClicked, eq_5, true );
+        open_env_popup( synth_data->eq_data->envs[4], &synth_data->eq_data->velocity[4], buttonThatWasClicked, eq_5, true );
         //[/UserButtonCode_button_edit_input_env_band_5]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_6)
     {
         //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[5], &GET_DATA( eq_data ).velocity[5], buttonThatWasClicked, eq_6, true );
+        open_env_popup( synth_data->eq_data->envs[5], &synth_data->eq_data->velocity[5], buttonThatWasClicked, eq_6, true );
         //[/UserButtonCode_button_edit_input_env_band_6]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_7)
     {
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
-        open_env_popup( GET_DATA( eq_data ).envs[6], &GET_DATA( eq_data ).velocity[6], buttonThatWasClicked, eq_7, true );
+        open_env_popup( synth_data->eq_data->envs[6], &synth_data->eq_data->velocity[6], buttonThatWasClicked, eq_7, true );
         //[/UserButtonCode_button_edit_input_env_band_7]
     }
     else if (buttonThatWasClicked == button_edit_env_chorus)
     {
         //[UserButtonCode_button_edit_env_chorus] -- add your button handler code here..
-        open_env_popup( GET_DATA( chorus_data ).env_data, &GET_DATA( chorus_data ).modulation, buttonThatWasClicked, chorus_modulation, false );
+        open_env_popup( synth_data->chorus_data->env_data, &synth_data->chorus_data->modulation, buttonThatWasClicked, chorus_modulation, false );
         //[/UserButtonCode_button_edit_env_chorus]
     }
     else if (buttonThatWasClicked == button_reset_arp_tune)
     {
         //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
-        _app_instance_store->audio_processor->noteOn( 1, 60+synth_data->note_offset.get_value()-24, 1.0f );
-        _app_instance_store->audio_processor->noteOff( 1, 60+synth_data->note_offset.get_value()-24 );
+        audio_processor->noteOn( 1, 60+synth_data->note_offset.get_value()-24, 1.0f );
+        audio_processor->noteOff( 1, 60+synth_data->note_offset.get_value()-24 );
         //[/UserButtonCode_button_reset_arp_tune]
     }
     else if (buttonThatWasClicked == button_programm_rename)
@@ -3426,14 +3532,11 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         {
             if( program_edit_type == CREATE )
             {
-                if( synth_data->create_new() )
-                {
-                    synth_data->rename( new_name );
-                }
+                synth_data->create_new(new_name);
             }
             else if( program_edit_type = RENAME )
             {
-                synth_data->rename( new_name );
+                synth_data->rename(new_name);
             }
             show_programs_and_select();
         }
@@ -3488,7 +3591,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     bool success = false;
     if( key == KeyPress::escapeKey )
     {
-        MIDIControlHandler::getInstance()->clear();
+        midi_control_handler->clear();
 
         synth_data->ctrl = false;
 
@@ -3522,7 +3625,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
     }
     else if( key.getTextDescription() == "ctrl + M" )
     {
-        MIDIControlHandler::getInstance()->toggle_midi_learn();
+        midi_control_handler->toggle_midi_learn();
         const Desktop& desktop = Desktop::getInstance();
         bool found = false;
         for (int i = 0; i != desktop.getNumMouseSources() ; ++i )
@@ -3624,7 +3727,7 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
         synth_data->ctrl = is_shift_down;
         show_ctrl_state();
 
-        UiLookAndFeel::getInstance()->show_values_always = is_ctrl_down;
+        look_and_feel->show_values_always = is_ctrl_down;
     }
 
     //else
@@ -3642,11 +3745,11 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
     editor_global_settings = nullptr;
     popup = nullptr;
 
-
-    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( amp_painter )
     {
-        removeChildComponent( amp_painter );
-        AppInstanceStore::getInstance()->kill_amp_painter();
+        audio_processor->amp_painter = nullptr;
+        delete amp_painter;
+        amp_painter = nullptr;
     }
 }
 void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_,
@@ -3655,7 +3758,7 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_,
         Monique_Ui_DualSlider*slider_,
         bool has_negative_sustain_ ) noexcept
 {
-    ComponentColours& colours = UiLookAndFeel::getInstance()->colours;
+    ComponentColours& colours = look_and_feel->colours;
     Colour button_off = colours.button_off_colour;
     Colour button_on = colours.button_on_colour;
     button_edit_input_env_1_1->setColour( TextButton::buttonColourId, button_off );
@@ -3688,7 +3791,7 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_,
             comps_to_observe.removeFirstMatchingValue(for_comp_);
             comps_to_observe.add(this);
 
-            addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( this, env_data_, sustain_, for_comp_->getX() < getWidth()/2, has_negative_sustain_ ) );
+            addAndMakeVisible( env_popup = new Monique_Ui_ENVPopup( ui_refresher, this, env_data_, sustain_, for_comp_->getX() < getWidth()/2, has_negative_sustain_ ) );
             env_popup->set_element_to_show(for_comp_,slider_);
             env_popup->set_clickable_components( comps_to_observe );
             for_comp_->setColour( TextButton::buttonColourId, button_on );
@@ -3790,7 +3893,7 @@ bool Monique_Ui_Mainwindow::handle_keep_env_open( ModulationSliderConfigBase*con
     {
         if( not caller_config_->action_keep_env_pop_open_for( env_popup->is_open_for() ) )
         {
-            if( GET_DATA( synth_data ).auto_close_env_popup )
+            if( synth_data->auto_close_env_popup )
             {
                 open_env_popup(nullptr,nullptr,nullptr,nullptr,false);
             }
@@ -3830,7 +3933,7 @@ void Monique_Ui_Mainwindow::resize_subeditors()
         env_popup->update_positions();
     }
 
-    if( Monique_Ui_AmpPainter* amp_painter = AppInstanceStore::getInstance()->get_amp_painter_unsave() )
+    if( amp_painter )
     {
         amp_painter->setBounds(keyboard->getX(), keyboard->getY(), keyboard->getWidth(), keyboard->getHeight());
     }
@@ -3845,11 +3948,11 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     {
         close_all_subeditors();
 
-        addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( _app_instance_store->audio_processor ) );
+        addAndMakeVisible( editor_midiio = new Monique_Ui_MidiIO( ui_refresher, audio_processor ) );
         resize_subeditors();
     }
 #else
-    MIDIControlHandler::getInstance()->toggle_midi_learn();
+    midi_control_handler->toggle_midi_learn();
     AppInstanceStore::getInstance()->editor->show_info_popup(nullptr,nullptr);
 #endif
 }
@@ -3859,7 +3962,7 @@ void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
     {
         close_all_subeditors();
 
-        addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings() );
+        addAndMakeVisible( editor_global_settings = new Monique_Ui_GlobalSettings(ui_refresher) );
         resize_subeditors();
     }
 }
@@ -3882,7 +3985,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
                  parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable"
-                 constructorParams="" variableInitialisers="AudioProcessorEditor(AppInstanceStore::getInstance()-&gt;audio_processor),_app_instance_store(AppInstanceStore::getInstance()),original_w(1465), original_h(1235)"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_" variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;AudioProcessorEditor(ui_refresher_-&gt;audio_processor),&#10;original_w(1465), original_h(1235)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">
   <METHODS>
@@ -4032,49 +4135,49 @@ BEGIN_JUCER_METADATA
   </BACKGROUND>
   <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
                     explicitFocusOrder="0" pos="585r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FXDistortionSlConfig()"/>
-  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
-                    explicitFocusOrder="0" pos="975r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RDrySlConfig()"/>
-  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
-                    explicitFocusOrder="0" pos="915r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RWidthSlConfig()"/>
+                    params="ui_refresher, &#10;new FXDistortionSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
                     explicitFocusOrder="0" pos="855r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new RRoomSlConfig()"/>
-  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
-                    explicitFocusOrder="0" pos="765r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new DelaySlConfig()"/>
-  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="615 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new CModSlConfig()"/>
-  <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="645r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(1)"/>
-  <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
-                    explicitFocusOrder="0" pos="720r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(2)"/>
-  <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
-                    explicitFocusOrder="0" pos="780r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(3)"/>
-  <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
-                    explicitFocusOrder="0" pos="980r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(6)"/>
-  <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
-                    explicitFocusOrder="0" pos="910r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(5)"/>
-  <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
-                    explicitFocusOrder="0" pos="850r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(4)"/>
-  <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="585r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EQSlConfig(0)"/>
+                    params="ui_refresher, &#10;new RRoomSlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
+                    explicitFocusOrder="0" pos="915r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new RWidthSlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
+                    explicitFocusOrder="0" pos="975r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new RDrySlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
                     explicitFocusOrder="0" pos="1065r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new BypassConfig()"/>
+                    params="ui_refresher, &#10;new BypassConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
+                    explicitFocusOrder="0" pos="585r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,0)"/>
+  <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
+                    explicitFocusOrder="0" pos="720r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,2)"/>
+  <GENERICCOMPONENT name="" id="3b0e3a8ef55d061a" memberName="eq_4" virtualName=""
+                    explicitFocusOrder="0" pos="780r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,3)"/>
+  <GENERICCOMPONENT name="" id="8a0f89a0c0f219b8" memberName="eq_5" virtualName=""
+                    explicitFocusOrder="0" pos="850r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,4)"/>
+  <GENERICCOMPONENT name="" id="2b128fb147c2823c" memberName="eq_6" virtualName=""
+                    explicitFocusOrder="0" pos="910r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,5)"/>
+  <GENERICCOMPONENT name="" id="12a573d837478d38" memberName="eq_7" virtualName=""
+                    explicitFocusOrder="0" pos="980r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,6)"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
                     explicitFocusOrder="0" pos="1065r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FColourSlConfig()"/>
+                    params="ui_refresher, &#10;new FColourSlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
+                    explicitFocusOrder="0" pos="765r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new DelaySlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
+                    virtualName="" explicitFocusOrder="0" pos="615 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new CModSlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
+                    explicitFocusOrder="0" pos="645r 800r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,1)"/>
   <LABEL name="" id="4a610cd12c392ab8" memberName="label_effect_hider"
          virtualName="" explicitFocusOrder="0" pos="1065r 815r 540 15"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText=""
@@ -4117,133 +4220,133 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
                     explicitFocusOrder="0" pos="1355r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new SpeedMultiSlConfig()"/>
+                    params="ui_refresher, &#10;new SpeedMultiSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
                     explicitFocusOrder="0" pos="1345r 670 60 130" class="Monique_Ui_DualSlider"
-                    params="new MorphSLConfig(3)"/>
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,3)"/>
   <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
                     explicitFocusOrder="0" pos="1285r 670 60 130" class="Monique_Ui_DualSlider"
-                    params="new MorphSLConfig(2)"/>
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
                     explicitFocusOrder="0" pos="1225r 670 60 130" class="Monique_Ui_DualSlider"
-                    params="new MorphSLConfig(1)"/>
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
                     explicitFocusOrder="0" pos="1165r 670 60 130" class="Monique_Ui_DualSlider"
-                    params="new MorphSLConfig(0)"/>
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
                     explicitFocusOrder="0" pos="90r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new WAVESlConfig(2)"/>
+                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="a8343a0b5df2dc06" memberName="keyboard" virtualName="MidiKeyboardComponent"
                     explicitFocusOrder="0" pos="0 1055 1465 180" class="Component"
-                    params="*_app_instance_store-&gt;audio_processor, MidiKeyboardComponent::horizontalKeyboard"/>
+                    params="*reinterpret_cast&lt; MoniqueAudioProcessor* &gt;( &amp;processor ), MidiKeyboardComponent::horizontalKeyboard"/>
   <GENERICCOMPONENT name="" id="35003b6b21577713" memberName="glide2" virtualName=""
                     explicitFocusOrder="0" pos="100 870 60 130" class="Monique_Ui_DualSlider"
-                    params="new GlideConfig()"/>
+                    params="ui_refresher, &#10;new GlideConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="d8ef93ac038fadca" memberName="arp_step_16" virtualName=""
                     explicitFocusOrder="0" pos="1205r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(15)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,15)"/>
   <GENERICCOMPONENT name="" id="7761deb0276debbd" memberName="arp_step_15" virtualName=""
                     explicitFocusOrder="0" pos="1145r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(14)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,14)"/>
   <GENERICCOMPONENT name="" id="20a9ed6504a039e2" memberName="arp_step_14" virtualName=""
                     explicitFocusOrder="0" pos="1085r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(13)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,13)"/>
   <GENERICCOMPONENT name="" id="791739ade4aee5df" memberName="arp_step_13" virtualName=""
                     explicitFocusOrder="0" pos="965 870 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(12)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,12)"/>
   <GENERICCOMPONENT name="" id="1e3ef8bba1be4b28" memberName="arp_step_12" virtualName=""
                     explicitFocusOrder="0" pos="955r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(11)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,11)"/>
   <GENERICCOMPONENT name="" id="fe823ea88a7a2471" memberName="arp_step_11" virtualName=""
                     explicitFocusOrder="0" pos="895r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(10)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,10)"/>
   <GENERICCOMPONENT name="" id="ee7d6057133dde55" memberName="arp_step_10" virtualName=""
                     explicitFocusOrder="0" pos="835r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(9)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,9)"/>
   <GENERICCOMPONENT name="" id="b4852f8bf0385747" memberName="arp_step_9" virtualName=""
                     explicitFocusOrder="0" pos="775r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(8)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,8)"/>
   <GENERICCOMPONENT name="" id="fd84ed45f47ab8b9" memberName="arp_step_8" virtualName=""
                     explicitFocusOrder="0" pos="705r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(7)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,7)"/>
   <GENERICCOMPONENT name="" id="cf5a0e63bd7f558a" memberName="arp_step_7" virtualName=""
                     explicitFocusOrder="0" pos="645r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(6)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,6)"/>
   <GENERICCOMPONENT name="" id="31712e752afeb9b5" memberName="arp_step_6" virtualName=""
                     explicitFocusOrder="0" pos="585r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(5)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,5)"/>
   <GENERICCOMPONENT name="" id="a729cce2b51e5737" memberName="arp_step_5" virtualName=""
                     explicitFocusOrder="0" pos="525r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(4)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,4)"/>
   <GENERICCOMPONENT name="" id="4ea4b03b58657c40" memberName="arp_step_4" virtualName=""
                     explicitFocusOrder="0" pos="455r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(3)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,3)"/>
   <GENERICCOMPONENT name="" id="b45b0bde6cb27e9d" memberName="arp_step_3" virtualName=""
                     explicitFocusOrder="0" pos="395r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(2)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="be72c3cee3e34864" memberName="arp_step_2" virtualName=""
                     explicitFocusOrder="0" pos="335r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(1)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="6665063ca7bdff41" memberName="arp_step_1" virtualName=""
                     explicitFocusOrder="0" pos="275r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new ArpStepSlConfig(0)"/>
+                    params="ui_refresher, &#10;new ArpStepSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="bb9c66366ce375c" memberName="shuffle" virtualName=""
                     explicitFocusOrder="0" pos="30 870 60 130" class="Monique_Ui_DualSlider"
-                    params="new ShuffleConfig()"/>
+                    params="ui_refresher, &#10;new ShuffleConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="6e5608d47c1be7c4" memberName="flt_sustain_4" virtualName=""
                     explicitFocusOrder="0" pos="395r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FSustainSlConfig()"/>
+                    params="ui_refresher, new FSustainSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="8386fe429fe8a2e6" memberName="flt_decay_4" virtualName=""
                     explicitFocusOrder="0" pos="335r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FDecaySlConfig()&#10;"/>
+                    params="ui_refresher, new FDecaySlConfig(synth_data)&#10;"/>
   <GENERICCOMPONENT name="" id="bb503e115ddb6edb" memberName="flt_attack_4" virtualName=""
                     explicitFocusOrder="0" pos="275r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FAttackSlConfig()"/>
+                    params="ui_refresher, new FAttackSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="ca4537ccb809ca96" memberName="flt_release_3" virtualName=""
                     explicitFocusOrder="0" pos="725r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FReleaseSlConfig(2)"/>
+                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="a60fcd747c533a26" memberName="flt_sustain_time_3"
                     virtualName="" explicitFocusOrder="0" pos="665r 600r 60 130"
-                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(2)"/>
+                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="78d4de9e0ffe3029" memberName="flt_sustain_3" virtualName=""
                     explicitFocusOrder="0" pos="605r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FSustainSlConfig(2)"/>
+                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="e8b49d00205726e6" memberName="flt_decay_3" virtualName=""
                     explicitFocusOrder="0" pos="545r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FDecaySlConfig(2)"/>
+                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="638e13e96c94deb1" memberName="flt_attack_3" virtualName=""
                     explicitFocusOrder="0" pos="485r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FAttackSlConfig(2)"/>
+                    params="ui_refresher, &#10;new FAttackSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="4e206df1142d5f1d" memberName="flt_release_2" virtualName=""
                     explicitFocusOrder="0" pos="725r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FReleaseSlConfig(1)"/>
+                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="b2e468ddbdcb0be8" memberName="flt_sustain_time_2"
                     virtualName="" explicitFocusOrder="0" pos="665r 420r 60 130"
-                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(1)"/>
+                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="aa6aa381eebdd61" memberName="flt_sustain_2" virtualName=""
                     explicitFocusOrder="0" pos="605r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FSustainSlConfig(1)"/>
+                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="140fc1e77383e0f9" memberName="flt_decay_2" virtualName=""
                     explicitFocusOrder="0" pos="545r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FDecaySlConfig(1)"/>
+                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="8a6f21a1f4a86dd" memberName="flt_attack_2" virtualName=""
                     explicitFocusOrder="0" pos="485r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FAttackSlConfig(1)"/>
+                    params="ui_refresher, &#10;new FAttackSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="b17b21322ed6df73" memberName="flt_release_1" virtualName=""
                     explicitFocusOrder="0" pos="725r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FReleaseSlConfig(0)"/>
+                    params="ui_refresher, &#10;new FReleaseSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="1460533da718423d" memberName="flt_sustain_time_1"
                     virtualName="" explicitFocusOrder="0" pos="665r 240r 60 130"
-                    class="Monique_Ui_DualSlider" params="new FSustainTimeSlConfig(0)"/>
+                    class="Monique_Ui_DualSlider" params="ui_refresher, &#10;new FSustainTimeSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="16f83a5a025850d0" memberName="flt_sustain_1" virtualName=""
                     explicitFocusOrder="0" pos="605r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FSustainSlConfig(0)"/>
+                    params="ui_refresher, &#10;new FSustainSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="dc67a284425c81d9" memberName="flt_decay_1" virtualName=""
                     explicitFocusOrder="0" pos="545r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FDecaySlConfig(0)"/>
+                    params="ui_refresher, &#10;new FDecaySlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="1a64935d9407f5bb" memberName="flt_attack_1" virtualName=""
                     explicitFocusOrder="0" pos="425 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FAttackSlConfig(0)"/>
+                    params="ui_refresher,&#10;new FAttackSlConfig(synth_data,0)"/>
   <LABEL name="" id="39e8fb50cf1d668d" memberName="label_monolisa" virtualName=""
          explicitFocusOrder="0" pos="1220r 50r 190 50" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="M O N I Q U E" editableSingleClick="0"
@@ -4350,23 +4453,23 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="7c9b1844748d88e" memberName="combo_programm" virtualName=""
-            explicitFocusOrder="0" pos="335 10 310 25" tooltip="Select and load a program of the selected bank (one box left)."
+            explicitFocusOrder="0" pos="335 10 315 27" tooltip="Select and load a program of the selected bank (one box left)."
             editable="1" layout="33" items="" textWhenNonSelected="SELECT PROGRAM"
             textWhenNoItems="EMPTY BANK"/>
   <TEXTBUTTON name="" id="dd0cd965aaddf5ba" memberName="button_programm_left"
-              virtualName="" explicitFocusOrder="0" pos="215 10 60 25" tooltip="Load the program before of the selected bank (right of this button)."
+              virtualName="" explicitFocusOrder="0" pos="215 10 60 27" tooltip="Load the program before of the selected bank (right of this button)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&lt;"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6ccb0337451b3a26" memberName="button_programm_right"
-              virtualName="" explicitFocusOrder="0" pos="710r 10 60 25" tooltip="Load the next program of the selected bank."
+              virtualName="" explicitFocusOrder="0" pos="710r 10 60 27" tooltip="Load the next program of the selected bank."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&gt;"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b91a29c51d2d93f1" memberName="button_programm_replace"
-              virtualName="" explicitFocusOrder="0" pos="910r 10 60 25" tooltip="Replaces the selected program."
+              virtualName="" explicitFocusOrder="0" pos="910r 10 60 27" tooltip="Replaces the selected program."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="REPLACE"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="9481aeac211cafc0" memberName="button_programm_new"
-              virtualName="" explicitFocusOrder="0" pos="850r 10 60 25" tooltip="Create a new program in the selected bank."
+              virtualName="" explicitFocusOrder="0" pos="850r 10 60 27" tooltip="Create a new program in the selected bank."
               bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="NEW"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="e5ff1639c5671984" memberName="button_open_oszi" virtualName=""
@@ -4378,144 +4481,144 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="MIDI"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_bank" virtualName=""
-            explicitFocusOrder="0" pos="275 10 60 25" tooltip="Select the current program bank."
+            explicitFocusOrder="0" pos="275 10 60 27" tooltip="Select the current program bank."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <TEXTBUTTON name="" id="aa7c44443637097c" memberName="button_programm_load"
-              virtualName="" explicitFocusOrder="0" pos="770r 10 60 25" tooltip="Load the selected program."
+              virtualName="" explicitFocusOrder="0" pos="770r 10 60 27" tooltip="Load the selected program."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LOAD"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="e8e2f9e6488018da" memberName="osc_1" virtualName=""
-                    explicitFocusOrder="0" pos="160r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new OSCSlConfig(0)"/>
+                    explicitFocusOrder="0" pos="100 240r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="308060a72bcb3066" memberName="osc_2" virtualName=""
                     explicitFocusOrder="0" pos="160r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new OSCSlConfig(1)"/>
+                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
                     explicitFocusOrder="0" pos="160r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new OSCSlConfig(2)"/>
+                    params="ui_refresher, &#10;new OSCSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
                     explicitFocusOrder="0" pos="900r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new LFOSlConfig(0)"/>
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
                     explicitFocusOrder="0" pos="1065r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FCutoffSLConfig(0)"/>
+                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
                     explicitFocusOrder="0" pos="900r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new LFOSlConfig(1)"/>
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
                     explicitFocusOrder="0" pos="900r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new LFOSlConfig(2)"/>
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
                     explicitFocusOrder="0" pos="1065r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FCutoffSLConfig(1)"/>
+                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="d7143931caaf1976" memberName="flt_cutoff_3" virtualName=""
                     explicitFocusOrder="0" pos="1065r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FCutoffSLConfig(2)"/>
+                    params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
                     explicitFocusOrder="0" pos="215 110 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(0,0)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,0)"/>
   <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
                     explicitFocusOrder="0" pos="335r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(0,1)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,1)"/>
   <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
                     explicitFocusOrder="0" pos="395r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(0,2)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,2)"/>
   <GENERICCOMPONENT name="" id="16470f25818b13ce" memberName="flt_distortion_1" virtualName=""
                     explicitFocusOrder="0" pos="1275r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new GForceSlConfig(0)"/>
+                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
                     explicitFocusOrder="0" pos="275r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(1,0)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,0)"/>
   <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
                     explicitFocusOrder="0" pos="335r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(1,1)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,1)"/>
   <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
                     explicitFocusOrder="0" pos="395r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(1,2)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,2)"/>
   <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
                     explicitFocusOrder="0" pos="275r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(2,0)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,0)"/>
   <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
                     explicitFocusOrder="0" pos="335r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(2,1)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,1)"/>
   <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
                     explicitFocusOrder="0" pos="395r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new InputSlConfig(2,2)"/>
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,2)"/>
   <GENERICCOMPONENT name="" id="31da059865f2567b" memberName="flt_resonance_1" virtualName=""
                     explicitFocusOrder="0" pos="1125r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FResonanceSLConfig(0)"/>
+                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="8e9c871f56bec21b" memberName="flt_gain_1" virtualName=""
                     explicitFocusOrder="0" pos="1185r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FGainSLConfig(0)"/>
+                    params="ui_refresher, &#10;new FGainSLConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="75550ba5bb7ce4e0" memberName="flt_resonance_2" virtualName=""
                     explicitFocusOrder="0" pos="1125r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FResonanceSLConfig(1)"/>
+                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="577a04755f6e3eca" memberName="flt_gain_2" virtualName=""
                     explicitFocusOrder="0" pos="1185r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FGainSLConfig(1)"/>
+                    params="ui_refresher, &#10;new FGainSLConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="aa2b2c2864221426" memberName="flt_resonance_3" virtualName=""
                     explicitFocusOrder="0" pos="1125r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FResonanceSLConfig(2)"/>
+                    params="ui_refresher, &#10;new FResonanceSLConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="5d7a48dcb59f2814" memberName="flt_gain_3" virtualName=""
                     explicitFocusOrder="0" pos="1185r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FGainSLConfig(2)"/>
+                    params="ui_refresher, &#10;new FGainSLConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="ba71384f051dd23" memberName="flt_volume_1" virtualName=""
                     explicitFocusOrder="0" pos="1375 110 60 130" class="Monique_Ui_DualSlider"
-                    params="new FVolumeSlConfig(0)"/>
+                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
                     explicitFocusOrder="0" pos="1435r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FVolumeSlConfig(1)"/>
+                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
                     explicitFocusOrder="0" pos="1435r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FVolumeSlConfig(2)"/>
+                    params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
                     explicitFocusOrder="0" pos="810r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EnvLfoSlConfig(0)"/>
+                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="944e7d4439e86773" memberName="lfo_opt_2" virtualName=""
                     explicitFocusOrder="0" pos="810r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EnvLfoSlConfig(1)"/>
+                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="2d0d9d7f81f143" memberName="lfo_opt_3" virtualName=""
                     explicitFocusOrder="0" pos="810r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new EnvLfoSlConfig(2)"/>
+                    params="ui_refresher, &#10;new EnvLfoSlConfig(synth_data,2)"/>
   <TEXTBUTTON name="" id="9669ee100bf4ee95" memberName="button_sequence_1"
               virtualName="" explicitFocusOrder="0" pos="275r 890r 60 20" tooltip="Turns this step on or off.&#10;(Has no effect if the arpeggiator (ARP) is turned off)"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="3eaa1962698c14dc" memberName="flt_release_4" virtualName=""
                     explicitFocusOrder="0" pos="455r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FReleaseSlConfig()"/>
+                    params="ui_refresher, new FReleaseSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
                     explicitFocusOrder="0" pos="1435r 800r 60 130" class="Monique_Ui_DualSlider"
-                    params="new VolumeConfig()"/>
+                    params="ui_refresher, &#10;new VolumeConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
                     explicitFocusOrder="0" pos="1275r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new GForceSlConfig(1)"/>
+                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="766d923ef01630c7" memberName="flt_distortion_3" virtualName=""
                     explicitFocusOrder="0" pos="1275r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new GForceSlConfig(2)"/>
+                    params="ui_refresher, &#10;new GForceSlConfig(synth_data,2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
               virtualName="" explicitFocusOrder="0" pos="1295 870 60 27" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x1"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
                     explicitFocusOrder="0" pos="90r 805r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FMFreqSlConfig()"/>
+                    params="ui_refresher, &#10;new FMFreqSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="53fd0bab31e1ce" memberName="flt_attack_6" virtualName=""
                     explicitFocusOrder="0" pos="160r 805r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FMAmountSlConfig()"/>
+                    params="ui_refresher, &#10;new FMAmountSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="7abd69d58b16456c" memberName="osc_wave_1" virtualName=""
                     explicitFocusOrder="0" pos="30 110 60 130" class="Monique_Ui_DualSlider"
-                    params="new WAVESlConfig(0)"/>
+                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="289652ee3553683c" memberName="osc_wave_2" virtualName=""
                     explicitFocusOrder="0" pos="90r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new WAVESlConfig(1)"/>
+                    params="ui_refresher, &#10;new WAVESlConfig(synth_data,1)"/>
   <SLIDER name="new slider" id="20de89a2be986cc1" memberName="sl_morhp_mix"
           virtualName="" explicitFocusOrder="0" pos="1165 765 180 33" tooltip="Morph between the morph sliders. &#10;&#10;Take a look at the MORPH MOTOR time in the SETUP to control the speed of this morph."
           min="0" max="3000" int="0.010000000000000000208" style="LinearHorizontal"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="" id="87db63f1017ff04b" memberName="button_programm_delete"
-              virtualName="" explicitFocusOrder="0" pos="1030r 10 60 25" tooltip="Delete the selected program."
+              virtualName="" explicitFocusOrder="0" pos="1030r 10 60 27" tooltip="Delete the selected program."
               bgColOff="ff000000" textCol="ffff0000" textColOn="ffff7900" buttonText="DELETE"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="VOICE 1" id="bcfd327216c64e93" memberName="filter_type_6_1"
@@ -4531,12 +4634,12 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="LP"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="4d29473e06fd562f" memberName="button_ctrl_toggle"
-              virtualName="" explicitFocusOrder="0" pos="100 10 60 25" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
+              virtualName="" explicitFocusOrder="0" pos="100 10 60 30" tooltip="Turns the SHIFT mode on or off.&#10;&#10;The shift mode moves all back sliders to front and front sliders to back."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
                     explicitFocusOrder="0" pos="1285r 1000r 60 130" class="Monique_Ui_DualSlider"
-                    params="new BPMSlConfig()"/>
+                    params="ui_refresher, &#10;new BPMSlConfig(synth_data)"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
               virtualName="" explicitFocusOrder="0" pos="1165r 765 60 33" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT"
@@ -4566,12 +4669,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
-              virtualName="" explicitFocusOrder="0" pos="30 10 60 25" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
+              virtualName="" explicitFocusOrder="0" pos="30 10 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
                     explicitFocusOrder="0" pos="1435r 870 60 130" class="Monique_Ui_DualSlider"
-                    params="new OctaveOffsetSlConfig()"/>
+                    params="ui_refresher, &#10;new OctaveOffsetSlConfig(synth_data)"/>
   <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline4"
          virtualName="" explicitFocusOrder="0" pos="245 55 120 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER INPUTS" editableSingleClick="0"
@@ -4664,7 +4767,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="de3bbc3ac23fc36a" memberName="label_ui_headline24"
          virtualName="" explicitFocusOrder="0" pos="1375 830 60 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OCTAVE" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="TUNE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="ecf3af4d030b7b19" memberName="label_ui_headline25"
@@ -4674,7 +4777,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c54e3e2b543626c5" memberName="volume_master_meter"
                     virtualName="Monique_Ui_SegmentedMeter" explicitFocusOrder="0"
-                    pos="1375 670 60 27" class="Component" params=""/>
+                    pos="1375 670 60 27" class="Component" params="ui_refresher"/>
   <LABEL name="DL" id="ad887653d405d154" memberName="label_eq" virtualName=""
          explicitFocusOrder="0" pos="740 630 90 35" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="EQUALIZER" editableSingleClick="0"
@@ -4759,15 +4862,15 @@ BEGIN_JUCER_METADATA
               needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="fa465a4afae26fc7" memberName="flt_pan_3" virtualName=""
                     explicitFocusOrder="0" pos="1335r 600r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FPanSlConfig(2)"/>
+                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="6397e9617b7dcaf9" memberName="flt_pan_2" virtualName=""
                     explicitFocusOrder="0" pos="1335r 420r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FPanSlConfig(1)"/>
+                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="e272cc245f5b87a1" memberName="flt_pan_1" virtualName=""
                     explicitFocusOrder="0" pos="1335r 240r 60 130" class="Monique_Ui_DualSlider"
-                    params="new FPanSlConfig(0)"/>
+                    params="ui_refresher, &#10;new FPanSlConfig(synth_data,0)"/>
   <TEXTBUTTON name="" id="db06e124f1fcbf4d" memberName="button_reset_arp_tune"
-              virtualName="" explicitFocusOrder="0" pos="1435r 870 60 27" tooltip="Reset the currently used note for the arpegiator to the defined note offset. (Triggers a note: semitones offset (back slider))"
+              virtualName="" explicitFocusOrder="0" pos="1435r 870 60 27" tooltip="Resets the arpeggiator to the defined program note.&#10;(Triggers a note which is defineable by the note dial (back dial))"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RESET"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="bcf2554ab289ccda" memberName="button_show_active_input_r_2_3"
@@ -4819,7 +4922,7 @@ BEGIN_JUCER_METADATA
               textCol="ffff3b00" textColOn="ffffff00" buttonText="" connectedEdges="0"
               needsCallback="0" radioGroupId="0"/>
   <TEXTBUTTON name="" id="5e29190ea95f8441" memberName="button_programm_rename"
-              virtualName="" explicitFocusOrder="0" pos="970r 10 60 25" tooltip="Replaces the selected program."
+              virtualName="" explicitFocusOrder="0" pos="970r 10 60 27" tooltip="Rename the selected program."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RENAME"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
@@ -4833,9 +4936,8 @@ END_JUCER_METADATA
 
 // JUCER_RESOURCE: empty_png, 159, "../Images/empty.png"
 static const unsigned char resource_Monique_Ui_Mainwindow_empty_png[] = { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,1,0,0,0,1,8,4,0,0,0,181,28,12,2,0,0,0,2,98,75,71,68,0,0,170,141,35,50,0,0,
-        0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,9,18,16,13,44,67,236,72,225,0,0,0,25,116,69,88,116,67,111,109,109,101,110,116,0,67,114,101,97,116,101,100,32,119,105,116,
-        104,32,71,73,77,80,87,129,14,23,0,0,0,11,73,68,65,84,8,215,99,248,255,31,0,3,0,1,255,100,93,114,245,0,0,0,0,73,69,78,68,174,66,96,130,0,0
-                                                                        };
+0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,0,7,116,73,77,69,7,223,9,18,16,13,44,67,236,72,225,0,0,0,25,116,69,88,116,67,111,109,109,101,110,116,0,67,114,101,97,116,101,100,32,119,105,116,
+104,32,71,73,77,80,87,129,14,23,0,0,0,11,73,68,65,84,8,215,99,248,255,31,0,3,0,1,255,100,93,114,245,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
 
 const char* Monique_Ui_Mainwindow::empty_png = (const char*) resource_Monique_Ui_Mainwindow_empty_png;
 const int Monique_Ui_Mainwindow::empty_pngSize = 159;

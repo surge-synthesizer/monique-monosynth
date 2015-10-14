@@ -17,8 +17,8 @@
   ==============================================================================
 */
 
-#ifndef __JUCE_HEADER_7345134BC6695C0E__
-#define __JUCE_HEADER_7345134BC6695C0E__
+#ifndef __JUCE_HEADER_A9EA3B45608EED62__
+#define __JUCE_HEADER_A9EA3B45608EED62__
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
@@ -40,11 +40,14 @@ class Monique_Ui_DragPad  : public Component
 {
 public:
     //==============================================================================
-    Monique_Ui_DragPad ();
+    Monique_Ui_DragPad (Monique_Ui_Refresher*ui_refresher_);
     ~Monique_Ui_DragPad();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    Monique_Ui_Refresher*const ui_refresher;
+    UiLookAndFeel* look_and_feel;
+
     const float original_w;
     const float original_h;
 
@@ -76,4 +79,4 @@ private:
 //[EndFile] You can add extra defines here...
 //[/EndFile]
 
-#endif   // __JUCE_HEADER_7345134BC6695C0E__
+#endif   // __JUCE_HEADER_A9EA3B45608EED62__

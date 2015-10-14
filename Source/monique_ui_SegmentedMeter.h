@@ -22,7 +22,7 @@ public Monique_Ui_Refreshable
     bool needsRepaint;
 
 public:
-    COLD Monique_Ui_SegmentedMeter() noexcept;
+    COLD Monique_Ui_SegmentedMeter( Monique_Ui_Refresher*const ui_refresher_ ) noexcept;
     COLD ~Monique_Ui_SegmentedMeter() noexcept;
 
 private:

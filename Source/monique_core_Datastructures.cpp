@@ -42,18 +42,25 @@ static inline int reduce_id_to_smaller_100( int id_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD RuntimeListener::RuntimeListener() noexcept :
-sample_rate(RuntimeNotifyer::getInstance()->sample_rate),
-            sample_rate_1ths(RuntimeNotifyer::getInstance()->sample_rate_1ths),
-            block_size(RuntimeNotifyer::getInstance()->block_size)
+COLD RuntimeListener::RuntimeListener( RuntimeNotifyer*const notifyer_ ) noexcept :
+notifyer( notifyer_ ),
+          sample_rate( notifyer_ ? notifyer_->sample_rate : 1 ),
+          sample_rate_1ths( notifyer_ ? notifyer_->sample_rate_1ths : 1 ),
+          block_size( notifyer_ ? notifyer_->block_size : 1 )
 {
-    RuntimeNotifyer::getInstance()->listeners.add( this );
-    RuntimeNotifyer::getInstance()->listeners.minimiseStorageOverheads();
+    if( notifyer )
+    {
+        notifyer->listeners.add( this );
+        notifyer->listeners.minimiseStorageOverheads();
+    }
 }
 
 COLD RuntimeListener::~RuntimeListener() noexcept
 {
-    RuntimeNotifyer::getInstance()->listeners.removeFirstMatchingValue( this );
+    if( notifyer )
+    {
+        notifyer->listeners.removeFirstMatchingValue( this );
+    }
 }
 
 //==============================================================================
@@ -69,19 +76,11 @@ COLD void RuntimeListener::block_size_changed() noexcept {};
 //==============================================================================
 //==============================================================================
 //==============================================================================
-juce_ImplementSingleton (RuntimeNotifyer)
-
 COLD RuntimeNotifyer::RuntimeNotifyer() noexcept :
 sample_rate(44100),
             sample_rate_1ths( 1.0/44100),
-            block_size(512)
-{
-}
-
-COLD RuntimeNotifyer::~RuntimeNotifyer() noexcept
-{
-    clearSingletonInstance();
-}
+block_size(512) {}
+COLD RuntimeNotifyer::~RuntimeNotifyer() noexcept {}
 
 //==============================================================================
 COLD void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
@@ -104,14 +103,6 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
     }
 };
 
-double RuntimeNotifyer::get_sample_rate() const noexcept
-{
-    return sample_rate;
-}
-int RuntimeNotifyer::get_block_size() const noexcept
-{
-    return block_size;
-}
 
 //==============================================================================
 //==============================================================================
@@ -126,8 +117,6 @@ samples_since_start(0),
                     clock_counter()
 #endif
 {
-    mono_ParameterOwnerStore::getInstance()->runtime_info = this;
-
     std::cout << "MONIQUE: init RTI" << std::endl;
 }
 COLD RuntimeInfo::~RuntimeInfo() noexcept {}
@@ -166,7 +155,7 @@ static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Param
 
 #define OSC_NAME "OSC"
 #define FM_NAME "FM"
-COLD FMOscData::FMOscData() noexcept
+COLD FMOscData::FMOscData( SmoothManager*const smooth_manager_ ) noexcept
 :
 fm_freq
 (
@@ -176,7 +165,7 @@ fm_freq
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_multi"),
     generate_short_human_name(FM_NAME,"tune")
 ),
-fm_freq_smoother(&fm_freq),
+fm_freq_smoother(smooth_manager_,&fm_freq),
 fm_shot
 (
     true,
@@ -201,7 +190,7 @@ fm_swing
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_swing"),
     generate_short_human_name(FM_NAME,"fm_swing")
 ),
-fm_swing_smoother(&fm_swing),
+fm_swing_smoother(smooth_manager_,&fm_swing),
 master_shift
 (
     MIN_MAX( 0, 1 ),
@@ -211,7 +200,7 @@ master_shift
     generate_short_human_name(OSC_NAME,"master_phase"),
     0
 ),
-master_shift_smoother(&master_shift)
+master_shift_smoother(smooth_manager_,&master_shift)
 {
 }
 COLD FMOscData::~FMOscData() noexcept {}
@@ -237,7 +226,7 @@ static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Par
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD OSCData::OSCData( int id_ ) noexcept
+COLD OSCData::OSCData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 id(id_),
 sync
@@ -259,7 +248,7 @@ wave
     generate_param_name(OSC_NAME,id_,"wave"),
     generate_short_human_name(OSC_NAME,id_,"wave")
 ),
-wave_smoother(&wave),
+wave_smoother(smooth_manager_,&wave),
 fm_amount
 (
     MIN_MAX( 0, 1 ),
@@ -268,7 +257,7 @@ fm_amount
     generate_param_name(OSC_NAME,id_,"fm_power"),
     generate_short_human_name(OSC_NAME,id_,"fm_mass")
 ),
-fm_amount_smoother(&fm_amount),
+fm_amount_smoother(smooth_manager_,&fm_amount),
 tune
 (
     MIN_MAX( -24, 24 ),
@@ -278,7 +267,7 @@ tune
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
 ),
-tune_smoother(&tune),
+tune_smoother(smooth_manager_,&tune),
 is_lfo_modulated
 (
     false,
@@ -318,7 +307,7 @@ static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Param
 //==============================================================================
 //==============================================================================
 #define ENV_NAME "ENV"
-COLD ENVData::ENVData( int id_ ) noexcept
+COLD ENVData::ENVData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 id( id_ ),
 
@@ -362,7 +351,7 @@ sustain
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
-sustain_smoother(&sustain),
+sustain_smoother(smooth_manager_,&sustain),
 sustain_time
 (
     MIN_MAX( 0.001, 1 ),
@@ -422,7 +411,7 @@ static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter
 //==============================================================================
 #define FILTER_NAME "FLT"
 #define FILTER_NAME_SHORT "F"
-COLD FilterData::FilterData( int id_ ) noexcept
+COLD FilterData::FilterData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 // ----
 filter_type
@@ -442,7 +431,7 @@ adsr_lfo_mix
     generate_param_name(FILTER_NAME,id_,"adsr_lfo_mix"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"lfo_mix")
 ),
-adsr_lfo_mix_smoother(&adsr_lfo_mix),
+adsr_lfo_mix_smoother(smooth_manager_,&adsr_lfo_mix),
 
 // ----
 distortion
@@ -454,7 +443,7 @@ distortion
     generate_short_human_name(FILTER_NAME_SHORT,id_,"destroy"),
     0.6
 ),
-distortion_smoother(&distortion),
+distortion_smoother(smooth_manager_,&distortion),
 modulate_distortion
 (
     false,
@@ -472,7 +461,7 @@ cutoff
     generate_short_human_name(FILTER_NAME_SHORT,id_,"cutoff"),
     0.7
 ),
-cutoff_smoother(&cutoff),
+cutoff_smoother(smooth_manager_,&cutoff),
 modulate_cutoff
 (
     true,
@@ -490,7 +479,7 @@ resonance
     generate_short_human_name(FILTER_NAME_SHORT,id_,"resonance"),
     0.2
 ),
-resonance_smoother(&resonance),
+resonance_smoother(smooth_manager_,&resonance),
 modulate_resonance
 (
     true,
@@ -508,7 +497,7 @@ gain
     generate_short_human_name(FILTER_NAME_SHORT,id_,"gain"),
     0.8
 ),
-gain_smoother(&gain),
+gain_smoother(smooth_manager_,&gain),
 modulate_gain
 (
     true,
@@ -526,7 +515,7 @@ pan
     generate_short_human_name(FILTER_NAME_SHORT,id_,"pan"),
     0.0
 ),
-pan_smoother(&pan),
+pan_smoother(smooth_manager_,&pan),
 modulate_pan
 (
     false,
@@ -543,7 +532,7 @@ output
     generate_short_human_name(FILTER_NAME_SHORT,id_,"volume"),
     0.6
 ),
-output_smoother(&output),
+output_smoother(smooth_manager_,&output),
 
 modulate_output
 (
@@ -578,11 +567,11 @@ input_holds
 
 // ----
 input_envs( /* INIT IN BODY */ ),
-env_data( new ENVData( id_ ) )
+env_data( new ENVData( smooth_manager_, id_ ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
-        ENVData* env_data = new ENVData( i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
+        ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
         env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
         env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
         env_data->max_release_time = env_data->max_release_time.get_info().max_value;
@@ -799,7 +788,7 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
 //==============================================================================
 //==============================================================================
 #define EQ_NAME "EQ"
-COLD EQData::EQData( int id_ ) noexcept
+COLD EQData::EQData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 velocity
 (
@@ -831,11 +820,11 @@ bypass
     generate_param_name(EQ_NAME,id_,"mix"),
     generate_short_human_name(EQ_NAME,"mix")
 ),
-bypass_smoother(&bypass)
+bypass_smoother(smooth_manager_,&bypass)
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
-        ENVData* env_data = new ENVData( band_id+EQ_ENV_ID_OFFSET );
+        ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
         env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
         env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
         env_data->max_release_time = env_data->max_release_time.get_info().max_value;
@@ -955,7 +944,7 @@ static inline void collect_saveable_parameters( ReverbData* data_, Array< Parame
 //==============================================================================
 //==============================================================================
 #define CHORUS_NAME "CHR"
-COLD ChorusData::ChorusData( int id_ ) noexcept
+COLD ChorusData::ChorusData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 modulation
 (
@@ -973,7 +962,7 @@ hold_modulation
 ),
 
 // ----
-env_data( new ENVData( CHORUS_ENV_ID_OFFSET ) )
+env_data( new ENVData( smooth_manager_, CHORUS_ENV_ID_OFFSET ) )
 {
     env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
     env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
@@ -1376,24 +1365,23 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD void set_default_midi_assignments() noexcept
+COLD void set_default_midi_assignments( MoniqueSynthData& synth_data ) noexcept
 {
     MIDIControl* midi_control;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    OSCData& master_osc_data( GET_DATA( osc_datas[MASTER_OSC] ) );
-    FMOscData& fm_osc_data( GET_DATA( fm_osc_data ) );
-    OSCData& osc_data_2( GET_DATA( osc_datas[1] ) );
-    OSCData& osc_data_3( GET_DATA( osc_datas[2] ) );
-    LFOData& master_lfo_data( GET_DATA( lfo_datas[MASTER_OSC] ) );
-    LFOData& lfo_data_2( GET_DATA( lfo_datas[1] ) );
-    LFOData& lfo_data_3( GET_DATA( lfo_datas[2] ) );
+    OSCData& master_osc_data( *synth_data.osc_datas[MASTER_OSC] );
+    FMOscData& fm_osc_data( *synth_data.fm_osc_data );
+    OSCData& osc_data_2( *synth_data.osc_datas[1] );
+    OSCData& osc_data_3( *synth_data.osc_datas[2] );
+    LFOData& master_lfo_data( *synth_data.lfo_datas[MASTER_OSC] );
+    LFOData& lfo_data_2( *synth_data.lfo_datas[1] );
+    LFOData& lfo_data_3( *synth_data.lfo_datas[2] );
     ENVData& main_env_data( *synth_data.env_data );
-    FilterData& filter_data_1( GET_DATA( filter_datas[0] ) );
-    FilterData& filter_data_2( GET_DATA( filter_datas[1] ) );
-    FilterData& filter_data_3( GET_DATA( filter_datas[2] ) );
-    ReverbData& reverb_data( GET_DATA( reverb_data ) );
-    ChorusData& chorus_data( GET_DATA( chorus_data ) );
+    FilterData& filter_data_1( *synth_data.filter_datas[0] );
+    FilterData& filter_data_2( *synth_data.filter_datas[1] );
+    FilterData& filter_data_3( *synth_data.filter_datas[2] );
+    ReverbData& reverb_data( *synth_data.reverb_data );
+    ChorusData& chorus_data( *synth_data.chorus_data );
 
     // 0 Bank Select // FIX!
     // 1
@@ -1599,362 +1587,411 @@ COLD void set_default_midi_assignments() noexcept
     // TODO
     // 126 UNUSED
     // 127 UNUSED
+};
 
-    ArpSequencerData& arp_data( GET_DATA( arp_data ) );
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct CREATE_SIN_LOOKUP
+{
+    static float* exec() noexcept
+    {
+        float* table_ = new float[LOOKUP_TABLE_SIZE];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        {
+            table_[i] = std::sin( double(i) / TABLESIZE_MULTI );
+        }
+
+        return table_;
+    }
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct CREATE_COS_LOOKUP
+{
+    static float* exec() noexcept
+    {
+        float* table_ = new float[LOOKUP_TABLE_SIZE];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        {
+            table_[i] = std::cos( double(i) / TABLESIZE_MULTI );
+        }
+
+        return table_;
+    }
+};
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct CREATE_EXP_LOOKUP
+{
+    static float* exec() noexcept
+    {
+        float* table_ = new float[LOOKUP_TABLE_SIZE];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        {
+#define EXP_PI_05_CORRECTION 4.81048f
+#define LOG_PI_1_CORRECTION 1.42108f
+#define EXP_PI_1_CORRECTION 23.1407f
+            table_[i] = (std::exp( double(i) / TABLESIZE_MULTI ) / EXP_PI_1_CORRECTION);
+        }
+
+        return table_;
+    }
 };
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 #define SYNTH_DATA_NAME "SD"
-COLD MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type ) noexcept
+COLD MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type,
+        UiLookAndFeel*look_and_feel_,
+        MoniqueAudioProcessor*const audio_processor_,
+        RuntimeNotifyer*const runtime_notifyer_,
+        RuntimeInfo*const info_,
+        DataBuffer*data_buffer_ ) noexcept
 :
-id( data_type ),
+ui_look_and_feel( look_and_feel_ ),
+                  audio_processor( audio_processor_ ),
+                  smooth_manager( data_type == MASTER ? new SmoothManager(runtime_notifyer_) : nullptr ),
+                  runtime_notifyer( runtime_notifyer_ ),
+                  runtime_info( info_ ),
+                  data_buffer( data_buffer_ ),
 
-    volume
-    (
-        MIN_MAX( 0, 1 ),
-        0.9,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
-        generate_short_human_name("MAIN","volume")
-    ),
-    volume_smoother(&volume),
-    glide
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
-        generate_short_human_name("GLOB","note_glide")
-    ),
-    delay
-    (
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
-        generate_short_human_name("FX","delay")
-    ),
-    delay_smoother(&delay),
-    effect_bypass
-    (
-        MIN_MAX( 0, 1 ),
-        1,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
-        generate_short_human_name("FX","mix")
-    ),
-    effect_bypass_smoother(&effect_bypass),
-    shape
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
-        generate_short_human_name("FX","shape")
-    ),
-    shape_smoother(&shape),
-    distortion
-    (
-        MIN_MAX( 0, 1 ),
-        0.6,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
-        generate_short_human_name("FX","distortion")
-    ),
-    distortion_smoother(&distortion),
-    octave_offset
-    (
-        MIN_MAX( -2, 2 ),
-        0,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
-        generate_short_human_name("GLOB","octave")
-    ),
-    note_offset
-    (
-        MIN_MAX( 0, 12 ),
-        0,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
-        generate_short_human_name("GLOB","arp_note_offset")
-    ),
+                  sine_lookup( data_type == MASTER ? CREATE_SIN_LOOKUP::exec() : nullptr ),
+                  cos_lookup( data_type == MASTER ? CREATE_COS_LOOKUP::exec() : nullptr ),
+                  exp_lookup( data_type == MASTER ? CREATE_EXP_LOOKUP::exec() : nullptr ),
 
-    sync
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
-        generate_short_human_name("SPEED","sync")
-    ),
-    speed
-    (
-        MIN_MAX( 20, 1000 ),
-        128,
-        980*10,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
-        generate_short_human_name("SPEED","speed")
-    ),
+                  id( data_type ),
 
-    glide_motor_time
-    (
-        MIN_MAX( 1, 1000 ),
-        50,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
-        generate_short_human_name("GLOB","smooth_motor_time")
-    ),
-    velocity_glide_time
-    (
-        MIN_MAX( 1, 999 ),
-        30,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
-        generate_short_human_name("GLOB","velocity_glide")
-    ),
+                  volume
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0.9,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
+                      generate_short_human_name("MAIN","volume")
+                  ),
+                  volume_smoother(smooth_manager,&volume),
+                  glide
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0.05,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
+                      generate_short_human_name("GLOB","note_glide")
+                  ),
+                  delay
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
+                      generate_short_human_name("FX","delay")
+                  ),
+                  delay_smoother(smooth_manager,&delay),
+                  effect_bypass
+                  (
+                      MIN_MAX( 0, 1 ),
+                      1,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
+                      generate_short_human_name("FX","mix")
+                  ),
+                  effect_bypass_smoother(smooth_manager,&effect_bypass),
+                  shape
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0.05,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
+                      generate_short_human_name("FX","shape")
+                  ),
+                  shape_smoother(smooth_manager,&shape),
+                  distortion
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0.6,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
+                      generate_short_human_name("FX","distortion")
+                  ),
+                  distortion_smoother(smooth_manager,&distortion),
+                  octave_offset
+                  (
+                      MIN_MAX( -2, 2 ),
+                      0,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
+                      generate_short_human_name("GLOB","octave")
+                  ),
+                  note_offset
+                  (
+                      MIN_MAX( 0, 12 ),
+                      0,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
+                      generate_short_human_name("GLOB","arp_note_offset")
+                  ),
 
-    ctrl
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
-        generate_short_human_name("GLOB","ctrl")
-    ),
-    midi_pickup_offset
-    (
-        MIN_MAX( 0, 1 ),
-        1,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
-        generate_short_human_name("MIDI","cc_pick_up")
-    ),
+                  sync
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
+                      generate_short_human_name("SPEED","sync")
+                  ),
+                  speed
+                  (
+                      MIN_MAX( 20, 1000 ),
+                      128,
+                      980*10,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
+                      generate_short_human_name("SPEED","speed")
+                  ),
 
-// -------------------------------------------------------------
-    osci_show_osc_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
-        generate_short_human_name("GLOB","osci_show_osc_1")
-    ),
-    osci_show_osc_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
-        generate_short_human_name("GLOB","osci_show_osc_2")
-    ),
-    osci_show_osc_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
-        generate_short_human_name("GLOB","osci_show_osc_3")
-    ),
-    osci_show_flt_env_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
-        generate_short_human_name("GLOB","osci_show_flt_env_1")
-    ),
-    osci_show_flt_env_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
-        generate_short_human_name("GLOB","osci_show_flt_env_2")
-    ),
-    osci_show_flt_env_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
-        generate_short_human_name("GLOB","osci_show_flt_env_3")
-    ),
-    osci_show_flt_1
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
-        generate_short_human_name("GLOB","osci_show_flt_1")
-    ),
-    osci_show_flt_2
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
-        generate_short_human_name("GLOB","osci_show_flt_2")
-    ),
-    osci_show_flt_3
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
-        generate_short_human_name("GLOB","osci_show_flt_3")
-    ),
-    osci_show_eq
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
-        generate_short_human_name("GLOB","osci_show_eq")
-    ),
-    osci_show_out
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
-        generate_short_human_name("GLOB","osci_show_out")
-    ),
-    osci_show_out_env
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
-        generate_short_human_name("GLOB","osci_show_out_env")
-    ),
-    osci_show_range
-    (
-        MIN_MAX( 0, 1 ),
-        0.05,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
-        generate_short_human_name("GLOB","osci_show_range")
-    ),
+                  glide_motor_time
+                  (
+                      MIN_MAX( 1, 1000 ),
+                      50,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
+                      generate_short_human_name("GLOB","smooth_motor_time")
+                  ),
+                  velocity_glide_time
+                  (
+                      MIN_MAX( 1, 999 ),
+                      30,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
+                      generate_short_human_name("GLOB","velocity_glide")
+                  ),
+
+                  ctrl
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
+                      generate_short_human_name("GLOB","ctrl")
+                  ),
+                  midi_pickup_offset
+                  (
+                      MIN_MAX( 0, 1 ),
+                      1,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
+                      generate_short_human_name("MIDI","cc_pick_up")
+                  ),
 
 // -------------------------------------------------------------
-    auto_close_env_popup
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
-        generate_short_human_name("GLOB","auto_close_env_popup")
-    ),
-    auto_switch_env_popup
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
-        generate_short_human_name("GLOB","auto_switch_env_popup")
-    ),
+                  osci_show_osc_1
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
+                      generate_short_human_name("GLOB","osci_show_osc_1")
+                  ),
+                  osci_show_osc_2
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
+                      generate_short_human_name("GLOB","osci_show_osc_2")
+                  ),
+                  osci_show_osc_3
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
+                      generate_short_human_name("GLOB","osci_show_osc_3")
+                  ),
+                  osci_show_flt_env_1
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
+                      generate_short_human_name("GLOB","osci_show_flt_env_1")
+                  ),
+                  osci_show_flt_env_2
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
+                      generate_short_human_name("GLOB","osci_show_flt_env_2")
+                  ),
+                  osci_show_flt_env_3
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
+                      generate_short_human_name("GLOB","osci_show_flt_env_3")
+                  ),
+                  osci_show_flt_1
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
+                      generate_short_human_name("GLOB","osci_show_flt_1")
+                  ),
+                  osci_show_flt_2
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
+                      generate_short_human_name("GLOB","osci_show_flt_2")
+                  ),
+                  osci_show_flt_3
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
+                      generate_short_human_name("GLOB","osci_show_flt_3")
+                  ),
+                  osci_show_eq
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
+                      generate_short_human_name("GLOB","osci_show_eq")
+                  ),
+                  osci_show_out
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
+                      generate_short_human_name("GLOB","osci_show_out")
+                  ),
+                  osci_show_out_env
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
+                      generate_short_human_name("GLOB","osci_show_out_env")
+                  ),
+                  osci_show_range
+                  (
+                      MIN_MAX( 0, 1 ),
+                      0.05,
+                      100,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
+                      generate_short_human_name("GLOB","osci_show_range")
+                  ),
 
 // -------------------------------------------------------------
-    num_extra_threads
-    (
-        MIN_MAX( 0, THREAD_LIMIT ),
-        0,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-        generate_short_human_name("GLOB","cpus")
-    ),
+                  auto_close_env_popup
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
+                      generate_short_human_name("GLOB","auto_close_env_popup")
+                  ),
+                  auto_switch_env_popup
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
+                      generate_short_human_name("GLOB","auto_switch_env_popup")
+                  ),
 
 // -------------------------------------------------------------
-    animate_envs
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
-        generate_short_human_name("animate_envs")
-    ),
-    show_tooltips
-    (
-        true,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
-        generate_short_human_name("show_tooltips")
-    ),
-    bind_sustain_and_sostenuto_pedal
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
-        generate_short_human_name("GLOB","bind_pedals")
-    ),
-    sliders_in_rotary_mode
-    (
-        false,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
-        generate_short_human_name("slider_rotary")
-    ),
-    sliders_sensitivity
-    (
-        MIN_MAX( 100, 2000 ),
-        500,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
-        generate_short_human_name("slider_sensitivity")
-    ),
-    ui_scale_factor
-    (
-        MIN_MAX( 0.6, 10 ),
-        0.7,
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
-        generate_short_human_name("ui_scale_factor")
-    ),
+                  num_extra_threads
+                  (
+                      MIN_MAX( 0, THREAD_LIMIT ),
+                      0,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
+                      generate_short_human_name("GLOB","cpus")
+                  ),
+
+// -------------------------------------------------------------
+                  animate_envs
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
+                      generate_short_human_name("animate_envs")
+                  ),
+                  show_tooltips
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
+                      generate_short_human_name("show_tooltips")
+                  ),
+                  bind_sustain_and_sostenuto_pedal
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
+                      generate_short_human_name("GLOB","bind_pedals")
+                  ),
+                  sliders_in_rotary_mode
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
+                      generate_short_human_name("slider_rotary")
+                  ),
+                  sliders_sensitivity
+                  (
+                      MIN_MAX( 100, 2000 ),
+                      500,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
+                      generate_short_human_name("slider_sensitivity")
+                  ),
+                  ui_scale_factor
+                  (
+                      MIN_MAX( 0.6, 10 ),
+                      0.7,
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
+                      generate_short_human_name("ui_scale_factor")
+                  ),
 
 // ----
-    env_data( new ENVData( MAIN_ENV ) ),
-    eq_data(new EQData(MASTER)),
-    arp_sequencer_data(new ArpSequencerData( MASTER )),
-    reverb_data(new ReverbData( MASTER ) ),
-    chorus_data(new ChorusData( MASTER )),
+                  env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
+                  eq_data(new EQData( smooth_manager, MASTER )),
+                  arp_sequencer_data(new ArpSequencerData( MASTER )),
+                  reverb_data(new ReverbData( MASTER ) ),
+                  chorus_data(new ChorusData( smooth_manager, MASTER )),
 
 // MORPH
 // -------------------------------------------------------------
-    morhp_states
-    (
-        SUM_MORPHER_GROUPS,
+                  morhp_states
+                  (
+                      SUM_MORPHER_GROUPS,
 
-        MIN_MAX( 0, 1 ),
-        0,
-        1000,
+                      MIN_MAX( 0, 1 ),
+                      0,
+                      1000,
 
-        SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-        MASTER,
-        "morph_state","morph",false
-    ),
-    morhp_switch_states
-    (
-        SUM_MORPHER_GROUPS,
+                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                      MASTER,
+                      "morph_state","morph",false
+                  ),
+                  morhp_switch_states
+                  (
+                      SUM_MORPHER_GROUPS,
 
-        LEFT,
+                      LEFT,
 
-        SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-        MASTER,
-        "morph_switch_state","morph_tgl",false
-    ),
-    linear_morhp_state
-    (
-        MIN_MAX( 0, 3 ),
-        0,
-        100,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
-        generate_short_human_name("morph_line")
-    ),
-    morph_motor_time
-    (
-        MIN_MAX( 20, 20000 ),
-        1000,
-        generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
-        generate_short_human_name("morph_motor")
-    ),
-    morph_group_1( new MorphGroup() ),
-    morph_group_2( new MorphGroup() ),
-    morph_group_3( new MorphGroup() ),
-    morph_group_4( new MorphGroup() ),
+                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                      MASTER,
+                      "morph_switch_state","morph_tgl",false
+                  ),
+                  linear_morhp_state
+                  (
+                      MIN_MAX( 0, 3 ),
+                      0,
+                      100,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
+                      generate_short_human_name("morph_line")
+                  ),
+                  morph_motor_time
+                  (
+                      MIN_MAX( 20, 20000 ),
+                      1000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
+                      generate_short_human_name("morph_motor")
+                  ),
+                  morph_group_1( new MorphGroup() ),
+                  morph_group_2( new MorphGroup() ),
+                  morph_group_3( new MorphGroup() ),
+                  morph_group_4( new MorphGroup() ),
 
 // FILES
 // ----
-    current_program(-1),
-    current_program_abs(-1),
-    current_bank(0),
+                  current_program(-1),
+                  current_program_abs(-1),
+                  current_bank(0),
 
-    error_string("ERROR")
+                  error_string("ERROR")
 {
-    // SINGLES
-    if( data_type == MASTER )
-    {
-        mono_ParameterOwnerStore::getInstance()->eq_data = eq_data;
-        mono_ParameterOwnerStore::getInstance()->arp_data = arp_sequencer_data;
-        mono_ParameterOwnerStore::getInstance()->reverb_data = reverb_data;
-        mono_ParameterOwnerStore::getInstance()->chorus_data = chorus_data;
-        mono_ParameterOwnerStore::getInstance()->synth_data = this;
-    }
-
     // OSCS DATA
-    fm_osc_data = new FMOscData();
-    if( data_type == MASTER )
-    {
-        mono_ParameterOwnerStore::getInstance()->fm_osc_data = fm_osc_data;
-    }
+    fm_osc_data = new FMOscData(smooth_manager);
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
-        OSCData* data = new OSCData(i);
+        OSCData* data = new OSCData(smooth_manager,i);
         osc_datas.add( data );
-
-        if( data_type == MASTER )
-        {
-            mono_ParameterOwnerStore::getInstance()->osc_datas.add( data );
-            mono_ParameterOwnerStore::getInstance()->osc_datas.minimiseStorageOverheads();
-        }
     }
     osc_datas.minimiseStorageOverheads();
 
@@ -1963,26 +2000,14 @@ id( data_type ),
     {
         LFOData* data = new LFOData(i);
         lfo_datas.add( data );
-
-        if( data_type == MASTER )
-        {
-            mono_ParameterOwnerStore::getInstance()->lfo_datas.add( data );
-            mono_ParameterOwnerStore::getInstance()->lfo_datas.minimiseStorageOverheads();
-        }
     }
     lfo_datas.minimiseStorageOverheads();
 
     // FILTERS
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
     {
-        FilterData* filter_data = new FilterData(i);
+        FilterData* filter_data = new FilterData(smooth_manager,i);
         filter_datas.add( filter_data );
-
-        if( data_type == MASTER )
-        {
-            mono_ParameterOwnerStore::getInstance()->filter_datas.add( filter_data );
-            mono_ParameterOwnerStore::getInstance()->filter_datas.minimiseStorageOverheads();
-        }
     }
     filter_datas.minimiseStorageOverheads();
 
@@ -2000,8 +2025,8 @@ id( data_type ),
         all_parameters.add( &ctrl );
         all_parameters.add( &linear_morhp_state );
 
-        refresh_banks_and_programms();
-        set_default_midi_assignments();
+        refresh_banks_and_programms( *this );
+        set_default_midi_assignments( *this );
     }
 }
 #include "monique_core_Synth.h"
@@ -2015,6 +2040,12 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     lfo_datas.clear();
     osc_datas.clear();
     filter_datas.clear();
+
+    delete smooth_manager;
+
+    delete [] exp_lookup;
+    delete [] cos_lookup;
+    delete [] sine_lookup;
 }
 
 //==============================================================================
@@ -2421,14 +2452,14 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
     if( data_type == MASTER )
     {
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ) ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
 
         // SETUP THE MORPH GROUP
         // TODO, do not initalize the unneded morph groups
@@ -2717,10 +2748,8 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void MoniqueSynthData::refresh_banks_and_programms() noexcept
+void MoniqueSynthData::refresh_banks_and_programms( MoniqueSynthData& synth_data ) noexcept
 {
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-
     // BANKS
     synth_data.banks.clearQuick();
     update_banks( synth_data.banks );
@@ -2733,7 +2762,7 @@ void MoniqueSynthData::refresh_banks_and_programms() noexcept
     }
     for( int i = 0 ; i != 26 ; ++i )
     {
-        update_bank_programms( i, synth_data.program_names_per_bank.getReference(i) );
+        update_bank_programms( synth_data, i, synth_data.program_names_per_bank.getReference(i) );
     }
 
     synth_data.calc_current_program_abs();
@@ -2749,14 +2778,16 @@ void MoniqueSynthData::calc_current_program_abs() noexcept
     current_program_abs = 0;
     for( int bank_id = 0 ; bank_id != current_bank ; ++bank_id )
     {
-        int bank_size = GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id).size();
+        int bank_size = program_names_per_bank.getReference(bank_id).size();
         if( current_program_abs+current_program < bank_size )
         {
             current_program_abs += current_program;
             break;
         }
         else
+        {
             current_program_abs += bank_size;
+        }
     }
 }
 void MoniqueSynthData::update_banks( StringArray& banks_ ) noexcept
@@ -2841,10 +2872,8 @@ static inline void sort_by_date( Array< File >& file_array_ )
     }
 }
 */
-void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray& program_names_ ) noexcept
+void MoniqueSynthData::update_bank_programms( MoniqueSynthData& synth_data, int bank_id_, StringArray& program_names_ ) noexcept
 {
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-
     File bank_folder = get_bank_folder( synth_data.banks[bank_id_] );
     Array< File > program_files;
     bank_folder.findChildFiles( program_files, File::findFiles, false, "*.mlprog" );
@@ -2860,11 +2889,11 @@ void MoniqueSynthData::update_bank_programms( int bank_id_, StringArray& program
 //==============================================================================
 const StringArray& MoniqueSynthData::get_banks() noexcept
 {
-    return GET_DATA( synth_data ).banks;
+    return banks;
 }
 const StringArray& MoniqueSynthData::get_programms( int bank_id_ ) noexcept
 {
-    return GET_DATA( synth_data ).program_names_per_bank.getReference(bank_id_);
+    return program_names_per_bank.getReference(bank_id_);
 }
 
 // ==============================================================================
@@ -2882,8 +2911,7 @@ void MoniqueSynthData::set_current_program( int programm_index_ ) noexcept
 {
     if( current_program != programm_index_ )
     {
-        MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-        current_program = programm_index_<synth_data.program_names_per_bank.getReference(current_bank).size() ? programm_index_ : current_program;
+        current_program = programm_index_< program_names_per_bank.getReference(current_bank).size() ? programm_index_ : current_program;
         if( current_program == programm_index_ )
         {
             calc_current_program_abs();
@@ -2894,10 +2922,9 @@ void MoniqueSynthData::set_current_program_abs( int programm_index_ ) noexcept
 {
     int sum_programms = 0;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
+    for( int bank_id = 0 ; bank_id != banks.size() ; ++bank_id )
     {
-        int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
+        int bank_size = program_names_per_bank.getReference(bank_id).size();
         if( programm_index_ < bank_size+sum_programms )
         {
             current_bank = bank_id;
@@ -2920,7 +2947,7 @@ int MoniqueSynthData::get_current_program() const noexcept
 }
 const StringArray& MoniqueSynthData::get_current_bank_programms() const noexcept
 {
-    return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank);
+    return program_names_per_bank.getReference(current_bank);
 }
 
 // ==============================================================================
@@ -2934,17 +2961,16 @@ const String& MoniqueSynthData::get_current_program_name_abs() const noexcept
     {
         return error_string;
     }
-    return GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank)[current_program];
+    return program_names_per_bank.getReference(current_bank)[current_program];
 }
 const String& MoniqueSynthData::get_program_name_abs(int id_) const noexcept
 {
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    for( int bank_id = 0 ; bank_id != synth_data.banks.size() ; ++bank_id )
+    for( int bank_id = 0 ; bank_id != banks.size() ; ++bank_id )
     {
-        const int bank_size = synth_data.program_names_per_bank.getReference(bank_id).size();
+        const int bank_size = program_names_per_bank.getReference(bank_id).size();
         if( id_ < bank_size )
         {
-            return synth_data.program_names_per_bank.getReference(bank_id)[id_];
+            return program_names_per_bank.getReference(bank_id)[id_];
         }
         else
         {
@@ -2986,28 +3012,30 @@ static inline String& generate_programm_name( const String& bank_, String& name_
 
     return name_;
 }
-void MoniqueSynthData::create_internal_backup() noexcept
+void MoniqueSynthData::create_internal_backup( const String& programm_name_, const String& bank_name_ ) noexcept
 {
+    last_bank = bank_name_;
+    last_program = programm_name_;
+
     saveable_backups.clearQuick();
     for( int i = 0 ; i != saveable_parameters.size() ; ++i )
     {
         saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
     }
 }
-bool MoniqueSynthData::create_new() noexcept
+bool MoniqueSynthData::create_new( const String& new_name_ ) noexcept
 {
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    String new_program_name = String("New Program");
-    generate_programm_name( synth_data.banks[current_bank], new_program_name );
+    String name_to_use = new_name_;
+    generate_programm_name( banks[current_bank], name_to_use );
 
-    bool success = write2file( synth_data.banks[current_bank], new_program_name );
+    bool success = write2file( banks[current_bank], name_to_use );
 
     if( success )
     {
-        refresh_banks_and_programms();
-        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_program_name);
+        refresh_banks_and_programms( *this );
+        current_program = program_names_per_bank.getReference(current_bank).indexOf(name_to_use);
 
-        create_internal_backup();
+        create_internal_backup( new_name_, banks[current_bank] );
     }
 
     return success;
@@ -3017,17 +3045,16 @@ bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
     if( current_program == -1 )
         return false;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+    File program = get_program_file( banks[current_bank], program_names_per_bank.getReference(current_bank)[current_program] );
 
     String name = new_name_;
     bool success = false;
-    generate_programm_name( synth_data.banks[current_bank], name );
+    generate_programm_name( banks[current_bank], name );
     if( program.existsAsFile() )
     {
         success = program.moveFileTo
         (
-            get_bank_folder(synth_data.banks[current_bank]).getFullPathName()
+            get_bank_folder(banks[current_bank]).getFullPathName()
             + String("/")
             + name
             + ".mlprog"
@@ -3036,8 +3063,10 @@ bool MoniqueSynthData::rename( const String& new_name_ ) noexcept
 
     if( success )
     {
-        refresh_banks_and_programms();
-        current_program = synth_data.program_names_per_bank.getReference(current_bank).indexOf(new_name_);
+        refresh_banks_and_programms( *this );
+        current_program = program_names_per_bank.getReference(current_bank).indexOf(new_name_);
+
+        create_internal_backup( new_name_, banks[current_bank] );
     }
 
     return success;
@@ -3047,21 +3076,21 @@ bool MoniqueSynthData::replace() noexcept
     if( current_program == -1 )
         return false;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+    String bank_name = banks[current_bank];
+    String program_name = program_names_per_bank.getReference(current_bank)[current_program];
+    File program = get_program_file( bank_name, program_name );
     bool success = AlertWindow::showNativeDialogBox
     (
         "REPLACE PROJECT?",
-        String("Overwrite project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        String("Overwrite project: ")+bank_name+String(":")+program_name,
         true
     );
     if( success )
     {
-        success = write2file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
-
+        success = write2file( bank_name, program_name );
         if( success )
         {
-            create_internal_backup();
+            create_internal_backup( program_name, bank_name );
         }
     }
 
@@ -3072,21 +3101,22 @@ bool MoniqueSynthData::remove() noexcept
     if( current_program == -1 )
         return false;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    File program = get_program_file( synth_data.banks[current_bank], synth_data.program_names_per_bank.getReference(current_bank)[current_program] );
+    String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
+    String old_bank_name = banks[current_bank];
+    File program = get_program_file( old_bank_name, old_program_name );
     bool success = AlertWindow::showNativeDialogBox
     (
         "DELETE PROJECT?",
-        String("Delete project: ")+synth_data.banks[current_bank]+String(":")+synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        String("Delete project: ")+old_bank_name+String(":")+old_program_name,
         true
     );
     if( success )
     {
         program.moveToTrash();
         current_program = -1;
-        refresh_banks_and_programms();
+        refresh_banks_and_programms( *this );
 
-        create_internal_backup();
+        create_internal_backup( String("REMOVED: ")+old_program_name, old_bank_name );
     }
 
     return success;
@@ -3098,11 +3128,10 @@ bool MoniqueSynthData::load( bool load_morph_groups, bool ignore_warnings_ ) noe
     if( current_program == -1 )
         return false;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
     return load
     (
-        synth_data.banks[current_bank],
-        synth_data.program_names_per_bank.getReference(current_bank)[current_program],
+        banks[current_bank],
+        program_names_per_bank.getReference(current_bank)[current_program],
         load_morph_groups,
         ignore_warnings_
     );
@@ -3118,7 +3147,7 @@ bool MoniqueSynthData::load_prev() noexcept
     }
     else
     {
-        int last_index = GET_DATA( synth_data ).program_names_per_bank.getReference(current_bank).size()-1;
+        int last_index = program_names_per_bank.getReference(current_bank).size()-1;
         if( last_index > 0 )
         {
             current_program = last_index;
@@ -3132,15 +3161,14 @@ bool MoniqueSynthData::load_next() noexcept
 {
     bool success = false;
 
-    MoniqueSynthData& synth_data( GET_DATA( synth_data ) );
-    if( current_program+1 < synth_data.program_names_per_bank.getReference(current_bank).size() )
+    if( current_program+1 < program_names_per_bank.getReference(current_bank).size() )
     {
         current_program++;
         success = load();
     }
     else
     {
-        if( synth_data.program_names_per_bank.getReference(current_bank).size() )
+        if( program_names_per_bank.getReference(current_bank).size() )
         {
             current_program = 0;
             success = load();
@@ -3153,12 +3181,14 @@ bool MoniqueSynthData::load_next() noexcept
 bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
     if( not ignore_warnings_ )
+    {
         ask_and_save_if_changed();
+    }
 
     bool success = false;
     File program_file = get_program_file( bank_name_, program_name_ );
-    last_bank = bank_name_;
-    last_program = program_name_;
+    // last_bank = bank_name_;
+    // last_program = program_name_;
     ScopedPointer<XmlElement> xml = XmlDocument( program_file ).getDocumentElement();
     if( xml )
     {
@@ -3208,9 +3238,9 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
                 xml_->setAttribute( String("right_morph_source_")+String( morpher_id ), right_morph_source_names[morpher_id] );
                 right_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("RightMorphData_")+String(morpher_id)));
             }
-        }
 
-        create_internal_backup();
+            create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
+        }
     }
 }
 bool MoniqueSynthData::write2file( const String& bank_name_, const String& program_name_ ) noexcept
@@ -3249,9 +3279,9 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
                 morph( morpher_id, morhp_states[morpher_id] );
                 morph_switch_buttons( morpher_id, false );
             }
-        }
 
-        create_internal_backup();
+            create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
+        }
     }
 }
 //==============================================================================
@@ -3271,7 +3301,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
 
-        UiLookAndFeel::getInstance()->colours.save_to( &xml );
+        ui_look_and_feel->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
     }
@@ -3318,7 +3348,7 @@ void MoniqueSynthData::load_settings() noexcept
         current_program = xml->getIntAttribute( "PROG", -1 );
 #endif
 
-        UiLookAndFeel::getInstance()->colours.read_from( xml );
+        ui_look_and_feel->colours.read_from( xml );
     }
 }
 
@@ -3356,8 +3386,3 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
-
-
-
-
-

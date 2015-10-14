@@ -1,51 +1,33 @@
-DONE:
-****************************************************************************
-- fix: broken note glide
-- fix: crash on shutdon if the env popup was open
-- fix: a memory leak on shutdown
-- fix: sustain was not adjustable if it was already at the sustain stage
-- fix: filter input leds (was incorrect for some edge cases)
-- fix: sustain time was brocken
-- add: copy&past to the env editor popup (does not copy the sustain)
-- fix: captions chorus, reverb, deleay...
-- fix: rotate the gain meter by 180°...
-- fix: wrong processed input envs (filter 3)
-- fix: brocken lfo animation (phase and tune)
-- improved: lfo switch smooth
-- moved: load save and editor section to the top
-- add: rename option for patches
+Es gibt so einige Klassiker, die mit einem System-Default immer gut kommen, damit du aus "neutral" heraus arbeiten kannst, z.B. Gain 0, Cutoff max., Reso 0, OSC Level (hier ab Sektion 2, wegen Filter und Generator auf 0), sonst frickelst du dir den Parameter immer erst hin. Manchmal ist es halt flott, denn Parameter mit einem Klick auf den typischen Defaultwert zu fahren, und das kombiniert man mit einer Sondertaste. Es geht ja nicht darum, sofort und sämtliche Parameter via Default-Reset zu versehen.
+FactoryDefault, StateOnProgramm oder User Return sind dann noch die user-freundlichen Konzepte, die nicht nur den Spaß an der Kiste vergrößern, sondern eine lockere Arbeitsweise ermöglichen. Interessant ist auch ein selektiver Reset ausgewählter Parameter.
 
-TODO
-controll linear sliders without mouse pointerr!
+MIDI feedback is brocken; see monique_core_Parameters.cpp (no processsor available)
 
 KNOWN BUGS:
 ****************************************************************************
 - sustain for main env and can be negative if you control it by automation param or midi cc
-- some load save questions if you load a morph group
-- assertion on shutdow
-- buttons are not updating the backup -> if you now switch to another program you wont get a "do you like to store question"
-- create new program and store it -> then change something and you get the parent program name for "do you like to store before close"
-- asks if you like to reconnect a old midi devices on a raw edge case
+- asks if you like to reconnect a old midi devices on a rare edge case
+- multi instances are not working if vst plugins are not started in a separate process
+- amp painter liest alten buffer oder neuen (>=0 or >0 or something or threading problem, but not an engine problem)
 
 UI
 ****************************************************************************
-add: a good background which explains the signal flow
-a lot of tooltips are not updated in 0.8
-font for tooltip misses top stripe
-shadow for env popup
-option: always start in ctrl mode
-welcome popup, if you like to disable the arp -> press this "holly button"
-a marker on the keyboard for the current program note if not C1
+- add: a good background which explains the signal flow
+- add: shadow for env popup
+- add option: always start in ctrl mode
+- add: welcome popup, if you like to disable the arp -> press this "holly button"
+- add: a marker on the keyboard for the current program note if not C1
+- move: editor buttons to the bottom right
+- option: arp always on, arp always off
+- option: pitch arp only or trigger notes anyway
 
 ENGINE
 ****************************************************************************
-changing modulation sliders can make some crackls
-modulation slider: instead of percent, set the target value (not sure - have to play around with)
-add: env shape slider for main and filter env's
-add: panic
-midi standard impl isn't complete
-add: own lfos for tune and phase
-midi: pitchwheel to osc
+- add: env shape slider for main and filter env's
+- add: panic
+- midi: the standard midi assignments are not complete
+- midi: assign pitchwheel to an osc tune
+- implement: bypass
 
 OPTIMIZE
 ****************************************************************************
@@ -57,6 +39,7 @@ PROGRAMS
 - add: a good default program or settings to start with monique (e.g. filter inputs not zero)
 - make a starter for percussions
 - add factory programs to the binary
+- adjust: factory defaults
 
 BUILD:
 ****************************************************************************

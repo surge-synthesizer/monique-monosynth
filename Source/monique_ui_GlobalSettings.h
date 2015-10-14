@@ -42,7 +42,7 @@ class Monique_Ui_GlobalSettings  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_GlobalSettings ();
+    Monique_Ui_GlobalSettings ( Monique_Ui_Refresher*ui_refresher_ );
     ~Monique_Ui_GlobalSettings();
 
     //==============================================================================

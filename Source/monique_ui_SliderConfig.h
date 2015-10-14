@@ -32,9 +32,9 @@
 				     "\n" \
                                      "GENERAL SIGNAL FLOW:\n" \
                                      "--------------------\n" \
-                                     "OSC's                -> FILTER 1 INPUT-> FILTER 1 FX-> FILTER 1 OUT-> MIX\n" \
-                                     "OSC's or FILTER 1 OUT-> FILTER 2 INPUT-> ..........................-> MIX\n" \
-                                     "OSC's or FILTER 2 OUT-> FILTER 3 INPUT-> ..........................-> MIX\n" \
+                                     "OSC's                -> FILTER 1 INPUT->FILTER PROCESS->FILTER 1 OUT->MIX\n" \
+                                     "OSC's or FILTER 1 OUT-> FILTER 2 INPUT-> ...........................->MIX\n" \
+                                     "OSC's or FILTER 2 OUT-> FILTER 3 INPUT-> ...........................->MIX\n" \
                                      "MIX -> EQ -> FX -> YOUR EARS!"
 
 //==============================================================================
@@ -60,6 +60,16 @@ StringRef get_tootip_front() const noexcept override \
     GERNERAL_SLIDER_INFORMATION \
     GERNERAL_SIGNAL_FLOW; \
 }
+#define TOP_SLIDER_DESCIPTION_2_CASE( text_1_1, text_2_1, boolean ) \
+StringRef get_tootip_front() const noexcept override \
+{ \
+  return \
+  boolean \
+  ? \
+  text_1_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW \
+  : \
+  text_2_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW; \
+}
 
 //==============================================================================
 //==============================================================================
@@ -71,6 +81,17 @@ StringRef get_tootip_back() const noexcept override \
   text "\n" \
   GERNERAL_SLIDER_INFORMATION \
   GERNERAL_SIGNAL_FLOW; \
+}
+
+#define BACK_SLIDER_DESCRIPTION_2_CASE( text_1_1, text_2_1, boolean ) \
+StringRef get_tootip_back() const noexcept override \
+{ \
+  return \
+  boolean \
+  ? \
+  text_1_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW \
+  : \
+  text_2_1 "\n" GERNERAL_SLIDER_INFORMATION GERNERAL_SIGNAL_FLOW; \
 }
 
 //==============================================================================
@@ -91,7 +112,16 @@ StringRef get_tootip_top() const noexcept override \
   text "\n" \
   GERNERAL_TOP_BUTTON_INFORMATION; \
 }
-
+#define TOP_BUTTON_DESCRIPTION_2_CASE( text_1_1, text_2_1, boolean ) \
+StringRef get_tootip_top() const noexcept override \
+{ \
+  return \
+  boolean \
+  ? \
+  text_1_1 "\n" GERNERAL_TOP_BUTTON_INFORMATION \
+  : \
+  text_2_1 "\n" GERNERAL_TOP_BUTTON_INFORMATION; \
+}
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -101,7 +131,7 @@ StringRef get_tootip_top() const noexcept override \
                                      "GENERAL BOTTOM BUTTON INFO:\n" \
                                      "---------------------------\n" \
                                      "Global shortcut: SHIFT\n" \
-                                     "Buttons below sliders/dials switch always from front slider to back slider and vice versa.\n"
+                                     "Buttons below sliders/dials switch always from front slider to back slider and vice versa."
 
 //==============================================================================
 //==============================================================================
@@ -128,18 +158,37 @@ StringRef get_tootip_top() const noexcept override \
 StringRef get_tootip_bottom() const noexcept override \
 { \
   return \
-  "Switch between '" front_name "' (front) and '" back_name "' (back) sliders.\n" \
+  "Switch between '" front_name "' (front) and '" back_name "' (back) slider.\n" \
   GERNERAL_SWITCH_BUTTON_INFORMATION; \
+}
+#define BOTTOM_BUTTON_SLIDERS_2_CASE( front_name_1_1, front_name_1_2, back_name_2_1, back_name_2_2, boolean ) \
+StringRef get_tootip_bottom() const noexcept override \
+{ \
+  return \
+  boolean \
+  ? \
+  "Switch between '" front_name_1_1 "' (front) and '" back_name_2_1 "' (back) slider.\n" GERNERAL_SWITCH_BUTTON_INFORMATION \
+  : \
+  "Switch between '" front_name_1_2 "' (front) and '" back_name_2_2 "' (back) slider.\n" GERNERAL_SWITCH_BUTTON_INFORMATION; \
 }
 
 #define BOTTOM_BUTTON_DIALS( front_name, back_name ) \
 StringRef get_tootip_bottom() const noexcept override \
 { \
   return \
-  "Switch between '" front_name "' (front) and '" back_name "' (back) dials.\n" \
+  "Switch between '" front_name "' (front) and '" back_name "' (back) dial.\n" \
   GERNERAL_SWITCH_BUTTON_INFORMATION; \
 }
-
+#define BOTTOM_BUTTON_DIALS_2_CASE( front_name_1_1, front_name_1_2, back_name_2_1, back_name_2_2, boolean ) \
+StringRef get_tootip_bottom() const noexcept override \
+{ \
+  return \
+  boolean \
+  ? \
+  "Switch between '" front_name_1_1 "' (front) and '" back_name_2_1 "' (back) dial.\n" GERNERAL_SWITCH_BUTTON_INFORMATION \
+  : \
+  "Switch between '" front_name_1_2 "' (front) and '" back_name_2_2 "' (back) dial.\n" GERNERAL_SWITCH_BUTTON_INFORMATION; \
+}
 
 
 
@@ -300,13 +349,12 @@ class WAVESlConfig : public ModulationSliderConfigBase
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "OSC 1: Turns oscillator modulations on and off (OSC PULSE, OSC SWITCH and FM SWING).\n"
-        "(See FM section: O-PULSE, O-SWITCH and FM SWING dials)\n"
-        "\n"
         "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
         "\n"
         "If SYNC is enabled the oscillator waits for the next cycle of OSC 1 to start its next own cycle.\n"
-        "If SYNC is disabled this oscillator is absolutely independent."
+        "If SYNC is disabled this oscillator is absolutely independent.\n"
+        "\n"
+        "Note: the oscillator will be auto-synced to OSC 1 at a defined tune of exactly 0 and +/-24."
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -315,18 +363,16 @@ class WAVESlConfig : public ModulationSliderConfigBase
     )
     BACK_SLIDER_DESCRIPTION
     (
-        "Define the mass of the FM oscillator which will be added to this oscillator.\n"
-        "\n"
-        "OSC 1: will be also added if O-MOD is turned off."
+        "Define the mass of the FM oscillator which will be added to this oscillator."
     )
 
 public:
-    WAVESlConfig( int id_ )
+    WAVESlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         id(id_),
-        wave( &(GET_DATA(osc_datas[id_]).wave) ),
-        fm_amount( &(GET_DATA(osc_datas[id_]).fm_amount) ),
-        top_parameter( &(GET_DATA(osc_datas[id_]).sync) ),
+        wave( &synth_data_->osc_datas[id_]->wave ),
+        fm_amount( &synth_data_->osc_datas[id_]->fm_amount ),
+        top_parameter( &synth_data_->osc_datas[id_]->sync ),
         top_text( "SYNC" ),
         bottom_text( "WAV-" + String(id_+1) )
     {}
@@ -424,9 +470,9 @@ class OSCSlConfig : public ModulationSliderConfigBase
                 value = get_last_modulation_amount(front_param);
             }
             else
-	    {
+            {
                 value = NO_TOP_BUTTON_AMP;
-	    }
+            }
         }
         else
         {
@@ -472,7 +518,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
             {
                 return String(0);
             }
-            else if( value < 10 and value > -10 )
+            else if( value < 12 and value > -12 )
             {
                 return String(round001(value));
             }
@@ -492,25 +538,53 @@ class OSCSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Detune this oscillator in semitones.\n"
+        "Moves the phase of OSC 1.",
+
+        "Detune this oscillator in semitones to OSC 1.\n"
+        "(OSC 1 runs with the frequency of the last triggered note.)",
+
+        id == 0
+    )
+    TOP_BUTTON_DESCRIPTION_2_CASE
+    (
+        "Turns phase modulation by LFO 1 (See: FILTER 1) on or off.",
+
+        "Turns tune modulation by LFO on or off.\n"
+        "(OSC 2 will be modulated by LFO 2 (See: FILTER 2), OSC 3 by LFO 3... .)",
+
+        id == 0
+    )
+    BOTTOM_BUTTON_DIALS_2_CASE
+    (
+        "OSC 1 PHASE", "LFO PHASE-MODULATION POWER",
+
+        "OSC TUNE", "LFO TUNE-MODULATION POWER",
+
+        id == 0
+    )
+    BACK_SLIDER_DESCRIPTION_2_CASE
+    (
+        "Define the power of the phase modulation by the LFO 1 amplitude relative to the defined phase (front).\n"
         "\n"
-        "OSC 1: Affected: FM TUNE.\n"
-    )
-    TOP_BUTTON_DESCRIPTION
-    (
-        "Turns tune modulation by LFO on and off.\n"
-        "(OSC 1 will be modulated by LFO 1 (See: FILTER 1), OSC 2 by LFO 2... .)"
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "OSC TUNE",
-        "LFO TUNE-MODULATION POWER"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
+        "Values greater than 0 increase the current phase by the current LFO 1 amplitude. Values less than 0 decrease the phase by the current LFO 1 amplitude.\n"
+        "\n"
+        "\n"
+        "EXAMPLE:\n"
+        "--------\n"
+        "Defined phase is 0.5 (front) (maximum 1).\n"
+        "Defined phase-modulation power is plus 50% (this).\n"
+        "Current LFO amplitude is 100% of the maximum.\n"
+        "The outcome phase will be 0.75.\n"
+        "\n"
+        "FORMULA:\n"
+        "--------\n"
+        "OUTCOME = PHASE + (MAX-PHASE) * MOD-POWER * CURRENT AMPLITUDE\n"
+        "0.75      = 0.5 + (1-0.5)     * 50%       * 100%"
+
+        ,
+
         "Define the power of the tune modulation by the LFO amplitude relative to the defined tune (front).\n"
         "\n"
         "Values greater than 0 increase the current tune by the current LFO amplitude. Values less than 0 decrease the tune by the current LFO amplitude.\n"
@@ -527,18 +601,22 @@ class OSCSlConfig : public ModulationSliderConfigBase
         "--------\n"
         "OUTCOME = TUNE + (MAX-TUNE) * MOD-POWER * CURRENT AMPLITUDE\n"
         "18      = 12   + (24-12)    * 50%       * 100%"
+
+        ,
+
+        id == 0
     )
 
 public:
-    OSCSlConfig( int id_ )
+    OSCSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         id(id_),
-        front_param( id == 0 ? &(GET_DATA(fm_osc_data).master_shift ) : &(GET_DATA(osc_datas[id_]).tune) ),
-        is_lfo_modulated( &(GET_DATA(osc_datas[id_]).is_lfo_modulated ) ),
+        front_param( id == 0 ? &synth_data_->fm_osc_data->master_shift : &synth_data_->osc_datas[id_]->tune ),
+        is_lfo_modulated( &synth_data_->osc_datas[id_]->is_lfo_modulated ),
         top_text( String("L-MOD") ),
         bottom_text( id_ == 0 ? String("PHASE") : String("TUNE-") + String(id_+1) ),
 
-        synth_data( GET_DATA_PTR( synth_data ) )
+        synth_data( synth_data_ )
     {}
 
     JUCE_LEAK_DETECTOR (OSCSlConfig)
@@ -655,42 +733,28 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Detune the FM oscillator relative, upwards to the tune of OSC 1.\n"
-        "(Zero = same as TUNE of OSC 1)\n"
+        "(1 = same frequency as OSC 1)\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0"
+        "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0."
     )
     TOP_BUTTON_DESCRIPTION
     (
         "Turns sync to OSC 1 on or off.\n"
         "\n"
-        "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one OSC 1 cycle).\n"
+        "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one cycle of OSC 1).\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0\n"
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
         "\n"
         "See: FM SHOT (next button on the right)"
     )
-    BOTTOM_BUTTON_DIALS
-    (
-        "FM TUNE",
-        "FM SWING"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the FM SWING amount.\n"
-        "\n"
-        "Values greater than 0 switch the FM oscillator phase smoothly (greater values = faster).\n"
-        "\n"
-        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0"
-    )
 public:
-    FMFreqSlConfig()
+    FMFreqSlConfig(MoniqueSynthData*const synth_data_)
         :
-        fm_freq( &(GET_DATA(fm_osc_data).fm_freq) ),
-        sync( &(GET_DATA(fm_osc_data).sync) )
+        fm_freq( &synth_data_->fm_osc_data->fm_freq ),
+        sync( &synth_data_->fm_osc_data->sync )
     {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
@@ -809,82 +873,26 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
-    TOP_SLIDER_DESCIPTION
-    (
-        "Define pulses for each oscillator.\n"
-        "\n"
-        "Affected: OSC 1 (if O-MOD is turned on), OSC 2 & 3\n"
-        "\n"
-        LINE_DOTTED
-        "\n"
-        "Values greater than 0 insert cycle breaks with the duration of one cycle of the affected oscillator.\n"
-        "\n"
-        "EXAMPLES:\n"
-        "---------\n"
-        "PULSE = 0 =   ‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| \n"
-        "               |_| |_| |_| |_| |_| |_| |_| |_| |_| |_\n"
-        "\n"
-        "PULSE = 1 =   ‾|  ___|‾|  ___|‾|  ___|‾|  ___|‾|  ___\n"
-        "               |_|     |_|     |_|     |_|     |_|   \n"
-        "\n"
-        "PULSE = 2 =   ‾|  _______|‾|  _______|‾|  _______|‾| \n"
-        "               |_|         |_|         |_|         |_\n"
-        "\n"
-        LINE_DOTTED
-        "\n"
-        "Values less than 0 change the cycle duration. One cycle becomes longer, the next one shorter.\n"
-        "\n"
-        "EXAMPLES:\n"
-        "---------\n"
-        "PULSE =   0 = ‾‾‾‾‾‾|      |‾‾‾‾‾‾|      |‾‾‾‾‾‾|    \n"
-        "                    |______|      |______|      |____\n"
-        "\n"
-        "PULSE =  -1 = ‾‾‾‾‾‾‾|       |‾‾‾‾‾|     |‾‾‾‾‾‾‾|   \n"
-        "                     |_______|     |_____|       |___\n"
-        "\n"
-        "PULSE = -12 = ‾‾‾‾‾‾‾‾‾‾‾|           |‾| |‾‾‾‾‾‾‾‾‾‾‾\n"
-        "                         |___________| |_|           "
-    )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns FM SHOT for each oscillator on and off.\n"
+        "Turns FM SHOT on or off.\n"
         "\n"
         "If FM SHOT is enabled only one cycle of the FM oscillator will be added to the modulated oscillator and then the FM OSC waits for a new OSC 1 cycle to start its next own cycle."
     )
-    BOTTOM_BUTTON_DIALS
+    TOP_SLIDER_DESCIPTION
     (
-        "OSC PULSE",
-        "OSC SWITCH"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define phase switches for each oscillator.\n"
+        "Define the FM SWING amount.\n"
         "\n"
-        "Affected: OSC 1 (if O-MOD is turned on), OSC 2 & 3\n"
+        "Values greater than 0 switch the FM oscillator phase smoothly (greater values = faster).\n"
         "\n"
-        LINE_DOTTED
-        "\n"
-        "Values greater than 0 switches the phase after the defined number of cycles.\n"
-        "\n"
-        "EXAMPLES:\n"
-        "---------\n"
-        "SWITCH = 0 =  ‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| |‾| \n"
-        "               |_| |_| |_| |_| |_| |_| |_| |_| |_| |_\n"
-        "\n"
-        "SWITCH = 1 =  ‾|   |‾|‾|   |‾|‾|   |‾|‾|   |‾|‾|   |‾\n"
-        "               |_|_|   |_|_|   |_|_|   |_|_|   |_|_| \n"
-        "\n"
-        "\n"
-        "SWITCH = 3 =  ‾|   |‾| |‾| |‾|‾| |‾| |‾|   |‾| |‾| |‾\n"
-        "               |_|_| |_| |_|   |_| |_| |_|_| |_| |_| "
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
     )
 
 public:
-    FMAmountSlConfig()
+    FMAmountSlConfig(MoniqueSynthData*const synth_data_)
         :
-        fm_swing( &(GET_DATA(fm_osc_data).fm_swing) ),
-        shot( &(GET_DATA(fm_osc_data).fm_shot) )
+        fm_swing( &synth_data_->fm_osc_data->fm_swing ),
+        shot( &synth_data_->fm_osc_data->fm_shot )
     {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)
@@ -923,7 +931,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
     {
         bool success = false;
-        FilterData*filter_data = GET_DATA_PTR( filter_datas[filter_id] );
+        FilterData*filter_data = synth_data->filter_datas[filter_id];
         if( env_ == filter_data->input_envs[0] or env_ == filter_data->input_envs[1] or env_ == filter_data->input_envs[2] )
         {
             success = true;
@@ -992,7 +1000,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         {
             if( is_on )
             {
-                value = mono_ParameterOwnerStore::getInstance()->voice->get_flt_input_env_amp(filter_id,input_id);
+                value = synth_data->voice->get_flt_input_env_amp(filter_id,input_id);
             }
             else
             {
@@ -1056,49 +1064,37 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the OSC input gain into this filter.\n"
         "(Will be the sustain level if ENV is turned on)\n"
         "\n"
         "FILTER 2 & 3:\n"
-        "On the left side of the dial (minus) the original OSC signal will be used as input.\n"
-        "On the right side (plus) the filtered OSC signal through the filter before will be used as input."
+        "On the left side of the dial (minus) the original OSC signal will be used as input. "
+        "On the right side (plus) the filtered OSC signal through the filter before will be used as input.\n"
+        "\n"
+        "A red highlighted LED on top marks an inactive input. This can happen if you try to use filtered signal as input (right dial positions) and the input of the same branch of the filter before is 0."
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns morphable ENV modulations for the OSC input gain on or off.\n"
+        "Turns modulation by an envelope for this input on or off.\n"
         "\n"
-        "If ENV is enabled the input dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
-        "If ENV is disabled the input dial defines input gain and the morphable envelope will be ignored."
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "INPUT/SUSTAIN",
-        "MORPH ENV"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define an envelope to control the OSC input gain into this FILTER.\n"
-        "(Has no effect if ENV is turned off)\n"
-        "\n"
-        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
-        "The input dial (front dial) will be the sustain level for this envelope."
+        "If ENV is enabled the input dial defines the sustain level for this input envelope (click EDIT to adjust the envelope).\n"
+        "If ENV is disabled the input dial defines a fixed input gain and the envelope will be ignored."
     )
 
 public:
-    InputSlConfig( int filter_id_, int input_id_ )
+    InputSlConfig( MoniqueSynthData*const synth_data_, int filter_id_, int input_id_ )
         :
         filter_id( filter_id_ ),
         input_id( input_id_ ),
-        input_sustain( &(GET_DATA(filter_datas[filter_id_]).input_sustains[input_id_]) ),
-        input_hold( &(GET_DATA(filter_datas[filter_id_]).input_holds[input_id_]) ),
+        input_sustain( &synth_data_->filter_datas[filter_id_]->input_sustains[input_id_] ),
+        input_hold( &synth_data_->filter_datas[filter_id_]->input_holds[input_id_] ),
 
         bottom_text( String("OSC ") + String(input_id_+1) ),
         input_text( String("O") + String(input_id_+1) ),
 
-        synth_data( GET_DATA_PTR( synth_data ) )
+        synth_data( synth_data_ )
     {}
 
     JUCE_LEAK_DETECTOR (InputSlConfig)
@@ -1237,10 +1233,10 @@ class GForceSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    GForceSlConfig( int id_ )
+    GForceSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        distortion( &(GET_DATA(filter_datas[id_]).distortion) ),
-        modulate_distortion( &(GET_DATA(filter_datas[id_]).modulate_distortion) )
+        distortion( &synth_data_->filter_datas[id_]->distortion ),
+        modulate_distortion( &synth_data_->filter_datas[id_]->modulate_distortion )
     {}
 
     JUCE_LEAK_DETECTOR (GForceSlConfig)
@@ -1372,25 +1368,25 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        is_main_adsr
-
-        ?
-
         "Define the main envelope attack time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
         VALUES_EDITABLE_ON_TOP
 
-        :
+        ,
 
         "Define the filter envelope attack time in ms.\n"
         "\n"
-        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
         VALUES_EDITABLE_ON_TOP
+
+        ,
+
+        is_main_adsr
     )
     BOTTOM_BUTTON_SLIDERS
     (
@@ -1403,16 +1399,16 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FAttackSlConfig( int id_ )
+    FAttackSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        attack( &(GET_DATA(filter_datas[id_]).env_data->attack) ),
-        max_attack_time( &(GET_DATA(filter_datas[id_]).env_data->max_attack_time) ),
+        attack( &synth_data_->filter_datas[id_]->env_data->attack ),
+        max_attack_time( &synth_data_->filter_datas[id_]->env_data->max_attack_time ),
         is_main_adsr(false)
     {}
-    FAttackSlConfig()
+    FAttackSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        attack(  &(GET_DATA(synth_data).env_data->attack) ),
-        max_attack_time(  &(GET_DATA(synth_data).env_data->max_attack_time) ),
+        attack( &synth_data_->env_data->attack ),
+        max_attack_time( &synth_data_->env_data->max_attack_time ),
         is_main_adsr(true)
     {}
 
@@ -1546,25 +1542,25 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        is_main_adsr
-
-        ?
-
         "Define the main envelope decay time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
         VALUES_EDITABLE_ON_TOP
 
-        :
+        ,
 
         "Define the filter envelope decay time in ms.\n"
         "\n"
-        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
         VALUES_EDITABLE_ON_TOP
+
+        ,
+
+        is_main_adsr
     )
     BOTTOM_BUTTON_SLIDERS
     (
@@ -1577,16 +1573,16 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FDecaySlConfig( int id_ )
+    FDecaySlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        decay( &(GET_DATA(filter_datas[id_]).env_data->decay) ),
-        max_decay_time( &(GET_DATA(filter_datas[id_]).env_data->max_decay_time) ),
+        decay( &synth_data_->filter_datas[id_]->env_data->decay ),
+        max_decay_time( &synth_data_->filter_datas[id_]->env_data->max_decay_time ),
         is_main_adsr(false)
     {}
-    FDecaySlConfig()
+    FDecaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        decay( &(GET_DATA(synth_data).env_data->decay) ),
-        max_decay_time( &(GET_DATA(synth_data).env_data->max_decay_time) ),
+        decay( &synth_data_->env_data->decay ),
+        max_decay_time( &synth_data_->env_data->max_decay_time ),
         is_main_adsr(true)
     {}
 
@@ -1712,30 +1708,30 @@ class FSustainSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        is_main_adsr
-
-        ?
-
         "Define the main envelope sustain level.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
         VALUES_EDITABLE_ON_TOP
 
-        :
+        ,
 
         "Define the filter envelope sustain level.\n"
         "\n"
-        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
         VALUES_EDITABLE_ON_TOP
+
+        ,
+
+        is_main_adsr
     )
 
 public:
-    FSustainSlConfig( int id_ ) : sustain( &(GET_DATA(filter_datas[id_]).env_data->sustain) ), is_main_adsr(false) {}
-    FSustainSlConfig() : sustain( &(GET_DATA(synth_data).env_data->sustain) ), is_main_adsr(true) {}
+    FSustainSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain( &synth_data_->filter_datas[id_]->env_data->sustain ), is_main_adsr(false) {}
+    FSustainSlConfig( MoniqueSynthData*const synth_data_ ) : sustain( &synth_data_->env_data->sustain ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1864,12 +1860,8 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        is_main_adsr
-
-        ?
-
         "Define the main envelope sustain time in ms.\n"
         "\n"
         "If the slider is set to max, the sustain time is unlimited (until note off).\n"
@@ -1878,20 +1870,24 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         "\n"
         VALUES_EDITABLE_ON_TOP
 
-        :
+        ,
 
         "Define the filter envelope sustain time in ms.\n"
         "\n"
         "If the slider is set to max, the sustain time is unlimited (until note off).\n"
         "\n"
-        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
         VALUES_EDITABLE_ON_TOP
+
+        ,
+
+        is_main_adsr
     )
 
 public:
-    FSustainTimeSlConfig( int id_ ) : sustain_time( &(GET_DATA(filter_datas[id_]).env_data->sustain_time) ), is_main_adsr(false) {}
-    FSustainTimeSlConfig() : sustain_time( &(GET_DATA(synth_data).env_data->sustain_time) ), is_main_adsr(true) {}
+    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain_time( &synth_data_->filter_datas[id_]->env_data->sustain_time ), is_main_adsr(false) {}
+    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_ ) : sustain_time( &synth_data_->env_data->sustain_time ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
@@ -2021,25 +2017,25 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    TOP_SLIDER_DESCIPTION_2_CASE
     (
-        is_main_adsr
-
-        ?
-
         "Define the main envelope release time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
         VALUES_EDITABLE_ON_TOP
 
-        :
+        ,
 
         "Define the filter envelope release time in ms.\n"
         "\n"
-        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, FILTER VOLUME \n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
         "\n"
         VALUES_EDITABLE_ON_TOP
+
+        ,
+
+        is_main_adsr
     )
     BOTTOM_BUTTON_SLIDERS
     (
@@ -2052,17 +2048,17 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FReleaseSlConfig( int id_ )
+    FReleaseSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        release( &(GET_DATA(filter_datas[id_]).env_data->release) ),
-        max_release_time( &(GET_DATA(filter_datas[id_]).env_data->max_release_time) ),
+        release( &synth_data_->filter_datas[id_]->env_data->release ),
+        max_release_time( &synth_data_->filter_datas[id_]->env_data->max_release_time ),
         is_main_adsr(false)
     {}
 
-    FReleaseSlConfig()
+    FReleaseSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        release( &(GET_DATA(synth_data).env_data->release) ),
-        max_release_time( &(GET_DATA(synth_data).env_data->max_release_time) ),
+        release( &synth_data_->env_data->release ),
+        max_release_time( &synth_data_->env_data->max_release_time ),
         is_main_adsr(true)
     {}
 
@@ -2190,13 +2186,13 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
         "On the right side: only the LFO amplitude will be uesd as modulation signal.\n"
         "In the middle: 50% of the envelope and 50% of the LFO will be used as modulator.\n"
         "\n"
-        "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, FILTER VOLUME"
+        "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, PAN, FILTER VOLUME"
     )
 
 public:
-    EnvLfoSlConfig( int id_ )
+    EnvLfoSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        adsr_lfo_mix( &(GET_DATA(filter_datas[id_]).adsr_lfo_mix) )
+        adsr_lfo_mix( &synth_data_->filter_datas[id_]->adsr_lfo_mix )
     {}
 
     JUCE_LEAK_DETECTOR (EnvLfoSlConfig)
@@ -2372,13 +2368,13 @@ class LFOSlConfig : public ModulationSliderConfigBase
         "If the LFO speed is slow (note durations) the LFO is always synced to the current speed (BPM).\n"
         "If the LFO speed is fast (note values) the LFO is not synced to anything.\n"
         "\n"
-        "Possible targets: OSC, MOD-MIX -> CUTOFF, RESONANCE, GAIN, DESTROY, FILTER VOLUME"
+        "Possible targets: OSC, MOD-MIX -> CUTOFF, RESONANCE, GAIN, DESTROY, PAN, FILTER VOLUME"
     )
 
 public:
-    LFOSlConfig( int id_ )
+    LFOSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        speed( &(GET_DATA(lfo_datas[id_]).speed) ),
+        speed( &synth_data_->lfo_datas[id_]->speed ),
 
         bottom_text( "LFO " + String(id_+1) )
     {}
@@ -2521,10 +2517,10 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FCutoffSLConfig( int id_ )
+    FCutoffSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        cutoff( &(GET_DATA(filter_datas[id_]).cutoff) ),
-        modulate_cutoff( &(GET_DATA(filter_datas[id_]).modulate_cutoff) )
+        cutoff( &synth_data_->filter_datas[id_]->cutoff ),
+        modulate_cutoff( &synth_data_->filter_datas[id_]->modulate_cutoff )
     {}
 
     JUCE_LEAK_DETECTOR (FCutoffSLConfig)
@@ -2664,10 +2660,10 @@ class FResonanceSLConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FResonanceSLConfig( int id_ )
+    FResonanceSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        resonance( &(GET_DATA(filter_datas[id_]).resonance) ),
-        modulate_resonance( &(GET_DATA(filter_datas[id_]).modulate_resonance) )
+        resonance( &synth_data_->filter_datas[id_]->resonance ),
+        modulate_resonance( &synth_data_->filter_datas[id_]->modulate_resonance )
     {}
 
     JUCE_LEAK_DETECTOR (FResonanceSLConfig)
@@ -2807,10 +2803,10 @@ class FGainSLConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FGainSLConfig( int id_ )
+    FGainSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        gain( &(GET_DATA(filter_datas[id_]).gain) ),
-        modulate_gain( &(GET_DATA(filter_datas[id_]).modulate_gain) )
+        gain( &synth_data_->filter_datas[id_]->gain ),
+        modulate_gain( &synth_data_->filter_datas[id_]->modulate_gain )
     {}
 
     JUCE_LEAK_DETECTOR (FGainSLConfig)
@@ -2928,35 +2924,32 @@ class FPanSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
-        "Define the filter output volume.\n"
-        "\n"
-        "Output target: EQ bank\n"
-        "Affected: BOOST of the next filter (except FILTER 3, there is no FILTER 4)"
+        "Define the filter panorama (left and right).\n"
+        "(Also processed if 'PASS' as filter type is selected)"
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns filter volume modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
+        "Turns filter panorama modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
     )
     BOTTOM_BUTTON_DIALS
     (
-        "FILTER VOLUME",
-        "FILTER VOLUME MODULATION POWER"
+        "FILTER PAN",
+        "FILTER PAN MODULATION POWER"
     )
     BACK_SLIDER_DESCRIPTION
     (
-        "Define the filter volume modulation power relative to the defined filter volume (front).\n"
+        "Define the filter pan modulation power relative to the defined filter pan (front).\n"
         NO_MOD_EFFECT
         GENERAL_MOD_EXAMPLE
     )
 
 public:
-    FPanSlConfig( int id_ )
+    FPanSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        pan( &(GET_DATA(filter_datas[id_]).pan) ),
-        modulate_pan( &(GET_DATA(filter_datas[id_]).modulate_pan) )
+        pan( &synth_data_->filter_datas[id_]->pan ),
+        modulate_pan( &synth_data_->filter_datas[id_]->modulate_pan )
     {}
 
     JUCE_LEAK_DETECTOR (FPanSlConfig)
@@ -3077,9 +3070,9 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Define the filter output volume.\n"
+        "(Also processed if 'PASS' as filter type is selected)"
         "\n"
-        "Output target: EQ bank\n"
-        "Affected: BOOST of the next filter (except FILTER 3, there is no FILTER 4)"
+        "Output target: EQ bank"
     )
     TOP_BUTTON_DESCRIPTION
     (
@@ -3098,10 +3091,10 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    FVolumeSlConfig( int id_ )
+    FVolumeSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        volume( &(GET_DATA(filter_datas[id_]).output) ),
-        modulate_volume( &(GET_DATA(filter_datas[id_]).modulate_output) )
+        volume( &synth_data_->filter_datas[id_]->output ),
+        modulate_volume( &synth_data_->filter_datas[id_]->modulate_output )
     {}
 
     JUCE_LEAK_DETECTOR (FVolumeSlConfig)
@@ -3253,11 +3246,11 @@ class BPMSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    BPMSlConfig()
+    BPMSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        speed( &(GET_DATA(synth_data).speed) ),
-        sync( &(GET_DATA(synth_data).sync) ),
-        runtime_info( &(GET_DATA(runtime_info)) )
+        speed( &synth_data_->speed ),
+        sync( &synth_data_->sync ),
+        runtime_info( synth_data_->runtime_info )
     {}
 
     JUCE_LEAK_DETECTOR (BPMSlConfig)
@@ -3383,10 +3376,10 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    SpeedMultiSlConfig()
+    SpeedMultiSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        speed_multi( &(GET_DATA(arp_data).speed_multi) ),
-        speed( &(GET_DATA(synth_data).speed) )
+        speed_multi( &synth_data_->arp_sequencer_data->speed_multi ),
+        speed( &synth_data_->speed )
     {}
 
     JUCE_LEAK_DETECTOR (SpeedMultiSlConfig)
@@ -3476,7 +3469,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "#-TUNE";
+        return "P-NOTE";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -3523,29 +3516,27 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the octave offset related to the current root note (e.g. pressed on the keyboard).\n"
         "\n"
         "Affected: OSC's, FM"
     )
-    TOP_BUTTON_DESCRIPTION
+    BOTTOM_BUTTON_DIALS
     (
-        "Turns OSC retune on or off.\n"
-        "(Has no effect if soft pedal is not down.)"
-        "\n"
-        "If OSC retune is enabled and the soft pedal is down each second and third note down retunes OSC 2 and OSC 3 relative to the first note which is still down (OSC 1).\n"
-        "If OSC retune is disabled and the soft pedal is down on note start reduces the gain of OSC 2 to 50% and OSC 3 to 33%.\n"
-        "\n"
-        "Note: MIDI CC 67 = soft pedal"
+        "OCTAVE OFFSET",
+        "PROGRAM NOTE"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the program note to easily get back to the right tune of the program by pushing the reset button."
     )
 
 public:
-    OctaveOffsetSlConfig()
+    OctaveOffsetSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        octave_offset( &(GET_DATA(synth_data).octave_offset) ),
-        note_offset( &(GET_DATA(synth_data).note_offset) )
+        octave_offset( &synth_data_->octave_offset ),
+        note_offset( &synth_data_->note_offset )
     {}
 
     JUCE_LEAK_DETECTOR (OctaveOffsetSlConfig)
@@ -3665,18 +3656,15 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
-        "Define the shape amount of the FX input (after EQ bank).\n"
-        "\n"
-        "Shaping makes some details in the sound more 'visible'."
+        "Define the power of distortion effects before and after the EQ bank."
     )
 
 public:
-    FXDistortionSlConfig()
+    FXDistortionSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        distortion( &(GET_DATA(synth_data).distortion) )
+        distortion( &synth_data_->distortion )
     {}
 
     JUCE_LEAK_DETECTOR (FXDistortionSlConfig)
@@ -3797,16 +3785,26 @@ class FColourSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION
     (
-        "Define the shape amount of the FX input (after EQ bank).\n"
+        "Define the resonance of all band filters."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "BAND RESONANCE",
+        "EQ MIX"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the mix of EQ output and EQ input.\n"
         "\n"
-        "Shaping makes some details in the sound more 'visible'."
+        "Values greater than 0 add more and more of the EQ bank output to the not EQ processed signal (FILTER MIX output).\n"
+        "(If the value is zero the EQ is bypassed)"
     )
 
 public:
-    FColourSlConfig()
+    FColourSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        shape( &(GET_DATA(synth_data).shape) ),
-        bypass( &(GET_DATA(eq_data).bypass) )
+        shape( &synth_data_->shape ),
+        bypass( &synth_data_->eq_data->bypass )
     {}
 
     JUCE_LEAK_DETECTOR (FColourSlConfig)
@@ -3932,9 +3930,9 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    RRoomSlConfig()
+    RRoomSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        room( &(GET_DATA(reverb_data).room) )
+        room( &synth_data_->reverb_data->room )
     {}
 
     JUCE_LEAK_DETECTOR (RRoomSlConfig)
@@ -4060,9 +4058,9 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    RWidthSlConfig()
+    RWidthSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        width( &(GET_DATA(reverb_data).width) )
+        width( &synth_data_->reverb_data->width )
     {}
 
     JUCE_LEAK_DETECTOR (RWidthSlConfig)
@@ -4188,9 +4186,9 @@ class RDrySlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    RDrySlConfig()
+    RDrySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        dry_wet_mix( &(GET_DATA(reverb_data).dry_wet_mix) )
+        dry_wet_mix( &synth_data_->reverb_data->dry_wet_mix )
     {}
 
     JUCE_LEAK_DETECTOR (RDrySlConfig)
@@ -4316,9 +4314,9 @@ class DelaySlConfig : public ModulationSliderConfigBase
     )
 
 public:
-    DelaySlConfig()
+    DelaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        delay( &(GET_DATA(synth_data).delay) )
+        delay( &synth_data_->delay )
     {}
 
     JUCE_LEAK_DETECTOR (DelaySlConfig)
@@ -4445,13 +4443,13 @@ class BypassConfig : public ModulationSliderConfigBase
         "(If the value is zero the FX section is bypassed)\n"
         "\n"
         "Affected:     REVERB, DELAY, CHORUS\n"
-        "NOT Affected: SHAPE"
+        "NOT Affected: DESTROY"
     )
 
 public:
-    BypassConfig()
+    BypassConfig( MoniqueSynthData*const synth_data_ )
         :
-        effect_bypass( &(GET_DATA(synth_data).effect_bypass) )
+        effect_bypass( &synth_data_->effect_bypass )
     {}
 
     JUCE_LEAK_DETECTOR (BypassConfig)
@@ -4568,28 +4566,15 @@ class VolumeConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the final output volume."
     )
-    BOTTOM_BUTTON_DIALS
-    (
-        "MASTER VOLUME",
-        "SOFT CLIPPING"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the SOFT CLIPPING amount of the final output.\n"
-        "\n"
-        "Values greater than 0 clipps the output softly and minimizes very large peaks much more than smaller ones.\n"
-        "Note: that samples after the soft clipper will be clipped hard if they are still larger as the possible output volume (this will have a distortion effect (may be wanted, may not))."
-    )
 
 public:
-    VolumeConfig()
+    VolumeConfig( MoniqueSynthData*const synth_data_ )
         :
-        volume( &(GET_DATA(synth_data).volume) )
+        volume( &synth_data_->volume )
     {}
 
     JUCE_LEAK_DETECTOR (VolumeConfig)
@@ -4677,7 +4662,7 @@ class CModSlConfig : public ModulationSliderConfigBase
         {
             if( is_on )
             {
-                value = mono_ParameterOwnerStore::getInstance()->voice->get_chorus_modulation_env_amp();
+                value = synth_data->voice->get_chorus_modulation_env_amp();
             }
             else
             {
@@ -4733,7 +4718,6 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the chorus amount.\n"
@@ -4742,33 +4726,21 @@ class CModSlConfig : public ModulationSliderConfigBase
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns morphable ENV modulations for the chorus amount on or off.\n"
-        "\n"
-        "If ENV is enabled the chorus dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
-        "If ENV is disabled the chorus dial defines just the chorus amount and the morphable envelope will be ignored."
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "CHORUS AMOUNT",
-        "MORPH ENV"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define an envelope to control the chorus amount.\n"
+        "Turns modulation by an envelope for the chorus amount on or off.\n"
         "(Has no effect if ENV is turned off)\n"
         "\n"
-        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
-        "The chorus dial (front dial) will be the sustain level for this envelope."
+        "If ENV is enabled the chorus dial defines the sustain level for its envelope (click EDIT to adjust the envelope).\n"
+        "If ENV is disabled the chorus dial defines a fixed amount level and the envelope will be ignored."
     )
 
 public:
-    CModSlConfig()
+    CModSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        modulation( &(GET_DATA(chorus_data).modulation) ),
-        hold_modulation( &(GET_DATA(chorus_data).hold_modulation) ),
+        modulation( &synth_data_->chorus_data->modulation ),
+        hold_modulation( &synth_data_->chorus_data->hold_modulation ),
 
-        synth_data( GET_DATA_PTR( synth_data ) ),
-        chorus_data( GET_DATA_PTR( chorus_data ) )
+        synth_data( synth_data_ ),
+        chorus_data( synth_data_->chorus_data )
     {}
 
     JUCE_LEAK_DETECTOR (CModSlConfig)
@@ -4788,6 +4760,8 @@ class GlideConfig : public ModulationSliderConfigBase
     Parameter*const glide;
     IntParameter*const velocity_glide_time;
     BoolParameter*const connect;
+
+    RuntimeNotifyer*const runtime_notifyer;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4884,7 +4858,7 @@ class GlideConfig : public ModulationSliderConfigBase
         }
         else
         {
-            const float sr = RuntimeNotifyer::getInstanceWithoutCreating()->get_sample_rate();
+            const float sr = runtime_notifyer->get_sample_rate();
             value = samplesToMsFast(glide->get_value()*sr/2,sr);
         }
         return String(round0(value));
@@ -4914,8 +4888,7 @@ class GlideConfig : public ModulationSliderConfigBase
         "(If you only have a sustain pedal you can enable bind pedals in the setup.)\n"
         "\n"
         "Note: MIDI CC 64 = sustain pedal.\n"
-        "Note: MIDI CC 66 = sostenuto pedal.\n"
-        "Note: MIDI CC 67 = soft pedal (See: O-TUNE (bottom right) for a soft pedal option)"
+        "Note: MIDI CC 66 = sostenuto pedal."
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -4930,11 +4903,13 @@ class GlideConfig : public ModulationSliderConfigBase
     )
 
 public:
-    GlideConfig()
+    GlideConfig( MoniqueSynthData*const synth_data_ )
         :
-        glide( &(GET_DATA(synth_data).glide) ),
-        velocity_glide_time( &(GET_DATA(synth_data).velocity_glide_time) ),
-        connect( &(GET_DATA(arp_data).connect) )
+        glide( &synth_data_->glide ),
+        velocity_glide_time( &synth_data_->velocity_glide_time ),
+        connect( &synth_data_->arp_sequencer_data->connect ),
+
+        runtime_notifyer( synth_data_->runtime_notifyer )
     {}
 
     JUCE_LEAK_DETECTOR (GlideConfig)
@@ -5065,10 +5040,10 @@ class ShuffleConfig : public ModulationSliderConfigBase
     )
 
 public:
-    ShuffleConfig()
+    ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
-        shuffle( &(GET_DATA(arp_data).shuffle) ),
-        is_on( &(GET_DATA(arp_data).is_on) )
+        shuffle( &synth_data_->arp_sequencer_data->shuffle ),
+        is_on( &synth_data_->arp_sequencer_data->is_on )
     {}
 
     JUCE_LEAK_DETECTOR (ShuffleConfig)
@@ -5104,7 +5079,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
     {
         bool success = false;
-        EQData*eq_data = GET_DATA_PTR( eq_data );
+        EQData*eq_data = synth_data->eq_data;
         if( env_ == eq_data->envs[0]
                 or env_ == eq_data->envs[1]
                 or env_ == eq_data->envs[2]
@@ -5176,7 +5151,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         {
             if( is_on )
             {
-                value = mono_ParameterOwnerStore::getInstance()->voice->get_band_env_amp(id);
+                value = synth_data->voice->get_band_env_amp(id);
             }
             else
             {
@@ -5234,43 +5209,30 @@ class EQSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
-        "Define the band boost amount for this frequency (bottom button caption).\n"
+        "Define the band boost amount for this frequency (bottom caption).\n"
+        "(Has no effect if EQ MIX is set to zero)\n"
         "(Will be the sustain level if ENV is turned on)\n"
         "\n"
         "Values greater than 0 will boost this band and values less than 0 will reduce it."
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns morphable ENV modulations for the band boost on or off.\n"
+        "Turns modulation by an envelope for this band boost on or off.\n"
         "\n"
-        "If ENV is enabled the band boost dial defines the sustain level for the morphable envelope (MORPH-ENV dial (back dial)).\n"
-        "If ENV is disabled the band boost dial defines just the band boost amount and the morphable envelope will be ignored."
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "BAND BOOST",
-        "MORPH ENV"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define an envelope to control the band boost amount.\n"
-        "(Has no effect if ENV is turned off)\n"
-        "\n"
-        "The dial defines an envelope out of the 4 morphable envelope presets (which you can define with the ENV preset editor (ENV button at the bottom of the main user interface)).\n"
-        "The band boost dial (front dial) will be the sustain level for this envelope."
+        "If ENV is enabled the band boost dial defines the sustain level for its envelope (click EDIT to adjust the envelope).\n"
+        "If ENV is disabled the band boost dial defines a fixed boost level and the envelope will be ignored."
     )
 
 public:
-    EQSlConfig( int id_ )
+    EQSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         id( id_ ),
-        velocity( &(GET_DATA(eq_data).velocity[id_]) ),
-        hold( &(GET_DATA(eq_data).hold[id_]) ),
+        velocity( &synth_data_->eq_data->velocity[id_] ),
+        hold( &synth_data_->eq_data->hold[id_] ),
 
-        synth_data( GET_DATA_PTR( synth_data ) )
+        synth_data( synth_data_ )
     {
         const float frequency_low_pass = get_low_pass_band_frequency( id_ );
         const float frequency_high_pass = get_high_pass_band_frequency( id_ );
@@ -5420,10 +5382,10 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     )
 //todo chencken
 public:
-    ArpStepSlConfig( int id_ )
+    ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        tune( &(GET_DATA(arp_data).tune[id_]) ),
-        velocity( &(GET_DATA(arp_data).velocity[id_]) ),
+        tune( &synth_data_->arp_sequencer_data->tune[id_] ),
+        velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
         bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) )
     {}
 
@@ -5551,14 +5513,14 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "\n"
         "OSC Morph Group:\n"
         "Morphs: OSC's, FM\n"
-        "Except: OSC SWITCH, OSC PULSE, BUTTONS\n"
+        "Except: BUTTONS\n"
         "\n"
         "FLT Morph Group:\n"
         "Morphs: FILTERS\n"
         "Except: FILTER TYPE, BUTTONS\n"
         "\n"
         "FX Morph Group:\n"
-        "Morphs: EQ BANK, SHAPE, REVERB, DELAY, CHORUS, FX-MIX, MASTER VOLUME, ADR PRESETS\n"
+        "Morphs: EQ BANK, ALL FX, FX-MIX, MASTER VOLUME\n"
         "Except: BUTTONS\n"
         "\n"
         "ARP Morph Group:\n"
@@ -5570,9 +5532,9 @@ class MorphSLConfig : public ModulationSliderConfigBase
     )
 
 public:
-    MorphSLConfig(int id_)
+    MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        morhp_state( &(GET_DATA(synth_data).morhp_states[id_]) ),
+        morhp_state( &synth_data_->morhp_states[id_] ),
         bottom_text( String( "TOGGL" ) + String(id_+1) )
     {}
 
@@ -5580,6 +5542,9 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
+
+
 
 
 

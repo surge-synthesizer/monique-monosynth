@@ -46,7 +46,7 @@ class Monique_Ui_MidiIO  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_MidiIO (mono_AudioDeviceManager*const audio_device_manager_);
+    Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_AudioDeviceManager*const audio_device_manager_);
     ~Monique_Ui_MidiIO();
 
     //==============================================================================

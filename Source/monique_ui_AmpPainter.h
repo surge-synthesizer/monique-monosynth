@@ -52,8 +52,10 @@ private:
     COLD virtual void block_size_changed() noexcept override;
 
 public:
-    COLD EndlessBuffer();
-    COLD ~EndlessBuffer();
+    COLD EndlessBuffer( RuntimeNotifyer*const notifyer_ ) noexcept;
+    COLD virtual ~EndlessBuffer() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EndlessBuffer)
 };
 //==============================================================================
 inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noexcept
@@ -134,8 +136,10 @@ private:
     COLD void block_size_changed() noexcept override;
 
 public:
-    COLD EndlessSwitchBuffer();
-    COLD ~EndlessSwitchBuffer();
+    COLD EndlessSwitchBuffer( RuntimeNotifyer*const notifyer_ ) noexcept;
+    COLD ~EndlessSwitchBuffer() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EndlessSwitchBuffer)
 };
 
 //==============================================================================
@@ -187,7 +191,7 @@ class Monique_Ui_AmpPainter  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_AmpPainter ();
+    Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiLookAndFeel*look_and_feel_);
     ~Monique_Ui_AmpPainter();
 
     //==============================================================================
@@ -196,13 +200,14 @@ public:
     const float original_h;
 
 private:
-    MoniqueSynthData* synth_data;
+    UiLookAndFeel*const look_and_feel;
+    MoniqueSynthData*const synth_data;
     OwnedArray<EndlessBuffer> filter_values;
     OwnedArray<EndlessBuffer> filter_env_values;
-    EndlessBuffer eq_values;
-    EndlessBuffer values_env;
-    EndlessBuffer values;
-    EndlessSwitchBuffer master_osc_values;
+    ScopedPointer< EndlessBuffer > eq_values;
+    ScopedPointer< EndlessBuffer > values_env;
+    ScopedPointer< EndlessBuffer > values;
+    ScopedPointer< EndlessSwitchBuffer > master_osc_values;
     OwnedArray<EndlessBuffer> osc_values;
 
     Array<EndlessBuffer*> buffers;
@@ -277,28 +282,28 @@ inline void Monique_Ui_AmpPainter::add_eq( const float* values_, int num_samples
 {
     //if( synth_data->osci_show_eq )
     {
-        eq_values.write( values_, num_samples_ );
+        eq_values->write( values_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_out_env( const float* values_, int num_samples_ ) noexcept
 {
     //if( synth_data->osci_show_out_env )
     {
-        values_env.write( values_, num_samples_ );
+        values_env->write( values_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_out( const float* values_l_, const float* values_r_, int num_samples_ ) noexcept
 {
     //if( synth_data->osci_show_out )
     {
-        values.write( values_l_, values_r_, num_samples_ );
+        values->write( values_l_, values_r_, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_master_osc( const float* values_, const float* is_switch_values, int num_samples_ ) noexcept
 {
     //if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and synth_data->osci_show_osc_3 )
     {
-        master_osc_values.write( values_, is_switch_values, num_samples_ );
+        master_osc_values->write( values_, is_switch_values, num_samples_ );
     }
 }
 inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, int num_samples_ ) noexcept
@@ -312,3 +317,4 @@ inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, int n
 //[/EndFile]
 
 #endif   // __JUCE_HEADER_15EBFFC85DA080CA__
+

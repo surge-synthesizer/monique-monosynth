@@ -23,9 +23,6 @@
 */
 
 #include "monique_ui_LookAndFeel.h"
-#include <iomanip>
-
-juce_ImplementSingleton (UiLookAndFeel)
 
 //==============================================================================
 //==============================================================================
@@ -54,8 +51,8 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
     s.setJustification (Justification::centredLeft);
     s.append
     (
-        text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?: tool tips you can disable in the setup."),
-        Font(Typeface::createSystemTypefaceFor(BinaryData::DroidSansMono_ttf, BinaryData::DroidSansMono_ttfSize)).withHeight(14.0f).withTypefaceStyle("bold"),
+        text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips you can disable in the setup."),								
+        Font(Typeface::createSystemTypefaceFor(BinaryData::SourceCodeProMedium_otf, BinaryData::SourceCodeProMedium_otfSize)).withHeight(15.0f),
         colour
     );
 
@@ -127,7 +124,7 @@ void ComponentColours::save_to(XmlElement* xml_) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-UiLookAndFeel::UiLookAndFeel()
+UiLookAndFeel::UiLookAndFeel() noexcept
 {
     std::cout << "MONIQUE: init style" << std::endl;
 
@@ -280,10 +277,7 @@ UiLookAndFeel::UiLookAndFeel()
 
     defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::FjallaOneRegular_otf,BinaryData::FjallaOneRegular_otfSize));
 }
-UiLookAndFeel::~UiLookAndFeel()
-{
-    clearSingletonInstance();
-}
+UiLookAndFeel::~UiLookAndFeel() noexcept {}
 
 //==============================================================================
 void UiLookAndFeel::drawButtonBackground (Graphics& g,

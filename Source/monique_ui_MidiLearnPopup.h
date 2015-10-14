@@ -44,7 +44,7 @@ class Monique_Ui_MainwindowPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_MainwindowPopup (Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_);
+    Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_);
     ~Monique_Ui_MainwindowPopup();
 
     //==============================================================================
