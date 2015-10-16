@@ -62,7 +62,7 @@ COLD mono_AudioDeviceManager::mono_AudioDeviceManager( RuntimeNotifyer*const run
 :
 RuntimeListener( runtime_notifyer_ ),
                  runtime_notifyer( runtime_notifyer_ ),
-                 
+
                  main_input_thru
                  (
                      false,
@@ -1208,7 +1208,10 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD mono_AudioDeviceManager::mono_AudioDeviceManager() noexcept
+COLD mono_AudioDeviceManager::mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept
+:
+RuntimeListener( runtime_notifyer_ ),
+runtime_notifyer( runtime_notifyer_ )
 {
     sample_rate_changed(0);
 }
@@ -1225,7 +1228,7 @@ COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) n
 
 COLD void mono_AudioDeviceManager::clear_feedback_and_shutdown() noexcept
 {
-    Array< Parameter* >& parameters = GET_DATA(synth_data).get_all_parameters();
+    Array< Parameter* >& parameters = get_synth_data()->get_all_parameters();
     for( int i = 0 ; i != parameters.size() ; ++ i )
     {
         parameters.getUnchecked(i)->midi_control->send_clear_feedback_only();

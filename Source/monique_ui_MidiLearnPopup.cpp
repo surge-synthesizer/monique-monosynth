@@ -174,7 +174,7 @@ void Monique_Ui_MainwindowPopup::comboBoxChanged (ComboBox* comboBoxThatHasChang
         //[UserComboBoxCode_combo_midi_number] -- add your combo box handling code here..
         if( _midi_control )
         {
-            _midi_control->train( comboBoxThatHasChanged->getSelectedItemIndex(), _midi_control->get_is_ctrl_version_of_name() );
+            _midi_control->train( comboBoxThatHasChanged->getSelectedItemIndex(), _midi_control->get_is_ctrl_version_of_name(), synth_data->audio_processor );
         }
         //[/UserComboBoxCode_combo_midi_number]
     }

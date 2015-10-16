@@ -57,7 +57,7 @@ private:
     // DATA & SYNTH PROCESSOR
 public:
     MoniqueSynthData* synth_data;
-    virtual MoniqueSynthData*get_synth_data() noexcept override { return synth_data; }
+    MoniqueSynthData*get_synth_data() noexcept override { return synth_data; }
     MoniqueSynthesiserVoice* voice;
     MoniqueSynthesizer* synth;
 
@@ -147,6 +147,8 @@ private:
     //==========================================================================
     // BOOT UI
     COLD AudioProcessorEditor* createEditor()  override;
+    
+    // GET UI
     Monique_Ui_Mainwindow*get_editor() noexcept override { return reinterpret_cast< Monique_Ui_Mainwindow* >( getActiveEditor() ); }
 
     //==========================================================================

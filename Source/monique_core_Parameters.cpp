@@ -364,7 +364,8 @@ inline void ChangeParamOverTime::change() noexcept
 //==============================================================================
 
 // ==============================================================================
-MIDIControl::MIDIControl(Parameter*const owner_): is_in_ctrl_mode(false), owner(owner_) {
+MIDIControl::MIDIControl(Parameter*const owner_): is_in_ctrl_mode(false), owner(owner_), audio_processor(nullptr)
+{
     midi_number = -1;
     is_ctrl_version_of_name = "";
 }
@@ -375,6 +376,7 @@ void MIDIControl::clear()
     stop_listen_for_feedback();
     send_clear_feedback_only();
 
+    audio_processor = nullptr;
     midi_number = -1;
     is_ctrl_version_of_name = "";
 }
@@ -445,9 +447,10 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 
     return success;
 }
-bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept
+bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version_of_, MoniqueAudioProcessor*audio_processor_ ) noexcept
 {
     send_clear_feedback_only();
+    audio_processor = audio_processor_;
 
     bool success = false;
     {
@@ -476,9 +479,10 @@ bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version
 
     return success;
 }
-bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept
+bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_, MoniqueAudioProcessor*audio_processor_ ) noexcept
 {
     send_clear_feedback_only();
+    audio_processor = audio_processor_;
 
     midi_number = controller_number_;
     is_ctrl_version_of_name = is_ctrl_version_of_name_;
@@ -495,26 +499,24 @@ bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_
     return true;
 }
 
-inline void MIDIControl::start_listen_for_feedback() noexcept
+void MIDIControl::start_listen_for_feedback() noexcept
 {
     owner->register_listener( this );
 }
-inline void MIDIControl::stop_listen_for_feedback() noexcept
+void MIDIControl::stop_listen_for_feedback() noexcept
 {
     owner->remove_listener( this );
 }
 
 void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
 {
-  // TODO
-  /*
     const bool is_ctrl_version_of = is_ctrl_version_of_name != "";
     if( type_of( param_ ) == IS_BOOL )
     {
         bool do_send
         = ( ! is_ctrl_version_of && ! is_in_ctrl_mode)
-        || ( (is_ctrl_version_of && is_in_ctrl_mode)
-        || &(GET_DATA( synth_data ).ctrl) == param_ );
+        || ( (is_ctrl_version_of && is_in_ctrl_mode) );
+        //|| &(GET_DATA( synth_data ).ctrl) == param_ );
         if( do_send )
         {
             send_standard_feedback();
@@ -527,7 +529,6 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
             send_standard_feedback();
         }
     }
-    */
 }
 void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
@@ -564,8 +565,7 @@ void MIDIControl::send_clear_feedback_only() const noexcept
 {
     if( is_valid_trained() )
     {
-        // TODO
-        // AppInstanceStore::getInstance()->audio_processor->clear_feedback_message( midi_number );
+        audio_processor->clear_feedback_message( midi_number );
     }
 }
 
@@ -576,20 +576,26 @@ void MIDIControl::set_ctrl_mode( bool mode_ ) noexcept
     send_feedback_only();
 }
 
-inline void MIDIControl::send_standard_feedback() const noexcept
-{   // TODO
-    //AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
+inline void MIDIControl::send_standard_feedback(  ) const noexcept
+{
+    if( is_valid_trained() )
+    {
+        audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
+    }
 }
 inline void MIDIControl::send_modulation_feedback() const noexcept
-{   // TODO
-    //AppInstanceStore::getInstance()->audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
+{
+    if( is_valid_trained() )
+    {
+        audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
+    }
 }
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
-COLD MIDIControlHandler::MIDIControlHandler( UiLookAndFeel*look_and_feel_ ) noexcept :
-ui_look_and_feel(look_and_feel_)
+COLD MIDIControlHandler::MIDIControlHandler( UiLookAndFeel*look_and_feel_, MoniqueAudioProcessor*const audio_processor_ ) noexcept :
+ui_look_and_feel(look_and_feel_), audio_processor(audio_processor_)
 {
     clear();
 }
@@ -654,13 +660,13 @@ bool MIDIControlHandler::handle_incoming_message( int controller_number_ ) noexc
     bool success = false;
     if( learning_param )
     {
-        if( learning_param->midi_control->train( controller_number_, nullptr ) )
+        if( learning_param->midi_control->train( controller_number_, nullptr, audio_processor ) )
         {
             success = true;
         }
         if( learning_ctrl_param )
         {
-            learning_ctrl_param->midi_control->train( controller_number_, learning_param );
+            learning_ctrl_param->midi_control->train( controller_number_, learning_param, audio_processor );
         }
 
         clear();

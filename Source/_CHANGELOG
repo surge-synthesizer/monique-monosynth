@@ -1,13 +1,8 @@
-Es gibt so einige Klassiker, die mit einem System-Default immer gut kommen, damit du aus "neutral" heraus arbeiten kannst, z.B. Gain 0, Cutoff max., Reso 0, OSC Level (hier ab Sektion 2, wegen Filter und Generator auf 0), sonst frickelst du dir den Parameter immer erst hin. Manchmal ist es halt flott, denn Parameter mit einem Klick auf den typischen Defaultwert zu fahren, und das kombiniert man mit einer Sondertaste. Es geht ja nicht darum, sofort und sämtliche Parameter via Default-Reset zu versehen.
-FactoryDefault, StateOnProgramm oder User Return sind dann noch die user-freundlichen Konzepte, die nicht nur den Spaß an der Kiste vergrößern, sondern eine lockere Arbeitsweise ermöglichen. Interessant ist auch ein selektiver Reset ausgewählter Parameter.
 
-MIDI feedback is brocken; see monique_core_Parameters.cpp (no processsor available)
 
 KNOWN BUGS:
 ****************************************************************************
-- sustain for main env and can be negative if you control it by automation param or midi cc
 - asks if you like to reconnect a old midi devices on a rare edge case
-- multi instances are not working if vst plugins are not started in a separate process
 - amp painter liest alten buffer oder neuen (>=0 or >0 or something or threading problem, but not an engine problem)
 
 UI
@@ -20,6 +15,7 @@ UI
 - move: editor buttons to the bottom right
 - option: arp always on, arp always off
 - option: pitch arp only or trigger notes anyway
+- add: FactoryDefault, StateOnProgramm oder User Return
 
 ENGINE
 ****************************************************************************
@@ -33,6 +29,8 @@ OPTIMIZE
 ****************************************************************************
 - calculate glide on values on change
 - faster glide and lfos (CPU power)
+- if the filter runs empty, skip processing?
+- windows perofmrance is unbelivable high with zero inputs
 
 PROGRAMS
 ****************************************************************************

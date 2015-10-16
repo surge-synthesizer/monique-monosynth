@@ -113,7 +113,7 @@ inline void EndlessBuffer::write( const float* samples_, const float* samples_2_
                 tmp_position = 0;
             }
 
-            tmp_sample_buffer[tmp_position] = sample_mix_ui(samples_[sid],samples_2_[sid]);
+            tmp_sample_buffer[tmp_position] = (samples_[sid]+samples_2_[sid])*0.5;
         }
     }
 

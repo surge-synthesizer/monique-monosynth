@@ -50,13 +50,20 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         label_attack->setText(String( MIN_ENV_TIMES + slider_attack->getValue()*20000 )+String("ms"), dontSendNotification);
 
         slider_decay->setValue( env_data->decay.get_value(), dontSendNotification );
-        label_decay->setText(String( slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
+        label_decay->setText(String( MIN_ENV_TIMES + slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
 
         slider_sustain->setValue( sustain->get_value(), dontSendNotification );
         label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
 
         slider_sustain_time->setValue( env_data->sustain_time.get_value()*10000, dontSendNotification );
+	if( slider_sustain_time->getValue() < 10000 )
+	{
         label_sustain_time->setText(String( round0(slider_sustain_time->getValue()) )+String("ms"), dontSendNotification);
+	}
+	else
+	{
+        label_sustain_time->setText(String( "unltd" ), dontSendNotification);
+	}
 
         slider_release->setValue( env_data->release.get_value(), dontSendNotification );
         label_release->setText(String( MIN_ENV_TIMES + slider_release->getValue() *20000)+String("ms"), dontSendNotification);
@@ -318,7 +325,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain->addListener (this);
 
     addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
-                                                         TRANS("(SUSTAIN)")));
+                                                         TRANS("SUSTAIN")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
     label_sustain_bottom->setEditable (false, false, false);
@@ -388,7 +395,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (copy = new TextButton (String::empty));
-    copy->setTooltip (TRANS("Copy this envelop settings to the clipboard (exclude sustain)."));
+    copy->setTooltip (TRANS("Copy this envelop settings to the clipboard."));
     copy->setButtonText (TRANS("COPY"));
     copy->addListener (this);
     copy->setColour (TextButton::buttonColourId, Colours::cornflowerblue);
@@ -397,7 +404,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past = new TextButton (String::empty));
-    past->setTooltip (TRANS("Past envelop settings from the clipboard (exclude sustain)."));
+    past->setTooltip (TRANS("Past envelop settings from the clipboard."));
     past->setButtonText (TRANS("PAST"));
     past->addListener (this);
     past->setColour (TextButton::buttonColourId, Colours::blueviolet);
@@ -420,12 +427,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
         }
     }
     this->setRepaintsOnMouseActivity(false);
-
-    if( has_negative_sustain_ )
-    {
-        slider_sustain->setRange (-1, 1, 0.0005);
-    }
-
     //[/UserPreSize]
 
     setSize (710, 190);
@@ -806,7 +807,7 @@ BEGIN_JUCER_METADATA
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ee00adc332943fc6" memberName="label_sustain_bottom"
          virtualName="" explicitFocusOrder="0" pos="140 140 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="(SUSTAIN)" editableSingleClick="0"
+         edTextCol="ff000000" edBkgCol="0" labelText="SUSTAIN" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="8b7051eff652e1d6" memberName="label_sustain" virtualName=""
@@ -842,11 +843,11 @@ BEGIN_JUCER_METADATA
               bgColOff="ffffff00" bgColOn="ffffff00" textCol="ff000000" textColOn="ff000000"
               buttonText="aCL" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b19da151b3279272" memberName="copy" virtualName=""
-              explicitFocusOrder="0" pos="660 135 40 20" tooltip="Copy this envelop settings to the clipboard (exclude sustain)."
+              explicitFocusOrder="0" pos="660 135 40 20" tooltip="Copy this envelop settings to the clipboard."
               bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="660 155 40 20" tooltip="Past envelop settings from the clipboard (exclude sustain)."
+              explicitFocusOrder="0" pos="660 155 40 20" tooltip="Past envelop settings from the clipboard."
               bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

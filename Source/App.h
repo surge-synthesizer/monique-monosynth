@@ -1,6 +1,9 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+
+#define MONO_SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
+
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -59,7 +62,9 @@ public:
 
     //==========================================================================
     COLD void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept;
-    inline int get_size() const noexcept { return size; }
+    inline int get_size() const noexcept {
+        return size;
+    }
 
     //==========================================================================
     COLD mono_AudioSampleBuffer(int numSamples) noexcept;
@@ -162,6 +167,32 @@ static inline float round001( float value ) noexcept
 {
     using namespace std; // MAC COMPILER PROBLEMS
     return roundf(value*100)/100;
+}
+static inline float round0001( float value ) noexcept
+{
+    using namespace std; // MAC COMPILER PROBLEMS
+    return roundf(value*1000)/1000;
+}
+static inline float auto_round( float value ) noexcept
+{
+    if( value < 1 )
+    {
+        value = round0001( value );
+    }
+    else if( value < 10 )
+    {
+        value = round001( value );
+    }
+    else if( value < 100 )
+    {
+        value = round01( value );
+    }
+    else
+    {
+        value = round0( value );
+    }
+
+    return value;
 }
 
 // --------------------------------------------------------------------------------------------

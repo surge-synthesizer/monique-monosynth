@@ -166,12 +166,6 @@ fm_freq
     generate_short_human_name(FM_NAME,"tune")
 ),
 fm_freq_smoother(smooth_manager_,&fm_freq),
-fm_shot
-(
-    true,
-    generate_param_name(OSC_NAME,MASTER_OSC,"fm_wave"),
-    generate_short_human_name(FM_NAME,"shot_ON")
-),
 sync
 (
     true,
@@ -186,11 +180,20 @@ fm_swing
 (
     MIN_MAX( 0, 1 ),
     0,
-    1000,
+    5000,
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_swing"),
     generate_short_human_name(FM_NAME,"fm_swing")
 ),
 fm_swing_smoother(smooth_manager_,&fm_swing),
+fm_shape
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(OSC_NAME,MASTER_OSC,"fm_phase"),
+    generate_short_human_name(FM_NAME,"fm_phase")
+),
+fm_shape_smoother(smooth_manager_,&fm_shape),
 master_shift
 (
     MIN_MAX( 0, 1 ),
@@ -209,18 +212,18 @@ COLD FMOscData::~FMOscData() noexcept {}
 static inline void copy( FMOscData* dest_, const FMOscData* src_ ) noexcept
 {
     dest_->fm_freq = src_->fm_freq;
-    dest_->fm_shot = src_->fm_shot;
     dest_->sync = src_->sync;
     dest_->fm_swing = src_->fm_swing;
     dest_->master_shift = src_->master_shift;
+    dest_->fm_shape = src_->fm_shape;
 }
 static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &osc_data_->fm_freq );
-    params_.add( &osc_data_->fm_shot );
     params_.add( &osc_data_->sync );
     params_.add( &osc_data_->fm_swing );
     params_.add( &osc_data_->master_shift );
+    params_.add( &osc_data_->fm_shape );
 }
 
 //==============================================================================
@@ -345,9 +348,9 @@ max_decay_time
 
 sustain
 (
-    MIN_MAX( -1, 1 ),
+    MIN_MAX( 0, 1 ),
     0.9,
-    2000,
+    1000,
     generate_param_name(ENV_NAME,id,"sustain"),
     generate_short_human_name(ENV_NAME,id_,"sustain")
 ),
@@ -389,13 +392,13 @@ shape
 COLD ENVData::~ENVData() noexcept {}
 
 //==============================================================================
-static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_sustain_ ) noexcept
+static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_max_times_ ) noexcept
 {
     params_.add( &data_->attack );
     params_.add( &data_->decay );
-    if( include_sustain_ )
+    params_.add( &data_->sustain );
+    if( include_max_times_ )
     {
-        params_.add( &data_->sustain );
         params_.add( &data_->max_attack_time );
         params_.add( &data_->max_decay_time );
         params_.add( &data_->max_release_time );
@@ -546,9 +549,9 @@ input_sustains
 (
     SUM_INPUTS_PER_FILTER,
 
-    MIN_MAX( -1, 1 ),
+    MIN_MAX( id_ == 0 ? 0 : -1, 1 ),
     0,
-    2000,
+    id_ == 0 ? 1000 : 2000,
 
     FILTER_NAME,FILTER_NAME_SHORT,
     id_,
@@ -571,23 +574,19 @@ env_data( new ENVData( smooth_manager_, id_ ) )
 {
     for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
     {
+        input_smoothers.add( new SmoothedParameter(smooth_manager_,&input_sustains[i]) );
+
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
         env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
         env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
         env_data->max_release_time = env_data->max_release_time.get_info().max_value;
         input_envs.add( env_data );
-        input_sustains[i].register_always_listener(this);
     }
 }
 
 COLD FilterData::~FilterData() noexcept
 {
     delete env_data;
-
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
-    {
-        input_sustains[i].remove_listener(this);
-    }
 }
 
 //==============================================================================
@@ -617,7 +616,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), false );
     }
 
-    copy( dest_->env_data, src_->env_data, true );
+    copy( dest_->env_data, src_->env_data, false );
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -627,7 +626,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
         params_.add( &data_->input_holds[i] );
         collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, false );
     }
-    collect_saveable_parameters( data_->env_data, params_, true );
+    collect_saveable_parameters( data_->env_data, params_, false );
 
     params_.add( &data_->adsr_lfo_mix );
 
@@ -648,31 +647,6 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
 
     params_.add( &data_->pan );
     params_.add( &data_->modulate_pan );
-}
-
-//==============================================================================
-void FilterData::parameter_value_changed( Parameter* param_ ) noexcept
-{
-    for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
-    {
-        if( input_sustains[i].ptr() == param_ )
-        {
-            input_envs[i]->sustain.set_value_without_notification( param_->get_value() );
-            break;
-        }
-    }
-}
-void FilterData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void FilterData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void FilterData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
 }
 
 //==============================================================================
@@ -794,9 +768,9 @@ velocity
 (
     SUM_EQ_BANDS,
 
-    MIN_MAX( -1, 1 ),
-    0,
-    2000,
+    MIN_MAX( 0, 1 ),
+    0.5,
+    1000,
 
     EQ_NAME,EQ_NAME,
     id_,
@@ -824,22 +798,16 @@ bypass_smoother(smooth_manager_,&bypass)
 {
     for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
     {
+        velocity_smoothers.add( new SmoothedParameter( smooth_manager_, &velocity[band_id] ) );
+
         ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
         env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
         env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
         env_data->max_release_time = env_data->max_release_time.get_info().max_value;
         envs.add( env_data );
-
-        velocity[band_id].register_always_listener(this);
     }
 }
-COLD EQData::~EQData() noexcept
-{
-    for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
-    {
-        velocity[band_id].remove_listener(this);
-    }
-}
+COLD EQData::~EQData() noexcept {}
 
 //==============================================================================
 static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
@@ -848,7 +816,6 @@ static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
     {
         dest_->velocity[i] = src_->velocity[i];
         dest_->hold[i] = src_->hold[i];
-
         copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ), false );
     }
 
@@ -860,36 +827,10 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
     {
         params_.add( &data_->velocity[i] );
         params_.add( &data_->hold[i] );
-
         collect_saveable_parameters( data_->envs.getUnchecked( i ), params_, false );
     }
 
     params_.add( &data_->bypass );
-}
-
-//==============================================================================
-void EQData::parameter_value_changed( Parameter* param_ ) noexcept
-{
-    for( int i = 0 ; i != SUM_EQ_BANDS ; ++i )
-    {
-        if( velocity[i].ptr() == param_ )
-        {
-            envs[i]->sustain.set_value_without_notification( (param_->get_value()+1)*0.5 );
-            break;
-        }
-    }
-}
-void EQData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void EQData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void EQData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
 }
 
 //==============================================================================
@@ -954,6 +895,7 @@ modulation
     generate_param_name(CHORUS_NAME,id_,"modulation"),
     generate_short_human_name("FX","chorus-amount")
 ),
+modulation_smoother( smooth_manager_, &modulation ),
 hold_modulation
 (
     true,
@@ -967,8 +909,6 @@ env_data( new ENVData( smooth_manager_, CHORUS_ENV_ID_OFFSET ) )
     env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
     env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
     env_data->max_release_time = env_data->max_release_time.get_info().max_value;
-
-    modulation.register_always_listener(this);
 }
 COLD ChorusData::~ChorusData() noexcept
 {
@@ -989,24 +929,6 @@ static inline void collect_saveable_parameters( ChorusData* data_, Array< Parame
     params_.add( &data_->hold_modulation );
 
     collect_saveable_parameters( data_->env_data, params_, false );
-}
-
-//==============================================================================
-void ChorusData::parameter_value_changed( Parameter* param_ ) noexcept
-{
-    env_data->sustain.set_value_without_notification( param_->get_value() );
-}
-void ChorusData::parameter_value_on_load_changed( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void ChorusData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
-}
-void ChorusData::parameter_value_changed_always_notification( Parameter* param_ ) noexcept
-{
-    parameter_value_changed( param_ );
 }
 
 //==============================================================================
@@ -1365,7 +1287,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD void set_default_midi_assignments( MoniqueSynthData& synth_data ) noexcept
+COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAudioProcessor*const midi_device_manager_ ) noexcept
 {
     MIDIControl* midi_control;
 
@@ -1385,121 +1307,121 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data ) noexcept
 
     // 0 Bank Select // FIX!
     // 1
-    synth_data.glide.midi_control->train( 1, nullptr );
+    synth_data.glide.midi_control->train( 1, nullptr, midi_device_manager_ );
     // 2 UNUSED
-    main_env_data.sustain.midi_control->train( 1, nullptr );
+    main_env_data.sustain.midi_control->train( 1, nullptr, midi_device_manager_ );
     // 3 UNUSED
     // 4
-    synth_data.ctrl.midi_control->train( 4, nullptr );
+    synth_data.ctrl.midi_control->train( 4, nullptr, midi_device_manager_ );
     // 5
-    synth_data.velocity_glide_time.midi_control->train( 5, nullptr );
+    synth_data.velocity_glide_time.midi_control->train( 5, nullptr, midi_device_manager_ );
     // 6 UNUSED
     // 7
-    synth_data.volume.midi_control->train( 7, nullptr );
+    synth_data.volume.midi_control->train( 7, nullptr, midi_device_manager_ );
     // 8 UNUSED
     // 9 UNUSED
     // 10 UNUSED
     // 11 UNUSED
     // 12
-    synth_data.shape.midi_control->train( 12, nullptr );
+    synth_data.shape.midi_control->train( 12, nullptr, midi_device_manager_ );
     // 13
     // TODO synth_data.curve_shape.midi_control->train( 13, nullptr );
     // 14
-    synth_data.effect_bypass.midi_control->train( 14, nullptr );
+    synth_data.effect_bypass.midi_control->train( 14, nullptr, midi_device_manager_ );
     // 15
-    synth_data.linear_morhp_state.midi_control->train( 15, nullptr );
+    synth_data.linear_morhp_state.midi_control->train( 15, nullptr, midi_device_manager_ );
     // 16
-    synth_data.morhp_states[0].midi_control->train( 16, nullptr );
+    synth_data.morhp_states[0].midi_control->train( 16, nullptr, midi_device_manager_ );
     // 17
-    synth_data.morhp_states[1].midi_control->train( 17, nullptr );
+    synth_data.morhp_states[1].midi_control->train( 17, nullptr, midi_device_manager_ );
     // 18
-    synth_data.morhp_states[2].midi_control->train( 18, nullptr );
+    synth_data.morhp_states[2].midi_control->train( 18, nullptr, midi_device_manager_ );
     // 19
-    synth_data.morhp_states[3].midi_control->train( 19, nullptr );
+    synth_data.morhp_states[3].midi_control->train( 19, nullptr, midi_device_manager_ );
     // 20
     // TODO fm_osc_data.puls_width.midi_control->train( 20, nullptr );
     // 21
     // TODO master_osc_data.fm_mix_algorythm.midi_control->train( 21, nullptr );
     // 22
-    filter_data_1.input_sustains[0].midi_control->train( 22, nullptr );
+    filter_data_1.input_sustains[0].midi_control->train( 22, nullptr, midi_device_manager_ );
     // 23
-    filter_data_1.input_sustains[1].midi_control->train( 23, nullptr );
+    filter_data_1.input_sustains[1].midi_control->train( 23, nullptr, midi_device_manager_ );
     // 24
-    filter_data_1.input_sustains[2].midi_control->train( 24, nullptr );
+    filter_data_1.input_sustains[2].midi_control->train( 24, nullptr, midi_device_manager_ );
     // 25
-    filter_data_1.env_data->attack.midi_control->train( 25, nullptr );
+    filter_data_1.env_data->attack.midi_control->train( 25, nullptr, midi_device_manager_ );
     // 26
-    filter_data_1.env_data->decay.midi_control->train( 26, nullptr );
+    filter_data_1.env_data->decay.midi_control->train( 26, nullptr, midi_device_manager_ );
     // 27
-    filter_data_1.env_data->sustain.midi_control->train( 27, nullptr );
+    filter_data_1.env_data->sustain.midi_control->train( 27, nullptr, midi_device_manager_ );
     // 28
-    filter_data_1.env_data->release.midi_control->train( 28, nullptr );
+    filter_data_1.env_data->release.midi_control->train( 28, nullptr, midi_device_manager_ );
     // 29
-    filter_data_1.adsr_lfo_mix.midi_control->train( 29, nullptr );
+    filter_data_1.adsr_lfo_mix.midi_control->train( 29, nullptr, midi_device_manager_ );
     // 30
-    master_lfo_data.speed.midi_control->train( 30, nullptr );
+    master_lfo_data.speed.midi_control->train( 30, nullptr, midi_device_manager_ );
     // 31
-    filter_data_1.cutoff.midi_control->train( 31, nullptr );
+    filter_data_1.cutoff.midi_control->train( 31, nullptr, midi_device_manager_ );
     // 32
-    filter_data_1.resonance.midi_control->train( 32, nullptr );
+    filter_data_1.resonance.midi_control->train( 32, nullptr, midi_device_manager_ );
     // 33
-    filter_data_1.gain.midi_control->train( 33, nullptr );
+    filter_data_1.gain.midi_control->train( 33, nullptr, midi_device_manager_ );
     // 34
-    filter_data_1.distortion.midi_control->train( 34, nullptr );
+    filter_data_1.distortion.midi_control->train( 34, nullptr, midi_device_manager_ );
     // 35 UNUSED / SPACER
     // 36
-    filter_data_2.input_sustains[0].midi_control->train( 36, nullptr );
+    filter_data_2.input_sustains[0].midi_control->train( 36, nullptr, midi_device_manager_ );
     // 37
-    filter_data_2.input_sustains[1].midi_control->train( 37, nullptr );
+    filter_data_2.input_sustains[1].midi_control->train( 37, nullptr, midi_device_manager_ );
     // 38
-    filter_data_2.input_sustains[2].midi_control->train( 38, nullptr );
+    filter_data_2.input_sustains[2].midi_control->train( 38, nullptr, midi_device_manager_ );
     // 39
-    filter_data_2.env_data->attack.midi_control->train( 39, nullptr );
+    filter_data_2.env_data->attack.midi_control->train( 39, nullptr, midi_device_manager_ );
     // 40
-    filter_data_2.env_data->decay.midi_control->train( 40, nullptr );
+    filter_data_2.env_data->decay.midi_control->train( 40, nullptr, midi_device_manager_ );
     // 41
-    filter_data_2.env_data->sustain.midi_control->train( 41, nullptr );
+    filter_data_2.env_data->sustain.midi_control->train( 41, nullptr, midi_device_manager_ );
     // 42
-    filter_data_2.env_data->release.midi_control->train( 42, nullptr );
+    filter_data_2.env_data->release.midi_control->train( 42, nullptr, midi_device_manager_ );
     // 43
-    filter_data_2.adsr_lfo_mix.midi_control->train( 43, nullptr );
+    filter_data_2.adsr_lfo_mix.midi_control->train( 43, nullptr, midi_device_manager_ );
     // 44
-    lfo_data_2.speed.midi_control->train( 44, nullptr );
+    lfo_data_2.speed.midi_control->train( 44, nullptr, midi_device_manager_ );
     // 45
-    filter_data_2.cutoff.midi_control->train( 45, nullptr );
+    filter_data_2.cutoff.midi_control->train( 45, nullptr, midi_device_manager_ );
     // 46
-    filter_data_2.resonance.midi_control->train( 46, nullptr );
+    filter_data_2.resonance.midi_control->train( 46, nullptr, midi_device_manager_ );
     // 47
-    filter_data_2.gain.midi_control->train( 47, nullptr );
+    filter_data_2.gain.midi_control->train( 47, nullptr, midi_device_manager_ );
     // 48
-    filter_data_2.distortion.midi_control->train( 48, nullptr );
+    filter_data_2.distortion.midi_control->train( 48, nullptr, midi_device_manager_ );
     // 49 UNUSED / SPACER
     // 50
-    filter_data_3.input_sustains[0].midi_control->train( 50, nullptr );
+    filter_data_3.input_sustains[0].midi_control->train( 50, nullptr, midi_device_manager_ );
     // 51
-    filter_data_3.input_sustains[1].midi_control->train( 51, nullptr );
+    filter_data_3.input_sustains[1].midi_control->train( 51, nullptr, midi_device_manager_ );
     // 52
-    filter_data_3.input_sustains[2].midi_control->train( 52, nullptr );
+    filter_data_3.input_sustains[2].midi_control->train( 52, nullptr, midi_device_manager_ );
     // 53
-    filter_data_3.env_data->attack.midi_control->train( 53, nullptr );
+    filter_data_3.env_data->attack.midi_control->train( 53, nullptr, midi_device_manager_ );
     // 54
-    filter_data_3.env_data->decay.midi_control->train( 54, nullptr );
+    filter_data_3.env_data->decay.midi_control->train( 54, nullptr, midi_device_manager_ );
     // 55
-    filter_data_3.env_data->sustain.midi_control->train( 55, nullptr );
+    filter_data_3.env_data->sustain.midi_control->train( 55, nullptr, midi_device_manager_ );
     // 56
-    filter_data_3.env_data->release.midi_control->train( 56, nullptr );
+    filter_data_3.env_data->release.midi_control->train( 56, nullptr, midi_device_manager_ );
     // 57
-    filter_data_3.adsr_lfo_mix.midi_control->train( 57, nullptr );
+    filter_data_3.adsr_lfo_mix.midi_control->train( 57, nullptr, midi_device_manager_ );
     // 58
-    lfo_data_3.speed.midi_control->train( 58, nullptr );
+    lfo_data_3.speed.midi_control->train( 58, nullptr, midi_device_manager_ );
     // 59
-    filter_data_3.cutoff.midi_control->train( 59, nullptr );
+    filter_data_3.cutoff.midi_control->train( 59, nullptr, midi_device_manager_ );
     // 60
-    filter_data_3.resonance.midi_control->train( 60, nullptr );
+    filter_data_3.resonance.midi_control->train( 60, nullptr, midi_device_manager_ );
     // 61
-    filter_data_3.gain.midi_control->train( 61, nullptr );
+    filter_data_3.gain.midi_control->train( 61, nullptr, midi_device_manager_ );
     // 62
-    filter_data_3.distortion.midi_control->train( 62, nullptr );
+    filter_data_3.distortion.midi_control->train( 62, nullptr, midi_device_manager_ );
     // 63 UNUSED / SPACER
     // 64 Hold Pedal (on/off) // FIX
     // 65 UNUSED
@@ -1509,50 +1431,50 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data ) noexcept
     // TODO synth_data.force_envs_to_zero.midi_control->train( 68, nullptr );
     // 69 UNUSED
     // 70
-    fm_osc_data.fm_freq.midi_control->train( 70, nullptr );
+    fm_osc_data.fm_freq.midi_control->train( 70, nullptr, midi_device_manager_ );
     // 71
-    main_env_data.decay.midi_control->train( 71, nullptr );
+    main_env_data.decay.midi_control->train( 71, nullptr, midi_device_manager_ );
     // 72
-    main_env_data.release.midi_control->train( 72, nullptr );
+    main_env_data.release.midi_control->train( 72, nullptr, midi_device_manager_ );
     // 73
-    main_env_data.attack.midi_control->train( 73, nullptr );
+    main_env_data.attack.midi_control->train( 73, nullptr, midi_device_manager_ );
     // 74
     // DISABLED FOR EWIND: main_env_data.sustain.midi_control->train( 74, nullptr );
     // 75
-    master_osc_data.fm_amount.midi_control->train( 75, nullptr );
+    master_osc_data.fm_amount.midi_control->train( 75, nullptr, midi_device_manager_ );
     // 76
-    master_osc_data.wave.midi_control->train( 76, nullptr );
+    master_osc_data.wave.midi_control->train( 76, nullptr, midi_device_manager_ );
     // 77
-    osc_data_2.fm_amount.midi_control->train( 77, nullptr );
+    osc_data_2.fm_amount.midi_control->train( 77, nullptr, midi_device_manager_ );
     // 78
-    osc_data_2.wave.midi_control->train( 78, nullptr );
+    osc_data_2.wave.midi_control->train( 78, nullptr, midi_device_manager_ );
     // 79
-    osc_data_3.fm_amount.midi_control->train( 79, nullptr );
+    osc_data_3.fm_amount.midi_control->train( 79, nullptr, midi_device_manager_ );
     // 80
     // TODO master_osc_data.o_mod.midi_control->train( 80, nullptr );
     // 81
-    osc_data_2.sync.midi_control->train( 81, nullptr );
+    osc_data_2.sync.midi_control->train( 81, nullptr, midi_device_manager_ );
     // 82
-    osc_data_3.sync.midi_control->train( 82, nullptr );
+    osc_data_3.sync.midi_control->train( 82, nullptr, midi_device_manager_ );
     // 83
-    master_osc_data.sync.midi_control->train( 83, nullptr );
+    master_osc_data.sync.midi_control->train( 83, nullptr, midi_device_manager_ );
     // 84 UNUSED
     // 85 UNUSED
     // 86 UNUSED
     // 87 UNUSED
     // 88 UNUSED
-    main_env_data.sustain.midi_control->train( 1, nullptr );
+    main_env_data.sustain.midi_control->train( 1, nullptr, midi_device_manager_ );
     // 89 UNUSED
     // 90 UNUSED
     // 91 Reverb Level
-    reverb_data.dry_wet_mix.midi_control->train( 91, nullptr );
+    reverb_data.dry_wet_mix.midi_control->train( 91, nullptr, midi_device_manager_ );
     // 92 Tremolo Level
     // 93 Chorus Level
-    chorus_data.modulation.midi_control->train( 93, nullptr );
+    chorus_data.modulation.midi_control->train( 93, nullptr, midi_device_manager_ );
     // 94
-    master_osc_data.tune.midi_control->train( 94, nullptr );
+    master_osc_data.tune.midi_control->train( 94, nullptr, midi_device_manager_ );
     // 95
-    synth_data.delay.midi_control->train( 95, nullptr );
+    synth_data.delay.midi_control->train( 95, nullptr, midi_device_manager_ );
     // 96 UNUSED
     // 97 DUNUSED
     // 98 UNUSED
@@ -2026,7 +1948,7 @@ ui_look_and_feel( look_and_feel_ ),
         all_parameters.add( &linear_morhp_state );
 
         refresh_banks_and_programms( *this );
-        set_default_midi_assignments( *this );
+        set_default_midi_assignments( *this, audio_processor_ );
     }
 }
 #include "monique_core_Synth.h"
@@ -2040,8 +1962,6 @@ COLD MoniqueSynthData::~MoniqueSynthData() noexcept
     lfo_datas.clear();
     osc_datas.clear();
     filter_datas.clear();
-
-    delete smooth_manager;
 
     delete [] exp_lookup;
     delete [] cos_lookup;
@@ -2219,6 +2139,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         {
             morph_group_1->register_parameter( fm_osc_data->fm_freq.ptr(), data_type == MASTER );
             morph_group_1->register_parameter( fm_osc_data->fm_swing.ptr(), data_type == MASTER );
+            morph_group_1->register_parameter( fm_osc_data->fm_shape.ptr(), data_type == MASTER );
         }
 
         // FILTERS
@@ -2236,6 +2157,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 {
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->sustain.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[0]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
@@ -2280,6 +2202,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 {
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->sustain.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[1]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
@@ -2324,6 +2247,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 {
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->attack.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->decay.ptr(), data_type == MASTER  );
+                    morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->sustain.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->sustain_time.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->release.ptr(), data_type == MASTER  );
                     morph_group_2->register_parameter( filter_datas[2]->input_envs[input_id]->shape.ptr(), data_type == MASTER  );
@@ -2378,6 +2302,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_3->register_parameter( eq_data->velocity[band_id].ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->attack.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->decay.ptr(), data_type == MASTER  );
+                morph_group_3->register_parameter( eq_data->envs[band_id]->sustain.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
@@ -2404,6 +2329,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->env_data->attack.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->env_data->decay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->env_data->sustain.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->env_data->sustain_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->env_data->release.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( chorus_data->env_data->shape.ptr(), data_type == MASTER  );
@@ -2716,6 +2642,27 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
 
     run_sync_morph();
 }
+
+void MoniqueSynthData::refresh_morph_programms() noexcept
+{
+    left_morph_sources.getUnchecked( 0 )->banks = banks;
+    left_morph_sources.getUnchecked( 1 )->banks = banks;
+    left_morph_sources.getUnchecked( 2 )->banks = banks;
+    left_morph_sources.getUnchecked( 3 )->banks = banks;
+    right_morph_sources.getUnchecked( 0 )->banks = banks;
+    right_morph_sources.getUnchecked( 1 )->banks = banks;
+    right_morph_sources.getUnchecked( 2 )->banks = banks;
+    right_morph_sources.getUnchecked( 3 )->banks = banks;
+    left_morph_sources.getUnchecked( 0 )->program_names_per_bank = program_names_per_bank;
+    left_morph_sources.getUnchecked( 1 )->program_names_per_bank = program_names_per_bank;
+    left_morph_sources.getUnchecked( 2 )->program_names_per_bank = program_names_per_bank;
+    left_morph_sources.getUnchecked( 3 )->program_names_per_bank = program_names_per_bank;
+    right_morph_sources.getUnchecked( 0 )->program_names_per_bank = program_names_per_bank;
+    right_morph_sources.getUnchecked( 1 )->program_names_per_bank = program_names_per_bank;
+    right_morph_sources.getUnchecked( 2 )->program_names_per_bank = program_names_per_bank;
+    right_morph_sources.getUnchecked( 3 )->program_names_per_bank = program_names_per_bank;
+}
+
 bool MoniqueSynthData::try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept
 {
     MoniqueSynthData* synth_data = left_morph_sources.getUnchecked( morpher_id_ );
@@ -2766,6 +2713,7 @@ void MoniqueSynthData::refresh_banks_and_programms( MoniqueSynthData& synth_data
     }
 
     synth_data.calc_current_program_abs();
+    synth_data.refresh_morph_programms();
 }
 void MoniqueSynthData::calc_current_program_abs() noexcept
 {
@@ -3381,7 +3329,7 @@ void MoniqueSynthData::read_midi() noexcept
         {
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
-                read_midi_from( *xml, saveable_parameters.getUnchecked(i) );
+                read_midi_from( *xml, saveable_parameters.getUnchecked(i), audio_processor );
             }
         }
     }

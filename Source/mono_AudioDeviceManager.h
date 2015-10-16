@@ -269,6 +269,9 @@ inline bool mono_AudioDeviceManager::init_first_time_audio_devices_successfully(
 class mono_AudioDeviceManager : public RuntimeListener
 {
 public:
+    RuntimeNotifyer*const runtime_notifyer;
+    
+public:
     // SEND
     inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept;
     inline void clear_feedback_message( int cc_number_ ) noexcept;
@@ -284,9 +287,13 @@ private:
     MidiMessageCollector cc_feedback_collector;
 
 protected:
-    COLD mono_AudioDeviceManager() noexcept;
+    COLD mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
     COLD void clear_feedback_and_shutdown() noexcept;
+    
+    virtual Monique_Ui_Mainwindow*get_editor() noexcept = 0;
+    virtual MoniqueSynthData*get_synth_data() noexcept = 0;
+
 };
 //==============================================================================
 

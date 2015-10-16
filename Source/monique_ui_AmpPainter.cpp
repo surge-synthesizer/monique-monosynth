@@ -247,75 +247,76 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             ) noexcept
             {
                 const Colour col_fill(col_.withAlpha(0.1f));
-                const Colour norm_col(col_);
+                const Colour norm_col(col_.withAlpha(0.2f + jmax(0.0f,jmin(0.8f,0.8f*scale_))));
 
                 int last_x = -9999;
-                int last_y = -9999;
-
+                int x_counter = 1;
                 int pos_counter = buffer_start_pos_;
                 for( int sid = 0 ; sid < num_samples_ ; ++sid )
                 {
-                    const int x = mono_floor((scale_*sid)+x_offset_);
 
-                    if( pos_counter++ >= buffer_size_ )
+                    if( ++pos_counter >= buffer_size_ )
                     {
                         pos_counter = 0;
                     }
+
                     float y = source_buffer_.get(pos_counter);
+		    MONO_SNAP_TO_ZERO( y );
 
-
-
-                    bool paint_line = true;
-                    if( last_x == x )
+                    float x_float = scale_*sid+x_offset_;
+		    MONO_SNAP_TO_ZERO( x_float );
+                    const int x = x_float;
+                    bool paint_line = false;
+                    if( last_x != x )
                     {
-                        paint_line = false;
-                    }
-                    {
-                        if( y >= 0 )
-                        {
-                            bool force_paint = false;
-                            if( y > 1 )
-                            {
-                                y = 1;
-                            }
-
-                            int h = mono_floor(y*height_)*0.5f;
-                            if( paint_line  )
-                            {
-                                g.setColour(col_fill);
-                                g.fillRect(x, y_center_ - h, 1, h);
-                            }
-                            if( force_paint || last_y != y || last_x == x )
-                            {
-                                g.setColour(norm_col);
-                                g.fillRect(x, y_center_ - h, 1, 1);
-
-                                last_y = y;
-                            }
-                        }
-                        else
-                        {
-                            if( y < -1 )
-                            {
-                                y = -1;
-                            }
-
-                            int h = mono_floor(y*height_)*-0.5f;
-                            if( paint_line )
-                            {
-                                g.setColour(col_fill);
-                                g.fillRect(x, y_center_, 1, h);
-                            }
-                            if( last_y != y || last_x == x )
-                            {
-                                g.setColour(norm_col);
-                                g.fillRect(x, y_center_ + h, 1, 1);
-
-                                last_y = y;
-                            }
-                        }
-
+                        paint_line = true;
                         last_x = x;
+                        x_counter++;
+                    }
+                    else
+                    {
+                        x_counter = 1;
+                    }
+
+                    if( y >= 0 )
+                    {
+                        if( y > 1 )
+                        {
+                            y = 1;
+                        }
+
+                        const float h_float = y*height_*0.5f;
+                        int h = h_float;
+                        if( paint_line  )
+                        {
+                            g.setColour(col_fill);
+                            g.fillRect(x, y_center_ - h, 1, h);
+                        }
+                        // DOT
+                        {
+                            g.setColour(norm_col);
+                            g.fillRect(x_float, float(y_center_)-h_float , 1.0f, 1.0f);
+                        }
+                    }
+                    else
+                    {
+                        if( y < -1 )
+                        {
+                            y = -1;
+                        }
+
+                        const float h_float = y*height_*-0.5f;
+                        int h = h_float;
+                        if( paint_line )
+                        {
+                            g.setColour(col_fill);
+                            g.fillRect(x, y_center_, 1, h);
+                        }
+                        // DOT
+                        {
+                            g.setColour(norm_col);
+                            g.fillRect(x_float, float(y_center_)+h_float, 1.0f, 1.0f);
+                        }
                     }
                 }
             }
@@ -699,11 +700,11 @@ void Monique_Ui_AmpPainter::refresh_buttons()
 //==============================================================================
 //==============================================================================
 COLD EndlessBuffer::EndlessBuffer( RuntimeNotifyer*const notifyer_ ) noexcept
-    :
-    RuntimeListener(notifyer_),
-    current_size(sample_rate * 2 + block_size),
-    sample_buffer( sample_rate * 2 + block_size ),
-    reader_position(0) {}
+:
+RuntimeListener(notifyer_),
+                current_size(sample_rate * 2 + block_size),
+                sample_buffer( sample_rate * 2 + block_size ),
+reader_position(0) {}
 COLD EndlessBuffer::~EndlessBuffer() noexcept {}
 
 //==============================================================================
@@ -728,9 +729,9 @@ inline float EndlessBuffer::get( int pos_ ) const noexcept
 //==============================================================================
 //==============================================================================
 COLD EndlessSwitchBuffer::EndlessSwitchBuffer( RuntimeNotifyer*const notifyer_ ) noexcept
-    :
-    EndlessBuffer(notifyer_),
-    switch_buffer( sample_rate * 2 + block_size )
+:
+EndlessBuffer(notifyer_),
+switch_buffer( sample_rate * 2 + block_size )
 {
     sample_rate_changed(0);
 }
@@ -856,3 +857,5 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
+

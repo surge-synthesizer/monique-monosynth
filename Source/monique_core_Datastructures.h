@@ -279,7 +279,7 @@ private:
 //==============================================================================
 //==============================================================================
 class SmoothedParameter;
-class SmoothManager : public RuntimeListener
+class SmoothManager : public RuntimeListener, DeletedAtShutdown
 {
     friend class SmoothedParameter;
     Array< SmoothedParameter* > smoothers;
@@ -344,6 +344,7 @@ class SmoothedParameter : public RuntimeListener
     float last_amp_valued;
     bool was_automated_last_time;
 
+    COLD void sample_rate_changed( double ) noexcept override;
     COLD void block_size_changed() noexcept override;
 
 public:
@@ -402,10 +403,11 @@ struct FMOscData
     Parameter fm_freq;
     SmoothedParameter fm_freq_smoother;
 
-    BoolParameter fm_shot;
     BoolParameter sync;
     Parameter fm_swing;
     SmoothedParameter fm_swing_smoother;
+    Parameter fm_shape;
+    SmoothedParameter fm_shape_smoother;
 
     ModulatedParameter master_shift;
     SmoothedParameter master_shift_smoother;
@@ -471,13 +473,13 @@ struct ENVData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
-static inline void copy( ENVData* dest_, const ENVData* src_, bool include_sustain_ ) noexcept
+static inline void copy( ENVData* dest_, const ENVData* src_, bool include_max_times_ ) noexcept
 {
     dest_->attack = src_->attack;
     dest_->decay = src_->decay;
-    if( include_sustain_ )
+    dest_->sustain = src_->sustain;
+    if( include_max_times_ )
     {
-        dest_->sustain = src_->sustain;
         dest_->max_attack_time = src_->max_attack_time;
         dest_->max_decay_time = src_->max_decay_time;
         dest_->max_release_time = src_->max_release_time;
@@ -491,7 +493,7 @@ static inline void copy( ENVData* dest_, const ENVData* src_, bool include_susta
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct FilterData : ParameterListener
+struct FilterData
 {
     IntParameter filter_type;
     Parameter adsr_lfo_mix;
@@ -521,17 +523,11 @@ struct FilterData : ParameterListener
     BoolParameter modulate_output;
 
     ArrayOfParameters input_sustains;
+    OwnedArray<SmoothedParameter> input_smoothers;
     OwnedArray<ENVData> input_envs;
     ArrayOfBoolParameters input_holds;
 
     ENVData*const env_data;
-
-private:
-    //==========================================================================
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
-    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
     //==========================================================================
@@ -839,22 +835,16 @@ static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
 }
 
 //==============================================================================
-struct EQData : ParameterListener
+struct EQData
 {
     ArrayOfParameters velocity;
+    OwnedArray<SmoothedParameter> velocity_smoothers;
     ArrayOfBoolParameters hold;
 
     Parameter bypass;
     SmoothedParameter bypass_smoother;
 
     OwnedArray<ENVData> envs;
-
-private:
-    //==========================================================================
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
-    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
     //==========================================================================
@@ -883,19 +873,13 @@ struct ReverbData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct ChorusData : ParameterListener
+struct ChorusData
 {
     Parameter modulation;
+    SmoothedParameter modulation_smoother;
     BoolParameter hold_modulation;
 
     ENVData*const env_data;
-
-private:
-    //==========================================================================
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_always_notification( Parameter* param_ ) noexcept override;
-    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
-    void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
 
 public:
     //==========================================================================
@@ -1081,6 +1065,7 @@ private:
 public:
     // COPY THE CURRENT STATE TO THE SOURCES
     void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept;
+    void refresh_morph_programms() noexcept;
     bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
     bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
 

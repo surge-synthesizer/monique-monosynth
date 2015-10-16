@@ -1,19 +1,7 @@
 #include "monique_ui_Refresher.h"
 
 //==============================================================================
-Monique_Ui_Refresher::Monique_Ui_Refresher(
-    MoniqueAudioProcessor*audio_processor_,
-    UiLookAndFeel*const look_and_feel_,
-    MIDIControlHandler*const midi_control_handler_,
-    MoniqueSynthData*const synth_data_, 
-    MoniqueSynthesiserVoice*const voice_ ) noexcept :
-audio_processor(audio_processor_),
-                look_and_feel(look_and_feel_),
-                midi_control_handler(midi_control_handler_),
-                synth_data( synth_data_ ),
-                voice(voice_),
-                editor(nullptr)
-{}
+
 Monique_Ui_Refresher::~Monique_Ui_Refresher() noexcept {}
 
 //==============================================================================

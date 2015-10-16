@@ -21,9 +21,9 @@ protected:
     MIDIControlHandler*const midi_control_handler;
     MoniqueSynthData*const synth_data;
     MoniqueSynthesiserVoice*const voice;
-    
+
     Monique_Ui_Mainwindow*get_editor() noexcept;
-    
+
 public:
     virtual void refresh() noexcept = 0;
 
@@ -41,8 +41,8 @@ public:
     MIDIControlHandler*const midi_control_handler;
     MoniqueSynthData*const synth_data;
     MoniqueSynthesiserVoice*const voice;
-    Monique_Ui_Mainwindow* editor; // WILL BE SET BY THE MAINWINDOW 
-  
+    Monique_Ui_Mainwindow* editor; // WILL BE SET BY THE MAINWINDOW
+
     CriticalSection lock;
     Array<Monique_Ui_Refreshable*> refreshables;
 
@@ -62,12 +62,20 @@ private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy< Monique_Ui_Refresher >;
-    Monique_Ui_Refresher( MoniqueAudioProcessor*const audio_processor,
-                          UiLookAndFeel*const look_and_feel_, 
-			  MIDIControlHandler*const midi_control_handler_, 
-			  MoniqueSynthData*const synth_data_,
-			  MoniqueSynthesiserVoice*const voice_
-			) noexcept;
+    Monique_Ui_Refresher
+    (
+        MoniqueAudioProcessor*audio_processor_,
+        UiLookAndFeel*const look_and_feel_,
+        MIDIControlHandler*const midi_control_handler_,
+        MoniqueSynthData*const synth_data_,
+    MoniqueSynthesiserVoice*const voice_ ) noexcept :
+    audio_processor(audio_processor_),
+                    look_and_feel(look_and_feel_),
+                    midi_control_handler(midi_control_handler_),
+                    synth_data( synth_data_ ),
+                    voice(voice_),
+                    editor(nullptr)
+    {}
     ~Monique_Ui_Refresher() noexcept;
 };
 

@@ -204,22 +204,22 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
         const FilterData*const filter_2_data = synth_data->filter_datas[1];
         const FilterData*const filter_3_data = synth_data->filter_datas[2];
 
-        bool last_filter_1_1_sustain = filter_1_data->input_envs[0]->sustain > 0 ? 1 : not filter_1_data->input_holds[0].get_value();
-        bool last_filter_1_2_sustain = filter_1_data->input_envs[1]->sustain > 0 ? 1 : not filter_1_data->input_holds[1].get_value();
-        bool last_filter_1_3_sustain = filter_1_data->input_envs[2]->sustain > 0 ? 1 : not filter_1_data->input_holds[2].get_value();
+        bool last_filter_1_1_sustain = filter_1_data->input_sustains[0] > 0 ? 1 : 0;
+        bool last_filter_1_2_sustain = filter_1_data->input_sustains[1] > 0 ? 1 : 0;
+        bool last_filter_1_3_sustain = filter_1_data->input_sustains[2] > 0 ? 1 : 0;
 
-        bool last_filter_2_1_sustain = filter_2_data->input_envs[0]->sustain < 0 ? true : (filter_2_data->input_envs[0]->sustain > 0 or not filter_2_data->input_holds[0].get_value()) and last_filter_1_1_sustain;
-        bool last_filter_2_2_sustain = filter_2_data->input_envs[1]->sustain < 0 ? true : (filter_2_data->input_envs[1]->sustain > 0 or not filter_2_data->input_holds[1].get_value()) and last_filter_1_2_sustain;
-        bool last_filter_2_3_sustain = filter_2_data->input_envs[2]->sustain < 0 ? true : (filter_2_data->input_envs[2]->sustain > 0 or not filter_2_data->input_holds[2].get_value()) and last_filter_1_3_sustain;
+        bool last_filter_2_1_sustain = filter_2_data->input_sustains[0] < 0 ? true : (filter_2_data->input_sustains[0] > 0) and last_filter_1_1_sustain;
+        bool last_filter_2_2_sustain = filter_2_data->input_sustains[1] < 0 ? true : (filter_2_data->input_sustains[1] > 0) and last_filter_1_2_sustain;
+        bool last_filter_2_3_sustain = filter_2_data->input_sustains[2] < 0 ? true : (filter_2_data->input_sustains[2] > 0) and last_filter_1_3_sustain;
 
         // FILTER 2
         {
-            float filter_2_1_sustain = filter_2_data->input_envs[0]->sustain.get_value();
-            float filter_2_2_sustain = filter_2_data->input_envs[1]->sustain.get_value();
-            float filter_2_3_sustain = filter_2_data->input_envs[2]->sustain.get_value();
+            float filter_2_1_sustain = filter_2_data->input_sustains[0];
+            float filter_2_2_sustain = filter_2_data->input_sustains[1];
+            float filter_2_3_sustain = filter_2_data->input_sustains[2];
 
             // FILTER 2 INPUT 1
-            if( filter_2_1_sustain > 0 or ( not filter_2_data->input_holds[0].get_value() and filter_2_1_sustain == 0 ) )
+            if( filter_2_1_sustain > 0 )
             {
                 button_show_active_input_l_2_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_1_sustain )
@@ -243,7 +243,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 2
-            if( filter_2_2_sustain > 0 or ( not filter_2_data->input_holds[1].get_value() and filter_2_2_sustain == 0) )
+            if( filter_2_2_sustain > 0 )
             {
                 button_show_active_input_l_2_2->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_2_sustain )
@@ -267,7 +267,7 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
             }
 
             // FILTER 2 INPUT 3
-            if( filter_2_3_sustain > 0 or ( not filter_2_data->input_holds[2].get_value() and filter_2_3_sustain == 0) )
+            if( filter_2_3_sustain > 0 )
             {
                 button_show_active_input_l_2_3->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_1_3_sustain )
@@ -293,12 +293,12 @@ void Monique_Ui_Mainwindow::show_current_voice_data()
 
         // FILTER 3
         {
-            float filter_3_1_sustain = filter_3_data->input_envs[0]->sustain.get_value();
-            float filter_3_2_sustain = filter_3_data->input_envs[1]->sustain.get_value();
-            float filter_3_3_sustain = filter_3_data->input_envs[2]->sustain.get_value();
+            float filter_3_1_sustain = filter_3_data->input_sustains[0];
+            float filter_3_2_sustain = filter_3_data->input_sustains[1];
+            float filter_3_3_sustain = filter_3_data->input_sustains[2];
 
             // FILTER 3 INPUT 1
-            if( filter_3_1_sustain > 0 or ( not filter_3_data->input_holds[0].get_value() and filter_3_1_sustain == 0) )
+            if( filter_3_1_sustain > 0 )
             {
                 button_show_active_input_l_3_1->setColour( TextButton::buttonColourId, button_off );
                 if( last_filter_2_1_sustain )
@@ -2252,12 +2252,6 @@ void Monique_Ui_Mainwindow::paint (Graphics& g)
     g.fillRoundedRectangle (790.0f, 100.0f, 1.0f, 5.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 685.0f, 5.0f, 1.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
-    g.fillRoundedRectangle (95.0f, 680.0f, 1.0f, 10.0f, 1.000f);
-
-    g.setColour (Colour (0xff11ffff));
     g.fillRoundedRectangle (1260.0f, 770.0f, 5.0f, 1.0f, 1.000f);
 
     g.setColour (Colour (0xff11ffff));
@@ -3396,104 +3390,104 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_edit_input_env_1_1)
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[0], &synth_data->filter_datas[0]->input_sustains[0], buttonThatWasClicked, flt_input_1, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[0], &synth_data->filter_datas[0]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_1, false );
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2)
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[1], &synth_data->filter_datas[0]->input_sustains[1], buttonThatWasClicked, flt_input_2, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[1], &synth_data->filter_datas[0]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_2, false );
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_sustains[2], buttonThatWasClicked, flt_input_3, false );
+        open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_3, false );
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1)
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[0], &synth_data->filter_datas[1]->input_sustains[0], buttonThatWasClicked, flt_input_6, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[0], &synth_data->filter_datas[1]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_6, true );
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2)
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[1], &synth_data->filter_datas[1]->input_sustains[1], buttonThatWasClicked, flt_input_7, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[1], &synth_data->filter_datas[1]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_7, true );
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3)
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[2], &synth_data->filter_datas[1]->input_sustains[2], buttonThatWasClicked, flt_input_8, true );
+        open_env_popup( synth_data->filter_datas[1]->input_envs[2], &synth_data->filter_datas[1]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_8, true );
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1)
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[0], &synth_data->filter_datas[2]->input_sustains[0], buttonThatWasClicked, flt_input_11, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[0], &synth_data->filter_datas[2]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_11, true );
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2)
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[1], &synth_data->filter_datas[2]->input_sustains[1], buttonThatWasClicked, flt_input_12, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[1], &synth_data->filter_datas[2]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_12, true );
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[2], &synth_data->filter_datas[2]->input_sustains[2], buttonThatWasClicked, flt_input_13, true );
+        open_env_popup( synth_data->filter_datas[2]->input_envs[2], &synth_data->filter_datas[2]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_13, true );
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1)
     {
         //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[0], &synth_data->eq_data->velocity[0], buttonThatWasClicked, eq_1, true );
+        open_env_popup( synth_data->eq_data->envs[0], &synth_data->eq_data->envs[0]->sustain, buttonThatWasClicked, eq_1, true );
         //[/UserButtonCode_button_edit_input_env_band_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_2)
     {
         //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[1], &synth_data->eq_data->velocity[1], buttonThatWasClicked, eq_2, true );
+        open_env_popup( synth_data->eq_data->envs[1], &synth_data->eq_data->envs[1]->sustain, buttonThatWasClicked, eq_2, true );
         //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3)
     {
         //[UserButtonCode_button_edit_input_env_band_3] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[2], &synth_data->eq_data->velocity[2], buttonThatWasClicked, eq_3, true );
+        open_env_popup( synth_data->eq_data->envs[2], &synth_data->eq_data->envs[2]->sustain, buttonThatWasClicked, eq_3, true );
         //[/UserButtonCode_button_edit_input_env_band_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_4)
     {
         //[UserButtonCode_button_edit_input_env_band_4] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[3], &synth_data->eq_data->velocity[3], buttonThatWasClicked, eq_4, true );
+        open_env_popup( synth_data->eq_data->envs[3], &synth_data->eq_data->envs[3]->sustain, buttonThatWasClicked, eq_4, true );
         //[/UserButtonCode_button_edit_input_env_band_4]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_5)
     {
         //[UserButtonCode_button_edit_input_env_band_5] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[4], &synth_data->eq_data->velocity[4], buttonThatWasClicked, eq_5, true );
+        open_env_popup( synth_data->eq_data->envs[4], &synth_data->eq_data->envs[4]->sustain, buttonThatWasClicked, eq_5, true );
         //[/UserButtonCode_button_edit_input_env_band_5]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_6)
     {
         //[UserButtonCode_button_edit_input_env_band_6] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[5], &synth_data->eq_data->velocity[5], buttonThatWasClicked, eq_6, true );
+        open_env_popup( synth_data->eq_data->envs[5], &synth_data->eq_data->envs[5]->sustain, buttonThatWasClicked, eq_6, true );
         //[/UserButtonCode_button_edit_input_env_band_6]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_7)
     {
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[6], &synth_data->eq_data->velocity[6], buttonThatWasClicked, eq_7, true );
+        open_env_popup( synth_data->eq_data->envs[6], &synth_data->eq_data->envs[6]->sustain, buttonThatWasClicked, eq_7, true );
         //[/UserButtonCode_button_edit_input_env_band_7]
     }
     else if (buttonThatWasClicked == button_edit_env_chorus)
     {
         //[UserButtonCode_button_edit_env_chorus] -- add your button handler code here..
-        open_env_popup( synth_data->chorus_data->env_data, &synth_data->chorus_data->modulation, buttonThatWasClicked, chorus_modulation, false );
+        open_env_popup( synth_data->chorus_data->env_data, &synth_data->chorus_data->env_data->sustain, buttonThatWasClicked, chorus_modulation, false );
         //[/UserButtonCode_button_edit_env_chorus]
     }
     else if (buttonThatWasClicked == button_reset_arp_tune)
@@ -3953,7 +3947,7 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     }
 #else
     midi_control_handler->toggle_midi_learn();
-    AppInstanceStore::getInstance()->editor->show_info_popup(nullptr,nullptr);
+    show_info_popup(nullptr,nullptr);
 #endif
 }
 void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
@@ -4032,8 +4026,6 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="790 100 81 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="780 95 626 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="790 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 685 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
-    <ROUNDRECT pos="95 680 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1260 770 5 1" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="1265 765 1 10" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>
     <ROUNDRECT pos="575 100 1 5" cornerSize="1" fill="solid: ff11ffff" hasStroke="0"/>

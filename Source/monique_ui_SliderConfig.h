@@ -328,7 +328,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( fm_amount->midi_control->get_ctrl_mode() )
-            return String( round0(fm_amount->get_value()*100) );
+            return String( auto_round(fm_amount->get_value()*100) );
         else
             return String( wave->get_value() );
     }
@@ -510,22 +510,11 @@ class OSCSlConfig : public ModulationSliderConfigBase
         const float value = front_param->get_value();
         if( front_param->midi_control->get_ctrl_mode() )
         {
-            return String( round0(front_param->get_modulation_amount() * 100) );
+            return String( auto_round(front_param->get_modulation_amount() * 100) );
         }
         else
         {
-            if( value == 0 )
-            {
-                return String(0);
-            }
-            else if( value < 12 and value > -12 )
-            {
-                return String(round001(value));
-            }
-            else
-            {
-                return String(round01(value));
-            }
+            return String(auto_round(value));
         }
     }
     StringRef get_center_suffix() const noexcept override
@@ -635,6 +624,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const fm_freq;
     BoolParameter*const sync;
+    Parameter*const fm_shape;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -666,7 +656,6 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -674,9 +663,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return fm_swing;
+        return fm_shape;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -690,7 +678,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_text() const noexcept override
     {
-        return "SYNC -";
+        return "SYNC";
     }
     /*
     float get_top_button_amp() const noexcept override
@@ -705,16 +693,14 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         return "TUNE";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "F-SWING";
+        return "SHAPE";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-    return false;
+        return false;
     }
-    */
 
     //==============================================================================
     // CENTER LABEL
@@ -724,11 +710,25 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( round01(fm_freq->get_value()*7 +1.1) );
+        if( not fm_freq->midi_control->get_ctrl_mode() )
+        {
+            return String( auto_round(fm_freq->get_value()*6 +2.1) );
+        }
+        else
+        {
+            return String( auto_round(fm_shape->get_value()*100) );
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "O1*";
+        if( not fm_freq->midi_control->get_ctrl_mode() )
+        {
+            return "x";
+        }
+        else
+        {
+            return "%";
+        }
     }
 
     //==============================================================================
@@ -746,14 +746,24 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "\n"
         "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one cycle of OSC 1).\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
-        "\n"
-        "See: FM SHOT (next button on the right)"
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
     )
+    BOTTOM_BUTTON_DIALS
+    (
+        "FM-TUNE", "FM-SHAPE"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the shape of the FM oscillator\n"
+        "\n"
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
+    )
+
 public:
     FMFreqSlConfig(MoniqueSynthData*const synth_data_)
         :
         fm_freq( &synth_data_->fm_osc_data->fm_freq ),
+        fm_shape( &synth_data_->fm_osc_data->fm_shape ),
         sync( &synth_data_->fm_osc_data->sync )
     {}
 
@@ -772,7 +782,6 @@ public:
 class FMAmountSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const fm_swing;
-    BoolParameter*const shot;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -814,12 +823,13 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return fm_mix_algorythm;
+        return fm_phaser;
     }
     */
 
     //==============================================================================
     // TOP BUTTON
+    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
         return TOP_BUTTON_IS_ON_OFF;
@@ -832,7 +842,6 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     {
         return "- SHOT";
     }
-    /*
     float get_top_button_amp() const noexcept override
     {
     return NO_TOP_BUTTON_AMP;
@@ -848,7 +857,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "FM ALGOR";
+        return "ROTATE";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -864,7 +873,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( round01(fm_swing->get_value()*20) );
+        return String( auto_round(fm_swing->get_value()*5) );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -887,12 +896,10 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
         "\n"
         "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
     )
-
 public:
     FMAmountSlConfig(MoniqueSynthData*const synth_data_)
         :
-        fm_swing( &synth_data_->fm_osc_data->fm_swing ),
-        shot( &synth_data_->fm_osc_data->fm_shot )
+        fm_swing( &synth_data_->fm_osc_data->fm_swing )
     {}
 
     JUCE_LEAK_DETECTOR (FMAmountSlConfig)
@@ -1047,7 +1054,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( round01(input_sustain->get_value()*100)  );
+        return String( auto_round(input_sustain->get_value()*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1067,7 +1074,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Define the OSC input gain into this filter.\n"
-        "(Will be the sustain level if ENV is turned on)\n"
+        "(Will be a fixed gain level if ENV is turned off)\n"
         "\n"
         "FILTER 2 & 3:\n"
         "On the left side of the dial (minus) the original OSC signal will be used as input. "
@@ -1079,8 +1086,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     (
         "Turns modulation by an envelope for this input on or off.\n"
         "\n"
-        "If ENV is enabled the input dial defines the sustain level for this input envelope (click EDIT to adjust the envelope).\n"
-        "If ENV is disabled the input dial defines a fixed input gain and the envelope will be ignored."
+        "If ENV is disabled the input dial defines a fixed gain level and the envelope will be ignored."
     )
 
 public:
@@ -1346,11 +1352,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         if( not attack->midi_control->get_ctrl_mode() )
         {
-            float value = MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value();
-            if( value < 100 )
-                return String(round01(value));
-            else
-                return String(round0(value));
+            return String( auto_round( MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value()) );
         }
         else
         {
@@ -1518,13 +1520,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         if( not decay->midi_control->get_ctrl_mode() )
         {
-            float value = decay->get_value() * max_decay_time->get_value();
-            if( value < 0 )
-                return "OFF";
-            else if( value < 100 )
-                return String(round01(value));
-            else
-                return String(round0(value));
+            return String( auto_round(decay->get_value() * max_decay_time->get_value() + MIN_ENV_TIMES) );
         }
         else
         {
@@ -1691,11 +1687,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain->get_value() * 100;
-        if( value < 100 )
-            return String(round01(value));
-        else
-            return String(round0(value));
+        return String( auto_round( sustain->get_value() * 100 ) );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1839,12 +1831,14 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         float value = sustain_time->get_value() * 10000;
-        if( value < 100 )
-            return String(round01(value));
-        else if( value == 10000 )
-            return String("unltd");
+        if( value <= 10000 )
+        {
+            return String(auto_round(value));
+        }
         else
-            return String(round0(value));
+        {
+            return String("unltd");
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -1995,11 +1989,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     {
         if( not release->midi_control->get_ctrl_mode() )
         {
-            float value = MIN_ENV_TIMES + release->get_value() * max_release_time->get_value();
-            if( value < 100 )
-                return String(round01(value));
-            else
-                return String(round0(value));
+            return String( auto_round( MIN_ENV_TIMES + release->get_value() * max_release_time->get_value() ) );
         }
         else
         {
@@ -3184,7 +3174,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        String value( round01(runtime_info->bpm) );
+        String value( auto_round(runtime_info->bpm) );
 #ifdef IS_STANDALONE
         if( runtime_info->is_extern_synced )
         {
@@ -3219,7 +3209,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(round01(speed->get_value()));
+        return String(auto_round(speed->get_value()));
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -3359,7 +3349,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(round0(speed->get_value()*ArpSequencerData::speed_multi_to_value(speed_multi->get_value())));
+        return String(auto_round(speed->get_value()*ArpSequencerData::speed_multi_to_value(speed_multi->get_value())));
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -4709,7 +4699,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( round01(chorus_data->modulation*100)  );
+        return String( auto_round(chorus_data->modulation*100)  );
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -4721,7 +4711,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Define the chorus amount.\n"
-        "(Will be the sustain level if ENV is turned on)\n"
+        "(Will be a fixed amount if ENV is turned off)\n"
         "(Has no effect if FX MIX is set to zero)"
     )
     TOP_BUTTON_DESCRIPTION
@@ -4729,7 +4719,6 @@ class CModSlConfig : public ModulationSliderConfigBase
         "Turns modulation by an envelope for the chorus amount on or off.\n"
         "(Has no effect if ENV is turned off)\n"
         "\n"
-        "If ENV is enabled the chorus dial defines the sustain level for its envelope (click EDIT to adjust the envelope).\n"
         "If ENV is disabled the chorus dial defines a fixed amount level and the envelope will be ignored."
     )
 
@@ -4861,7 +4850,7 @@ class GlideConfig : public ModulationSliderConfigBase
             const float sr = runtime_notifyer->get_sample_rate();
             value = samplesToMsFast(glide->get_value()*sr/2,sr);
         }
-        return String(round0(value));
+        return String(auto_round(value));
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -5198,7 +5187,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( round01(velocity->get_value()*100)  );
+        return String( auto_round(velocity->get_value()*100)  );
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -5213,7 +5202,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     (
         "Define the band boost amount for this frequency (bottom caption).\n"
         "(Has no effect if EQ MIX is set to zero)\n"
-        "(Will be the sustain level if ENV is turned on)\n"
+        "(Will be a fixed gain level if ENV is turned off)\n"
         "\n"
         "Values greater than 0 will boost this band and values less than 0 will reduce it."
     )
@@ -5221,7 +5210,6 @@ class EQSlConfig : public ModulationSliderConfigBase
     (
         "Turns modulation by an envelope for this band boost on or off.\n"
         "\n"
-        "If ENV is enabled the band boost dial defines the sustain level for its envelope (click EDIT to adjust the envelope).\n"
         "If ENV is disabled the band boost dial defines a fixed boost level and the envelope will be ignored."
     )
 
@@ -5347,7 +5335,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( tune->midi_control->get_ctrl_mode() )
-            return String( round01(velocity->get_value()*100) );
+            return String( auto_round(velocity->get_value()*100) );
         else
             return String( tune->get_value() );
     }

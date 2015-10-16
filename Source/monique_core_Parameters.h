@@ -1142,6 +1142,7 @@ static inline void min_max_switch( Parameter* param_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MoniqueAudioProcessor;
 class MIDIControl : ParameterListener
 {
 public:
@@ -1160,6 +1161,7 @@ private:
     String is_ctrl_version_of_name;
     bool is_in_ctrl_mode;
     Parameter*const owner;
+    MoniqueAudioProcessor*audio_processor;
 
 public:
     int8 get_midi_number() const noexcept
@@ -1175,17 +1177,18 @@ public:
         return controller_number_ == midi_number;
     }
     bool read_from_if_you_listen( int controller_number_, int controller_value_, float pickup_offset_ ) noexcept;
-    bool train( int controller_number_, Parameter*const is_ctrl_version_of_ ) noexcept;
-    bool train( int controller_number_, String is_ctrl_version_of_name_ ) noexcept;
+    bool train( int controller_number_, Parameter*const is_ctrl_version_of_, MoniqueAudioProcessor*audio_processor ) noexcept;
+    bool train( int controller_number_, String is_ctrl_version_of_name_, MoniqueAudioProcessor*audio_processor ) noexcept;
     bool is_valid_trained() const noexcept
     {
-        return midi_number != -1;
+        return midi_number != -1 and audio_processor != nullptr;
     }
     void send_feedback_only() const noexcept;
     void send_clear_feedback_only() const noexcept;
 
     void set_ctrl_mode( bool mode_ ) noexcept;
-    inline bool get_ctrl_mode() const noexcept {
+    bool get_ctrl_mode() const noexcept 
+    {
         return is_in_ctrl_mode;
     }
 
@@ -1211,6 +1214,7 @@ class UiLookAndFeel;
 class MIDIControlHandler
 {
     UiLookAndFeel*const ui_look_and_feel;
+    MoniqueAudioProcessor*const audio_processor;
   
     bool is_activated_and_waiting_for_param;
     Parameter* learning_param;
@@ -1233,7 +1237,7 @@ public:
 private:
     friend class MoniqueAudioProcessor;
     friend class ContainerDeletePolicy< MIDIControlHandler >;
-    COLD MIDIControlHandler( UiLookAndFeel*look_and_feel_ ) noexcept;
+    COLD MIDIControlHandler( UiLookAndFeel*look_and_feel_, MoniqueAudioProcessor*const audio_processor_ ) noexcept;
     COLD ~MIDIControlHandler() noexcept;
 };
 
@@ -1285,7 +1289,7 @@ static inline void write_midi_to( XmlElement& xml_, const Parameter* param_ ) no
         xml_.setAttribute( info.name + "_MIDI_CTRL", param_->midi_control->get_is_ctrl_version_of_name() );
     }
 }
-static inline void read_midi_from( const XmlElement& xml_, Parameter* param_ ) noexcept
+static inline void read_midi_from( const XmlElement& xml_, Parameter* param_, MoniqueAudioProcessor*midi_device_manager_ ) noexcept
 {
     const ParameterInfo& info = param_->get_info();
     const int number = xml_.getIntAttribute( info.name + "_MIDI_NR", -1 );
@@ -1295,7 +1299,8 @@ static inline void read_midi_from( const XmlElement& xml_, Parameter* param_ ) n
         param_->midi_control->train
         (
             number,
-            ctrl
+            ctrl,
+	    midi_device_manager_
         );
     }
 }

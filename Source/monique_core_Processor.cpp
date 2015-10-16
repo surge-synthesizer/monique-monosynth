@@ -250,36 +250,36 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          peak_meter(nullptr),
                          amp_painter(nullptr)
 {
+#ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
-
+#endif
     std::cout << "MONIQUE: init core" << std::endl;
     FloatVectorOperations::enableFlushToZeroMode(true);
     {
         ui_look_and_feel = new UiLookAndFeel();
         LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
-        midi_control_handler = new MIDIControlHandler( ui_look_and_feel );
+        midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
 
         info = new RuntimeInfo();
         data_buffer = new DataBuffer(getBlockSize());
         synth_data = new MoniqueSynthData( MASTER, ui_look_and_feel, this, runtime_notifyer, info, data_buffer );
         voice = new MoniqueSynthesiserVoice( this, synth_data, runtime_notifyer, info, data_buffer );
-	synth_data->voice = voice;
+        synth_data->voice = voice;
         synth = new MoniqueSynthesizer( synth_data, voice, new MoniqueSynthesiserSound(), midi_control_handler );
-	
-	note_down_store = new NoteDownStore( synth_data ),
 
-#ifdef IS_STANDALONE
-        audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
-        if( audio_is_successful_initalized )
-        {
-            AudioDeviceManager::AudioDeviceSetup setup;
-            getAudioDeviceSetup(setup);
-            setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
-            addAudioCallback (&player);
-            player.setProcessor (this);
-        }
-#endif
+        note_down_store = new NoteDownStore( synth_data );
     }
+#ifdef IS_STANDALONE
+    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
+    if( audio_is_successful_initalized )
+    {
+        AudioDeviceManager::AudioDeviceSetup setup;
+        getAudioDeviceSetup(setup);
+        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
+        addAudioCallback (&player);
+        player.setProcessor (this);
+    }
+#endif
 
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
     {
