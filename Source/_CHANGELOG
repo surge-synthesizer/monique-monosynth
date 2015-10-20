@@ -1,36 +1,52 @@
+steps sind nicht automatisierbar
+stop note if daw stops
 
+
+CHANGES:
+improved: oscilloscope start correct painting on startup
+remember: was oscilloscope open (plugin runtime parameter)
+changed/fixed: some automation parameter names
+fix: filter max env times wasnt stored or automataable
+fix: tooltip for speed sync
+fix: env popup position for plugin 
+add: "ROOT" ("R" for black keys) as keyname on the keyboard for the current program note
+changed: diaglos are now in monique style, no more in os style
+improved: on program change you get the question if you like to store a changed program before -> new: CREATE BACKUP, OLD and KEEPED(YES, NO-CHANCEL), 
+fix: filter 3 input 2 & 3 led was wrong
+fix: add support to load from banks > D from host
+fix: avoid host by "overset" the current program by a program number after restore the monique state (e.g. mulab)
+add: shadow the popups
+fix: crash if you have open the env popup and the midi learn popup and then you close the env popup
+add: runtime option to force arp always on or off by ignoring the program state (take a look at the arp on button and the new popup right off the button)
+improve: popup positions
+fix: arp was one step to fast
+fix: stop the synth on stop daw and restart the arp correctly if the arp was turned on and running
 
 KNOWN BUGS:
 ****************************************************************************
 - asks if you like to reconnect a old midi devices on a rare edge case
-- amp painter liest alten buffer oder neuen (>=0 or >0 or something or threading problem, but not an engine problem)
 
 UI
 ****************************************************************************
 - add: a good background which explains the signal flow
-- add: shadow for env popup
 - add option: always start in ctrl mode
 - add: welcome popup, if you like to disable the arp -> press this "holly button"
-- add: a marker on the keyboard for the current program note if not C1
-- move: editor buttons to the bottom right
-- option: arp always on, arp always off
 - option: pitch arp only or trigger notes anyway
 - add: FactoryDefault, StateOnProgramm oder User Return
+- add: env shape slider for main and filter env's
 
 ENGINE
 ****************************************************************************
-- add: env shape slider for main and filter env's
 - add: panic
 - midi: the standard midi assignments are not complete
 - midi: assign pitchwheel to an osc tune
 - implement: bypass
+- implement: offline if main env is end and output is 200 samples zero
 
 OPTIMIZE
 ****************************************************************************
 - calculate glide on values on change
 - faster glide and lfos (CPU power)
-- if the filter runs empty, skip processing?
-- windows perofmrance is unbelivable high with zero inputs
 
 PROGRAMS
 ****************************************************************************
@@ -104,7 +120,8 @@ bücher
 
 PRRRRRROOOOOOOOOOOOOOO
 - automatisieren von fm frequence!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> super geil
-
+global colour theme and programm theme
+- animate arp on keyboard
 - scala für sequencer
 automate fm frequency
 - double precessission

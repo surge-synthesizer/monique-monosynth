@@ -80,16 +80,20 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     {
         int current_note;
         float current_velocity;
+	
+	ArpInfo() : current_note(-1), current_velocity(0) {}
     } arp_info;
 
     //==============================================================================
     bool canPlaySound (SynthesiserSound*) override {
         return true;
     }
-    void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
-    void start_internal( int midiNoteNumber, float velocity ) noexcept;
-    void stopNote(float, bool allowTailOff) override;
 public:
+    void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
+private:
+    void start_internal( int midiNoteNumber, float velocity ) noexcept;
+public:
+    void stopNote(float, bool allowTailOff) override;
     void stop_arp() noexcept;
     void restart_arp( int sample_pos_in_buffer_ ) noexcept;
 private:
@@ -127,8 +131,8 @@ public:
     COLD MoniqueSynthesiserVoice( MoniqueAudioProcessor*const audio_processor_,
                                   MoniqueSynthData*const synth_data_,
                                   RuntimeNotifyer*const notifyer_,
-				  RuntimeInfo*const info_,
-				  DataBuffer*data_buffer_ ) noexcept;
+                                  RuntimeInfo*const info_,
+                                  DataBuffer*data_buffer_ ) noexcept;
     COLD ~MoniqueSynthesiserVoice() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MoniqueSynthesiserVoice)

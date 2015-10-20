@@ -73,6 +73,10 @@
               file="../Source/monique_ui_Morph.cpp"/>
         <FILE id="A3cJBm" name="monique_ui_Morph.h" compile="0" resource="0"
               file="../Source/monique_ui_Morph.h"/>
+        <FILE id="NBlnqO" name="monique_ui_OptionPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_OptionPopup.cpp"/>
+        <FILE id="EThxgk" name="monique_ui_OptionPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_OptionPopup.h"/>
         <FILE id="q2Ipl5" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wjJSXf" name="monique_ui_Refresher.h" compile="0" resource="0"

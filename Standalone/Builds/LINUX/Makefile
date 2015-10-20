@@ -64,6 +64,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
   $(OBJDIR)/monique_ui_Morph_2d3a4c72.o \
+  $(OBJDIR)/monique_ui_OptionPopup_88264961.o \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
@@ -170,6 +171,11 @@ $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o: ../../../Source/monique_ui_Mod
 $(OBJDIR)/monique_ui_Morph_2d3a4c72.o: ../../../Source/monique_ui_Morph.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_Morph.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_OptionPopup_88264961.o: ../../../Source/monique_ui_OptionPopup.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_OptionPopup.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Refresher_b7c42db2.o: ../../../Source/monique_ui_Refresher.cpp

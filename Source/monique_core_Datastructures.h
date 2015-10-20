@@ -966,6 +966,11 @@ struct MoniqueSynthData : ParameterListener
 
     BoolParameter auto_close_env_popup;
     BoolParameter auto_switch_env_popup;
+    
+    BoolParameter is_osci_open;
+    
+    BoolParameter keep_arp_always_on;
+    BoolParameter keep_arp_always_off;
 
     // MULTITHREADING
     IntParameter num_extra_threads;
@@ -1105,6 +1110,7 @@ public:
     int get_current_bank() const noexcept;
     int get_current_program() const noexcept;
     const StringArray& get_current_bank_programms() const noexcept;
+    String alternative_program_name;
 
     const String error_string;
     int get_current_programm_id_abs() const noexcept;
@@ -1112,7 +1118,7 @@ public:
     const String& get_program_name_abs(int id_) const noexcept;
 
     // ==============================================================================
-    void create_internal_backup( const String& programm_name_, const String& bank_name_ ) noexcept;
+    void create_internal_backup( const String& programm_name_, const String& bank_name_  ) noexcept;
     bool create_new( const String& new_name_ ) noexcept;
     bool rename( const String& new_name_ ) noexcept;
     bool replace() noexcept;
@@ -1122,7 +1128,7 @@ public:
     bool load_prev() noexcept;
     bool load_next() noexcept;
 private:
-    bool load( const String& bank_name_, const String& program_name_, bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
+    bool load( const String bank_name_, const String program_name_, bool load_morph_groups = true, bool ignore_warnings_ = false ) noexcept;
 
 public:
     // ==============================================================================
@@ -1135,7 +1141,7 @@ private:
 
 public:
     void save_settings() const noexcept;
-    void ask_and_save_if_changed() noexcept;
+    void ask_and_save_if_changed( bool with_new_option = false ) noexcept;
     void load_settings() noexcept;
 
 public:

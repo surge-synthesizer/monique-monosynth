@@ -47,34 +47,29 @@ void Monique_Ui_MainwindowPopup::set_element_to_show( Component*const comp_ )
 {
     related_to_comp = comp_;
     Component* parent = comp_->getParentComponent();
-    int x = comp_->getX();
-    int y = comp_->getY()+comp_->getHeight();
-    while( parent )
-    {
-        if( parent->getParentComponent() ) // IGNORES THE MAIN WINDOW
-        {
-            x += parent->getX();
-            y += parent->getY();
-        }
-        parent = parent->getParentComponent();
-    }
-    setBounds( x-10, y, comp_->getWidth()+20, original_h );
+    int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
+    int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
+    setTopLeftPosition( x+comp_->getWidth()/2 - getWidth()/2, y+comp_->getHeight() );
 }
 void Monique_Ui_MainwindowPopup::update_positions( )
 {
     if( related_to_comp )
+    {
         set_element_to_show( related_to_comp );
+    }
 }
 //[/MiscUserDefs]
 
 //==============================================================================
 Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_)
     : Monique_Ui_Refreshable(ui_refresher_),
+      DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point<int>(10,10))),
       parent(parent_),
       _midi_control(midi_control_),
       original_w(80), original_h(95)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    setOwner(this);
     //[/Constructor_pre]
 
     addAndMakeVisible (combo_midi_number = new ComboBox (String::empty));
@@ -130,6 +125,8 @@ Monique_Ui_MainwindowPopup::~Monique_Ui_MainwindowPopup()
 void Monique_Ui_MainwindowPopup::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+    g.setColour(Colours::black.withAlpha(0.8f));
+    g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 #include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPrePaint]
 
@@ -217,9 +214,9 @@ void Monique_Ui_MainwindowPopup::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MainwindowPopup"
-                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable"
+                 componentName="" parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MIDIControl* midi_control_"
-                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;parent(parent_),&#10;_midi_control(midi_control_),&#10;original_w(80), original_h(95)"
+                 variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;_midi_control(midi_control_),&#10;original_w(80), original_h(95)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="95">
   <BACKGROUND backgroundColour="ffffff">

@@ -860,14 +860,15 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
         if( manager->its_your_first_time )
         {
             manager->its_your_first_time = false;
-            bool success = AlertWindow::showNativeDialogBox
+            bool success = AlertWindow::showOkCancelBox
                            (
+                               AlertWindow::AlertIconType::QuestionIcon,
                                "MIDI DEVICES DETECTED.",
                                "Monique found some MIDI input devices. May be your piano keyboard!?\n"
                                "Do you like to connect it?\n"
                                "\n"
                                "(a keyboard you can select at 'INPUT (Notes...)').",
-                               true
+                               "YES", "NO"
                            );
             if(force_quit)
             {
@@ -897,12 +898,13 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             editor->open_midi_editor_if_closed();
                         }
-                        bool success = AlertWindow::showNativeDialogBox
+                        bool success = AlertWindow::showOkCancelBox
                                        (
+                                           AlertWindow::AlertIconType::QuestionIcon,
                                            "MIDI IN DEVICE CONNECTED.",
                                            "Monique found a previously connected MIDI NOTE IN port.\n"
                                            "Do you like to reactivate that port: " + selected_note_in_device + "?",
-                                           true
+                                           "YES","NO"
                                        );
                         if(force_quit)
                         {
@@ -932,12 +934,12 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->note_input_state = REMOVED;
                     was_open_note_input = false;
                     connection_lost_note_input = true;
-                    AlertWindow::showNativeDialogBox
+                    AlertWindow::showMessageBoxAsync
                     (
+                        AlertWindow::AlertIconType::WarningIcon,
                         "MIDI IN DEVICE REMOVED.",
                         "Monique lost the MIDI NOTE IN connection to: " + selected_note_in_device + ".\n"
-                        "Please reconnect the device or select another one.",
-                        false
+                        "Please reconnect the device or select another one."
                     );
                     if(force_quit)
                     {
@@ -972,12 +974,13 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                         {
                             editor->open_midi_editor_if_closed();
                         }
-                        bool success = AlertWindow::showNativeDialogBox
+                        bool success = AlertWindow::showOkCancelBox
                                        (
+                                           AlertWindow::AlertIconType::QuestionIcon,
                                            "MIDI IN DEVICE CONNECTED.",
                                            "Monique found a previously connected MIDI CC IN port.\n"
-                                           "Do you like to reactivate that port: " + selected_cc_in_device + "?",
-                                           true
+                                           "Do you like to reactivate that port: " + selected_cc_in_device + "?"
+                                           "YES", "NO"
                                        );
                         if(force_quit)
                         {
@@ -1007,12 +1010,12 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     manager->cc_input_state = REMOVED;
                     was_open_cc_input = false;
                     connection_lost_cc_input = true;
-                    AlertWindow::showNativeDialogBox
+                    AlertWindow::showMessageBoxAsync
                     (
+                        AlertWindow::AlertIconType::WarningIcon,
                         "MIDI IN DEVICE REMOVED.",
                         "Monique lost the MIDI CC IN connection to: " + selected_cc_in_device + ".\n"
-                        "Please reconnect the device or select another one.",
-                        false
+                        "Please reconnect the device or select another one."
                     );
                     if(force_quit)
                     {
@@ -1056,12 +1059,13 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         editor->open_midi_editor_if_closed();
                     }
-                    bool success = AlertWindow::showNativeDialogBox
+                    bool success = AlertWindow::showOkCancelBox
                                    (
+                                       AlertWindow::AlertIconType::QuestionIcon,
                                        "MIDI OUT DEVICE CONNECTED.",
                                        "Monique found a previously connected MIDI THRU OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_thru_out_device + "?",
-                                       true
+                                       "YES", "NO"
                                    );
                     if(force_quit)
                     {
@@ -1091,12 +1095,12 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_thru_output_state = REMOVED;
                 was_open_thru_output = false;
                 connection_lost_thru_output = true;
-                AlertWindow::showNativeDialogBox
+                AlertWindow::showMessageBoxAsync
                 (
+                    AlertWindow::AlertIconType::WarningIcon,
                     "MIDI OUT DEVICE REMOVED.",
                     "Monique lost the MIDI THRU OUT connection to: " + selected_thru_out_device + ".\n"
-                    "Please reconnect the device or select another one.",
-                    false
+                    "Please reconnect the device or select another one."
                 );
                 if(force_quit)
                 {
@@ -1128,12 +1132,13 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                     {
                         editor->open_midi_editor_if_closed();
                     }
-                    bool success = AlertWindow::showNativeDialogBox
+                    bool success = AlertWindow::showOkCancelBox
                                    (
+                                       AlertWindow::AlertIconType::QuestionIcon,
                                        "MIDI OUT DEVICE CONNECTED.",
                                        "Monique found a previously connected MIDI FEEDBACK OUT port.\n"
                                        "Do you like to reactivate that port: " + selected_feedback_out_device + "?",
-                                       true
+                                       "YES", "NO"
                                    );
                     if( success )
                     {
@@ -1163,12 +1168,12 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                 manager->midi_feedback_output_state = REMOVED;
                 was_open_cc_output = false;
                 connection_lost_cc_output = true;
-                AlertWindow::showNativeDialogBox
+                AlertWindow::showMessageBoxAsync
                 (
+                    AlertWindow::AlertIconType::WarningIcon,
                     "MIDI OUT DEVICE REMOVED.",
                     "Monique lost the MIDI FEEDBACK OUT connection to: " + selected_feedback_out_device + ".\n"
-                    "Please reconnect the device or select another one.",
-                    false
+                    "Please reconnect the device or select another one."
                 );
                 if(force_quit)
                 {
@@ -1211,7 +1216,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
 COLD mono_AudioDeviceManager::mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept
 :
 RuntimeListener( runtime_notifyer_ ),
-runtime_notifyer( runtime_notifyer_ )
+                 runtime_notifyer( runtime_notifyer_ )
 {
     sample_rate_changed(0);
 }

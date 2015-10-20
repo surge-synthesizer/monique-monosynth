@@ -29,13 +29,13 @@ ifeq ($(CONFIG),DEVEL)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
   $(OBJDIR)/monique_core_Datastructures_d410a63f.o \
   $(OBJDIR)/monique_core_Parameters_93b9539f.o \
   $(OBJDIR)/monique_core_Processor_aa317247.o \
   $(OBJDIR)/monique_core_Synth_27fdfbf1.o \
   $(OBJDIR)/monique_ui_AmpPainter_161972c7.o \
   $(OBJDIR)/monique_ui_DragPad_4a969d69.o \
+  $(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
   $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o \
   $(OBJDIR)/monique_ui_MainWindow_f360d1a9.o \
@@ -43,6 +43,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
   $(OBJDIR)/monique_ui_Morph_2d3a4c72.o \
+  $(OBJDIR)/monique_ui_OptionPopup_88264961.o \
   $(OBJDIR)/monique_ui_Refresher_b7c42db2.o \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
@@ -80,11 +81,6 @@ strip:
 	@echo Stripping Monique
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
-$(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o: ../../../Source/monique_ui_ENVPopup.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling monique_ui_ENVPopup.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
 $(OBJDIR)/monique_core_Datastructures_d410a63f.o: ../../../Source/monique_core_Datastructures.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_core_Datastructures.cpp"
@@ -113,6 +109,11 @@ $(OBJDIR)/monique_ui_AmpPainter_161972c7.o: ../../../Source/monique_ui_AmpPainte
 $(OBJDIR)/monique_ui_DragPad_4a969d69.o: ../../../Source/monique_ui_DragPad.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_DragPad.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_ENVPopup_1cc5ce1f.o: ../../../Source/monique_ui_ENVPopup.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_ENVPopup.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o: ../../../Source/monique_ui_GlobalSettings.cpp
@@ -148,6 +149,11 @@ $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o: ../../../Source/monique_ui_Mod
 $(OBJDIR)/monique_ui_Morph_2d3a4c72.o: ../../../Source/monique_ui_Morph.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_Morph.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/monique_ui_OptionPopup_88264961.o: ../../../Source/monique_ui_OptionPopup.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_OptionPopup.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/monique_ui_Refresher_b7c42db2.o: ../../../Source/monique_ui_Refresher.cpp

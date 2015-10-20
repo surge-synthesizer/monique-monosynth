@@ -63,6 +63,7 @@ MidiKeyboardComponent::MidiKeyboardComponent (MidiKeyboardState& s, Orientation 
       blackNoteLength (1),
       keyWidth (16.0f),
       orientation (o),
+      root_note(60),
       midiChannel (1),
       midiInChannelMask (0xffff),
       velocity (1.0f),
@@ -118,7 +119,7 @@ void MidiKeyboardComponent::setOrientation (const Orientation newOrientation)
 }
 
 void MidiKeyboardComponent::setAvailableRange (const int lowestNote,
-                                               const int highestNote)
+        const int highestNote)
 {
     jassert (lowestNote >= 0 && lowestNote <= 127);
     jassert (highestNote >= 0 && highestNote <= 127);
@@ -206,7 +207,8 @@ void MidiKeyboardComponent::getKeyPosition (int midiNoteNumber, const float keyW
                                      3.0f, 4 - blackNoteWidth * 0.7f,
                                      4.0f, 5 - blackNoteWidth * 0.5f,
                                      5.0f, 6 - blackNoteWidth * 0.3f,
-                                     6.0f };
+                                     6.0f
+                                   };
 
     const int octave = midiNoteNumber / 12;
     const int note   = midiNoteNumber % 12;
@@ -233,10 +235,17 @@ Rectangle<int> MidiKeyboardComponent::getWhiteNotePos (int noteNum) const
 
     switch (orientation)
     {
-        case horizontalKeyboard:            pos.setBounds (x, 0, w, getHeight()); break;
-        case verticalKeyboardFacingLeft:    pos.setBounds (0, x, getWidth(), w); break;
-        case verticalKeyboardFacingRight:   pos.setBounds (0, getHeight() - x - w, getWidth(), w); break;
-        default: break;
+    case horizontalKeyboard:
+        pos.setBounds (x, 0, w, getHeight());
+        break;
+    case verticalKeyboardFacingLeft:
+        pos.setBounds (0, x, getWidth(), w);
+        break;
+    case verticalKeyboardFacingRight:
+        pos.setBounds (0, getHeight() - x - w, getWidth(), w);
+        break;
+    default:
+        break;
     }
 
     return pos;
@@ -386,20 +395,34 @@ void MidiKeyboardComponent::paint (Graphics& g)
 
     switch (orientation)
     {
-        case horizontalKeyboard:            g.fillRect (0, 0, x, 5); break;
-        case verticalKeyboardFacingLeft:    g.fillRect (width - 5, 0, 5, x); break;
-        case verticalKeyboardFacingRight:   g.fillRect (0, 0, 5, x); break;
-        default: break;
+    case horizontalKeyboard:
+        g.fillRect (0, 0, x, 5);
+        break;
+    case verticalKeyboardFacingLeft:
+        g.fillRect (width - 5, 0, 5, x);
+        break;
+    case verticalKeyboardFacingRight:
+        g.fillRect (0, 0, 5, x);
+        break;
+    default:
+        break;
     }
 
     g.setColour (lineColour);
 
     switch (orientation)
     {
-        case horizontalKeyboard:            g.fillRect (0, height - 1, x, 1); break;
-        case verticalKeyboardFacingLeft:    g.fillRect (0, 0, 1, x); break;
-        case verticalKeyboardFacingRight:   g.fillRect (width - 1, 0, 1, x); break;
-        default: break;
+    case horizontalKeyboard:
+        g.fillRect (0, height - 1, x, 1);
+        break;
+    case verticalKeyboardFacingLeft:
+        g.fillRect (0, 0, 1, x);
+        break;
+    case verticalKeyboardFacingRight:
+        g.fillRect (width - 1, 0, 1, x);
+        break;
+    default:
+        break;
     }
 
     const Colour blackNoteColour (findColour (blackNoteColourId));
@@ -417,10 +440,17 @@ void MidiKeyboardComponent::paint (Graphics& g)
 
                 switch (orientation)
                 {
-                    case horizontalKeyboard:            pos.setBounds (x, 0, w, blackNoteLength); break;
-                    case verticalKeyboardFacingLeft:    pos.setBounds (width - blackNoteLength, x, blackNoteLength, w); break;
-                    case verticalKeyboardFacingRight:   pos.setBounds (0, height - x - w, blackNoteLength, w); break;
-                    default: break;
+                case horizontalKeyboard:
+                    pos.setBounds (x, 0, w, blackNoteLength);
+                    break;
+                case verticalKeyboardFacingLeft:
+                    pos.setBounds (width - blackNoteLength, x, blackNoteLength, w);
+                    break;
+                case verticalKeyboardFacingRight:
+                    pos.setBounds (0, height - x - w, blackNoteLength, w);
+                    break;
+                default:
+                    break;
                 }
 
                 drawBlackNote (noteNum, g, pos.getX(), pos.getY(), pos.getWidth(), pos.getHeight(),
@@ -432,10 +462,10 @@ void MidiKeyboardComponent::paint (Graphics& g)
 }
 
 void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
-                                           Graphics& g, int x, int y, int w, int h,
-                                           bool isDown, bool isOver,
-                                           const Colour& lineColour,
-                                           const Colour& textColour)
+        Graphics& g, int x, int y, int w, int h,
+        bool isDown, bool isOver,
+        const Colour& lineColour,
+        const Colour& textColour)
 {
     Colour c (Colours::transparentWhite);
 
@@ -445,7 +475,10 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
     g.setColour (c);
     g.fillRect (x, y, w, h);
 
-    const String text (getWhiteNoteText (midiNoteNumber));
+
+    String text (getWhiteNoteText (midiNoteNumber));
+    if( midiNoteNumber == root_note )
+        text = "PROG";
 
     if (text.isNotEmpty())
     {
@@ -454,10 +487,17 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
 
         switch (orientation)
         {
-            case horizontalKeyboard:            g.drawFittedText (text, x + 1, y,     w - 1, h - 2, Justification::centredBottom, 1); break;
-            case verticalKeyboardFacingLeft:    g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredLeft,   1); break;
-            case verticalKeyboardFacingRight:   g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredRight,  1); break;
-            default: break;
+        case horizontalKeyboard:
+            g.drawFittedText (text, x + 1, y,     w - 1, h - 2, Justification::centredBottom, 1);
+            break;
+        case verticalKeyboardFacingLeft:
+            g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredLeft,   1);
+            break;
+        case verticalKeyboardFacingRight:
+            g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredRight,  1);
+            break;
+        default:
+            break;
         }
     }
 
@@ -465,28 +505,42 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
 
     switch (orientation)
     {
-        case horizontalKeyboard:            g.fillRect (x, y, 1, h); break;
-        case verticalKeyboardFacingLeft:    g.fillRect (x, y, w, 1); break;
-        case verticalKeyboardFacingRight:   g.fillRect (x, y + h - 1, w, 1); break;
-        default: break;
+    case horizontalKeyboard:
+        g.fillRect (x, y, 1, h);
+        break;
+    case verticalKeyboardFacingLeft:
+        g.fillRect (x, y, w, 1);
+        break;
+    case verticalKeyboardFacingRight:
+        g.fillRect (x, y + h - 1, w, 1);
+        break;
+    default:
+        break;
     }
 
     if (midiNoteNumber == rangeEnd)
     {
         switch (orientation)
         {
-            case horizontalKeyboard:            g.fillRect (x + w, y, 1, h); break;
-            case verticalKeyboardFacingLeft:    g.fillRect (x, y + h, w, 1); break;
-            case verticalKeyboardFacingRight:   g.fillRect (x, y - 1, w, 1); break;
-            default: break;
+        case horizontalKeyboard:
+            g.fillRect (x + w, y, 1, h);
+            break;
+        case verticalKeyboardFacingLeft:
+            g.fillRect (x, y + h, w, 1);
+            break;
+        case verticalKeyboardFacingRight:
+            g.fillRect (x, y - 1, w, 1);
+            break;
+        default:
+            break;
         }
     }
 }
 
-void MidiKeyboardComponent::drawBlackNote (int /*midiNoteNumber*/,
-                                           Graphics& g, int x, int y, int w, int h,
-                                           bool isDown, bool isOver,
-                                           const Colour& noteFillColour)
+void MidiKeyboardComponent::drawBlackNote (int midiNoteNumber,
+        Graphics& g, int x, int y, int w, int h,
+        bool isDown, bool isOver,
+        const Colour& noteFillColour)
 {
     Colour c (noteFillColour);
 
@@ -495,6 +549,7 @@ void MidiKeyboardComponent::drawBlackNote (int /*midiNoteNumber*/,
 
     g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c, 0.0f, h/4, false));
     g.fillRect (x, y, w, h);
+
 
     if (isDown)
     {
@@ -505,15 +560,46 @@ void MidiKeyboardComponent::drawBlackNote (int /*midiNoteNumber*/,
     {
         //g.setColour ();
         //g.setColour ();
-	g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c.brighter(), 0.0f, h/2, false));
+        g.setGradientFill (ColourGradient (Colour(0xff050505), 0.0f, 0.0f, c.brighter(), 0.0f, h/2, false));
         const int xIndent = jmax (1, jmin (w, h) / 8);
 
         switch (orientation)
         {
-            case horizontalKeyboard:            g.fillRect (x + xIndent, y, w - xIndent * 2, 7 * h / 8); break;
-            case verticalKeyboardFacingLeft:    g.fillRect (x + w / 8, y + xIndent, w - w / 8, h - xIndent * 2); break;
-            case verticalKeyboardFacingRight:   g.fillRect (x, y + xIndent, 7 * w / 8, h - xIndent * 2); break;
-            default: break;
+        case horizontalKeyboard:
+            g.fillRect (x + xIndent, y, w - xIndent * 2, 7 * h / 8);
+            break;
+        case verticalKeyboardFacingLeft:
+            g.fillRect (x + w / 8, y + xIndent, w - w / 8, h - xIndent * 2);
+            break;
+        case verticalKeyboardFacingRight:
+            g.fillRect (x, y + xIndent, 7 * w / 8, h - xIndent * 2);
+            break;
+        default:
+            break;
+        }
+    }
+
+    String text ("");
+    if( midiNoteNumber == root_note )
+        text = "PR";
+    if (text.isNotEmpty())
+    {
+        g.setColour (Colour(0xffffffff));
+        g.setFont (Font (jmin (16.0f, keyWidth * 0.9f)).withHorizontalScale (0.8f));
+
+        switch (orientation)
+        {
+        case horizontalKeyboard:
+            g.drawFittedText (text, x + 1, y,     w - 1, h - 2, Justification::centredBottom, 1);
+            break;
+        case verticalKeyboardFacingLeft:
+            g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredLeft,   1);
+            break;
+        case verticalKeyboardFacingRight:
+            g.drawFittedText (text, x + 2, y + 2, w - 4, h - 4, Justification::centredRight,  1);
+            break;
+        default:
+            break;
         }
     }
 }
@@ -533,22 +619,31 @@ String MidiKeyboardComponent::getWhiteNoteText (const int midiNoteNumber)
 }
 
 void MidiKeyboardComponent::drawUpDownButton (Graphics& g, int w, int h,
-                                              const bool mouseOver,
-                                              const bool buttonDown,
-                                              const bool movesOctavesUp)
+        const bool mouseOver,
+        const bool buttonDown,
+        const bool movesOctavesUp)
 {
-        w=w*2;
-    
+    w=w*2;
+
     g.fillAll (findColour (upDownButtonBackgroundColourId));
 
     float angle;
 
     switch (orientation)
     {
-        case horizontalKeyboard:            angle = movesOctavesUp ? 0.0f  : 0.5f;  break;
-        case verticalKeyboardFacingLeft:    angle = movesOctavesUp ? 0.25f : 0.75f; break;
-        case verticalKeyboardFacingRight:   angle = movesOctavesUp ? 0.75f : 0.25f; break;
-        default:                            jassertfalse; angle = 0; break;
+    case horizontalKeyboard:
+        angle = movesOctavesUp ? 0.0f  : 0.5f;
+        break;
+    case verticalKeyboardFacingLeft:
+        angle = movesOctavesUp ? 0.25f : 0.75f;
+        break;
+    case verticalKeyboardFacingRight:
+        angle = movesOctavesUp ? 0.75f : 0.25f;
+        break;
+    default:
+        jassertfalse;
+        angle = 0;
+        break;
     }
 
     Path path;
@@ -556,7 +651,7 @@ void MidiKeyboardComponent::drawUpDownButton (Graphics& g, int w, int h,
     path.applyTransform (AffineTransform::rotation (float_Pi * 2.0f * angle, 0.5f, 0.5f));
 
     g.setColour (findColour (upDownButtonArrowColourId)
-                  .withAlpha (buttonDown ? 1.0f : (mouseOver ? 1 : 0.7f)));
+                 .withAlpha (buttonDown ? 1.0f : (mouseOver ? 1 : 0.7f)));
 
     g.fillPath (path, path.getTransformToScaleToFit (1.0f, 1.0f, w - 2.0f, h - 2.0f, true));
 }
@@ -750,7 +845,9 @@ void MidiKeyboardComponent::mouseDrag (const MouseEvent& e)
     updateNoteUnderMouse (e, true);
 }
 
-bool MidiKeyboardComponent::mouseDownOnKey    (int, const MouseEvent&)  { return true; }
+bool MidiKeyboardComponent::mouseDownOnKey    (int, const MouseEvent&)  {
+    return true;
+}
 void MidiKeyboardComponent::mouseDraggedToKey (int, const MouseEvent&)  {}
 void MidiKeyboardComponent::mouseUpOnKey      (int, const MouseEvent&)  {}
 
@@ -790,8 +887,8 @@ void MidiKeyboardComponent::mouseExit (const MouseEvent& e)
 void MidiKeyboardComponent::mouseWheelMove (const MouseEvent&, const MouseWheelDetails& wheel)
 {
     const float amount = (orientation == horizontalKeyboard && wheel.deltaX != 0)
-                            ? wheel.deltaX : (orientation == verticalKeyboardFacingLeft ? wheel.deltaY
-                                                                                        : -wheel.deltaY);
+                         ? wheel.deltaX : (orientation == verticalKeyboardFacingLeft ? wheel.deltaY
+                                           : -wheel.deltaY);
 
     setLowestVisibleKeyFloat (firstKey - amount * keyWidth);
 }
@@ -830,7 +927,7 @@ void MidiKeyboardComponent::clearKeyMappings()
 }
 
 void MidiKeyboardComponent::setKeyPressForNote (const KeyPress& key,
-                                                const int midiNoteOffsetFromC)
+        const int midiNoteOffsetFromC)
 {
     removeKeyPressForNote (midiNoteOffsetFromC);
 

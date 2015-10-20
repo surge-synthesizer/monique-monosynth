@@ -16,10 +16,6 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
-        <FILE id="MvAyKu" name="monique_ui_ENVPopup.cpp" compile="1" resource="0"
-              file="../Source/monique_ui_ENVPopup.cpp"/>
-        <FILE id="nnUF9F" name="monique_ui_ENVPopup.h" compile="0" resource="0"
-              file="../Source/monique_ui_ENVPopup.h"/>
         <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
         <FILE id="Rx262E" name="App_h_includer.h" compile="0" resource="0"
               file="../Source/App_h_includer.h"/>
@@ -51,6 +47,10 @@
               file="../Source/monique_ui_DragPad.cpp"/>
         <FILE id="gR4Btz" name="monique_ui_DragPad.h" compile="0" resource="0"
               file="../Source/monique_ui_DragPad.h"/>
+        <FILE id="MvAyKu" name="monique_ui_ENVPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_ENVPopup.cpp"/>
+        <FILE id="nnUF9F" name="monique_ui_ENVPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_ENVPopup.h"/>
         <FILE id="VPlKOB" name="monique_ui_GlobalSettings.cpp" compile="1"
               resource="0" file="../Source/monique_ui_GlobalSettings.cpp"/>
         <FILE id="jVmeyU" name="monique_ui_GlobalSettings.h" compile="0" resource="0"
@@ -79,6 +79,10 @@
               file="../Source/monique_ui_Morph.cpp"/>
         <FILE id="wlkbSt" name="monique_ui_Morph.h" compile="0" resource="0"
               file="../Source/monique_ui_Morph.h"/>
+        <FILE id="r8Oddp" name="monique_ui_OptionPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_OptionPopup.cpp"/>
+        <FILE id="ENeGOs" name="monique_ui_OptionPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_OptionPopup.h"/>
         <FILE id="Rcl3AZ" name="monique_ui_Refresher.cpp" compile="1" resource="0"
               file="../Source/monique_ui_Refresher.cpp"/>
         <FILE id="wfhwmk" name="monique_ui_Refresher.h" compile="0" resource="0"

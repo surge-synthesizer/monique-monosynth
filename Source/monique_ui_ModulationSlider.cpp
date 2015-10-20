@@ -340,7 +340,32 @@ void Monique_Ui_DualSlider::refresh() noexcept
         }
         else if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_ON_OFF )
         {
-            button_top->setColour (TextButton::buttonColourId, top_parameter->get_value() == true ? look_and_feel->colours.button_on_colour : look_and_feel->colours.button_off_colour );
+            bool is_forced_on = false;
+            bool is_forced_off = false;
+            if( opt_a_parameter )
+            {
+                is_forced_on = *opt_a_parameter;
+            }
+            if( opt_b_parameter )
+            {
+                is_forced_off = *opt_b_parameter;
+            }
+
+            Colour col;
+            if( is_forced_off )
+            {
+                col = look_and_feel->colours.button_off_colour.interpolatedWith(Colours::red,0.2f);
+            }
+            else if( is_forced_on )
+            {
+                col = look_and_feel->colours.button_on_colour.interpolatedWith(Colours::red,0.5f);
+            }
+            else
+            {
+                col = top_parameter->get_value() == true ? look_and_feel->colours.button_on_colour : look_and_feel->colours.button_off_colour;
+            }
+
+            button_top->setColour (TextButton::buttonColourId, col );
         }
     }
 
@@ -554,6 +579,22 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     //[Constructor_pre] You can add your own custom stuff here..
     //[/Constructor_pre]
 
+    addAndMakeVisible (button_top = new EventButton (String::empty));
+    button_top->addListener (this);
+    button_top->setColour (TextButton::buttonColourId, Colours::black);
+    button_top->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_top->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (label_top = new Label (String::empty,
+            String::empty));
+    label_top->setFont (Font (15.00f, Font::plain));
+    label_top->setJustificationType (Justification::centred);
+    label_top->setEditable (true, true, false);
+    label_top->setColour (Label::textColourId, Colours::yellow);
+    label_top->setColour (TextEditor::textColourId, Colours::black);
+    label_top->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_top->addListener (this);
+
     addAndMakeVisible (slider_value = new SnapSlider ("0"));
     slider_value->setRange (0, 1000, 0.01);
     slider_value->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
@@ -595,22 +636,6 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     label->setColour (TextEditor::textColourId, Colours::black);
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_top = new TextButton (String::empty));
-    button_top->addListener (this);
-    button_top->setColour (TextButton::buttonColourId, Colours::black);
-    button_top->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_top->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (label_top = new Label (String::empty,
-                                              String::empty));
-    label_top->setFont (Font (15.00f, Font::plain));
-    label_top->setJustificationType (Justification::centred);
-    label_top->setEditable (true, true, false);
-    label_top->setColour (Label::textColourId, Colours::yellow);
-    label_top->setColour (TextEditor::textColourId, Colours::black);
-    label_top->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label_top->addListener (this);
-
 
     //[UserPreSize]
     last_painted_mod_slider_val = -999999;
@@ -619,6 +644,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     // INIT SLIDERS AND BUTTONS
     slider_value->owner = this;
     slider_modulation->owner = this;
+    button_top->owner = this;
     if( _config->get_is_linear() )
     {
         slider_modulation->setSliderStyle (Slider::LinearVertical );
@@ -638,11 +664,25 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
 
     jassert( slider_value->isVisible() );
     if( not slider_modulation->isVisible() )
+    {
         slider_modulation = nullptr;
+    }
     if( not button_top->isVisible() )
+    {
         button_top = nullptr;
+        opt_a_parameter = nullptr;
+        opt_b_parameter = nullptr;
+    }
+    else
+    {
+        opt_a_parameter = config_->get_top_button_option_param_a();
+        opt_b_parameter = config_->get_top_button_option_param_b();
+    }
+
     if( not button_bottom->isVisible() )
+    {
         button_bottom = nullptr;
+    }
     //if( not label_top->isVisible() )
     //  label_top = nullptr;
     if( not label->isVisible() )
@@ -656,7 +696,9 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
         back_parameter = nullptr;
     }
     else
+    {
         modulation_parameter = nullptr;
+    }
     top_parameter = _config->get_top_button_parameter_base();
     top_button_type = _config->get_top_button_type();
 
@@ -687,12 +729,12 @@ Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    button_top = nullptr;
+    label_top = nullptr;
     slider_value = nullptr;
     button_bottom = nullptr;
     slider_modulation = nullptr;
     label = nullptr;
-    button_top = nullptr;
-    label_top = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -734,16 +776,78 @@ void Monique_Ui_DualSlider::resized()
     /*
     //[/UserPreResize]
 
+    button_top->setBounds (0, 0, 60, 27);
+    label_top->setBounds (0, -4, 60, 35);
     slider_value->setBounds (0, 37, 60, 56);
     button_bottom->setBounds (0, 95, 60, 33);
     slider_modulation->setBounds (0, 37, 60, 56);
     label->setBounds (0, 95, 60, 33);
-    button_top->setBounds (0, 0, 60, 27);
-    label_top->setBounds (0, -4, 60, 35);
     //[UserResized] Add your own custom resize handling here..
     */
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
+}
+
+void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == button_top)
+    {
+        //[UserButtonCode_button_top] -- add your button handler code here..
+        if( opt_a_parameter )
+        {
+            opt_a_parameter->set_value(false);
+        }
+        if( opt_b_parameter )
+        {
+            opt_b_parameter->set_value(false);
+        }
+
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            top_parameter, buttonThatWasClicked
+        )
+        else
+        {
+            top_parameter->set_value( top_parameter->get_value() == 1 ? false : true );
+        }
+        get_editor()->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
+        //[/UserButtonCode_button_top]
+    }
+    else if (buttonThatWasClicked == button_bottom)
+    {
+        //[UserButtonCode_button_bottom] -- add your button handler code here..
+        set_ctrl_view_mode( ! front_parameter->midi_control->get_ctrl_mode() );
+        show_view_mode();
+        //[/UserButtonCode_button_bottom]
+    }
+
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
+}
+
+void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == label_top)
+    {
+        //[UserLabelCode_label_top] -- add your label text handling code here..
+        if( slider_value->isEnabled() )
+            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue() ), sendNotification );
+        else if( slider_modulation )
+        {
+            if( slider_modulation->isEnabled() )
+                slider_modulation->setValue( label_top->getText().getFloatValue()/1000, sendNotification );
+        }
+        //[/UserLabelCode_label_top]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
 }
 
 void Monique_Ui_DualSlider::sliderValueChanged (Slider* sliderThatWasMoved)
@@ -805,62 +909,12 @@ void Monique_Ui_DualSlider::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == button_bottom)
-    {
-        //[UserButtonCode_button_bottom] -- add your button handler code here..
-        set_ctrl_view_mode( ! front_parameter->midi_control->get_ctrl_mode() );
-        show_view_mode();
-        //[/UserButtonCode_button_bottom]
-    }
-    else if (buttonThatWasClicked == button_top)
-    {
-        //[UserButtonCode_button_top] -- add your button handler code here..
-        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-        (
-            top_parameter, buttonThatWasClicked
-        )
-        else
-        {
-            top_parameter->set_value( top_parameter->get_value() == 1 ? false : true );
-        }
-        get_editor()->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
-        //[/UserButtonCode_button_top]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
-}
-
-void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
-{
-    //[UserlabelTextChanged_Pre]
-    //[/UserlabelTextChanged_Pre]
-
-    if (labelThatHasChanged == label_top)
-    {
-        //[UserLabelCode_label_top] -- add your label text handling code here..
-        if( slider_value->isEnabled() )
-            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue() ), sendNotification );
-        else if( slider_modulation )
-        {
-            if( slider_modulation->isEnabled() )
-                slider_modulation->setValue( label_top->getText().getFloatValue()/1000, sendNotification );
-        }
-        //[/UserLabelCode_label_top]
-    }
-
-    //[UserlabelTextChanged_Post]
-    //[/UserlabelTextChanged_Post]
-}
-
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+//==============================================================================
+//==============================================================================
+//==============================================================================
 void SnapSlider::mouseEnter(const MouseEvent& event)
 {
     owner->sliderValueEnter(this);
@@ -877,22 +931,53 @@ void Left2MiddleSlider::mouseExit(const MouseEvent& event)
 {
     owner->sliderModExit(this);
 }
+//==============================================================================
 void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
-};
+}
 void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 {
     runtime_show_value_popup = false;
-};
+}
 void Monique_Ui_DualSlider::sliderModEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
-};
+}
 void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 {
     runtime_show_value_popup = false;
-};
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+void EventButton::mouseEnter(const MouseEvent& event)
+{
+    owner->topButtonEnter(event.eventComponent);
+}
+void EventButton::mouseExit(const MouseEvent& event)
+{
+    owner->topButtonExit(event.eventComponent);
+}
+//==============================================================================
+void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
+{
+    if( opt_a_parameter != nullptr and opt_b_parameter != nullptr )
+    {
+        get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter,
+                                         _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
+                                         _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
+                                       );
+    }
+}
+void Monique_Ui_DualSlider::topButtonExit (Component*b_)
+{
+    if( opt_a_parameter != nullptr and opt_b_parameter != nullptr )
+    {
+        get_editor()->open_option_popup( nullptr, nullptr, nullptr, "", "", "", "" );
+    }
+}
 //[/MiscUserCode]
 
 
@@ -912,6 +997,15 @@ BEGIN_JUCER_METADATA
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="60" initialHeight="130">
   <BACKGROUND backgroundColour="ff000000"/>
+  <TEXTBUTTON name="" id="5c83d26e935f379d" memberName="button_top" virtualName="EventButton"
+              explicitFocusOrder="0" pos="0 0 60 27" bgColOff="ff000000" textCol="ffff3b00"
+              textColOn="ffffff00" buttonText="" connectedEdges="0" needsCallback="1"
+              radioGroupId="0"/>
+  <LABEL name="" id="91e2ef3f217d2a8f" memberName="label_top" virtualName=""
+         explicitFocusOrder="0" pos="0 -4 60 35" textCol="ffffff00" edTextCol="ff000000"
+         edBkgCol="0" labelText="" editableSingleClick="1" editableDoubleClick="1"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
+         bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_value" virtualName="SnapSlider"
           explicitFocusOrder="0" pos="0 37 60 56" bkgcol="ff101010" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
@@ -932,15 +1026,6 @@ BEGIN_JUCER_METADATA
   <LABEL name="" id="c4d4f0ae59fb458b" memberName="label" virtualName=""
          explicitFocusOrder="0" pos="0 95 60 33" textCol="ffffff00" edTextCol="ff000000"
          edBkgCol="0" labelText="" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="5c83d26e935f379d" memberName="button_top" virtualName=""
-              explicitFocusOrder="0" pos="0 0 60 27" bgColOff="ff000000" textCol="ffff3b00"
-              textColOn="ffffff00" buttonText="" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
-  <LABEL name="" id="91e2ef3f217d2a8f" memberName="label_top" virtualName=""
-         explicitFocusOrder="0" pos="0 -4 60 35" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="" editableSingleClick="1" editableDoubleClick="1"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>

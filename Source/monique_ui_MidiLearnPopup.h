@@ -39,6 +39,7 @@ class MIDIControl;
 */
 class Monique_Ui_MainwindowPopup  : public Component,
                                     public Monique_Ui_Refreshable,
+                                    public DropShadower,
                                     public ComboBoxListener,
                                     public ButtonListener
 {

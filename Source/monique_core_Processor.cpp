@@ -246,9 +246,13 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          try_to_restart_arp( false ),
                          connection_missed_counter(0),
                          received_a_clock_in_time(false),
+#else
+                         restore_time(-1),
 #endif
                          peak_meter(nullptr),
-                         amp_painter(nullptr)
+                         amp_painter(nullptr),
+                         stored_note(-1),
+                         stored_velocity(0)
 {
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
@@ -287,7 +291,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         synth_data->read_midi();
         synth_data->load_default();
 #ifdef IS_STANDALONE
-        synth_data->load();
+        synth_data->load(true);
 #endif
     }
 #ifdef IS_PLUGIN
@@ -381,6 +385,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
+
+    const bool was_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
 
 #ifdef IS_STANDALONE
     static bool is_first_time = true;
@@ -588,6 +594,17 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
                     note_down_store->handle_midi_messages( midi_messages_ );
+
+                    const bool is_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
+                    if( was_playing and not is_playing )
+                    {
+                        voice->stop_arp();
+                    }
+                    else if( not was_playing and is_playing )
+                    {
+                        voice->restart_arp(0);
+                    }
+
                     synth->renderNextBlock ( buffer_, midi_messages_, 0, num_samples );
                     midi_messages_.clear(); // WILL BE FILLED AT THE END
                 }
@@ -774,31 +791,6 @@ void MoniqueAudioProcessor::parameter_modulation_value_changed( Parameter* param
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#ifdef IS_PLUGIN
-void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
-{
-    std::cout << "getStateInformation" << std::endl;
-    XmlElement xml("PROJECT-1.0");
-    synth_data->save_to( &xml );
-    copyXmlToBinary ( xml, destData );
-}
-void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
-{
-    std::cout << "setStateInformation" << std::endl;
-    ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
-    if ( xml )
-    {
-        if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
-        {
-            synth_data->read_from( xml );
-        }
-    }
-}
-#endif
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 bool MoniqueAudioProcessor::hasEditor() const
 {
     return true;
@@ -874,10 +866,62 @@ double MoniqueAudioProcessor::getTailLengthSeconds() const
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#ifdef IS_PLUGIN
+void MoniqueAudioProcessor::getStateInformation ( MemoryBlock& destData )
+{
+    XmlElement xml("PROJECT-1.0");
+    String modded_name = synth_data->alternative_program_name;
+    String name = modded_name.fromFirstOccurrenceOf ("0RIGINAL WAS: ",false, false);
+    xml.setAttribute( "MODDED_PROGRAM", name == "" ? modded_name : name );
+    //xml.getIntAttribute( "BANK", synth_data->current_bank );
+    //xml.getIntAttribute( "PROG", synth_data->current_program );
+    synth_data->save_to( &xml );
+    copyXmlToBinary ( xml, destData );
+}
+void MoniqueAudioProcessor::setStateInformation ( const void* data, int sizeInBytes )
+{
+    ScopedPointer<XmlElement> xml ( getXmlFromBinary ( data, sizeInBytes ) );
+    if ( xml )
+    {
+        if ( xml->hasTagName ( "PROJECT-1.0" ) || xml->hasTagName("MONOLisa")  )
+        {
+            synth_data->read_from( xml );
+            String modded_name = synth_data->alternative_program_name;
+            String old_name = xml->getStringAttribute( "MODDED_PROGRAM", "1234567899876543212433442424678" );
+            if( old_name != "1234567899876543212433442424678" )
+            {
+                synth_data->alternative_program_name = String("0RIGINAL WAS: ") + old_name;
+                //synth_data->current_bank = xml->getIntAttribute( "BANK", 0 );
+                //synth_data->current_program = xml->getIntAttribute( "PROG", -1 );
+            }
+        }
+    }
+    else
+    {
+        synth_data->alternative_program_name = "ERROR: Could not load patch!";
+    }
+
+    restore_time = Time::getMillisecondCounter();
+}
+/*
+void getCurrentProgramStateInformation ( MemoryBlock& dest_data_ )
+{
+
+}
+void setCurrentProgramStateInformation ( const void* data_, int size_in_bytes_ )
+{
+
+}
+*/
+#endif
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 int MoniqueAudioProcessor::getNumPrograms()
 {
     int size = 0;
-    for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
+    for( int bank_id = 0 ; bank_id != 26 ; ++bank_id )
     {
         size += synth_data->get_programms( bank_id ).size();
     }
@@ -886,12 +930,23 @@ int MoniqueAudioProcessor::getNumPrograms()
 }
 int MoniqueAudioProcessor::getCurrentProgram()
 {
-    return jmax(0,synth_data->get_current_programm_id_abs());
+    return synth_data->get_current_programm_id_abs();
 }
 void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 {
+#ifdef IS_PLUGIN
+    if((Time::getMillisecondCounter()-restore_time)<200)
+    {
+        return;
+    }
+#endif
+
     synth_data->set_current_program_abs(id_);
     synth_data->load(true,true);
+    if( get_editor() )
+    {
+        get_editor()->triggerAsyncUpdate();
+    }
 }
 const String MoniqueAudioProcessor::getProgramName ( int id_ )
 {
@@ -901,4 +956,8 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
 {
     synth_data->set_current_program_abs(id_);
     synth_data->rename(name_);
+    if( get_editor() )
+    {
+        get_editor()->triggerAsyncUpdate();
+    }
 }

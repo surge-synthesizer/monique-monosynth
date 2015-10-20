@@ -104,6 +104,17 @@ public:
     {}
 };
 
+class EventButton : public TextButton
+{
+    friend class Monique_Ui_DualSlider;
+    Monique_Ui_DualSlider* owner;
+
+    void mouseEnter (const MouseEvent& event) override;
+    void mouseExit (const MouseEvent& event) override;
+public:
+    EventButton( const String& name_ ) : TextButton( name_ ) { }
+};
+
 enum
 {
     TOP_BUTTON_IS_ON = -4,
@@ -125,6 +136,33 @@ struct ModulationSliderConfigBase
         return false;
     }
 
+    //==============================================================================
+    // OPTION POPUP
+    virtual BoolParameter* get_top_button_option_param_a() noexcept
+    {
+        return nullptr;
+    }
+    virtual BoolParameter* get_top_button_option_param_b() noexcept
+    {
+        return nullptr;
+    }
+    virtual StringRef get_top_button_option_param_a_text() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_top_button_option_param_b_text() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_top_button_option_param_a_tool_tip() const noexcept
+    {
+        return "";
+    }
+    virtual StringRef get_top_button_option_param_b_tool_tip() const noexcept
+    {
+        return "";
+    }
+    
     //==============================================================================
     // FRONT SLIDER
     virtual SLIDER_STYLES get_front_slider_style() const noexcept
@@ -263,9 +301,9 @@ class MoniqueSynthData;
 */
 class Monique_Ui_DualSlider  : public Component,
                                public Monique_Ui_Refreshable,
-                               public SliderListener,
                                public ButtonListener,
-                               public LabelListener
+                               public LabelListener,
+                               public SliderListener
 {
 public:
     //==============================================================================
@@ -285,13 +323,16 @@ public:
     const float original_h;
 
     ModulationSliderConfigBase*const _config;
-    
+
 private:
     Parameter* front_parameter;
     Parameter* modulation_parameter;
     Parameter* back_parameter;
     ModulationSliderConfigBase::TOP_BUTTON_TYPE top_button_type;
     BoolParameter* top_parameter;
+
+    BoolParameter* opt_a_parameter;
+    BoolParameter* opt_b_parameter;
 
     bool runtime_show_value_popup;
     bool last_runtime_show_value_popup;
@@ -307,15 +348,17 @@ public:
     void sliderValueExit (Slider*s_);
     void sliderModEnter (Slider*s_);
     void sliderModExit (Slider*s_);
+    void topButtonEnter (Component*a_);
+    void topButtonExit (Component*b_);
 
 public:
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
-    void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
     void labelTextChanged (Label* labelThatHasChanged);
+    void sliderValueChanged (Slider* sliderThatWasMoved);
 
 
 
@@ -324,12 +367,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<EventButton> button_top;
+    ScopedPointer<Label> label_top;
     ScopedPointer<SnapSlider> slider_value;
     ScopedPointer<TextButton> button_bottom;
     ScopedPointer<Left2MiddleSlider> slider_modulation;
     ScopedPointer<Label> label;
-    ScopedPointer<TextButton> button_top;
-    ScopedPointer<Label> label_top;
 
 
     //==============================================================================

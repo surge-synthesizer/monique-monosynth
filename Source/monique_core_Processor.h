@@ -53,11 +53,17 @@ private:
     void timerCallback() override;
 #endif
 
+    int stored_note;
+    float stored_velocity;
+
+
     // ==============================================================================
     // DATA & SYNTH PROCESSOR
 public:
     MoniqueSynthData* synth_data;
-    MoniqueSynthData*get_synth_data() noexcept override { return synth_data; }
+    MoniqueSynthData*get_synth_data() noexcept override {
+        return synth_data;
+    }
     MoniqueSynthesiserVoice* voice;
     MoniqueSynthesizer* synth;
 
@@ -116,8 +122,11 @@ private:
     //==========================================================================
     // LOAD SAVE
 #ifdef IS_PLUGIN
+    int64 restore_time;
     void getStateInformation ( MemoryBlock& dest_data_ ) override;
     void setStateInformation ( const void* data_, int size_in_bytes_ ) override;
+    //void getCurrentProgramStateInformation ( MemoryBlock& dest_data_ ) override;
+    //void setCurrentProgramStateInformation ( const void* data_, int size_in_bytes_ ) override;
 #else
     void getStateInformation ( MemoryBlock& dest_data_ ) override {}
     void setStateInformation ( const void* data_, int size_in_bytes_ ) override {}
@@ -147,9 +156,11 @@ private:
     //==========================================================================
     // BOOT UI
     COLD AudioProcessorEditor* createEditor()  override;
-    
+
     // GET UI
-    Monique_Ui_Mainwindow*get_editor() noexcept override { return reinterpret_cast< Monique_Ui_Mainwindow* >( getActiveEditor() ); }
+    Monique_Ui_Mainwindow*get_editor() noexcept override {
+        return reinterpret_cast< Monique_Ui_Mainwindow* >( getActiveEditor() );
+    }
 
     //==========================================================================
     // GLOBAL CLASSES

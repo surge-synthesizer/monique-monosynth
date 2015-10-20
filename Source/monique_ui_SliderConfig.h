@@ -3226,7 +3226,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
         "(PLUGIN: has no effect if SYNC is turned on)\n"
         "(STANALONE: has no effect if SYNC is turned on and a MIDI clock is continuously received)\n"
         "\n"
-        "Affected: ARPEGGIATOR, LFO's (if slow) (OSC's and FM if L-MOD is turned on)"
+        "Affected: ARPEGGIATOR"
     )
     TOP_BUTTON_DESCRIPTION
     (
@@ -4916,6 +4916,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
 {
     IntParameter*const shuffle;
     BoolParameter*const is_on;
+    MoniqueSynthData*const synth_data;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4926,6 +4927,51 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     */
 
+    //==============================================================================
+    // OPTION POPUP
+    BoolParameter* get_top_button_option_param_a() noexcept override
+    {
+        return &synth_data->keep_arp_always_on;
+    }
+    BoolParameter* get_top_button_option_param_b() noexcept override
+    {
+        return &synth_data->keep_arp_always_off;
+    }
+    StringRef get_top_button_option_param_a_text() const noexcept override
+    {
+        return "FORCE ARP ON";
+    }
+    StringRef get_top_button_option_param_b_text() const noexcept override
+    {
+        return "FORCE ARP OFF";
+    }
+    StringRef get_top_button_option_param_a_tool_tip() const noexcept override
+    {
+        return "Keeps the arpeggiator always on.\n"
+	"\n"
+	"If enabled the defined ARP ON state will be ignored and the arpeggiator is always ON by force!\n"
+	"If you save a program and this option is turned on the program will be stored with ARP ON, else it uses the current ARP ON state.\n"
+	"\n"
+	"IMPORTANT NOTES:\n"
+	"****************\n"
+	"This is a runtime parameter and is always turned off at application start.\n"
+	"If you change the ARP ON state on the main user interface will turning off this this option.\n"
+	;
+    }
+    StringRef get_top_button_option_param_b_tool_tip() const noexcept override
+    {
+        return "Keeps the arpeggiator always off.\n"
+	"\n"
+	"If enabled the defined ARP ON state will be ignored and the arpeggiator is always OFF by force!\n"
+	"If you save a program and this option is turned on the program will be stored with ARP OFF, else it uses the current ARP ON state.\n"
+	"\n"
+	"IMPORTANT NOTES:\n"
+	"****************\n"
+	"This is a runtime parameter and is always turned off at application start.\n"
+	"If you change the ARP ON state on the main user interface will turning off this this option.\n"
+	;
+    }
+    
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -5032,7 +5078,9 @@ public:
     ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
-        is_on( &synth_data_->arp_sequencer_data->is_on )
+        is_on( &synth_data_->arp_sequencer_data->is_on ),
+
+        synth_data( synth_data_ )
     {}
 
     JUCE_LEAK_DETECTOR (ShuffleConfig)

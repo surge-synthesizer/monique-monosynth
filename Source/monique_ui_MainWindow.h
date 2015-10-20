@@ -32,6 +32,7 @@ class Monique_Ui_MidiIO;
 class Monique_Ui_MorphConfig;
 class Monique_Ui_GlobalSettings;
 class Monique_Ui_ENVPopup;
+class Monique_Ui_OptionPopup;
 class Monique_Ui_AmpPainter;
 
 class MoniqueSynthesiserVoice;
@@ -57,10 +58,11 @@ class ENVData;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-                               public Monique_Ui_Refreshable,
-                               public ButtonListener,
-                               public ComboBoxListener,
-                               public SliderListener
+    public Monique_Ui_Refreshable,
+    public ButtonListener,
+    public ComboBoxListener,
+    public SliderListener,
+    public AsyncUpdater
 {
 public:
     //==============================================================================
@@ -79,17 +81,23 @@ public:
     ScopedPointer<Monique_Ui_MorphConfig> editor_morph;
     ScopedPointer<Monique_Ui_GlobalSettings> editor_global_settings;
     ScopedPointer<Monique_Ui_ENVPopup> env_popup;
+    ScopedPointer<Monique_Ui_OptionPopup> option_popup;
     Monique_Ui_AmpPainter*amp_painter;
 
     void refresh() noexcept override;
     void update_tooltip_handling( bool is_help_key_down_ ) noexcept;
     void show_current_voice_data();
-    void show_programs_and_select();
+    void handleAsyncUpdate() override;
+    void show_programs_and_select(bool force);
     void show_ctrl_state();
     void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
     void close_all_subeditors();
     void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, bool has_negative_sustain_ ) noexcept;
     void open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
+    void open_option_popup( Component*const for_comp_,
+                            BoolParameter*param_a_, BoolParameter*param_b_,
+                            StringRef text_a_, StringRef text_b_,
+                            StringRef tool_tip_a_, StringRef tool_tip_b_ ) noexcept;
     bool handle_keep_env_open( ModulationSliderConfigBase*const caller_config_ ) noexcept;
     void resize_subeditors();
     void open_midi_editor_if_closed() noexcept;
@@ -114,12 +122,12 @@ public:
     int last_programm;
     enum EDIT_TYPES
     {
-      LOAD,
-      REPLACE,
-      CREATE,
-      RENAME,
-      REMOVE,
-      NOT_SET
+        LOAD,
+        REPLACE,
+        CREATE,
+        RENAME,
+        REMOVE,
+        NOT_SET
     };
     EDIT_TYPES program_edit_type;
     void sliderClicked (Slider*s_) override;

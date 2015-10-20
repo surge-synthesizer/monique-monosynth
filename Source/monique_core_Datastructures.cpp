@@ -182,7 +182,7 @@ fm_swing
     0,
     5000,
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_swing"),
-    generate_short_human_name(FM_NAME,"fm_swing")
+    generate_short_human_name(FM_NAME,"swing")
 ),
 fm_swing_smoother(smooth_manager_,&fm_swing),
 fm_shape
@@ -191,7 +191,7 @@ fm_shape
     0,
     1000,
     generate_param_name(OSC_NAME,MASTER_OSC,"fm_phase"),
-    generate_short_human_name(FM_NAME,"fm_phase")
+    generate_short_human_name(FM_NAME,"phase")
 ),
 fm_shape_smoother(smooth_manager_,&fm_shape),
 master_shift
@@ -200,7 +200,7 @@ master_shift
     0,
     1000,
     generate_param_name(OSC_NAME,MASTER_OSC,"master_shift"),
-    generate_short_human_name(OSC_NAME,"master_phase"),
+    generate_short_human_name(OSC_NAME,"phase"),
     0
 ),
 master_shift_smoother(smooth_manager_,&master_shift)
@@ -432,7 +432,7 @@ adsr_lfo_mix
     -0.9,
     2000,
     generate_param_name(FILTER_NAME,id_,"adsr_lfo_mix"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"lfo_mix")
+    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_mix")
 ),
 adsr_lfo_mix_smoother(smooth_manager_,&adsr_lfo_mix),
 
@@ -577,9 +577,6 @@ env_data( new ENVData( smooth_manager_, id_ ) )
         input_smoothers.add( new SmoothedParameter(smooth_manager_,&input_sustains[i]) );
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
-        env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
-        env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
-        env_data->max_release_time = env_data->max_release_time.get_info().max_value;
         input_envs.add( env_data );
     }
 }
@@ -613,10 +610,10 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), false );
+        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), true );
     }
 
-    copy( dest_->env_data, src_->env_data, false );
+    copy( dest_->env_data, src_->env_data, true );
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -624,9 +621,9 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
     {
         params_.add( &data_->input_sustains[i] );
         params_.add( &data_->input_holds[i] );
-        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, false );
+        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, true );
     }
-    collect_saveable_parameters( data_->env_data, params_, false );
+    collect_saveable_parameters( data_->env_data, params_, true );
 
     params_.add( &data_->adsr_lfo_mix );
 
@@ -1631,7 +1628,7 @@ ui_look_and_feel( look_and_feel_ ),
                       0.05,
                       1000,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
-                      generate_short_human_name("FX","shape")
+                      generate_short_human_name("EQ","resonance")
                   ),
                   shape_smoother(smooth_manager,&shape),
                   distortion
@@ -1640,7 +1637,7 @@ ui_look_and_feel( look_and_feel_ ),
                       0.6,
                       1000,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
-                      generate_short_human_name("FX","distortion")
+                      generate_short_human_name("FX","destroy")
                   ),
                   distortion_smoother(smooth_manager,&distortion),
                   octave_offset
@@ -1655,14 +1652,14 @@ ui_look_and_feel( look_and_feel_ ),
                       MIN_MAX( 0, 12 ),
                       0,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
-                      generate_short_human_name("GLOB","arp_note_offset")
+                      generate_short_human_name("GLOB","note_offset")
                   ),
 
                   sync
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
-                      generate_short_human_name("SPEED","sync")
+                      generate_short_human_name("GLOB","speed_sync")
                   ),
                   speed
                   (
@@ -1670,7 +1667,7 @@ ui_look_and_feel( look_and_feel_ ),
                       128,
                       980*10,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
-                      generate_short_human_name("SPEED","speed")
+                      generate_short_human_name("GLOB","speed")
                   ),
 
                   glide_motor_time
@@ -1708,73 +1705,73 @@ ui_look_and_feel( look_and_feel_ ),
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
-                      generate_short_human_name("GLOB","osci_show_osc_1")
+                      generate_short_human_name("CONF","osci_show_osc_1")
                   ),
                   osci_show_osc_2
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
-                      generate_short_human_name("GLOB","osci_show_osc_2")
+                      generate_short_human_name("CONF","osci_show_osc_2")
                   ),
                   osci_show_osc_3
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
-                      generate_short_human_name("GLOB","osci_show_osc_3")
+                      generate_short_human_name("CONF","osci_show_osc_3")
                   ),
                   osci_show_flt_env_1
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
-                      generate_short_human_name("GLOB","osci_show_flt_env_1")
+                      generate_short_human_name("CONF","osci_show_flt_env_1")
                   ),
                   osci_show_flt_env_2
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
-                      generate_short_human_name("GLOB","osci_show_flt_env_2")
+                      generate_short_human_name("CONF","osci_show_flt_env_2")
                   ),
                   osci_show_flt_env_3
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
-                      generate_short_human_name("GLOB","osci_show_flt_env_3")
+                      generate_short_human_name("CONF","osci_show_flt_env_3")
                   ),
                   osci_show_flt_1
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
-                      generate_short_human_name("GLOB","osci_show_flt_1")
+                      generate_short_human_name("CONF","osci_show_flt_1")
                   ),
                   osci_show_flt_2
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
-                      generate_short_human_name("GLOB","osci_show_flt_2")
+                      generate_short_human_name("CONF","osci_show_flt_2")
                   ),
                   osci_show_flt_3
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
-                      generate_short_human_name("GLOB","osci_show_flt_3")
+                      generate_short_human_name("CONF","osci_show_flt_3")
                   ),
                   osci_show_eq
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
-                      generate_short_human_name("GLOB","osci_show_eq")
+                      generate_short_human_name("CONF","osci_show_eq")
                   ),
                   osci_show_out
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
-                      generate_short_human_name("GLOB","osci_show_out")
+                      generate_short_human_name("CONF","osci_show_out")
                   ),
                   osci_show_out_env
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
-                      generate_short_human_name("GLOB","osci_show_out_env")
+                      generate_short_human_name("CONF","osci_show_out_env")
                   ),
                   osci_show_range
                   (
@@ -1782,7 +1779,7 @@ ui_look_and_feel( look_and_feel_ ),
                       0.05,
                       100,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
-                      generate_short_human_name("GLOB","osci_show_range")
+                      generate_short_human_name("CONF","osci_show_range")
                   ),
 
 // -------------------------------------------------------------
@@ -1790,14 +1787,37 @@ ui_look_and_feel( look_and_feel_ ),
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
-                      generate_short_human_name("GLOB","auto_close_env_popup")
+                      generate_short_human_name("POP","auto_close_env_popup")
                   ),
                   auto_switch_env_popup
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
-                      generate_short_human_name("GLOB","auto_switch_env_popup")
+                      generate_short_human_name("POP","auto_switch_env_popup")
                   ),
+
+// -------------------------------------------------------------
+                  is_osci_open
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"is_osci_open"),
+                      generate_short_human_name("CONF","is_osci_open")
+                  ),
+
+// -------------------------------------------------------------
+                  keep_arp_always_on
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_ON_always"),
+                      generate_short_human_name("GLOB","arp_ON_always")
+                  ),
+                  keep_arp_always_off
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
+                      generate_short_human_name("GLOB","arp_OFF_always")
+                  ),
+
 
 // -------------------------------------------------------------
                   num_extra_threads
@@ -1805,7 +1825,7 @@ ui_look_and_feel( look_and_feel_ ),
                       MIN_MAX( 0, THREAD_LIMIT ),
                       0,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-                      generate_short_human_name("GLOB","cpus")
+                      generate_short_human_name("CONF","cpus")
                   ),
 
 // -------------------------------------------------------------
@@ -1813,32 +1833,32 @@ ui_look_and_feel( look_and_feel_ ),
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
-                      generate_short_human_name("animate_envs")
+                      generate_short_human_name("CONF","animate_envs")
                   ),
                   show_tooltips
                   (
                       true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
-                      generate_short_human_name("show_tooltips")
+                      generate_short_human_name("CONF","show_tooltips")
                   ),
                   bind_sustain_and_sostenuto_pedal
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
-                      generate_short_human_name("GLOB","bind_pedals")
+                      generate_short_human_name("MIDI","bind_pedals")
                   ),
                   sliders_in_rotary_mode
                   (
                       false,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
-                      generate_short_human_name("slider_rotary")
+                      generate_short_human_name("CONF","slider_type")
                   ),
                   sliders_sensitivity
                   (
                       MIN_MAX( 100, 2000 ),
                       500,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
-                      generate_short_human_name("slider_sensitivity")
+                      generate_short_human_name("CONF","slider_sensitivity")
                   ),
                   ui_scale_factor
                   (
@@ -1846,7 +1866,7 @@ ui_look_and_feel( look_and_feel_ ),
                       0.7,
                       1000,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
-                      generate_short_human_name("ui_scale_factor")
+                      generate_short_human_name("CONF","ui_scale_factor")
                   ),
 
 // ----
@@ -1886,14 +1906,14 @@ ui_look_and_feel( look_and_feel_ ),
                       0,
                       100,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
-                      generate_short_human_name("morph_line")
+                      generate_short_human_name("GLOB","morph_line")
                   ),
                   morph_motor_time
                   (
                       MIN_MAX( 20, 20000 ),
                       1000,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
-                      generate_short_human_name("morph_motor")
+                      generate_short_human_name("CONF","morph_motor")
                   ),
                   morph_group_1( new MorphGroup() ),
                   morph_group_2( new MorphGroup() ),
@@ -1906,7 +1926,8 @@ ui_look_and_feel( look_and_feel_ ),
                   current_program_abs(-1),
                   current_bank(0),
 
-                  error_string("ERROR")
+                  error_string("ERROR"),
+                  alternative_program_name("NO PROGRAM SELECTED")
 {
     // OSCS DATA
     fm_osc_data = new FMOscData(smooth_manager);
@@ -2668,7 +2689,7 @@ bool MoniqueSynthData::try_to_load_programm_to_left_side( int morpher_id_, int b
     MoniqueSynthData* synth_data = left_morph_sources.getUnchecked( morpher_id_ );
     synth_data->set_current_bank( bank_id_ );
     synth_data->set_current_program( index_ );
-    bool success = synth_data->load( false );
+    bool success = synth_data->load( );
     if( success )
     {
         run_sync_morph();
@@ -2682,7 +2703,7 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
     MoniqueSynthData* synth_data = right_morph_sources.getUnchecked( morpher_id_ );
     synth_data->set_current_bank( bank_id_ );
     synth_data->set_current_program( index_ );
-    bool success = synth_data->load( false );
+    bool success = synth_data->load( );
     if( success )
     {
         run_sync_morph();
@@ -2970,6 +2991,9 @@ void MoniqueSynthData::create_internal_backup( const String& programm_name_, con
     {
         saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
     }
+
+
+    alternative_program_name = last_program;
 }
 bool MoniqueSynthData::create_new( const String& new_name_ ) noexcept
 {
@@ -3027,11 +3051,12 @@ bool MoniqueSynthData::replace() noexcept
     String bank_name = banks[current_bank];
     String program_name = program_names_per_bank.getReference(current_bank)[current_program];
     File program = get_program_file( bank_name, program_name );
-    bool success = AlertWindow::showNativeDialogBox
+    bool success = AlertWindow::showOkCancelBox
     (
+        AlertWindow::AlertIconType::QuestionIcon,
         "REPLACE PROJECT?",
         String("Overwrite project: ")+bank_name+String(":")+program_name,
-        true
+        "YES", "NO"
     );
     if( success )
     {
@@ -3052,11 +3077,12 @@ bool MoniqueSynthData::remove() noexcept
     String old_program_name = program_names_per_bank.getReference(current_bank)[current_program];
     String old_bank_name = banks[current_bank];
     File program = get_program_file( old_bank_name, old_program_name );
-    bool success = AlertWindow::showNativeDialogBox
+    bool success = AlertWindow::showOkCancelBox
     (
+        AlertWindow::AlertIconType::QuestionIcon,
         "DELETE PROJECT?",
         String("Delete project: ")+old_bank_name+String(":")+old_program_name,
-        true
+        "YES", "NO"
     );
     if( success )
     {
@@ -3126,13 +3152,8 @@ bool MoniqueSynthData::load_next() noexcept
     return success;
 }
 #include "monique_ui_MainWindow.h"
-bool MoniqueSynthData::load( const String& bank_name_, const String& program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
+bool MoniqueSynthData::load( const String bank_name_, const String program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
-    if( not ignore_warnings_ )
-    {
-        ask_and_save_if_changed();
-    }
-
     bool success = false;
     File program_file = get_program_file( bank_name_, program_name_ );
     // last_bank = bank_name_;
@@ -3166,12 +3187,25 @@ void MoniqueSynthData::load_default() noexcept
 {
     ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::INITER_mlprog );
     read_from( xml );
+    alternative_program_name = "DEFAULT";
 }
 // ==============================================================================
 void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
 {
     if( xml_ )
     {
+        // REPLACE ARP OTIONS
+        {
+            if( keep_arp_always_on )
+            {
+                arp_sequencer_data->is_on = true;
+            }
+            if( keep_arp_always_off )
+            {
+                arp_sequencer_data->is_on = false;
+            }
+        }
+
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
             write_parameter_to_file( *xml_, saveable_parameters.getUnchecked(i) );
@@ -3246,31 +3280,53 @@ void MoniqueSynthData::save_settings() const noexcept
         {
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
+
+#ifdef IS_STANDALONE
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
+#endif
 
         ui_look_and_feel->colours.save_to( &xml );
 
         xml.writeToFile(settings_session_file,"");
     }
 }
-void MoniqueSynthData::ask_and_save_if_changed() noexcept
+void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
 {
     // CHECK FOR CHANGES FIRST
     for( int i = 0 ; i != saveable_backups.size() ; ++i )
     {
         if( saveable_backups.getUnchecked(i) != saveable_parameters.getUnchecked(i)->get_value() )
         {
-            bool success = AlertWindow::showNativeDialogBox
-            (
-                "CURRENT PROJECT CHANGED!",
-                String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
-                true
-            );
+            const bool is_restored_programm = alternative_program_name.startsWith("0RIGINAL WAS: ");
 
-            if( success )
+            int success = 0;
+            // - 0 if the third button was pressed (normally used for 'cancel')
+            // - 1 if the first button was pressed (normally used for 'yes')
+            // - 2 if the middle button was pressed (normally used for 'no')
+            if( !is_restored_programm )
+            {
+                success = AlertWindow::showYesNoCancelBox
+                (
+                    AlertWindow::AlertIconType::QuestionIcon,
+                    "CURRENT PROJECT CHANGED!",
+                    String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
+                    "YES",
+                    "CREATE A BACKUP (_backup)",
+                    "NO, CHANCEL"
+                );
+            }
+
+            if( success == 1 )
             {
                 write2file( last_bank, last_program );
+            }
+            else if( success == 0 )
+            {
+            }
+            else if( success == 2 )
+            {
+                create_new( last_program + String("_backup") );
             }
 
             break;
@@ -3334,3 +3390,6 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
+
+

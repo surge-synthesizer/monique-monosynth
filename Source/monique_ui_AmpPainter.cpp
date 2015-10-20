@@ -744,6 +744,7 @@ COLD void EndlessSwitchBuffer::sample_rate_changed( double /* old_sr_ */ ) noexc
     current_size = sample_rate * 2 + block_size;
     sample_buffer.setSize( current_size );
     switch_buffer.setSize( current_size );
+    FloatVectorOperations::fill( switch_buffer.getWritePointer(), true, current_size );
 }
 COLD void EndlessSwitchBuffer::block_size_changed() noexcept
 {

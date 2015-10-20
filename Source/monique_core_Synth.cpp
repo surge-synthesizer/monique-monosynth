@@ -53,7 +53,7 @@ RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
                  max_value( param_to_smooth_->get_info().max_value ),
                  min_value( param_to_smooth_->get_info().min_value ),
 
-                 last_value(param_to_smooth_->get_value()),
+                 last_value(0), // TO ENSURE START ON A SILENT STAGE
                  last_target(-99),
                  difference_per_sample(0),
                  samples_left(0),
@@ -2930,8 +2930,8 @@ public:
             oldy1 = y1;
             oldy2 = y2;
             oldy3 = y3;
-	    
-	    input_and_worker_ = input_and_worker_-y4;
+
+            input_and_worker_ = input_and_worker_-y4;
         }
 
         return hard_clipper_1(input_and_worker_);
@@ -4970,7 +4970,7 @@ public:
             else
 #endif
             {
-                step = mono_floor(steps_per_sample*sync_sample_pos)+1; // +1 for future processing
+                step = mono_floor(steps_per_sample*sync_sample_pos); //+1; // +1 for future processing
             }
 
             --shuffle_to_back_counter;
@@ -4980,9 +4980,13 @@ public:
                 next_step_on_hold = step;
 
                 if( current_step % 2 == 0 )
+		{
                     shuffle_to_back_counter = mono_floor(samples_per_step * ArpSequencerData::shuffle_to_value( data->shuffle ));
+		}
                 else
+		{
                     shuffle_to_back_counter = 0;
+		}
 
                 found_a_step = true;
             }
@@ -5004,6 +5008,11 @@ public:
     inline int get_current_step() const noexcept
     {
         return current_step % SUM_ENV_ARP_STEPS;
+    }
+    inline void reset_current_step() noexcept
+    {
+        current_step = 0;
+        step_at_sample_current_buffer = 0;
     }
     inline int get_step_before() const noexcept
     {
@@ -5161,9 +5170,13 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
     current_velocity = velocity_;
 
     // OSCS
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on;
-    float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
 
+    float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     float note = current_note+arp_offset+pitch_offset;
     master_osc->update( note );
     second_osc->update( note );
@@ -5189,11 +5202,21 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
         }
         eq_processor->start_attack();
         fx_processor->start_attack();
+
+        if( is_arp_on )
+        {
+           // an_arp_note_is_already_running = true;
+        }
     }
 }
 void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 {
-    if( not synth_data->arp_sequencer_data->is_on )
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
+    if( not is_arp_on )
     {
         if( allowTailOff )
         {
@@ -5210,7 +5233,12 @@ void MoniqueSynthesiserVoice::stop_arp() noexcept
 {
     arp_info.current_note = -1;
     sample_position_for_restart_arp = -1;
-    if( synth_data->arp_sequencer_data->is_on )
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
+    if( is_arp_on )
     {
         arp_info.current_note = current_note;
         arp_info.current_velocity = current_velocity;
@@ -5248,7 +5276,12 @@ void MoniqueSynthesiserVoice::stop_internal() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 {
-    if( not synth_data->arp_sequencer_data->is_on and fx_processor->final_env->get_current_stage() == END_ENV )
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
+    if( not is_arp_on and fx_processor->final_env->get_current_stage() == END_ENV )
     {
         const float last_out_average = fx_processor->last_output_smoother.get_average();
         if( last_out_average < 0.0000001f and last_out_average > -0.0000001f )
@@ -5295,7 +5328,11 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     int counted_samples = num_samples_;
     bool is_a_step = false;
     const bool connect = synth_data->arp_sequencer_data->connect;
-    const bool arp_is_on = synth_data->arp_sequencer_data->is_on;
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
     while( counted_samples > 0 )
     {
         // SEARCH FOR STEPS (16ths) IN THE CURRENT BUFFER RANGE
@@ -5321,13 +5358,13 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         // HANDLE RETIGGERS
         is_a_step = arp_sequencer->found_last_process_a_step();
         bool is_step_enabled = arp_sequencer->last_found_step_is_enabled();
-        if ( is_a_step and an_arp_note_is_already_running and ( not connect or not arp_is_on or not is_step_enabled ) )
+        if ( is_a_step and an_arp_note_is_already_running and ( not connect or not is_arp_on or not is_step_enabled ) )
         {
             stop_internal();
             an_arp_note_is_already_running = false;
         }
 
-        const bool is_a_new_arp_step_to_start = (arp_is_on and is_a_step and is_step_enabled);
+        const bool is_a_new_arp_step_to_start = (is_arp_on and is_a_step and is_step_enabled);
         if( is_a_new_arp_step_to_start )
         {
             start_internal( current_note, current_velocity );
@@ -5409,7 +5446,12 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
 
     float velocity_to_use = current_velocity;
-                            if( synth_data->arp_sequencer_data->is_on )
+                            bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+                            if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
+    if( is_arp_on )
     {
         velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_step];
     }
@@ -5435,7 +5477,11 @@ void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
 {
     pitch_offset = (pitch_ > 0x2000 ? 2.0f/0x2000*(pitch_-0x2000) : -2.0f/0x2000*(0x2000-pitch_));
 
-    bool is_arp_on = synth_data->arp_sequencer_data->is_on;
+    bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+    if( synth_data->keep_arp_always_off )
+    {
+        is_arp_on = false;
+    }
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     master_osc->update( current_note+arp_offset+pitch_offset );
     second_osc->update( current_note+arp_offset+pitch_offset );
@@ -5545,7 +5591,7 @@ void MoniqueSynthesizer::handleSoftPedal(int, bool isDown)
 }
 void MoniqueSynthesizer::handleBankSelect (int controllerValue) noexcept
 {
-    synth_data->set_current_bank( jmin(26,controllerValue) );
+    synth_data->set_current_bank( jmin(25,controllerValue) );
 }
 void MoniqueSynthesizer::handleProgramChange (int midiChannel, int programNumber)
 {

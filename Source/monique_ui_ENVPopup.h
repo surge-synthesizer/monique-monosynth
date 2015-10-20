@@ -40,6 +40,7 @@ class ENVData;
 */
 class Monique_Ui_ENVPopup  : public Component,
                              public Monique_Ui_Refreshable,
+                             public DropShadower,
                              public SliderListener,
                              public ButtonListener
 {

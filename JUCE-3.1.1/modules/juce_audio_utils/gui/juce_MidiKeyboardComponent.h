@@ -45,9 +45,9 @@
     @see MidiKeyboardState
 */
 class JUCE_API  MidiKeyboardComponent  : public Component,
-                                         public MidiKeyboardStateListener,
-                                         public ChangeBroadcaster,
-                                         private Timer
+    public MidiKeyboardStateListener,
+    public ChangeBroadcaster,
+    private Timer
 {
 public:
     //==============================================================================
@@ -71,6 +71,16 @@ public:
 
     /** Destructor. */
     ~MidiKeyboardComponent();
+
+    // HACK
+    void setRootNote (int note)
+    {
+        if( root_note != note )
+        {
+            root_note = note;
+            repaint();
+        }
+    }
 
     //==============================================================================
     /** Changes the velocity used in midi note-on messages that are triggered by clicking
@@ -98,7 +108,9 @@ public:
     /** Returns the midi channel that the keyboard is using for midi messages.
         @see setMidiChannel
     */
-    int getMidiChannel() const noexcept                             { return midiChannel; }
+    int getMidiChannel() const noexcept                             {
+        return midiChannel;
+    }
 
     /** Sets a mask to indicate which incoming midi channels should be represented by
         key movements.
@@ -117,20 +129,26 @@ public:
     /** Returns the current set of midi channels represented by the component.
         This is the value that was set with setMidiChannelsToDisplay().
     */
-    int getMidiChannelsToDisplay() const noexcept                   { return midiInChannelMask; }
+    int getMidiChannelsToDisplay() const noexcept                   {
+        return midiInChannelMask;
+    }
 
     //==============================================================================
     /** Changes the width used to draw the white keys. */
     void setKeyWidth (float widthInPixels);
 
     /** Returns the width that was set by setKeyWidth(). */
-    float getKeyWidth() const noexcept                              { return keyWidth; }
+    float getKeyWidth() const noexcept                              {
+        return keyWidth;
+    }
 
     /** Changes the keyboard's current direction. */
     void setOrientation (Orientation newOrientation);
 
     /** Returns the keyboard's current direction. */
-    Orientation getOrientation() const noexcept                     { return orientation; }
+    Orientation getOrientation() const noexcept                     {
+        return orientation;
+    }
 
     /** Sets the range of midi notes that the keyboard will be limited to.
 
@@ -145,12 +163,16 @@ public:
     /** Returns the first note in the available range.
         @see setAvailableRange
     */
-    int getRangeStart() const noexcept                              { return rangeStart; }
+    int getRangeStart() const noexcept                              {
+        return rangeStart;
+    }
 
     /** Returns the last note in the available range.
         @see setAvailableRange
     */
-    int getRangeEnd() const noexcept                                { return rangeEnd; }
+    int getRangeEnd() const noexcept                                {
+        return rangeEnd;
+    }
 
     /** If the keyboard extends beyond the size of the component, this will scroll
         it to show the given key at the start.
@@ -163,12 +185,16 @@ public:
     /** Returns the number of the first key shown in the component.
         @see setLowestVisibleKey
     */
-    int getLowestVisibleKey() const noexcept                        { return (int) firstKey; }
+    int getLowestVisibleKey() const noexcept                        {
+        return (int) firstKey;
+    }
 
     /** Returns the length of the black notes.
         This will be their vertical or horizontal length, depending on the keyboard's orientation.
     */
-    int getBlackNoteLength() const noexcept                         { return blackNoteLength; }
+    int getBlackNoteLength() const noexcept                         {
+        return blackNoteLength;
+    }
 
     /** If set to true, then scroll buttons will appear at either end of the keyboard
         if there are too many notes to fit them all in the component at once.
@@ -255,7 +281,9 @@ public:
     /** This returns the value set by setOctaveForMiddleC().
         @see setOctaveForMiddleC
     */
-    int getOctaveForMiddleC() const noexcept            { return octaveNumForMiddleC; }
+    int getOctaveForMiddleC() const noexcept            {
+        return octaveNumForMiddleC;
+    }
 
     //==============================================================================
     /** @internal */
@@ -373,6 +401,7 @@ private:
     float keyWidth;
     Orientation orientation;
 
+    int root_note;
     int midiChannel, midiInChannelMask;
     float velocity;
 
