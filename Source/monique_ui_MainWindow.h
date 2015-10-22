@@ -58,11 +58,11 @@ class ENVData;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-    public Monique_Ui_Refreshable,
-    public ButtonListener,
-    public ComboBoxListener,
-    public SliderListener,
-    public AsyncUpdater
+                               public Monique_Ui_Refreshable,
+                               public AsyncUpdater,
+                               public ButtonListener,
+                               public ComboBoxListener,
+                               public SliderListener
 {
 public:
     //==============================================================================
@@ -277,11 +277,8 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_input_12;
     ScopedPointer<Monique_Ui_DualSlider> flt_input_13;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_1;
-    ScopedPointer<Monique_Ui_DualSlider> flt_gain_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_2;
-    ScopedPointer<Monique_Ui_DualSlider> flt_gain_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_3;
-    ScopedPointer<Monique_Ui_DualSlider> flt_gain_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_volume_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_volume_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_volume_3;
@@ -371,6 +368,9 @@ private:
     ScopedPointer<TextButton> button_show_active_input_r_3_1;
     ScopedPointer<TextButton> button_show_active_input_l_3_1;
     ScopedPointer<TextButton> button_programm_rename;
+    ScopedPointer<Monique_Ui_DualSlider> flt_shape_1;
+    ScopedPointer<Monique_Ui_DualSlider> flt_shape_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_shape_3;
 
 
     //==============================================================================

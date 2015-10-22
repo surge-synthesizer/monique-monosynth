@@ -712,7 +712,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         if( not fm_freq->midi_control->get_ctrl_mode() )
         {
-            return String( auto_round(fm_freq->get_value()*6 +2.1) );
+            return String( auto_round(fm_freq->get_value()*7 +1.01) );
         }
         else
         {
@@ -2054,6 +2054,146 @@ public:
 
     JUCE_LEAK_DETECTOR (FReleaseSlConfig)
 };
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class FShapeSlConfig : public ModulationSliderConfigBase
+{
+    Parameter*const shape;
+
+    const bool is_main_adsr;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+        return true;
+    }
+    */
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    Parameter* get_front_parameter_base() const noexcept override
+    {
+        return shape;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    /*
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+    return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    Parameter* get_back_parameter_base() const noexcept override
+    {
+    return max_decay_time;
+    }
+    */
+
+    //==============================================================================
+    // TOP BUTTON
+    /*
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+    return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    }
+    BoolParameter* get_top_button_parameter_base() const noexcept override
+    {
+    return nullptr;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+    return "";
+    }
+    float get_top_button_amp() const noexcept override
+    {
+    return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "SHAPE";
+    }
+    /*
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+    return "MAX T(ms)";
+    }
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return SHOW_OWN_VALUE;
+    }
+    String get_center_value() const noexcept override
+    {
+        return String(auto_round( shape->get_value() * 100 ));
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "/\\";
+    }
+    /*
+    float get_label_edit_value( float entered_value_ ) const noexcept override
+    {
+        return entered_value_/10000;
+    }
+    */
+
+    //==============================================================================
+    // TOOLTIP
+    TOP_SLIDER_DESCIPTION_2_CASE
+    (
+        ""
+
+        ,
+
+        ""
+
+        ,
+
+        is_main_adsr
+    )
+
+public:
+    FShapeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : shape( &synth_data_->filter_datas[id_]->env_data->shape ), is_main_adsr(false) {}
+    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
+
+    JUCE_LEAK_DETECTOR (FShapeSlConfig)
+};
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -2385,6 +2525,7 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
 {
     Parameter*const cutoff;
     BoolParameter*const modulate_cutoff;
+    IntParameter*const filter_type;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2468,20 +2609,39 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        if( not cutoff->midi_control->get_ctrl_mode() )
+        {
+            if( filter_type->get_value() == LPF )
+            {
+                return String( auto_round( 965.0f * cutoff->get_value() + MIN_CUTOFF ) );
+            }
+            else
+            {
+                return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
+            }
+        }
+        else
+        {
+            return String( auto_round( cutoff->get_modulation_amount()*100 ) );
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( not cutoff->midi_control->get_ctrl_mode() )
+        {
+            return "Hz";
+        }
+        else
+        {
+            return "%";
+        }
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -2510,7 +2670,8 @@ public:
     FCutoffSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         cutoff( &synth_data_->filter_datas[id_]->cutoff ),
-        modulate_cutoff( &synth_data_->filter_datas[id_]->modulate_cutoff )
+        modulate_cutoff( &synth_data_->filter_datas[id_]->modulate_cutoff ),
+        filter_type( &synth_data_->filter_datas[id_]->filter_type )
     {}
 
     JUCE_LEAK_DETECTOR (FCutoffSLConfig)
@@ -2658,149 +2819,7 @@ public:
 
     JUCE_LEAK_DETECTOR (FResonanceSLConfig)
 };
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class FGainSLConfig : public ModulationSliderConfigBase
-{
-    Parameter*const gain;
-    BoolParameter*const modulate_gain;
 
-    //==============================================================================
-    // BASIC SLIDER TYPE
-    /*
-    bool get_is_linear() const noexcept override
-    {
-    return false;
-    }
-    */
-
-    //==============================================================================
-    // FRONT SLIDER
-    SLIDER_STYLES get_front_slider_style() const noexcept override
-    {
-        return VALUE_SLIDER;
-    }
-    Parameter* get_front_parameter_base() const noexcept override
-    {
-        return gain;
-    }
-    /*
-    int get_override_front_min_value() const noexcept override
-    {
-    return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    int get_override_front_max_value() const noexcept override
-    {
-    return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    */
-
-    //==============================================================================
-    // BACK SLIDER
-    SLIDER_STYLES get_back_slider_style() const noexcept override
-    {
-        return MODULATION_SLIDER;
-    }
-    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    Parameter* get_back_parameter_base() const noexcept override
-    {
-        return gain;
-    }
-
-    //==============================================================================
-    // TOP BUTTON
-    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
-    {
-        return TOP_BUTTON_IS_MODULATOR;
-    }
-    BoolParameter* get_top_button_parameter_base() const noexcept override
-    {
-        return modulate_gain;
-    }
-    StringRef get_top_button_text() const noexcept override
-    {
-        return "X-MOD";
-    }
-    /*
-    float get_top_button_amp() const noexcept override
-    {
-    return NO_TOP_BUTTON_AMP;
-    }
-    */
-
-    //==============================================================================
-    // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override
-    {
-        return "GAIN";
-    }
-    StringRef get_bottom_button_switch_text() const noexcept override
-    {
-        return "MOD %";
-    }
-    /*
-    bool get_is_bottom_button_text_dynamic() const noexcept override
-    {
-    return false;
-    }
-    */
-
-    //==============================================================================
-    // CENTER LABEL
-    /*
-    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
-    {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
-    }
-    String get_center_value() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_center_suffix() const noexcept override
-    {
-    return "";
-    }
-    */
-
-    //==============================================================================
-    // TOOLTIP
-    TOP_SLIDER_DESCIPTION
-    (
-        "Define the filter gain (boost the frequencys below the cutoff (LOW PASS), above the cutoff (HIGH PASS), close to the cutoff (BAND PASS) ).\n"
-        "(Has no effect if 'PASS' as filter type is selected)"
-    )
-    TOP_BUTTON_DESCRIPTION
-    (
-        "Turns gain modulation by ENVELOPE-LFO-MIX (MOD-MIX) on or off."
-    )
-    BOTTOM_BUTTON_DIALS
-    (
-        "GAIN",
-        "GAIN MODULATION POWER"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the gain modulation power relative to the defined gain (front).\n"
-        NO_MOD_EFFECT
-        GENERAL_MOD_EXAMPLE
-    )
-
-public:
-    FGainSLConfig( MoniqueSynthData*const synth_data_, int id_ )
-        :
-        gain( &synth_data_->filter_datas[id_]->gain ),
-        modulate_gain( &synth_data_->filter_datas[id_]->modulate_gain )
-    {}
-
-    JUCE_LEAK_DETECTOR (FGainSLConfig)
-};
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -3178,11 +3197,11 @@ class BPMSlConfig : public ModulationSliderConfigBase
 #ifdef IS_STANDALONE
         if( runtime_info->is_extern_synced )
         {
-            value += String(" EXT");
+            value = value + String(" EXT");
         }
         else
         {
-            value += String(" BPM");
+            value = value + String(" BPM");
         }
 #else
         value += String(" BPM");
@@ -3198,7 +3217,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     */
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return true;
+        return false;
     }
 
     //==============================================================================
@@ -3226,7 +3245,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
         "(PLUGIN: has no effect if SYNC is turned on)\n"
         "(STANALONE: has no effect if SYNC is turned on and a MIDI clock is continuously received)\n"
         "\n"
-        "Affected: ARPEGGIATOR"
+        "Affected: ARPEGGIATOR, LFO's if slow (speed is defined in note durations)"
     )
     TOP_BUTTON_DESCRIPTION
     (
@@ -4948,30 +4967,30 @@ class ShuffleConfig : public ModulationSliderConfigBase
     StringRef get_top_button_option_param_a_tool_tip() const noexcept override
     {
         return "Keeps the arpeggiator always on.\n"
-	"\n"
-	"If enabled the defined ARP ON state will be ignored and the arpeggiator is always ON by force!\n"
-	"If you save a program and this option is turned on the program will be stored with ARP ON, else it uses the current ARP ON state.\n"
-	"\n"
-	"IMPORTANT NOTES:\n"
-	"****************\n"
-	"This is a runtime parameter and is always turned off at application start.\n"
-	"If you change the ARP ON state on the main user interface will turning off this this option.\n"
-	;
+               "\n"
+               "If enabled the defined ARP ON state will be ignored and the arpeggiator is always ON by force!\n"
+               "If you save a program and this option is turned on the program will be stored with ARP ON, else it uses the current ARP ON state.\n"
+               "\n"
+               "IMPORTANT NOTES:\n"
+               "****************\n"
+               "This is a runtime parameter and is always turned off at application start.\n"
+               "If you change the ARP ON state on the main user interface will turning off this this option.\n"
+               ;
     }
     StringRef get_top_button_option_param_b_tool_tip() const noexcept override
     {
         return "Keeps the arpeggiator always off.\n"
-	"\n"
-	"If enabled the defined ARP ON state will be ignored and the arpeggiator is always OFF by force!\n"
-	"If you save a program and this option is turned on the program will be stored with ARP OFF, else it uses the current ARP ON state.\n"
-	"\n"
-	"IMPORTANT NOTES:\n"
-	"****************\n"
-	"This is a runtime parameter and is always turned off at application start.\n"
-	"If you change the ARP ON state on the main user interface will turning off this this option.\n"
-	;
+               "\n"
+               "If enabled the defined ARP ON state will be ignored and the arpeggiator is always OFF by force!\n"
+               "If you save a program and this option is turned on the program will be stored with ARP OFF, else it uses the current ARP ON state.\n"
+               "\n"
+               "IMPORTANT NOTES:\n"
+               "****************\n"
+               "This is a runtime parameter and is always turned off at application start.\n"
+               "If you change the ARP ON state on the main user interface will turning off this this option.\n"
+               ;
     }
-    
+
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -5578,6 +5597,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

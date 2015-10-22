@@ -35,6 +35,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
 {
     //[Constructor_pre] You can add your own custom stuff here..
     is_currently_painting = false;
+    current_buffer_start_pos = 0;
 
     eq_values = new EndlessBuffer( synth_data_->runtime_notifyer );
     values_env = new EndlessBuffer( synth_data_->runtime_notifyer );

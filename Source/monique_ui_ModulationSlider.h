@@ -313,9 +313,10 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     bool is_in_ctrl_view() const;
-    void set_ctrl_view_mode( bool mode_ ) const;
+    void set_ctrl_view_mode( bool mode_ );
     void show_view_mode();
     void update_return_values() noexcept;
+    bool force_repaint;
 
     Parameter* get_front_parameter() noexcept { return front_parameter; }
 

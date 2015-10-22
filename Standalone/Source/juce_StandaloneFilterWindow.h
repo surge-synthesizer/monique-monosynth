@@ -41,7 +41,7 @@ private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
     Monique_Ui_Mainwindow* main_window;
-    
+
     COLD void deleteFilter() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow)

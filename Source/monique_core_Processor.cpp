@@ -6,6 +6,7 @@
 #include "monique_ui_MainWindow.h"
 #include "monique_ui_SegmentedMeter.h"
 #include "monique_ui_Refresher.h"
+#include "monique_ui_AmpPainter.h"
 
 //==============================================================================
 //==============================================================================
@@ -254,6 +255,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          stored_note(-1),
                          stored_velocity(0)
 {
+    SHARED::getInstance()->num_instances++;
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
 #endif
@@ -273,17 +275,6 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
         note_down_store = new NoteDownStore( synth_data );
     }
-#ifdef IS_STANDALONE
-    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
-    if( audio_is_successful_initalized )
-    {
-        AudioDeviceManager::AudioDeviceSetup setup;
-        getAudioDeviceSetup(setup);
-        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
-        addAudioCallback (&player);
-        player.setProcessor (this);
-    }
-#endif
 
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
     {
@@ -296,6 +287,18 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
     }
 #ifdef IS_PLUGIN
     init_automatable_parameters();
+#endif
+
+#ifdef IS_STANDALONE
+    audio_is_successful_initalized = (mono_AudioDeviceManager::read() == "");
+    if( audio_is_successful_initalized )
+    {
+        AudioDeviceManager::AudioDeviceSetup setup;
+        getAudioDeviceSetup(setup);
+        setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
+        addAudioCallback (&player);
+        player.setProcessor (this);
+    }
 #endif
 }
 
@@ -321,6 +324,14 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 #endif
     synth_data->save_midi();
     synth_data->save_settings();
+
+    SHARED::getInstance()->num_instances--;
+    if( SHARED::getInstance()->num_instances == 0 and SHARED::getInstance()->env_clipboard )
+    {
+        ENVData*env = SHARED::getInstance()->env_clipboard;
+        SHARED::getInstance()->env_clipboard = nullptr;
+        delete env;
+    }
 
     delete synth;
     delete synth_data;
@@ -375,8 +386,10 @@ void MoniqueAudioProcessor::timerCallback()
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
-    if( buffer_.getNumChannels() < 2 )
+    if( buffer_.getNumChannels() < 1 )
+    {
         return;
+    }
 
     if( sample_rate != getSampleRate() || getBlockSize() != block_size )
     {
@@ -400,6 +413,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
     current_pos_info.isPlaying = true;
     current_pos_info.isRecording = false;
     current_pos_info.timeInSamples += buffer_.getNumSamples();
+
     {
         {
 #else // PLUGIN
@@ -408,7 +422,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
         {
 #endif
-            if( current_pos_info.timeInSamples + num_samples >= 0 ) //&& current_pos_info.isPlaying )
+            //if( current_pos_info.timeInSamples + num_samples >= 0 ) //&& current_pos_info.isPlaying )
             {
 #ifdef IS_STANDALONE
                 // +++++ SYNC BLOCK EXTERN MIDI
@@ -599,6 +613,10 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                     if( was_playing and not is_playing )
                     {
                         voice->stop_arp();
+                        if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
+                        {
+                            amp_painter->clear_and_keep_minimum();
+                        }
                     }
                     else if( not was_playing and is_playing )
                     {
@@ -763,6 +781,21 @@ void MoniqueAudioProcessor::setParameter( int i_, float percent_ )
     {
         automateable_parameters.getUnchecked(i_-1)->set_modulation_amount( (percent_*2)-1 );
     }
+}
+bool MoniqueAudioProcessor::isMetaParameter (int i_) const
+{
+    Parameter*param = automateable_parameters.getUnchecked(i_);
+    if( ! param )
+    {
+        param = automateable_parameters.getUnchecked(i_-1);
+    }
+
+    if( TYPES_DEF::IS_BOOL != type_of( param) )
+    {
+        return true;
+    }
+
+    return false;
 }
 
 //==============================================================================

@@ -26,11 +26,11 @@
 
 // You can define these strings in your app if you want to override the default names:
 #undef JUCE_ALSA_MIDI_INPUT_NAME
- #define JUCE_ALSA_MIDI_INPUT_NAME  "B-Step Midi Input"
+ #define JUCE_ALSA_MIDI_INPUT_NAME  "Monique MIDI IN"
 //#endif
 
 #undef JUCE_ALSA_MIDI_OUTPUT_NAME
- #define JUCE_ALSA_MIDI_OUTPUT_NAME "B-Step Midi Output"
+ #define JUCE_ALSA_MIDI_OUTPUT_NAME "Monique MIDI OUT"
 //#endif
 
 //==============================================================================

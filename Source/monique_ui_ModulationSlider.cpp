@@ -395,7 +395,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
     //==============================================================================
     // UPDATE SLIDER CENTER LABEL
     {
-        bool is_repaint_required = false;
+        bool is_repaint_required = force_repaint;
+	force_repaint = false;
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always;
         if( slider_value->isVertical() )
         {
@@ -552,13 +553,14 @@ void Monique_Ui_DualSlider::refresh() noexcept
     }
 }
 
-void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ ) const
+void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ )
 {
     front_parameter->midi_control->set_ctrl_mode( mode_ );
     if( back_parameter )
     {
         back_parameter->midi_control->set_ctrl_mode( mode_ );
     }
+    force_repaint = true;
 }
 
 void Monique_Ui_DualSlider::sliderClicked (Slider*s_)
@@ -577,6 +579,7 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
       original_w(60), original_h(130)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    force_repaint = false;
     //[/Constructor_pre]
 
     addAndMakeVisible (button_top = new EventButton (String::empty));

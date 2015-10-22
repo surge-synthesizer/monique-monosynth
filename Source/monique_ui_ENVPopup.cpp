@@ -79,6 +79,8 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         auto_close->setColour (TextButton::buttonColourId, synth_data->auto_close_env_popup ? Colours::yellow : button_off );
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
+
+    past->setEnabled(bool(SHARED::getInstance()->env_clipboard));
 }
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
@@ -688,16 +690,18 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == copy)
     {
         //[UserButtonCode_copy] -- add your button handler code here..
-        env_clipboard = new ENVData( synth_data->smooth_manager, 999);
-        ::copy( env_clipboard, env_data, false );
+        if( not SHARED::getInstance()->env_clipboard )
+        {
+            SHARED::getInstance()->env_clipboard = new ENVData( nullptr, 999);
+        } ::copy( SHARED::getInstance()->env_clipboard, env_data, false );
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
     {
         //[UserButtonCode_past] -- add your button handler code here..
-        if( env_clipboard )
+        if( SHARED::getInstance()->env_clipboard )
         {
-            ::copy( env_data, env_clipboard, false );
+            ::copy( env_data, SHARED::getInstance()->env_clipboard, false );
         }
         //[/UserButtonCode_past]
     }

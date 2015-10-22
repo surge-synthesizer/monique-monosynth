@@ -2,7 +2,7 @@
   ==============================================================================
 
    This file is part of the JUCE library.
-   Copyright (c) 2013 - Raw Material Software Ltd.
+   Copyright (c) 2015 - ROLI Ltd.
 
    Permission is granted to use this software under the terms of either:
    a) the GPL v2 (or any later version)
@@ -38,7 +38,7 @@
 //==============================================================================
 // component resources for Audio Unit
 #define RES_ID          1000
-#define COMP_TYPE       'aumi'
+#define COMP_TYPE       JucePlugin_AUMainType
 #define COMP_SUBTYPE    JucePlugin_AUSubType
 #define COMP_MANUF      JucePlugin_AUManufacturerCode
 #define VERSION         JucePlugin_VersionCode

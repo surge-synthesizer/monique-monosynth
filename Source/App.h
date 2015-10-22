@@ -1,6 +1,7 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+#define JUCE_JACK_CLIENT_NAME "MoniqueJACK"
 
 #define MONO_SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
 
@@ -64,6 +65,10 @@ public:
     COLD void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept;
     inline int get_size() const noexcept {
         return size;
+    }
+    void clear() noexcept
+    {
+       buffer->clear();
     }
 
     //==========================================================================

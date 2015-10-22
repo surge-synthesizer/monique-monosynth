@@ -697,7 +697,9 @@ size( init_buffer_size_ ),
       filter_output_samples( init_buffer_size_ ),
       filter_env_amps( init_buffer_size_ ),
 
-      tmp_buffer( init_buffer_size_ )
+      tmp_buffer( init_buffer_size_ ),
+
+      second_mono_buffer( init_buffer_size_ )
 {
 }
 COLD DataBuffer::~DataBuffer() noexcept {}
@@ -730,6 +732,8 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
         filter_env_amps.setSize(size_);
 
         tmp_buffer.setSize(size_);
+
+        second_mono_buffer.setSize(size_);
     }
 }
 
@@ -1700,9 +1704,11 @@ public:
                     {
                         last_modulator_frequency = modulator_freq;
 
-                        modulator.set_vibrato_frequency( last_frequency*(modulator_freq*6 +2.1) );
+                        float note = root_note + freq_glide_delta*freq_glide_samples_left;
+                        modulator.set_vibrato_frequency( last_frequency+last_frequency*(modulator_freq*6 +1.01) );
 
                         modulator_sync_cylces = mono_floor(modulator_freq*6+1);
+                        //modulator_sync_cylces = modulator_freq*48;
                     }
                 }
 
@@ -2496,6 +2502,10 @@ public:
     inline void reset() noexcept
     {
         current_stage = END_ENV;
+
+        last_sustain = 0;
+        goes_to_sustain = false;
+        is_sustain = false;
         env_osc.reset();
     }
 
@@ -2759,7 +2769,7 @@ inline float AmpSmoother<smooth_samples>::get_current_value() const noexcept
 class AnalogFilter : public RuntimeListener
 {
     friend class DoubleAnalogFilter;
-    float p, k, r, gain;
+    float p, k, r;
     float y1,y2,y3,y4;
     float oldx;
     float oldy1,oldy2,oldy3;
@@ -2772,13 +2782,12 @@ class AnalogFilter : public RuntimeListener
 public:
     //==========================================================================
     // RETURNS TRUE ON COFF CHANGED
-    inline bool update(float resonance_, float cutoff_, float gain_) noexcept
+    inline bool update(float resonance_, float cutoff_) noexcept
     {
         bool success = false;
-        resonance_*=0.8;
-        if( force_update or ( cutoff != cutoff_ || gain != gain_ || res != resonance_ ) )
+        resonance_ = jmax(0.00001f, resonance_*=0.99999);
+        if( force_update or ( cutoff != cutoff_ || res != resonance_ ) )
         {
-            gain = gain_;
             cutoff = cutoff_;
             res = resonance_;
             success = true;
@@ -2787,11 +2796,10 @@ public:
         }
         return success;
     }
-    inline void update_with_calc(float resonance_, float cutoff_, float gain_) noexcept
+    inline void update_with_calc(float resonance_, float cutoff_) noexcept
     {
-        if( force_update or ( cutoff != cutoff_ || gain != gain_ || res != resonance_ ) )
+        if( force_update or ( cutoff != cutoff_ || res != resonance_ ) )
         {
-            gain = gain_;
             cutoff = cutoff_;
             res = resonance_;
             calc_coefficients();
@@ -2808,7 +2816,6 @@ public:
         p = other_.p;
         k = other_.k;
         r = other_.r;
-        gain = other_.gain;
     }
     inline void copy_state_from( const AnalogFilter& other_ ) noexcept
     {
@@ -2821,20 +2828,17 @@ public:
         y3 = other_.y3;
         y4 = other_.y4;
     }
-
+#define MONO_UNDENORMALISE(x)   x += 1.0f; x -= 1.0f;
     //==========================================================================
     inline float processLow(float input_and_worker_) noexcept
     {
-        if( input_and_worker_ == 0 )
+        if( input_and_worker_ != 0 )
         {
-            if( ++zero_counter == 50 )
-            {
-                reset();
-            }
+            zero_counter = 0;
         }
         else
         {
-            zero_counter = 0;
+            ++zero_counter;
         }
 
         if( zero_counter < 50 )
@@ -2843,12 +2847,17 @@ public:
 
             //Four cascaded onepole filters (bilinear transform)
             y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
             y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
             y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
             y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
             //Clipper band limited sigmoid
             y4 -= (y4*y4*y4) /6;
+            //MONO_UNDENORMALISE (y4);
 
             oldx = input_and_worker_;
             oldy1 = y1;
@@ -2862,16 +2871,13 @@ public:
     }
     inline float processLowResonance(float input_and_worker_) noexcept
     {
-        if( input_and_worker_ == 0 )
+        if( input_and_worker_ != 0 )
         {
-            if( ++zero_counter == 50 )
-            {
-                reset();
-            }
+            zero_counter = 0;
         }
         else
         {
-            zero_counter = 0;
+            ++zero_counter;
         }
 
         if( zero_counter < 50 )
@@ -2881,9 +2887,13 @@ public:
 
             //Four cascaded onepole filters (bilinear transform)
             y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
             y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
             y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
             y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
             //Clipper band limited sigmoid
             y4 -= (y4*y4*y4) /6;
@@ -2900,16 +2910,13 @@ public:
     }
     inline float processHighResonance(float input_and_worker_) noexcept
     {
-        if( input_and_worker_ == 0 )
+        if( input_and_worker_ != 0 )
         {
-            if( ++zero_counter == 50 )
-            {
-                reset();
-            }
+            zero_counter = 0;
         }
         else
         {
-            zero_counter = 0;
+            ++zero_counter;
         }
 
         if( zero_counter < 50 )
@@ -2919,9 +2926,13 @@ public:
 
             //Four cascaded onepole filters (bilinear transform)
             y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
             y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
             y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
             y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
             //Clipper band limited sigmoid
             y4 -= (y4*y4*y4) /6;
@@ -2941,21 +2952,26 @@ public:
     inline void reset() noexcept
     {
         y1=y2=y3=y4=oldx=oldy1=oldy2=oldy3=0;
+        zero_counter = 0;
     }
 
     //==========================================================================
     inline void calc_coefficients() noexcept
     {
         {
-            float f = (cutoff+cutoff) * sample_rate_1ths;
-            float agressive = 0.48f*gain;
-            p=f*((1.5f+agressive)-((0.5f+agressive)*f));
+            float f = (cutoff) * sample_rate_1ths;
+            
+	    //float agressive = 0.98f *( 1.0f - res );
+	    //float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
+            //p=f*((1.99f-agressive)-((0.99f-agressive)*f));
+	    p=f*(1.8f-0.8f*f);
             k=p*2-1;
         }
-        {
-            const float t=(1.0f-p)*1.386249f;
+        {    
+	    const float cutoff_power = 1.0f - (0.5 * jmin(1.0f,1.0f/(8000.0f*cutoff)));
+            float t= (1.0f-p)*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
             const float t2=12.0f+t*t;
-            r = res*(t2+6.0f*t)/(t2-6.0f*t);
+            r = res*(t2+6.0f*t)/(t2-6.0f*t) * cutoff_power;
         }
     }
 
@@ -2973,7 +2989,7 @@ public:
 :
     RuntimeListener( notifyer_ ),
 
-                     p(1),k(1),r(1),gain(1),
+                     p(1),k(1),r(1),
                      y1(0),y2(0),y3(0),y4(0),
                      oldx(0),oldy1(0),oldy2(0),oldy3(0),
 
@@ -3007,9 +3023,9 @@ class DoubleAnalogFilter
 public:
     // LP
     //==========================================================================
-    inline void updateLow2Pass(float resonance_, float cutoff_, float gain_) noexcept
+    inline void updateLow2Pass(float resonance_, float cutoff_ ) noexcept
     {
-        if( flt_2.update( resonance_, cutoff_, gain_ ) )
+        if( flt_2.update( resonance_, cutoff_ ) )
         {
             flt_2.calc_coefficients();
             flt_1.copy_coefficient_from( flt_2 );
@@ -3018,22 +3034,21 @@ public:
     inline float processLow2Pass(float in_) noexcept
     {
         const float out = flt_2.processLowResonance( in_ );
-        const float gain = flt_1.gain;
         const float low = flt_1.processLowResonance( out );
 
         return process_filter_change
         (
             in_,
             //(out+low)*(1.0f-gain) + resonance_clipping(out+low)*gain
-            sample_mix(out*(1.0f-gain), sample_mix(out,low)*gain)
+            sample_mix(out,low)
         );
     }
 
     // 1 PASS HP
     //==========================================================================
-    inline void updateHigh2Pass(float resonance_, float cutoff_, float gain_) noexcept
+    inline void updateHigh2Pass(float resonance_, float cutoff_ ) noexcept
     {
-        if( flt_1.update( resonance_, cutoff_, gain_ ) )
+        if( flt_1.update( resonance_, cutoff_ ) )
         {
             flt_1.calc_coefficients();
         }
@@ -3051,12 +3066,12 @@ public:
 
     // BAND
     //==========================================================================
-    inline void updateBand(float resonance_, float cutoff_, float gain_ ) noexcept
+    inline void updateBand(float resonance_, float cutoff_ ) noexcept
     {
-        if( flt_1.update( resonance_, cutoff_+10, gain_ ) )
+        if( flt_1.update( resonance_, cutoff_+10 ) )
         {
             flt_1.calc_coefficients();
-            flt_2.update( resonance_, cutoff_, gain_ );
+            flt_2.update( resonance_, cutoff_ );
             flt_2.calc_coefficients();
         }
     }
@@ -3254,9 +3269,9 @@ public:
             input_envs.getUnchecked(input_id)->reset();
         }
 
-        double_filter[0]->reset();
-        double_filter[1]->reset();
-        double_filter[2]->reset();
+        //double_filter[0]->reset();
+        //double_filter[1]->reset();
+        //double_filter[2]->reset();
     }
 
 private:
@@ -3379,8 +3394,6 @@ public:
 #define DISTORTION_IN(x) distortion__(x,filter_distortion)
 #define DISTORTION_OUT(x) distortion__(x,filter_distortion)
 
-#define MAX_CUTOFF 8000.0f
-#define MIN_CUTOFF 40.0f
 
             // PREPARE
             {
@@ -3388,7 +3401,6 @@ public:
 
                 filter_data->resonance_smoother.process_modulation( filter_data->modulate_resonance, amp_mix, num_samples );
                 filter_data->cutoff_smoother.process_modulation( filter_data->modulate_cutoff, amp_mix, num_samples );
-                filter_data->gain_smoother.process_modulation( filter_data->modulate_gain, amp_mix, num_samples );
                 filter_data->distortion_smoother.process_modulation( filter_data->modulate_distortion, amp_mix, num_samples );
                 filter_data->pan_smoother.process_modulation( filter_data->modulate_pan, amp_mix, num_samples );
             }
@@ -3412,7 +3424,6 @@ public:
 
                     const float* const tmp_resonance_buffer;
                     const float* const tmp_cuttof_buffer;
-                    const float* const tmp_gain_buffer;
                     const float* const tmp_distortion_buffer;
 
                     const float* const input_buffer;
@@ -3426,11 +3437,20 @@ public:
                         for( int sid = 0 ; sid != num_samples_ ; ++sid )
                         {
                             const float filter_distortion = tmp_distortion_buffer[sid];
+
+                            /*
+                                        filter.updateLow2Pass
+                                        (
+                                            tmp_resonance_buffer[sid],
+                                            ( (10180.0f * tmp_cuttof_buffer[sid]) +20 ),
+                                            tmp_gain_buffer[sid]
+                                        );
+                                        */
+
                             filter.updateLow2Pass
                             (
                                 tmp_resonance_buffer[sid],
-                                ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF) * (1.0f/8)) +35 ),
-                                tmp_gain_buffer[sid]
+                                ( ((965.0f * tmp_cuttof_buffer[sid]) /* * (1.0f/8)*/) +MIN_CUTOFF )
                             );
                             out_buffer[sid] = DISTORTION_OUT( filter.processLow2Pass( DISTORTION_IN( input_buffer[sid] ) ) );
                         }
@@ -3445,7 +3465,6 @@ public:
 
                                  tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
@@ -3480,7 +3499,6 @@ public:
 
                     const float* const tmp_resonance_buffer;
                     const float* const tmp_cuttof_buffer;
-                    const float* const tmp_gain_buffer;
                     const float* const tmp_distortion_buffer;
 
                     const float* const input_buffer;
@@ -3497,8 +3515,7 @@ public:
                             filter.updateHigh2Pass
                             (
                                 tmp_resonance_buffer[sid],
-                                ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF)) +35 ),
-                                tmp_gain_buffer[sid]
+                                ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid])) + MIN_CUTOFF )
                             );
                             out_buffer[sid] = DISTORTION_OUT( filter.processHigh2Pass( DISTORTION_IN( input_buffer[sid] ) ) );
                         }
@@ -3513,7 +3530,6 @@ public:
 
                                  tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
@@ -3547,7 +3563,6 @@ public:
 
                     const float* const tmp_resonance_buffer;
                     const float* const tmp_cuttof_buffer;
-                    const float* const tmp_gain_buffer;
                     const float* const tmp_distortion_buffer;
 
                     const float* const input_buffer;
@@ -3565,8 +3580,7 @@ public:
                             filter.updateBand
                             (
                                 tmp_resonance_buffer[sid],
-                                ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] + MIN_CUTOFF)) +35 ),
-                                tmp_gain_buffer[sid]
+                                ( ((MAX_CUTOFF * tmp_cuttof_buffer[sid] )) + MIN_CUTOFF )
                             );
                             out_buffer[sid] = DISTORTION_OUT( filter.processBand( DISTORTION_IN( input_buffer[sid] ) ) );
                         }
@@ -3581,7 +3595,6 @@ public:
 
                                  tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
@@ -3613,7 +3626,6 @@ public:
                     const int input_id;
                     const int num_samples_;
 
-                    const float* const tmp_gain_buffer;
                     const float* const tmp_distortion_buffer;
 
                     const float* const input_buffer;
@@ -3639,7 +3651,6 @@ public:
                                  input_id(input_id_),
                                  num_samples_(num_samples__),
 
-                                 tmp_gain_buffer( processor_->filter_data->gain_smoother.get_smoothed_modulated_buffer() ),
                                  tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
@@ -3909,7 +3920,7 @@ public:
                         const float shape = smoothed_shape_buffer[sid];
                         const float amp = env_buffer[sid];
                         const float in = filter_in_samples[sid] * amp;
-                        filter.update_with_calc( shape*0.8f, filter_frequency, 0 );
+                        filter.update_with_calc( shape*0.8f, filter_frequency );
                         float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
                         band_out_buffer[sid] = output*4;
                     }
@@ -4175,55 +4186,69 @@ public:
     //==============================================================================
     inline void fill(float sample_) noexcept
     {
-        index = index % buffer_size;
         buffer[index] = sample_;
-        index++;
+        if( ++index >= buffer_size )
+        {
+            index = 0;
+        }
     }
 #define DELAY_GLIDE 0.01f
-    inline float tick(float delay_ ) noexcept
+    inline float tick( float delay_ ) noexcept
     {
         if( delay_ < last_delay - DELAY_GLIDE)
+        {
             delay_ = last_delay - DELAY_GLIDE;
+        }
         else if( delay_ > last_delay + DELAY_GLIDE )
+        {
             delay_ = last_delay + DELAY_GLIDE;
-
+        }
         last_delay = delay_;
 
         float i = float(index) - delay_;
         if(i >= buffer_size)
+        {
             i -= buffer_size;
+        }
         else if(i < 0)
+        {
             i += buffer_size;
+        }
 
-        int ia = mono_floor(i);
+        // will be same as i or less
+        int ia = std::floor(i);
         if (ia >= buffer_size)
+        {
             ia = 0;
+        }
+        const float delta = i-ia;
+        // will be same as i or one more
         int ib = ia + 1;
         if (ib >= buffer_size)
+        {
             ib = 0;
+        }
 
-        float delta = i-ia;
-        if( delta > 1 )
-            delta = 0;
         return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
     }
     inline void reset() noexcept
     {
         index = 0;
-        last_delay = 210;
         sample_rate_changed(0);
     }
     //==============================================================================
     COLD void sample_rate_changed( double ) noexcept override
     {
-        buffer_size = sample_rate/10;
-        if( buffer )
-            delete[] buffer;
-        buffer = new float[buffer_size];
-        for( int i = 0 ; i != buffer_size ; ++i )
+        if( buffer_size != int(sample_rate/10) )
         {
-            buffer[i] = 0;
+            buffer_size = int(sample_rate/10);
+            if( buffer )
+            {
+                delete[] buffer;
+            }
+            buffer = new float[buffer_size];
         }
+        FloatVectorOperations::clear( buffer, buffer_size );
     }
 
 public:
@@ -4411,7 +4436,7 @@ public:
     //==============================================================================
     COLD void reset (float sampleRate, float fadeLengthSeconds) noexcept
     {
-        stepsToTarget = mono_floor (fadeLengthSeconds * sampleRate);
+        stepsToTarget = std::floor (fadeLengthSeconds * sampleRate);
         currentValue = target;
         countdown = 0;
     }
@@ -4541,10 +4566,14 @@ public:
     COLD void reset() noexcept
     {
         for (int i = 0; i < numCombs; ++i)
+        {
             comb[i].clear();
+        }
 
         for (int i = 0; i < numAllPasses; ++i)
+        {
             allPass[i].clear();
+        }
     }
 
 public:
@@ -4570,6 +4599,42 @@ COLD mono_Reverb( RuntimeNotifyer*const notifyer_ ) noexcept :
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class ZeroInCounter
+{
+    int count_zeros;
+
+public:
+    //==============================================================================
+    void add(float value) noexcept
+    {
+        if( value > -0.0001 and value < 0.0001 )
+        {
+            count_zeros++;
+        }
+        else
+        {
+            count_zeros = 0;
+        }
+    }
+
+    int get_num_zeros() const noexcept
+    {
+        return count_zeros;
+    }
+
+    void reset() noexcept
+    {
+        count_zeros = 0;
+    }
+
+public:
+    //==============================================================================
+COLD ZeroInCounter() noexcept :
+    count_zeros(0) { }
+    COLD ~ZeroInCounter() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroInCounter)
+};
 class FXProcessor
 {
     mono_ThreadManager*const thread_manager;
@@ -4595,7 +4660,7 @@ class FXProcessor
 
 public:
     Smoother velocity_smoother;
-    Smoother last_output_smoother;
+    ZeroInCounter last_output_smoother;
 
 private:
     const MoniqueSynthData*const synth_data;
@@ -4665,6 +4730,8 @@ public:
             // CHORUS
             const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_buffer() );
             const float* const smoothed_bypass = synth_data->effect_bypass_smoother.get_smoothed_buffer();
+            const float max_chorus_delay_power_left = chorus_l.get_sample_rate() * (1.0f/200.454545455f);
+            const float max_chorus_delay_power_right  = chorus_l.get_sample_rate() * (1.0f/220.5f);
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 const float in_l = left_input_buffer[sid];
@@ -4673,10 +4740,12 @@ public:
                 const float modulation_amp = chorus_env_buffer[sid];
                 const float feedback = modulation_amp*0.85f;
 
-                float tmp_sample_l  = chorus_l.tick((modulation_amp * 220) + 1.51f);
-                float tmp_sample_r = chorus_r.tick((modulation_amp * 200) + 1.56f);
+                float tmp_sample_l  = chorus_l.tick((modulation_amp * max_chorus_delay_power_left) + 1.51f);
+                float tmp_sample_r = chorus_r.tick((modulation_amp * max_chorus_delay_power_right) + 1.56f);
                 chorus_l.fill( sample_mix (in_l, tmp_sample_r * feedback ) );
                 chorus_r.fill( sample_mix (in_r, tmp_sample_l * feedback ) );
+                //chorus_l.fill( in_l, tmp_sample_r * feedback ) );
+                //chorus_r.fill( in_r, tmp_sample_l * feedback ) );
 
                 const float bypass = smoothed_bypass[sid];
                 left_input_buffer[sid] = sample_mix(tmp_sample_l*bypass, in_l*(1.0f-bypass));
@@ -4741,7 +4810,6 @@ public:
                         const float bypass = smoothed_bypass[sid];
                         sample = sample_mix(processor->reverb_r.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
                         final_output[sid] = sample;
-                        processor->last_output_smoother.add( sample );
                     }
                     processor->delayPosition = delay_pos;
                 }
@@ -4786,6 +4854,7 @@ public:
                                            ) ;
             left_executer.try_run_paralel();
 
+            const bool is_stereo = output_buffer_.getNumChannels() > 1;
             {
                 LeftRightExecuter right_executer
                 (
@@ -4798,7 +4867,7 @@ public:
 
                     delayBuffer.getWritePointer (RIGHT),
 
-                    &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_]
+                    is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer()
                 ) ;
                 right_executer.exec_right();
             }
@@ -4808,13 +4877,25 @@ public:
             {
                 const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
                 float*const left_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
-                float*const right_buffer = &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_];
-                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                float*const right_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
+                if( is_stereo )
                 {
-                    const float volume = smoothed_volume_buffer[sid];
-
-                    left_buffer[sid] *= volume*2;
-                    right_buffer[sid] *= volume*2;
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        last_output_smoother.add( left_buffer[sid]*right_buffer[sid] );
+                        const float volume = smoothed_volume_buffer[sid];
+                        left_buffer[sid] *= volume*2;
+                        right_buffer[sid] *= volume*2;
+                    }
+                }
+                else
+                {
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        last_output_smoother.add( left_buffer[sid]*right_buffer[sid] );
+                        const float volume = smoothed_volume_buffer[sid];
+                        left_buffer[sid] *= sample_mix(left_buffer[sid]* volume*2, right_buffer[sid]* volume*2);
+                    }
                 }
 
                 // VISUALIZE BEFORE FONAL OUT
@@ -4823,14 +4904,22 @@ public:
                     ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
                     meter->process( left_buffer, num_samples_ );
                 }
-
-                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                if( is_stereo )
                 {
-                    const float volume = smoothed_volume_buffer[sid];
-
-                    left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
-                    right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
+                        right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
+                    }
                 }
+                else
+                {
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
+                    }
+                }
+
                 // VISUALIZE
                 if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
                 {
@@ -4844,6 +4933,8 @@ public:
     //==========================================================================
     void start_attack() noexcept
     {
+        last_output_smoother.reset();
+
         chorus_modulation_env->start_attack();
         final_env->start_attack();
     }
@@ -4866,9 +4957,11 @@ public:
         chorus_r.reset();
         chorus_modulation_env->reset();
         delayPosition = 0;
+        FloatVectorOperations::clear(delayBuffer.getWritePointer(), delayBuffer.get_size());
         final_env->reset();
 
-        last_output_smoother.reset(50);
+        last_output_smoother.reset();
+        velocity_smoother.reset(0);
     }
 
 public:
@@ -4896,7 +4989,7 @@ public:
                    final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
                    velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
-                   last_output_smoother( notifyer_, 50 ),
+                   last_output_smoother(),
 
                    synth_data( synth_data_ ),
                    data_buffer( synth_data_->data_buffer ),
@@ -4971,6 +5064,10 @@ public:
 #endif
             {
                 step = mono_floor(steps_per_sample*sync_sample_pos); //+1; // +1 for future processing
+                if( step < 0 )
+                {
+                    step = 0;
+                }
             }
 
             --shuffle_to_back_counter;
@@ -4980,13 +5077,13 @@ public:
                 next_step_on_hold = step;
 
                 if( current_step % 2 == 0 )
-		{
+                {
                     shuffle_to_back_counter = mono_floor(samples_per_step * ArpSequencerData::shuffle_to_value( data->shuffle ));
-		}
+                }
                 else
-		{
+                {
                     shuffle_to_back_counter = 0;
-		}
+                }
 
                 found_a_step = true;
             }
@@ -5008,11 +5105,6 @@ public:
     inline int get_current_step() const noexcept
     {
         return current_step % SUM_ENV_ARP_STEPS;
-    }
-    inline void reset_current_step() noexcept
-    {
-        current_step = 0;
-        step_at_sample_current_buffer = 0;
     }
     inline int get_step_before() const noexcept
     {
@@ -5205,7 +5297,7 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 
         if( is_arp_on )
         {
-           // an_arp_note_is_already_running = true;
+            // an_arp_note_is_already_running = true;
         }
     }
 }
@@ -5254,6 +5346,8 @@ void MoniqueSynthesiserVoice::restart_arp( int sample_pos_in_buffer_ ) noexcept
     {
         current_note = arp_info.current_note;
         current_velocity = arp_info.current_velocity;
+        arp_info.current_note = -1;
+        arp_info.current_velocity = 0;
         sample_position_for_restart_arp = sample_pos_in_buffer_;
     }
 }
@@ -5281,13 +5375,38 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
     {
         is_arp_on = false;
     }
-    if( not is_arp_on and fx_processor->final_env->get_current_stage() == END_ENV )
+
+    if( fx_processor->final_env->get_current_stage() == END_ENV and not synth_data->audio_processor->amp_painter )
     {
-        const float last_out_average = fx_processor->last_output_smoother.get_average();
-        if( last_out_average < 0.0000001f and last_out_average > -0.0000001f )
+        if( current_note != -1 and not is_arp_on )
         {
-            reset();
+            if( fx_processor->last_output_smoother.get_num_zeros() > master_osc->get_sample_rate()*1.5 )
+            {
+                for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
+                {
+                    filter_processors[voice_id]->reset();
+                }
+                eq_processor->reset();
+                fx_processor->reset();
+
+                //arp_info.current_note = current_note;
+                //arp_info.current_velocity = current_velocity;
+
+                current_note = -1;
+                clearCurrentNote();
+
+                /*
+                        if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
+                        {
+                            amp_painter->clear_and_keep_minimum();
+                        }
+                        */
+            }
         }
+    }
+    else
+    {
+        fx_processor->last_output_smoother.reset();
     }
 }
 
@@ -5333,6 +5452,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     {
         is_arp_on = false;
     }
+
     while( counted_samples > 0 )
     {
         // SEARCH FOR STEPS (16ths) IN THE CURRENT BUFFER RANGE
@@ -5343,12 +5463,24 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         int step_id = arp_sequencer->get_current_step();
 
         // FORCE AN ARP RESTART
-        if( sample_position_for_restart_arp > -1 and step_id == 0 )
+        if( sample_position_for_restart_arp > -1 )
         {
-            start_internal( current_note, current_velocity );
-            an_arp_note_is_already_running = true;
-            sample_position_for_restart_arp = -1;
+            if( step_id == 0 )
+            {
+                start_internal( current_note, current_velocity );
+                an_arp_note_is_already_running = true;
+                sample_position_for_restart_arp = -1;
+            }
         }
+        else if( is_arp_on and current_note == -1 )
+        {
+            //current_note = arp_info.current_note != -1 ? arp_info.current_note : 60+synth_data->note_offset.get_value()-24;
+            //current_velocity = arp_info.current_velocity != 0 ? arp_info.current_velocity : 1;
+
+            current_note = 60+synth_data->note_offset.get_value()-24;
+            current_velocity = 1;
+        }
+
         if( samples_to_next_arp_step_in_this_buffer > 0 )
         {
             render_block( output_buffer_, is_a_step ? step_id : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
@@ -5377,9 +5509,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
-    if( current_note == -1 )
-        return;
-
+    const bool render_anything = current_note != -1 or synth_data->audio_processor->amp_painter;
 
     const int num_samples = num_samples_;
     if( num_samples == 0 )
@@ -5392,6 +5522,11 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         current_step = step_number_;
     }
 
+    if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
+    {
+        amp_painter->calc_new_cycle();
+    }
+
     // SMOOTH PARAMETERS
     synth_data->smooth_manager->smooth(num_samples_, synth_data->glide_motor_time );
 
@@ -5399,8 +5534,11 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         // MAIN THREAD // NO DEPENCIES
         lfos[0]->process( step_number_, start_sample_, num_samples );
-        filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
         master_osc->process( data_buffer, num_samples ); // NEED LFO 0
+        if( render_anything )
+        {
+            filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
+        }
 
         // SUB THREAD
         // DEPENCIES OSC 0
@@ -5412,9 +5550,9 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             const int step_number;
             void exec() noexcept override
             {
-                voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
                 voice->lfos[1]->process( step_number, start_sample, num_samples );
                 voice->second_osc->process( voice->data_buffer, num_samples );
+                voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
             }
             Executer(MoniqueSynthesiserVoice*const voice_,
             int num_samples_,
@@ -5428,35 +5566,47 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                 step_number(step_number_)
             {}
         };
-        Executer executer( this, num_samples, start_sample_, step_number_ );
-        executer.try_run_paralel();
+        if( render_anything )
+        {
+            Executer executer( this, num_samples, start_sample_, step_number_ );
+            executer.try_run_paralel();
 
-        lfos[2]->process( step_number_, start_sample_, num_samples );
-        filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
-        third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+            lfos[2]->process( step_number_, start_sample_, num_samples );
+            third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+            filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
 
-        while( executer.isWorking() ) {}
+            while( executer.isWorking() ) {}
+        }
+        else
+        {
+            lfos[1]->process( step_number_, start_sample_, num_samples );
+            second_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+            lfos[2]->process( step_number_, start_sample_, num_samples );
+            third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+        }
     }
-
-    filter_processors[0]->process( num_samples );
-    filter_processors[1]->process( num_samples );
-    filter_processors[2]->process( num_samples );
-
-    eq_processor->process( num_samples );
-
-
-    float velocity_to_use = current_velocity;
-                            bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-                            if( synth_data->keep_arp_always_off )
+    if( render_anything )
     {
-        is_arp_on = false;
+        filter_processors[0]->process( num_samples );
+        filter_processors[1]->process( num_samples );
+        filter_processors[2]->process( num_samples );
+
+        eq_processor->process( num_samples );
+
+
+        float velocity_to_use = current_velocity;
+        bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
+        if( synth_data->keep_arp_always_off )
+        {
+            is_arp_on = false;
+        }
+        if( is_arp_on )
+        {
+            velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_step];
+        }
+        fx_processor->process( output_buffer_, velocity_to_use, start_sample_, num_samples_ );
+        // OSCs - THREAD 1 ?
     }
-    if( is_arp_on )
-    {
-        velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_step];
-    }
-    fx_processor->process( output_buffer_, velocity_to_use, start_sample_, num_samples_ );
-    // OSCs - THREAD 1 ?
 
     // VISUALIZE
     if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
@@ -5500,17 +5650,17 @@ void MoniqueSynthesiserVoice::reset() noexcept
 }
 void MoniqueSynthesiserVoice::reset_internal() noexcept
 {
-    // TODO reset oscs to zero
     for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
     {
         filter_processors[voice_id]->reset();
     }
     eq_processor->reset();
     fx_processor->reset();
-
-    master_osc->reset();
-    second_osc->reset();
-    third_osc->reset();
+    /*
+        master_osc->reset();
+        second_osc->reset();
+        third_osc->reset();
+        */
 }
 void MoniqueSynthesiserVoice::handle_sustain_pedal( bool down_ ) noexcept
 {
@@ -5551,7 +5701,9 @@ float MoniqueSynthesiserVoice::get_lfo_amp( int lfo_id_ ) const noexcept
 float MoniqueSynthesiserVoice::get_arp_sequence_amp( int step_ ) const noexcept
 {
     if( arp_sequencer->get_current_step() == step_ )
+    {
         return fx_processor->final_env->get_amp();
+    }
 
     return 0;
 }
@@ -5707,9 +5859,5 @@ void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve 
     }
 }
 
-
-
-
-
-
-
+//==============================================================================
+juce_ImplementSingleton(SHARED);

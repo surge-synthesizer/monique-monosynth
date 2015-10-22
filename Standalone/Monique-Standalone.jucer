@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.2"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.4"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -182,10 +182,11 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1"/>
+                       useRuntimeLibDLL="0" fastMath="1" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"/>
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="1"
+                       headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
@@ -218,7 +219,7 @@
   <JUCEOPTIONS JUCE_USE_CDREADER="disabled" JUCE_USE_CDBURNER="disabled" JUCE_USE_FLAC="disabled"
                JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="disabled"
                JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
-               JUCE_ASIO="disabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="enabled"
+               JUCE_ASIO="enabled" JUCE_WASAPI="enabled" JUCE_DIRECTSOUND="enabled"
                JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_PLUGINHOST_VST="disabled"
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"

@@ -457,9 +457,9 @@ modulate_distortion
 // ----
 cutoff
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     0.2,
-    1000,
+    MAX_CUTOFF,
     generate_param_name(FILTER_NAME,id_,"cutoff"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"cutoff"),
     0.7
@@ -475,7 +475,7 @@ modulate_cutoff
 // ----
 resonance
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     0.3,
     1000,
     generate_param_name(FILTER_NAME,id_,"resonance"),
@@ -488,24 +488,6 @@ modulate_resonance
     true,
     generate_param_name(FILTER_NAME,id_,"modulate_resonance"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_resonance_ON")
-),
-
-// ----
-gain
-(
-    MIN_MAX( 0.001, 1 ),
-    0.3,
-    1000,
-    generate_param_name(FILTER_NAME,id_,"gain"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"gain"),
-    0.8
-),
-gain_smoother(smooth_manager_,&gain),
-modulate_gain
-(
-    true,
-    generate_param_name(FILTER_NAME,id_,"modulate_gain"),
-    generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_gain_ON")
 ),
 
 // ----
@@ -577,6 +559,9 @@ env_data( new ENVData( smooth_manager_, id_ ) )
         input_smoothers.add( new SmoothedParameter(smooth_manager_,&input_sustains[i]) );
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
+	env_data->max_attack_time.set_value(env_data->max_attack_time.get_info().max_value) ;
+	env_data->max_decay_time.set_value(env_data->max_decay_time.get_info().max_value) ;
+	env_data->max_release_time.set_value(env_data->max_release_time.get_info().max_value) ;
         input_envs.add( env_data );
     }
 }
@@ -595,11 +580,8 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
     dest_->modulate_distortion = src_->modulate_distortion;
     dest_->cutoff = src_->cutoff;
     dest_->modulate_cutoff = src_->modulate_cutoff;
-    dest_->modulate_gain = src_->modulate_gain;
     dest_->resonance = src_->resonance;
     dest_->modulate_resonance = src_->modulate_resonance;
-    dest_->gain = src_->gain;
-    dest_->modulate_gain = src_->modulate_gain;
     dest_->output = src_->output;
     dest_->modulate_output = src_->modulate_output;
     dest_->pan = src_->pan;
@@ -610,7 +592,7 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), true );
+        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), false );
     }
 
     copy( dest_->env_data, src_->env_data, true );
@@ -621,7 +603,7 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
     {
         params_.add( &data_->input_sustains[i] );
         params_.add( &data_->input_holds[i] );
-        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, true );
+        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, false );
     }
     collect_saveable_parameters( data_->env_data, params_, true );
 
@@ -633,8 +615,6 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
     params_.add( &data_->modulate_cutoff );
     params_.add( &data_->resonance );
     params_.add( &data_->modulate_resonance );
-    params_.add( &data_->gain );
-    params_.add( &data_->modulate_gain );
 
     params_.add( &data_->distortion );
     params_.add( &data_->modulate_distortion );
@@ -1362,7 +1342,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     // 32
     filter_data_1.resonance.midi_control->train( 32, nullptr, midi_device_manager_ );
     // 33
-    filter_data_1.gain.midi_control->train( 33, nullptr, midi_device_manager_ );
+    // TODO filter_data_1.gain.midi_control->train( 33, nullptr, midi_device_manager_ );
     // 34
     filter_data_1.distortion.midi_control->train( 34, nullptr, midi_device_manager_ );
     // 35 UNUSED / SPACER
@@ -1389,7 +1369,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     // 46
     filter_data_2.resonance.midi_control->train( 46, nullptr, midi_device_manager_ );
     // 47
-    filter_data_2.gain.midi_control->train( 47, nullptr, midi_device_manager_ );
+    // TODO filter_data_2.gain.midi_control->train( 47, nullptr, midi_device_manager_ );
     // 48
     filter_data_2.distortion.midi_control->train( 48, nullptr, midi_device_manager_ );
     // 49 UNUSED / SPACER
@@ -1416,7 +1396,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     // 60
     filter_data_3.resonance.midi_control->train( 60, nullptr, midi_device_manager_ );
     // 61
-    filter_data_3.gain.midi_control->train( 61, nullptr, midi_device_manager_ );
+    // TODO filter_data_3.gain.midi_control->train( 61, nullptr, midi_device_manager_ );
     // 62
     filter_data_3.distortion.midi_control->train( 62, nullptr, midi_device_manager_ );
     // 63 UNUSED / SPACER
@@ -1703,19 +1683,19 @@ ui_look_and_feel( look_and_feel_ ),
 // -------------------------------------------------------------
                   osci_show_osc_1
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
                       generate_short_human_name("CONF","osci_show_osc_1")
                   ),
                   osci_show_osc_2
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
                       generate_short_human_name("CONF","osci_show_osc_2")
                   ),
                   osci_show_osc_3
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
                       generate_short_human_name("CONF","osci_show_osc_3")
                   ),
@@ -1739,19 +1719,19 @@ ui_look_and_feel( look_and_feel_ ),
                   ),
                   osci_show_flt_1
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
                       generate_short_human_name("CONF","osci_show_flt_1")
                   ),
                   osci_show_flt_2
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
                       generate_short_human_name("CONF","osci_show_flt_2")
                   ),
                   osci_show_flt_3
                   (
-                      false,
+                      true,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
                       generate_short_human_name("CONF","osci_show_flt_3")
                   ),
@@ -2171,7 +2151,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->pan.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
@@ -2189,7 +2168,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
@@ -2216,7 +2194,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->pan.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
@@ -2234,7 +2211,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
@@ -2261,7 +2237,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->distortion.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->cutoff.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->resonance.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->gain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->output.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->pan.ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
@@ -2279,7 +2254,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
                 morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_gain.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
                     morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
@@ -3313,7 +3287,7 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
                     String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
                     "YES",
                     "CREATE A BACKUP (_backup)",
-                    "NO, CHANCEL"
+                    "NO, CANCEL"
                 );
             }
 

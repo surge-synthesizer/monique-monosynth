@@ -101,7 +101,10 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     }
 
     // THREADS
-    combo_multicore_cpus->setSelectedId( synth_data->num_extra_threads+1, dontSendNotification );
+    if( combo_multicore_cpus != getCurrentlyFocusedComponent() )
+    {
+        combo_multicore_cpus->setSelectedId( synth_data->num_extra_threads+1, dontSendNotification );
+    }
 
     // SLIDERS
     toggle_slider_rotary->setToggleState( synth_data->sliders_in_rotary_mode, dontSendNotification );
@@ -109,6 +112,10 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     slider_sensitivity->setEnabled( not synth_data->sliders_in_rotary_mode );
 }
 
+void Monique_Ui_GlobalSettings::handleAsyncUpdate()
+{
+    update_audio_devices();
+}
 void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
 {
     last_repainted_colour = colour_to_edit_;
@@ -869,7 +876,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     //label_9->setVisible(false);
     label_9->setEnabled(false);
 #else
-    update_audio_devices();
+    triggerAsyncUpdate();
 #endif
 
     /*
@@ -1073,15 +1080,21 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
         AudioDeviceManager::AudioDeviceSetup current_device_setup;
         audio_processor->getAudioDeviceSetup( current_device_setup );
         current_device_setup.bufferSize = combo_block_size->getText().getIntValue();
-        String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
+        audio_processor->suspendProcessing(true);
+        {
+            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
 
-        if( error != "" )
-            AlertWindow::showMessageBoxAsync
-            (
-                AlertWindow::AlertIconType::WarningIcon,
-                "ERROR: SET BLOCK SIZE!",
-                error
-            );
+            if( error != "" )
+            {
+                AlertWindow::showMessageBoxAsync
+                (
+                    AlertWindow::AlertIconType::WarningIcon,
+                    "ERROR: SET BLOCK SIZE!",
+                    error
+                );
+            }
+        }
+        audio_processor->suspendProcessing(false);
 
         update_audio_devices();
 #endif
@@ -1092,20 +1105,29 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
         //[UserComboBoxCode_combo_audio_driver] -- add your combo box handling code here..
 #ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
-        audio_processor->setCurrentAudioDeviceType(combo_audio_driver->getText(),true);
-        if( not audio_processor->audio_is_successful_initalized )
+        audio_processor->suspendProcessing(true);
         {
-            String error = audio_processor->initialise(0,2, nullptr, false );
-            if( error != "" )
+            audio_processor->setCurrentAudioDeviceType(combo_audio_driver->getText(),true);
+            if( not audio_processor->audio_is_successful_initalized )
             {
-                AlertWindow::showMessageBoxAsync
-                (
-                    AlertWindow::AlertIconType::WarningIcon,
-                    "ERROR: OPEN AUDIO DEVICE!",
-                    error
-                );
+                String error = audio_processor->initialise(2,2, nullptr, false );
+                if( error != "" )
+                {
+                    AlertWindow::showMessageBoxAsync
+                    (
+                        AlertWindow::AlertIconType::WarningIcon,
+                        "ERROR: OPEN AUDIO DEVICE!",
+                        error
+                    );
+                    audio_processor->audio_is_successful_initalized = false;
+                }
+                else
+                {
+                    audio_processor->audio_is_successful_initalized = true;
+                }
             }
         }
+        audio_processor->suspendProcessing(false);
 
         update_audio_devices();
 #endif
@@ -1117,41 +1139,25 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
 #ifdef IS_STANDALONE
         MoniqueAudioProcessor* audio_processor = synth_data->audio_processor;
 
-        // GET CURRENT SETTINGS
-        AudioDeviceManager::AudioDeviceSetup current_device_setup;
-        audio_processor->getAudioDeviceSetup( current_device_setup );
-
-        // UPDATE SETTINGS
-        current_device_setup.outputDeviceName = combo_audio_device->getText();
-        current_device_setup.sampleRate = 0;
-        current_device_setup.bufferSize = 0;
-        current_device_setup.inputChannels = 0;
-        current_device_setup.useDefaultInputChannels = false;
-        current_device_setup.outputChannels = 2;
-        current_device_setup.useDefaultOutputChannels = false;
-
-        // SET NEW SETTINGS
-        String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
-
-        if( error != "" )
+        audio_processor->suspendProcessing(true);
         {
-            AlertWindow::showMessageBoxAsync
-            (
-                AlertWindow::AlertIconType::WarningIcon,
-                "ERROR: OPEN AUDIO DEVICE!",
-                error
-            );
-        }
-        else if( not audio_processor->audio_is_successful_initalized )
-        {
-            String error = audio_processor->initialise( 0,2, nullptr, false );
-            if( error == "" )
-            {
-                audio_processor->addAudioCallback (&audio_processor->player);
-                audio_processor->player.setProcessor (audio_processor);
-                audio_processor->audio_is_successful_initalized = true;
-            }
-            else
+            // GET CURRENT SETTINGS
+            AudioDeviceManager::AudioDeviceSetup current_device_setup;
+            audio_processor->getAudioDeviceSetup( current_device_setup );
+
+            // UPDATE SETTINGS
+            current_device_setup.outputDeviceName = combo_audio_device->getText();
+            current_device_setup.sampleRate = 0;
+            current_device_setup.bufferSize = 0;
+            current_device_setup.useDefaultInputChannels = true;
+            current_device_setup.useDefaultOutputChannels = true;
+
+            // SET NEW SETTINGS
+            audio_processor->player.setProcessor (nullptr);
+            audio_processor->removeAudioCallback (&audio_processor->player);
+            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
+
+            if( error != "" )
             {
                 AlertWindow::showMessageBoxAsync
                 (
@@ -1159,8 +1165,48 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
                     "ERROR: OPEN AUDIO DEVICE!",
                     error
                 );
+                audio_processor->audio_is_successful_initalized = false;
+            }
+            else if( not audio_processor->audio_is_successful_initalized )
+            {
+                String error = audio_processor->initialise( 2,2, nullptr, false );
+                if( error == "" )
+                {
+                    audio_processor->addAudioCallback (&audio_processor->player);
+                    audio_processor->player.setProcessor (audio_processor);
+                    audio_processor->audio_is_successful_initalized = true;
+                }
+                else
+                {
+                    audio_processor->audio_is_successful_initalized = false;
+                    AlertWindow::showMessageBoxAsync
+                    (
+                        AlertWindow::AlertIconType::WarningIcon,
+                        "ERROR: OPEN AUDIO DEVICE!",
+                        error
+                    );
+                }
+            }
+            else
+            {
+                //String error = audio_processor->initialise( 2,2, nullptr, false );
+                audio_processor->addAudioCallback (&audio_processor->player);
+                audio_processor->player.setProcessor (audio_processor);
+                audio_processor->audio_is_successful_initalized = true;
+                /*
+                        if( error != "" )
+                        {
+                            AlertWindow::showMessageBoxAsync
+                            (
+                                AlertWindow::AlertIconType::WarningIcon,
+                                "ERROR: OPEN AUDIO DEVICE!",
+                                error
+                            );
+                        }
+                        */
             }
         }
+        audio_processor->suspendProcessing(false);
 
         update_audio_devices();
 #endif
@@ -1174,25 +1220,30 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
         AudioDeviceManager::AudioDeviceSetup current_device_setup;
         audio_processor->getAudioDeviceSetup( current_device_setup );
         current_device_setup.sampleRate = combo_sample_rate->getText().getDoubleValue();
-        String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
 
-        if( error != "" )
+        audio_processor->suspendProcessing(true);
         {
-            AlertWindow::showMessageBoxAsync
-            (
-                AlertWindow::AlertIconType::WarningIcon,
-                "ERROR: SET SAMPLE RATE!",
-                error
-            );
+            String error = audio_processor->setAudioDeviceSetup( current_device_setup, true );
+
+            if( error != "" )
+            {
+                AlertWindow::showMessageBoxAsync
+                (
+                    AlertWindow::AlertIconType::WarningIcon,
+                    "ERROR: SET SAMPLE RATE!",
+                    error
+                );
+            }
         }
+        audio_processor->suspendProcessing(false);
 
         update_audio_devices();
 #endif
         //[/UserComboBoxCode_combo_sample_rate]
     }
 
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
+//[UsercomboBoxChanged_Post]
+//[/UsercomboBoxChanged_Post]
 }
 
 void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)

@@ -112,6 +112,7 @@ private:
     String getParameterLabel (int index) const override;
     int getParameterNumSteps (int index_ ) override;
     float getParameterDefaultValue (int index_) override;
+    bool isMetaParameter (int parameterIndex) const override;
 
     void parameter_value_changed( Parameter* ) noexcept override;
     void parameter_value_changed_always_notification( Parameter* ) noexcept override;

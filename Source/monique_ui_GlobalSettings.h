@@ -38,7 +38,8 @@ class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public ComboBoxListener,
                                    public ButtonListener,
-                                   public SliderListener
+                                   public SliderListener, 
+				   public AsyncUpdater
 {
 public:
     //==============================================================================
@@ -48,6 +49,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
     void refresh() noexcept override;
+    void handleAsyncUpdate() override;
 
     const float original_w;
     const float original_h;

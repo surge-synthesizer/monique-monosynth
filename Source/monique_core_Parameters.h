@@ -1071,7 +1071,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
             {
                 new_value = info.min_value;
             }
-
+            
             param_->set_value_on_load( new_value );
             success = true;
         }
@@ -1079,7 +1079,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
 
     if( has_modulation( param_ ) )
     {
-        const float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
+        float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
 
         param_->set_modulation_amount_without_notification( new_modulation_amount );
         success = true;
@@ -1187,7 +1187,7 @@ public:
     void send_clear_feedback_only() const noexcept;
 
     void set_ctrl_mode( bool mode_ ) noexcept;
-    bool get_ctrl_mode() const noexcept 
+    bool get_ctrl_mode() const noexcept
     {
         return is_in_ctrl_mode;
     }
@@ -1215,7 +1215,7 @@ class MIDIControlHandler
 {
     UiLookAndFeel*const ui_look_and_feel;
     MoniqueAudioProcessor*const audio_processor;
-  
+
     bool is_activated_and_waiting_for_param;
     Parameter* learning_param;
     Parameter* learning_ctrl_param;
@@ -1300,7 +1300,7 @@ static inline void read_midi_from( const XmlElement& xml_, Parameter* param_, Mo
         (
             number,
             ctrl,
-	    midi_device_manager_
+            midi_device_manager_
         );
     }
 }

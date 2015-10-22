@@ -265,7 +265,7 @@ COLD String mono_AudioDeviceManager::restore_audio_device( bool try_to_open_an_a
     const OwnedArray<AudioIODeviceType>& types = getAvailableDeviceTypes();
     error = AudioDeviceManager::initialise
     (
-        0,2,
+        2,2,
         audio_device_init_backup->getChildByName("DEVICESETUP"),
         try_to_open_an_alternativ_
     );
@@ -298,7 +298,7 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
             type->scanForDevices();
             error = AudioDeviceManager::initialise
             (
-                0,2,
+                2,2,
                 nullptr,
                 false
             );

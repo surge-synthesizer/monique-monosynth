@@ -478,7 +478,7 @@ void MidiKeyboardComponent::drawWhiteNote (int midiNoteNumber,
 
     String text (getWhiteNoteText (midiNoteNumber));
     if( midiNoteNumber == root_note )
-        text = "PROG";
+        text = MidiMessage::getMidiNoteName (midiNoteNumber, true, true, octaveNumForMiddleC);
 
     if (text.isNotEmpty())
     {
@@ -581,7 +581,8 @@ void MidiKeyboardComponent::drawBlackNote (int midiNoteNumber,
 
     String text ("");
     if( midiNoteNumber == root_note )
-        text = "PR";
+        text = MidiMessage::getMidiNoteName (midiNoteNumber, true, true, octaveNumForMiddleC);
+    
     if (text.isNotEmpty())
     {
         g.setColour (Colour(0xffffffff));

@@ -46,6 +46,18 @@ public:
     {
         return current_size;
     }
+    void clear() noexcept
+    {
+        sample_buffer.clear();
+    }
+    int get_reader_start() const noexcept
+    {
+        return reader_position;
+    }
+    void set_reader_start( int reader_position_ )  noexcept
+    {
+        reader_position = reader_position_;
+    }
 
 private:
     COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
@@ -72,7 +84,7 @@ inline void EndlessBuffer::write( const float* samples_, int num_samples_ ) noex
     {
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            if( tmp_position++ >= current_size )
+            if( ++tmp_position >= current_size )
             {
                 tmp_position = 0;
             }
@@ -108,12 +120,12 @@ inline void EndlessBuffer::write( const float* samples_, const float* samples_2_
     {
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            if( tmp_position++ >= current_size )
+            if( ++tmp_position >= current_size )
             {
                 tmp_position = 0;
             }
 
-            tmp_sample_buffer[tmp_position] = (samples_[sid]+samples_2_[sid])*0.5;
+            tmp_sample_buffer[tmp_position] = sample_mix_ui(samples_[sid],samples_2_[sid]);
         }
     }
 
@@ -130,6 +142,11 @@ class EndlessSwitchBuffer : public EndlessBuffer
 public:
     inline void write( const float* samples_, const float* switchs_, int num_samples_ ) noexcept;
     inline int get_new_reader_start_position( int samples_to_paint_ ) const noexcept;
+    void clear() noexcept
+    {
+        FloatVectorOperations::fill(switch_buffer.getWritePointer(),1,switch_buffer.get_size());
+        EndlessBuffer::clear();
+    }
 
 private:
     COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
@@ -159,7 +176,7 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
     {
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            if( tmp_position++ >= current_size )
+            if( ++tmp_position >= current_size )
             {
                 tmp_position = 0;
             }
@@ -185,9 +202,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class Monique_Ui_AmpPainter  : public Component,
-                               public Timer,
-                               public SliderListener,
-                               public ButtonListener
+    public Timer,
+    public SliderListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
@@ -200,6 +217,7 @@ public:
     const float original_h;
 
 private:
+    int current_buffer_start_pos;
     UiLookAndFeel*const look_and_feel;
     MoniqueSynthData*const synth_data;
     OwnedArray<EndlessBuffer> filter_values;
@@ -213,6 +231,7 @@ private:
     Array<EndlessBuffer*> buffers;
 
 public:
+    inline void calc_new_cycle() noexcept;
     inline void add_filter( int id_, const float* values_l_,const float* values_r_, int num_samples_ ) noexcept;
     inline void add_filter_env( int id_, const float* values_, int num_samples_ ) noexcept;
     inline void add_eq( const float* values_, int num_samples_ ) noexcept;
@@ -220,6 +239,7 @@ public:
     inline void add_out( const float* values_l_, const float* values_r_, int num_samples_ ) noexcept;
     inline void add_master_osc( const float* values_, const float* is_switch_values, int num_samples_ ) noexcept;
     inline void add_osc( int id_, const float* values_, int num_samples_ ) noexcept;
+    inline void clear_and_keep_minimum() noexcept;
 
 private:
     void timerCallback() override;
@@ -262,11 +282,17 @@ private:
 };
 
 //[EndFile] You can add extra defines here...
+inline void Monique_Ui_AmpPainter::calc_new_cycle() noexcept
+{
+    current_buffer_start_pos = master_osc_values->get_reader_start();
+}
+
 inline void Monique_Ui_AmpPainter::add_filter_env(int id_, const float* values_, int num_samples_) noexcept
 {
     //if( id_ == 0 and synth_data->osci_show_flt_env_1 or id_ == 1 and synth_data->osci_show_flt_env_2 or id_ == 2 and synth_data->osci_show_flt_env_3 )
     {
         EndlessBuffer*const values = filter_env_values.getUnchecked(id_);
+        values->set_reader_start(current_buffer_start_pos);
         values->write( values_, num_samples_ );
     }
 }
@@ -275,6 +301,7 @@ inline void Monique_Ui_AmpPainter::add_filter(int id_, const float* values_l_, c
     //if( id_ == 0 and synth_data->osci_show_flt_1 or id_ == 1 and synth_data->osci_show_flt_2 or id_ == 2 and synth_data->osci_show_flt_3 )
     {
         EndlessBuffer*const values = filter_values.getUnchecked(id_);
+        values->set_reader_start(current_buffer_start_pos);
         values->write( values_l_, values_r_, num_samples_ );
     }
 }
@@ -282,6 +309,7 @@ inline void Monique_Ui_AmpPainter::add_eq( const float* values_, int num_samples
 {
     //if( synth_data->osci_show_eq )
     {
+        eq_values->set_reader_start(current_buffer_start_pos);
         eq_values->write( values_, num_samples_ );
     }
 }
@@ -289,6 +317,7 @@ inline void Monique_Ui_AmpPainter::add_out_env( const float* values_, int num_sa
 {
     //if( synth_data->osci_show_out_env )
     {
+        values_env->set_reader_start(current_buffer_start_pos);
         values_env->write( values_, num_samples_ );
     }
 }
@@ -296,6 +325,7 @@ inline void Monique_Ui_AmpPainter::add_out( const float* values_l_, const float*
 {
     //if( synth_data->osci_show_out )
     {
+        values->set_reader_start(current_buffer_start_pos);
         values->write( values_l_, values_r_, num_samples_ );
     }
 }
@@ -311,8 +341,21 @@ inline void Monique_Ui_AmpPainter::add_osc( int id_, const float* values_, int n
     //if( id_ == 0 or id_ == 1 and synth_data->osci_show_osc_2 or id_ == 2 and synth_data->osci_show_osc_3 )
     {
         EndlessBuffer*const osc_values_ = osc_values.getUnchecked(id_-1);
+        osc_values_->set_reader_start(current_buffer_start_pos);
         osc_values_->write( values_, num_samples_ );
     }
+}
+inline void Monique_Ui_AmpPainter::clear_and_keep_minimum() noexcept
+{
+    values->clear();
+    values_env->clear();
+    eq_values->clear();
+    filter_values.getUnchecked(0)->clear();
+    filter_values.getUnchecked(1)->clear();
+    filter_values.getUnchecked(2)->clear();
+    filter_env_values.getUnchecked(0)->clear();
+    filter_env_values.getUnchecked(1)->clear();
+    filter_env_values.getUnchecked(2)->clear();
 }
 //[/EndFile]
 

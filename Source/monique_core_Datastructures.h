@@ -76,6 +76,9 @@ enum MONIQUE_SETUP
     SUM_EQ_BANDS = 7
 };
 
+#define MIN_CUTOFF 35.0f
+#define MAX_CUTOFF 7965.0f
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -116,6 +119,7 @@ public:
     mono_AudioSampleBuffer<SUM_FILTERS> filter_env_amps;
 
     mono_AudioSampleBuffer<1> tmp_buffer;
+    mono_AudioSampleBuffer<1> second_mono_buffer;
 
 private:
     // ==============================================================================
@@ -147,6 +151,11 @@ private:
     //==========================================================================
     friend class RuntimeNotifyer;
     COLD virtual void set_sample_rate( double sr_ ) noexcept;
+public:
+    inline double get_sample_rate() const noexcept {
+        return sample_rate;
+    }
+private:
     COLD virtual void set_block_size( int bs_ ) noexcept;
     COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept;
     COLD virtual void block_size_changed() noexcept;
@@ -510,10 +519,6 @@ struct FilterData
     ModulatedParameter resonance;
     SmoothedParameter resonance_smoother;
     BoolParameter modulate_resonance;
-
-    ModulatedParameter gain;
-    SmoothedParameter gain_smoother;
-    BoolParameter modulate_gain;
 
     ModulatedParameter pan;
     SmoothedParameter pan_smoother;
@@ -966,9 +971,9 @@ struct MoniqueSynthData : ParameterListener
 
     BoolParameter auto_close_env_popup;
     BoolParameter auto_switch_env_popup;
-    
+
     BoolParameter is_osci_open;
-    
+
     BoolParameter keep_arp_always_on;
     BoolParameter keep_arp_always_off;
 
@@ -1163,6 +1168,14 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static ScopedPointer< ENVData > env_clipboard;
+class SHARED
+{
+public:
+    int num_instances ;
+    ENVData* env_clipboard;
+    juce_DeclareSingleton( SHARED, false );
+
+    SHARED() : num_instances(0), env_clipboard(nullptr) {}
+};
 
 #endif
