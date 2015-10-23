@@ -559,9 +559,9 @@ env_data( new ENVData( smooth_manager_, id_ ) )
         input_smoothers.add( new SmoothedParameter(smooth_manager_,&input_sustains[i]) );
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
-	env_data->max_attack_time.set_value(env_data->max_attack_time.get_info().max_value) ;
-	env_data->max_decay_time.set_value(env_data->max_decay_time.get_info().max_value) ;
-	env_data->max_release_time.set_value(env_data->max_release_time.get_info().max_value) ;
+        env_data->max_attack_time.set_value(env_data->max_attack_time.get_info().max_value) ;
+        env_data->max_decay_time.set_value(env_data->max_decay_time.get_info().max_value) ;
+        env_data->max_release_time.set_value(env_data->max_release_time.get_info().max_value) ;
         input_envs.add( env_data );
     }
 }
@@ -1071,6 +1071,7 @@ void MorphGroup::run_sync_morph() noexcept
 
         // VALUE
         {
+            // bei 0.5 = (l + r)/2
             const float target_value = (left_param->get_value()*(1.0f - last_power_of_right )) + (right_param->get_value()*last_power_of_right);
             const float current_value = target_param->get_value();
             sync_param_deltas.add( (target_value-current_value)/SYNC_MORPH_STEPS );
@@ -1084,7 +1085,9 @@ void MorphGroup::run_sync_morph() noexcept
             sync_modulation_deltas.add( (target_modulation-current_modulation)/SYNC_MORPH_STEPS );
         }
         else
+        {
             sync_modulation_deltas.add( -1 );
+        }
     }
 
     startTimer(SYNC_MORPH_TIME);
@@ -1102,9 +1105,13 @@ void MorphGroup::timerCallback()
             const float max = info.max_value;
             float new_value = param->get_value() + sync_param_deltas[i];
             if( new_value > max )
+            {
                 new_value = max;
+            }
             else if( new_value < min )
+            {
                 new_value = min;
+            }
 
             param->set_value_without_notification( new_value );
         }
@@ -1115,9 +1122,13 @@ void MorphGroup::timerCallback()
         {
             float new_modualtation = param->get_modulation_amount() + modulation_delta;
             if( new_modualtation > 1 )
+            {
                 new_modualtation = 1;
+            }
             else if( new_modualtation < -1 )
+            {
                 new_modualtation = -1;
+            }
 
             param->set_modulation_amount_without_notification( new_modualtation );
         }
@@ -1165,50 +1176,79 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
         const int param_id = params.indexOf( param_ );
         if( param_id != -1 )
         {
-            Parameter* left_source_param = left_morph_source->params[param_id];
-            Parameter* right_source_param = right_morph_source->params[param_id];
+            Parameter*const left_source_param = left_morph_source->params[param_id];
+            Parameter*const right_source_param = right_morph_source->params[param_id];
 
-            // x = l*(1-m)+r*m
-            // r = (l*(m-1.0f)+x)/m
-            // l = (m*r-x) / (m-1)
             const float current_value = param_->get_value();
-            float right_value = right_source_param->get_value();
-            bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
-            const ParameterInfo& info = param_->get_info();
-            const float max = info.max_value;
-            const float min = info.min_value;
-            if( update_left_or_right == RIGHT )
-            {
-                const float left_value = left_source_param->get_value();
-                float new_right_value = (left_value*(last_power_of_right-1)+current_value) / last_power_of_right;
-                if( new_right_value > max )
-                {
-                    new_right_value = max;
-                    update_left_or_right = LEFT;
-                }
-                else if( new_right_value < min )
-                {
-                    new_right_value = min;
-                    update_left_or_right = LEFT;
-                }
+            const float right_value = right_source_param->get_value();
+            const float left_value = left_source_param->get_value();
+            const double right_power = last_power_of_right;
+            const double left_power = 1.0f-right_power;
+            const bool work_on_left = left_power >= right_power;
 
-                right_source_param->set_value_without_notification( new_right_value );
-                right_value = new_right_value;
-            }
-            if( update_left_or_right == LEFT )
+            float new_left = left_value;
+            float new_right = right_value;
+            // KEEP THE RIGHT SIDE UNTOUCHED
+            if( left_power == 1 )
             {
-                float new_left_value = (last_power_of_right*right_value-current_value) / (last_power_of_right-1);
-                if( new_left_value > max )
-                {
-                    new_left_value = max;
-                }
-                else if( new_left_value < min )
-                {
-                    new_left_value = min;
-                }
-
-                left_source_param->set_value_without_notification( new_left_value );
+                new_left = current_value;
             }
+            // KEEP THE LEFT SIDE UNTOUCHED
+            else if( right_power == 1 )
+            {
+                new_right = current_value;
+            }
+            else
+            {
+                const ParameterInfo& info = param_->get_info();
+                const float max = info.max_value;
+                const float min = info.min_value;
+
+                // ---------------
+                // 8a + 4b = 12 | - 8a
+                // 4b = 12 - 8a | :4
+                // b = 3 - 2a
+                // -------------------------
+                // left_power*left_value + right_power*right_value = current_value | - left_power*left_value
+                // right_power*right_value = current_value - left_power*left_value | :right_power
+                // right_value = (current_value/right_power) - (left_power/right_power)*left_value
+                // -------------------------
+                // left_power*left_value + right_power*right_value = current_value | - right_power*right_value
+                // left_power*left_value = current_value - right_power*right_value | :left_power
+                // left_value = (current_value/left_power) - (right_power/left_power)*right_value
+
+                if( work_on_left )
+                {
+                    new_left = (current_value/left_power) - (right_power/left_power)*right_value;
+                    if( new_left < min )
+                    {
+                        new_left = min;
+                        new_right = (current_value/right_power) - (left_power/right_power)*new_left;
+                    }
+                    else if( new_left > max )
+                    {
+                        new_left = max;
+                        new_right = (current_value/right_power) - (left_power/right_power)*new_left;
+                    }
+                }
+                else
+                {
+                    new_right = (current_value/right_power) - (left_power/right_power)*left_value;
+                    if( new_right < min )
+                    {
+                        new_right = min;
+                        new_left = (current_value/left_power) - (right_power/left_power)*new_right;
+                    }
+                    else if( new_left > max )
+                    {
+                        new_right = max;
+                        new_left = (current_value/left_power) - (right_power/left_power)*new_right;
+                    }
+                }
+            }
+            left_source_param->set_value_without_notification( new_left );
+            right_source_param->set_value_without_notification( new_right );
+            jassert( current_value != left_power*left_source_param->get_value() + right_power*right_source_param->get_value() );
         }
     }
 }
@@ -2516,10 +2556,14 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
             // SMOTH TO ZERO
             float morph_state_2 = get_morph_state(2);
             if( morph_state_2 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[2], 0, morph_motor_time );
+            }
             float morph_state_3 = get_morph_state(3);
             if( morph_state_3 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[3], 0, morph_motor_time );
+            }
         }
         else if( value <= 2 )
         {
@@ -2531,10 +2575,14 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
             // SMOTH TO ZERO
             float morph_state_0 = get_morph_state(0);
             if( morph_state_0 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[0], 0, morph_motor_time );
+            }
             float morph_state_3 = get_morph_state(3);
             if( morph_state_3 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[3], 0, morph_motor_time );
+            }
         }
         else
         {
@@ -2546,10 +2594,14 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
             // SMOTH TO ZERO
             float morph_state_0 = get_morph_state(0);
             if( morph_state_0 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[0], 0, morph_motor_time );
+            }
             float morph_state_1 = get_morph_state(1);
             if( morph_state_1 != 0 )
+            {
                 ChangeParamOverTime::execute( morhp_states[1], 0, morph_motor_time );
+            }
         }
     }
 }

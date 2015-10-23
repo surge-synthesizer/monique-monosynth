@@ -110,7 +110,7 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
 
     addAndMakeVisible (out_env = new TextButton ("new button"));
     out_env->setTooltip (TRANS("Turns visualisation for the FINAL/MAIN ADSR on or off."));
-    out_env->setButtonText (TRANS("MAIN ADSR"));
+    out_env->setButtonText (TRANS("AMP ENV"));
     out_env->addListener (this);
 
     addAndMakeVisible (drawing_area = new Component());
@@ -846,7 +846,7 @@ BEGIN_JUCER_METADATA
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
               explicitFocusOrder="0" pos="100 60 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
-              buttonText="MAIN ADSR" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              buttonText="AMP ENV" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
                     explicitFocusOrder="0" pos="215 10 1240 135" class="Component"
                     params=""/>
@@ -859,5 +859,3 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
-
-

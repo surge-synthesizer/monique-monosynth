@@ -396,7 +396,6 @@ void Monique_Ui_DualSlider::refresh() noexcept
     // UPDATE SLIDER CENTER LABEL
     {
         bool is_repaint_required = force_repaint;
-	force_repaint = false;
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always;
         if( slider_value->isVertical() )
         {
@@ -436,7 +435,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         if( slider_modulation )
                         {
                             float modulation_value = slider_modulation->getValue();
-                            if( last_painted_mod_slider_val != modulation_value )
+                            if( last_painted_mod_slider_val != modulation_value or force_repaint )
                             {
                                 last_painted_mod_slider_val = modulation_value;
                                 slider_modulation->SET_VALUE_TO_PAINT( String(round01(modulation_value*100)) + String("@") + String("%") );
@@ -451,7 +450,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     else
                     {
                         float value = slider_value->getValue();
-                        if( last_painted_value_slider_val != value )
+                        if( last_painted_value_slider_val != value or force_repaint )
                         {
                             last_painted_value_slider_val = value;
                             slider_value->SET_VALUE_TO_PAINT( String(round01(value*100)) );
@@ -486,7 +485,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         if( slider_modulation )
                         {
                             float modulation_value = slider_modulation->getValue();
-                            if( last_painted_mod_slider_val != modulation_value )
+                            if( last_painted_mod_slider_val != modulation_value or force_repaint )
                             {
                                 last_painted_mod_slider_val = modulation_value;
                                 slider_modulation->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
@@ -501,7 +500,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     {
                         float value = slider_value->getValue();
                         // TODO or switched!
-                        if( last_painted_value_slider_val != value )
+                        if( last_painted_value_slider_val != value or force_repaint )
                         {
                             last_painted_value_slider_val = value;
                             slider_value->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
@@ -549,6 +548,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 slider_modulation->repaint();
             }
             slider_value->repaint();
+	    
+            force_repaint = false;
         }
     }
 }
@@ -938,6 +939,7 @@ void Left2MiddleSlider::mouseExit(const MouseEvent& event)
 void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
+    force_repaint = true;
 }
 void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 {
@@ -946,6 +948,7 @@ void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 void Monique_Ui_DualSlider::sliderModEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
+    force_repaint = true;
 }
 void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 {

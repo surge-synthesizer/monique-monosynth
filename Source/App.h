@@ -212,7 +212,7 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
     static int count_samples = 0;
     if( count_samples < samples_to_print )
     {
-        std::cout << count_samples << " notes:"<<  info_ <<  " >>"<<  std::fixed << std::setprecision(10) << std::abs( in_ ) << std::endl;
+        //std::cout << count_samples << " notes:"<<  info_ <<  " >>"<<  std::fixed << std::setprecision(10) << std::abs( in_ ) << std::endl;
         count_samples ++;
     }
 }

@@ -1391,7 +1391,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_ui_headline12->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_ui_headline13 = new Label ("DL",
-                                                        TRANS("MAIN ENVELOPE")));
+                                                        TRANS("AMP ENVELOPE")));
     label_ui_headline13->setFont (Font (30.00f, Font::plain));
     label_ui_headline13->setJustificationType (Justification::centred);
     label_ui_headline13->setEditable (false, false, false);
@@ -4766,7 +4766,7 @@ BEGIN_JUCER_METADATA
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="cc8c514c76739c41" memberName="label_ui_headline13"
          virtualName="" explicitFocusOrder="0" pos="270 630 130 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="MAIN ENVELOPE" editableSingleClick="0"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="AMP ENVELOPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="DL" id="c10833d7ab234ea1" memberName="label_shape" virtualName=""

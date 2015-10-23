@@ -36,14 +36,14 @@
 */
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
+                                   public AsyncUpdater,
                                    public ComboBoxListener,
                                    public ButtonListener,
-                                   public SliderListener, 
-				   public AsyncUpdater
+                                   public SliderListener
 {
 public:
     //==============================================================================
-    Monique_Ui_GlobalSettings ( Monique_Ui_Refresher*ui_refresher_ );
+    Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_refresher_ );
     ~Monique_Ui_GlobalSettings();
 
     //==============================================================================

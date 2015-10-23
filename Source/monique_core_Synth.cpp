@@ -2960,15 +2960,15 @@ public:
     {
         {
             float f = (cutoff) * sample_rate_1ths;
-            
-	    //float agressive = 0.98f *( 1.0f - res );
-	    //float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
+
+            //float agressive = 0.98f *( 1.0f - res );
+            //float agressive = 0.98f * jmax(0.0f,( 1.0f/8000.0f*cutoff ));
             //p=f*((1.99f-agressive)-((0.99f-agressive)*f));
-	    p=f*(1.8f-0.8f*f);
+            p=f*(1.8f-0.8f*f);
             k=p*2-1;
         }
-        {    
-	    const float cutoff_power = 1.0f - (0.5 * jmin(1.0f,1.0f/(8000.0f*cutoff)));
+        {
+            const float cutoff_power = 1.0f - (0.5 * jmin(1.0f,1.0f/(8000.0f*cutoff)));
             float t= (1.0f-p)*1.386249f; // + ( 0.2f * (1.0f-1.0f/(1000.0f*jmax(0.00001f,cutoff))) );
             const float t2=12.0f+t*t;
             r = res*(t2+6.0f*t)/(t2-6.0f*t) * cutoff_power;
@@ -4526,10 +4526,11 @@ public:
     }
     inline void update_parameters() noexcept
     {
+#define ROOM_SCALE 1.0f
 #define WET_SCALE_FACTOR 3.0f
 #define DRY_SCALE_FACTOR 1.0f
-#define ROOM_SCALE_FACTOR 0.28f
-#define ROOM_OFFSET 0.7f
+#define ROOM_SCALE_FACTOR (0.28f*ROOM_SCALE)
+#define ROOM_OFFSET (1.0f - 0.28f*ROOM_SCALE -0.02f)
         const float wet = parameters.wetLevel * WET_SCALE_FACTOR;
         dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
         wetGain1.setValue (0.5f * wet * (1.0f + parameters.width));
@@ -4547,14 +4548,13 @@ public:
 
         for (int i = 0; i < numCombs; ++i)
         {
-            comb[i].setSize ((intSampleRate * combTunings[i]) / 44100);
-            comb[i].setSize ((intSampleRate * (combTunings[i] + stereoSpread)) / 44100);
+            comb[i].setSize ((intSampleRate * combTunings[i]*ROOM_SCALE) / 44100);
+            comb[i].setSize ((intSampleRate * (combTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
         }
-
         for (int i = 0; i < numAllPasses; ++i)
         {
-            allPass[i].setSize ((intSampleRate * allPassTunings[i]) / 44100);
-            allPass[i].setSize ((intSampleRate * (allPassTunings[i] + stereoSpread)) / 44100);
+            allPass[i].setSize ((intSampleRate * allPassTunings[i]*ROOM_SCALE) / 44100);
+            allPass[i].setSize ((intSampleRate * (allPassTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
         }
 
         const float smoothTime = 0.01f;
@@ -4679,30 +4679,32 @@ public:
         float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
 
         // PREPARE REVERB
-        const float reverb_room = reverb_data->room;
-        const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
-        const float reverb_width = reverb_data->width;
-        ReverbParameters& rever_params_l = reverb_l.get_parameters();
-        if(
-            rever_params_l.roomSize != reverb_room
-            || rever_params_l.dryLevel != reverb_dry_wet_mix
-            // current_params.wetLevel != r_params.wetLevel
-            || rever_params_l.width != reverb_width
-        )
         {
-            rever_params_l.roomSize = reverb_room;
-            rever_params_l.dryLevel = reverb_dry_wet_mix;
-            rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
-            rever_params_l.width = reverb_width;
+            const float reverb_room = reverb_data->room;
+            const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
+            const float reverb_width = reverb_data->width;
+            ReverbParameters& rever_params_l = reverb_l.get_parameters();
+            if(
+                rever_params_l.roomSize != reverb_room
+                || rever_params_l.dryLevel != reverb_dry_wet_mix
+                // current_params.wetLevel != r_params.wetLevel
+                || rever_params_l.width != reverb_width
+            )
+            {
+                rever_params_l.roomSize = reverb_room;
+                rever_params_l.dryLevel = reverb_dry_wet_mix;
+                rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+                rever_params_l.width = reverb_width;
 
-            ReverbParameters& rever_params_r = reverb_r.get_parameters();
-            rever_params_r.roomSize = rever_params_l.roomSize;
-            rever_params_r.dryLevel = rever_params_l.dryLevel;
-            rever_params_r.wetLevel = rever_params_l.wetLevel;
-            rever_params_r.width = rever_params_l.width;
+                ReverbParameters& rever_params_r = reverb_r.get_parameters();
+                rever_params_r.roomSize = rever_params_l.roomSize;
+                rever_params_r.dryLevel = rever_params_l.dryLevel;
+                rever_params_r.wetLevel = rever_params_l.wetLevel;
+                rever_params_r.width = rever_params_l.width;
 
-            reverb_l.update_parameters();
-            reverb_r.update_parameters();
+                reverb_l.update_parameters();
+                reverb_r.update_parameters();
+            }
         }
 
         // PREPARE

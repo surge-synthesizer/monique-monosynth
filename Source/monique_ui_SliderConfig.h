@@ -1372,7 +1372,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the main envelope attack time in ms.\n"
+        "Define the amp envelope attack time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
@@ -1540,7 +1540,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the main envelope decay time in ms.\n"
+        "Define the amp envelope decay time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
@@ -3513,7 +3513,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
         }
         else
         {
-            return MidiMessage::getMidiNoteName( 60+note_offset->get_value()+octave_offset->get_value()*12, true, true, 1 );
+            return MidiMessage::getMidiNoteName( 60+note_offset->get_value(), true, false, 0 );
         }
     }
     /*
@@ -4891,7 +4891,7 @@ class GlideConfig : public ModulationSliderConfigBase
         "\n"
         "If enabled all steps without an empty step between will be handled as one step (no envelope retrigger).\n"
         "\n"
-        "Sustain pedal can bind and hold notes (main ENV).\n"
+        "Sustain pedal can bind and hold notes (AMP ENV).\n"
         "Sostenuto pedal can bind and hold the filter ENV's.\n"
         "(If you only have a sustain pedal you can enable bind pedals in the setup.)\n"
         "\n"
@@ -5306,10 +5306,13 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+#include "monique_core_Synth.h"
 class ArpStepSlConfig : public ModulationSliderConfigBase
 {
+    Parameter*const octave_offset;
     Parameter*const tune;
     Parameter*const velocity;
+    MoniqueSynthesiserVoice*const voice;
 
     const String bottom_text;
 
@@ -5402,16 +5405,20 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         if( tune->midi_control->get_ctrl_mode() )
+        {
             return String( auto_round(velocity->get_value()*100) );
+        }
         else
-            return String( tune->get_value() );
+        {
+            return MidiMessage::getMidiNoteName(voice->get_current_note() + tune->get_value() +octave_offset->get_value()*12 + 12,true,true,0);
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
         if( tune->midi_control->get_ctrl_mode() )
             return "%";
         else
-            return "#";
+            return "";
     }
 
     //==============================================================================
@@ -5439,9 +5446,11 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 public:
     ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        octave_offset( &synth_data_->octave_offset ),
         tune( &synth_data_->arp_sequencer_data->tune[id_] ),
         velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
-        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) )
+        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) ),
+        voice( synth_data_->voice )
     {}
 
     JUCE_LEAK_DETECTOR (ArpStepSlConfig)
@@ -5575,7 +5584,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "Except: FILTER TYPE, BUTTONS\n"
         "\n"
         "FX Morph Group:\n"
-        "Morphs: EQ BANK, ALL FX, FX-MIX, MASTER VOLUME\n"
+        "Morphs: AMP ENVELOPE, EQ BANK, ALL FX, FX-MIX, MASTER VOLUME\n"
         "Except: BUTTONS\n"
         "\n"
         "ARP Morph Group:\n"

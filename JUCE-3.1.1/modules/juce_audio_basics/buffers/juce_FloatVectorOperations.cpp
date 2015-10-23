@@ -994,7 +994,7 @@ double JUCE_CALLTYPE FloatVectorOperations::findMaximum (const double* src, int 
 
 void JUCE_CALLTYPE FloatVectorOperations::enableFlushToZeroMode (bool shouldEnable) noexcept
 {
-
+  
 #if JUCE_USE_SSE_INTRINSICS
     
   if( SystemStats::hasSSE3() )

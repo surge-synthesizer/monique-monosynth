@@ -115,7 +115,7 @@ Cheers
 
 
 
-DONE
+DONE 0.94
 fix: no bypass if the osci is open
 add: asio support (Windows) (standalone)
 fix: init audio device problems (standalone)
@@ -137,6 +137,17 @@ removed: filter gain
 add: shape slider for filter envelope
 changed: resonance was limited to 80% now 100% possible
 fix: bug in env popup - values was all to small (or to short)
+DONE 0.95
+renamed: main env to amp env
+fix: tool tip for "show tool tips" option
+change: slider values for the arp tune are now in note numbers depending on the current key
+fix: rapaint slider values at the right time
+resize reverb (3x times max)
+
+
+TODO:
+buggy: updating morph groups
+
 
 
 TIM:

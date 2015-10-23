@@ -202,9 +202,9 @@ inline void EndlessSwitchBuffer::write( const float* samples_, const float* swit
                                                                     //[/Comments]
 */
 class Monique_Ui_AmpPainter  : public Component,
-    public Timer,
-    public SliderListener,
-    public ButtonListener
+                               public Timer,
+                               public SliderListener,
+                               public ButtonListener
 {
 public:
     //==============================================================================
@@ -360,4 +360,3 @@ inline void Monique_Ui_AmpPainter::clear_and_keep_minimum() noexcept
 //[/EndFile]
 
 #endif   // __JUCE_HEADER_15EBFFC85DA080CA__
-
