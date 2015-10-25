@@ -49,8 +49,16 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         slider_attack->setValue( env_data->attack.get_value(), dontSendNotification );
         label_attack->setText(String( MIN_ENV_TIMES + slider_attack->getValue()*20000 )+String("ms"), dontSendNotification);
 
-        slider_decay->setValue( env_data->decay.get_value(), dontSendNotification );
-        label_decay->setText(String( MIN_ENV_TIMES + slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
+        if( env_data->decay.get_value() > 0 )
+        {
+            slider_decay->setValue( env_data->decay.get_value(), dontSendNotification );
+            label_decay->setText(String( MIN_ENV_TIMES + slider_decay->getValue()*20000 )+String("ms"), dontSendNotification);
+        }
+        else
+        {
+            slider_decay->setValue( 0, dontSendNotification );
+            label_decay->setText(String( "off" ), dontSendNotification);
+        }
 
         slider_sustain->setValue( sustain->get_value(), dontSendNotification );
         label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);

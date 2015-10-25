@@ -46,7 +46,6 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
 void Monique_Ui_MainwindowPopup::set_element_to_show( Component*const comp_ )
 {
     related_to_comp = comp_;
-    Component* parent = comp_->getParentComponent();
     int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
     int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
     setTopLeftPosition( x+comp_->getWidth()/2 - getWidth()/2, y+comp_->getHeight() );

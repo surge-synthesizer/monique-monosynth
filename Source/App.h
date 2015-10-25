@@ -1,6 +1,7 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+
 #define JUCE_JACK_CLIENT_NAME "MoniqueJACK"
 
 #define MONO_SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;

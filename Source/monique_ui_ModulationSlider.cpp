@@ -251,7 +251,7 @@ void Monique_Ui_DualSlider::show_view_mode()
         if( not label_top->isBeingEdited() )
         {
             label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
-            label_top->repaint();
+            //label_top->repaint();
         }
     }
 }
@@ -545,9 +545,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
 
             if( slider_modulation )
             {
-                slider_modulation->repaint();
+               // slider_modulation->repaint();
             }
-            slider_value->repaint();
+           // slider_value->repaint();
 	    
             force_repaint = false;
         }
@@ -561,7 +561,7 @@ void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ )
     {
         back_parameter->midi_control->set_ctrl_mode( mode_ );
     }
-    force_repaint = true;
+    //force_repaint = true;
 }
 
 void Monique_Ui_DualSlider::sliderClicked (Slider*s_)

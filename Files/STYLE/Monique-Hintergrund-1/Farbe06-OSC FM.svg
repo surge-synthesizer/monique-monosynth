@@ -1,0 +1,11 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1274 840" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;">
+    <g id="Hintergrund 4" transform="matrix(1,0,0,1,0,11)">
+        <g transform="matrix(0.928646,0,0,4.62307,11.6541,-125.505)">
+            <g id="Oscilators">
+                <path d="M147.206,31.353C147.206,29.785 140.87,28.513 133.066,28.513L17.141,28.513C9.336,28.513 3,29.785 3,31.353L3,166.706C3,168.273 9.336,169.546 17.141,169.546L133.066,169.546C140.87,169.546 147.206,168.273 147.206,166.706L147.206,31.353Z" style="fill:rgb(116,119,122);"/>
+            </g>
+        </g>
+    </g>
+</svg>

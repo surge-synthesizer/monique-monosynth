@@ -790,9 +790,12 @@ bool MoniqueAudioProcessor::isMetaParameter (int i_) const
         param = automateable_parameters.getUnchecked(i_-1);
     }
 
-    if( TYPES_DEF::IS_BOOL != type_of( param) )
+    if( TYPES_DEF::IS_BOOL != type_of( param ) )
     {
-        return true;
+        if( param->get_info().short_name.contains("morph") )
+        {
+            return true;
+        }
     }
 
     return false;

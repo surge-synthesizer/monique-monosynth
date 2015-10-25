@@ -38,6 +38,16 @@ public:
     COLD bool keyPressed (const KeyPress& key) override;
 
 private:
+    bool keyStateChanged (const bool isKeyDown) override
+    {
+        return main_window->keyStateChanged( isKeyDown );
+    }
+    void modifierKeysChanged (const ModifierKeys& modifiers) override
+    {
+        main_window->modifierKeysChanged( modifiers );
+    }
+
+private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
     Monique_Ui_Mainwindow* main_window;
@@ -243,6 +253,10 @@ COLD bool StandaloneFilterWindow::keyPressed (const KeyPress& key)
         success = true;
     }
 
+    if( not success )
+    {
+        return main_window->keyPressed( key );
+    }
     return success;
 }
 

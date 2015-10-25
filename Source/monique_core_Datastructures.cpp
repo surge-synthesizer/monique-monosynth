@@ -1179,24 +1179,18 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
             Parameter*const left_source_param = left_morph_source->params[param_id];
             Parameter*const right_source_param = right_morph_source->params[param_id];
 
-            const float current_value = param_->get_value();
-            const float right_value = right_source_param->get_value();
-            const float left_value = left_source_param->get_value();
             const double right_power = last_power_of_right;
             const double left_power = 1.0f-right_power;
-            const bool work_on_left = left_power >= right_power;
 
-            float new_left = left_value;
-            float new_right = right_value;
             // KEEP THE RIGHT SIDE UNTOUCHED
             if( left_power == 1 )
             {
-                new_left = current_value;
+                left_source_param->set_value_without_notification( param_->get_value() );
             }
             // KEEP THE LEFT SIDE UNTOUCHED
             else if( right_power == 1 )
             {
-                new_right = current_value;
+                right_source_param->set_value_without_notification( param_->get_value() );
             }
             else
             {
@@ -1217,7 +1211,12 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 // left_power*left_value = current_value - right_power*right_value | :left_power
                 // left_value = (current_value/left_power) - (right_power/left_power)*right_value
 
-                if( work_on_left )
+                const float current_value = param_->get_value();
+                const float right_value = right_source_param->get_value();
+                const float left_value = left_source_param->get_value();
+                float new_left;
+                float new_right;
+                if( left_power >= right_power )
                 {
                     new_left = (current_value/left_power) - (right_power/left_power)*right_value;
                     if( new_left < min )
@@ -1229,6 +1228,10 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                     {
                         new_left = max;
                         new_right = (current_value/right_power) - (left_power/right_power)*new_left;
+                    }
+                    else
+                    {
+                        new_right = right_value;
                     }
                 }
                 else
@@ -1244,11 +1247,15 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                         new_right = max;
                         new_left = (current_value/left_power) - (right_power/left_power)*new_right;
                     }
+                    else
+                    {
+                        new_left = left_value;
+                    }
                 }
+                left_source_param->set_value_without_notification( new_left );
+                right_source_param->set_value_without_notification( new_right );
+                jassert( current_value != left_power*left_source_param->get_value() + right_power*right_source_param->get_value() );
             }
-            left_source_param->set_value_without_notification( new_left );
-            right_source_param->set_value_without_notification( new_right );
-            jassert( current_value != left_power*left_source_param->get_value() + right_power*right_source_param->get_value() );
         }
     }
 }
@@ -1257,46 +1264,85 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
     const int param_id = params.indexOf( param_ );
     if( param_id != -1 )
     {
-        Parameter& left_source_param = *left_morph_source->params[param_id];
-        Parameter& right_source_param = *right_morph_source->params[param_id];
+        Parameter*const left_source_param = left_morph_source->params[param_id];
+        Parameter*const right_source_param = right_morph_source->params[param_id];
 
-        const float current_modulation = param_->get_modulation_amount();
+        const double right_power = last_power_of_right;
+        const double left_power = 1.0f-right_power;
 
-        float right_modulation = right_source_param.get_modulation_amount();
-        bool update_left_or_right = last_power_of_right > 0.5f ? RIGHT : LEFT;
-        if( update_left_or_right == RIGHT )
+        // KEEP THE RIGHT SIDE UNTOUCHED
+        if( left_power == 1 )
         {
-            const float left_modulation = left_source_param.get_modulation_amount();
-            float new_right_modulation = (left_modulation*(last_power_of_right-1)+current_modulation) / last_power_of_right;
-
-            if( new_right_modulation > 1 )
-            {
-                new_right_modulation = 1;
-                update_left_or_right = LEFT;
-            }
-            else if( new_right_modulation < -1 )
-            {
-                new_right_modulation = -1;
-                update_left_or_right = LEFT;
-            }
-
-            right_source_param.set_modulation_amount_without_notification( new_right_modulation );
-            right_modulation = new_right_modulation;
+            left_source_param->set_modulation_amount_without_notification( param_->get_modulation_amount() );
         }
-        if( update_left_or_right == LEFT )
+        // KEEP THE LEFT SIDE UNTOUCHED
+        else if( right_power == 1 )
         {
-            float new_left_modulation = (last_power_of_right*right_modulation-current_modulation) / (last_power_of_right-1);
+            right_source_param->set_modulation_amount_without_notification( param_->get_modulation_amount() );
+        }
+        else
+        {
+            const ParameterInfo& info = param_->get_info();
+            const float max = 1;
+            const float min = -1;
 
-            if( new_left_modulation > 1 )
-            {
-                new_left_modulation = 1;
-            }
-            else if( new_left_modulation < -1 )
-            {
-                new_left_modulation = -1;
-            }
+            // ---------------
+            // 8a + 4b = 12 | - 8a
+            // 4b = 12 - 8a | :4
+            // b = 3 - 2a
+            // -------------------------
+            // left_power*left_value + right_power*right_value = current_value | - left_power*left_value
+            // right_power*right_value = current_value - left_power*left_value | :right_power
+            // right_value = (current_value/right_power) - (left_power/right_power)*left_value
+            // -------------------------
+            // left_power*left_value + right_power*right_value = current_value | - right_power*right_value
+            // left_power*left_value = current_value - right_power*right_value | :left_power
+            // left_value = (current_value/left_power) - (right_power/left_power)*right_value
 
-            left_source_param.set_modulation_amount_without_notification( new_left_modulation );
+            const float current_value = param_->get_modulation_amount();
+            const float right_value = right_source_param->get_modulation_amount();
+            const float left_value = left_source_param->get_modulation_amount();
+            float new_left;
+            float new_right;
+            if( left_power >= right_power )
+            {
+                new_left = (current_value/left_power) - (right_power/left_power)*right_value;
+                if( new_left < min )
+                {
+                    new_left = min;
+                    new_right = (current_value/right_power) - (left_power/right_power)*new_left;
+                }
+                else if( new_left > max )
+                {
+                    new_left = max;
+                    new_right = (current_value/right_power) - (left_power/right_power)*new_left;
+                }
+                else
+                {
+                    new_right = right_value;
+                }
+            }
+            else
+            {
+                new_right = (current_value/right_power) - (left_power/right_power)*left_value;
+                if( new_right < min )
+                {
+                    new_right = min;
+                    new_left = (current_value/left_power) - (right_power/left_power)*new_right;
+                }
+                else if( new_left > max )
+                {
+                    new_right = max;
+                    new_left = (current_value/left_power) - (right_power/left_power)*new_right;
+                }
+                else
+                {
+                    new_left = left_value;
+                }
+            }
+            left_source_param->set_modulation_amount_without_notification( new_left );
+            right_source_param->set_modulation_amount_without_notification( new_right );
+            jassert( current_value != left_power*left_source_param->get_modulation_amount() + right_power*right_source_param->get_modulation_amount() );
         }
     }
 }
@@ -3211,9 +3257,11 @@ bool MoniqueSynthData::load( const String bank_name_, const String program_name_
 // ==============================================================================
 void MoniqueSynthData::load_default() noexcept
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::INITER_mlprog );
+    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog );
     read_from( xml );
-    alternative_program_name = "DEFAULT";
+    alternative_program_name = FACTORY_NAME;
+    //current_bank = 0;
+    current_program = -1;
 }
 // ==============================================================================
 void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
@@ -3330,16 +3378,16 @@ void MoniqueSynthData::ask_and_save_if_changed( bool with_new_option ) noexcept
             // - 0 if the third button was pressed (normally used for 'cancel')
             // - 1 if the first button was pressed (normally used for 'yes')
             // - 2 if the middle button was pressed (normally used for 'no')
-            if( !is_restored_programm )
+            if( !is_restored_programm and alternative_program_name != FACTORY_NAME and current_program != -1 )
             {
-                success = AlertWindow::showYesNoCancelBox
+                success = AlertWindow::showOkCancelBox
                 (
                     AlertWindow::AlertIconType::QuestionIcon,
                     "CURRENT PROJECT CHANGED!",
                     String("Do you like to store your changes to '") + last_bank + String(":") + last_program + String( "' first?"),
                     "YES",
-                    "CREATE A BACKUP (_backup)",
-                    "NO, CANCEL"
+                    //"CREATE A BACKUP (_backup)",
+                    "NO"
                 );
             }
 
@@ -3416,6 +3464,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

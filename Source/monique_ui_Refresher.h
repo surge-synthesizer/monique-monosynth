@@ -47,6 +47,14 @@ public:
     Array<Monique_Ui_Refreshable*> refreshables;
 
     void timerCallback() override;
+    void pause() noexcept
+    {
+        stopTimer();
+    }
+    void go_on() noexcept
+    {
+        startTimer(UI_REFRESH_RATE);
+    }
 
 private:
     //==========================================================================

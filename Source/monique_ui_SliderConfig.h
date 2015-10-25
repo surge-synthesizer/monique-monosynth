@@ -712,7 +712,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     {
         if( not fm_freq->midi_control->get_ctrl_mode() )
         {
-            return String( auto_round(fm_freq->get_value()*7 +1.01) );
+            return String( auto_round(fm_freq->get_value()*6 +2.01) );
         }
         else
         {
@@ -1520,7 +1520,14 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         if( not decay->midi_control->get_ctrl_mode() )
         {
-            return String( auto_round(decay->get_value() * max_decay_time->get_value() + MIN_ENV_TIMES) );
+            if( decay->get_value() > 0 )
+            {
+                return String( auto_round(decay->get_value() * max_decay_time->get_value()) + MIN_ENV_TIMES );
+            }
+            else
+            {
+                return String( "off" );
+            }
         }
         else
         {
@@ -1529,7 +1536,14 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "ms";
+        if( decay->get_value() > 0 )
+        {
+            return "ms";
+        }
+        else
+        {
+            return "";
+        }
     }
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
@@ -5536,11 +5550,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return "MIX";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
     return "";
@@ -5553,20 +5567,26 @@ class MorphSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        return String(auto_round( morhp_state->get_value()*100 ));
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        const float state = morhp_state->get_value();
+        if( state <= 0.5 )
+        {
+            return String("L");
+        }
+        else
+        {
+            return String("R");
+        }
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -5574,7 +5594,18 @@ class MorphSLConfig : public ModulationSliderConfigBase
     (
         "Morph between two programs, one the LEFT side and one on the RIGHT side.\n"
         "\n"
+        "With the morph editor (EDIT) you can load any available Monique-program to the left or right side of each morph group.\n"
         "\n"
+        "How stay the morph programs in sync with my changes?\n"
+        "Any changes at a morphable paramter (e.g. cutoff) will update the left or right morph program. "
+        "The update depends on the morph slider position. "
+        "If the slider is more left (less than 50) the left program will be updated with first priority, on the right the right program.\n"
+        "\n"
+        "RECOMMENDATION: if you like to keep 100% control over the left and right programs keep the morph slider absolutely left or right during changing morphable parameters (e.g. cutoff). Because this will route changes only to the left or right side.\n"
+        "\n"
+        "\n"
+        "MORPH OVERVIEW:\n"
+        "---------------\n"
         "OSC Morph Group:\n"
         "Morphs: OSC's, FM\n"
         "Except: BUTTONS\n"
@@ -5590,9 +5621,6 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "ARP Morph Group:\n"
         "Morphs: (ARPEGGIATOR), SHUFFLE, NOTE-G, VELO-G, STEP NOTE, STEP VELOCITY\n"
         "Except: BUTTONS\n"
-        "\n"
-        "\n"
-        "With the morph editor (EDIT) you can load each of your programs to the left or right side of each morph group."
     )
 
 public:

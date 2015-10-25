@@ -71,6 +71,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    int last_refreshed_note;
+
     MoniqueAudioProcessor* audio_processor;
     MoniqueSynthesiserVoice* voice;
 
@@ -133,6 +135,8 @@ public:
     void sliderClicked (Slider*s_) override;
 
     bool is_ctrl_down;
+    
+    void mouseEnter (const MouseEvent& event) override;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -157,6 +161,8 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> button_programm_replace;
+    ScopedPointer<TextButton> button_programm_new;
     ScopedPointer<Monique_Ui_DualSlider> distortion;
     ScopedPointer<Monique_Ui_DualSlider> reverb_room;
     ScopedPointer<Monique_Ui_DualSlider> reverb_width;
@@ -251,8 +257,6 @@ private:
     ScopedPointer<ComboBox> combo_programm;
     ScopedPointer<TextButton> button_programm_left;
     ScopedPointer<TextButton> button_programm_right;
-    ScopedPointer<TextButton> button_programm_replace;
-    ScopedPointer<TextButton> button_programm_new;
     ScopedPointer<TextButton> button_open_oszi;
     ScopedPointer<TextButton> button_open_midi_io_settings;
     ScopedPointer<ComboBox> combo_bank;
@@ -371,6 +375,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_3;
+    ScopedPointer<TextButton> button_programm_scratch;
 
 
     //==============================================================================

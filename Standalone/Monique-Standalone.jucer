@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.4"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.5"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -98,7 +98,8 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
-      <FILE id="VXb1Tn" name="INITER.mlprog" compile="0" resource="1" file="../Files/INITER.mlprog"/>
+      <FILE id="Ky2RVE" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+            file="../Files/FACTORTY DEFAULT.mlprog"/>
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
         <FILE id="z08yEt" name="SourceCodePro-Medium.otf" compile="0" resource="1"
               file="../Fonts/source-code-pro/SourceCodePro-Medium.otf"/>

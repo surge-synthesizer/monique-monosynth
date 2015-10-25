@@ -2392,14 +2392,29 @@ private:
         {
         case TRIGGER_START : // --> ATTACK
         {
-            env_osc.set_process_values
-            (
-                env_osc.last_out(), 1,
-                env_data->shape,
-                env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES
-            );
-            goes_to_sustain = false;
-            is_sustain = false;
+            const float attack_time = env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES;
+            if( env_data->decay > 0 )
+            {
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), 1,
+                    env_data->shape,
+                    attack_time
+                );
+                goes_to_sustain = false;
+                is_sustain = false;
+            }
+            else
+            {
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), smoothed_sustain_buffer[sid_],
+                    env_data->shape,
+                    attack_time
+                );
+                goes_to_sustain = true;
+                is_sustain = false;
+            }
 
             env_osc.calculate_attack_coeffecients();
             current_stage = ATTACK;
@@ -2408,25 +2423,30 @@ private:
         }
         case ATTACK : // --> DECAY
         {
-            env_osc.set_process_values
-            (
-                env_osc.last_out(), smoothed_sustain_buffer[sid_],
-                env_data->shape,
-                env_data->decay*env_data->max_decay_time+MIN_ENV_TIMES
-            );
-            goes_to_sustain = true;
-            is_sustain = false;
-            env_osc.calculate_release_coeffecients();
+            const float decay = env_data->decay;
+            if( decay > 0 )
+            {
+                env_osc.set_process_values
+                (
+                    env_osc.last_out(), smoothed_sustain_buffer[sid_],
+                    env_data->shape,
+                    decay*env_data->max_decay_time+MIN_ENV_TIMES
+                );
+                goes_to_sustain = true;
+                is_sustain = false;
+                env_osc.calculate_release_coeffecients();
 
-            current_stage = DECAY;
+                current_stage = DECAY;
 
-            break;
+                break;
+            }
+            // ELSE FALL TO DECAY AN START SUSTAIN LEVEL
         }
         case DECAY : // --> SUSTAIN
         {
             float sustain_time = env_data->sustain_time;
             float sustain_level = smoothed_sustain_buffer[sid_];
-            if( sustain_time >= 1.0f )
+            if( sustain_time >= 1 )
             {
                 env_osc.set_process_values
                 (
