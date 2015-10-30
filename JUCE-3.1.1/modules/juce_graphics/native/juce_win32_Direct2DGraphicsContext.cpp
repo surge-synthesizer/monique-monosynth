@@ -40,7 +40,8 @@ public:
         if (factories->d2dFactory != nullptr)
         {
             HRESULT hr = factories->d2dFactory->CreateHwndRenderTarget (props, propsHwnd, renderingTarget.resetAndGetPointerAddress());
-            jassert (SUCCEEDED (hr)); (void) hr;
+            jassert (SUCCEEDED (hr));
+            (void) hr;
             hr = renderingTarget->CreateSolidColorBrush (D2D1::ColorF::ColorF (0.0f, 0.0f, 0.0f, 1.0f), colourBrush.resetAndGetPointerAddress());
         }
     }
@@ -79,7 +80,9 @@ public:
         renderingTarget->CheckWindowState();
     }
 
-    bool isVectorDevice() const { return false; }
+    bool isVectorDevice() const {
+        return false;
+    }
 
     void setOrigin (Point<int> o)
     {
@@ -259,8 +262,8 @@ public:
         float hScale = currentState->font.getHorizontalScale();
 
         renderingTarget->SetTransform (transformToMatrix (AffineTransform::scale (hScale, 1.0f)
-                                                                          .followedBy (transform)
-                                                                          .followedBy (currentState->transform)));
+                                       .followedBy (transform)
+                                       .followedBy (currentState->transform)));
 
         const UINT16 glyphIndices = (UINT16) glyphNumber;
         const FLOAT glyphAdvances = 0;
@@ -287,7 +290,7 @@ public:
         renderingTarget->SetTransform (transformToMatrix (currentState->transform));
 
         DirectWriteTypeLayout::drawToD2DContext (text, area, renderingTarget, factories->directWriteFactory,
-                                                 factories->d2dFactory, factories->systemFonts);
+                factories->d2dFactory, factories->systemFonts);
 
         renderingTarget->SetTransform (D2D1::IdentityMatrix());
         return true;
@@ -298,12 +301,12 @@ public:
     {
     public:
         SavedState (Direct2DLowLevelGraphicsContext& owner_)
-          : owner (owner_), currentBrush (0),
-            fontHeightToEmSizeFactor (1.0f), currentFontFace (0),
-            clipsRect (false), shouldClipRect (false),
-            clipsRectList (false), shouldClipRectList (false),
-            clipsComplex (false), shouldClipComplex (false),
-            clipsBitmap (false), shouldClipBitmap (false)
+            : owner (owner_), currentBrush (0),
+              fontHeightToEmSizeFactor (1.0f), currentFontFace (0),
+              clipsRect (false), shouldClipRect (false),
+              clipsRectList (false), shouldClipRectList (false),
+              clipsComplex (false), shouldClipComplex (false),
+              clipsBitmap (false), shouldClipBitmap (false)
         {
             if (owner.currentState != nullptr)
             {
@@ -619,8 +622,8 @@ public:
 
                         D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES props =
                             D2D1::RadialGradientBrushProperties (D2D1::Point2F (p1.x, p1.y),
-                                                                 D2D1::Point2F (0, 0),
-                                                                 r, r);
+                                    D2D1::Point2F (0, 0),
+                                    r, r);
 
                         owner.renderingTarget->CreateRadialGradientBrush (props, brushProps, gradientStops, radialGradient.resetAndGetPointerAddress());
                         currentBrush = radialGradient;
@@ -634,7 +637,7 @@ public:
 
                         D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES props =
                             D2D1::LinearGradientBrushProperties (D2D1::Point2F (p1.x, p1.y),
-                                                                 D2D1::Point2F (p2.x, p2.y));
+                                    D2D1::Point2F (p2.x, p2.y));
 
                         owner.renderingTarget->CreateLinearGradientBrush (props, brushProps, gradientStops, linearGradient.resetAndGetPointerAddress());
 
@@ -753,56 +756,56 @@ private:
         {
             switch (it.elementType)
             {
-                case Path::Iterator::cubicTo:
-                {
-                    D2D1_BEZIER_SEGMENT seg;
+            case Path::Iterator::cubicTo:
+            {
+                D2D1_BEZIER_SEGMENT seg;
 
-                    transform.transformPoint (it.x1, it.y1);
-                    seg.point1 = D2D1::Point2F (it.x1, it.y1);
+                transform.transformPoint (it.x1, it.y1);
+                seg.point1 = D2D1::Point2F (it.x1, it.y1);
 
-                    transform.transformPoint (it.x2, it.y2);
-                    seg.point2 = D2D1::Point2F (it.x2, it.y2);
+                transform.transformPoint (it.x2, it.y2);
+                seg.point2 = D2D1::Point2F (it.x2, it.y2);
 
-                    transform.transformPoint(it.x3, it.y3);
-                    seg.point3 = D2D1::Point2F (it.x3, it.y3);
+                transform.transformPoint(it.x3, it.y3);
+                seg.point3 = D2D1::Point2F (it.x3, it.y3);
 
-                    sink->AddBezier (seg);
-                    break;
-                }
+                sink->AddBezier (seg);
+                break;
+            }
 
-                case Path::Iterator::lineTo:
-                {
-                    transform.transformPoint (it.x1, it.y1);
-                    sink->AddLine (D2D1::Point2F (it.x1, it.y1));
-                    break;
-                }
+            case Path::Iterator::lineTo:
+            {
+                transform.transformPoint (it.x1, it.y1);
+                sink->AddLine (D2D1::Point2F (it.x1, it.y1));
+                break;
+            }
 
-                case Path::Iterator::quadraticTo:
-                {
-                    D2D1_QUADRATIC_BEZIER_SEGMENT seg;
+            case Path::Iterator::quadraticTo:
+            {
+                D2D1_QUADRATIC_BEZIER_SEGMENT seg;
 
-                    transform.transformPoint (it.x1, it.y1);
-                    seg.point1 = D2D1::Point2F (it.x1, it.y1);
+                transform.transformPoint (it.x1, it.y1);
+                seg.point1 = D2D1::Point2F (it.x1, it.y1);
 
-                    transform.transformPoint (it.x2, it.y2);
-                    seg.point2 = D2D1::Point2F (it.x2, it.y2);
+                transform.transformPoint (it.x2, it.y2);
+                seg.point2 = D2D1::Point2F (it.x2, it.y2);
 
-                    sink->AddQuadraticBezier (seg);
-                    break;
-                }
+                sink->AddQuadraticBezier (seg);
+                break;
+            }
 
-                case Path::Iterator::closePath:
-                {
-                    sink->EndFigure (D2D1_FIGURE_END_CLOSED);
-                    break;
-                }
+            case Path::Iterator::closePath:
+            {
+                sink->EndFigure (D2D1_FIGURE_END_CLOSED);
+                break;
+            }
 
-                case Path::Iterator::startNewSubPath:
-                {
-                    transform.transformPoint (it.x1, it.y1);
-                    sink->BeginFigure (D2D1::Point2F (it.x1, it.y1), D2D1_FIGURE_BEGIN_FILLED);
-                    break;
-                }
+            case Path::Iterator::startNewSubPath:
+            {
+                transform.transformPoint (it.x1, it.y1);
+                sink->BeginFigure (D2D1::Point2F (it.x1, it.y1), D2D1_FIGURE_BEGIN_FILLED);
+                break;
+            }
             }
         }
     }

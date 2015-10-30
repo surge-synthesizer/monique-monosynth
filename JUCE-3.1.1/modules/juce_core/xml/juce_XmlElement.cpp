@@ -27,19 +27,21 @@
 */
 
 XmlElement::XmlAttributeNode::XmlAttributeNode (const XmlAttributeNode& other) noexcept
-    : name (other.name),
-      value (other.value)
+:
+name (other.name),
+     value (other.value)
 {
 }
 
 XmlElement::XmlAttributeNode::XmlAttributeNode (const Identifier& n, const String& v) noexcept
-    : name (n), value (v)
+:
+name (n), value (v)
 {
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     // this checks whether the attribute name string contains any illegal characters..
     for (String::CharPointerType t (name.getCharPointer()); ! t.isEmpty(); ++t)
         jassert (t.isLetterOrDigit() || *t == '_' || *t == '-' || *t == ':');
-   #endif
+#endif
 }
 
 XmlElement::XmlAttributeNode::XmlAttributeNode (String::CharPointerType nameStart, String::CharPointerType nameEnd)
@@ -114,10 +116,11 @@ XmlElement& XmlElement::operator= (const XmlElement& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 XmlElement::XmlElement (XmlElement&& other) noexcept
-    : nextListItem      (static_cast<LinkedListPointer<XmlElement>&&> (other.nextListItem)),
-      firstChildElement (static_cast<LinkedListPointer<XmlElement>&&> (other.firstChildElement)),
-      attributes        (static_cast<LinkedListPointer<XmlAttributeNode>&&> (other.attributes)),
-      tagName           (static_cast<String&&> (other.tagName))
+:
+nextListItem      (static_cast<LinkedListPointer<XmlElement>&&> (other.nextListItem)),
+                  firstChildElement (static_cast<LinkedListPointer<XmlElement>&&> (other.firstChildElement)),
+                  attributes        (static_cast<LinkedListPointer<XmlAttributeNode>&&> (other.attributes)),
+                  tagName           (static_cast<String&&> (other.tagName))
 {
 }
 
@@ -155,93 +158,103 @@ XmlElement::~XmlElement() noexcept
 //==============================================================================
 namespace XmlOutputFunctions
 {
-   #if 0 // (These functions are just used to generate the lookup table used below)
-    bool isLegalXmlCharSlow (const juce_wchar character) noexcept
+#if 0 // (These functions are just used to generate the lookup table used below)
+bool isLegalXmlCharSlow (const juce_wchar character) noexcept
+{
+    if ((character >= 'a' && character <= 'z')
+    || (character >= 'A' && character <= 'Z')
+    || (character >= '0' && character <= '9'))
+        return true;
+
+    const char* t = " .,;:-()_+=?!'#@[]/\\*%~{}$|";
+
+    do
     {
-        if ((character >= 'a' && character <= 'z')
-             || (character >= 'A' && character <= 'Z')
-                || (character >= '0' && character <= '9'))
+        if (((juce_wchar) (uint8) *t) == character)
             return true;
+    }
+    while (*++t != 0);
 
-        const char* t = " .,;:-()_+=?!'#@[]/\\*%~{}$|";
+    return false;
+}
 
-        do
+void generateLegalCharLookupTable()
+{
+    uint8 n[32] = { 0 };
+    for (int i = 0; i < 256; ++i)
+        if (isLegalXmlCharSlow (i))
+            n[i >> 3] |= (1 << (i & 7));
+
+    String s;
+    for (int i = 0; i < 32; ++i)
+        s << (int) n[i] << ", ";
+
+    DBG (s);
+}
+#endif
+
+static bool isLegalXmlChar (const uint32 c) noexcept
+{
+    static const unsigned char legalChars[] = {
+        0, 0, 0, 0, 187, 255, 255, 175, 255,
+        255, 255, 191, 254, 255, 255, 127
+    };
+    return c < sizeof (legalChars) * 8
+           && (legalChars [c >> 3] & (1 << (c & 7))) != 0;
+}
+
+static void escapeIllegalXmlChars (OutputStream& outputStream, const String& text, const bool changeNewLines)
+{
+    String::CharPointerType t (text.getCharPointer());
+
+    for (;;)
+    {
+        const uint32 character = (uint32) t.getAndAdvance();
+
+        if (character == 0)
+            break;
+
+        if (isLegalXmlChar (character))
         {
-            if (((juce_wchar) (uint8) *t) == character)
-                return true;
+            outputStream << (char) character;
         }
-        while (*++t != 0);
-
-        return false;
-    }
-
-    void generateLegalCharLookupTable()
-    {
-        uint8 n[32] = { 0 };
-        for (int i = 0; i < 256; ++i)
-            if (isLegalXmlCharSlow (i))
-                n[i >> 3] |= (1 << (i & 7));
-
-        String s;
-        for (int i = 0; i < 32; ++i)
-            s << (int) n[i] << ", ";
-
-        DBG (s);
-    }
-   #endif
-
-    static bool isLegalXmlChar (const uint32 c) noexcept
-    {
-        static const unsigned char legalChars[] = { 0, 0, 0, 0, 187, 255, 255, 175, 255,
-                                                    255, 255, 191, 254, 255, 255, 127 };
-        return c < sizeof (legalChars) * 8
-                 && (legalChars [c >> 3] & (1 << (c & 7))) != 0;
-    }
-
-    static void escapeIllegalXmlChars (OutputStream& outputStream, const String& text, const bool changeNewLines)
-    {
-        String::CharPointerType t (text.getCharPointer());
-
-        for (;;)
+        else
         {
-            const uint32 character = (uint32) t.getAndAdvance();
-
-            if (character == 0)
+            switch (character)
+            {
+            case '&':
+                outputStream << "&amp;";
+                break;
+            case '"':
+                outputStream << "&quot;";
+                break;
+            case '>':
+                outputStream << "&gt;";
+                break;
+            case '<':
+                outputStream << "&lt;";
                 break;
 
-            if (isLegalXmlChar (character))
-            {
-                outputStream << (char) character;
-            }
-            else
-            {
-                switch (character)
+            case '\n':
+            case '\r':
+                if (! changeNewLines)
                 {
-                case '&':   outputStream << "&amp;"; break;
-                case '"':   outputStream << "&quot;"; break;
-                case '>':   outputStream << "&gt;"; break;
-                case '<':   outputStream << "&lt;"; break;
-
-                case '\n':
-                case '\r':
-                    if (! changeNewLines)
-                    {
-                        outputStream << (char) character;
-                        break;
-                    }
-                    // Note: deliberate fall-through here!
-                default:
-                    outputStream << "&#" << ((int) character) << ';';
+                    outputStream << (char) character;
                     break;
                 }
+                // Note: deliberate fall-through here!
+            default:
+                outputStream << "&#" << ((int) character) << ';';
+                break;
             }
         }
     }
+}
 
-    static void writeSpaces (OutputStream& out, const size_t numSpaces)
-    {
-        out.writeRepeatedByte (' ', numSpaces);
-    }
+static void writeSpaces (OutputStream& out, const size_t numSpaces)
+{
+    out.writeRepeatedByte (' ', numSpaces);
+}
 }
 
 void XmlElement::writeElementAsText (OutputStream& outputStream,
@@ -505,10 +518,10 @@ bool XmlElement::getBoolAttribute (StringRef attributeName, const bool defaultRe
         const juce_wchar firstChar = *(att->value.getCharPointer().findEndOfWhitespace());
 
         return firstChar == '1'
-            || firstChar == 't'
-            || firstChar == 'y'
-            || firstChar == 'T'
-            || firstChar == 'Y';
+               || firstChar == 't'
+               || firstChar == 'y'
+               || firstChar == 'T'
+               || firstChar == 'Y';
     }
 
     return defaultReturnValue;
@@ -520,7 +533,7 @@ bool XmlElement::compareAttribute (StringRef attributeName,
 {
     if (const XmlAttributeNode* att = getAttribute (attributeName))
         return ignoreCase ? att->value.equalsIgnoreCase (stringToCompareAgainst)
-                          : att->value == stringToCompareAgainst;
+               : att->value == stringToCompareAgainst;
 
     return false;
 }
@@ -564,8 +577,8 @@ void XmlElement::setAttribute (const Identifier& attributeName, const double num
 void XmlElement::removeAttribute (const Identifier& attributeName) noexcept
 {
     for (LinkedListPointer<XmlAttributeNode>* att = &attributes;
-         att->get() != nullptr;
-         att = &(att->get()->nextListItem))
+    att->get() != nullptr;
+    att = &(att->get()->nextListItem))
     {
         if (att->get()->name == attributeName)
         {
@@ -721,7 +734,7 @@ bool XmlElement::isEquivalentTo (const XmlElement* const other,
                 }
 
                 if (thisAtt->name != otherAtt->name
-                     || thisAtt->value != otherAtt->value)
+                        || thisAtt->value != otherAtt->value)
                 {
                     return false;
                 }
@@ -824,8 +837,8 @@ static const String juce_xmltextContentAttributeName ("text");
 const String& XmlElement::getText() const noexcept
 {
     jassert (isTextElement());  // you're trying to get the text from an element that
-                                // isn't actually a text element.. If this contains text sub-nodes, you
-                                // probably want to use getAllSubText instead.
+    // isn't actually a text element.. If this contains text sub-nodes, you
+    // probably want to use getAllSubText instead.
 
     return getStringAttribute (juce_xmltextContentAttributeName);
 }

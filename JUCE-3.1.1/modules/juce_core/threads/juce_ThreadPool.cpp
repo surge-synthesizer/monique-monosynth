@@ -30,7 +30,7 @@ class ThreadPool::ThreadPoolThread  : public Thread
 {
 public:
     ThreadPoolThread (ThreadPool& p)
-       : Thread ("Pool"), currentJob (nullptr), pool (p)
+        : Thread ("Pool"), currentJob (nullptr), pool (p)
     {
     }
 

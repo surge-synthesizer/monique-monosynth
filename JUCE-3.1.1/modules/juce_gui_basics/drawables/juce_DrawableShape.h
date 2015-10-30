@@ -91,7 +91,9 @@ public:
     /** Returns the current fill type.
         @see setFill
     */
-    const RelativeFillType& getFill() const noexcept                { return mainFill; }
+    const RelativeFillType& getFill() const noexcept                {
+        return mainFill;
+    }
 
     /** Sets the fill type with which the outline will be drawn.
         @see setFill
@@ -106,7 +108,9 @@ public:
     /** Returns the current stroke fill.
         @see setStrokeFill
     */
-    const RelativeFillType& getStrokeFill() const noexcept          { return strokeFill; }
+    const RelativeFillType& getStrokeFill() const noexcept          {
+        return strokeFill;
+    }
 
     /** Changes the properties of the outline that will be drawn around the path.
         If the stroke has 0 thickness, no stroke will be drawn.
@@ -120,7 +124,9 @@ public:
     void setStrokeThickness (float newThickness);
 
     /** Returns the current outline style. */
-    const PathStrokeType& getStrokeType() const noexcept            { return strokeType; }
+    const PathStrokeType& getStrokeType() const noexcept            {
+        return strokeType;
+    }
 
     //==============================================================================
     /** @internal */
@@ -138,7 +144,7 @@ public:
         void setStrokeType (const PathStrokeType& newStrokeType, UndoManager*);
 
         static const Identifier type, colour, colours, fill, stroke, path, jointStyle, capStyle, strokeWidth,
-                                gradientPoint1, gradientPoint2, gradientPoint3, radial, imageId, imageOpacity;
+               gradientPoint1, gradientPoint2, gradientPoint3, radial, imageId, imageOpacity;
     };
 
     /** @internal */

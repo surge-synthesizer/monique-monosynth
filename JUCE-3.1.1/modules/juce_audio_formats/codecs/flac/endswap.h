@@ -37,7 +37,7 @@
 #if ! HAVE_BSWAP16
 static inline unsigned short __builtin_bswap16(unsigned short a)
 {
-	return (a<<8)|(a>>8);
+    return (a<<8)|(a>>8);
 }
 #endif
 

@@ -48,11 +48,11 @@ AudioProcessor::~AudioProcessor()
     // that it refers to is deleted..
     jassert (activeEditor == nullptr);
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     // This will fail if you've called beginParameterChangeGesture() for one
     // or more parameters without having made a corresponding call to endParameterChangeGesture...
     jassert (changingParams.countNumberOfSetBits() == 0);
-   #endif
+#endif
 }
 
 void AudioProcessor::setPlayHead (AudioPlayHead* const newPlayHead)
@@ -73,9 +73,9 @@ void AudioProcessor::removeListener (AudioProcessorListener* const listenerToRem
 }
 
 void AudioProcessor::setPlayConfigDetails (const int newNumIns,
-                                           const int newNumOuts,
-                                           const double newSampleRate,
-                                           const int newBlockSize) noexcept
+        const int newNumOuts,
+        const double newSampleRate,
+        const int newBlockSize) noexcept
 {
     sampleRate = newSampleRate;
     blockSize  = newBlockSize;
@@ -112,7 +112,7 @@ void AudioProcessor::setLatencySamples (const int newLatency)
 }
 
 void AudioProcessor::setParameterNotifyingHost (const int parameterIndex,
-                                                const float newValue)
+        const float newValue)
 {
     setParameter (parameterIndex, newValue);
     sendParamChangeMessageToListeners (parameterIndex, newValue);
@@ -142,12 +142,12 @@ void AudioProcessor::beginParameterChangeGesture (int parameterIndex)
 {
     if (isPositiveAndBelow (parameterIndex, getNumParameters()))
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         // This means you've called beginParameterChangeGesture twice in succession without a matching
         // call to endParameterChangeGesture. That might be fine in most hosts, but better to avoid doing it.
         jassert (! changingParams [parameterIndex]);
         changingParams.setBit (parameterIndex);
-       #endif
+#endif
 
         for (int i = listeners.size(); --i >= 0;)
             if (AudioProcessorListener* l = getListenerLocked (i))
@@ -163,13 +163,13 @@ void AudioProcessor::endParameterChangeGesture (int parameterIndex)
 {
     if (isPositiveAndBelow (parameterIndex, getNumParameters()))
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         // This means you've called endParameterChangeGesture without having previously called
         // endParameterChangeGesture. That might be fine in most hosts, but better to keep the
         // calls matched correctly.
         jassert (changingParams [parameterIndex]);
         changingParams.clearBit (parameterIndex);
-       #endif
+#endif
 
         for (int i = listeners.size(); --i >= 0;)
             if (AudioProcessorListener* l = getListenerLocked (i))
@@ -385,13 +385,13 @@ void AudioProcessor::copyXmlToBinary (const XmlElement& xml, juce::MemoryBlock& 
 XmlElement* AudioProcessor::getXmlFromBinary (const void* data, const int sizeInBytes)
 {
     if (sizeInBytes > 8
-         && ByteOrder::littleEndianInt (data) == magicXmlNumber)
+            && ByteOrder::littleEndianInt (data) == magicXmlNumber)
     {
         const int stringLength = (int) ByteOrder::littleEndianInt (addBytesToPointer (data, 4));
 
         if (stringLength > 0)
             return XmlDocument::parse (String::fromUTF8 (static_cast<const char*> (data) + 8,
-                                                         jmin ((sizeInBytes - 8), stringLength)));
+                                       jmin ((sizeInBytes - 8), stringLength)));
     }
 
     return nullptr;
@@ -403,7 +403,8 @@ void AudioProcessorListener::audioProcessorParameterChangeGestureEnd   (AudioPro
 
 //==============================================================================
 AudioProcessorParameter::AudioProcessorParameter() noexcept
-    : processor (nullptr), parameterIndex (-1)
+:
+processor (nullptr), parameterIndex (-1)
 {}
 
 AudioProcessorParameter::~AudioProcessorParameter() {}
@@ -432,10 +433,18 @@ void AudioProcessorParameter::endChangeGesture()
     processor->endParameterChangeGesture (parameterIndex);
 }
 
-bool AudioProcessorParameter::isOrientationInverted() const { return false; }
-bool AudioProcessorParameter::isAutomatable() const         { return true; }
-bool AudioProcessorParameter::isMetaParameter() const       { return false; }
-int AudioProcessorParameter::getNumSteps() const            { return AudioProcessor::getDefaultNumParameterSteps(); }
+bool AudioProcessorParameter::isOrientationInverted() const {
+    return false;
+}
+bool AudioProcessorParameter::isAutomatable() const         {
+    return true;
+}
+bool AudioProcessorParameter::isMetaParameter() const       {
+    return false;
+}
+int AudioProcessorParameter::getNumSteps() const            {
+    return AudioProcessor::getDefaultNumParameterSteps();
+}
 
 String AudioProcessorParameter::getText (float value, int /*maximumStringLength*/) const
 {
@@ -446,18 +455,18 @@ String AudioProcessorParameter::getText (float value, int /*maximumStringLength*
 bool AudioPlayHead::CurrentPositionInfo::operator== (const CurrentPositionInfo& other) const noexcept
 {
     return timeInSamples == other.timeInSamples
-        && ppqPosition == other.ppqPosition
-        && editOriginTime == other.editOriginTime
-        && ppqPositionOfLastBarStart == other.ppqPositionOfLastBarStart
-        && frameRate == other.frameRate
-        && isPlaying == other.isPlaying
-        && isRecording == other.isRecording
-        && bpm == other.bpm
-        && timeSigNumerator == other.timeSigNumerator
-        && timeSigDenominator == other.timeSigDenominator
-        && ppqLoopStart == other.ppqLoopStart
-        && ppqLoopEnd == other.ppqLoopEnd
-        && isLooping == other.isLooping;
+           && ppqPosition == other.ppqPosition
+           && editOriginTime == other.editOriginTime
+           && ppqPositionOfLastBarStart == other.ppqPositionOfLastBarStart
+           && frameRate == other.frameRate
+           && isPlaying == other.isPlaying
+           && isRecording == other.isRecording
+           && bpm == other.bpm
+           && timeSigNumerator == other.timeSigNumerator
+           && timeSigDenominator == other.timeSigDenominator
+           && ppqLoopStart == other.ppqLoopStart
+           && ppqLoopEnd == other.ppqLoopEnd
+           && isLooping == other.isLooping;
 }
 
 bool AudioPlayHead::CurrentPositionInfo::operator!= (const CurrentPositionInfo& other) const noexcept

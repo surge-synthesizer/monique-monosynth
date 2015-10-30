@@ -20,8 +20,8 @@ Monique_Ui_Refreshable(ui_refresher_),
                        sampleCount   (0),
 
                        my_red( Colours::red.getARGB() ),
-                       my_yellow( look_and_feel->colours.button_on_colour.getARGB()),
-                       my_green( look_and_feel->colours.slider_track_colour.getARGB() ),
+                       my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB()),
+                       my_green( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
 
                        needsRepaint  (true)
 {
@@ -84,10 +84,10 @@ void Monique_Ui_SegmentedMeter::resized()
         float x = w - (i*segmentWidth);
         float x2 = w - ((i+1.0f)*segmentWidth);
 
-        gOn.setGradientFill (ColourGradient (colour_on, x, 0, Colour (0xff333333), x2, 0, false));
+        gOn.setColour (colour_on);
         gOn.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
 
-        gOff.setGradientFill (ColourGradient (colour_off.darker(0.3), x, 0, Colour (0xff161616), x2, 0, false));
+        gOff.setColour (colour_off.darker(0.3));
         gOff.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
         gOff.setColour (colour_off.darker (0.6f));
         gOff.drawRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0, 1);

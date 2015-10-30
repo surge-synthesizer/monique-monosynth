@@ -147,14 +147,14 @@ private:
     //==============================================================================
     Array<int> trackStartSamples;
 
-   #if JUCE_MAC
+#if JUCE_MAC
     File volumeDir;
     Array<File> tracks;
     int currentReaderTrack;
     ScopedPointer <AudioFormatReader> reader;
     AudioCDReader (const File& volume);
 
-   #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
     bool audioTracks [100];
     void* handle;
     MemoryBlock buffer;
@@ -163,9 +163,9 @@ private:
     AudioCDReader (void* handle);
     int getIndexAt (int samplePos);
 
-   #elif JUCE_LINUX
+#elif JUCE_LINUX
     AudioCDReader();
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioCDReader)
 };

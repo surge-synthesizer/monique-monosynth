@@ -67,7 +67,9 @@ public:
     void deleteControl();
 
     /** Returns true if a control is currently in use. */
-    bool isControlOpen() const noexcept                 { return control != nullptr; }
+    bool isControlOpen() const noexcept                 {
+        return control != nullptr;
+    }
 
     /** Does a QueryInterface call on the embedded control object.
 
@@ -102,7 +104,9 @@ public:
 
     /** Returns true if mouse events are allowed to get through to the control.
     */
-    bool areMouseEventsAllowed() const noexcept                 { return mouseEventsAllowed; }
+    bool areMouseEventsAllowed() const noexcept                 {
+        return mouseEventsAllowed;
+    }
 
     //==============================================================================
     /** @internal */

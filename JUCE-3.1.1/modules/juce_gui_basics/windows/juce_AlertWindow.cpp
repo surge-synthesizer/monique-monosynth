@@ -24,11 +24,11 @@
 
 static juce_wchar getDefaultPasswordChar() noexcept
 {
-   #if JUCE_LINUX
+#if JUCE_LINUX
     return 0x2022;
-   #else
+#else
     return 0x25cf;
-   #endif
+#endif
 }
 
 //==============================================================================
@@ -36,17 +36,17 @@ AlertWindow::AlertWindow (const String& title,
                           const String& message,
                           AlertIconType iconType,
                           Component* comp)
-   : TopLevelWindow (title, true),
-     alertIconType (iconType),
-     associatedComponent (comp),
-     escapeKeyCancels (true)
+    : TopLevelWindow (title, true),
+      alertIconType (iconType),
+      associatedComponent (comp),
+      escapeKeyCancels (true)
 {
 #ifdef IS_MOBILE_APP
     setAlwaysOnTop (true);
 #else
     setAlwaysOnTop (juce_areThereAnyAlwaysOnTopWindows());
 #endif
-    
+
     if (message.isEmpty())
         text = " "; // to force an update if the message is empty
 
@@ -95,7 +95,7 @@ void AlertWindow::addButton (const String& name,
 {
     TextButton* const b = new TextButton (name, String::empty);
     buttons.add (b);
-    
+
     b->setColour( TextButton::textColourOnId, Colour( 0xff00ffff ) );
     b->setColour( TextButton::textColourOffId, Colour( 0xff00ffff ) );
 
@@ -227,7 +227,9 @@ public:
         setColour (TextEditor::shadowColourId, Colours::transparentBlack);
     }
 
-    int getPreferredWidth() const noexcept   { return bestWidth; }
+    int getPreferredWidth() const noexcept   {
+        return bestWidth;
+    }
 
     void updateLayout (const int width)
     {
@@ -438,8 +440,8 @@ void AlertWindow::updateLayout (const bool onlyIncreaseSize)
     {
 #ifdef IS_MOBILE_APP
         const int cx = getX() + getWidth() / 2;
-	centreAroundComponent (associatedComponent, w, h);
-	setTopLeftPosition ( getX(), desktop_height/4-getHeight()/2 );
+        centreAroundComponent (associatedComponent, w, h);
+        setTopLeftPosition ( getX(), desktop_height/4-getHeight()/2 );
 #else
         centreAroundComponent (associatedComponent, w, h);
 #endif
@@ -611,20 +613,20 @@ private:
     void show()
     {
         LookAndFeel& lf = associatedComponent != nullptr ? associatedComponent->getLookAndFeel()
-                                                         : LookAndFeel::getDefaultLookAndFeel();
+                          : LookAndFeel::getDefaultLookAndFeel();
 
         ScopedPointer <Component> alertBox (lf.createAlertWindow (title, message, button1, button2, button3,
-                                                                  iconType, numButtons, associatedComponent));
+                                            iconType, numButtons, associatedComponent));
 
         jassert (alertBox != nullptr); // you have to return one of these!
 
-       #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
         if (modal)
         {
             returnValue = alertBox->runModalLoop();
         }
         else
-       #endif
+#endif
         {
             (void) modal; // (to avoid an unused variable warning)
 

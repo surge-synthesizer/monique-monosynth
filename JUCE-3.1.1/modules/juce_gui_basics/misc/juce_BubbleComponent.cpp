@@ -23,7 +23,7 @@
 */
 
 BubbleComponent::BubbleComponent()
-  : allowablePlacements (above | below | left | right)
+    : allowablePlacements (above | below | left | right)
 {
     setInterceptsMouseClicks (false, false);
 
@@ -80,7 +80,7 @@ void BubbleComponent::setPosition (const Rectangle<int>& rectangleToPointTo)
     const int totalH = content.getHeight() + edgeSpace * 2;
 
     const Rectangle<int> availableSpace (getParentComponent() != nullptr ? getParentComponent()->getLocalBounds()
-                                                                         : getParentMonitorArea());
+                                         : getParentMonitorArea());
 
     int spaceAbove = ((allowablePlacements & above) != 0) ? jmax (0, rectangleToPointTo.getY()  - availableSpace.getY()) : -1;
     int spaceBelow = ((allowablePlacements & below) != 0) ? jmax (0, availableSpace.getBottom() - rectangleToPointTo.getBottom()) : -1;
@@ -89,12 +89,12 @@ void BubbleComponent::setPosition (const Rectangle<int>& rectangleToPointTo)
 
     // look at whether the component is elongated, and if so, try to position next to its longer dimension.
     if (rectangleToPointTo.getWidth() > rectangleToPointTo.getHeight() * 2
-         && (spaceAbove > totalH + 20 || spaceBelow > totalH + 20))
+            && (spaceAbove > totalH + 20 || spaceBelow > totalH + 20))
     {
         spaceLeft = spaceRight = 0;
     }
     else if (rectangleToPointTo.getWidth() < rectangleToPointTo.getHeight() / 2
-              && (spaceLeft > totalW + 20 || spaceRight > totalW + 20))
+             && (spaceLeft > totalW + 20 || spaceRight > totalW + 20))
     {
         spaceAbove = spaceBelow = 0;
     }

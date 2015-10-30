@@ -26,7 +26,8 @@
   ==============================================================================
 */
 
-Random::Random (const int64 seedValue) noexcept   : seed (seedValue)
+Random::Random (const int64 seedValue) noexcept   :
+seed (seedValue)
 {
 }
 

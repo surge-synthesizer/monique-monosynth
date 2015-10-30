@@ -25,7 +25,8 @@
 class CodeEditorComponent::CodeEditorLine
 {
 public:
-    CodeEditorLine() noexcept   : highlightColumnStart (0), highlightColumnEnd (0)
+CodeEditorLine() noexcept   :
+    highlightColumnStart (0), highlightColumnEnd (0)
     {
     }
 
@@ -114,14 +115,15 @@ private:
     struct SyntaxToken
     {
         SyntaxToken (const String& t, const int len, const int type) noexcept
-            : text (t), length (len), tokenType (type)
+:
+        text (t), length (len), tokenType (type)
         {}
 
         bool operator== (const SyntaxToken& other) const noexcept
         {
             return tokenType == other.tokenType
-                    && length == other.length
-                    && text == other.text;
+                   && length == other.length
+                   && text == other.text;
         }
 
         String text;
@@ -225,29 +227,29 @@ private:
 
 namespace CodeEditorHelpers
 {
-    static int findFirstNonWhitespaceChar (StringRef line) noexcept
+static int findFirstNonWhitespaceChar (StringRef line) noexcept
+{
+    String::CharPointerType t (line.text);
+    int i = 0;
+
+    while (! t.isEmpty())
     {
-        String::CharPointerType t (line.text);
-        int i = 0;
+        if (! t.isWhitespace())
+            return i;
 
-        while (! t.isEmpty())
-        {
-            if (! t.isWhitespace())
-                return i;
-
-            ++t;
-            ++i;
-        }
-
-        return 0;
+        ++t;
+        ++i;
     }
+
+    return 0;
+}
 }
 
 //==============================================================================
 class CodeEditorComponent::Pimpl   : public Timer,
-                                     public AsyncUpdater,
-                                     public ScrollBar::Listener,
-                                     public CodeDocument::Listener
+    public AsyncUpdater,
+    public ScrollBar::Listener,
+    public CodeDocument::Listener
 {
 public:
     Pimpl (CodeEditorComponent& ed) : owner (ed) {}
@@ -255,8 +257,12 @@ public:
 private:
     CodeEditorComponent& owner;
 
-    void timerCallback() override        { owner.newTransaction(); }
-    void handleAsyncUpdate() override    { owner.rebuildLineTokens(); }
+    void timerCallback() override        {
+        owner.newTransaction();
+    }
+    void handleAsyncUpdate() override    {
+        owner.rebuildLineTokens();
+    }
 
     void scrollBarMoved (ScrollBar* scrollBarThatHasMoved, double newRangeStart) override
     {
@@ -291,7 +297,7 @@ public:
         const CodeEditorComponent& editor = *static_cast<CodeEditorComponent*> (getParentComponent());
 
         g.fillAll (editor.findColour (CodeEditorComponent::backgroundColourId)
-                    .overlaidWith (editor.findColour (lineNumberBackgroundId)));
+                   .overlaidWith (editor.findColour (lineNumberBackgroundId)));
 
         const Rectangle<int> clip (g.getClipBounds());
         const int lineH = editor.lineHeight;
@@ -571,12 +577,12 @@ void CodeEditorComponent::codeDocumentChanged (const int startIndex, const int e
     columnToTryToMaintain = -1;
 
     if (affectedTextEnd.getPosition() >= selectionStart.getPosition()
-         && affectedTextStart.getPosition() <= selectionEnd.getPosition())
+            && affectedTextStart.getPosition() <= selectionEnd.getPosition())
         deselectAll();
 
     if (shouldFollowDocumentChanges)
         if (caretPos.getPosition() > affectedTextEnd.getPosition()
-            || caretPos.getPosition() < affectedTextStart.getPosition())
+                || caretPos.getPosition() < affectedTextStart.getPosition())
             moveCaretTo (affectedTextStart, false);
 
     updateScrollBars();
@@ -599,7 +605,7 @@ void CodeEditorComponent::moveCaretTo (const CodeDocument::Position& newPos, con
         if (dragType == notDragging)
         {
             if (abs (caretPos.getPosition() - selectionStart.getPosition())
-                  < abs (caretPos.getPosition() - selectionEnd.getPosition()))
+                    < abs (caretPos.getPosition() - selectionEnd.getPosition()))
                 dragType = draggingSelectionStart;
             else
                 dragType = draggingSelectionEnd;
@@ -775,7 +781,7 @@ void CodeEditorComponent::insertTabAtCaret()
     if (! readOnly)
     {
         if (CharacterFunctions::isWhitespace (caretPos.getCharacter())
-             && caretPos.getLineNumber() == caretPos.movedBy (1).getLineNumber())
+                && caretPos.getLineNumber() == caretPos.movedBy (1).getLineNumber())
         {
             moveCaretTo (document.findWordBreakAfter (caretPos), false);
         }
@@ -819,8 +825,12 @@ bool CodeEditorComponent::deleteWhitespaceBackwardsToTabStop()
     return false;
 }
 
-void CodeEditorComponent::indentSelection()     { indentSelectedLines ( spacesPerTab); }
-void CodeEditorComponent::unindentSelection()   { indentSelectedLines (-spacesPerTab); }
+void CodeEditorComponent::indentSelection()     {
+    indentSelectedLines ( spacesPerTab);
+}
+void CodeEditorComponent::unindentSelection()   {
+    indentSelectedLines (-spacesPerTab);
+}
 
 void CodeEditorComponent::indentSelectedLines (const int spacesToAdd)
 {
@@ -1243,7 +1253,8 @@ void CodeEditorComponent::getAllCommands (Array<CommandID>& commands)
                               StandardApplicationCommandIDs::del,
                               StandardApplicationCommandIDs::selectAll,
                               StandardApplicationCommandIDs::undo,
-                              StandardApplicationCommandIDs::redo };
+                              StandardApplicationCommandIDs::redo
+                            };
 
     commands.addArray (ids, numElementsInArray (ids));
 }
@@ -1254,48 +1265,48 @@ void CodeEditorComponent::getCommandInfo (const CommandID commandID, Application
 
     switch (commandID)
     {
-        case StandardApplicationCommandIDs::cut:
-            result.setInfo (TRANS ("Cut"), TRANS ("Copies the currently selected text to the clipboard and deletes it."), "Editing", 0);
-            result.setActive (anythingSelected && ! readOnly);
-            result.defaultKeypresses.add (KeyPress ('x', ModifierKeys::commandModifier, 0));
-            break;
+    case StandardApplicationCommandIDs::cut:
+        result.setInfo (TRANS ("Cut"), TRANS ("Copies the currently selected text to the clipboard and deletes it."), "Editing", 0);
+        result.setActive (anythingSelected && ! readOnly);
+        result.defaultKeypresses.add (KeyPress ('x', ModifierKeys::commandModifier, 0));
+        break;
 
-        case StandardApplicationCommandIDs::copy:
-            result.setInfo (TRANS ("Copy"), TRANS ("Copies the currently selected text to the clipboard."), "Editing", 0);
-            result.setActive (anythingSelected);
-            result.defaultKeypresses.add (KeyPress ('c', ModifierKeys::commandModifier, 0));
-            break;
+    case StandardApplicationCommandIDs::copy:
+        result.setInfo (TRANS ("Copy"), TRANS ("Copies the currently selected text to the clipboard."), "Editing", 0);
+        result.setActive (anythingSelected);
+        result.defaultKeypresses.add (KeyPress ('c', ModifierKeys::commandModifier, 0));
+        break;
 
-        case StandardApplicationCommandIDs::paste:
-            result.setInfo (TRANS ("Paste"), TRANS ("Inserts text from the clipboard."), "Editing", 0);
-            result.setActive (! readOnly);
-            result.defaultKeypresses.add (KeyPress ('v', ModifierKeys::commandModifier, 0));
-            break;
+    case StandardApplicationCommandIDs::paste:
+        result.setInfo (TRANS ("Paste"), TRANS ("Inserts text from the clipboard."), "Editing", 0);
+        result.setActive (! readOnly);
+        result.defaultKeypresses.add (KeyPress ('v', ModifierKeys::commandModifier, 0));
+        break;
 
-        case StandardApplicationCommandIDs::del:
-            result.setInfo (TRANS ("Delete"), TRANS ("Deletes any selected text."), "Editing", 0);
-            result.setActive (anythingSelected && ! readOnly);
-            break;
+    case StandardApplicationCommandIDs::del:
+        result.setInfo (TRANS ("Delete"), TRANS ("Deletes any selected text."), "Editing", 0);
+        result.setActive (anythingSelected && ! readOnly);
+        break;
 
-        case StandardApplicationCommandIDs::selectAll:
-            result.setInfo (TRANS ("Select All"), TRANS ("Selects all the text in the editor."), "Editing", 0);
-            result.defaultKeypresses.add (KeyPress ('a', ModifierKeys::commandModifier, 0));
-            break;
+    case StandardApplicationCommandIDs::selectAll:
+        result.setInfo (TRANS ("Select All"), TRANS ("Selects all the text in the editor."), "Editing", 0);
+        result.defaultKeypresses.add (KeyPress ('a', ModifierKeys::commandModifier, 0));
+        break;
 
-        case StandardApplicationCommandIDs::undo:
-            result.setInfo (TRANS ("Undo"), TRANS ("Undo"), "Editing", 0);
-            result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier, 0));
-            result.setActive (document.getUndoManager().canUndo() && ! readOnly);
-            break;
+    case StandardApplicationCommandIDs::undo:
+        result.setInfo (TRANS ("Undo"), TRANS ("Undo"), "Editing", 0);
+        result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier, 0));
+        result.setActive (document.getUndoManager().canUndo() && ! readOnly);
+        break;
 
-        case StandardApplicationCommandIDs::redo:
-            result.setInfo (TRANS ("Redo"), TRANS ("Redo"), "Editing", 0);
-            result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0));
-            result.setActive (document.getUndoManager().canRedo() && ! readOnly);
-            break;
+    case StandardApplicationCommandIDs::redo:
+        result.setInfo (TRANS ("Redo"), TRANS ("Redo"), "Editing", 0);
+        result.defaultKeypresses.add (KeyPress ('z', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0));
+        result.setActive (document.getUndoManager().canRedo() && ! readOnly);
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -1308,14 +1319,29 @@ bool CodeEditorComponent::performCommand (const CommandID commandID)
 {
     switch (commandID)
     {
-        case StandardApplicationCommandIDs::cut:        cutToClipboard(); break;
-        case StandardApplicationCommandIDs::copy:       copyToClipboard(); break;
-        case StandardApplicationCommandIDs::paste:      pasteFromClipboard(); break;
-        case StandardApplicationCommandIDs::del:        cut(); break;
-        case StandardApplicationCommandIDs::selectAll:  selectAll(); break;
-        case StandardApplicationCommandIDs::undo:       undo(); break;
-        case StandardApplicationCommandIDs::redo:       redo(); break;
-        default:                                        return false;
+    case StandardApplicationCommandIDs::cut:
+        cutToClipboard();
+        break;
+    case StandardApplicationCommandIDs::copy:
+        copyToClipboard();
+        break;
+    case StandardApplicationCommandIDs::paste:
+        pasteFromClipboard();
+        break;
+    case StandardApplicationCommandIDs::del:
+        cut();
+        break;
+    case StandardApplicationCommandIDs::selectAll:
+        selectAll();
+        break;
+    case StandardApplicationCommandIDs::undo:
+        undo();
+        break;
+    case StandardApplicationCommandIDs::redo:
+        redo();
+        break;
+    default:
+        return false;
     }
 
     return true;
@@ -1410,7 +1436,7 @@ void CodeEditorComponent::mouseDoubleClick (const MouseEvent& e)
 void CodeEditorComponent::mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel)
 {
     if ((verticalScrollBar.isVisible() && wheel.deltaY != 0)
-         || (horizontalScrollBar.isVisible() && wheel.deltaX != 0))
+            || (horizontalScrollBar.isVisible() && wheel.deltaX != 0))
     {
         {
             MouseWheelDetails w (wheel);
@@ -1431,8 +1457,12 @@ void CodeEditorComponent::mouseWheelMove (const MouseEvent& e, const MouseWheelD
 }
 
 //==============================================================================
-void CodeEditorComponent::focusGained (FocusChangeType)     { updateCaretPosition(); }
-void CodeEditorComponent::focusLost (FocusChangeType)       { updateCaretPosition(); }
+void CodeEditorComponent::focusGained (FocusChangeType)     {
+    updateCaretPosition();
+}
+void CodeEditorComponent::focusLost (FocusChangeType)       {
+    updateCaretPosition();
+}
 
 //==============================================================================
 void CodeEditorComponent::setTabSize (const int numSpaces, const bool insertSpaces)
@@ -1450,7 +1480,7 @@ String CodeEditorComponent::getTabString (const int numSpaces) const
 {
     return String::repeatedString (useSpacesForTabs ? " " : "\t",
                                    useSpacesForTabs ? numSpaces
-                                                    : (numSpaces / spacesPerTab));
+                                   : (numSpaces / spacesPerTab));
 }
 
 int CodeEditorComponent::indexToColumn (int lineNum, int index) const noexcept
@@ -1536,8 +1566,8 @@ void CodeEditorComponent::setColourScheme (const ColourScheme& scheme)
 Colour CodeEditorComponent::getColourForTokenType (const int tokenType) const
 {
     return isPositiveAndBelow (tokenType, colourScheme.types.size())
-                ? colourScheme.types.getReference (tokenType).colour
-                : findColour (CodeEditorComponent::defaultTextColourId);
+           ? colourScheme.types.getReference (tokenType).colour
+           : findColour (CodeEditorComponent::defaultTextColourId);
 }
 
 void CodeEditorComponent::clearCachedIterators (const int firstLineToBeInvalid)
@@ -1627,9 +1657,10 @@ CodeEditorComponent::State::State (const CodeEditorComponent& editor)
 }
 
 CodeEditorComponent::State::State (const State& other) noexcept
-    : lastTopLine (other.lastTopLine),
-      lastCaretPos (other.lastCaretPos),
-      lastSelectionEnd (other.lastSelectionEnd)
+:
+lastTopLine (other.lastTopLine),
+            lastCaretPos (other.lastCaretPos),
+            lastSelectionEnd (other.lastSelectionEnd)
 {
 }
 

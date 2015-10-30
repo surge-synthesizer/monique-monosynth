@@ -37,7 +37,8 @@ StringArray::StringArray (const StringArray& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 StringArray::StringArray (StringArray&& other) noexcept
-    : strings (static_cast <Array <String>&&> (other.strings))
+:
+strings (static_cast <Array <String>&&> (other.strings))
 {
 }
 #endif
@@ -304,7 +305,7 @@ void StringArray::sortNatural()
 String StringArray::joinIntoString (StringRef separator, int start, int numberToJoin) const
 {
     const int last = (numberToJoin < 0) ? size()
-                                        : jmin (size(), start + numberToJoin);
+                     : jmin (size(), start + numberToJoin);
 
     if (start < 0)
         start = 0;
@@ -356,8 +357,8 @@ int StringArray::addTokens (StringRef text, StringRef breakCharacters, StringRef
         for (String::CharPointerType t (text.text);;)
         {
             String::CharPointerType tokenEnd (CharacterFunctions::findEndOfToken (t,
-                                                                                  breakCharacters.text,
-                                                                                  quoteCharacters.text));
+                                              breakCharacters.text,
+                                              quoteCharacters.text));
             strings.add (String (t, tokenEnd));
             ++num;
 
@@ -385,10 +386,16 @@ int StringArray::addLines (StringRef sourceText)
 
             switch (text.getAndAdvance())
             {
-                case 0:     finished = true; break;
-                case '\n':  break;
-                case '\r':  if (*text == '\n') ++text; break;
-                default:    continue;
+            case 0:
+                finished = true;
+                break;
+            case '\n':
+                break;
+            case '\r':
+                if (*text == '\n') ++text;
+                break;
+            default:
+                continue;
             }
 
             strings.add (String (startOfLine, endOfLine));
@@ -443,9 +450,9 @@ void StringArray::removeDuplicates (const bool ignoreCase)
 }
 
 void StringArray::appendNumbersToDuplicates (const bool ignoreCase,
-                                             const bool appendNumberToFirstInstance,
-                                             CharPointer_UTF8 preNumberString,
-                                             CharPointer_UTF8 postNumberString)
+        const bool appendNumberToFirstInstance,
+        CharPointer_UTF8 preNumberString,
+        CharPointer_UTF8 postNumberString)
 {
     CharPointer_UTF8 defaultPre (" ("), defaultPost (")");
 

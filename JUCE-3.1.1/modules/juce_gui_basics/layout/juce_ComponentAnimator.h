@@ -48,7 +48,7 @@
     @see Desktop::getAnimator
 */
 class JUCE_API  ComponentAnimator  : public ChangeBroadcaster,
-                                     private Timer
+    private Timer
 {
 public:
     //==============================================================================

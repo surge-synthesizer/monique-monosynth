@@ -68,7 +68,7 @@ void TooltipWindow::updatePosition (const String& tip, Point<int> pos, const Rec
     setBounds (Rectangle<int> (pos.x > parentArea.getCentreX() ? pos.x - (w + 12) : pos.x + 24,
                                pos.y > parentArea.getCentreY() ? pos.y - (h + 6)  : pos.y + 6,
                                w, h)
-                .constrainedWithin (parentArea));
+               .constrainedWithin (parentArea));
 
     setVisible (true);
 }
@@ -95,11 +95,11 @@ void TooltipWindow::displayTip (Point<int> screenPos, const String& tip)
         else
         {
             updatePosition (tip, screenPos, Desktop::getInstance().getDisplays()
-                                                .getDisplayContaining (screenPos).userArea);
+                            .getDisplayContaining (screenPos).userArea);
 
             addToDesktop (ComponentPeer::windowHasDropShadow
-                            | ComponentPeer::windowIsTemporary
-                            | ComponentPeer::windowIgnoresKeyPresses);
+                          | ComponentPeer::windowIsTemporary
+                          | ComponentPeer::windowIgnoresKeyPresses);
         }
 
         toFront (false);
@@ -109,8 +109,8 @@ void TooltipWindow::displayTip (Point<int> screenPos, const String& tip)
 String TooltipWindow::getTipFor (Component* const c)
 {
     if (c != nullptr
-         && Process::isForegroundProcess()
-         && ! ModifierKeys::getCurrentModifiers().isAnyMouseButtonDown())
+            && Process::isForegroundProcess()
+            && ! ModifierKeys::getCurrentModifiers().isAnyMouseButtonDown())
     {
         if (TooltipClient* const ttc = dynamic_cast <TooltipClient*> (c))
             if (! c->isCurrentlyBlockedByAnotherModalComponent())
@@ -177,8 +177,8 @@ void TooltipWindow::timerCallback()
         // if there isn't currently a tip, but one is needed, only let it
         // appear after a timeout..
         if (newTip.isNotEmpty()
-             && newTip != tipShowing
-             && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears)
+                && newTip != tipShowing
+                && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears)
         {
             displayTip (mousePos.roundToInt(), newTip);
         }

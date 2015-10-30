@@ -141,17 +141,23 @@ public:
     /** Returns the red component of this colour.
         @returns a value between 0x00 and 0xff.
     */
-    uint8 getRed() const noexcept                       { return argb.getRed(); }
+    uint8 getRed() const noexcept                       {
+        return argb.getRed();
+    }
 
     /** Returns the green component of this colour.
         @returns a value between 0x00 and 0xff.
     */
-    uint8 getGreen() const noexcept                     { return argb.getGreen(); }
+    uint8 getGreen() const noexcept                     {
+        return argb.getGreen();
+    }
 
     /** Returns the blue component of this colour.
         @returns a value between 0x00 and 0xff.
     */
-    uint8 getBlue() const noexcept                      { return argb.getBlue(); }
+    uint8 getBlue() const noexcept                      {
+        return argb.getBlue();
+    }
 
     /** Returns the red component of this colour as a floating point value.
         @returns a value between 0.0 and 1.0
@@ -184,7 +190,9 @@ public:
 
         Alpha of 0x00 is completely transparent, 0xff is completely opaque.
     */
-    uint8 getAlpha() const noexcept                     { return argb.getAlpha(); }
+    uint8 getAlpha() const noexcept                     {
+        return argb.getAlpha();
+    }
 
     /** Returns the colour's alpha (opacity) as a floating point value.
 

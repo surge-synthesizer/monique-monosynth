@@ -39,8 +39,7 @@ static inline float sample_mix( float s1_, float s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD SmoothedParameter::SmoothedParameter( SmoothManager*const smooth_manager_,
-        Parameter*const param_to_smooth_ ) noexcept
+COLD SmoothedParameter::SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept
 :
 RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
                  smooth_manager(smooth_manager_),
@@ -71,12 +70,14 @@ RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
     if( smooth_manager )
     {
         smooth_manager->smoothers.add(this);
+        param_to_smooth_->get_runtime_info().my_smoother = this;
     }
 }
 COLD SmoothedParameter::~SmoothedParameter() noexcept
 {
     if( smooth_manager )
     {
+        param_to_smooth->get_runtime_info().my_smoother = nullptr;
         smooth_manager->smoothers.removeFirstMatchingValue(this);
     }
 }
@@ -681,6 +682,7 @@ size( init_buffer_size_ ),
       band_out_buffers( init_buffer_size_ ),
 
       lfo_amplitudes( init_buffer_size_ ),
+      mfo_amplitudes( init_buffer_size_ ),
       filter_stereo_output_samples( init_buffer_size_ ),
       filter_output_samples_l_r( init_buffer_size_ ),
 
@@ -715,6 +717,7 @@ COLD void DataBuffer::resize_buffer_if_required( int size_ ) noexcept
         band_out_buffers.setSize(size_);
 
         lfo_amplitudes.setSize(size_);
+        mfo_amplitudes.setSize(size_);
         filter_stereo_output_samples.setSize(size_);
         filter_output_samples_l_r.setSize(size_);
 
@@ -1455,8 +1458,6 @@ class LFO : public RuntimeListener
 {
     const float*const sine_lookup;
 
-    mono_SineWave sine_generator;
-
     float last_speed;
     float samples_per_cylce;
     float last_out;
@@ -1475,13 +1476,14 @@ public:
     //==============================================================================
     inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
     {
+        // TODO smoothed
         const float speed( lfo_data->speed );
         if( speed != last_speed )
         {
             const float bars_per_sec = runtime_info->bpm/4/60;
             if( speed <= 17 )
             {
-                const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( lfo_data->speed );
+                const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed );
                 samples_per_cylce = sample_rate / cycles_per_sec;
             }
             else
@@ -1499,7 +1501,11 @@ public:
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             const float current_angle_samples = fmod(sync_sample_pos+sid,samples_per_cylce);
-            float amp = lfo2amp( lookup( sine_lookup, (2.0f*float_Pi)*(1.0f/samples_per_cylce*current_angle_samples)) );
+            float amp = 0;
+            if( current_angle_samples > 0 )
+            {
+                amp = lfo2amp( lookup( sine_lookup, (float_Pi*2)*(1.0f/samples_per_cylce*current_angle_samples)) );
+            }
             if( --glide_counter > 0 )
             {
                 float glide = (1.0f/glide_samples*glide_counter);
@@ -1520,56 +1526,6 @@ public:
         return last_out;
     }
 
-    //==========================================================================
-    static float get_lfo_speed_multi( float speed_ ) noexcept
-    {
-        float factor = 1;
-        if( speed_ <= 6 )
-        {
-            factor = 1;
-            if( speed_ == 0 )
-                factor = 16; //return "16/1";
-            else if( speed_ <= 1 )
-                factor = 12; //return "12/1";
-            else if( speed_ <= 2 )
-                factor = 8;
-            else if( speed_ <= 3 )
-                factor = 4;
-            else if( speed_ <= 4 )
-                factor = 3;
-            else if( speed_ <= 5 )
-                factor = 2;
-        }
-        else if( speed_ <= 17 )
-        {
-            factor = 0;
-            if( speed_ <= 7 )
-                factor = 3.0f/4;
-            else if( speed_ <= 8 )
-                factor = 1.0f/2;
-            else if( speed_ <= 9 )
-                factor = 1.0f/3;
-            else if( speed_ <= 10 )
-                factor = 1.0f/4;
-            else if( speed_ <= 11 )
-                factor = 1.0f/8;
-            else if( speed_ <= 12 )
-                factor = 1.0f/12;
-            else if( speed_ <= 13 )
-                factor = 1.0f/16;
-            else if( speed_ <= 14 )
-                factor = 1.0f/24;
-            else if( speed_ <= 15 )
-                factor = 1.0f/32;
-            else if( speed_ <= 16 )
-                factor = 1.0f/64;
-            else
-                factor = 1.0f/128;
-        }
-
-        return factor;
-    }
-
 private:
     //==========================================================================
     friend class MoniqueSynthesiserVoice;
@@ -1578,7 +1534,6 @@ private:
     RuntimeListener(notifyer_),
 
                     sine_lookup( sine_lookup_ ),
-                    sine_generator( notifyer_, sine_lookup_ ),
 
                     last_speed(0),
                     samples_per_cylce(100),
@@ -1597,6 +1552,124 @@ private:
     COLD ~LFO() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class MFO : public RuntimeListener
+{
+    const float*const sine_lookup;
+
+    float last_speed;
+    float samples_per_cylce;
+    float last_out;
+
+    float glide_samples;
+    int glide_counter;
+    float glide_value;
+
+    DataBuffer*const data_buffer;
+    const MFOData*const mfo_data;
+    const RuntimeInfo*const runtime_info;
+
+public:
+    //==============================================================================
+    inline void process( float*dest_, int step_number_, int64 sync_sample_pos_, int num_samples_, bool use_glide_ = true ) noexcept
+    {
+        const float speed( mfo_data->speed );
+        if( speed != last_speed )
+        {
+            const float bars_per_sec = runtime_info->bpm/4/60;
+            const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed );
+            samples_per_cylce = sample_rate / cycles_per_sec;
+
+            glide_samples = glide_counter = sample_rate/10;
+            glide_value = last_out;
+            last_speed = speed;
+        }
+
+        const float wave_ = mfo_data->wave;
+        const float offset_ = mfo_data->phase_shift;
+        const float* smoothed_wave_buffer( mfo_data->wave_smoother.get_smoothed_buffer() );
+        const float* smoothed_offset_buffer( mfo_data->phase_shift_smoother.get_smoothed_buffer() );
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            const float current_angle_samples = fmod(sync_sample_pos_+sid,samples_per_cylce);
+
+            float amp = 0;
+            {
+                float sine_amp = 0;
+                if( current_angle_samples > 0 )
+                {
+                    const float angle = (float_Pi*2) * (1.0f/samples_per_cylce*current_angle_samples)+ (use_glide_ ? smoothed_offset_buffer[sid] : offset_ ) *float_Pi;
+                    sine_amp = lookup( sine_lookup, angle );
+                }
+
+                const float wave = use_glide_ ? smoothed_wave_buffer[sid] : wave_;
+                amp = sine_amp*(100.0f*wave+1)*wave + sine_amp*(1.0f-wave);
+                if( amp > 1 )
+                {
+                    amp = 1;
+                }
+                else if( amp < -1 )
+                {
+                    amp = -1;
+                }
+                amp = lfo2amp(amp);
+            }
+
+            if( --glide_counter > 0 )
+            {
+                float glide = (1.0f/glide_samples*glide_counter);
+                amp = amp*(1.0f-glide) + glide_value*glide;
+            }
+
+            dest_[sid] = amp;
+        }
+        last_out = dest_[num_samples_-1];
+    }
+    void sample_rate_changed( double ) noexcept
+    {
+        last_speed = -1;
+    }
+
+    //==========================================================================
+    float get_current_amp() const noexcept
+    {
+        return last_out;
+    }
+
+public:
+    //==========================================================================
+    COLD MFO( RuntimeNotifyer*const notifyer_, MoniqueSynthData*synth_data_, MFOData*mfo_data_, const float*const sine_lookup_ ) noexcept
+:
+    RuntimeListener(notifyer_),
+
+                    sine_lookup( sine_lookup_ ),
+
+                    last_speed(0),
+                    samples_per_cylce(100),
+                    last_out(0),
+
+                    glide_samples(0),
+                    glide_counter(0),
+                    glide_value(0),
+
+                    data_buffer( synth_data_->data_buffer ),
+                    mfo_data( mfo_data_ ),
+                    runtime_info( synth_data_->runtime_info )
+    {}
+    COLD ~MFO() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MFO)
 };
 
 //==============================================================================
@@ -1823,10 +1896,10 @@ public:
     }
 
     //==============================================================================
-    inline void update( float root_note_ ) noexcept
+    inline void update( float root_note_, int sample_pos_ ) noexcept
     {
         root_note_ += synth_data->octave_offset *12;
-        const float glide = synth_data->glide;
+        const float glide = synth_data->glide_smoother.get_smoothed_buffer()[sample_pos_];
         if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
         {
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
@@ -1834,7 +1907,14 @@ public:
             const float rest_glide = freq_glide_delta*freq_glide_samples_left;
             freq_glide_samples_left = (sample_rate*0.5) * glide;
             const float glide_notes_diverence = root_note - root_note_;
-            freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
+            if( freq_glide_samples_left > 0 )
+            {
+                freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
+            }
+            else
+            {
+                freq_glide_delta = 0;
+            }
         }
 
         root_note = root_note_;
@@ -2082,10 +2162,10 @@ public:
     }
 
     //==============================================================================
-    inline void update( float root_note_ ) noexcept
+    inline void update( float root_note_, int sample_pos_ ) noexcept
     {
         root_note_ += synth_data->octave_offset *12;
-        const float glide = synth_data->glide;
+        const float glide = synth_data->glide_smoother.get_smoothed_buffer()[sample_pos_];
         if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
         {
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
@@ -2093,7 +2173,14 @@ public:
             const float rest_glide = freq_glide_delta*freq_glide_samples_left;
             freq_glide_samples_left = (sample_rate*0.5) * glide;
             const float glide_notes_diverence = root_note - root_note_;
-            freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
+            if( freq_glide_samples_left > 0 )
+            {
+                freq_glide_delta = (glide_notes_diverence+rest_glide) / freq_glide_samples_left;
+            }
+            else
+            {
+                freq_glide_delta = 0;
+            }
         }
 
         root_note = root_note_;
@@ -2186,7 +2273,7 @@ public:
         start_amp = start_value_;
         target_amp = end_value_;
         shape = shape_*0.9+0.1;
-        time_in_samples = msToSamplesFast( time_in_ms_, sample_rate );
+        time_in_samples = jmax(int64(10),msToSamplesFast( time_in_ms_+1, sample_rate ));
     }
     inline void calculate_attack_coeffecients() noexcept
     {
@@ -2226,9 +2313,9 @@ public:
     {
         start_amp = out_amp;
         target_amp = target_;
-        sample_counter = time_in_samples;
-        angle = 0;
-        delta = float_Pi / sample_counter;
+        //sample_counter = time_in_samples;
+        //delta = (float_Pi) / sample_counter;
+        //angle = 0;
     }
 
 public:
@@ -2388,17 +2475,18 @@ private:
     inline void update_stage( int sid_ ) noexcept
     {
         const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
+        const float* smoothed_shape_buffer = env_data->shape_smoother.get_smoothed_buffer();
         switch( current_stage )
         {
         case TRIGGER_START : // --> ATTACK
         {
-            const float attack_time = env_data->attack*env_data->max_attack_time+MIN_ENV_TIMES;
+            const float attack_time = env_data->attack*MAX_ENV_TIMES+MIN_ENV_TIMES;
             if( env_data->decay > 0 )
             {
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), 1,
-                    env_data->shape,
+                    smoothed_shape_buffer[sid_],
                     attack_time
                 );
                 goes_to_sustain = false;
@@ -2409,7 +2497,7 @@ private:
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), smoothed_sustain_buffer[sid_],
-                    env_data->shape,
+                    smoothed_shape_buffer[sid_],
                     attack_time
                 );
                 goes_to_sustain = true;
@@ -2429,8 +2517,8 @@ private:
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), smoothed_sustain_buffer[sid_],
-                    env_data->shape,
-                    decay*env_data->max_decay_time+MIN_ENV_TIMES
+                    smoothed_shape_buffer[sid_],
+                    decay*MAX_ENV_TIMES+MIN_ENV_TIMES
                 );
                 goes_to_sustain = true;
                 is_sustain = false;
@@ -2451,7 +2539,7 @@ private:
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), sustain_level,
-                    env_data->shape,
+                    smoothed_shape_buffer[sid_],
                     sustain_time*10000
                 );
                 env_osc.calculate_unlimited_coeffecients();
@@ -2463,7 +2551,7 @@ private:
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), 0,
-                    env_data->shape,
+                    smoothed_shape_buffer[sid_],
                     sustain_time*10000
                 );
                 env_osc.calculate_release_coeffecients();
@@ -2479,8 +2567,8 @@ private:
             env_osc.set_process_values
             (
                 env_osc.last_out(), 0,
-                env_data->shape,
-                env_data->release*env_data->max_release_time+MIN_ENV_TIMES
+                smoothed_shape_buffer[sid_],
+                env_data->release*MAX_ENV_TIMES+MIN_ENV_TIMES
             );
             goes_to_sustain = false;
             is_sustain = false;
@@ -4668,7 +4756,6 @@ class FXProcessor
     Chorus chorus_l;
     Chorus chorus_r;
     friend class mono_ParameterOwnerStore;
-    ScopedPointer< ENV > chorus_modulation_env;
 
     // DELAY
     int delayPosition;
@@ -4698,45 +4785,12 @@ public:
         float* left_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(LEFT);
         float* right_input_buffer = data_buffer->filter_stereo_output_samples.getWritePointer(RIGHT);
 
-        // PREPARE REVERB
-        {
-            const float reverb_room = reverb_data->room;
-            const float reverb_dry_wet_mix = 1.0f-reverb_data->dry_wet_mix;
-            const float reverb_width = reverb_data->width;
-            ReverbParameters& rever_params_l = reverb_l.get_parameters();
-            if(
-                rever_params_l.roomSize != reverb_room
-                || rever_params_l.dryLevel != reverb_dry_wet_mix
-                // current_params.wetLevel != r_params.wetLevel
-                || rever_params_l.width != reverb_width
-            )
-            {
-                rever_params_l.roomSize = reverb_room;
-                rever_params_l.dryLevel = reverb_dry_wet_mix;
-                rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
-                rever_params_l.width = reverb_width;
-
-                ReverbParameters& rever_params_r = reverb_r.get_parameters();
-                rever_params_r.roomSize = rever_params_l.roomSize;
-                rever_params_r.dryLevel = rever_params_l.dryLevel;
-                rever_params_r.wetLevel = rever_params_l.wetLevel;
-                rever_params_r.width = rever_params_l.width;
-
-                reverb_l.update_parameters();
-                reverb_r.update_parameters();
-            }
-        }
+        float* left_out_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
+        const bool is_stereo = output_buffer_.getNumChannels() > 1;
+        float* right_out_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
 
         // PREPARE
         {
-            chorus_data->modulation_smoother.process_amp
-            (
-                not chorus_data->hold_modulation,
-                chorus_modulation_env,
-                data_buffer->chorus_env.getWritePointer(),
-                num_samples_
-            );
-
             float* const final_env_amp = data_buffer->final_env.getWritePointer();
             final_env->process( final_env_amp, num_samples_ );
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -4751,7 +4805,7 @@ public:
         {
             // CHORUS
             const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_buffer() );
-            const float* const smoothed_bypass = synth_data->effect_bypass_smoother.get_smoothed_buffer();
+            const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_buffer() );
             const float max_chorus_delay_power_left = chorus_l.get_sample_rate() * (1.0f/200.454545455f);
             const float max_chorus_delay_power_right  = chorus_l.get_sample_rate() * (1.0f/220.5f);
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -4766,157 +4820,124 @@ public:
                 float tmp_sample_r = chorus_r.tick((modulation_amp * max_chorus_delay_power_right) + 1.56f);
                 chorus_l.fill( sample_mix (in_l, tmp_sample_r * feedback ) );
                 chorus_r.fill( sample_mix (in_r, tmp_sample_l * feedback ) );
+
                 //chorus_l.fill( in_l, tmp_sample_r * feedback ) );
                 //chorus_r.fill( in_r, tmp_sample_l * feedback ) );
 
-                const float bypass = smoothed_bypass[sid];
-                left_input_buffer[sid] = sample_mix(tmp_sample_l*bypass, in_l*(1.0f-bypass));
-                right_input_buffer[sid] = sample_mix(tmp_sample_r*bypass, in_r*(1.0f-bypass));
+                const float pan = smoothed_pan_buffer[sid];
+                const float left = jmin(1.0f,pan+1);
+                const float right = jmin(1.0f,pan*-1+1);
+                left_out_buffer[sid] = tmp_sample_l*left + in_l*(1.0f-left);
+                right_out_buffer[sid] = tmp_sample_r*right + in_r*(1.0f-right);
+            }
+        }
+
+        // DELAY
+        {
+            const float* const smoothed_pan_buffer = synth_data->delay_pan_smoother.get_smoothed_buffer();
+            float*const left_delay_data = delayBuffer.getWritePointer (LEFT);
+            float*const right_delay_data = delayBuffer.getWritePointer (RIGHT);
+            const float* const smoothed_delay_buffer = synth_data->delay_smoother.get_smoothed_buffer();
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                {
+                    const float in_l = left_out_buffer[sid];
+                    const float in_r = right_out_buffer[sid];
+                    const float delay_data_in_l = left_delay_data[delayPosition];
+                    const float delay_data_in_r = right_delay_data[delayPosition];
+                    float sample_l = delay_data_in_l+in_l;
+                    float sample_r = delay_data_in_r+in_r;
+                    const float pan = smoothed_pan_buffer[sid];
+                    const float left = jmax(0.0f,jmin(1.0f,pan+1));
+                    const float right = jmax(0.0f,jmin(1.0f,pan*-1+1));
+                    left_delay_data[delayPosition] = sample_l * smoothed_delay_buffer[sid] * left;
+                    right_delay_data[delayPosition] = sample_r * smoothed_delay_buffer[sid] * right;
+                    if ( ++delayPosition >= DELAY_BUFFER_SIZE )
+                    {
+                        delayPosition = 0;
+                    }
+
+                    left_out_buffer[sid] = sample_l;
+                    right_out_buffer[sid] = sample_r;
+                }
+            }
+        }
+
+
+        // REVERB
+        {
+            const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_buffer() );
+            const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_buffer();
+
+            const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_buffer();
+            const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_buffer();
+            const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_buffer();
+            ReverbParameters& rever_params_l = reverb_l.get_parameters();
+            ReverbParameters& rever_params_r = reverb_r.get_parameters();
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                {
+                    const float reverb_room = smoothed_room_buffer[sid];
+                    const float reverb_dry_wet_mix = 1.0f-smoothed_dry_wet_mix_buffer[sid];
+                    const float reverb_width = smoothed_with_buffer[sid];
+                    if(
+                        rever_params_l.roomSize != reverb_room
+                        || rever_params_l.dryLevel != reverb_dry_wet_mix
+                        // current_params.wetLevel != r_params.wetLevel
+                        || rever_params_l.width != reverb_width
+                    )
+                    {
+                        rever_params_l.roomSize = reverb_room;
+                        rever_params_l.dryLevel = reverb_dry_wet_mix;
+                        rever_params_l.wetLevel = 1.0f-reverb_dry_wet_mix;
+                        rever_params_l.width = reverb_width;
+
+                        rever_params_r.roomSize = rever_params_l.roomSize;
+                        rever_params_r.dryLevel = rever_params_l.dryLevel;
+                        rever_params_r.wetLevel = rever_params_l.wetLevel;
+                        rever_params_r.width = rever_params_l.width;
+
+                        reverb_l.update_parameters();
+                        reverb_r.update_parameters();
+                    }
+
+                    const float in_l = left_out_buffer[sid];
+                    const float in_r = right_out_buffer[sid];
+                    float sample_l = reverb_l.processSingleSampleRaw( in_l );
+                    float sample_r = reverb_r.processSingleSampleRaw( in_r );
+
+                    const float pan = smoothed_pan_buffer[sid];
+                    const float left = jmin(1.0f,pan+1);
+                    const float right = jmin(1.0f,pan*-1+1);
+                    const float bypass = smoothed_bypass_buffer[sid];
+                    left_out_buffer[sid] = sample_mix( (sample_l*left + in_l*(1.0f-left))*bypass, left_input_buffer[sid]*(1.0f-bypass));
+                    right_out_buffer[sid] = sample_mix( (sample_r*right + in_r*(1.0f-right) )*bypass, right_input_buffer[sid]*(1.0f-bypass));
+                }
             }
         }
 
         // PROCESS
         {
-            struct LeftRightExecuter : public mono_Thread
-            {
-                FXProcessor*const processor;
-
-                const int num_samples;
-
-                int delay_pos;
-
-                const float* const input_buffer;
-                float* const delay_data;
-                float* const final_output;
-
-                const float* const smoothed_delay_buffer;
-                const float* const smoothed_bypass;
-
-                // LEFT SIDE
-                inline void exec() noexcept override
-                {
-                    // DELAY
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        const float in = input_buffer[sid];
-                        const float delay_data_in = delay_data[delay_pos];
-                        float sample = delay_data_in+in;
-                        delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
-                        if ( ++delay_pos >= DELAY_BUFFER_SIZE )
-                        {
-                            delay_pos = 0;
-                        }
-
-                        const float bypass = smoothed_bypass[sid];
-                        final_output[sid] = sample_mix(processor->reverb_l.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
-                    }
-                }
-
-                inline void exec_right() noexcept
-                {
-                    // DELAY / REVERB / MIX
-                    for( int sid = 0 ; sid != num_samples ; ++sid )
-                    {
-                        // DELAY
-                        const float in = input_buffer[sid];
-                        const float delay_data_in = delay_data[delay_pos];
-                        float sample = delay_data_in+in;
-                        delay_data[delay_pos] = sample * smoothed_delay_buffer[sid];
-                        if (++delay_pos >= DELAY_BUFFER_SIZE)
-                        {
-                            delay_pos = 0;
-                        }
-
-                        // REVERB
-                        // MIX
-                        const float bypass = smoothed_bypass[sid];
-                        sample = sample_mix(processor->reverb_r.processSingleSampleRaw( sample )*bypass, input_buffer[sid]*(1.0f-bypass));
-                        final_output[sid] = sample;
-                    }
-                    processor->delayPosition = delay_pos;
-                }
-
-                LeftRightExecuter( FXProcessor*const fx_processor_,
-
-                                   const int num_samples_,
-                                   const int delay_pos_,
-
-                                   const float* input_buffer_,
-
-                                   float* delay_data_,
-                                   float* final_output_
-                                 ) noexcept
-:
-                mono_Thread( fx_processor_->thread_manager ),
-                             processor( fx_processor_ ),
-
-                             num_samples( num_samples_ ),
-                             delay_pos( delay_pos_ ),
-
-                             input_buffer(input_buffer_),
-                             delay_data(delay_data_),
-                             final_output(final_output_),
-
-                             smoothed_delay_buffer( fx_processor_->synth_data->delay_smoother.get_smoothed_buffer() ),
-                             smoothed_bypass( fx_processor_->synth_data->effect_bypass_smoother.get_smoothed_buffer() )
-                {}
-            };
-
-            const int delay_pos = delayPosition;
-            LeftRightExecuter left_executer( this,
-
-                                             num_samples_,
-                                             delay_pos,
-
-                                             left_input_buffer,
-
-                                             delayBuffer.getWritePointer (LEFT),
-
-                                             &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_]
-                                           ) ;
-            left_executer.try_run_paralel();
-
-            const bool is_stereo = output_buffer_.getNumChannels() > 1;
-            {
-                LeftRightExecuter right_executer
-                (
-                    this,
-
-                    num_samples_,
-                    delay_pos,
-
-                    right_input_buffer,
-
-                    delayBuffer.getWritePointer (RIGHT),
-
-                    is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer()
-                ) ;
-                right_executer.exec_right();
-            }
-
-            while( left_executer.isWorking() ) {}
             // FINAL MIX
             {
                 const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
-                float*const left_buffer = &output_buffer_.getWritePointer(LEFT)[start_sample_final_out_];
-                float*const right_buffer = is_stereo ? &output_buffer_.getWritePointer(RIGHT)[start_sample_final_out_] : data_buffer->second_mono_buffer.getWritePointer();
                 if( is_stereo )
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        last_output_smoother.add( left_buffer[sid]*right_buffer[sid] );
+                        last_output_smoother.add( left_out_buffer[sid]*right_out_buffer[sid] );
                         const float volume = smoothed_volume_buffer[sid];
-                        left_buffer[sid] *= volume*2;
-                        right_buffer[sid] *= volume*2;
+                        left_out_buffer[sid] *= volume*2;
+                        right_out_buffer[sid] *= volume*2;
                     }
                 }
                 else
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        last_output_smoother.add( left_buffer[sid]*right_buffer[sid] );
+                        last_output_smoother.add( left_out_buffer[sid]*right_out_buffer[sid] );
                         const float volume = smoothed_volume_buffer[sid];
-                        left_buffer[sid] *= sample_mix(left_buffer[sid]* volume*2, right_buffer[sid]* volume*2);
+                        left_out_buffer[sid] *= sample_mix(left_out_buffer[sid]* volume*2, right_out_buffer[sid]* volume*2);
                     }
                 }
 
@@ -4924,28 +4945,28 @@ public:
                 if( Monique_Ui_SegmentedMeter*meter = synth_data->audio_processor->peak_meter )
                 {
                     ScopedLock locked(synth_data->audio_processor->peak_meter_lock);
-                    meter->process( left_buffer, num_samples_ );
+                    meter->process( left_out_buffer, num_samples_ );
                 }
                 if( is_stereo )
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
-                        right_buffer[sid] = soft_clipp_greater_0_9( right_buffer[sid] ) ;
+                        left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
+                        right_out_buffer[sid] = soft_clipp_greater_0_9( right_out_buffer[sid] ) ;
                     }
                 }
                 else
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        left_buffer[sid] = soft_clipp_greater_0_9( left_buffer[sid] ) ;
+                        left_out_buffer[sid] = soft_clipp_greater_0_9( left_out_buffer[sid] ) ;
                     }
                 }
 
                 // VISUALIZE
                 if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
                 {
-                    amp_painter->add_out( left_buffer, right_buffer, num_samples_ );
+                    amp_painter->add_out( left_out_buffer, right_out_buffer, num_samples_ );
                     amp_painter->add_out_env( data_buffer->final_env.getReadPointer(), num_samples_ );
                 }
             }
@@ -4956,15 +4977,13 @@ public:
     void start_attack() noexcept
     {
         last_output_smoother.reset();
-
-        chorus_modulation_env->start_attack();
         final_env->start_attack();
     }
     void start_release( bool is_sustain_pedal_down_, bool is_sostenuto_pedal_down_ ) noexcept
     {
         if( not is_sostenuto_pedal_down_ )
         {
-            chorus_modulation_env->set_to_release();
+            //chorus_modulation_env->set_to_release();
         }
         if( not is_sustain_pedal_down_ )
         {
@@ -4977,7 +4996,6 @@ public:
         reverb_r.reset();
         chorus_l.reset();
         chorus_r.reset();
-        chorus_modulation_env->reset();
         delayPosition = 0;
         FloatVectorOperations::clear(delayBuffer.getWritePointer(), delayBuffer.get_size());
         final_env->reset();
@@ -5002,8 +5020,6 @@ public:
 
                    chorus_l(notifyer_),
                    chorus_r(notifyer_),
-
-                   chorus_modulation_env( new ENV( notifyer_, synth_data_, synth_data_->chorus_data->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
                    delayPosition( 0 ),
                    delayBuffer ( DELAY_BUFFER_SIZE ),
@@ -5240,6 +5256,12 @@ audio_processor( audio_processor_ ),
         lfos[i] = new LFO( notifyer_, synth_data_, i, synth_data_->sine_lookup );
     }
 
+    mfos = new MFO*[SUM_MORPHER_GROUPS];
+    for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+    {
+        mfos[i] = new MFO( notifyer_, synth_data_, synth_data->mfo_datas[i], synth_data_->sine_lookup );
+    }
+
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
     filter_processors = new FilterProcessor*[SUM_FILTERS];
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
@@ -5257,6 +5279,10 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
     {
         delete lfos[i];
     }
+    for( int i = SUM_MORPHER_GROUPS-1 ; i > -1 ; --i )
+    {
+        delete mfos[i];
+    }
     delete third_osc;
     delete second_osc;
     delete master_osc;
@@ -5271,9 +5297,9 @@ COLD MoniqueSynthesiserVoice::~MoniqueSynthesiserVoice() noexcept
 //==============================================================================
 void MoniqueSynthesiserVoice::startNote( int midi_note_number_, float velocity_, SynthesiserSound* /*sound*/, int pitch_ )
 {
-    start_internal( midi_note_number_, velocity_ );
+    start_internal( midi_note_number_, velocity_, 0 );
 }
-void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_ ) noexcept
+void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float velocity_, int sample_number_ ) noexcept
 {
     stopped_and_sostenuto_pedal_was_down = false;
     stopped_and_sustain_pedal_was_down = false;
@@ -5292,9 +5318,9 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
     float note = current_note+arp_offset+pitch_offset;
-    master_osc->update( note );
-    second_osc->update( note );
-    third_osc->update( note );
+    master_osc->update( note, sample_number_ );
+    second_osc->update( note, sample_number_ );
+    third_osc->update( note, sample_number_ );
 
     // PROCESSORS
     bool start_up = true;
@@ -5489,7 +5515,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         {
             if( step_id == 0 )
             {
-                start_internal( current_note, current_velocity );
+                start_internal( current_note, current_velocity, counted_samples+start_sample_ );
                 an_arp_note_is_already_running = true;
                 sample_position_for_restart_arp = -1;
             }
@@ -5521,13 +5547,82 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         const bool is_a_new_arp_step_to_start = (is_arp_on and is_a_step and is_step_enabled);
         if( is_a_new_arp_step_to_start )
         {
-            start_internal( current_note, current_velocity );
+            start_internal( current_note, current_velocity, counted_samples+start_sample_ );
             an_arp_note_is_already_running = true;
         }
     }
 
     // FREE IT
     release_if_inactive();
+}
+
+// TEST for developement, TODO move to ??
+inline void SmoothManager::automated_morph( const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept
+{
+    int glide_motor_time_in_samples( msToSamplesFast(morph_motor_time_in_ms_, sample_rate) );
+    for( int i = 0 ; i != smoothers.size() ; ++i )
+    {
+        SmoothedParameter*smoothed_param = smoothers.getUnchecked(i);
+        morph_group_->morph
+        (
+            smoothed_param->param_to_smooth,
+            smoothed_param->values.getWritePointer(),
+            smoothed_param->values_modulated.getWritePointer(),
+            morph_amount_,
+            num_samples_
+        );
+    }
+}
+inline bool MorphGroup::morph( const Parameter* original_param_, float* value_target_buffer_, float* mod_target_buffer_, const float* morph_amount_, int num_samples_ ) noexcept
+{
+    const int index = params.indexOf( const_cast< Parameter* >( original_param_ ) );
+    if( index != -1 )
+    {   /*
+           if( not original_param_->get_info().name.contains("sustain")
+            and not original_param_->get_info().name.contains("SD_")
+            and not original_param_->get_info().name.contains("EQ_")
+            and not original_param_->get_info().name.contains("VERB_")
+            and not original_param_->get_info().name.contains("CHR_")
+             )
+           */
+        {
+            const Parameter*left_param = left_morph_source->params.getUnchecked(index);
+            const Parameter*right_param = right_morph_source->params.getUnchecked(index);
+
+            const SmoothedParameter*const left_smoother = left_param->get_runtime_info().my_smoother;
+            const float* const left_smoothed_buffer = left_smoother->get_smoothed_buffer();
+            const SmoothedParameter*const right_smoother = right_param->get_runtime_info().my_smoother;
+            const float* const right_smoothed_buffer = right_smoother->get_smoothed_buffer();
+
+            // VALUE
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float power_of_right = morph_amount_[sid];
+                //const float new_value = (left_param->get_value()*(1.0f - power_of_right)) + (right_param->get_value() * power_of_right);
+                const float new_value = (left_smoothed_buffer[sid]*(1.0f - power_of_right)) + (right_smoothed_buffer[sid] * power_of_right);
+                value_target_buffer_[sid] = new_value;
+
+                // VISUALIZE
+                //const_cast< Parameter* > ( original_param_ )->set_value_without_notification( new_value );
+            }
+
+            // std::cout << original_param_->get_info().name << "   " << left_param->get_info().name << "   " << right_param->get_info().name<< std::endl;
+        }
+        return true;
+    }
+
+
+
+    /*
+    // MODULATION VALUE
+    if( has_modulation( target_param ) )
+    {
+        const float target_modulation = (left_param->get_modulation_amount()*(1.0f - power_of_right_)) + (right_param->get_modulation_amount()*power_of_right_);
+        target_param->set_modulation_amount_without_notification( target_modulation );
+    }
+    */
+
+    return false;
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
 {
@@ -5549,8 +5644,30 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         amp_painter->calc_new_cycle();
     }
 
+    // MFOS
+
     // SMOOTH PARAMETERS
     synth_data->smooth_manager->smooth(num_samples_, synth_data->glide_motor_time );
+    if( synth_data->is_morph_modulated[0] )
+    {
+        mfos[0]->process( data_buffer->mfo_amplitudes.getWritePointer(0), step_number_, info->samples_since_start+start_sample_, num_samples );
+        synth_data->smooth_manager->automated_morph( data_buffer->mfo_amplitudes.getReadPointer(), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_1 );
+    }
+    if( synth_data->is_morph_modulated[1] )
+    {
+        mfos[1]->process( data_buffer->mfo_amplitudes.getWritePointer(1), step_number_, info->samples_since_start+start_sample_, num_samples );
+        synth_data->smooth_manager->automated_morph( data_buffer->mfo_amplitudes.getReadPointer(1), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_2 );
+    }
+    if( synth_data->is_morph_modulated[2] )
+    {
+        mfos[2]->process( data_buffer->mfo_amplitudes.getWritePointer(2), step_number_, info->samples_since_start+start_sample_, num_samples );
+        synth_data->smooth_manager->automated_morph( data_buffer->mfo_amplitudes.getReadPointer(2), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_3 );
+    }
+    if( synth_data->is_morph_modulated[3] )
+    {
+        mfos[3]->process( data_buffer->mfo_amplitudes.getWritePointer(3), step_number_, info->samples_since_start+start_sample_, num_samples );
+        synth_data->smooth_manager->automated_morph( data_buffer->mfo_amplitudes.getReadPointer(2), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_4 );
+    }
 
     // MULTI THREADED FLT_ENV / LFO / OSC
     {
@@ -5636,6 +5753,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
         amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
+        //amp_painter->add_osc( 2, data_buffer->mfo_amplitudes.getReadPointer(), num_samples_ );
     }
 
     // UI INFORMATIONS
@@ -5655,9 +5773,9 @@ void MoniqueSynthesiserVoice::pitchWheelMoved (int pitch_ )
         is_arp_on = false;
     }
     float arp_offset = is_arp_on ? arp_sequencer->get_current_tune() : 0;
-    master_osc->update( current_note+arp_offset+pitch_offset );
-    second_osc->update( current_note+arp_offset+pitch_offset );
-    third_osc->update( current_note+arp_offset+pitch_offset );
+    master_osc->update( current_note+arp_offset+pitch_offset, 0 );
+    second_osc->update( current_note+arp_offset+pitch_offset, 0 );
+    third_osc->update( current_note+arp_offset+pitch_offset, 0 );
 }
 
 //==============================================================================
@@ -5720,6 +5838,10 @@ float MoniqueSynthesiserVoice::get_lfo_amp( int lfo_id_ ) const noexcept
 {
     return lfos[lfo_id_]->get_current_amp();
 }
+float MoniqueSynthesiserVoice::get_mfo_amp( int lfo_id_ ) const noexcept
+{
+    return mfos[lfo_id_]->get_current_amp();
+}
 float MoniqueSynthesiserVoice::get_arp_sequence_amp( int step_ ) const noexcept
 {
     if( arp_sequencer->get_current_step() == step_ )
@@ -5740,10 +5862,6 @@ float MoniqueSynthesiserVoice::get_flt_input_env_amp( int flt_id_, int input_id_
 float MoniqueSynthesiserVoice::get_band_env_amp( int band_id_ ) const noexcept
 {
     return eq_processor->envs[band_id_]->get_amp();
-}
-float MoniqueSynthesiserVoice::get_chorus_modulation_env_amp() const noexcept
-{
-    return fx_processor->chorus_modulation_env->get_amp();
 }
 
 //==============================================================================
@@ -5880,6 +5998,27 @@ void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve 
         }
     }
 }
-
+void MoniqueSynthData::get_full_mfo( MFOData&mfo_data_, Array< float >& curve ) noexcept
+{
+    MFO mfo( runtime_notifyer, this, &mfo_data_, sine_lookup );
+    const float sample_rate = runtime_notifyer->get_sample_rate();
+    int count_time = 100000; //msToSamplesFast( 44100, sample_rate );
+    int i = 0;
+    const int blocksize = runtime_notifyer->get_block_size();
+    float* buffer = new float[blocksize];
+    curve.ensureStorageAllocated(count_time+blocksize);
+    while(i*blocksize<count_time)
+    {
+        mfo.process( buffer, 1, 1 + i*blocksize, blocksize, false );
+	if( i > 10 )
+        for( int sid = 0 ; sid != blocksize ; ++sid )
+        {
+            curve.add( buffer[sid] );
+        }
+        i++;
+    }
+    delete [] buffer;
+}
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+

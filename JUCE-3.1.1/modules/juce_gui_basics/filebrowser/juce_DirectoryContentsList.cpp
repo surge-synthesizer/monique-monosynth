@@ -23,9 +23,9 @@
 */
 
 DirectoryContentsList::DirectoryContentsList (const FileFilter* f, TimeSliceThread& t)
-   : fileFilter (f), thread (t),
-     fileTypeFlags (File::ignoreHiddenFiles | File::findFiles),
-     shouldStop (true)
+    : fileFilter (f), thread (t),
+      fileTypeFlags (File::ignoreHiddenFiles | File::findFiles),
+      shouldStop (true)
 {
 }
 
@@ -37,7 +37,7 @@ DirectoryContentsList::~DirectoryContentsList()
 void DirectoryContentsList::setIgnoresHiddenFiles (const bool shouldIgnoreHiddenFiles)
 {
     setTypeFlags (shouldIgnoreHiddenFiles ? (fileTypeFlags | File::ignoreHiddenFiles)
-                                          : (fileTypeFlags & ~File::ignoreHiddenFiles));
+                  : (fileTypeFlags & ~File::ignoreHiddenFiles));
 }
 
 bool DirectoryContentsList::ignoresHiddenFiles() const
@@ -47,8 +47,8 @@ bool DirectoryContentsList::ignoresHiddenFiles() const
 
 //==============================================================================
 void DirectoryContentsList::setDirectory (const File& directory,
-                                          const bool includeDirectories,
-                                          const bool includeFiles)
+        const bool includeDirectories,
+        const bool includeFiles)
 {
     jassert (includeDirectories || includeFiles); // you have to speciify at least one of these!
 
@@ -63,8 +63,10 @@ void DirectoryContentsList::setDirectory (const File& directory,
     }
 
     int newFlags = fileTypeFlags;
-    if (includeDirectories) newFlags |= File::findDirectories;  else newFlags &= ~File::findDirectories;
-    if (includeFiles)       newFlags |= File::findFiles;        else newFlags &= ~File::findFiles;
+    if (includeDirectories) newFlags |= File::findDirectories;
+    else newFlags &= ~File::findDirectories;
+    if (includeFiles)       newFlags |= File::findFiles;
+    else newFlags &= ~File::findFiles;
 
     setTypeFlags (newFlags);
 }
@@ -216,10 +218,10 @@ struct FileInfoComparator
     static int compareElements (const DirectoryContentsList::FileInfo* const first,
                                 const DirectoryContentsList::FileInfo* const second)
     {
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         if (first->isDirectory != second->isDirectory)
             return first->isDirectory ? -1 : 1;
-       #endif
+#endif
 
         return first->filename.compareNatural (second->filename);
     }
@@ -233,8 +235,8 @@ bool DirectoryContentsList::addFile (const File& file, const bool isDir,
     const ScopedLock sl (fileListLock);
 
     if (fileFilter == nullptr
-         || ((! isDir) && fileFilter->isFileSuitable (file))
-         || (isDir && fileFilter->isDirectorySuitable (file)))
+            || ((! isDir) && fileFilter->isFileSuitable (file))
+            || (isDir && fileFilter->isDirectorySuitable (file)))
     {
         ScopedPointer<FileInfo> info (new FileInfo());
 

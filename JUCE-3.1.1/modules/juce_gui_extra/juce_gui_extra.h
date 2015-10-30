@@ -34,7 +34,7 @@
     If you're not using any embedded web-pages, turning this off may reduce your code size.
 */
 #ifndef JUCE_WEB_BROWSER
- #define JUCE_WEB_BROWSER 1
+#define JUCE_WEB_BROWSER 1
 #endif
 
 /** Config: JUCE_ENABLE_LIVE_CONSTANT_EDITOR
@@ -42,9 +42,9 @@
     for that macro for more details.
 */
 #ifndef JUCE_ENABLE_LIVE_CONSTANT_EDITOR
- #if JUCE_DEBUG
-  #define JUCE_ENABLE_LIVE_CONSTANT_EDITOR 1
- #endif
+#if JUCE_DEBUG
+#define JUCE_ENABLE_LIVE_CONSTANT_EDITOR 1
+#endif
 #endif
 
 //=============================================================================

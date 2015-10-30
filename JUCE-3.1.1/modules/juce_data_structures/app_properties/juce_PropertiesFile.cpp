@@ -24,13 +24,13 @@
 
 namespace PropertyFileConstants
 {
-    static const int magicNumber            = (int) ByteOrder::littleEndianInt ("PROP");
-    static const int magicNumberCompressed  = (int) ByteOrder::littleEndianInt ("CPRP");
+static const int magicNumber            = (int) ByteOrder::littleEndianInt ("PROP");
+static const int magicNumberCompressed  = (int) ByteOrder::littleEndianInt ("CPRP");
 
-    static const char* const fileTag        = "PROPERTIES";
-    static const char* const valueTag       = "VALUE";
-    static const char* const nameAttribute  = "name";
-    static const char* const valueAttribute = "val";
+static const char* const fileTag        = "PROPERTIES";
+static const char* const valueTag       = "VALUE";
+static const char* const nameAttribute  = "name";
+static const char* const valueAttribute = "val";
 }
 
 //==============================================================================
@@ -49,9 +49,9 @@ File PropertiesFile::Options::getDefaultFile() const
     // mustn't have illegal characters in this name..
     jassert (applicationName == File::createLegalFileName (applicationName));
 
-   #if JUCE_MAC || JUCE_IOS
+#if JUCE_MAC || JUCE_IOS
     File dir (commonToAllUsers ?  "/Library/"
-                               : "~/Library/");
+              : "~/Library/");
 
     if (osxLibrarySubFolder != "Preferences" && ! osxLibrarySubFolder.startsWith ("Application Support"))
     {
@@ -82,24 +82,24 @@ File PropertiesFile::Options::getDefaultFile() const
     if (folderName.isNotEmpty())
         dir = dir.getChildFile (folderName);
 
-   #elif JUCE_LINUX || JUCE_ANDROID
+#elif JUCE_LINUX || JUCE_ANDROID
     const File dir (File (commonToAllUsers ? "/var" : "~")
-                     .getChildFile (folderName.isNotEmpty() ? folderName
-                                                            : ("." + applicationName)));
+                    .getChildFile (folderName.isNotEmpty() ? folderName
+                                   : ("." + applicationName)));
 
-   #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
     File dir (File::getSpecialLocation (commonToAllUsers ? File::commonApplicationDataDirectory
-                                                         : File::userApplicationDataDirectory));
+                                        : File::userApplicationDataDirectory));
 
     if (dir == File())
         return File();
 
     dir = dir.getChildFile (folderName.isNotEmpty() ? folderName
-                                                    : applicationName);
-   #endif
+                            : applicationName);
+#endif
 
     return dir.getChildFile (applicationName)
-              .withFileExtension (filenameSuffix);
+           .withFileExtension (filenameSuffix);
 }
 
 
@@ -166,9 +166,9 @@ bool PropertiesFile::save()
     stopTimer();
 
     if (options.doNotSave
-         || file == File()
-         || file.isDirectory()
-         || ! file.getParentDirectory().createDirectory())
+            || file == File()
+            || file.isDirectory()
+            || ! file.getParentDirectory().createDirectory())
         return false;
 
     if (options.storageFormat == storeAsXML)
@@ -196,8 +196,8 @@ bool PropertiesFile::loadAsXml()
                 {
                     getAllProperties().set (name,
                                             e->getFirstChildElement() != nullptr
-                                                ? e->getFirstChildElement()->createDocument ("", true)
-                                                : e->getStringAttribute (PropertyFileConstants::valueAttribute));
+                                            ? e->getFirstChildElement()->createDocument ("", true)
+                                            : e->getStringAttribute (PropertyFileConstants::valueAttribute));
                 }
             }
 

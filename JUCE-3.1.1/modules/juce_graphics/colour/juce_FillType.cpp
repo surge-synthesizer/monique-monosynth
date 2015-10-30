@@ -23,12 +23,14 @@
 */
 
 FillType::FillType() noexcept
-    : colour (0xff000000)
+:
+colour (0xff000000)
 {
 }
 
 FillType::FillType (Colour c) noexcept
-    : colour (c)
+:
+colour (c)
 {
 }
 
@@ -38,7 +40,8 @@ FillType::FillType (const ColourGradient& gradient_)
 }
 
 FillType::FillType (const Image& image_, const AffineTransform& transform_) noexcept
-    : colour (0xff000000), image (image_), transform (transform_)
+:
+colour (0xff000000), image (image_), transform (transform_)
 {
 }
 
@@ -65,10 +68,11 @@ FillType& FillType::operator= (const FillType& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 FillType::FillType (FillType&& other) noexcept
-    : colour (other.colour),
-      gradient (other.gradient.release()),
-      image (static_cast <Image&&> (other.image)),
-      transform (other.transform)
+:
+colour (other.colour),
+       gradient (other.gradient.release()),
+       image (static_cast <Image&&> (other.image)),
+       transform (other.transform)
 {
 }
 
@@ -91,9 +95,9 @@ FillType::~FillType() noexcept
 bool FillType::operator== (const FillType& other) const
 {
     return colour == other.colour && image == other.image
-            && transform == other.transform
-            && (gradient == other.gradient
-                 || (gradient != nullptr && other.gradient != nullptr && *gradient == *other.gradient));
+           && transform == other.transform
+           && (gradient == other.gradient
+               || (gradient != nullptr && other.gradient != nullptr && *gradient == *other.gradient));
 }
 
 bool FillType::operator!= (const FillType& other) const

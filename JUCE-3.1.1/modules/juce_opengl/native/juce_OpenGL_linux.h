@@ -71,7 +71,7 @@ public:
         swa.event_mask = ExposureMask | StructureNotifyMask;
 
         const Rectangle<int> bounds (component.getTopLevelComponent()
-                                        ->getLocalArea (&component, component.getLocalBounds()));
+                                     ->getLocalArea (&component, component.getLocalBounds()));
 
         embeddedWindow = XCreateWindow (display, windowH,
                                         bounds.getX(), bounds.getY(),
@@ -121,7 +121,7 @@ public:
     bool makeActive() const noexcept
     {
         return renderContext != 0
-                 && glXMakeCurrent (display, embeddedWindow, renderContext);
+               && glXMakeCurrent (display, embeddedWindow, renderContext);
     }
 
     bool isActive() const noexcept
@@ -168,12 +168,22 @@ public:
         return false;
     }
 
-    int getSwapInterval() const                 { return swapFrames; }
-    bool createdOk() const noexcept             { return true; }
-    void* getRawContext() const noexcept        { return renderContext; }
-    GLuint getFrameBufferID() const noexcept    { return 0; }
+    int getSwapInterval() const                 {
+        return swapFrames;
+    }
+    bool createdOk() const noexcept             {
+        return true;
+    }
+    void* getRawContext() const noexcept        {
+        return renderContext;
+    }
+    GLuint getFrameBufferID() const noexcept    {
+        return 0;
+    }
 
-    struct Locker { Locker (NativeContext&) {} };
+    struct Locker {
+        Locker (NativeContext&) {}
+    };
 
 private:
     GLXContext renderContext;

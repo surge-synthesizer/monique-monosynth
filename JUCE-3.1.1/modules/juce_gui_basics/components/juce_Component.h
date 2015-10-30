@@ -71,7 +71,9 @@ public:
     /** Returns the name of this component.
         @see setName
     */
-    const String& getName() const noexcept                  { return componentName; }
+    const String& getName() const noexcept                  {
+        return componentName;
+    }
 
     /** Sets the name of this component.
 
@@ -85,7 +87,9 @@ public:
     /** Returns the ID string that was set by setComponentID().
         @see setComponentID, findChildWithID
     */
-    const String& getComponentID() const noexcept           { return componentID; }
+    const String& getComponentID() const noexcept           {
+        return componentID;
+    }
 
     /** Sets the component's ID string.
         You can retrieve the ID using getComponentID().
@@ -117,7 +121,9 @@ public:
 
         @see isShowing, setVisible
     */
-    bool isVisible() const noexcept                         { return flags.visibleFlag; }
+    bool isVisible() const noexcept                         {
+        return flags.visibleFlag;
+    }
 
     /** Called when this component's visibility changes.
         @see setVisible, isVisible
@@ -253,7 +259,9 @@ public:
         bounds will no longer be a direct reflection of the position at which it appears within
         its parent, as the transform will be applied to its bounding box.
     */
-    int getX() const noexcept                               { return bounds.getX(); }
+    int getX() const noexcept                               {
+        return bounds.getX();
+    }
 
     /** Returns the y coordinate of the top of this component.
         This is a distance in pixels from the top edge of the component's parent.
@@ -262,13 +270,19 @@ public:
         bounds will no longer be a direct reflection of the position at which it appears within
         its parent, as the transform will be applied to its bounding box.
     */
-    int getY() const noexcept                               { return bounds.getY(); }
+    int getY() const noexcept                               {
+        return bounds.getY();
+    }
 
     /** Returns the component's width in pixels. */
-    int getWidth() const noexcept                           { return bounds.getWidth(); }
+    int getWidth() const noexcept                           {
+        return bounds.getWidth();
+    }
 
     /** Returns the component's height in pixels. */
-    int getHeight() const noexcept                          { return bounds.getHeight(); }
+    int getHeight() const noexcept                          {
+        return bounds.getHeight();
+    }
 
     /** Returns the x coordinate of the component's right-hand edge.
         This is a distance in pixels from the left edge of the component's parent.
@@ -277,10 +291,14 @@ public:
         bounds will no longer be a direct reflection of the position at which it appears within
         its parent, as the transform will be applied to its bounding box.
     */
-    int getRight() const noexcept                           { return bounds.getRight(); }
+    int getRight() const noexcept                           {
+        return bounds.getRight();
+    }
 
     /** Returns the component's top-left position as a Point. */
-    Point<int> getPosition() const noexcept                 { return bounds.getPosition(); }
+    Point<int> getPosition() const noexcept                 {
+        return bounds.getPosition();
+    }
 
     /** Returns the y coordinate of the bottom edge of this component.
         This is a distance in pixels from the top edge of the component's parent.
@@ -289,7 +307,9 @@ public:
         bounds will no longer be a direct reflection of the position at which it appears within
         its parent, as the transform will be applied to its bounding box.
     */
-    int getBottom() const noexcept                          { return bounds.getBottom(); }
+    int getBottom() const noexcept                          {
+        return bounds.getBottom();
+    }
 
     /** Returns this component's bounding box.
         The rectangle returned is relative to the top-left of the component's parent.
@@ -298,7 +318,9 @@ public:
         bounds will no longer be a direct reflection of the position at which it appears within
         its parent, as the transform will be applied to its bounding box.
     */
-    const Rectangle<int>& getBounds() const noexcept        { return bounds; }
+    const Rectangle<int>& getBounds() const noexcept        {
+        return bounds;
+    }
 
     /** Returns the component's bounds, relative to its own origin.
         This is like getBounds(), but returns the rectangle in local coordinates, In practice, it'll
@@ -785,7 +807,9 @@ public:
         If this is the highest-level component or hasn't yet been added to
         a parent, this will return null.
     */
-    Component* getParentComponent() const noexcept                  { return parentComponent; }
+    Component* getParentComponent() const noexcept                  {
+        return parentComponent;
+    }
 
     /** Searches the parent components for a component of a specified class.
 
@@ -1094,7 +1118,9 @@ public:
     /** Returns the current component effect.
         @see setComponentEffect
     */
-    ImageEffectFilter* getComponentEffect() const noexcept              { return effect; }
+    ImageEffectFilter* getComponentEffect() const noexcept              {
+        return effect;
+    }
 
     //==============================================================================
     /** Finds the appropriate look-and-feel to use for this component.
@@ -1927,9 +1953,9 @@ public:
         @see enterModalState, exitModalState, isCurrentlyModal, getCurrentlyModalComponent,
              isCurrentlyBlockedByAnotherModalComponent, ModalComponentManager
     */
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     int runModalLoop();
-   #endif
+#endif
 
     /** Puts the component into a modal state.
 
@@ -2041,7 +2067,9 @@ public:
         Each component has a NamedValueSet object which you can use to attach arbitrary
         items of data to it.
     */
-    const NamedValueSet& getProperties() const noexcept                 { return properties; }
+    const NamedValueSet& getProperties() const noexcept                 {
+        return properties;
+    }
 
     //==============================================================================
     /** Looks for a colour that has been registered with the given colour ID number.
@@ -2130,31 +2158,50 @@ public:
         SafePointer (ComponentType* component)                : weakRef (component) {}
 
         /** Creates a copy of another SafePointer. */
-        SafePointer (const SafePointer& other) noexcept       : weakRef (other.weakRef) {}
+    SafePointer (const SafePointer& other) noexcept       :
+        weakRef (other.weakRef) {}
 
         /** Copies another pointer to this one. */
-        SafePointer& operator= (const SafePointer& other)     { weakRef = other.weakRef; return *this; }
+        SafePointer& operator= (const SafePointer& other)     {
+            weakRef = other.weakRef;
+            return *this;
+        }
 
         /** Copies another pointer to this one. */
-        SafePointer& operator= (ComponentType* newComponent)  { weakRef = newComponent; return *this; }
+        SafePointer& operator= (ComponentType* newComponent)  {
+            weakRef = newComponent;
+            return *this;
+        }
 
         /** Returns the component that this pointer refers to, or null if the component no longer exists. */
-        ComponentType* getComponent() const noexcept          { return dynamic_cast<ComponentType*> (weakRef.get()); }
+        ComponentType* getComponent() const noexcept          {
+            return dynamic_cast<ComponentType*> (weakRef.get());
+        }
 
         /** Returns the component that this pointer refers to, or null if the component no longer exists. */
-        operator ComponentType*() const noexcept              { return getComponent(); }
+        operator ComponentType*() const noexcept              {
+            return getComponent();
+        }
 
         /** Returns the component that this pointer refers to, or null if the component no longer exists. */
         ComponentType* operator->() noexcept                  { return getComponent(); }
 
         /** Returns the component that this pointer refers to, or null if the component no longer exists. */
-        const ComponentType* operator->() const noexcept      { return getComponent(); }
+        const ComponentType* operator->() const noexcept      {
+            return getComponent();
+        }
 
         /** If the component is valid, this deletes it and sets this pointer to null. */
-        void deleteAndZero()                                  { delete getComponent(); }
+        void deleteAndZero()                                  {
+            delete getComponent();
+        }
 
-        bool operator== (ComponentType* component) const noexcept   { return weakRef == component; }
-        bool operator!= (ComponentType* component) const noexcept   { return weakRef != component; }
+        bool operator== (ComponentType* component) const noexcept   {
+            return weakRef == component;
+        }
+        bool operator!= (ComponentType* component) const noexcept   {
+            return weakRef != component;
+        }
 
     private:
         WeakReference<Component> weakRef;
@@ -2200,7 +2247,9 @@ public:
         virtual ~Positioner() {}
 
         /** Returns the component that this positioner controls. */
-        Component& getComponent() const noexcept    { return component; }
+        Component& getComponent() const noexcept    {
+            return component;
+        }
 
         /** Attempts to set the component's position to the given rectangle.
             Unlike simply calling Component::setBounds(), this may involve the positioner
@@ -2238,7 +2287,9 @@ public:
     /** Returns the object that was set by setCachedComponentImage().
         @see setCachedComponentImage
     */
-    CachedComponentImage* getCachedComponentImage() const noexcept  { return cachedImage; }
+    CachedComponentImage* getCachedComponentImage() const noexcept  {
+        return cachedImage;
+    }
 
     //==============================================================================
     // These methods are deprecated - use localPointToGlobal, getLocalPoint, getLocalPoint, etc instead.
@@ -2252,7 +2303,7 @@ private:
     friend class MouseInputSource;
     friend class MouseInputSourceInternal;
 
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     static Component* currentlyFocusedComponent;
 
     //==============================================================================
@@ -2299,9 +2350,9 @@ private:
         bool mouseDownWasBlocked        : 1;
         bool isMoveCallbackPending      : 1;
         bool isResizeCallbackPending    : 1;
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         bool isInsidePaintCall          : 1;
-       #endif
+#endif
     };
 
     union
@@ -2355,7 +2406,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Component)
 
     //==============================================================================
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This is included here just to cause a compile error if your code is still handling
     // drag-and-drop with this method. If so, just update it to use the new FileDragAndDropTarget
     // class, which is easy (just make your class inherit from FileDragAndDropTarget, and
@@ -2365,13 +2416,13 @@ private:
     // This is included here to cause an error if you use or overload it - it has been deprecated in
     // favour of contains (Point<int>)
     void contains (int, int) JUCE_DELETED_FUNCTION;
-   #endif
+#endif
 
 protected:
     //==============================================================================
     /** @internal */
     virtual ComponentPeer* createNewPeer (int styleFlags, void* nativeWindowToAttachTo);
-   #endif
+#endif
 };
 
 

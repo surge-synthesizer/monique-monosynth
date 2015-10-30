@@ -24,72 +24,72 @@
 
 namespace CDBurnerHelpers
 {
-    IDiscRecorder* enumCDBurners (StringArray* list, int indexToOpen, IDiscMaster** master)
+IDiscRecorder* enumCDBurners (StringArray* list, int indexToOpen, IDiscMaster** master)
+{
+    CoInitialize (0);
+
+    IDiscMaster* dm;
+    IDiscRecorder* result = nullptr;
+
+    if (SUCCEEDED (CoCreateInstance (CLSID_MSDiscMasterObj, 0,
+                                     CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER,
+                                     IID_IDiscMaster,
+                                     (void**) &dm)))
     {
-        CoInitialize (0);
-
-        IDiscMaster* dm;
-        IDiscRecorder* result = nullptr;
-
-        if (SUCCEEDED (CoCreateInstance (CLSID_MSDiscMasterObj, 0,
-                                         CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER,
-                                         IID_IDiscMaster,
-                                         (void**) &dm)))
+        if (SUCCEEDED (dm->Open()))
         {
-            if (SUCCEEDED (dm->Open()))
+            IEnumDiscRecorders* drEnum = nullptr;
+
+            if (SUCCEEDED (dm->EnumDiscRecorders (&drEnum)))
             {
-                IEnumDiscRecorders* drEnum = nullptr;
+                IDiscRecorder* dr = nullptr;
+                DWORD dummy;
+                int index = 0;
 
-                if (SUCCEEDED (dm->EnumDiscRecorders (&drEnum)))
+                while (drEnum->Next (1, &dr, &dummy) == S_OK)
                 {
-                    IDiscRecorder* dr = nullptr;
-                    DWORD dummy;
-                    int index = 0;
-
-                    while (drEnum->Next (1, &dr, &dummy) == S_OK)
+                    if (indexToOpen == index)
                     {
-                        if (indexToOpen == index)
-                        {
-                            result = dr;
-                            break;
-                        }
-                        else if (list != nullptr)
-                        {
-                            BSTR path;
+                        result = dr;
+                        break;
+                    }
+                    else if (list != nullptr)
+                    {
+                        BSTR path;
 
-                            if (SUCCEEDED (dr->GetPath (&path)))
-                                list->add ((const WCHAR*) path);
-                        }
-
-                        ++index;
-                        dr->Release();
+                        if (SUCCEEDED (dr->GetPath (&path)))
+                            list->add ((const WCHAR*) path);
                     }
 
-                    drEnum->Release();
+                    ++index;
+                    dr->Release();
                 }
 
-                if (master == 0)
-                    dm->Close();
+                drEnum->Release();
             }
 
-            if (master != nullptr)
-                *master = dm;
-            else
-                dm->Release();
+            if (master == 0)
+                dm->Close();
         }
 
-        return result;
+        if (master != nullptr)
+            *master = dm;
+        else
+            dm->Release();
     }
+
+    return result;
+}
 }
 
 //==============================================================================
 class AudioCDBurner::Pimpl  : public ComBaseClassHelper <IDiscMasterProgressEvents>,
-                              public Timer
+    public Timer
 {
 public:
     Pimpl (AudioCDBurner& owner_, IDiscMaster* discMaster_, IDiscRecorder* discRecorder_)
-      : owner (owner_), discMaster (discMaster_), discRecorder (discRecorder_), redbook (0),
-        listener (0), progress (0), shouldCancel (false)
+        : owner (owner_), discMaster (discMaster_), discRecorder (discRecorder_), redbook (0),
+          listener (0), progress (0), shouldCancel (false)
     {
         HRESULT hr = discMaster->SetActiveDiscMasterFormat (IID_IRedbookDiscMaster, (void**) &redbook);
         jassert (SUCCEEDED (hr));
@@ -130,19 +130,37 @@ public:
         return E_NOTIMPL;
     }
 
-    JUCE_COMRESULT NotifyPnPActivity (void)                              { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyAddProgress (long /*nCompletedSteps*/, long /*nTotalSteps*/)    { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyTrackProgress (long /*nCurrentTrack*/, long /*nTotalTracks*/)   { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyPreparingBurn (long /*nEstimatedSeconds*/)      { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyClosingDisc (long /*nEstimatedSeconds*/)        { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyBurnComplete (HRESULT /*status*/)               { return E_NOTIMPL; }
-    JUCE_COMRESULT NotifyEraseComplete (HRESULT /*status*/)              { return E_NOTIMPL; }
+    JUCE_COMRESULT NotifyPnPActivity (void)                              {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyAddProgress (long /*nCompletedSteps*/, long /*nTotalSteps*/)    {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyTrackProgress (long /*nCurrentTrack*/, long /*nTotalTracks*/)   {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyPreparingBurn (long /*nEstimatedSeconds*/)      {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyClosingDisc (long /*nEstimatedSeconds*/)        {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyBurnComplete (HRESULT /*status*/)               {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT NotifyEraseComplete (HRESULT /*status*/)              {
+        return E_NOTIMPL;
+    }
 
     class ScopedDiscOpener
     {
     public:
-        ScopedDiscOpener (Pimpl& p) : pimpl (p) { pimpl.discRecorder->OpenExclusive(); }
-        ~ScopedDiscOpener()                     { pimpl.discRecorder->Close(); }
+        ScopedDiscOpener (Pimpl& p) : pimpl (p) {
+            pimpl.discRecorder->OpenExclusive();
+        }
+        ~ScopedDiscOpener()                     {
+            pimpl.discRecorder->Close();
+        }
 
     private:
         Pimpl& pimpl;
@@ -181,7 +199,7 @@ public:
 
         PROPVARIANT iPropVariant;
         return FAILED (prop->ReadMultiple (1, &iPropSpec, &iPropVariant))
-                   ? defaultReturn : (int) iPropVariant.lVal;
+               ? defaultReturn : (int) iPropVariant.lVal;
     }
 
     bool setIntProperty (const LPOLESTR name, const int value) const
@@ -200,7 +218,7 @@ public:
 
         iPropVariant.lVal = (long) value;
         return SUCCEEDED (prop->WriteMultiple (1, &iPropSpec, &iPropVariant, iPropVariant.vt))
-                && SUCCEEDED (discRecorder->SetRecorderProperties (prop));
+               && SUCCEEDED (discRecorder->SetRecorderProperties (prop));
     }
 
     void timerCallback() override
@@ -385,10 +403,10 @@ bool AudioCDBurner::addAudioTrack (AudioSource* audioSource, int numSamples)
         buffer.clear (bytesPerBlock);
 
         typedef AudioData::Pointer <AudioData::Int16, AudioData::LittleEndian,
-                                    AudioData::Interleaved, AudioData::NonConst> CDSampleFormat;
+                AudioData::Interleaved, AudioData::NonConst> CDSampleFormat;
 
         typedef AudioData::Pointer <AudioData::Float32, AudioData::NativeEndian,
-                                    AudioData::NonInterleaved, AudioData::Const> SourceSampleFormat;
+                AudioData::NonInterleaved, AudioData::Const> SourceSampleFormat;
 
         CDSampleFormat left (buffer, 2);
         left.convertSamples (SourceSampleFormat (sourceBuffer.getReadPointer (0)), samplesPerBlock);

@@ -44,12 +44,12 @@ public:
                             alert window should be associated with. Depending on the look
                             and feel, this might be used for positioning of the alert window.
     */
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     static void JUCE_CALLTYPE showMessageBox (AlertWindow::AlertIconType iconType,
-                                              const String& title,
-                                              const String& message,
-                                              Component* associatedComponent = nullptr);
-   #endif
+            const String& title,
+            const String& message,
+            Component* associatedComponent = nullptr);
+#endif
 
     /** Shows a dialog box that just has a message and a single 'ok' button to close it.
 
@@ -69,10 +69,10 @@ public:
                             before it gets called.
     */
     static void JUCE_CALLTYPE showMessageBoxAsync (AlertWindow::AlertIconType iconType,
-                                                    const String& title,
-                                                    const String& message,
-                                                    Component* associatedComponent = nullptr,
-                                                    ModalComponentManager::Callback* callback = nullptr);
+            const String& title,
+            const String& message,
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
 
     /** Shows a dialog box with two buttons.
 
@@ -103,15 +103,15 @@ public:
                  later by the callback.
     */
     static bool JUCE_CALLTYPE showOkCancelBox (AlertWindow::AlertIconType iconType,
-                                               const String& title,
-                                               const String& message,
-                                            #if JUCE_MODAL_LOOPS_PERMITTED
-                                               Component* associatedComponent = nullptr,
-                                               ModalComponentManager::Callback* callback = nullptr);
-                                            #else
-                                               Component* associatedComponent,
-                                               ModalComponentManager::Callback* callback);
-                                            #endif
+            const String& title,
+            const String& message,
+#if JUCE_MODAL_LOOPS_PERMITTED
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
+#else
+            Component* associatedComponent,
+            ModalComponentManager::Callback* callback);
+#endif
 
     /** Shows a dialog box with three buttons.
 
@@ -146,15 +146,15 @@ public:
                  - 2 if 'no' was pressed
     */
     static int JUCE_CALLTYPE showYesNoCancelBox (AlertWindow::AlertIconType iconType,
-                                                 const String& title,
-                                                 const String& message,
-                                               #if JUCE_MODAL_LOOPS_PERMITTED
-                                                 Component* associatedComponent = nullptr,
-                                                 ModalComponentManager::Callback* callback = nullptr);
-                                               #else
-                                                 Component* associatedComponent,
-                                                 ModalComponentManager::Callback* callback);
-                                               #endif
+            const String& title,
+            const String& message,
+#if JUCE_MODAL_LOOPS_PERMITTED
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
+#else
+            Component* associatedComponent,
+            ModalComponentManager::Callback* callback);
+#endif
 
 private:
     NativeMessageBox() JUCE_DELETED_FUNCTION;

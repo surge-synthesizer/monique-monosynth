@@ -68,10 +68,10 @@ public:
     */
     MemoryBlock& operator= (const MemoryBlock&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     MemoryBlock (MemoryBlock&&) noexcept;
     MemoryBlock& operator= (MemoryBlock&&) noexcept;
-   #endif
+#endif
 
     //==============================================================================
     /** Compares two memory blocks.
@@ -93,18 +93,24 @@ public:
         Note that the pointer returned will probably become invalid when the
         block is resized.
     */
-    void* getData() const noexcept                                  { return data; }
+    void* getData() const noexcept                                  {
+        return data;
+    }
 
     /** Returns a byte from the memory block.
         This returns a reference, so you can also use it to set a byte.
     */
     template <typename Type>
-    char& operator[] (const Type offset) const noexcept             { return data [offset]; }
+    char& operator[] (const Type offset) const noexcept             {
+        return data [offset];
+    }
 
 
     //==============================================================================
     /** Returns the block's current allocated size, in bytes. */
-    size_t getSize() const noexcept                                 { return size; }
+    size_t getSize() const noexcept                                 {
+        return size;
+    }
 
     /** Resizes the memory block.
 

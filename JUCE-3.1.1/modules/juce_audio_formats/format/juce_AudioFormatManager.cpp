@@ -32,7 +32,7 @@ void AudioFormatManager::registerFormat (AudioFormat* newFormat, const bool make
 
     if (newFormat != nullptr)
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         for (int i = getNumKnownFormats(); --i >= 0;)
         {
             if (getKnownFormat (i)->getFormatName() == newFormat->getFormatName())
@@ -40,7 +40,7 @@ void AudioFormatManager::registerFormat (AudioFormat* newFormat, const bool make
                 jassertfalse; // trying to add the same format twice!
             }
         }
-       #endif
+#endif
 
         if (makeThisTheDefaultFormat)
             defaultFormatIndex = getNumKnownFormats();
@@ -54,25 +54,25 @@ void AudioFormatManager::registerBasicFormats()
     registerFormat (new WavAudioFormat(), true);
     registerFormat (new AiffAudioFormat(), false);
 
-   #if JUCE_USE_FLAC
+#if JUCE_USE_FLAC
     registerFormat (new FlacAudioFormat(), false);
-   #endif
+#endif
 
-   #if JUCE_USE_OGGVORBIS
+#if JUCE_USE_OGGVORBIS
     registerFormat (new OggVorbisAudioFormat(), false);
-   #endif
+#endif
 
-   #if JUCE_MAC || JUCE_IOS
+#if JUCE_MAC || JUCE_IOS
     registerFormat (new CoreAudioFormat(), false);
-   #endif
+#endif
 
-   #if JUCE_USE_MP3AUDIOFORMAT
+#if JUCE_USE_MP3AUDIOFORMAT
     registerFormat (new MP3AudioFormat(), false);
-   #endif
+#endif
 
-   #if JUCE_USE_WINDOWS_MEDIA_FORMAT
+#if JUCE_USE_WINDOWS_MEDIA_FORMAT
     registerFormat (new WindowsMediaAudioFormat(), false);
-   #endif
+#endif
 }
 
 void AudioFormatManager::clearFormats()

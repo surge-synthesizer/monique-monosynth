@@ -74,41 +74,41 @@ void XmlDocument::setEmptyTextElementsIgnored (const bool shouldBeIgnored) noexc
 
 namespace XmlIdentifierChars
 {
-    static bool isIdentifierCharSlow (const juce_wchar c) noexcept
-    {
-        return CharacterFunctions::isLetterOrDigit (c)
-                 || c == '_' || c == '-' || c == ':' || c == '.';
-    }
+static bool isIdentifierCharSlow (const juce_wchar c) noexcept
+{
+    return CharacterFunctions::isLetterOrDigit (c)
+    || c == '_' || c == '-' || c == ':' || c == '.';
+}
 
-    static bool isIdentifierChar (const juce_wchar c) noexcept
-    {
-        static const uint32 legalChars[] = { 0, 0x7ff6000, 0x87fffffe, 0x7fffffe, 0 };
+static bool isIdentifierChar (const juce_wchar c) noexcept
+{
+    static const uint32 legalChars[] = { 0, 0x7ff6000, 0x87fffffe, 0x7fffffe, 0 };
 
-        return ((int) c < (int) numElementsInArray (legalChars) * 32) ? ((legalChars [c >> 5] & (1 << (c & 31))) != 0)
-                                                                      : isIdentifierCharSlow (c);
-    }
+    return ((int) c < (int) numElementsInArray (legalChars) * 32) ? ((legalChars [c >> 5] & (1 << (c & 31))) != 0)
+           : isIdentifierCharSlow (c);
+}
 
-    /*static void generateIdentifierCharConstants()
-    {
-        uint32 n[8] = { 0 };
-        for (int i = 0; i < 256; ++i)
-            if (isIdentifierCharSlow (i))
-                n[i >> 5] |= (1 << (i & 31));
+/*static void generateIdentifierCharConstants()
+{
+    uint32 n[8] = { 0 };
+    for (int i = 0; i < 256; ++i)
+        if (isIdentifierCharSlow (i))
+            n[i >> 5] |= (1 << (i & 31));
 
-        String s;
-        for (int i = 0; i < 8; ++i)
-            s << "0x" << String::toHexString ((int) n[i]) << ", ";
+    String s;
+    for (int i = 0; i < 8; ++i)
+        s << "0x" << String::toHexString ((int) n[i]) << ", ";
 
-        DBG (s);
-    }*/
+    DBG (s);
+}*/
 
-    static String::CharPointerType findEndOfToken (String::CharPointerType p)
-    {
-        while (isIdentifierChar (*p))
-            ++p;
+static String::CharPointerType findEndOfToken (String::CharPointerType p)
+{
+    while (isIdentifierChar (*p))
+        ++p;
 
-        return p;
-    }
+    return p;
+}
 }
 
 XmlElement* XmlDocument::getDocumentElement (const bool onlyReadOuterDocumentElement)
@@ -122,14 +122,14 @@ XmlElement* XmlDocument::getDocumentElement (const bool onlyReadOuterDocumentEle
             MemoryOutputStream data;
             data.writeFromInputStream (*in, onlyReadOuterDocumentElement ? 8192 : -1);
 
-           #if JUCE_STRING_UTF_TYPE == 8
+#if JUCE_STRING_UTF_TYPE == 8
             if (data.getDataSize() > 2)
             {
                 data.writeByte (0);
                 const char* text = static_cast<const char*> (data.getData());
 
                 if (CharPointer_UTF16::isByteOrderMarkBigEndian (text)
-                      || CharPointer_UTF16::isByteOrderMarkLittleEndian (text))
+                        || CharPointer_UTF16::isByteOrderMarkLittleEndian (text))
                 {
                     originalText = data.toString();
                 }
@@ -142,9 +142,9 @@ XmlElement* XmlDocument::getDocumentElement (const bool onlyReadOuterDocumentEle
                     return parseDocumentElement (String::CharPointerType (text), onlyReadOuterDocumentElement);
                 }
             }
-           #else
+#else
             originalText = data.toString();
-           #endif
+#endif
         }
     }
 
@@ -189,7 +189,7 @@ juce_wchar XmlDocument::readNextChar() noexcept
 }
 
 XmlElement* XmlDocument::parseDocumentElement (String::CharPointerType textToParse,
-                                               const bool onlyReadOuterDocumentElement)
+        const bool onlyReadOuterDocumentElement)
 {
     input = textToParse;
     errorOccurred = false;
@@ -232,12 +232,12 @@ bool XmlDocument::parseHeader()
         if (headerEnd.isEmpty())
             return false;
 
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         const String encoding (String (input, headerEnd)
-                                 .fromFirstOccurrenceOf ("encoding", false, true)
-                                 .fromFirstOccurrenceOf ("=", false, false)
-                                 .fromFirstOccurrenceOf ("\"", false, false)
-                                 .upToFirstOccurrenceOf ("\"", false, false).trim());
+                               .fromFirstOccurrenceOf ("encoding", false, true)
+                               .fromFirstOccurrenceOf ("=", false, false)
+                               .fromFirstOccurrenceOf ("\"", false, false)
+                               .upToFirstOccurrenceOf ("\"", false, false).trim());
 
         /* If you load an XML document with a non-UTF encoding type, it may have been
            loaded wrongly.. Since all the files are read via the normal juce file streams,
@@ -247,7 +247,7 @@ bool XmlDocument::parseHeader()
            XML parser.
         */
         jassert (encoding.isEmpty() || encoding.startsWithIgnoreCase ("utf-"));
-       #endif
+#endif
 
         input = headerEnd + 2;
         skipNextWhiteSpace();
@@ -297,8 +297,8 @@ void XmlDocument::skipNextWhiteSpace()
         if (*input == '<')
         {
             if (input[1] == '!'
-                 && input[2] == '-'
-                 && input[3] == '-')
+                    && input[2] == '-'
+                    && input[3] == '-')
             {
                 input += 4;
                 const int closeComment = input.indexOf (CharPointer_ASCII ("-->"));
@@ -468,7 +468,7 @@ XmlElement* XmlDocument::readNextElement (const bool alsoParseSubElements)
                     else
                     {
                         setLastError ("expected '=' after attribute '"
-                                        + String (attNameStart, attNameEnd) + "'", false);
+                                      + String (attNameStart, attNameEnd) + "'", false);
                         return node;
                     }
                 }
@@ -532,8 +532,8 @@ void XmlDocument::readChildElements (XmlElement& parent)
                         break;
                     }
                     else if (c0 == ']'
-                              && input[1] == ']'
-                              && input[2] == '>')
+                             && input[1] == ']'
+                             && input[2] == '>')
                     {
                         childAppender.append (XmlElement::createTextElement (String (inputStart, input)));
                         input += 3;
@@ -788,7 +788,7 @@ String XmlDocument::expandExternalEntity (const String& entity)
             tokenisedDTD.addTokens (dtdText, true);
 
             if (tokenisedDTD [tokenisedDTD.size() - 2].equalsIgnoreCase ("system")
-                 && tokenisedDTD [tokenisedDTD.size() - 1].isQuotedString())
+                    && tokenisedDTD [tokenisedDTD.size() - 1].isQuotedString())
             {
                 const String fn (tokenisedDTD [tokenisedDTD.size() - 1]);
 
@@ -806,14 +806,14 @@ String XmlDocument::expandExternalEntity (const String& entity)
 
                     if (closeBracket > openBracket)
                         tokenisedDTD.addTokens (dtdText.substring (openBracket + 1,
-                                                                   closeBracket), true);
+                                                closeBracket), true);
                 }
             }
 
             for (int i = tokenisedDTD.size(); --i >= 0;)
             {
                 if (tokenisedDTD[i].startsWithChar ('%')
-                     && tokenisedDTD[i].endsWithChar (';'))
+                        && tokenisedDTD[i].endsWithChar (';'))
                 {
                     const String parsed (getParameterEntity (tokenisedDTD[i].substring (1, tokenisedDTD[i].length() - 1)));
                     StringArray newToks;
@@ -854,8 +854,8 @@ String XmlDocument::expandExternalEntity (const String& entity)
                     const String resolved (expandEntity (ent.substring (i + 1, semiColon)));
 
                     ent = ent.substring (0, ampersand)
-                           + resolved
-                           + ent.substring (semiColon + 1);
+                          + resolved
+                          + ent.substring (semiColon + 1);
 
                     ampersand = ent.indexOfChar (semiColon + 1, '&');
                 }
@@ -875,8 +875,8 @@ String XmlDocument::getParameterEntity (const String& entity)
     for (int i = 0; i < tokenisedDTD.size(); ++i)
     {
         if (tokenisedDTD[i] == entity
-             && tokenisedDTD [i - 1] == "%"
-             && tokenisedDTD [i - 2].equalsIgnoreCase ("<!entity"))
+                && tokenisedDTD [i - 1] == "%"
+                && tokenisedDTD [i - 2].equalsIgnoreCase ("<!entity"))
         {
             const String ent (tokenisedDTD [i + 1].trimCharactersAtEnd (">"));
 

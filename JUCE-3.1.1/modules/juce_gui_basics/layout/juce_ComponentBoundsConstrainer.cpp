@@ -23,13 +23,14 @@
 */
 
 ComponentBoundsConstrainer::ComponentBoundsConstrainer() noexcept
-    : minW (0), maxW (0x3fffffff),
-      minH (0), maxH (0x3fffffff),
-      minOffTop (0),
-      minOffLeft (0),
-      minOffBottom (0),
-      minOffRight (0),
-      aspectRatio (0.0)
+:
+minW (0), maxW (0x3fffffff),
+     minH (0), maxH (0x3fffffff),
+     minOffTop (0),
+     minOffLeft (0),
+     minOffBottom (0),
+     minOffRight (0),
+     aspectRatio (0.0)
 {
 }
 
@@ -67,9 +68,9 @@ void ComponentBoundsConstrainer::setMaximumSize (const int maximumWidth, const i
 }
 
 void ComponentBoundsConstrainer::setSizeLimits (const int minimumWidth,
-                                                const int minimumHeight,
-                                                const int maximumWidth,
-                                                const int maximumHeight) noexcept
+        const int minimumHeight,
+        const int maximumWidth,
+        const int maximumHeight) noexcept
 {
     jassert (maximumWidth >= minimumWidth);
     jassert (maximumHeight >= minimumHeight);
@@ -83,9 +84,9 @@ void ComponentBoundsConstrainer::setSizeLimits (const int minimumWidth,
 }
 
 void ComponentBoundsConstrainer::setMinimumOnscreenAmounts (const int minimumWhenOffTheTop,
-                                                            const int minimumWhenOffTheLeft,
-                                                            const int minimumWhenOffTheBottom,
-                                                            const int minimumWhenOffTheRight) noexcept
+        const int minimumWhenOffTheLeft,
+        const int minimumWhenOffTheBottom,
+        const int minimumWhenOffTheRight) noexcept
 {
     minOffTop    = minimumWhenOffTheTop;
     minOffLeft   = minimumWhenOffTheLeft;
@@ -104,11 +105,11 @@ double ComponentBoundsConstrainer::getFixedAspectRatio() const noexcept
 }
 
 void ComponentBoundsConstrainer::setBoundsForComponent (Component* const component,
-                                                        const Rectangle<int>& targetBounds,
-                                                        const bool isStretchingTop,
-                                                        const bool isStretchingLeft,
-                                                        const bool isStretchingBottom,
-                                                        const bool isStretchingRight)
+        const Rectangle<int>& targetBounds,
+        const bool isStretchingTop,
+        const bool isStretchingLeft,
+        const bool isStretchingBottom,
+        const bool isStretchingRight)
 {
     jassert (component != nullptr);
 
@@ -146,7 +147,7 @@ void ComponentBoundsConstrainer::checkComponentBounds (Component* component)
 }
 
 void ComponentBoundsConstrainer::applyBoundsToComponent (Component* component,
-                                                         const Rectangle<int>& bounds)
+        const Rectangle<int>& bounds)
 {
     if (Component::Positioner* const positioner = component->getPositioner())
         positioner->applyNewBounds (bounds);
@@ -165,12 +166,12 @@ void ComponentBoundsConstrainer::resizeEnd()
 
 //==============================================================================
 void ComponentBoundsConstrainer::checkBounds (Rectangle<int>& bounds,
-                                              const Rectangle<int>& old,
-                                              const Rectangle<int>& limits,
-                                              const bool isStretchingTop,
-                                              const bool isStretchingLeft,
-                                              const bool isStretchingBottom,
-                                              const bool isStretchingRight)
+        const Rectangle<int>& old,
+        const Rectangle<int>& limits,
+        const bool isStretchingTop,
+        const bool isStretchingLeft,
+        const bool isStretchingBottom,
+        const bool isStretchingRight)
 {
     if (isStretchingLeft)
         bounds.setLeft (jlimit (old.getRight() - maxW, old.getRight() - minW, bounds.getX()));

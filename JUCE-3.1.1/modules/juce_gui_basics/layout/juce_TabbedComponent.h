@@ -74,7 +74,9 @@ public:
     /** Returns the current thickness of the tab bar.
         @see setTabBarDepth
     */
-    int getTabBarDepth() const noexcept                         { return tabDepth; }
+    int getTabBarDepth() const noexcept                         {
+        return tabDepth;
+    }
 
     /** Specifies the thickness of an outline that should be drawn around the content component.
 
@@ -154,7 +156,9 @@ public:
     /** Returns the current component that's filling the panel.
         This will return nullptr if there isn't one.
     */
-    Component* getCurrentContentComponent() const noexcept          { return panelComponent; }
+    Component* getCurrentContentComponent() const noexcept          {
+        return panelComponent;
+    }
 
     //==============================================================================
     /** Callback method to indicate the selected tab has been changed.
@@ -166,7 +170,9 @@ public:
     virtual void popupMenuClickOnTab (int tabIndex, const String& tabName);
 
     /** Returns the tab button bar component that is being used. */
-    TabbedButtonBar& getTabbedButtonBar() const noexcept            { return *tabs; }
+    TabbedButtonBar& getTabbedButtonBar() const noexcept            {
+        return *tabs;
+    }
 
     //==============================================================================
     /** A set of colour IDs to use to change the colour of various aspects of the component.

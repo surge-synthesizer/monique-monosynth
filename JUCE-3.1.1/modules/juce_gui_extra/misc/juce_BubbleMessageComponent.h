@@ -36,7 +36,7 @@
     @see BubbleComponent
 */
 class JUCE_API  BubbleMessageComponent  : public BubbleComponent,
-                                          private Timer
+    private Timer
 {
 public:
     //==============================================================================

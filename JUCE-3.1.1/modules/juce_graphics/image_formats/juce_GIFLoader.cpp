@@ -23,7 +23,7 @@
 */
 
 #if (JUCE_MAC || JUCE_IOS) && USE_COREGRAPHICS_RENDERING && JUCE_USE_COREIMAGE_LOADER
- Image juce_loadWithCoreImage (InputStream& input);
+Image juce_loadWithCoreImage (InputStream& input);
 #else
 
 //==============================================================================
@@ -112,8 +112,8 @@ private:
         char b[6];
 
         if (input.read (b, 6) == 6
-             && (strncmp ("GIF87a", b, 6) == 0
-                  || strncmp ("GIF89a", b, 6) == 0))
+                && (strncmp ("GIF87a", b, 6) == 0
+                    || strncmp ("GIF89a", b, 6) == 0))
         {
             if (input.read (b, 4) == 4)
             {
@@ -385,10 +385,20 @@ private:
                     {
                         switch (++pass)
                         {
-                            case 1:     ypos = 4; yStep = 8; break;
-                            case 2:     ypos = 2; yStep = 4; break;
-                            case 3:     ypos = 1; yStep = 2; break;
-                            default:    return true;
+                        case 1:
+                            ypos = 4;
+                            yStep = 8;
+                            break;
+                        case 2:
+                            ypos = 2;
+                            yStep = 4;
+                            break;
+                        case 3:
+                            ypos = 1;
+                            yStep = 2;
+                            break;
+                        default:
+                            return true;
                         }
                     }
                 }
@@ -414,27 +424,31 @@ private:
 GIFImageFormat::GIFImageFormat() {}
 GIFImageFormat::~GIFImageFormat() {}
 
-String GIFImageFormat::getFormatName()                  { return "GIF"; }
-bool GIFImageFormat::usesFileExtension (const File& f)  { return f.hasFileExtension ("gif"); }
+String GIFImageFormat::getFormatName()                  {
+    return "GIF";
+}
+bool GIFImageFormat::usesFileExtension (const File& f)  {
+    return f.hasFileExtension ("gif");
+}
 
 bool GIFImageFormat::canUnderstand (InputStream& in)
 {
     char header [4];
 
     return (in.read (header, sizeof (header)) == sizeof (header))
-             && header[0] == 'G'
-             && header[1] == 'I'
-             && header[2] == 'F';
+           && header[0] == 'G'
+           && header[1] == 'I'
+           && header[2] == 'F';
 }
 
 Image GIFImageFormat::decodeImage (InputStream& in)
 {
-   #if (JUCE_MAC || JUCE_IOS) && USE_COREGRAPHICS_RENDERING && JUCE_USE_COREIMAGE_LOADER
+#if (JUCE_MAC || JUCE_IOS) && USE_COREGRAPHICS_RENDERING && JUCE_USE_COREIMAGE_LOADER
     return juce_loadWithCoreImage (in);
-   #else
+#else
     const ScopedPointer <GIFLoader> loader (new GIFLoader (in));
     return loader->image;
-   #endif
+#endif
 }
 
 bool GIFImageFormat::writeImageToStream (const Image& /*sourceImage*/, OutputStream& /*destStream*/)

@@ -82,7 +82,9 @@ public:
     /** Returns the number of bytes of data that have been written to the stream.
         @see getData
     */
-    size_t getDataSize() const noexcept                 { return size; }
+    size_t getDataSize() const noexcept                 {
+        return size;
+    }
 
     /** Resets the stream, clearing any data that has been written to it so far. */
     void reset() noexcept;
@@ -114,7 +116,9 @@ public:
     void flush();
 
     bool write (const void*, size_t) override;
-    int64 getPosition() override                                 { return (int64) position; }
+    int64 getPosition() override                                 {
+        return (int64) position;
+    }
     bool setPosition (int64) override;
     int64 writeFromInputStream (InputStream&, int64 maxNumBytesToWrite) override;
     bool writeRepeatedByte (uint8 byte, size_t numTimesToRepeat) override;

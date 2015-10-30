@@ -38,7 +38,7 @@
          Component::getCurrentlyModalComponent, Component::isCurrentlyBlockedByAnotherModalComponent
 */
 class JUCE_API  ModalComponentManager   : private AsyncUpdater,
-                                          private DeletedAtShutdown
+    private DeletedAtShutdown
 {
 public:
     //==============================================================================
@@ -112,12 +112,12 @@ public:
     */
     bool cancelAllModalComponents();
 
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     /** Runs the event loop until the currently topmost modal component is dismissed, and
         returns the exit code for that component.
     */
     int runEventLoopForCurrentComponent();
-   #endif
+#endif
 
     //==============================================================================
     juce_DeclareSingleton_SingleThreaded_Minimal (ModalComponentManager)
@@ -182,7 +182,7 @@ public:
     */
     template <typename ParamType>
     static ModalComponentManager::Callback* create (void (*functionToCall) (int, ParamType),
-                                                    ParamType parameterValue)
+            ParamType parameterValue)
     {
         return new FunctionCaller1 <ParamType> (functionToCall, parameterValue);
     }
@@ -211,8 +211,8 @@ public:
     */
     template <typename ParamType1, typename ParamType2>
     static ModalComponentManager::Callback* withParam (void (*functionToCall) (int, ParamType1, ParamType2),
-                                                       ParamType1 parameterValue1,
-                                                       ParamType2 parameterValue2)
+            ParamType1 parameterValue1,
+            ParamType2 parameterValue2)
     {
         return new FunctionCaller2 <ParamType1, ParamType2> (functionToCall, parameterValue1, parameterValue2);
     }
@@ -242,7 +242,7 @@ public:
     */
     template <class ComponentType>
     static ModalComponentManager::Callback* forComponent (void (*functionToCall) (int, ComponentType*),
-                                                          ComponentType* component)
+            ComponentType* component)
     {
         return new ComponentCaller1 <ComponentType> (functionToCall, component);
     }
@@ -272,8 +272,8 @@ public:
     */
     template <class ComponentType, typename ParamType>
     static ModalComponentManager::Callback* forComponent (void (*functionToCall) (int, ComponentType*, ParamType),
-                                                          ComponentType* component,
-                                                          ParamType param)
+            ComponentType* component,
+            ParamType param)
     {
         return new ComponentCaller2 <ComponentType, ParamType> (functionToCall, component, param);
     }
@@ -289,7 +289,9 @@ private:
         FunctionCaller1 (FunctionType& f, ParamType& p1)
             : function (f), param (p1) {}
 
-        void modalStateFinished (int returnValue)  { function (returnValue, param); }
+        void modalStateFinished (int returnValue)  {
+            function (returnValue, param);
+        }
 
     private:
         const FunctionType function;
@@ -307,7 +309,9 @@ private:
         FunctionCaller2 (FunctionType& f, ParamType1& p1, ParamType2& p2)
             : function (f), param1 (p1), param2 (p2) {}
 
-        void modalStateFinished (int returnValue)   { function (returnValue, param1, param2); }
+        void modalStateFinished (int returnValue)   {
+            function (returnValue, param1, param2);
+        }
 
     private:
         const FunctionType function;

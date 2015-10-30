@@ -97,7 +97,9 @@ public:
         return s;
     }
 
-    ImageType* createType() const override    { return new SoftwareImageType(); }
+    ImageType* createType() const override    {
+        return new SoftwareImageType();
+    }
 
 private:
     HeapBlock<uint8> imageData;
@@ -177,7 +179,9 @@ public:
         return newImage.getPixelData();
     }
 
-    ImageType* createType() const override    { return image->createType(); }
+    ImageType* createType() const override    {
+        return image->createType();
+    }
 
 private:
     const ImagePixelData::Ptr image;
@@ -202,7 +206,8 @@ Image::Image() noexcept
 }
 
 Image::Image (ImagePixelData* const instance) noexcept
-    : image (instance)
+:
+image (instance)
 {
 }
 
@@ -217,7 +222,8 @@ Image::Image (const PixelFormat format, int width, int height, bool clearImage, 
 }
 
 Image::Image (const Image& other) noexcept
-    : image (other.image)
+:
+image (other.image)
 {
 }
 
@@ -229,7 +235,8 @@ Image& Image::operator= (const Image& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 Image::Image (Image&& other) noexcept
-    : image (static_cast <ImagePixelData::Ptr&&> (other.image))
+:
+image (static_cast <ImagePixelData::Ptr&&> (other.image))
 {
 }
 
@@ -246,15 +253,33 @@ Image::~Image()
 
 const Image Image::null;
 
-int Image::getReferenceCount() const noexcept           { return image == nullptr ? 0 : image->getReferenceCount(); }
-int Image::getWidth() const noexcept                    { return image == nullptr ? 0 : image->width; }
-int Image::getHeight() const noexcept                   { return image == nullptr ? 0 : image->height; }
-Rectangle<int> Image::getBounds() const noexcept        { return image == nullptr ? Rectangle<int>() : Rectangle<int> (image->width, image->height); }
-Image::PixelFormat Image::getFormat() const noexcept    { return image == nullptr ? UnknownFormat : image->pixelFormat; }
-bool Image::isARGB() const noexcept                     { return getFormat() == ARGB; }
-bool Image::isRGB() const noexcept                      { return getFormat() == RGB; }
-bool Image::isSingleChannel() const noexcept            { return getFormat() == SingleChannel; }
-bool Image::hasAlphaChannel() const noexcept            { return getFormat() != RGB; }
+int Image::getReferenceCount() const noexcept           {
+    return image == nullptr ? 0 : image->getReferenceCount();
+}
+int Image::getWidth() const noexcept                    {
+    return image == nullptr ? 0 : image->width;
+}
+int Image::getHeight() const noexcept                   {
+    return image == nullptr ? 0 : image->height;
+}
+Rectangle<int> Image::getBounds() const noexcept        {
+    return image == nullptr ? Rectangle<int>() : Rectangle<int> (image->width, image->height);
+}
+Image::PixelFormat Image::getFormat() const noexcept    {
+    return image == nullptr ? UnknownFormat : image->pixelFormat;
+}
+bool Image::isARGB() const noexcept                     {
+    return getFormat() == ARGB;
+}
+bool Image::isRGB() const noexcept                      {
+    return getFormat() == RGB;
+}
+bool Image::isSingleChannel() const noexcept            {
+    return getFormat() == SingleChannel;
+}
+bool Image::hasAlphaChannel() const noexcept            {
+    return getFormat() != RGB;
+}
 
 LowLevelGraphicsContext* Image::createLowLevelContext() const
 {
@@ -286,7 +311,7 @@ Image Image::rescaled (const int newWidth, const int newHeight, const Graphics::
     Graphics g (newImage);
     g.setImageResamplingQuality (quality);
     g.drawImageTransformed (*this, AffineTransform::scale (newWidth  / (float) image->width,
-                                                           newHeight / (float) image->height), false);
+                            newHeight / (float) image->height), false);
     return newImage;
 }
 
@@ -398,10 +423,15 @@ Colour Image::BitmapData::getPixelColour (const int x, const int y) const noexce
 
     switch (pixelFormat)
     {
-        case Image::ARGB:           return Colour (((const PixelARGB*)  pixel)->getUnpremultipliedARGB());
-        case Image::RGB:            return Colour (((const PixelRGB*)   pixel)->getUnpremultipliedARGB());
-        case Image::SingleChannel:  return Colour (((const PixelAlpha*) pixel)->getUnpremultipliedARGB());
-        default:                    jassertfalse; break;
+    case Image::ARGB:
+        return Colour (((const PixelARGB*)  pixel)->getUnpremultipliedARGB());
+    case Image::RGB:
+        return Colour (((const PixelRGB*)   pixel)->getUnpremultipliedARGB());
+    case Image::SingleChannel:
+        return Colour (((const PixelAlpha*) pixel)->getUnpremultipliedARGB());
+    default:
+        jassertfalse;
+        break;
     }
 
     return Colour();
@@ -416,10 +446,18 @@ void Image::BitmapData::setPixelColour (const int x, const int y, Colour colour)
 
     switch (pixelFormat)
     {
-        case Image::ARGB:           ((PixelARGB*)  pixel)->set (col); break;
-        case Image::RGB:            ((PixelRGB*)   pixel)->set (col); break;
-        case Image::SingleChannel:  ((PixelAlpha*) pixel)->set (col); break;
-        default:                    jassertfalse; break;
+    case Image::ARGB:
+        ((PixelARGB*)  pixel)->set (col);
+        break;
+    case Image::RGB:
+        ((PixelRGB*)   pixel)->set (col);
+        break;
+    case Image::SingleChannel:
+        ((PixelAlpha*) pixel)->set (col);
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 }
 
@@ -455,7 +493,7 @@ void Image::setPixelAt (const int x, const int y, Colour colour)
 void Image::multiplyAlphaAt (const int x, const int y, const float multiplier)
 {
     if (isPositiveAndBelow (x, getWidth()) && isPositiveAndBelow (y, getHeight())
-         && hasAlphaChannel())
+            && hasAlphaChannel())
     {
         const BitmapData destData (*this, x, y, 1, 1, BitmapData::readWrite);
 
@@ -490,16 +528,25 @@ static void performPixelOp (const Image::BitmapData& data, const PixelOperation&
 {
     switch (data.pixelFormat)
     {
-        case Image::ARGB:           PixelIterator<PixelARGB> ::iterate (data, pixelOp); break;
-        case Image::RGB:            PixelIterator<PixelRGB>  ::iterate (data, pixelOp); break;
-        case Image::SingleChannel:  PixelIterator<PixelAlpha>::iterate (data, pixelOp); break;
-        default:                    jassertfalse; break;
+    case Image::ARGB:
+        PixelIterator<PixelARGB> ::iterate (data, pixelOp);
+        break;
+    case Image::RGB:
+        PixelIterator<PixelRGB>  ::iterate (data, pixelOp);
+        break;
+    case Image::SingleChannel:
+        PixelIterator<PixelAlpha>::iterate (data, pixelOp);
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 }
 
 struct AlphaMultiplyOp
 {
-    AlphaMultiplyOp (float alpha_) noexcept : alpha (alpha_) {}
+AlphaMultiplyOp (float alpha_) noexcept :
+    alpha (alpha_) {}
 
     const float alpha;
 

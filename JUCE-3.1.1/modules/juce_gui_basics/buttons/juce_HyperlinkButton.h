@@ -81,7 +81,9 @@ public:
     void setURL (const URL& newURL) noexcept;
 
     /** Returns the URL that the button will trigger. */
-    const URL& getURL() const noexcept                          { return url; }
+    const URL& getURL() const noexcept                          {
+        return url;
+    }
 
     //==============================================================================
     /** Resizes the button horizontally to fit snugly around the text.

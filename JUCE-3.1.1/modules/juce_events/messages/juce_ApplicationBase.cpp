@@ -67,8 +67,8 @@ void JUCEApplicationBase::quit()
 }
 
 void JUCEApplicationBase::sendUnhandledException (const std::exception* const e,
-                                                  const char* const sourceFile,
-                                                  const int lineNumber)
+        const char* const sourceFile,
+        const int lineNumber)
 {
     if (JUCEApplicationBase* const app = JUCEApplicationBase::getInstance())
         app->unhandledException (e, sourceFile, lineNumber);
@@ -76,7 +76,7 @@ void JUCEApplicationBase::sendUnhandledException (const std::exception* const e,
 
 //==============================================================================
 #if ! (JUCE_IOS || JUCE_ANDROID)
- #define JUCE_HANDLE_MULTIPLE_INSTANCES 1
+#define JUCE_HANDLE_MULTIPLE_INSTANCES 1
 #endif
 
 #if JUCE_HANDLE_MULTIPLE_INSTANCES
@@ -97,7 +97,7 @@ public:
         jassert (app != nullptr);
 
         MessageManager::broadcastMessage (app->getApplicationName()
-                                            + "/" + app->getCommandLineParameters());
+                                          + "/" + app->getCommandLineParameters());
         return true;
     }
 
@@ -133,8 +133,12 @@ struct JUCEApplicationBase::MultipleInstanceHandler {};
 //==============================================================================
 #if JUCE_ANDROID
 
-StringArray JUCEApplicationBase::getCommandLineParameterArray() { return StringArray(); }
-String JUCEApplicationBase::getCommandLineParameters()          { return String(); }
+StringArray JUCEApplicationBase::getCommandLineParameterArray() {
+    return StringArray();
+}
+String JUCEApplicationBase::getCommandLineParameters()          {
+    return String();
+}
 
 #else
 
@@ -143,8 +147,8 @@ String JUCEApplicationBase::getCommandLineParameters()          { return String(
 String JUCE_CALLTYPE JUCEApplicationBase::getCommandLineParameters()
 {
     return CharacterFunctions::findEndOfToken (CharPointer_UTF16 (GetCommandLineW()),
-                                               CharPointer_UTF16 (L" "),
-                                               CharPointer_UTF16 (L"\"")).findEndOfWhitespace();
+            CharPointer_UTF16 (L" "),
+            CharPointer_UTF16 (L"\"")).findEndOfWhitespace();
 }
 
 StringArray JUCE_CALLTYPE JUCEApplicationBase::getCommandLineParameterArray()
@@ -164,19 +168,19 @@ StringArray JUCE_CALLTYPE JUCEApplicationBase::getCommandLineParameterArray()
 #else
 
 #if JUCE_IOS
- extern int juce_iOSMain (int argc, const char* argv[]);
+extern int juce_iOSMain (int argc, const char* argv[]);
 #endif
 
 #if JUCE_MAC
- extern void initialiseNSApplication();
+extern void initialiseNSApplication();
 #endif
 
 #if JUCE_WINDOWS
- const char* const* juce_argv = nullptr;
- int juce_argc = 0;
+const char* const* juce_argv = nullptr;
+int juce_argc = 0;
 #else
- extern const char* const* juce_argv;  // declared in juce_core
- extern int juce_argc;
+extern const char* const* juce_argv;  // declared in juce_core
+extern int juce_argc;
 #endif
 
 String JUCEApplicationBase::getCommandLineParameters()
@@ -208,15 +212,15 @@ int JUCEApplicationBase::main (int argc, const char* argv[])
         juce_argc = argc;
         juce_argv = argv;
 
-       #if JUCE_MAC
+#if JUCE_MAC
         initialiseNSApplication();
-       #endif
+#endif
 
-       #if JUCE_IOS
+#if JUCE_IOS
         return juce_iOSMain (argc, argv);
-       #else
+#else
         return JUCEApplicationBase::main();
-       #endif
+#endif
     }
 }
 
@@ -249,13 +253,13 @@ int JUCEApplicationBase::main()
 //==============================================================================
 bool JUCEApplicationBase::initialiseApp()
 {
-   #if JUCE_HANDLE_MULTIPLE_INSTANCES
+#if JUCE_HANDLE_MULTIPLE_INSTANCES
     if ((! moreThanOneInstanceAllowed()) && sendCommandLineToPreexistingInstance())
     {
         DBG ("Another instance is running - quitting...");
         return false;
     }
-   #endif
+#endif
 
     // let the app do its setting-up..
     initialise (getCommandLineParameters());
@@ -265,10 +269,10 @@ bool JUCEApplicationBase::initialiseApp()
     if (MessageManager::getInstance()->hasStopMessageBeenSent())
         return false;
 
-   #if JUCE_HANDLE_MULTIPLE_INSTANCES
+#if JUCE_HANDLE_MULTIPLE_INSTANCES
     if (multipleInstanceHandler != nullptr)
         MessageManager::getInstance()->registerBroadcastListener (multipleInstanceHandler);
-   #endif
+#endif
 
     return true;
 }
@@ -277,10 +281,10 @@ int JUCEApplicationBase::shutdownApp()
 {
     jassert (JUCEApplicationBase::getInstance() == this);
 
-   #if JUCE_HANDLE_MULTIPLE_INSTANCES
+#if JUCE_HANDLE_MULTIPLE_INSTANCES
     if (multipleInstanceHandler != nullptr)
         MessageManager::getInstance()->deregisterBroadcastListener (multipleInstanceHandler);
-   #endif
+#endif
 
     JUCE_TRY
     {

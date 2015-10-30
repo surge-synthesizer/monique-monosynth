@@ -27,11 +27,11 @@
 */
 
 #ifndef INTERNET_FLAG_NEED_FILE
- #define INTERNET_FLAG_NEED_FILE 0x00000010
+#define INTERNET_FLAG_NEED_FILE 0x00000010
 #endif
 
 #ifndef INTERNET_OPTION_DISABLE_AUTODIAL
- #define INTERNET_OPTION_DISABLE_AUTODIAL 70
+#define INTERNET_OPTION_DISABLE_AUTODIAL 70
 #endif
 
 //==============================================================================
@@ -41,9 +41,9 @@ public:
     WebInputStream (const String& address_, bool isPost_, const MemoryBlock& postData_,
                     URL::OpenStreamProgressCallback* progressCallback, void* progressCallbackContext,
                     const String& headers_, int timeOutMs_, StringPairArray* responseHeaders)
-      : statusCode (0), connection (0), request (0),
-        address (address_), headers (headers_), postData (postData_), position (0),
-        finished (false), isPost (isPost_), timeOutMs (timeOutMs_)
+        : statusCode (0), connection (0), request (0),
+          address (address_), headers (headers_), postData (postData_), position (0),
+          finished (false), isPost (isPost_), timeOutMs (timeOutMs_)
     {
         for (int maxRedirects = 10; --maxRedirects >= 0;)
         {
@@ -114,9 +114,15 @@ public:
     }
 
     //==============================================================================
-    bool isError() const        { return request == 0; }
-    bool isExhausted()          { return finished; }
-    int64 getPosition()         { return position; }
+    bool isError() const        {
+        return request == 0;
+    }
+    bool isExhausted()          {
+        return finished;
+    }
+    int64 getPosition()         {
+        return position;
+    }
 
     int64 getTotalLength()
     {
@@ -216,7 +222,7 @@ private:
             const int usernameNumChars = 1024;
             const int passwordNumChars = 1024;
             HeapBlock<TCHAR> file (fileNumChars), server (serverNumChars),
-                             username (usernameNumChars), password (passwordNumChars);
+                      username (usernameNumChars), password (passwordNumChars);
 
             URL_COMPONENTS uc = { 0 };
             uc.dwStructSize = sizeof (uc);
@@ -257,7 +263,7 @@ private:
         connection = InternetConnect (sessionHandle, uc.lpszHostName, uc.nPort,
                                       uc.lpszUserName, uc.lpszPassword,
                                       isFtp ? (DWORD) INTERNET_SERVICE_FTP
-                                            : (DWORD) INTERNET_SERVICE_HTTP,
+                                      : (DWORD) INTERNET_SERVICE_HTTP,
                                       0, 0);
         if (connection != 0)
         {
@@ -280,11 +286,11 @@ private:
         const TCHAR* mimeTypes[] = { _T("*/*"), nullptr };
 
         DWORD flags = INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES
-                        | INTERNET_FLAG_NO_AUTO_REDIRECT | SECURITY_SET_MASK;
+                      | INTERNET_FLAG_NO_AUTO_REDIRECT | SECURITY_SET_MASK;
 
         if (address.startsWithIgnoreCase ("https:"))
             flags |= INTERNET_FLAG_SECURE;  // (this flag only seems necessary if the OS is running IE6 -
-                                            //  IE7 seems to automatically work out when it's https)
+        //  IE7 seems to automatically work out when it's https)
 
         request = HttpOpenRequest (connection, isPost ? _T("POST") : _T("GET"),
                                    uc.lpszUrlPath, 0, 0, mimeTypes, flags, 0);
@@ -309,9 +315,9 @@ private:
                     DWORD bytesDone = 0;
 
                     if (bytesToDo > 0
-                         && ! InternetWriteFile (request,
-                                                 static_cast<const char*> (postData.getData()) + bytesSent,
-                                                 (DWORD) bytesToDo, &bytesDone))
+                            && ! InternetWriteFile (request,
+                                                    static_cast<const char*> (postData.getData()) + bytesSent,
+                                                    (DWORD) bytesToDo, &bytesDone))
                     {
                         break;
                     }
@@ -327,7 +333,7 @@ private:
                     bytesSent += bytesDone;
 
                     if (progressCallback != nullptr
-                          && ! progressCallback (progressCallbackContext, bytesSent, (int) postData.getSize()))
+                            && ! progressCallback (progressCallbackContext, bytesSent, (int) postData.getSize()))
                         break;
                 }
             }
@@ -373,71 +379,71 @@ struct GetAdaptersInfoHelper
 
 namespace MACAddressHelpers
 {
-    static void addAddress (Array<MACAddress>& result, const MACAddress& ma)
+static void addAddress (Array<MACAddress>& result, const MACAddress& ma)
+{
+    if (! ma.isNull())
+        result.addIfNotAlreadyThere (ma);
+}
+
+static void getViaGetAdaptersInfo (Array<MACAddress>& result)
+{
+    GetAdaptersInfoHelper gah;
+
+    if (gah.callGetAdaptersInfo())
     {
-        if (! ma.isNull())
-            result.addIfNotAlreadyThere (ma);
+        for (PIP_ADAPTER_INFO adapter = gah.adapterInfo; adapter != nullptr; adapter = adapter->Next)
+            if (adapter->AddressLength >= 6)
+                addAddress (result, MACAddress (adapter->Address));
     }
+}
 
-    static void getViaGetAdaptersInfo (Array<MACAddress>& result)
+static void getViaNetBios (Array<MACAddress>& result)
+{
+    DynamicLibrary dll ("netapi32.dll");
+    JUCE_LOAD_WINAPI_FUNCTION (dll, Netbios, NetbiosCall, UCHAR, (PNCB))
+
+    if (NetbiosCall != 0)
     {
-        GetAdaptersInfoHelper gah;
+        LANA_ENUM enums = { 0 };
 
-        if (gah.callGetAdaptersInfo())
         {
-            for (PIP_ADAPTER_INFO adapter = gah.adapterInfo; adapter != nullptr; adapter = adapter->Next)
-                if (adapter->AddressLength >= 6)
-                    addAddress (result, MACAddress (adapter->Address));
+            NCB ncb = { 0 };
+            ncb.ncb_command = NCBENUM;
+            ncb.ncb_buffer = (unsigned char*) &enums;
+            ncb.ncb_length = sizeof (LANA_ENUM);
+            NetbiosCall (&ncb);
         }
-    }
 
-    static void getViaNetBios (Array<MACAddress>& result)
-    {
-        DynamicLibrary dll ("netapi32.dll");
-        JUCE_LOAD_WINAPI_FUNCTION (dll, Netbios, NetbiosCall, UCHAR, (PNCB))
-
-        if (NetbiosCall != 0)
+        for (int i = 0; i < enums.length; ++i)
         {
-            LANA_ENUM enums = { 0 };
+            NCB ncb2 = { 0 };
+            ncb2.ncb_command = NCBRESET;
+            ncb2.ncb_lana_num = enums.lana[i];
 
+            if (NetbiosCall (&ncb2) == 0)
             {
                 NCB ncb = { 0 };
-                ncb.ncb_command = NCBENUM;
-                ncb.ncb_buffer = (unsigned char*) &enums;
-                ncb.ncb_length = sizeof (LANA_ENUM);
-                NetbiosCall (&ncb);
-            }
+                memcpy (ncb.ncb_callname, "*                   ", NCBNAMSZ);
+                ncb.ncb_command = NCBASTAT;
+                ncb.ncb_lana_num = enums.lana[i];
 
-            for (int i = 0; i < enums.length; ++i)
-            {
-                NCB ncb2 = { 0 };
-                ncb2.ncb_command = NCBRESET;
-                ncb2.ncb_lana_num = enums.lana[i];
-
-                if (NetbiosCall (&ncb2) == 0)
+                struct ASTAT
                 {
-                    NCB ncb = { 0 };
-                    memcpy (ncb.ncb_callname, "*                   ", NCBNAMSZ);
-                    ncb.ncb_command = NCBASTAT;
-                    ncb.ncb_lana_num = enums.lana[i];
+                    ADAPTER_STATUS adapt;
+                    NAME_BUFFER    NameBuff [30];
+                };
 
-                    struct ASTAT
-                    {
-                        ADAPTER_STATUS adapt;
-                        NAME_BUFFER    NameBuff [30];
-                    };
+                ASTAT astat;
+                zerostruct (astat);
+                ncb.ncb_buffer = (unsigned char*) &astat;
+                ncb.ncb_length = sizeof (ASTAT);
 
-                    ASTAT astat;
-                    zerostruct (astat);
-                    ncb.ncb_buffer = (unsigned char*) &astat;
-                    ncb.ncb_length = sizeof (ASTAT);
-
-                    if (NetbiosCall (&ncb) == 0 && astat.adapt.adapter_type == 0xfe)
-                        addAddress (result, MACAddress (astat.adapt.adapter_address));
-                }
+                if (NetbiosCall (&ncb) == 0 && astat.adapt.adapter_type == 0xfe)
+                    addAddress (result, MACAddress (astat.adapt.adapter_address));
             }
         }
     }
+}
 }
 
 void MACAddress::findAllAddresses (Array<MACAddress>& result)
@@ -466,9 +472,9 @@ void IPAddress::findAllAddresses (Array<IPAddress>& result)
 
 //==============================================================================
 bool JUCE_CALLTYPE Process::openEmailWithAttachments (const String& targetEmailAddress,
-                                                      const String& emailSubject,
-                                                      const String& bodyText,
-                                                      const StringArray& filesToAttach)
+        const String& emailSubject,
+        const String& bodyText,
+        const StringArray& filesToAttach)
 {
     DynamicLibrary dll ("MAPI32.dll");
     JUCE_LOAD_WINAPI_FUNCTION (dll, MAPISendMail, mapiSendMail,

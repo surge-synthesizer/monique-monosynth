@@ -36,9 +36,9 @@ public:
 
         NSOpenGLPixelFormatAttribute attribs[] =
         {
-           #if JUCE_OPENGL3
+#if JUCE_OPENGL3
             NSOpenGLPFAOpenGLProfile, version >= openGL3_2 ? NSOpenGLProfileVersion3_2Core : NSOpenGLProfileVersionLegacy,
-           #endif
+#endif
             NSOpenGLPFADoubleBuffer,
             NSOpenGLPFAClosestPolicy,
             NSOpenGLPFANoRecovery,
@@ -47,32 +47,32 @@ public:
             NSOpenGLPFADepthSize,   (NSOpenGLPixelFormatAttribute) pixFormat.depthBufferBits,
             NSOpenGLPFAStencilSize, (NSOpenGLPixelFormatAttribute) pixFormat.stencilBufferBits,
             NSOpenGLPFAAccumSize,   (NSOpenGLPixelFormatAttribute) (pixFormat.accumulationBufferRedBits + pixFormat.accumulationBufferGreenBits
-                                        + pixFormat.accumulationBufferBlueBits + pixFormat.accumulationBufferAlphaBits),
+            + pixFormat.accumulationBufferBlueBits + pixFormat.accumulationBufferAlphaBits),
             pixFormat.multisamplingLevel > 0 ? NSOpenGLPFASamples : (NSOpenGLPixelFormatAttribute) 0,
             (NSOpenGLPixelFormatAttribute) pixFormat.multisamplingLevel,
             0
         };
 
-        NSOpenGLPixelFormat* format = [[NSOpenGLPixelFormat alloc] initWithAttributes: attribs];
+NSOpenGLPixelFormat* format = [[NSOpenGLPixelFormat alloc] initWithAttributes: attribs];
 
         static MouseForwardingNSOpenGLViewClass cls;
-        view = [cls.createInstance() initWithFrame: NSMakeRect (0, 0, 100.0f, 100.0f)
-                                       pixelFormat: format];
+view = [cls.createInstance() initWithFrame: NSMakeRect (0, 0, 100.0f, 100.0f)
+        pixelFormat: format];
 
-       #if defined (MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
-        if ([view respondsToSelector: @selector (setWantsBestResolutionOpenGLSurface:)])
-            [view setWantsBestResolutionOpenGLSurface: YES];
-       #endif
+#if defined (MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
+if ([view respondsToSelector: @selector (setWantsBestResolutionOpenGLSurface:)])
+[view setWantsBestResolutionOpenGLSurface: YES];
+#endif
 
-        [[NSNotificationCenter defaultCenter] addObserver: view
-                                                 selector: @selector (_surfaceNeedsUpdate:)
-                                                     name: NSViewGlobalFrameDidChangeNotification
-                                                   object: view];
+[[NSNotificationCenter defaultCenter] addObserver: view
+ selector: @selector (_surfaceNeedsUpdate:)
+ name: NSViewGlobalFrameDidChangeNotification
+ object: view];
 
-        renderContext = [[[NSOpenGLContext alloc] initWithFormat: format
-                                                    shareContext: (NSOpenGLContext*) contextToShare] autorelease];
+renderContext = [[[NSOpenGLContext alloc] initWithFormat: format
+                  shareContext: (NSOpenGLContext*) contextToShare] autorelease];
 
-        [view setOpenGLContext: renderContext];
+[view setOpenGLContext: renderContext];
         [format release];
 
         viewAttachment = NSViewComponent::attachViewToComponent (component, view);
@@ -80,26 +80,34 @@ public:
 
     ~NativeContext()
     {
-        [[NSNotificationCenter defaultCenter] removeObserver: view];
+[[NSNotificationCenter defaultCenter] removeObserver: view];
         [renderContext clearDrawable];
-        [renderContext setView: nil];
-        [view setOpenGLContext: nil];
+[renderContext setView: nil];
+[view setOpenGLContext: nil];
         renderContext = nil;
     }
 
     void initialiseOnRenderThread (OpenGLContext&) {}
-    void shutdownOnRenderThread()               { deactivateCurrentContext(); }
+    void shutdownOnRenderThread()               {
+        deactivateCurrentContext();
+    }
 
-    bool createdOk() const noexcept             { return getRawContext() != nullptr; }
-    void* getRawContext() const noexcept        { return static_cast <void*> (renderContext); }
-    GLuint getFrameBufferID() const noexcept    { return 0; }
+    bool createdOk() const noexcept             {
+        return getRawContext() != nullptr;
+    }
+    void* getRawContext() const noexcept        {
+        return static_cast <void*> (renderContext);
+    }
+    GLuint getFrameBufferID() const noexcept    {
+        return 0;
+    }
 
     bool makeActive() const noexcept
     {
         jassert (renderContext != nil);
 
         if ([renderContext view] != view)
-            [renderContext setView: view];
+[renderContext setView: view];
 
         if (NSOpenGLContext* context = [view openGLContext])
         {
@@ -149,16 +157,16 @@ public:
     {
         minSwapTimeMs = (numFramesPerSwap * 1000) / 60;
 
-        [renderContext setValues: (const GLint*) &numFramesPerSwap
-                    forParameter: NSOpenGLCPSwapInterval];
+[renderContext setValues: (const GLint*) &numFramesPerSwap
+ forParameter: NSOpenGLCPSwapInterval];
         return true;
     }
 
     int getSwapInterval() const
     {
         GLint numFrames = 0;
-        [renderContext getValues: &numFrames
-                    forParameter: NSOpenGLCPSwapInterval];
+[renderContext getValues: &numFrames
+ forParameter: NSOpenGLCPSwapInterval];
 
         return numFrames;
     }
@@ -201,17 +209,23 @@ public:
     {
         MouseForwardingNSOpenGLViewClass()  : ObjCClass <NSOpenGLView> ("JUCEGLView_")
         {
-            addMethod (@selector (rightMouseDown:),      rightMouseDown,     "v@:@");
-            addMethod (@selector (rightMouseUp:),        rightMouseUp,       "v@:@");
-            addMethod (@selector (acceptsFirstMouse:),   acceptsFirstMouse,  "v@:@");
+addMethod (@selector (rightMouseDown:),      rightMouseDown,     "v@:@");
+addMethod (@selector (rightMouseUp:),        rightMouseUp,       "v@:@");
+addMethod (@selector (acceptsFirstMouse:),   acceptsFirstMouse,  "v@:@");
 
             registerClass();
         }
 
     private:
-        static void rightMouseDown (id self, SEL, NSEvent* ev)      { [[(NSOpenGLView*) self superview] rightMouseDown: ev]; }
-        static void rightMouseUp   (id self, SEL, NSEvent* ev)      { [[(NSOpenGLView*) self superview] rightMouseUp:   ev]; }
-        static BOOL acceptsFirstMouse (id, SEL, NSEvent*)           { return YES; }
+        static void rightMouseDown (id self, SEL, NSEvent* ev)      {
+[[(NSOpenGLView*) self superview] rightMouseDown: ev];
+        }
+        static void rightMouseUp   (id self, SEL, NSEvent* ev)      {
+[[(NSOpenGLView*) self superview] rightMouseUp:   ev];
+        }
+        static BOOL acceptsFirstMouse (id, SEL, NSEvent*)           {
+            return YES;
+        }
     };
 
 

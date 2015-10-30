@@ -29,7 +29,8 @@
 Identifier::Identifier() noexcept {}
 Identifier::~Identifier() noexcept {}
 
-Identifier::Identifier (const Identifier& other) noexcept  : name (other.name) {}
+Identifier::Identifier (const Identifier& other) noexcept  :
+name (other.name) {}
 
 Identifier& Identifier::operator= (const Identifier other) noexcept
 {
@@ -66,5 +67,5 @@ Identifier Identifier::null;
 bool Identifier::isValidIdentifier (const String& possibleIdentifier) noexcept
 {
     return possibleIdentifier.isNotEmpty()
-            && possibleIdentifier.containsOnly ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-:#@$%");
+    && possibleIdentifier.containsOnly ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-:#@$%");
 }

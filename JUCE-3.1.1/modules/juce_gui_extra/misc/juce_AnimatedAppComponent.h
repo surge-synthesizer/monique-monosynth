@@ -35,7 +35,7 @@
     to take care of continuously repainting itself.
 */
 class AnimatedAppComponent   : public Component,
-                               private Timer
+    private Timer
 {
 public:
     AnimatedAppComponent();
@@ -54,7 +54,9 @@ public:
     /** Returns the number of times that update() has been called since the component
         started running.
     */
-    int getFrameCounter() const noexcept        { return totalUpdates; }
+    int getFrameCounter() const noexcept        {
+        return totalUpdates;
+    }
 
     /** When called from update(), this returns the number of milliseconds since the
         last update call.

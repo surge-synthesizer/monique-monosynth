@@ -33,7 +33,9 @@ public:
     ~CoreGraphicsContext();
 
     //==============================================================================
-    bool isVectorDevice() const override         { return false; }
+    bool isVectorDevice() const override         {
+        return false;
+    }
 
     void setOrigin (Point<int>) override;
     void addTransform (const AffineTransform&) override;

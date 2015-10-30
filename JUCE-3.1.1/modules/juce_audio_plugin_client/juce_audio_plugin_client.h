@@ -32,7 +32,7 @@
 
 namespace juce
 {
- #include "utility/juce_PluginHostType.h"
+#include "utility/juce_PluginHostType.h"
 }
 
 #endif   // JUCE_AUDIO_PLUGIN_CLIENT_H_INCLUDED

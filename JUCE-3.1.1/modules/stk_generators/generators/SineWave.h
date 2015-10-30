@@ -72,9 +72,9 @@ public:
         return _isNewCylce;
     }
     void clearNewCycleState() {
-      _isNewCylce = false;
+        _isNewCylce = false;
     }
-    
+
 
     //! Return the last computed output value.
     StkFloat lastOut( void ) const {

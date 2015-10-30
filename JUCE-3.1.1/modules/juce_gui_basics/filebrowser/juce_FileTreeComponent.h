@@ -39,7 +39,7 @@
     @see DirectoryContentsList, FileListComponent
 */
 class JUCE_API  FileTreeComponent  : public TreeView,
-                                     public DirectoryContentsDisplayComponent
+    public DirectoryContentsDisplayComponent
 {
 public:
     //==============================================================================
@@ -54,7 +54,9 @@ public:
     /** Returns the number of files the user has got selected.
         @see getSelectedFile
     */
-    int getNumSelectedFiles() const                 { return TreeView::getNumSelectedItems(); }
+    int getNumSelectedFiles() const                 {
+        return TreeView::getNumSelectedItems();
+    }
 
     /** Returns one of the files that the user has currently selected.
         The index should be in the range 0 to (getNumSelectedFiles() - 1).
@@ -84,13 +86,17 @@ public:
 
     /** Returns the last value that was set by setDragAndDropDescription().
     */
-    const String& getDragAndDropDescription() const noexcept    { return dragAndDropDescription; }
+    const String& getDragAndDropDescription() const noexcept    {
+        return dragAndDropDescription;
+    }
 
     /** Changes the height of the treeview items. */
     void setItemHeight (int newHeight);
 
     /** Returns the height of the treeview items. */
-    int getItemHeight() const noexcept                          { return itemHeight; }
+    int getItemHeight() const noexcept                          {
+        return itemHeight;
+    }
 
 private:
     //==============================================================================

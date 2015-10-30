@@ -30,13 +30,17 @@ static const int minNumberOfStringsForGarbageCollection = 300;
 static const uint32 garbageCollectionInterval = 30000;
 
 
-StringPool::StringPool() noexcept  : lastGarbageCollectionTime (0) {}
+StringPool::StringPool() noexcept  :
+lastGarbageCollectionTime (0) {}
 StringPool::~StringPool() {}
 
 struct StartEndString
 {
-    StartEndString (String::CharPointerType s, String::CharPointerType e) noexcept : start (s), end (e) {}
-    operator String() const   { return String (start, end); }
+StartEndString (String::CharPointerType s, String::CharPointerType e) noexcept :
+    start (s), end (e) {}
+    operator String() const   {
+        return String (start, end);
+    }
 
     String::CharPointerType start, end;
 };
@@ -144,7 +148,7 @@ String StringPool::getPooledString (const String& newString)
 void StringPool::garbageCollectIfNeeded()
 {
     if (strings.size() > minNumberOfStringsForGarbageCollection
-         && Time::getApproximateMillisecondCounter() > lastGarbageCollectionTime + garbageCollectionInterval)
+            && Time::getApproximateMillisecondCounter() > lastGarbageCollectionTime + garbageCollectionInterval)
         garbageCollect();
 }
 

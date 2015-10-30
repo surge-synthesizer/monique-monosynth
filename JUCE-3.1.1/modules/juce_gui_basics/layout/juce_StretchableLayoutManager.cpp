@@ -39,9 +39,9 @@ void StretchableLayoutManager::clearAllItems()
 }
 
 void StretchableLayoutManager::setItemLayout (const int itemIndex,
-                                              const double minimumSize,
-                                              const double maximumSize,
-                                              const double preferredSize)
+        const double minimumSize,
+        const double maximumSize,
+        const double preferredSize)
 {
     ItemLayoutProperties* layout = getInfoFor (itemIndex);
 
@@ -65,9 +65,9 @@ void StretchableLayoutManager::setItemLayout (const int itemIndex,
 }
 
 bool StretchableLayoutManager::getItemLayout (const int itemIndex,
-                                              double& minimumSize,
-                                              double& maximumSize,
-                                              double& preferredSize) const
+        double& minimumSize,
+        double& maximumSize,
+        double& preferredSize) const
 {
     if (const ItemLayoutProperties* const layout = getInfoFor (itemIndex))
     {
@@ -116,7 +116,7 @@ double StretchableLayoutManager::getItemCurrentRelativeSize (const int itemIndex
 }
 
 void StretchableLayoutManager::setItemPosition (const int itemIndex,
-                                                int newPosition)
+        int newPosition)
 {
     for (int i = items.size(); --i >= 0;)
     {
@@ -144,10 +144,10 @@ void StretchableLayoutManager::setItemPosition (const int itemIndex,
 
 //==============================================================================
 void StretchableLayoutManager::layOutComponents (Component** const components,
-                                                 int numComponents,
-                                                 int x, int y, int w, int h,
-                                                 const bool vertically,
-                                                 const bool resizeOtherDimension)
+        int numComponents,
+        int x, int y, int w, int h,
+        const bool vertically,
+        const bool resizeOtherDimension)
 {
     setTotalSize (vertically ? h : w);
     int pos = vertically ? y : x;
@@ -212,9 +212,9 @@ StretchableLayoutManager::ItemLayoutProperties* StretchableLayoutManager::getInf
 }
 
 int StretchableLayoutManager::fitComponentsIntoSpace (const int startIndex,
-                                                      const int endIndex,
-                                                      const int availableSpace,
-                                                      int startPos)
+        const int endIndex,
+        const int availableSpace,
+        int startPos)
 {
     // calculate the total sizes
     double totalIdealSize = 0.0;
@@ -228,7 +228,7 @@ int StretchableLayoutManager::fitComponentsIntoSpace (const int startIndex,
 
         totalMinimums += layout->currentSize;
         totalIdealSize += sizeToRealSize (layout->preferredSize, totalSize);
-   }
+    }
 
     if (totalIdealSize <= 0)
         totalIdealSize = 1.0;
@@ -273,7 +273,7 @@ int StretchableLayoutManager::fitComponentsIntoSpace (const int startIndex,
             if (extraWanted > 0)
             {
                 const int extraAllowed = jmin (extraWanted,
-                                                extraSpace / jmax (1, numWantingMoreSpace));
+                                               extraSpace / jmax (1, numWantingMoreSpace));
 
                 if (extraAllowed > 0)
                 {
@@ -301,7 +301,7 @@ int StretchableLayoutManager::fitComponentsIntoSpace (const int startIndex,
 }
 
 int StretchableLayoutManager::getMinimumSizeOfItems (const int startIndex,
-                                                     const int endIndex) const
+        const int endIndex) const
 {
     int totalMinimums = 0;
 
@@ -329,7 +329,7 @@ void StretchableLayoutManager::updatePrefSizesToMatchCurrentPositions()
 
         layout->preferredSize
             = (layout->preferredSize < 0) ? getItemCurrentRelativeSize (i)
-                                          : getItemCurrentAbsoluteSize (i);
+              : getItemCurrentAbsoluteSize (i);
     }
 }
 

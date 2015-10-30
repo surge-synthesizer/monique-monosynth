@@ -182,8 +182,8 @@ void MenuBarComponent::showMenu (int index)
             const Rectangle<int> itemPos (xPositions [index], 0, xPositions [index + 1] - xPositions [index], getHeight());
 
             m.showMenuAsync (PopupMenu::Options().withTargetComponent (this)
-                                                 .withTargetScreenArea (localAreaToGlobal (itemPos))
-                                                 .withMinimumWidth (itemPos.getWidth()),
+                             .withTargetScreenArea (localAreaToGlobal (itemPos))
+                             .withMinimumWidth (itemPos.getWidth()),
                              ModalCallbackFunction::forComponent (menuBarMenuDismissedCallback, this, index));
         }
     }
@@ -322,7 +322,7 @@ void MenuBarComponent::menuBarItemsChanged (MenuBarModel* /*menuBarModel*/)
 }
 
 void MenuBarComponent::menuCommandInvoked (MenuBarModel* /*menuBarModel*/,
-                                           const ApplicationCommandTarget::InvocationInfo& info)
+        const ApplicationCommandTarget::InvocationInfo& info)
 {
     if (model == nullptr || (info.commandFlags & ApplicationCommandInfo::dontTriggerVisualFeedback) != 0)
         return;

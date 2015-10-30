@@ -97,12 +97,12 @@ public:
     struct KnownTypeface
     {
         KnownTypeface (const File& f, const int index, const FTFaceWrapper& face)
-           : file (f),
-             family (face.face->family_name),
-             style (face.face->style_name),
-             faceIndex (index),
-             isMonospaced ((face.face->face_flags & FT_FACE_FLAG_FIXED_WIDTH) != 0),
-             isSansSerif (isFaceSansSerif (family))
+            : file (f),
+              family (face.face->family_name),
+              style (face.face->style_name),
+              faceIndex (index),
+              isMonospaced ((face.face->face_flags & FT_FACE_FLAG_FIXED_WIDTH) != 0),
+              isSansSerif (isFaceSansSerif (family))
         {
         }
 
@@ -195,7 +195,7 @@ public:
         for (int i = 0; i < paths.size(); ++i)
         {
             DirectoryIterator iter (File::getCurrentWorkingDirectory()
-                                       .getChildFile (paths[i]), true);
+                                    .getChildFile (paths[i]), true);
 
             while (iter.next())
                 if (iter.getFile().hasFileExtension ("ttf;pfb;pcf;otf"))
@@ -262,7 +262,7 @@ private:
             const KnownTypeface* const face = faces.getUnchecked(i);
 
             if (face->family == familyName
-                  && (face->style.equalsIgnoreCase (style) || style.isEmpty()))
+                    && (face->style.equalsIgnoreCase (style) || style.isEmpty()))
                 return face;
         }
 
@@ -292,7 +292,7 @@ class FreeTypeTypeface   : public CustomTypeface
 public:
     FreeTypeTypeface (const Font& font)
         : faceWrapper (FTTypefaceList::getInstance()->createFace (font.getTypefaceName(),
-                                                                  font.getTypefaceStyle()))
+                       font.getTypefaceStyle()))
     {
         if (faceWrapper != nullptr)
             initialiseCharacteristics (font.getTypefaceName(),
@@ -322,7 +322,7 @@ public:
             const unsigned int glyphIndex = FT_Get_Char_Index (face, character);
 
             if (FT_Load_Glyph (face, glyphIndex, FT_LOAD_NO_SCALE | FT_LOAD_NO_BITMAP | FT_LOAD_IGNORE_TRANSFORM | FT_LOAD_NO_HINTING) == 0
-                  && face->glyph->format == ft_glyph_format_outline)
+                    && face->glyph->format == ft_glyph_format_outline)
             {
                 const float scale = 1.0f / (float) (face->ascender - face->descender);
                 Path destShape;
@@ -412,8 +412,8 @@ private:
                     const int next2 = (p == (endPoint - 1)) ? startPoint : (p + 2);
 
                     if (p >= endPoint
-                         || FT_CURVE_TAG (tags[next1]) != FT_Curve_Tag_Cubic
-                         || FT_CURVE_TAG (tags[next2]) != FT_Curve_Tag_On)
+                            || FT_CURVE_TAG (tags[next1]) != FT_Curve_Tag_Cubic
+                            || FT_CURVE_TAG (tags[next2]) != FT_Curve_Tag_On)
                         return false;
 
                     const float x2 = scaleX * points [next1].x;
@@ -444,7 +444,7 @@ private:
             FT_Vector kerning;
 
             if (FT_Get_Kerning (face, glyphIndex, rightGlyphIndex, ft_kerning_unscaled, &kerning) == 0
-                   && kerning.x != 0)
+                    && kerning.x != 0)
                 addKerningPair (character, rightCharCode, kerning.x / height);
 
             rightCharCode = FT_Get_Next_Char (face, rightCharCode, &rightGlyphIndex);

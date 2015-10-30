@@ -23,23 +23,23 @@
 */
 
 ThreadWithProgressWindow::ThreadWithProgressWindow (const String& title,
-                                                    const bool hasProgressBar,
-                                                    const bool hasCancelButton,
-                                                    const int cancellingTimeOutMs,
-                                                    const String& cancelButtonText,
-                                                    Component* componentToCentreAround)
-   : Thread ("ThreadWithProgressWindow"),
-     progress (0.0),
-     timeOutMsWhenCancelling (cancellingTimeOutMs),
-     wasCancelledByUser (false)
+        const bool hasProgressBar,
+        const bool hasCancelButton,
+        const int cancellingTimeOutMs,
+        const String& cancelButtonText,
+        Component* componentToCentreAround)
+    : Thread ("ThreadWithProgressWindow"),
+      progress (0.0),
+      timeOutMsWhenCancelling (cancellingTimeOutMs),
+      wasCancelledByUser (false)
 {
     alertWindow = LookAndFeel::getDefaultLookAndFeel()
-                    .createAlertWindow (title, String(),
-                                        cancelButtonText.isEmpty() ? TRANS("Cancel")
-                                                                   : cancelButtonText,
-                                        String(), String(),
-                                        AlertWindow::NoIcon, hasCancelButton ? 1 : 0,
-                                        componentToCentreAround);
+                  .createAlertWindow (title, String(),
+                                      cancelButtonText.isEmpty() ? TRANS("Cancel")
+                                      : cancelButtonText,
+                                      String(), String(),
+                                      AlertWindow::NoIcon, hasCancelButton ? 1 : 0,
+                                      componentToCentreAround);
 
     // if there are no buttons, we won't allow the user to interrupt the thread.
     alertWindow->setEscapeKeyCancels (false);

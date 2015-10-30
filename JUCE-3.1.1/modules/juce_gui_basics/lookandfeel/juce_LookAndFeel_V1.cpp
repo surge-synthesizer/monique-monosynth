@@ -47,7 +47,7 @@ LookAndFeel_V1::~LookAndFeel_V1()
 
 //==============================================================================
 void LookAndFeel_V1::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
-                                           bool isMouseOverButton, bool isButtonDown)
+        bool isMouseOverButton, bool isButtonDown)
 {
     const int width = button.getWidth();
     const int height = button.getHeight();
@@ -92,7 +92,7 @@ void LookAndFeel_V1::drawTickBox (Graphics& g, Component& /*component*/,
     box.addRoundedRectangle (0.0f, 2.0f, 6.0f, 6.0f, 1.0f);
 
     g.setColour (isEnabled ? Colours::blue.withAlpha (isButtonDown ? 0.3f : 0.1f)
-                           : Colours::lightgrey.withAlpha (0.1f));
+                     : Colours::lightgrey.withAlpha (0.1f));
 
     AffineTransform trans (AffineTransform::scale (w / 9.0f, h / 9.0f).translated (x, y));
 
@@ -175,10 +175,10 @@ void LookAndFeel_V1::drawProgressBar (Graphics& g, ProgressBar& progressBar,
 }
 
 void LookAndFeel_V1::drawScrollbarButton (Graphics& g, ScrollBar& bar,
-                                          int width, int height, int buttonDirection,
-                                          bool isScrollbarVertical,
-                                          bool isMouseOverButton,
-                                          bool isButtonDown)
+        int width, int height, int buttonDirection,
+        bool isScrollbarVertical,
+        bool isMouseOverButton,
+        bool isButtonDown)
 {
     if (isScrollbarVertical)
         width -= 2;
@@ -225,7 +225,7 @@ void LookAndFeel_V1::drawScrollbar (Graphics& g, ScrollBar& bar,
     g.fillAll (bar.findColour (ScrollBar::backgroundColourId));
 
     g.setColour (bar.findColour (ScrollBar::thumbColourId)
-                    .withAlpha ((isMouseOver || isMouseDown) ? 0.4f : 0.15f));
+                 .withAlpha ((isMouseOver || isMouseDown) ? 0.4f : 0.15f));
 
     if (thumbSize > 0.0f)
     {
@@ -251,7 +251,7 @@ void LookAndFeel_V1::drawScrollbar (Graphics& g, ScrollBar& bar,
         }
 
         g.setColour (bar.findColour (ScrollBar::thumbColourId)
-                        .withAlpha ((isMouseOver || isMouseDown) ? 0.95f : 0.7f));
+                     .withAlpha ((isMouseOver || isMouseDown) ? 0.95f : 0.7f));
 
         g.fillRect (thumb);
 
@@ -322,7 +322,7 @@ void LookAndFeel_V1::drawComboBox (Graphics& g, int width, int height,
     g.fillAll (box.findColour (ComboBox::backgroundColourId));
 
     g.setColour (box.findColour ((isButtonDown) ? ComboBox::buttonColourId
-                                                : ComboBox::backgroundColourId));
+                                 : ComboBox::backgroundColourId));
     g.fillRect (buttonX, buttonY, buttonW, buttonH);
 
     g.setColour (box.findColour (ComboBox::outlineColourId));
@@ -343,7 +343,7 @@ void LookAndFeel_V1::drawComboBox (Graphics& g, int width, int height,
                        buttonX + buttonW * arrowX,          buttonY + buttonH * 0.55f);
 
         g.setColour (box.findColour ((isButtonDown) ? ComboBox::backgroundColourId
-                                                    : ComboBox::buttonColourId));
+                                     : ComboBox::buttonColourId));
         g.fillPath (p);
     }
 }
@@ -386,7 +386,7 @@ void LookAndFeel_V1::drawLinearSlider (Graphics& g,
     else
     {
         g.setColour (slider.findColour (Slider::trackColourId)
-                           .withMultipliedAlpha (slider.isEnabled() ? 1.0f : 0.3f));
+                     .withMultipliedAlpha (slider.isEnabled() ? 1.0f : 0.3f));
 
         if (slider.isHorizontal())
         {
@@ -471,7 +471,7 @@ int LookAndFeel_V1::getSliderThumbRadius (Slider&)
 void LookAndFeel_V1::drawCornerResizer (Graphics& g, int w, int h, bool isMouseOver, bool isMouseDragging)
 {
     g.setColour ((isMouseOver || isMouseDragging) ? Colours::lightgrey
-                                                  : Colours::darkgrey);
+                 : Colours::darkgrey);
 
     const float lineThickness = jmin (w, h) * 0.1f;
 
@@ -532,11 +532,11 @@ Button* LookAndFeel_V1::createDocumentWindowButton (int buttonType)
 }
 
 void LookAndFeel_V1::positionDocumentWindowButtons (DocumentWindow&,
-                                                    int titleBarX, int titleBarY, int titleBarW, int titleBarH,
-                                                    Button* minimiseButton,
-                                                    Button* maximiseButton,
-                                                    Button* closeButton,
-                                                    bool positionTitleBarButtonsOnLeft)
+        int titleBarX, int titleBarY, int titleBarW, int titleBarH,
+        Button* minimiseButton,
+        Button* maximiseButton,
+        Button* closeButton,
+        bool positionTitleBarButtonsOnLeft)
 {
     titleBarY += titleBarH / 8;
     titleBarH -= titleBarH / 4;
@@ -544,13 +544,13 @@ void LookAndFeel_V1::positionDocumentWindowButtons (DocumentWindow&,
     const int buttonW = titleBarH;
 
     int x = positionTitleBarButtonsOnLeft ? titleBarX + 4
-                                          : titleBarX + titleBarW - buttonW - 4;
+            : titleBarX + titleBarW - buttonW - 4;
 
     if (closeButton != nullptr)
     {
         closeButton->setBounds (x, titleBarY, buttonW, titleBarH);
         x += positionTitleBarButtonsOnLeft ? buttonW + buttonW / 5
-                                           : -(buttonW + buttonW / 5);
+             : -(buttonW + buttonW / 5);
     }
 
     if (positionTitleBarButtonsOnLeft)

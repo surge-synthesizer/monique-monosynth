@@ -33,7 +33,7 @@
     @see AudioFormatReader
 */
 class JUCE_API  BufferingAudioReader  : public AudioFormatReader,
-                                        private TimeSliceClient
+    private TimeSliceClient
 {
 public:
     /** Creates a reader.

@@ -191,28 +191,28 @@ typedef juint			jsize;
 
 /* moved from jni.h -- Sun's new jni.h doesn't have this anymore */
 #ifdef __cplusplus
-typedef class _jobject *jref;
+    typedef class _jobject *jref;
 #else
-typedef struct _jobject *jref;
+    typedef struct _jobject *jref;
 #endif
 
-typedef unsigned char	jbool;
-typedef signed char	jbyte;
+    typedef unsigned char	jbool;
+    typedef signed char	jbyte;
 #ifdef IS_64 /* XXX ok for alpha, but not right on all 64-bit architectures */
-typedef unsigned int	juint;
-typedef int				jint;
+    typedef unsigned int	juint;
+    typedef int				jint;
 #else
-typedef unsigned long	juint;
-typedef long			jint;
+    typedef unsigned long	juint;
+    typedef long			jint;
 #endif
 
-/*******************************************************************************
- * jlong : long long (64-bit signed integer type) support.
- ******************************************************************************/
+    /*******************************************************************************
+     * jlong : long long (64-bit signed integer type) support.
+     ******************************************************************************/
 
-/*
-** Bit masking macros.  (n must be <= 31 to be portable)
-*/
+    /*
+    ** Bit masking macros.  (n must be <= 31 to be portable)
+    */
 #define JRI_BIT(n)			((juint)1 << (n))
 #define JRI_BITMASK(n)		(JRI_BIT(n) - 1)
 
@@ -220,25 +220,25 @@ typedef long			jint;
 
 #ifdef OSF1
 
-/* long is default 64-bit on OSF1, -std1 does not allow long long */
-typedef long                  jlong;
-typedef unsigned long         julong;
+    /* long is default 64-bit on OSF1, -std1 does not allow long long */
+    typedef long                  jlong;
+    typedef unsigned long         julong;
 #define jlong_MAXINT          0x7fffffffffffffffL
 #define jlong_MININT          0x8000000000000000L
 #define jlong_ZERO            0x0L
 
 #elif (defined(WIN32) || defined(_WIN32))
 
-typedef LONGLONG              jlong;
-typedef DWORDLONG             julong;
+    typedef LONGLONG              jlong;
+    typedef DWORDLONG             julong;
 #define jlong_MAXINT          0x7fffffffffffffffi64
 #define jlong_MININT          0x8000000000000000i64
 #define jlong_ZERO            0x0i64
 
 #else
 
-typedef long long             jlong;
-typedef unsigned long long    julong;
+    typedef long long             jlong;
+    typedef unsigned long long    julong;
 #define jlong_MAXINT          0x7fffffffffffffffLL
 #define jlong_MININT          0x8000000000000000LL
 #define jlong_ZERO            0x0LL
@@ -286,25 +286,25 @@ typedef unsigned long long    julong;
 
 #else  /* !HAVE_LONG_LONG */
 
-typedef struct {
+    typedef struct {
 #ifdef IS_LITTLE_ENDIAN
-    juint lo, hi;
+        juint lo, hi;
 #else
-    juint hi, lo;
+        juint hi, lo;
 #endif
-} jlong;
-typedef jlong				julong;
+    } jlong;
+    typedef jlong				julong;
 
-extern jlong jlong_MAXINT, jlong_MININT, jlong_ZERO;
+    extern jlong jlong_MAXINT, jlong_MININT, jlong_ZERO;
 
 #define jlong_IS_ZERO(a)	(((a).hi == 0) && ((a).lo == 0))
 #define jlong_EQ(a, b)		(((a).hi == (b).hi) && ((a).lo == (b).lo))
 #define jlong_NE(a, b)		(((a).hi != (b).hi) || ((a).lo != (b).lo))
 #define jlong_GE_ZERO(a)	(((a).hi >> 31) == 0)
 
-/*
- * NB: jlong_CMP and jlong_UCMP work only for strict relationals (<, >).
- */
+    /*
+     * NB: jlong_CMP and jlong_UCMP work only for strict relationals (<, >).
+     */
 #define jlong_CMP(a, op, b)	(((int32)(a).hi op (int32)(b).hi) ||          \
 				 (((a).hi == (b).hi) && ((a).lo op (b).lo)))
 #define jlong_UCMP(a, op, b)	(((a).hi op (b).hi) ||                    \
@@ -336,12 +336,12 @@ extern jlong jlong_MAXINT, jlong_MININT, jlong_ZERO;
     (r).lo = _a.lo - _b.lo;                                               \
     (r).hi = _a.hi - _b.hi - (_a.lo < _b.lo);                             \
 }                                                                         \
-
-/*
- * Multiply 64-bit operands a and b to get 64-bit result r.
- * First multiply the low 32 bits of a and b to get a 64-bit result in r.
- * Then add the outer and inner products to r.hi.
- */
+ 
+    /*
+     * Multiply 64-bit operands a and b to get 64-bit result r.
+     * First multiply the low 32 bits of a and b to get a 64-bit result in r.
+     * Then add the outer and inner products to r.hi.
+     */
 #define jlong_MUL(r, a, b) {                                              \
     jlong _a, _b;                                                         \
     _a = a; _b = b;                                                       \
@@ -349,14 +349,14 @@ extern jlong jlong_MAXINT, jlong_MININT, jlong_ZERO;
     (r).hi += _a.hi * _b.lo + _a.lo * _b.hi;                              \
 }
 
-/* XXX _jlong_lo16(a) = ((a) << 16 >> 16) is better on some archs (not on mips) */
+    /* XXX _jlong_lo16(a) = ((a) << 16 >> 16) is better on some archs (not on mips) */
 #define _jlong_lo16(a)		((a) & JRI_BITMASK(16))
 #define _jlong_hi16(a)		((a) >> 16)
 
-/*
- * Multiply 32-bit operands a and b to get 64-bit result r.
- * Use polynomial expansion based on primitive field element (1 << 16).
- */
+    /*
+     * Multiply 32-bit operands a and b to get 64-bit result r.
+     * Use polynomial expansion based on primitive field element (1 << 16).
+     */
 #define jlong_MUL32(r, a, b) {                                            \
      juint _a1, _a0, _b1, _b0, _y0, _y1, _y2, _y3;                        \
      _a1 = _jlong_hi16(a), _a0 = _jlong_lo16(a);                          \
@@ -372,15 +372,15 @@ extern jlong jlong_MAXINT, jlong_MININT, jlong_ZERO;
      (r).hi = _y3 + _jlong_hi16(_y1);                                     \
 }
 
-/*
- * Divide 64-bit unsigned operand a by 64-bit unsigned operand b, setting *qp
- * to the 64-bit unsigned quotient, and *rp to the 64-bit unsigned remainder.
- * Minimize effort if one of qp and rp is null.
- */
+    /*
+     * Divide 64-bit unsigned operand a by 64-bit unsigned operand b, setting *qp
+     * to the 64-bit unsigned quotient, and *rp to the 64-bit unsigned remainder.
+     * Minimize effort if one of qp and rp is null.
+     */
 #define jlong_UDIVMOD(qp, rp, a, b)	jlong_udivmod(qp, rp, a, b)
 
-extern JRI_PUBLIC_API(void)
-jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
+    extern JRI_PUBLIC_API(void)
+    jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
 
 #define jlong_DIV(r, a, b) {                                              \
     jlong _a, _b;                                                         \
@@ -419,9 +419,9 @@ jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
 	jlong_NEG(r, r);                                                      \
 }
 
-/*
- * NB: b is a juint, not jlong or julong, for the shift ops.
- */
+    /*
+     * NB: b is a juint, not jlong or julong, for the shift ops.
+     */
 #define jlong_SHL(r, a, b) {                                              \
     if (b) {                                                              \
 	jlong _a;                                                             \
@@ -438,7 +438,7 @@ jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
     }                                                                     \
 }
 
-/* a is an int32, b is int32, r is jlong */
+    /* a is an int32, b is int32, r is jlong */
 #define jlong_ISHL(r, a, b) {                                             \
     if (b) {                                                              \
 	jlong _a;                                                             \
@@ -539,7 +539,7 @@ jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
 
 #endif /* !HAVE_LONG_LONG */
 
-/******************************************************************************/
+    /******************************************************************************/
 
 #ifdef HAVE_ALIGNED_LONGLONGS
 #define JRI_GET_INT64(_t,_addr) ( ((_t).x[0] = ((jint*)(_addr))[0]), \
@@ -553,7 +553,7 @@ jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
 #define JRI_SET_INT64(_t, _addr, _v) (*(jlong*)(_addr) = (_v))
 #endif
 
-/* If double's must be aligned on doubleword boundaries then define this */
+    /* If double's must be aligned on doubleword boundaries then define this */
 #ifdef HAVE_ALIGNED_DOUBLES
 #define JRI_GET_DOUBLE(_t,_addr) ( ((_t).x[0] = ((jint*)(_addr))[0]), \
                                ((_t).x[1] = ((jint*)(_addr))[1]),      \
@@ -566,7 +566,7 @@ jlong_udivmod(julong *qp, julong *rp, julong a, julong b);
 #define JRI_SET_DOUBLE(_t, _addr, _v) (*(jdouble*)(_addr) = (_v))
 #endif
 
-/******************************************************************************/
+    /******************************************************************************/
 #ifdef __cplusplus
 }
 #endif

@@ -23,12 +23,12 @@
 */
 
 #if defined (JUCE_EVENTS_H_INCLUDED) && ! JUCE_AMALGAMATED_INCLUDE
- /* When you add this cpp file to your project, you mustn't include it in a file where you've
-    already included any other headers - just put it inside a file on its own, possibly with your config
-    flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
-    header files that the compiler may be using.
- */
- #error "Incorrect use of JUCE cpp file"
+/* When you add this cpp file to your project, you mustn't include it in a file where you've
+   already included any other headers - just put it inside a file on its own, possibly with your config
+   flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
+   header files that the compiler may be using.
+*/
+#error "Incorrect use of JUCE cpp file"
 #endif
 
 // Your project must contain an AppConfig.h file with your project-specific settings in it,
@@ -39,23 +39,23 @@
 #include "juce_events.h"
 
 #if JUCE_CATCH_UNHANDLED_EXCEPTIONS && JUCE_MODULE_AVAILABLE_juce_gui_basics
- #include "../juce_gui_basics/juce_gui_basics.h"
+#include "../juce_gui_basics/juce_gui_basics.h"
 #endif
 
 //==============================================================================
 #if JUCE_MAC
- #import <IOKit/IOKitLib.h>
- #import <IOKit/IOCFPlugIn.h>
- #import <IOKit/hid/IOHIDLib.h>
- #import <IOKit/hid/IOHIDKeys.h>
- #import <IOKit/pwr_mgt/IOPMLib.h>
+#import <IOKit/IOKitLib.h>
+#import <IOKit/IOCFPlugIn.h>
+#import <IOKit/hid/IOHIDLib.h>
+#import <IOKit/hid/IOHIDKeys.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
 #elif JUCE_LINUX
- #include <X11/Xlib.h>
- #include <X11/Xresource.h>
- #include <X11/Xutil.h>
- #undef KeyPress
- #include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+#include <X11/Xutil.h>
+#undef KeyPress
+#include <unistd.h>
 #endif
 
 //==============================================================================
@@ -77,26 +77,26 @@ namespace juce
 
 //==============================================================================
 #if JUCE_MAC
- #include "../juce_core/native/juce_osx_ObjCHelpers.h"
- #include "native/juce_osx_MessageQueue.h"
- #include "native/juce_mac_MessageManager.mm"
+#include "../juce_core/native/juce_osx_ObjCHelpers.h"
+#include "native/juce_osx_MessageQueue.h"
+#include "native/juce_mac_MessageManager.mm"
 
 #elif JUCE_IOS
- #include "../juce_core/native/juce_osx_ObjCHelpers.h"
- #include "native/juce_osx_MessageQueue.h"
- #include "native/juce_ios_MessageManager.mm"
+#include "../juce_core/native/juce_osx_ObjCHelpers.h"
+#include "native/juce_osx_MessageQueue.h"
+#include "native/juce_ios_MessageManager.mm"
 
 #elif JUCE_WINDOWS
- #include "native/juce_win32_HiddenMessageWindow.h"
- #include "native/juce_win32_Messaging.cpp"
+#include "native/juce_win32_HiddenMessageWindow.h"
+#include "native/juce_win32_Messaging.cpp"
 
 #elif JUCE_LINUX
- #include "native/juce_ScopedXLock.h"
- #include "native/juce_linux_Messaging.cpp"
+#include "native/juce_ScopedXLock.h"
+#include "native/juce_linux_Messaging.cpp"
 
 #elif JUCE_ANDROID
- #include "../juce_core/native/juce_android_JNIHelpers.h"
- #include "native/juce_android_Messaging.cpp"
+#include "../juce_core/native/juce_android_JNIHelpers.h"
+#include "native/juce_android_Messaging.cpp"
 
 #endif
 

@@ -38,7 +38,9 @@
 namespace MP3Decoder
 {
 
-struct AllocationTable  { int16 bits, d; };
+struct AllocationTable  {
+    int16 bits, d;
+};
 
 const struct AllocationTable allocTable0[] =
 {
@@ -132,65 +134,74 @@ struct BandInfoStruct
 
 const BandInfoStruct bandInfo[9] =
 {
-  { {0, 4, 8, 12, 16, 20, 24, 30, 36, 44, 52, 62, 74, 90, 110, 134, 162, 196, 238, 288, 342, 418, 576},
-    {4, 4, 4, 4, 4, 4, 6, 6, 8, 8, 10, 12, 16, 20, 24, 28, 34, 42, 50, 54, 76, 158},
-    {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 30 * 3, 40 * 3, 52 * 3, 66 * 3, 84 * 3, 106 * 3, 136 * 3, 192 * 3},
-    {4, 4, 4, 4, 6, 8, 10, 12, 14, 18, 22, 30, 56} },
+    {   {0, 4, 8, 12, 16, 20, 24, 30, 36, 44, 52, 62, 74, 90, 110, 134, 162, 196, 238, 288, 342, 418, 576},
+        {4, 4, 4, 4, 4, 4, 6, 6, 8, 8, 10, 12, 16, 20, 24, 28, 34, 42, 50, 54, 76, 158},
+        {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 30 * 3, 40 * 3, 52 * 3, 66 * 3, 84 * 3, 106 * 3, 136 * 3, 192 * 3},
+        {4, 4, 4, 4, 6, 8, 10, 12, 14, 18, 22, 30, 56}
+    },
 
-  { {0, 4, 8, 12, 16, 20, 24, 30, 36, 42, 50, 60, 72, 88, 106, 128, 156, 190, 230, 276, 330, 384, 576},
-    {4, 4, 4, 4, 4, 4, 6, 6, 6, 8, 10, 12, 16, 18, 22, 28, 34, 40, 46, 54, 54, 192},
-    {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 28 * 3, 38 * 3, 50 * 3, 64 * 3, 80 * 3, 100 * 3, 126 * 3, 192 * 3},
-    {4, 4, 4, 4, 6, 6, 10, 12, 14, 16, 20, 26, 66} },
+    {   {0, 4, 8, 12, 16, 20, 24, 30, 36, 42, 50, 60, 72, 88, 106, 128, 156, 190, 230, 276, 330, 384, 576},
+        {4, 4, 4, 4, 4, 4, 6, 6, 6, 8, 10, 12, 16, 18, 22, 28, 34, 40, 46, 54, 54, 192},
+        {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 28 * 3, 38 * 3, 50 * 3, 64 * 3, 80 * 3, 100 * 3, 126 * 3, 192 * 3},
+        {4, 4, 4, 4, 6, 6, 10, 12, 14, 16, 20, 26, 66}
+    },
 
-  { {0, 4, 8, 12, 16, 20, 24, 30, 36, 44, 54, 66, 82, 102, 126, 156, 194, 240, 296, 364, 448, 550, 576},
-    {4, 4, 4, 4, 4, 4, 6, 6, 8, 10, 12, 16, 20, 24, 30, 38, 46, 56, 68, 84, 102, 26},
-    {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 30 * 3, 42 * 3, 58 * 3, 78 * 3, 104 * 3, 138 * 3, 180 * 3, 192 * 3},
-    {4, 4, 4, 4, 6, 8, 12, 16, 20, 26, 34, 42, 12} },
+    {   {0, 4, 8, 12, 16, 20, 24, 30, 36, 44, 54, 66, 82, 102, 126, 156, 194, 240, 296, 364, 448, 550, 576},
+        {4, 4, 4, 4, 4, 4, 6, 6, 8, 10, 12, 16, 20, 24, 30, 38, 46, 56, 68, 84, 102, 26},
+        {0, 4 * 3, 8 * 3, 12 * 3, 16 * 3, 22 * 3, 30 * 3, 42 * 3, 58 * 3, 78 * 3, 104 * 3, 138 * 3, 180 * 3, 192 * 3},
+        {4, 4, 4, 4, 6, 8, 12, 16, 20, 26, 34, 42, 12}
+    },
 
-  { {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
-    {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54 },
-    {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 24 * 3, 32 * 3, 42 * 3, 56 * 3, 74 * 3, 100 * 3, 132 * 3, 174 * 3, 192 * 3},
-    {4, 4, 4, 6, 6, 8, 10, 14, 18, 26, 32, 42, 18 } },
+    {   {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
+        {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54 },
+        {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 24 * 3, 32 * 3, 42 * 3, 56 * 3, 74 * 3, 100 * 3, 132 * 3, 174 * 3, 192 * 3},
+        {4, 4, 4, 6, 6, 8, 10, 14, 18, 26, 32, 42, 18 }
+    },
 
-  { {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 114, 136, 162, 194, 232, 278, 332, 394, 464, 540, 576},
-    {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 18, 22, 26, 32, 38, 46, 54, 62, 70, 76, 36 },
-    {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 26 * 3, 36 * 3, 48 * 3, 62 * 3, 80 * 3, 104 * 3, 136 * 3, 180 * 3, 192 * 3},
-    {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 32, 44, 12 } },
+    {   {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 114, 136, 162, 194, 232, 278, 332, 394, 464, 540, 576},
+        {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 18, 22, 26, 32, 38, 46, 54, 62, 70, 76, 36 },
+        {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 26 * 3, 36 * 3, 48 * 3, 62 * 3, 80 * 3, 104 * 3, 136 * 3, 180 * 3, 192 * 3},
+        {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 32, 44, 12 }
+    },
 
-  { {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
-    {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54 },
-    {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 26 * 3, 36 * 3, 48 * 3, 62 * 3, 80 * 3, 104 * 3, 134 * 3, 174 * 3, 192 * 3},
-    {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18 } },
+    {   {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
+        {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54 },
+        {0, 4 * 3, 8 * 3, 12 * 3, 18 * 3, 26 * 3, 36 * 3, 48 * 3, 62 * 3, 80 * 3, 104 * 3, 134 * 3, 174 * 3, 192 * 3},
+        {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18 }
+    },
 
-  { {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
-    {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54},
-    {0, 12, 24, 36, 54, 78, 108, 144, 186, 240, 312, 402, 522, 576},
-    {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18} },
+    {   {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
+        {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54},
+        {0, 12, 24, 36, 54, 78, 108, 144, 186, 240, 312, 402, 522, 576},
+        {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18}
+    },
 
-  { {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
-    {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54},
-    {0, 12, 24, 36, 54, 78, 108, 144, 186, 240, 312, 402, 522, 576},
-    {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18} },
+    {   {0, 6, 12, 18, 24, 30, 36, 44, 54, 66, 80, 96, 116, 140, 168, 200, 238, 284, 336, 396, 464, 522, 576},
+        {6, 6, 6, 6, 6, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32, 38, 46, 52, 60, 68, 58, 54},
+        {0, 12, 24, 36, 54, 78, 108, 144, 186, 240, 312, 402, 522, 576},
+        {4, 4, 4, 6, 8, 10, 12, 14, 18, 24, 30, 40, 18}
+    },
 
-  { {0, 12, 24, 36, 48, 60, 72, 88, 108, 132, 160, 192, 232, 280, 336, 400, 476, 566, 568, 570, 572, 574, 576},
-    {12, 12, 12, 12, 12, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 76, 90, 2, 2, 2, 2, 2},
-    {0, 24, 48, 72, 108, 156, 216, 288, 372, 480, 486, 492, 498, 576},
-    {8, 8, 8, 12, 16, 20, 24, 28, 36, 2, 2, 2, 26} }
+    {   {0, 12, 24, 36, 48, 60, 72, 88, 108, 132, 160, 192, 232, 280, 336, 400, 476, 566, 568, 570, 572, 574, 576},
+        {12, 12, 12, 12, 12, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 76, 90, 2, 2, 2, 2, 2},
+        {0, 24, 48, 72, 108, 156, 216, 288, 372, 480, 486, 492, 498, 576},
+        {8, 8, 8, 12, 16, 20, 24, 28, 36, 2, 2, 2, 26}
+    }
 };
 
 const double decodeWindow[] =
 {
     0.000000000, -0.000015259, -0.000015259, -0.000015259, -0.000015259, -0.000015259, -0.000015259, -0.000030518,
-   -0.000030518, -0.000030518, -0.000030518, -0.000045776, -0.000045776, -0.000061035, -0.000061035, -0.000076294,
-   -0.000076294, -0.000091553, -0.000106812, -0.000106812, -0.000122070, -0.000137329, -0.000152588, -0.000167847,
-   -0.000198364, -0.000213623, -0.000244141, -0.000259399, -0.000289917, -0.000320435, -0.000366211, -0.000396729,
-   -0.000442505, -0.000473022, -0.000534058, -0.000579834, -0.000625610, -0.000686646, -0.000747681, -0.000808716,
-   -0.000885010, -0.000961304, -0.001037598, -0.001113892, -0.001205444, -0.001296997, -0.001388550, -0.001480103,
-   -0.001586914, -0.001693726, -0.001785278, -0.001907349, -0.002014160, -0.002120972, -0.002243042, -0.002349854,
-   -0.002456665, -0.002578735, -0.002685547, -0.002792358, -0.002899170, -0.002990723, -0.003082275, -0.003173828,
-   -0.003250122, -0.003326416, -0.003387451, -0.003433228, -0.003463745, -0.003479004, -0.003479004, -0.003463745,
-   -0.003417969, -0.003372192, -0.003280640, -0.003173828, -0.003051758, -0.002883911, -0.002700806, -0.002487183,
-   -0.002227783, -0.001937866, -0.001617432, -0.001266479, -0.000869751, -0.000442505,  0.000030518,  0.000549316,
+    -0.000030518, -0.000030518, -0.000030518, -0.000045776, -0.000045776, -0.000061035, -0.000061035, -0.000076294,
+    -0.000076294, -0.000091553, -0.000106812, -0.000106812, -0.000122070, -0.000137329, -0.000152588, -0.000167847,
+    -0.000198364, -0.000213623, -0.000244141, -0.000259399, -0.000289917, -0.000320435, -0.000366211, -0.000396729,
+    -0.000442505, -0.000473022, -0.000534058, -0.000579834, -0.000625610, -0.000686646, -0.000747681, -0.000808716,
+    -0.000885010, -0.000961304, -0.001037598, -0.001113892, -0.001205444, -0.001296997, -0.001388550, -0.001480103,
+    -0.001586914, -0.001693726, -0.001785278, -0.001907349, -0.002014160, -0.002120972, -0.002243042, -0.002349854,
+    -0.002456665, -0.002578735, -0.002685547, -0.002792358, -0.002899170, -0.002990723, -0.003082275, -0.003173828,
+    -0.003250122, -0.003326416, -0.003387451, -0.003433228, -0.003463745, -0.003479004, -0.003479004, -0.003463745,
+    -0.003417969, -0.003372192, -0.003280640, -0.003173828, -0.003051758, -0.002883911, -0.002700806, -0.002487183,
+    -0.002227783, -0.001937866, -0.001617432, -0.001266479, -0.000869751, -0.000442505,  0.000030518,  0.000549316,
     0.001098633,  0.001693726,  0.002334595,  0.003005981,  0.003723145,  0.004486084,  0.005294800,  0.006118774,
     0.007003784,  0.007919312,  0.008865356,  0.009841919,  0.010848999,  0.011886597,  0.012939453,  0.014022827,
     0.015121460,  0.016235352,  0.017349243,  0.018463135,  0.019577026,  0.020690918,  0.021789551,  0.022857666,
@@ -198,14 +209,14 @@ const double decodeWindow[] =
     0.030532837,  0.031005859,  0.031387329,  0.031661987,  0.031814575,  0.031845093,  0.031738281,  0.031478882,
     0.031082153,  0.030517578,  0.029785156,  0.028884888,  0.027801514,  0.026535034,  0.025085449,  0.023422241,
     0.021575928,  0.019531250,  0.017257690,  0.014801025,  0.012115479,  0.009231567,  0.006134033,  0.002822876,
-   -0.000686646, -0.004394531, -0.008316040, -0.012420654, -0.016708374, -0.021179199, -0.025817871, -0.030609131,
-   -0.035552979, -0.040634155, -0.045837402, -0.051132202, -0.056533813, -0.061996460, -0.067520142, -0.073059082,
-   -0.078628540, -0.084182739, -0.089706421, -0.095169067, -0.100540161, -0.105819702, -0.110946655, -0.115921021,
-   -0.120697021, -0.125259399, -0.129562378, -0.133590698, -0.137298584, -0.140670776, -0.143676758, -0.146255493,
-   -0.148422241, -0.150115967, -0.151306152, -0.151962280, -0.152069092, -0.151596069, -0.150497437, -0.148773193,
-   -0.146362305, -0.143264771, -0.139450073, -0.134887695, -0.129577637, -0.123474121, -0.116577148, -0.108856201,
-   -0.100311279, -0.090927124, -0.080688477, -0.069595337, -0.057617187, -0.044784546, -0.031082153, -0.016510010,
-   -0.001068115,  0.015228271,  0.032379150,  0.050354004,  0.069168091,  0.088775635,  0.109161377,  0.130310059,
+    -0.000686646, -0.004394531, -0.008316040, -0.012420654, -0.016708374, -0.021179199, -0.025817871, -0.030609131,
+    -0.035552979, -0.040634155, -0.045837402, -0.051132202, -0.056533813, -0.061996460, -0.067520142, -0.073059082,
+    -0.078628540, -0.084182739, -0.089706421, -0.095169067, -0.100540161, -0.105819702, -0.110946655, -0.115921021,
+    -0.120697021, -0.125259399, -0.129562378, -0.133590698, -0.137298584, -0.140670776, -0.143676758, -0.146255493,
+    -0.148422241, -0.150115967, -0.151306152, -0.151962280, -0.152069092, -0.151596069, -0.150497437, -0.148773193,
+    -0.146362305, -0.143264771, -0.139450073, -0.134887695, -0.129577637, -0.123474121, -0.116577148, -0.108856201,
+    -0.100311279, -0.090927124, -0.080688477, -0.069595337, -0.057617187, -0.044784546, -0.031082153, -0.016510010,
+    -0.001068115,  0.015228271,  0.032379150,  0.050354004,  0.069168091,  0.088775635,  0.109161377,  0.130310059,
     0.152206421,  0.174789429,  0.198059082,  0.221984863,  0.246505737,  0.271591187,  0.297210693,  0.323318481,
     0.349868774,  0.376800537,  0.404083252,  0.431655884,  0.459472656,  0.487472534,  0.515609741,  0.543823242,
     0.572036743,  0.600219727,  0.628295898,  0.656219482,  0.683914185,  0.711318970,  0.738372803,  0.765029907,
@@ -403,7 +414,7 @@ struct VBRTagData
             sampleRate = sampleRates[type][sampleRateIndex];
 
         data += type != 0 ? (mode != 3 ? (32 + 4) : (17 + 4))
-                          : (mode != 3 ? (17 + 4) : (9 + 4));
+                    : (mode != 3 ? (17 + 4) : (9 + 4));
 
         if (! isVbrTag (data))
             return false;
@@ -450,7 +461,7 @@ private:
     static bool isVbrTag (const uint8* const d) noexcept
     {
         return (d[0] == 'X' && d[1] == 'i' && d[2] == 'n' && d[3] == 'g')
-            || (d[0] == 'I' && d[1] == 'n' && d[2] == 'f' && d[3] == 'o');
+        || (d[0] == 'I' && d[1] == 'n' && d[2] == 'f' && d[3] == 'o');
     }
 };
 
@@ -507,29 +518,38 @@ struct MP3Frame
 
         static const int frameSizes [2][3][16] =
         {
-            { { 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448 },
-              { 0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384 },
-              { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 } },
+            {   { 0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448 },
+                { 0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384 },
+                { 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 }
+            },
 
-            { { 0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256 },
-              { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 },
-              { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 } }
+            {   { 0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256 },
+                { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 },
+                { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }
+            }
         };
 
         if (bitrateIndex == 0)
         {
             jassertfalse; // This means the file is using "free format". Apparently very few decoders
-                          // support this mode, and this one certainly doesn't handle it correctly!
+            // support this mode, and this one certainly doesn't handle it correctly!
             frameSize = 0;
         }
         else
         {
             switch (layer)
             {
-                case 1: frameSize = (((frameSizes[lsf][0][bitrateIndex] * 12000) / getFrequency() + padding) * 4) - 4; break;
-                case 2: frameSize = (frameSizes[lsf][1][bitrateIndex] * 144000)  / getFrequency() + (padding - 4); break;
-                case 3: frameSize = (bitrateIndex == 0) ? 0 : ((frameSizes[lsf][2][bitrateIndex] * 144000) / (getFrequency() << lsf) + (padding - 4)); break;
-                default: break;
+            case 1:
+                frameSize = (((frameSizes[lsf][0][bitrateIndex] * 12000) / getFrequency() + padding) * 4) - 4;
+                break;
+            case 2:
+                frameSize = (frameSizes[lsf][1][bitrateIndex] * 144000)  / getFrequency() + (padding - 4);
+                break;
+            case 3:
+                frameSize = (bitrateIndex == 0) ? 0 : ((frameSizes[lsf][2][bitrateIndex] * 144000) / (getFrequency() << lsf) + (padding - 4));
+                break;
+            default:
+                break;
             }
         }
     }
@@ -549,7 +569,11 @@ struct Constants
 {
     Constants()
     {
-        cosTables[0] = cos64; cosTables[1] = cos32; cosTables[2] = cos16; cosTables[3] = cos8; cosTables[4] = cos4;
+        cosTables[0] = cos64;
+        cosTables[1] = cos32;
+        cosTables[2] = cos16;
+        cosTables[3] = cos8;
+        cosTables[4] = cos4;
         initDecodeTables();
         initLayer2Tables();
         initLayer3Tables();
@@ -559,10 +583,14 @@ struct Constants
     {
         switch (d1)
         {
-            case 3:   return &group3tab [3 * jmin (index, 3u * 3u * 3u)];
-            case 5:   return &group5tab [3 * jmin (index, 5u * 5u * 5u)];
-            case 9:   return &group9tab [3 * jmin (index, 9u * 9u * 9u)];
-            default:  break;
+        case 3:
+            return &group3tab [3 * jmin (index, 3u * 3u * 3u)];
+        case 5:
+            return &group5tab [3 * jmin (index, 5u * 5u * 5u)];
+        case 9:
+            return &group9tab [3 * jmin (index, 9u * 9u * 9u)];
+        default:
+            break;
         }
 
         static const uint8 dummy[] = { 0, 0, 0 };
@@ -1052,7 +1080,9 @@ struct Layer3SideInfo
         const float* pow2gain;
     };
 
-    struct InfoPair { Info gr[2]; };
+    struct InfoPair {
+        Info gr[2];
+    };
     InfoPair ch[2];
 
     uint32 mainDataStart, privateBits;
@@ -1061,336 +1091,488 @@ struct Layer3SideInfo
 //==============================================================================
 namespace DCT
 {
-    enum { SBLIMIT = 32 };
-    static const float cos6_1  = 0.866025388f;
-    static const float cos6_2  = 0.5f;
-    static const float cos9[]  = { 1.0f, 0.98480773f, 0.939692616f, 0.866025388f, 0.766044438f, 0.642787635f, 0.5f, 0.342020154f, 0.173648179f };
-    static const float cos36[] = { 0.501909912f, 0.517638087f, 0.551688969f, 0.610387266f, 0.707106769f, 0.871723413f, 1.18310082f, 1.93185163f, 5.73685646f };
-    static const float cos12[] = { 0.517638087f, 0.707106769f, 1.93185163f };
+enum { SBLIMIT = 32 };
+static const float cos6_1  = 0.866025388f;
+static const float cos6_2  = 0.5f;
+static const float cos9[]  = { 1.0f, 0.98480773f, 0.939692616f, 0.866025388f, 0.766044438f, 0.642787635f, 0.5f, 0.342020154f, 0.173648179f };
+static const float cos36[] = { 0.501909912f, 0.517638087f, 0.551688969f, 0.610387266f, 0.707106769f, 0.871723413f, 1.18310082f, 1.93185163f, 5.73685646f };
+static const float cos12[] = { 0.517638087f, 0.707106769f, 1.93185163f };
 
-    inline void dct36_0 (const int v, float* const ts, float* const out1, float* const out2,
-                         const float* const wintab, float sum0, const float sum1) noexcept
+inline void dct36_0 (const int v, float* const ts, float* const out1, float* const out2,
+                     const float* const wintab, float sum0, const float sum1) noexcept
+{
+    const float tmp = sum0 + sum1;
+    out2[9 + v] = tmp * wintab[27 + v];
+    out2[8 - v] = tmp * wintab[26 - v];
+    sum0 -= sum1;
+    ts[SBLIMIT * (8 - v)] = out1[8 - v] + sum0 * wintab[8 - v];
+    ts[SBLIMIT * (9 + v)] = out1[9 + v] + sum0 * wintab[9 + v];
+}
+
+inline void dct36_1 (const int v, float* const ts, float* const out1, float* const out2, const float* const wintab,
+                     const float tmp1a, const float tmp1b, const float tmp2a, const float tmp2b) noexcept
+{
+    dct36_0 (v, ts, out1, out2, wintab, tmp1a + tmp2a, (tmp1b + tmp2b) * cos36[v]);
+}
+
+inline void dct36_2 (const int v, float* const ts, float* const out1, float* const out2, const float* const wintab,
+                     const float tmp1a, const float tmp1b, const float tmp2a, const float tmp2b) noexcept
+{
+    dct36_0 (v, ts, out1, out2, wintab, tmp2a - tmp1a, (tmp2b - tmp1b) * cos36[v]);
+}
+
+static void dct36 (float* const in, float* const out1, float* const out2, const float* const wintab, float* const ts) noexcept
+{
+    in[17] += in[16];
+    in[16] += in[15];
+    in[15] += in[14];
+    in[14] += in[13];
+    in[13] += in[12];
+    in[12] += in[11];
+    in[11] += in[10];
+    in[10] += in[9];
+    in[9]  += in[8];
+    in[8]  += in[7];
+    in[7]  += in[6];
+    in[6]  += in[5];
+    in[5]  += in[4];
+    in[4]  += in[3];
+    in[3]  += in[2];
+    in[2]  += in[1];
+    in[1]  += in[0];
+    in[17] += in[15];
+    in[15] += in[13];
+    in[13] += in[11];
+    in[11] += in[9];
+    in[9]  += in[7];
+    in[7]  += in[5];
+    in[5]  += in[3];
+    in[3]  += in[1];
+
+    const float ta33 = in[6]  * cos9[3];
+    const float ta66 = in[12] * cos9[6];
+    const float tb33 = in[7]  * cos9[3];
+    const float tb66 = in[13] * cos9[6];
+
     {
-        const float tmp = sum0 + sum1;
-        out2[9 + v] = tmp * wintab[27 + v];
-        out2[8 - v] = tmp * wintab[26 - v];
-        sum0 -= sum1;
-        ts[SBLIMIT * (8 - v)] = out1[8 - v] + sum0 * wintab[8 - v];
-        ts[SBLIMIT * (9 + v)] = out1[9 + v] + sum0 * wintab[9 + v];
+        const float tmp1a = in[2] * cos9[1] + ta33 + in[10] * cos9[5] + in[14] * cos9[7];
+        const float tmp1b = in[3] * cos9[1] + tb33 + in[11] * cos9[5] + in[15] * cos9[7];
+        const float tmp2a = in[0] + in[4] * cos9[2] + in[8] * cos9[4] + ta66 + in[16] * cos9[8];
+        const float tmp2b = in[1] + in[5] * cos9[2] + in[9] * cos9[4] + tb66 + in[17] * cos9[8];
+        dct36_1 (0, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
+        dct36_2 (8, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
     }
 
-    inline void dct36_1 (const int v, float* const ts, float* const out1, float* const out2, const float* const wintab,
-                         const float tmp1a, const float tmp1b, const float tmp2a, const float tmp2b) noexcept
     {
-        dct36_0 (v, ts, out1, out2, wintab, tmp1a + tmp2a, (tmp1b + tmp2b) * cos36[v]);
+        const float tmp1a = (in[2] - in[10] - in[14]) * cos9[3];
+        const float tmp1b = (in[3] - in[11] - in[15]) * cos9[3];
+        const float tmp2a = (in[4] - in[8] - in[16]) * cos9[6] - in[12] + in[0];
+        const float tmp2b = (in[5] - in[9] - in[17]) * cos9[6] - in[13] + in[1];
+        dct36_1 (1, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
+        dct36_2 (7, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
     }
 
-    inline void dct36_2 (const int v, float* const ts, float* const out1, float* const out2, const float* const wintab,
-                         const float tmp1a, const float tmp1b, const float tmp2a, const float tmp2b) noexcept
     {
-        dct36_0 (v, ts, out1, out2, wintab, tmp2a - tmp1a, (tmp2b - tmp1b) * cos36[v]);
+        const float tmp1a = in[2] * cos9[5] - ta33 - in[10] * cos9[7] + in[14] * cos9[1];
+        const float tmp1b = in[3] * cos9[5] - tb33 - in[11] * cos9[7] + in[15] * cos9[1];
+        const float tmp2a = in[0] - in[4] * cos9[8] - in[8] * cos9[2] + ta66 + in[16] * cos9[4];
+        const float tmp2b = in[1] - in[5] * cos9[8] - in[9] * cos9[2] + tb66 + in[17] * cos9[4];
+        dct36_1 (2, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
+        dct36_2 (6, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
     }
 
-    static void dct36 (float* const in, float* const out1, float* const out2, const float* const wintab, float* const ts) noexcept
     {
-        in[17] += in[16]; in[16] += in[15]; in[15] += in[14]; in[14] += in[13]; in[13] += in[12];
-        in[12] += in[11]; in[11] += in[10]; in[10] += in[9];  in[9]  += in[8];  in[8]  += in[7];
-        in[7]  += in[6];  in[6]  += in[5];  in[5]  += in[4];  in[4]  += in[3];  in[3]  += in[2];
-        in[2]  += in[1];  in[1]  += in[0];  in[17] += in[15]; in[15] += in[13]; in[13] += in[11];
-        in[11] += in[9];  in[9]  += in[7];  in[7]  += in[5];  in[5]  += in[3];  in[3]  += in[1];
-
-        const float ta33 = in[6]  * cos9[3];
-        const float ta66 = in[12] * cos9[6];
-        const float tb33 = in[7]  * cos9[3];
-        const float tb66 = in[13] * cos9[6];
-
-        {
-            const float tmp1a = in[2] * cos9[1] + ta33 + in[10] * cos9[5] + in[14] * cos9[7];
-            const float tmp1b = in[3] * cos9[1] + tb33 + in[11] * cos9[5] + in[15] * cos9[7];
-            const float tmp2a = in[0] + in[4] * cos9[2] + in[8] * cos9[4] + ta66 + in[16] * cos9[8];
-            const float tmp2b = in[1] + in[5] * cos9[2] + in[9] * cos9[4] + tb66 + in[17] * cos9[8];
-            dct36_1 (0, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-            dct36_2 (8, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-        }
-
-        {
-            const float tmp1a = (in[2] - in[10] - in[14]) * cos9[3];
-            const float tmp1b = (in[3] - in[11] - in[15]) * cos9[3];
-            const float tmp2a = (in[4] - in[8] - in[16]) * cos9[6] - in[12] + in[0];
-            const float tmp2b = (in[5] - in[9] - in[17]) * cos9[6] - in[13] + in[1];
-            dct36_1 (1, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-            dct36_2 (7, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-        }
-
-        {
-            const float tmp1a = in[2] * cos9[5] - ta33 - in[10] * cos9[7] + in[14] * cos9[1];
-            const float tmp1b = in[3] * cos9[5] - tb33 - in[11] * cos9[7] + in[15] * cos9[1];
-            const float tmp2a = in[0] - in[4] * cos9[8] - in[8] * cos9[2] + ta66 + in[16] * cos9[4];
-            const float tmp2b = in[1] - in[5] * cos9[8] - in[9] * cos9[2] + tb66 + in[17] * cos9[4];
-            dct36_1 (2, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-            dct36_2 (6, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-        }
-
-        {
-            const float tmp1a = in[2] * cos9[7] - ta33 + in[10] * cos9[1] - in[14] * cos9[5];
-            const float tmp1b = in[3] * cos9[7] - tb33 + in[11] * cos9[1] - in[15] * cos9[5];
-            const float tmp2a = in[0] - in[4] * cos9[4] + in[8] * cos9[8] + ta66 - in[16] * cos9[2];
-            const float tmp2b = in[1] - in[5] * cos9[4] + in[9] * cos9[8] + tb66 - in[17] * cos9[2];
-            dct36_1 (3, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-            dct36_2 (5, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
-        }
-
-        const float sum0 =  in[0] - in[4] + in[8] - in[12] + in[16];
-        const float sum1 = (in[1] - in[5] + in[9] - in[13] + in[17]) * cos36[4];
-        dct36_0 (4, ts, out1, out2, wintab, sum0, sum1);
+        const float tmp1a = in[2] * cos9[7] - ta33 + in[10] * cos9[1] - in[14] * cos9[5];
+        const float tmp1b = in[3] * cos9[7] - tb33 + in[11] * cos9[1] - in[15] * cos9[5];
+        const float tmp2a = in[0] - in[4] * cos9[4] + in[8] * cos9[8] + ta66 - in[16] * cos9[2];
+        const float tmp2b = in[1] - in[5] * cos9[4] + in[9] * cos9[8] + tb66 - in[17] * cos9[2];
+        dct36_1 (3, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
+        dct36_2 (5, ts, out1, out2, wintab, tmp1a, tmp1b, tmp2a, tmp2b);
     }
 
-    struct DCT12Inputs
+    const float sum0 =  in[0] - in[4] + in[8] - in[12] + in[16];
+    const float sum1 = (in[1] - in[5] + in[9] - in[13] + in[17]) * cos36[4];
+    dct36_0 (4, ts, out1, out2, wintab, sum0, sum1);
+}
+
+struct DCT12Inputs
+{
+    float in0, in1, in2, in3, in4, in5;
+
+    inline DCT12Inputs (const float* const in) noexcept
     {
-        float in0, in1, in2, in3, in4, in5;
+        in5 = in[5*3] + (in4 = in[4*3]);
+        in4 += (in3 = in[3*3]);
+        in3 += (in2 = in[2*3]);
+        in2 += (in1 = in[1*3]);
+        in1 += (in0 = in[0*3]);
+        in5 += in3;
+        in3 += in1;
+        in2 *= cos6_1;
+        in3 *= cos6_1;
+    }
 
-        inline DCT12Inputs (const float* const in) noexcept
-        {
-            in5 = in[5*3] + (in4 = in[4*3]);
-            in4 += (in3 = in[3*3]);
-            in3 += (in2 = in[2*3]);
-            in2 += (in1 = in[1*3]);
-            in1 += (in0 = in[0*3]);
-            in5 += in3; in3 += in1;
-            in2 *= cos6_1;
-            in3 *= cos6_1;
-        }
-
-        inline void process() noexcept
-        {
-            in0 += in4 * cos6_2;
-            in4 = in0 + in2; in0 -= in2;
-            in1 += in5 * cos6_2;
-            in5 = (in1 + in3) * cos12[0];
-            in1 = (in1 - in3) * cos12[2];
-            in3 = in4 + in5; in4 -= in5;
-            in2 = in0 + in1; in0 -= in1;
-        }
-    };
-
-    static void dct12 (const float* in, float* const out1, float* const out2, const float* wi, float* ts) noexcept
+    inline void process() noexcept
     {
-        {
-            ts[0] = out1[0];
-            ts[SBLIMIT * 1] = out1[1];
-            ts[SBLIMIT * 2] = out1[2];
-            ts[SBLIMIT * 3] = out1[3];
-            ts[SBLIMIT * 4] = out1[4];
-            ts[SBLIMIT * 5] = out1[5];
+        in0 += in4 * cos6_2;
+        in4 = in0 + in2;
+        in0 -= in2;
+        in1 += in5 * cos6_2;
+        in5 = (in1 + in3) * cos12[0];
+        in1 = (in1 - in3) * cos12[2];
+        in3 = in4 + in5;
+        in4 -= in5;
+        in2 = in0 + in1;
+        in0 -= in1;
+    }
+};
 
-            DCT12Inputs inputs (in);
+static void dct12 (const float* in, float* const out1, float* const out2, const float* wi, float* ts) noexcept
+{
+    {
+        ts[0] = out1[0];
+        ts[SBLIMIT * 1] = out1[1];
+        ts[SBLIMIT * 2] = out1[2];
+        ts[SBLIMIT * 3] = out1[3];
+        ts[SBLIMIT * 4] = out1[4];
+        ts[SBLIMIT * 5] = out1[5];
 
-            {
-                float tmp1 = (inputs.in0 - inputs.in4);
-                const float tmp2 = (inputs.in1 - inputs.in5) * cos12[1];
-                const float tmp0 = tmp1 + tmp2;
-                tmp1 -= tmp2;
-
-                ts[16 * SBLIMIT] = out1[16] + tmp0 * wi[10];
-                ts[13 * SBLIMIT] = out1[13] + tmp0 * wi[7];
-                ts[7  * SBLIMIT] = out1[7]  + tmp1 * wi[1];
-                ts[10 * SBLIMIT] = out1[10] + tmp1 * wi[4];
-            }
-
-            inputs.process();
-
-            ts[17 * SBLIMIT] = out1[17] + inputs.in2 * wi[11];
-            ts[12 * SBLIMIT] = out1[12] + inputs.in2 * wi[6];
-            ts[14 * SBLIMIT] = out1[14] + inputs.in3 * wi[8];
-            ts[15 * SBLIMIT] = out1[15] + inputs.in3 * wi[9];
-
-            ts[6  * SBLIMIT] = out1[6]  + inputs.in0 * wi[0];
-            ts[11 * SBLIMIT] = out1[11] + inputs.in0 * wi[5];
-            ts[8  * SBLIMIT] = out1[8]  + inputs.in4 * wi[2];
-            ts[9  * SBLIMIT] = out1[9]  + inputs.in4 * wi[3];
-        }
+        DCT12Inputs inputs (in);
 
         {
-            DCT12Inputs inputs (++in);
-            float tmp1 = (inputs.in0 - inputs.in4);
-            const float tmp2 = (inputs.in1 - inputs.in5) * cos12[1];
-            const float tmp0 = tmp1 + tmp2;
-            tmp1 -= tmp2;
-            out2[4] = tmp0 * wi[10];
-            out2[1] = tmp0 * wi[7];
-            ts[13 * SBLIMIT] += tmp1 * wi[1];
-            ts[16 * SBLIMIT] += tmp1 * wi[4];
-
-            inputs.process();
-
-            out2[5] = inputs.in2 * wi[11];
-            out2[0] = inputs.in2 * wi[6];
-            out2[2] = inputs.in3 * wi[8];
-            out2[3] = inputs.in3 * wi[9];
-            ts[12 * SBLIMIT] += inputs.in0 * wi[0];
-            ts[17 * SBLIMIT] += inputs.in0 * wi[5];
-            ts[14 * SBLIMIT] += inputs.in4 * wi[2];
-            ts[15 * SBLIMIT] += inputs.in4 * wi[5 - 2];
-        }
-
-        {
-            DCT12Inputs inputs (++in);
-            out2[12] = out2[13] = out2[14] = out2[15] = out2[16] = out2[17] = 0;
-
             float tmp1 = (inputs.in0 - inputs.in4);
             const float tmp2 = (inputs.in1 - inputs.in5) * cos12[1];
             const float tmp0 = tmp1 + tmp2;
             tmp1 -= tmp2;
 
-            out2[10] = tmp0 * wi[10];
-            out2[7]  = tmp0 * wi[7];
-            out2[1] += tmp1 * wi[1];
-            out2[4] += tmp1 * wi[4];
-
-            inputs.process();
-
-            out2[11] = inputs.in2 * wi[11];
-            out2[6]  = inputs.in2 * wi[6];
-            out2[8]  = inputs.in3 * wi[8];
-            out2[9]  = inputs.in3 * wi[9];
-            out2[0] += inputs.in0 * wi[0];
-            out2[5] += inputs.in0 * wi[5];
-            out2[2] += inputs.in4 * wi[2];
-            out2[3] += inputs.in4 * wi[3];
+            ts[16 * SBLIMIT] = out1[16] + tmp0 * wi[10];
+            ts[13 * SBLIMIT] = out1[13] + tmp0 * wi[7];
+            ts[7  * SBLIMIT] = out1[7]  + tmp1 * wi[1];
+            ts[10 * SBLIMIT] = out1[10] + tmp1 * wi[4];
         }
+
+        inputs.process();
+
+        ts[17 * SBLIMIT] = out1[17] + inputs.in2 * wi[11];
+        ts[12 * SBLIMIT] = out1[12] + inputs.in2 * wi[6];
+        ts[14 * SBLIMIT] = out1[14] + inputs.in3 * wi[8];
+        ts[15 * SBLIMIT] = out1[15] + inputs.in3 * wi[9];
+
+        ts[6  * SBLIMIT] = out1[6]  + inputs.in0 * wi[0];
+        ts[11 * SBLIMIT] = out1[11] + inputs.in0 * wi[5];
+        ts[8  * SBLIMIT] = out1[8]  + inputs.in4 * wi[2];
+        ts[9  * SBLIMIT] = out1[9]  + inputs.in4 * wi[3];
     }
 
-    static void dct64 (float* const out0, float* const out1, float* const b1, float* const b2, const float* const samples) noexcept
     {
-        {
-            const float* const costab = constants.cosTables[0];
-            b1[0x00] = samples[0x00] + samples[0x1F];   b1[0x1F] = (samples[0x00] - samples[0x1F]) * costab[0x0];
-            b1[0x01] = samples[0x01] + samples[0x1E];   b1[0x1E] = (samples[0x01] - samples[0x1E]) * costab[0x1];
-            b1[0x02] = samples[0x02] + samples[0x1D];   b1[0x1D] = (samples[0x02] - samples[0x1D]) * costab[0x2];
-            b1[0x03] = samples[0x03] + samples[0x1C];   b1[0x1C] = (samples[0x03] - samples[0x1C]) * costab[0x3];
-            b1[0x04] = samples[0x04] + samples[0x1B];   b1[0x1B] = (samples[0x04] - samples[0x1B]) * costab[0x4];
-            b1[0x05] = samples[0x05] + samples[0x1A];   b1[0x1A] = (samples[0x05] - samples[0x1A]) * costab[0x5];
-            b1[0x06] = samples[0x06] + samples[0x19];   b1[0x19] = (samples[0x06] - samples[0x19]) * costab[0x6];
-            b1[0x07] = samples[0x07] + samples[0x18];   b1[0x18] = (samples[0x07] - samples[0x18]) * costab[0x7];
-            b1[0x08] = samples[0x08] + samples[0x17];   b1[0x17] = (samples[0x08] - samples[0x17]) * costab[0x8];
-            b1[0x09] = samples[0x09] + samples[0x16];   b1[0x16] = (samples[0x09] - samples[0x16]) * costab[0x9];
-            b1[0x0A] = samples[0x0A] + samples[0x15];   b1[0x15] = (samples[0x0A] - samples[0x15]) * costab[0xA];
-            b1[0x0B] = samples[0x0B] + samples[0x14];   b1[0x14] = (samples[0x0B] - samples[0x14]) * costab[0xB];
-            b1[0x0C] = samples[0x0C] + samples[0x13];   b1[0x13] = (samples[0x0C] - samples[0x13]) * costab[0xC];
-            b1[0x0D] = samples[0x0D] + samples[0x12];   b1[0x12] = (samples[0x0D] - samples[0x12]) * costab[0xD];
-            b1[0x0E] = samples[0x0E] + samples[0x11];   b1[0x11] = (samples[0x0E] - samples[0x11]) * costab[0xE];
-            b1[0x0F] = samples[0x0F] + samples[0x10];   b1[0x10] = (samples[0x0F] - samples[0x10]) * costab[0xF];
-        }
+        DCT12Inputs inputs (++in);
+        float tmp1 = (inputs.in0 - inputs.in4);
+        const float tmp2 = (inputs.in1 - inputs.in5) * cos12[1];
+        const float tmp0 = tmp1 + tmp2;
+        tmp1 -= tmp2;
+        out2[4] = tmp0 * wi[10];
+        out2[1] = tmp0 * wi[7];
+        ts[13 * SBLIMIT] += tmp1 * wi[1];
+        ts[16 * SBLIMIT] += tmp1 * wi[4];
 
-        {
-            const float* const costab = constants.cosTables[1];
-            b2[0x00] = b1[0x00] + b1[0x0F];   b2[0x0F] = (b1[0x00] - b1[0x0F]) * costab[0];
-            b2[0x01] = b1[0x01] + b1[0x0E];   b2[0x0E] = (b1[0x01] - b1[0x0E]) * costab[1];
-            b2[0x02] = b1[0x02] + b1[0x0D];   b2[0x0D] = (b1[0x02] - b1[0x0D]) * costab[2];
-            b2[0x03] = b1[0x03] + b1[0x0C];   b2[0x0C] = (b1[0x03] - b1[0x0C]) * costab[3];
-            b2[0x04] = b1[0x04] + b1[0x0B];   b2[0x0B] = (b1[0x04] - b1[0x0B]) * costab[4];
-            b2[0x05] = b1[0x05] + b1[0x0A];   b2[0x0A] = (b1[0x05] - b1[0x0A]) * costab[5];
-            b2[0x06] = b1[0x06] + b1[0x09];   b2[0x09] = (b1[0x06] - b1[0x09]) * costab[6];
-            b2[0x07] = b1[0x07] + b1[0x08];   b2[0x08] = (b1[0x07] - b1[0x08]) * costab[7];
-            b2[0x10] = b1[0x10] + b1[0x1F];   b2[0x1F] = (b1[0x1F] - b1[0x10]) * costab[0];
-            b2[0x11] = b1[0x11] + b1[0x1E];   b2[0x1E] = (b1[0x1E] - b1[0x11]) * costab[1];
-            b2[0x12] = b1[0x12] + b1[0x1D];   b2[0x1D] = (b1[0x1D] - b1[0x12]) * costab[2];
-            b2[0x13] = b1[0x13] + b1[0x1C];   b2[0x1C] = (b1[0x1C] - b1[0x13]) * costab[3];
-            b2[0x14] = b1[0x14] + b1[0x1B];   b2[0x1B] = (b1[0x1B] - b1[0x14]) * costab[4];
-            b2[0x15] = b1[0x15] + b1[0x1A];   b2[0x1A] = (b1[0x1A] - b1[0x15]) * costab[5];
-            b2[0x16] = b1[0x16] + b1[0x19];   b2[0x19] = (b1[0x19] - b1[0x16]) * costab[6];
-            b2[0x17] = b1[0x17] + b1[0x18];   b2[0x18] = (b1[0x18] - b1[0x17]) * costab[7];
-        }
+        inputs.process();
 
-        {
-            const float* const costab = constants.cosTables[2];
-            b1[0x00] = b2[0x00] + b2[0x07];   b1[0x07] = (b2[0x00] - b2[0x07]) * costab[0];
-            b1[0x01] = b2[0x01] + b2[0x06];   b1[0x06] = (b2[0x01] - b2[0x06]) * costab[1];
-            b1[0x02] = b2[0x02] + b2[0x05];   b1[0x05] = (b2[0x02] - b2[0x05]) * costab[2];
-            b1[0x03] = b2[0x03] + b2[0x04];   b1[0x04] = (b2[0x03] - b2[0x04]) * costab[3];
-            b1[0x08] = b2[0x08] + b2[0x0F];   b1[0x0F] = (b2[0x0F] - b2[0x08]) * costab[0];
-            b1[0x09] = b2[0x09] + b2[0x0E];   b1[0x0E] = (b2[0x0E] - b2[0x09]) * costab[1];
-            b1[0x0A] = b2[0x0A] + b2[0x0D];   b1[0x0D] = (b2[0x0D] - b2[0x0A]) * costab[2];
-            b1[0x0B] = b2[0x0B] + b2[0x0C];   b1[0x0C] = (b2[0x0C] - b2[0x0B]) * costab[3];
-            b1[0x10] = b2[0x10] + b2[0x17];   b1[0x17] = (b2[0x10] - b2[0x17]) * costab[0];
-            b1[0x11] = b2[0x11] + b2[0x16];   b1[0x16] = (b2[0x11] - b2[0x16]) * costab[1];
-            b1[0x12] = b2[0x12] + b2[0x15];   b1[0x15] = (b2[0x12] - b2[0x15]) * costab[2];
-            b1[0x13] = b2[0x13] + b2[0x14];   b1[0x14] = (b2[0x13] - b2[0x14]) * costab[3];
-            b1[0x18] = b2[0x18] + b2[0x1F];   b1[0x1F] = (b2[0x1F] - b2[0x18]) * costab[0];
-            b1[0x19] = b2[0x19] + b2[0x1E];   b1[0x1E] = (b2[0x1E] - b2[0x19]) * costab[1];
-            b1[0x1A] = b2[0x1A] + b2[0x1D];   b1[0x1D] = (b2[0x1D] - b2[0x1A]) * costab[2];
-            b1[0x1B] = b2[0x1B] + b2[0x1C];   b1[0x1C] = (b2[0x1C] - b2[0x1B]) * costab[3];
-        }
-
-        {
-            const float cos0 = constants.cosTables[3][0];
-            const float cos1 = constants.cosTables[3][1];
-            b2[0x00] = b1[0x00] + b1[0x03];   b2[0x03] = (b1[0x00] - b1[0x03]) * cos0;
-            b2[0x01] = b1[0x01] + b1[0x02];   b2[0x02] = (b1[0x01] - b1[0x02]) * cos1;
-            b2[0x04] = b1[0x04] + b1[0x07];   b2[0x07] = (b1[0x07] - b1[0x04]) * cos0;
-            b2[0x05] = b1[0x05] + b1[0x06];   b2[0x06] = (b1[0x06] - b1[0x05]) * cos1;
-            b2[0x08] = b1[0x08] + b1[0x0B];   b2[0x0B] = (b1[0x08] - b1[0x0B]) * cos0;
-            b2[0x09] = b1[0x09] + b1[0x0A];   b2[0x0A] = (b1[0x09] - b1[0x0A]) * cos1;
-            b2[0x0C] = b1[0x0C] + b1[0x0F];   b2[0x0F] = (b1[0x0F] - b1[0x0C]) * cos0;
-            b2[0x0D] = b1[0x0D] + b1[0x0E];   b2[0x0E] = (b1[0x0E] - b1[0x0D]) * cos1;
-            b2[0x10] = b1[0x10] + b1[0x13];   b2[0x13] = (b1[0x10] - b1[0x13]) * cos0;
-            b2[0x11] = b1[0x11] + b1[0x12];   b2[0x12] = (b1[0x11] - b1[0x12]) * cos1;
-            b2[0x14] = b1[0x14] + b1[0x17];   b2[0x17] = (b1[0x17] - b1[0x14]) * cos0;
-            b2[0x15] = b1[0x15] + b1[0x16];   b2[0x16] = (b1[0x16] - b1[0x15]) * cos1;
-            b2[0x18] = b1[0x18] + b1[0x1B];   b2[0x1B] = (b1[0x18] - b1[0x1B]) * cos0;
-            b2[0x19] = b1[0x19] + b1[0x1A];   b2[0x1A] = (b1[0x19] - b1[0x1A]) * cos1;
-            b2[0x1C] = b1[0x1C] + b1[0x1F];   b2[0x1F] = (b1[0x1F] - b1[0x1C]) * cos0;
-            b2[0x1D] = b1[0x1D] + b1[0x1E];   b2[0x1E] = (b1[0x1E] - b1[0x1D]) * cos1;
-        }
-
-        {
-            const float cos0 = constants.cosTables[4][0];
-            b1[0x00] = b2[0x00] + b2[0x01];   b1[0x01] = (b2[0x00] - b2[0x01]) * cos0;
-            b1[0x02] = b2[0x02] + b2[0x03];   b1[0x03] = (b2[0x03] - b2[0x02]) * cos0;  b1[0x02] += b1[0x03];
-            b1[0x04] = b2[0x04] + b2[0x05];   b1[0x05] = (b2[0x04] - b2[0x05]) * cos0;
-            b1[0x06] = b2[0x06] + b2[0x07];   b1[0x07] = (b2[0x07] - b2[0x06]) * cos0;
-            b1[0x06] += b1[0x07];   b1[0x04] += b1[0x06];  b1[0x06] += b1[0x05]; b1[0x05] += b1[0x07];
-            b1[0x08] = b2[0x08] + b2[0x09];   b1[0x09] = (b2[0x08] - b2[0x09]) * cos0;
-            b1[0x0A] = b2[0x0A] + b2[0x0B];   b1[0x0B] = (b2[0x0B] - b2[0x0A]) * cos0;  b1[0x0A] += b1[0x0B];
-            b1[0x0C] = b2[0x0C] + b2[0x0D];   b1[0x0D] = (b2[0x0C] - b2[0x0D]) * cos0;
-            b1[0x0E] = b2[0x0E] + b2[0x0F];   b1[0x0F] = (b2[0x0F] - b2[0x0E]) * cos0;
-            b1[0x0E] += b1[0x0F];   b1[0x0C] += b1[0x0E];  b1[0x0E] += b1[0x0D]; b1[0x0D] += b1[0x0F];
-            b1[0x10] = b2[0x10] + b2[0x11];   b1[0x11] = (b2[0x10] - b2[0x11]) * cos0;
-            b1[0x12] = b2[0x12] + b2[0x13];   b1[0x13] = (b2[0x13] - b2[0x12]) * cos0;  b1[0x12] += b1[0x13];
-            b1[0x14] = b2[0x14] + b2[0x15];   b1[0x15] = (b2[0x14] - b2[0x15]) * cos0;
-            b1[0x16] = b2[0x16] + b2[0x17];   b1[0x17] = (b2[0x17] - b2[0x16]) * cos0;
-            b1[0x16] += b1[0x17];    b1[0x14] += b1[0x16]; b1[0x16] += b1[0x15];  b1[0x15] += b1[0x17];
-            b1[0x18] = b2[0x18] + b2[0x19];   b1[0x19] = (b2[0x18] - b2[0x19]) * cos0;
-            b1[0x1A] = b2[0x1A] + b2[0x1B];   b1[0x1B] = (b2[0x1B] - b2[0x1A]) * cos0;  b1[0x1A] += b1[0x1B];
-            b1[0x1C] = b2[0x1C] + b2[0x1D];   b1[0x1D] = (b2[0x1C] - b2[0x1D]) * cos0;
-            b1[0x1E] = b2[0x1E] + b2[0x1F];   b1[0x1F] = (b2[0x1F] - b2[0x1E]) * cos0;
-            b1[0x1E] += b1[0x1F];    b1[0x1C] += b1[0x1E]; b1[0x1E] += b1[0x1D];  b1[0x1D] += b1[0x1F];
-        }
-
-        out0[0x10 * 16] = b1[0x00];  out0[0x10 * 12] = b1[0x04]; out0[0x10 * 8]  = b1[0x02];  out0[0x10 * 4]  = b1[0x06];
-        out0[0] = b1[0x01];  out1[0]  = b1[0x01]; out1[0x10 * 4]  = b1[0x05];  out1[0x10 * 8]  = b1[0x03];
-        out1[0x10 * 12] = b1[0x07];
-
-        b1[0x08] += b1[0x0C];  out0[0x10 * 14] = b1[0x08];  b1[0x0C] += b1[0x0a];  out0[0x10 * 10] = b1[0x0C];
-        b1[0x0A] += b1[0x0E];  out0[0x10 * 6]  = b1[0x0A];  b1[0x0E] += b1[0x09];  out0[0x10 * 2]  = b1[0x0E];
-        b1[0x09] += b1[0x0D];  out1[0x10 * 2]  = b1[0x09];  b1[0x0D] += b1[0x0B];  out1[0x10 * 6]  = b1[0x0D];
-        b1[0x0B] += b1[0x0F];  out1[0x10 * 10] = b1[0x0B];  out1[0x10 * 14] = b1[0x0F];
-
-        b1[0x18] += b1[0x1C];  out0[0x10 * 15] = b1[0x10] + b1[0x18];   out0[0x10 * 13] = b1[0x18] + b1[0x14];
-        b1[0x1C] += b1[0x1a];  out0[0x10 * 11] = b1[0x14] + b1[0x1C];   out0[0x10 * 9]  = b1[0x1C] + b1[0x12];
-        b1[0x1A] += b1[0x1E];  out0[0x10 * 7]  = b1[0x12] + b1[0x1A];   out0[0x10 * 5]  = b1[0x1A] + b1[0x16];
-        b1[0x1E] += b1[0x19];  out0[0x10 * 3]  = b1[0x16] + b1[0x1E];   out0[0x10 * 1]  = b1[0x1E] + b1[0x11];
-        b1[0x19] += b1[0x1D];  out1[0x10 * 1]  = b1[0x11] + b1[0x19];   out1[0x10 * 3]  = b1[0x19] + b1[0x15];
-        b1[0x1D] += b1[0x1B];  out1[0x10 * 5]  = b1[0x15] + b1[0x1D];   out1[0x10 * 7]  = b1[0x1D] + b1[0x13];
-        b1[0x1B] += b1[0x1F];  out1[0x10 * 9]  = b1[0x13] + b1[0x1B];   out1[0x10 * 11] = b1[0x1B] + b1[0x17];
-        out1[0x10 * 13] = b1[0x17] + b1[0x1F];  out1[0x10 * 15] = b1[0x1F];
+        out2[5] = inputs.in2 * wi[11];
+        out2[0] = inputs.in2 * wi[6];
+        out2[2] = inputs.in3 * wi[8];
+        out2[3] = inputs.in3 * wi[9];
+        ts[12 * SBLIMIT] += inputs.in0 * wi[0];
+        ts[17 * SBLIMIT] += inputs.in0 * wi[5];
+        ts[14 * SBLIMIT] += inputs.in4 * wi[2];
+        ts[15 * SBLIMIT] += inputs.in4 * wi[5 - 2];
     }
 
-    static void dct64 (float* const a, float* const b, const float* const c) noexcept
     {
-        float temp[64];
-        dct64 (a, b, temp, temp + 32, c);
+        DCT12Inputs inputs (++in);
+        out2[12] = out2[13] = out2[14] = out2[15] = out2[16] = out2[17] = 0;
+
+        float tmp1 = (inputs.in0 - inputs.in4);
+        const float tmp2 = (inputs.in1 - inputs.in5) * cos12[1];
+        const float tmp0 = tmp1 + tmp2;
+        tmp1 -= tmp2;
+
+        out2[10] = tmp0 * wi[10];
+        out2[7]  = tmp0 * wi[7];
+        out2[1] += tmp1 * wi[1];
+        out2[4] += tmp1 * wi[4];
+
+        inputs.process();
+
+        out2[11] = inputs.in2 * wi[11];
+        out2[6]  = inputs.in2 * wi[6];
+        out2[8]  = inputs.in3 * wi[8];
+        out2[9]  = inputs.in3 * wi[9];
+        out2[0] += inputs.in0 * wi[0];
+        out2[5] += inputs.in0 * wi[5];
+        out2[2] += inputs.in4 * wi[2];
+        out2[3] += inputs.in4 * wi[3];
     }
+}
+
+static void dct64 (float* const out0, float* const out1, float* const b1, float* const b2, const float* const samples) noexcept
+{
+    {
+        const float* const costab = constants.cosTables[0];
+        b1[0x00] = samples[0x00] + samples[0x1F];
+        b1[0x1F] = (samples[0x00] - samples[0x1F]) * costab[0x0];
+        b1[0x01] = samples[0x01] + samples[0x1E];
+        b1[0x1E] = (samples[0x01] - samples[0x1E]) * costab[0x1];
+        b1[0x02] = samples[0x02] + samples[0x1D];
+        b1[0x1D] = (samples[0x02] - samples[0x1D]) * costab[0x2];
+        b1[0x03] = samples[0x03] + samples[0x1C];
+        b1[0x1C] = (samples[0x03] - samples[0x1C]) * costab[0x3];
+        b1[0x04] = samples[0x04] + samples[0x1B];
+        b1[0x1B] = (samples[0x04] - samples[0x1B]) * costab[0x4];
+        b1[0x05] = samples[0x05] + samples[0x1A];
+        b1[0x1A] = (samples[0x05] - samples[0x1A]) * costab[0x5];
+        b1[0x06] = samples[0x06] + samples[0x19];
+        b1[0x19] = (samples[0x06] - samples[0x19]) * costab[0x6];
+        b1[0x07] = samples[0x07] + samples[0x18];
+        b1[0x18] = (samples[0x07] - samples[0x18]) * costab[0x7];
+        b1[0x08] = samples[0x08] + samples[0x17];
+        b1[0x17] = (samples[0x08] - samples[0x17]) * costab[0x8];
+        b1[0x09] = samples[0x09] + samples[0x16];
+        b1[0x16] = (samples[0x09] - samples[0x16]) * costab[0x9];
+        b1[0x0A] = samples[0x0A] + samples[0x15];
+        b1[0x15] = (samples[0x0A] - samples[0x15]) * costab[0xA];
+        b1[0x0B] = samples[0x0B] + samples[0x14];
+        b1[0x14] = (samples[0x0B] - samples[0x14]) * costab[0xB];
+        b1[0x0C] = samples[0x0C] + samples[0x13];
+        b1[0x13] = (samples[0x0C] - samples[0x13]) * costab[0xC];
+        b1[0x0D] = samples[0x0D] + samples[0x12];
+        b1[0x12] = (samples[0x0D] - samples[0x12]) * costab[0xD];
+        b1[0x0E] = samples[0x0E] + samples[0x11];
+        b1[0x11] = (samples[0x0E] - samples[0x11]) * costab[0xE];
+        b1[0x0F] = samples[0x0F] + samples[0x10];
+        b1[0x10] = (samples[0x0F] - samples[0x10]) * costab[0xF];
+    }
+
+    {
+        const float* const costab = constants.cosTables[1];
+        b2[0x00] = b1[0x00] + b1[0x0F];
+        b2[0x0F] = (b1[0x00] - b1[0x0F]) * costab[0];
+        b2[0x01] = b1[0x01] + b1[0x0E];
+        b2[0x0E] = (b1[0x01] - b1[0x0E]) * costab[1];
+        b2[0x02] = b1[0x02] + b1[0x0D];
+        b2[0x0D] = (b1[0x02] - b1[0x0D]) * costab[2];
+        b2[0x03] = b1[0x03] + b1[0x0C];
+        b2[0x0C] = (b1[0x03] - b1[0x0C]) * costab[3];
+        b2[0x04] = b1[0x04] + b1[0x0B];
+        b2[0x0B] = (b1[0x04] - b1[0x0B]) * costab[4];
+        b2[0x05] = b1[0x05] + b1[0x0A];
+        b2[0x0A] = (b1[0x05] - b1[0x0A]) * costab[5];
+        b2[0x06] = b1[0x06] + b1[0x09];
+        b2[0x09] = (b1[0x06] - b1[0x09]) * costab[6];
+        b2[0x07] = b1[0x07] + b1[0x08];
+        b2[0x08] = (b1[0x07] - b1[0x08]) * costab[7];
+        b2[0x10] = b1[0x10] + b1[0x1F];
+        b2[0x1F] = (b1[0x1F] - b1[0x10]) * costab[0];
+        b2[0x11] = b1[0x11] + b1[0x1E];
+        b2[0x1E] = (b1[0x1E] - b1[0x11]) * costab[1];
+        b2[0x12] = b1[0x12] + b1[0x1D];
+        b2[0x1D] = (b1[0x1D] - b1[0x12]) * costab[2];
+        b2[0x13] = b1[0x13] + b1[0x1C];
+        b2[0x1C] = (b1[0x1C] - b1[0x13]) * costab[3];
+        b2[0x14] = b1[0x14] + b1[0x1B];
+        b2[0x1B] = (b1[0x1B] - b1[0x14]) * costab[4];
+        b2[0x15] = b1[0x15] + b1[0x1A];
+        b2[0x1A] = (b1[0x1A] - b1[0x15]) * costab[5];
+        b2[0x16] = b1[0x16] + b1[0x19];
+        b2[0x19] = (b1[0x19] - b1[0x16]) * costab[6];
+        b2[0x17] = b1[0x17] + b1[0x18];
+        b2[0x18] = (b1[0x18] - b1[0x17]) * costab[7];
+    }
+
+    {
+        const float* const costab = constants.cosTables[2];
+        b1[0x00] = b2[0x00] + b2[0x07];
+        b1[0x07] = (b2[0x00] - b2[0x07]) * costab[0];
+        b1[0x01] = b2[0x01] + b2[0x06];
+        b1[0x06] = (b2[0x01] - b2[0x06]) * costab[1];
+        b1[0x02] = b2[0x02] + b2[0x05];
+        b1[0x05] = (b2[0x02] - b2[0x05]) * costab[2];
+        b1[0x03] = b2[0x03] + b2[0x04];
+        b1[0x04] = (b2[0x03] - b2[0x04]) * costab[3];
+        b1[0x08] = b2[0x08] + b2[0x0F];
+        b1[0x0F] = (b2[0x0F] - b2[0x08]) * costab[0];
+        b1[0x09] = b2[0x09] + b2[0x0E];
+        b1[0x0E] = (b2[0x0E] - b2[0x09]) * costab[1];
+        b1[0x0A] = b2[0x0A] + b2[0x0D];
+        b1[0x0D] = (b2[0x0D] - b2[0x0A]) * costab[2];
+        b1[0x0B] = b2[0x0B] + b2[0x0C];
+        b1[0x0C] = (b2[0x0C] - b2[0x0B]) * costab[3];
+        b1[0x10] = b2[0x10] + b2[0x17];
+        b1[0x17] = (b2[0x10] - b2[0x17]) * costab[0];
+        b1[0x11] = b2[0x11] + b2[0x16];
+        b1[0x16] = (b2[0x11] - b2[0x16]) * costab[1];
+        b1[0x12] = b2[0x12] + b2[0x15];
+        b1[0x15] = (b2[0x12] - b2[0x15]) * costab[2];
+        b1[0x13] = b2[0x13] + b2[0x14];
+        b1[0x14] = (b2[0x13] - b2[0x14]) * costab[3];
+        b1[0x18] = b2[0x18] + b2[0x1F];
+        b1[0x1F] = (b2[0x1F] - b2[0x18]) * costab[0];
+        b1[0x19] = b2[0x19] + b2[0x1E];
+        b1[0x1E] = (b2[0x1E] - b2[0x19]) * costab[1];
+        b1[0x1A] = b2[0x1A] + b2[0x1D];
+        b1[0x1D] = (b2[0x1D] - b2[0x1A]) * costab[2];
+        b1[0x1B] = b2[0x1B] + b2[0x1C];
+        b1[0x1C] = (b2[0x1C] - b2[0x1B]) * costab[3];
+    }
+
+    {
+        const float cos0 = constants.cosTables[3][0];
+        const float cos1 = constants.cosTables[3][1];
+        b2[0x00] = b1[0x00] + b1[0x03];
+        b2[0x03] = (b1[0x00] - b1[0x03]) * cos0;
+        b2[0x01] = b1[0x01] + b1[0x02];
+        b2[0x02] = (b1[0x01] - b1[0x02]) * cos1;
+        b2[0x04] = b1[0x04] + b1[0x07];
+        b2[0x07] = (b1[0x07] - b1[0x04]) * cos0;
+        b2[0x05] = b1[0x05] + b1[0x06];
+        b2[0x06] = (b1[0x06] - b1[0x05]) * cos1;
+        b2[0x08] = b1[0x08] + b1[0x0B];
+        b2[0x0B] = (b1[0x08] - b1[0x0B]) * cos0;
+        b2[0x09] = b1[0x09] + b1[0x0A];
+        b2[0x0A] = (b1[0x09] - b1[0x0A]) * cos1;
+        b2[0x0C] = b1[0x0C] + b1[0x0F];
+        b2[0x0F] = (b1[0x0F] - b1[0x0C]) * cos0;
+        b2[0x0D] = b1[0x0D] + b1[0x0E];
+        b2[0x0E] = (b1[0x0E] - b1[0x0D]) * cos1;
+        b2[0x10] = b1[0x10] + b1[0x13];
+        b2[0x13] = (b1[0x10] - b1[0x13]) * cos0;
+        b2[0x11] = b1[0x11] + b1[0x12];
+        b2[0x12] = (b1[0x11] - b1[0x12]) * cos1;
+        b2[0x14] = b1[0x14] + b1[0x17];
+        b2[0x17] = (b1[0x17] - b1[0x14]) * cos0;
+        b2[0x15] = b1[0x15] + b1[0x16];
+        b2[0x16] = (b1[0x16] - b1[0x15]) * cos1;
+        b2[0x18] = b1[0x18] + b1[0x1B];
+        b2[0x1B] = (b1[0x18] - b1[0x1B]) * cos0;
+        b2[0x19] = b1[0x19] + b1[0x1A];
+        b2[0x1A] = (b1[0x19] - b1[0x1A]) * cos1;
+        b2[0x1C] = b1[0x1C] + b1[0x1F];
+        b2[0x1F] = (b1[0x1F] - b1[0x1C]) * cos0;
+        b2[0x1D] = b1[0x1D] + b1[0x1E];
+        b2[0x1E] = (b1[0x1E] - b1[0x1D]) * cos1;
+    }
+
+    {
+        const float cos0 = constants.cosTables[4][0];
+        b1[0x00] = b2[0x00] + b2[0x01];
+        b1[0x01] = (b2[0x00] - b2[0x01]) * cos0;
+        b1[0x02] = b2[0x02] + b2[0x03];
+        b1[0x03] = (b2[0x03] - b2[0x02]) * cos0;
+        b1[0x02] += b1[0x03];
+        b1[0x04] = b2[0x04] + b2[0x05];
+        b1[0x05] = (b2[0x04] - b2[0x05]) * cos0;
+        b1[0x06] = b2[0x06] + b2[0x07];
+        b1[0x07] = (b2[0x07] - b2[0x06]) * cos0;
+        b1[0x06] += b1[0x07];
+        b1[0x04] += b1[0x06];
+        b1[0x06] += b1[0x05];
+        b1[0x05] += b1[0x07];
+        b1[0x08] = b2[0x08] + b2[0x09];
+        b1[0x09] = (b2[0x08] - b2[0x09]) * cos0;
+        b1[0x0A] = b2[0x0A] + b2[0x0B];
+        b1[0x0B] = (b2[0x0B] - b2[0x0A]) * cos0;
+        b1[0x0A] += b1[0x0B];
+        b1[0x0C] = b2[0x0C] + b2[0x0D];
+        b1[0x0D] = (b2[0x0C] - b2[0x0D]) * cos0;
+        b1[0x0E] = b2[0x0E] + b2[0x0F];
+        b1[0x0F] = (b2[0x0F] - b2[0x0E]) * cos0;
+        b1[0x0E] += b1[0x0F];
+        b1[0x0C] += b1[0x0E];
+        b1[0x0E] += b1[0x0D];
+        b1[0x0D] += b1[0x0F];
+        b1[0x10] = b2[0x10] + b2[0x11];
+        b1[0x11] = (b2[0x10] - b2[0x11]) * cos0;
+        b1[0x12] = b2[0x12] + b2[0x13];
+        b1[0x13] = (b2[0x13] - b2[0x12]) * cos0;
+        b1[0x12] += b1[0x13];
+        b1[0x14] = b2[0x14] + b2[0x15];
+        b1[0x15] = (b2[0x14] - b2[0x15]) * cos0;
+        b1[0x16] = b2[0x16] + b2[0x17];
+        b1[0x17] = (b2[0x17] - b2[0x16]) * cos0;
+        b1[0x16] += b1[0x17];
+        b1[0x14] += b1[0x16];
+        b1[0x16] += b1[0x15];
+        b1[0x15] += b1[0x17];
+        b1[0x18] = b2[0x18] + b2[0x19];
+        b1[0x19] = (b2[0x18] - b2[0x19]) * cos0;
+        b1[0x1A] = b2[0x1A] + b2[0x1B];
+        b1[0x1B] = (b2[0x1B] - b2[0x1A]) * cos0;
+        b1[0x1A] += b1[0x1B];
+        b1[0x1C] = b2[0x1C] + b2[0x1D];
+        b1[0x1D] = (b2[0x1C] - b2[0x1D]) * cos0;
+        b1[0x1E] = b2[0x1E] + b2[0x1F];
+        b1[0x1F] = (b2[0x1F] - b2[0x1E]) * cos0;
+        b1[0x1E] += b1[0x1F];
+        b1[0x1C] += b1[0x1E];
+        b1[0x1E] += b1[0x1D];
+        b1[0x1D] += b1[0x1F];
+    }
+
+    out0[0x10 * 16] = b1[0x00];
+    out0[0x10 * 12] = b1[0x04];
+    out0[0x10 * 8]  = b1[0x02];
+    out0[0x10 * 4]  = b1[0x06];
+    out0[0] = b1[0x01];
+    out1[0]  = b1[0x01];
+    out1[0x10 * 4]  = b1[0x05];
+    out1[0x10 * 8]  = b1[0x03];
+    out1[0x10 * 12] = b1[0x07];
+
+    b1[0x08] += b1[0x0C];
+    out0[0x10 * 14] = b1[0x08];
+    b1[0x0C] += b1[0x0a];
+    out0[0x10 * 10] = b1[0x0C];
+    b1[0x0A] += b1[0x0E];
+    out0[0x10 * 6]  = b1[0x0A];
+    b1[0x0E] += b1[0x09];
+    out0[0x10 * 2]  = b1[0x0E];
+    b1[0x09] += b1[0x0D];
+    out1[0x10 * 2]  = b1[0x09];
+    b1[0x0D] += b1[0x0B];
+    out1[0x10 * 6]  = b1[0x0D];
+    b1[0x0B] += b1[0x0F];
+    out1[0x10 * 10] = b1[0x0B];
+    out1[0x10 * 14] = b1[0x0F];
+
+    b1[0x18] += b1[0x1C];
+    out0[0x10 * 15] = b1[0x10] + b1[0x18];
+    out0[0x10 * 13] = b1[0x18] + b1[0x14];
+    b1[0x1C] += b1[0x1a];
+    out0[0x10 * 11] = b1[0x14] + b1[0x1C];
+    out0[0x10 * 9]  = b1[0x1C] + b1[0x12];
+    b1[0x1A] += b1[0x1E];
+    out0[0x10 * 7]  = b1[0x12] + b1[0x1A];
+    out0[0x10 * 5]  = b1[0x1A] + b1[0x16];
+    b1[0x1E] += b1[0x19];
+    out0[0x10 * 3]  = b1[0x16] + b1[0x1E];
+    out0[0x10 * 1]  = b1[0x1E] + b1[0x11];
+    b1[0x19] += b1[0x1D];
+    out1[0x10 * 1]  = b1[0x11] + b1[0x19];
+    out1[0x10 * 3]  = b1[0x19] + b1[0x15];
+    b1[0x1D] += b1[0x1B];
+    out1[0x10 * 5]  = b1[0x15] + b1[0x1D];
+    out1[0x10 * 7]  = b1[0x1D] + b1[0x13];
+    b1[0x1B] += b1[0x1F];
+    out1[0x10 * 9]  = b1[0x13] + b1[0x1B];
+    out1[0x10 * 11] = b1[0x1B] + b1[0x17];
+    out1[0x10 * 13] = b1[0x17] + b1[0x1F];
+    out1[0x10 * 15] = b1[0x1F];
+}
+
+static void dct64 (float* const a, float* const b, const float* const c) noexcept
+{
+    float temp[64];
+    dct64 (a, b, temp, temp + 32, c);
+}
 }
 
 //==============================================================================
@@ -1451,7 +1633,7 @@ struct MP3Stream
             frameSize = frame.frameSize;
             isFreeFormat = (frameSize == 0);
             sideInfoSize = frame.lsf != 0 ? ((frame.numChannels == 1) ? 9 : 17)
-                                          : ((frame.numChannels == 1) ? 17 : 32);
+                               : ((frame.numChannels == 1) ? 17 : 32);
 
             if (frame.crc16FollowsHeader)
                 sideInfoSize += 2;
@@ -1501,10 +1683,17 @@ struct MP3Stream
 
                 switch (frame.layer)
                 {
-                    case 1:  decodeLayer1Frame (out0, out1, done); break;
-                    case 2:  decodeLayer2Frame (out0, out1, done); break;
-                    case 3:  decodeLayer3Frame (out0, out1, done); break;
-                    default: break;
+                case 1:
+                    decodeLayer1Frame (out0, out1, done);
+                    break;
+                case 2:
+                    decodeLayer2Frame (out0, out1, done);
+                    break;
+                case 3:
+                    decodeLayer3Frame (out0, out1, done);
+                    break;
+                default:
+                    break;
                 }
             }
 
@@ -1646,11 +1835,11 @@ private:
         const int newLayer = 4 - ((header >> 17) & 3);
 
         return (header & 0xffe00000) == 0xffe00000
-                && newLayer != 4
-                && (oldLayer <= 0 || newLayer == oldLayer)
-                && ((header >> 12) & 15) != 15
-                && ((header >> 10) & 3) != 3
-                && (header & 3) != 2;
+        && newLayer != 4
+        && (oldLayer <= 0 || newLayer == oldLayer)
+        && ((header >> 12) & 15) != 15
+        && ((header >> 10) & 3) != 3
+        && (header & 3) != 2;
     }
 
     bool rollBackBufferPointer (int backstep) noexcept
@@ -1674,7 +1863,7 @@ private:
             return 0;
 
         const uint32 result = ((((((bufferPointer[0] << 8) | bufferPointer[1]) << 8)
-                               | bufferPointer[2]) << bitIndex) & 0xffffff) >> (24 - numBits);
+        | bufferPointer[2]) << bitIndex) & 0xffffff) >> (24 - numBits);
         bitIndex += numBits;
         bufferPointer += (bitIndex >> 3);
         bitIndex &= 7;
@@ -1730,7 +1919,7 @@ private:
                 const uint32 numChannels     = (mode == 3) ? 1 : 2;
 
                 if (numChannels == (uint32) frame.numChannels && lsf == (uint32) frame.lsf
-                      && mpeg25 == frame.mpeg25 && sampleRateIndex == (uint32) frame.sampleRateIndex)
+                        && mpeg25 == frame.mpeg25 && sampleRateIndex == (uint32) frame.sampleRateIndex)
                     break;
             }
 
@@ -1836,7 +2025,7 @@ private:
             {
                 Layer3SideInfo::Info& granule = sideinfo.ch[0].gr[gr];
                 const int part2bits = frame.lsf ? getLayer3ScaleFactors2 (scaleFactors[0], granule, 0)
-                                                : getLayer3ScaleFactors1 (scaleFactors[0], granule);
+                : getLayer3ScaleFactors1 (scaleFactors[0], granule);
 
                 if (layer3DequantizeSample (hybridIn[0], scaleFactors[0], granule, frame.sampleRateIndex, part2bits))
                     return;
@@ -1846,7 +2035,7 @@ private:
             {
                 Layer3SideInfo::Info& granule = sideinfo.ch[1].gr[gr];
                 const int part2bits = frame.lsf ? getLayer3ScaleFactors2 (scaleFactors[1], granule, iStereo)
-                                                : getLayer3ScaleFactors1 (scaleFactors[1], granule);
+                                      : getLayer3ScaleFactors1 (scaleFactors[1], granule);
 
                 if (layer3DequantizeSample (hybridIn[1], scaleFactors[1], granule, frame.sampleRateIndex, part2bits))
                     return;
@@ -1875,23 +2064,23 @@ private:
 
                 switch (single)
                 {
-                    case 3:
-                    {
-                        float* in0 = (float*) hybridIn[0];
-                        const float* in1 = (const float*) hybridIn[1];
-                        for (int i = 0; i < (int) (18 * granule.maxb); ++i, ++in0)
-                            *in0 = (*in0 + *in1++);
-                    }
-                    break;
+                case 3:
+                {
+                    float* in0 = (float*) hybridIn[0];
+                    const float* in1 = (const float*) hybridIn[1];
+                    for (int i = 0; i < (int) (18 * granule.maxb); ++i, ++in0)
+                        *in0 = (*in0 + *in1++);
+                }
+                break;
 
-                    case 1:
-                    {
-                        float* in0 = (float*) hybridIn[0];
-                        const float* in1 = (const float*) hybridIn[1];
-                        for (int i = 0; i < (int) (18 * granule.maxb); ++i)
-                            *in0++ = *in1++;
-                    }
-                    break;
+                case 1:
+                {
+                    float* in0 = (float*) hybridIn[0];
+                    const float* in1 = (const float*) hybridIn[1];
+                    for (int i = 0; i < (int) (18 * granule.maxb); ++i)
+                        *in0++ = *in1++;
+                }
+                break;
                 }
             }
 
@@ -2064,24 +2253,24 @@ private:
                 {
                     switch (scfsi[i][ch])
                     {
-                        case 0:
-                            s0 = getBitsUint8 (6);
-                            s1 = getBitsUint8 (6);
-                            s2 = getBitsUint8 (6);
-                            break;
-                        case 1:
-                            s1 = s0 = getBitsUint8 (6);
-                            s2 = getBitsUint8 (6);
-                            break;
-                        case 2:
-                            s2 = s1 = s0 = getBitsUint8 (6);
-                            break;
-                        case 3:
-                            s0 = getBitsUint8 (6);
-                            s2 = s1 = getBitsUint8 (6);
-                            break;
-                        default:
-                            break;
+                    case 0:
+                        s0 = getBitsUint8 (6);
+                        s1 = getBitsUint8 (6);
+                        s2 = getBitsUint8 (6);
+                        break;
+                    case 1:
+                        s1 = s0 = getBitsUint8 (6);
+                        s2 = getBitsUint8 (6);
+                        break;
+                    case 2:
+                        s2 = s1 = s0 = getBitsUint8 (6);
+                        break;
+                    case 3:
+                        s0 = getBitsUint8 (6);
+                        s2 = s1 = getBitsUint8 (6);
+                        break;
+                    default:
+                        break;
                     }
                 }
 
@@ -2418,7 +2607,7 @@ private:
         };
 
         uint32 len = iStereo ? constants.iLength2 [granule.scaleFactorCompression >> 1]
-                             : constants.nLength2 [granule.scaleFactorCompression];
+                     : constants.nLength2 [granule.scaleFactorCompression];
 
         granule.preflag = (len >> 15) & 1;
 
@@ -2669,8 +2858,10 @@ private:
                 }
 
                 --mc;
-                *xrpnt = 0;  xrpnt += step;
-                *xrpnt = 0;  xrpnt += step;
+                *xrpnt = 0;
+                xrpnt += step;
+                *xrpnt = 0;
+                xrpnt += step;
             }
 
             granule.maxBand[0] = (uint32) (max[0] + 1);
@@ -2680,7 +2871,7 @@ private:
 
             const int rmax = jmax (max[0], max[1], max[3]) + 1;
             granule.maxb = rmax ? (uint32) constants.shortLimit[sampleRate][rmax]
-                                : (uint32) constants.longLimit[sampleRate][max[3] + 1];
+                           : (uint32) constants.longLimit[sampleRate][max[3] + 1];
         }
         else
         {
@@ -2902,37 +3093,58 @@ private:
 
         for (j = 16; j != 0; --j, b0 += 16, window += 32)
         {
-            float sum = window[0] * b0[0];  sum -= window[1] * b0[1];
-            sum += window[2]  * b0[2];   sum -= window[3]  * b0[3];
-            sum += window[4]  * b0[4];   sum -= window[5]  * b0[5];
-            sum += window[6]  * b0[6];   sum -= window[7]  * b0[7];
-            sum += window[8]  * b0[8];   sum -= window[9]  * b0[9];
-            sum += window[10] * b0[10];  sum -= window[11] * b0[11];
-            sum += window[12] * b0[12];  sum -= window[13] * b0[13];
-            sum += window[14] * b0[14];  sum -= window[15] * b0[15];
+            float sum = window[0] * b0[0];
+            sum -= window[1] * b0[1];
+            sum += window[2]  * b0[2];
+            sum -= window[3]  * b0[3];
+            sum += window[4]  * b0[4];
+            sum -= window[5]  * b0[5];
+            sum += window[6]  * b0[6];
+            sum -= window[7]  * b0[7];
+            sum += window[8]  * b0[8];
+            sum -= window[9]  * b0[9];
+            sum += window[10] * b0[10];
+            sum -= window[11] * b0[11];
+            sum += window[12] * b0[12];
+            sum -= window[13] * b0[13];
+            sum += window[14] * b0[14];
+            sum -= window[15] * b0[15];
             *out++ = sum;
         }
 
         {
-            float sum = window[0] * b0[0];   sum += window[2] * b0[2];
-            sum += window[4]  * b0[4];   sum += window[6]  * b0[6];
-            sum += window[8]  * b0[8];   sum += window[10] * b0[10];
-            sum += window[12] * b0[12];  sum += window[14] * b0[14];
+            float sum = window[0] * b0[0];
+            sum += window[2] * b0[2];
+            sum += window[4]  * b0[4];
+            sum += window[6]  * b0[6];
+            sum += window[8]  * b0[8];
+            sum += window[10] * b0[10];
+            sum += window[12] * b0[12];
+            sum += window[14] * b0[14];
             *out++ = sum;
-            b0 -= 16; window -= 32;
+            b0 -= 16;
+            window -= 32;
             window += bo1 << 1;
         }
 
         for (j = 15; j != 0; --j, b0 -= 16, window -= 32)
         {
-            float sum = -window[-1] * b0[0];  sum -= window[-2] * b0[1];
-            sum -= window[-3]  * b0[2];   sum -= window[-4]  * b0[3];
-            sum -= window[-5]  * b0[4];   sum -= window[-6]  * b0[5];
-            sum -= window[-7]  * b0[6];   sum -= window[-8]  * b0[7];
-            sum -= window[-9]  * b0[8];   sum -= window[-10] * b0[9];
-            sum -= window[-11] * b0[10];  sum -= window[-12] * b0[11];
-            sum -= window[-13] * b0[12];  sum -= window[-14] * b0[13];
-            sum -= window[-15] * b0[14];  sum -= window[0]   * b0[15];
+            float sum = -window[-1] * b0[0];
+            sum -= window[-2] * b0[1];
+            sum -= window[-3]  * b0[2];
+            sum -= window[-4]  * b0[3];
+            sum -= window[-5]  * b0[4];
+            sum -= window[-6]  * b0[5];
+            sum -= window[-7]  * b0[6];
+            sum -= window[-8]  * b0[7];
+            sum -= window[-9]  * b0[8];
+            sum -= window[-10] * b0[9];
+            sum -= window[-11] * b0[10];
+            sum -= window[-12] * b0[11];
+            sum -= window[-13] * b0[12];
+            sum -= window[-14] * b0[13];
+            sum -= window[-15] * b0[14];
+            sum -= window[0]   * b0[15];
             *out++ = sum;
         }
 
@@ -3085,13 +3297,13 @@ private:
             uint8 buffer[6];
 
             if (stream.stream.read (buffer, 6) == 6
-                 && buffer[0] != 0xff
-                 && ((buffer[2] | buffer[3] | buffer[4] | buffer[5]) & 0x80) == 0)
+                    && buffer[0] != 0xff
+                    && ((buffer[2] | buffer[3] | buffer[4] | buffer[5]) & 0x80) == 0)
             {
                 const uint32 length = (((uint32) buffer[2]) << 21)
-                                    | (((uint32) buffer[3]) << 14)
-                                    | (((uint32) buffer[4]) << 7)
-                                    |  ((uint32) buffer[5]);
+                                      | (((uint32) buffer[3]) << 14)
+                                      | (((uint32) buffer[4]) << 7)
+                                      |  ((uint32) buffer[5]);
 
                 stream.stream.skipNextBytes (length);
                 return;
@@ -3132,12 +3344,24 @@ private:
 MP3AudioFormat::MP3AudioFormat()  : AudioFormat (MP3Decoder::mp3FormatName, ".mp3") {}
 MP3AudioFormat::~MP3AudioFormat() {}
 
-Array<int> MP3AudioFormat::getPossibleSampleRates() { return Array<int>(); }
-Array<int> MP3AudioFormat::getPossibleBitDepths()   { return Array<int>(); }
-bool MP3AudioFormat::canDoStereo()                  { return true; }
-bool MP3AudioFormat::canDoMono()                    { return true; }
-bool MP3AudioFormat::isCompressed()                 { return true; }
-StringArray MP3AudioFormat::getQualityOptions()     { return StringArray(); }
+Array<int> MP3AudioFormat::getPossibleSampleRates() {
+    return Array<int>();
+}
+Array<int> MP3AudioFormat::getPossibleBitDepths()   {
+    return Array<int>();
+}
+bool MP3AudioFormat::canDoStereo()                  {
+    return true;
+}
+bool MP3AudioFormat::canDoMono()                    {
+    return true;
+}
+bool MP3AudioFormat::isCompressed()                 {
+    return true;
+}
+StringArray MP3AudioFormat::getQualityOptions()     {
+    return StringArray();
+}
 
 AudioFormatReader* MP3AudioFormat::createReaderFor (InputStream* sourceStream, const bool deleteStreamIfOpeningFails)
 {
@@ -3153,8 +3377,8 @@ AudioFormatReader* MP3AudioFormat::createReaderFor (InputStream* sourceStream, c
 }
 
 AudioFormatWriter* MP3AudioFormat::createWriterFor (OutputStream*, double /*sampleRateToUse*/,
-                                                    unsigned int /*numberOfChannels*/, int /*bitsPerSample*/,
-                                                    const StringPairArray& /*metadataValues*/, int /*qualityOptionIndex*/)
+        unsigned int /*numberOfChannels*/, int /*bitsPerSample*/,
+        const StringPairArray& /*metadataValues*/, int /*qualityOptionIndex*/)
 {
     return nullptr;
 }

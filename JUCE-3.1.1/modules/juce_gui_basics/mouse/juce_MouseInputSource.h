@@ -55,8 +55,12 @@ public:
     ~MouseInputSource() noexcept;
 
     //==============================================================================
-    bool operator== (const MouseInputSource& other) const noexcept     { return pimpl == other.pimpl; }
-    bool operator!= (const MouseInputSource& other) const noexcept     { return pimpl != other.pimpl; }
+    bool operator== (const MouseInputSource& other) const noexcept     {
+        return pimpl == other.pimpl;
+    }
+    bool operator!= (const MouseInputSource& other) const noexcept     {
+        return pimpl != other.pimpl;
+    }
 
     //==============================================================================
     /** Returns true if this object represents a normal desk-based mouse device. */

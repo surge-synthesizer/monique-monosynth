@@ -24,8 +24,12 @@
 
 struct Spinner  : public Component, private Timer
 {
-    Spinner()                       { startTimer (1000 / 50); }
-    void timerCallback() override   { repaint(); }
+    Spinner()                       {
+        startTimer (1000 / 50);
+    }
+    void timerCallback() override   {
+        repaint();
+    }
 
     void paint (Graphics& g) override
     {
@@ -34,8 +38,8 @@ struct Spinner  : public Component, private Timer
 };
 
 struct TracktionMarketplaceUnlockForm::OverlayComp  : public Component,
-                                                      private Thread,
-                                                      private Timer
+    private Thread,
+    private Timer
 {
     OverlayComp (TracktionMarketplaceUnlockForm& f)  : Thread (String()), form (f)
     {
@@ -112,15 +116,15 @@ struct TracktionMarketplaceUnlockForm::OverlayComp  : public Component,
 
 static juce_wchar getDefaultPasswordChar() noexcept
 {
-   #if JUCE_LINUX
+#if JUCE_LINUX
     return 0x2022;
-   #else
+#else
     return 0x25cf;
-   #endif
+#endif
 }
 
 TracktionMarketplaceUnlockForm::TracktionMarketplaceUnlockForm (TracktionMarketplaceStatus& s,
-                                                                const String& userInstructions)
+        const String& userInstructions)
     : status (s),
       message (String(), userInstructions),
       passwordBox (String(), getDefaultPasswordChar()),

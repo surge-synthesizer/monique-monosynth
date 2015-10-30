@@ -41,7 +41,9 @@ struct SortFunctionConverter
     SortFunctionConverter (ElementComparator& e) : comparator (e) {}
 
     template <typename Type>
-    bool operator() (Type a, Type b)  { return comparator.compareElements (a, b) < 0; }
+    bool operator() (Type a, Type b)  {
+        return comparator.compareElements (a, b) < 0;
+    }
 
 private:
     ElementComparator& comparator;
@@ -121,15 +123,15 @@ static void sortArray (ElementComparator& comparator,
 */
 template <class ElementType, class ElementComparator>
 static int findInsertIndexInSortedArray (ElementComparator& comparator,
-                                         ElementType* const array,
-                                         const ElementType newElement,
-                                         int firstElement,
-                                         int lastElement)
+        ElementType* const array,
+        const ElementType newElement,
+        int firstElement,
+        int lastElement)
 {
     jassert (firstElement <= lastElement);
 
     (void) comparator;  // if you pass in an object with a static compareElements() method, this
-                        // avoids getting warning messages about the parameter being unused
+    // avoids getting warning messages about the parameter being unused
 
     while (firstElement < lastElement)
     {

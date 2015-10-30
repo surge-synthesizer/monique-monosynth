@@ -30,12 +30,16 @@ AudioIODevice::AudioIODevice (const String& deviceName, const String& deviceType
 AudioIODevice::~AudioIODevice() {}
 
 void AudioIODeviceCallback::audioDeviceError (const String&)    {}
-bool AudioIODevice::setAudioPreprocessingEnabled (bool)         { return false; }
-bool AudioIODevice::hasControlPanel() const                     { return false; }
+bool AudioIODevice::setAudioPreprocessingEnabled (bool)         {
+    return false;
+}
+bool AudioIODevice::hasControlPanel() const                     {
+    return false;
+}
 
 bool AudioIODevice::showControlPanel()
 {
     jassertfalse;    // this should only be called for devices which return true from
-                     // their hasControlPanel() method.
+    // their hasControlPanel() method.
     return false;
 }

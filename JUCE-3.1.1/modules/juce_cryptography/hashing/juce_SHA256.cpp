@@ -26,7 +26,8 @@ class SHA256Processor
 {
 public:
     SHA256Processor() noexcept
-        : length (0)
+:
+    length (0)
     {
         state[0] = 0x6a09e667;
         state[1] = 0xbb67ae85;
@@ -61,16 +62,30 @@ public:
 
         for (uint32 j = 0; j < 64; j += 16)
         {
-            #define JUCE_SHA256(i) \
+#define JUCE_SHA256(i) \
                 s[(7 - i) & 7] += S1 (s[(4 - i) & 7]) + ch (s[(4 - i) & 7], s[(5 - i) & 7], s[(6 - i) & 7]) + constants[i + j] \
                                      + (j != 0 ? (block[i & 15] += s1 (block[(i - 2) & 15]) + block[(i - 7) & 15] + s0 (block[(i - 15) & 15])) \
                                                : block[i]); \
                 s[(3 - i) & 7] += s[(7 - i) & 7]; \
                 s[(7 - i) & 7] += S0 (s[(0 - i) & 7]) + maj (s[(0 - i) & 7], s[(1 - i) & 7], s[(2 - i) & 7])
 
-            JUCE_SHA256(0);  JUCE_SHA256(1);  JUCE_SHA256(2);  JUCE_SHA256(3);  JUCE_SHA256(4);  JUCE_SHA256(5);  JUCE_SHA256(6);  JUCE_SHA256(7);
-            JUCE_SHA256(8);  JUCE_SHA256(9);  JUCE_SHA256(10); JUCE_SHA256(11); JUCE_SHA256(12); JUCE_SHA256(13); JUCE_SHA256(14); JUCE_SHA256(15);
-            #undef JUCE_SHA256
+            JUCE_SHA256(0);
+            JUCE_SHA256(1);
+            JUCE_SHA256(2);
+            JUCE_SHA256(3);
+            JUCE_SHA256(4);
+            JUCE_SHA256(5);
+            JUCE_SHA256(6);
+            JUCE_SHA256(7);
+            JUCE_SHA256(8);
+            JUCE_SHA256(9);
+            JUCE_SHA256(10);
+            JUCE_SHA256(11);
+            JUCE_SHA256(12);
+            JUCE_SHA256(13);
+            JUCE_SHA256(14);
+            JUCE_SHA256(15);
+#undef JUCE_SHA256
         }
 
         for (int i = 0; i < 8; ++i)
@@ -228,8 +243,12 @@ String SHA256::toHexString() const
     return String::toHexString (result, sizeof (result), 0);
 }
 
-bool SHA256::operator== (const SHA256& other) const noexcept  { return memcmp (result, other.result, sizeof (result)) == 0; }
-bool SHA256::operator!= (const SHA256& other) const noexcept  { return ! operator== (other); }
+bool SHA256::operator== (const SHA256& other) const noexcept  {
+    return memcmp (result, other.result, sizeof (result)) == 0;
+}
+bool SHA256::operator!= (const SHA256& other) const noexcept  {
+    return ! operator== (other);
+}
 
 
 //==============================================================================

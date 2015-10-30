@@ -139,9 +139,9 @@ void b2Log(const char* string, ...);
 /// See http://en.wikipedia.org/wiki/Software_versioning
 struct b2Version
 {
-	int32 major;		///< significant changes
-	int32 minor;		///< incremental changes
-	int32 revision;		///< bug fixes
+    int32 major;		///< significant changes
+    int32 minor;		///< incremental changes
+    int32 revision;		///< bug fixes
 };
 
 /// Current version.

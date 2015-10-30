@@ -27,9 +27,10 @@
 */
 
 ReadWriteLock::ReadWriteLock() noexcept
-    : numWaitingWriters (0),
-      numWriters (0),
-      writerThreadId (0)
+:
+numWaitingWriters (0),
+                  numWriters (0),
+                  writerThreadId (0)
 {
     readerThreads.ensureStorageAllocated (16);
 }
@@ -65,7 +66,7 @@ bool ReadWriteLock::tryEnterRead() const noexcept
     }
 
     if (numWriters + numWaitingWriters == 0
-         || (threadId == writerThreadId && numWriters > 0))
+            || (threadId == writerThreadId && numWriters > 0))
     {
         ThreadRecursionCount trc = { threadId, 1 };
         readerThreads.add (trc);
@@ -124,8 +125,8 @@ bool ReadWriteLock::tryEnterWrite() const noexcept
 bool ReadWriteLock::tryEnterWriteInternal (Thread::ThreadID threadId) const noexcept
 {
     if (readerThreads.size() + numWriters == 0
-         || threadId == writerThreadId
-         || (readerThreads.size() == 1 && readerThreads.getReference(0).threadID == threadId))
+            || threadId == writerThreadId
+            || (readerThreads.size() == 1 && readerThreads.getReference(0).threadID == threadId))
     {
         writerThreadId = threadId;
         ++numWriters;

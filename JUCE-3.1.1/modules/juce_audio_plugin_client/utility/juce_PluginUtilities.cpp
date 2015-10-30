@@ -23,7 +23,7 @@
 */
 
 #if _MSC_VER || defined (__MINGW32__) || defined (__MINGW64__)
- #include <windows.h>
+#include <windows.h>
 #endif
 
 // Your project must contain an AppConfig.h file with your project-specific settings in it,
@@ -35,11 +35,11 @@
 
 // HACK
 #ifdef JUCE_MINGW
- #include <windows.h>
+#include <windows.h>
 // HACK EOF
 
 #if JucePlugin_Build_RTAS
- extern "C" BOOL WINAPI DllMainRTAS (HINSTANCE, DWORD, LPVOID);
+extern "C" BOOL WINAPI DllMainRTAS (HINSTANCE, DWORD, LPVOID);
 #endif
 
 extern "C" BOOL WINAPI DllMain (HINSTANCE instance, DWORD reason, LPVOID reserved)
@@ -47,15 +47,15 @@ extern "C" BOOL WINAPI DllMain (HINSTANCE instance, DWORD reason, LPVOID reserve
     if (reason == DLL_PROCESS_ATTACH)
         Process::setCurrentModuleInstanceHandle (instance);
 
-   #if JucePlugin_Build_RTAS
+#if JucePlugin_Build_RTAS
     if (GetModuleHandleA ("DAE.DLL") != 0)
     {
-       #if JucePlugin_Build_AAX
+#if JucePlugin_Build_AAX
         if (! File::getSpecialLocation (File::currentExecutableFile).hasFileExtension ("aaxplugin"))
-       #endif
+#endif
             return DllMainRTAS (instance, reason, reserved);
     }
-   #endif
+#endif
 
     (void) reserved;
     return TRUE;

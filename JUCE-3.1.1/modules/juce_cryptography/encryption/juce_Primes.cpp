@@ -24,128 +24,128 @@
 
 namespace PrimesHelpers
 {
-    static void createSmallSieve (const int numBits, BigInteger& result)
+static void createSmallSieve (const int numBits, BigInteger& result)
+{
+    result.setBit (numBits);
+    result.clearBit (numBits); // to enlarge the array
+
+    result.setBit (0);
+    int n = 2;
+
+    do
     {
-        result.setBit (numBits);
-        result.clearBit (numBits); // to enlarge the array
+        for (int i = n + n; i < numBits; i += n)
+            result.setBit (i);
 
-        result.setBit (0);
-        int n = 2;
+        n = result.findNextClearBit (n + 1);
+    }
+    while (n <= (numBits >> 1));
+}
 
-        do
+static void bigSieve (const BigInteger& base, const int numBits, BigInteger& result,
+                      const BigInteger& smallSieve, const int smallSieveSize)
+{
+    jassert (! base[0]); // must be even!
+
+    result.setBit (numBits);
+    result.clearBit (numBits);  // to enlarge the array
+
+    int index = smallSieve.findNextClearBit (0);
+
+    do
+    {
+        const unsigned int prime = ((unsigned int) index << 1) + 1;
+
+        BigInteger r (base), remainder;
+        r.divideBy (prime, remainder);
+
+        unsigned int i = prime - remainder.getBitRangeAsInt (0, 32);
+
+        if (r.isZero())
+            i += prime;
+
+        if ((i & 1) == 0)
+            i += prime;
+
+        i = (i - 1) >> 1;
+
+        while (i < (unsigned int) numBits)
         {
-            for (int i = n + n; i < numBits; i += n)
-                result.setBit (i);
-
-            n = result.findNextClearBit (n + 1);
+            result.setBit ((int) i);
+            i += prime;
         }
-        while (n <= (numBits >> 1));
+
+        index = smallSieve.findNextClearBit (index + 1);
+    }
+    while (index < smallSieveSize);
+}
+
+static bool findCandidate (const BigInteger& base, const BigInteger& sieve,
+                           const int numBits, BigInteger& result, const int certainty)
+{
+    for (int i = 0; i < numBits; ++i)
+    {
+        if (! sieve[i])
+        {
+            result = base + (unsigned int) ((i << 1) + 1);
+
+            if (Primes::isProbablyPrime (result, certainty))
+                return true;
+        }
     }
 
-    static void bigSieve (const BigInteger& base, const int numBits, BigInteger& result,
-                          const BigInteger& smallSieve, const int smallSieveSize)
+    return false;
+}
+
+static bool passesMillerRabin (const BigInteger& n, int iterations)
+{
+    const BigInteger one (1), two (2);
+    const BigInteger nMinusOne (n - one);
+
+    BigInteger d (nMinusOne);
+    const int s = d.findNextSetBit (0);
+    d >>= s;
+
+    BigInteger smallPrimes;
+    int numBitsInSmallPrimes = 0;
+
+    for (;;)
     {
-        jassert (! base[0]); // must be even!
+        numBitsInSmallPrimes += 256;
+        createSmallSieve (numBitsInSmallPrimes, smallPrimes);
 
-        result.setBit (numBits);
-        result.clearBit (numBits);  // to enlarge the array
+        const int numPrimesFound = numBitsInSmallPrimes - smallPrimes.countNumberOfSetBits();
 
-        int index = smallSieve.findNextClearBit (0);
+        if (numPrimesFound > iterations + 1)
+            break;
+    }
 
-        do
+    int smallPrime = 2;
+
+    while (--iterations >= 0)
+    {
+        smallPrime = smallPrimes.findNextClearBit (smallPrime + 1);
+
+        BigInteger r (smallPrime);
+        r.exponentModulo (d, n);
+
+        if (r != one && r != nMinusOne)
         {
-            const unsigned int prime = ((unsigned int) index << 1) + 1;
-
-            BigInteger r (base), remainder;
-            r.divideBy (prime, remainder);
-
-            unsigned int i = prime - remainder.getBitRangeAsInt (0, 32);
-
-            if (r.isZero())
-                i += prime;
-
-            if ((i & 1) == 0)
-                i += prime;
-
-            i = (i - 1) >> 1;
-
-            while (i < (unsigned int) numBits)
+            for (int j = 0; j < s; ++j)
             {
-                result.setBit ((int) i);
-                i += prime;
+                r.exponentModulo (two, n);
+
+                if (r == nMinusOne)
+                    break;
             }
 
-            index = smallSieve.findNextClearBit (index + 1);
+            if (r != nMinusOne)
+                return false;
         }
-        while (index < smallSieveSize);
     }
 
-    static bool findCandidate (const BigInteger& base, const BigInteger& sieve,
-                               const int numBits, BigInteger& result, const int certainty)
-    {
-        for (int i = 0; i < numBits; ++i)
-        {
-            if (! sieve[i])
-            {
-                result = base + (unsigned int) ((i << 1) + 1);
-
-                if (Primes::isProbablyPrime (result, certainty))
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-    static bool passesMillerRabin (const BigInteger& n, int iterations)
-    {
-        const BigInteger one (1), two (2);
-        const BigInteger nMinusOne (n - one);
-
-        BigInteger d (nMinusOne);
-        const int s = d.findNextSetBit (0);
-        d >>= s;
-
-        BigInteger smallPrimes;
-        int numBitsInSmallPrimes = 0;
-
-        for (;;)
-        {
-            numBitsInSmallPrimes += 256;
-            createSmallSieve (numBitsInSmallPrimes, smallPrimes);
-
-            const int numPrimesFound = numBitsInSmallPrimes - smallPrimes.countNumberOfSetBits();
-
-            if (numPrimesFound > iterations + 1)
-                break;
-        }
-
-        int smallPrime = 2;
-
-        while (--iterations >= 0)
-        {
-            smallPrime = smallPrimes.findNextClearBit (smallPrime + 1);
-
-            BigInteger r (smallPrime);
-            r.exponentModulo (d, n);
-
-            if (r != one && r != nMinusOne)
-            {
-                for (int j = 0; j < s; ++j)
-                {
-                    r.exponentModulo (two, n);
-
-                    if (r == nMinusOne)
-                        break;
-                }
-
-                if (r != nMinusOne)
-                    return false;
-            }
-        }
-
-        return true;
-    }
+    return true;
+}
 }
 
 //==============================================================================

@@ -161,7 +161,7 @@
  for small objects.
 */
 
-                        /* Type declarations */
+/* Type declarations */
 
 #ifndef OF /* function prototypes */
 #  ifdef STDC
@@ -179,7 +179,7 @@
  */
 #ifdef SYS16BIT
 #  if defined(M_I86SM) || defined(M_I86MM)
-     /* MSC small or medium model */
+/* MSC small or medium model */
 #    define SMALL_MEDIUM
 #    ifdef _MSC_VER
 #      define FAR _far
@@ -188,7 +188,7 @@
 #    endif
 #  endif
 #  if (defined(__SMALL__) || defined(__MEDIUM__))
-     /* Turbo C small or medium model */
+/* Turbo C small or medium model */
 #    define SMALL_MEDIUM
 #    ifdef __BORLANDC__
 #      define FAR _far
@@ -199,9 +199,9 @@
 #endif
 
 #if defined(WINDOWS) || defined(WIN32)
-   /* If building or using zlib as a DLL, define ZLIB_DLL.
-    * This is not mandatory, but it offers a little performance increase.
-    */
+/* If building or using zlib as a DLL, define ZLIB_DLL.
+ * This is not mandatory, but it offers a little performance increase.
+ */
 #  ifdef ZLIB_DLL
 #    if defined(WIN32) && (!defined(__BORLANDC__) || (__BORLANDC__ >= 0x500))
 #      ifdef ZLIB_INTERNAL
@@ -211,17 +211,17 @@
 #      endif
 #    endif
 #  endif  /* ZLIB_DLL */
-   /* If building or using zlib with the WINAPI/WINAPIV calling convention,
-    * define ZLIB_WINAPI.
-    * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
-    */
+/* If building or using zlib with the WINAPI/WINAPIV calling convention,
+ * define ZLIB_WINAPI.
+ * Caution: the standard ZLIB1.DLL is NOT compiled using ZLIB_WINAPI.
+ */
 #  ifdef ZLIB_WINAPI
 #    ifdef FAR
 #      undef FAR
 #    endif
 #    include <windows.h>
-     /* No need for _export, use ZLIB.DEF instead. */
-     /* For complete Windows compatibility, use WINAPI, not __stdcall. */
+/* No need for _export, use ZLIB.DEF instead. */
+/* For complete Windows compatibility, use WINAPI, not __stdcall. */
 #    define ZEXPORT WINAPI
 #    ifdef WIN32
 #      define ZEXPORTVA WINAPIV
@@ -264,10 +264,10 @@ typedef unsigned int   uInt;  /* 16 bits or more */
 typedef unsigned long  uLong; /* 32 bits or more */
 
 #ifdef SMALL_MEDIUM
-   /* Borland C/C++ and some old MSC versions ignore FAR inside typedef */
+/* Borland C/C++ and some old MSC versions ignore FAR inside typedef */
 #  define Bytef Byte FAR
 #else
-   typedef Byte  FAR Bytef;
+typedef Byte  FAR Bytef;
 #endif
 typedef char  FAR charf;
 typedef int   FAR intf;
@@ -275,13 +275,13 @@ typedef uInt  FAR uIntf;
 typedef uLong FAR uLongf;
 
 #ifdef STDC
-   typedef void const *voidpc;
-   typedef void FAR   *voidpf;
-   typedef void       *voidp;
+typedef void const *voidpc;
+typedef void FAR   *voidpf;
+typedef void       *voidp;
 #else
-   typedef Byte const *voidpc;
-   typedef Byte FAR   *voidpf;
-   typedef Byte       *voidp;
+typedef Byte const *voidpc;
+typedef Byte FAR   *voidpf;
+typedef Byte       *voidp;
 #endif
 
 #if 0           /* HAVE_UNISTD_H -- this line is updated by ./configure */

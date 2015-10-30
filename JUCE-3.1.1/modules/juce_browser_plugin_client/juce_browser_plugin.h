@@ -33,14 +33,14 @@
     Use this flag to enable or disable the building of an NPAPI verstion of your plugin.
 */
 #ifndef JUCE_BUILD_NPAPI
- #define JUCE_BUILD_NPAPI 1
+#define JUCE_BUILD_NPAPI 1
 #endif
 
 /** Config: JUCE_BUILD_ACTIVEX
     Use this flag to enable or disable the building of an ActiveX verstion of your plugin.
 */
 #if JUCE_WINDOWS && ! defined (JUCE_BUILD_ACTIVEX)
- #define JUCE_BUILD_ACTIVEX 1
+#define JUCE_BUILD_ACTIVEX 1
 #endif
 
 //=============================================================================
@@ -48,21 +48,21 @@
     This should be a quoted string containing the name of your company.
 */
 #ifndef JuceBrowserPlugin_Company
- #error "You must define the JuceBrowserPlugin_Company macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_Company macro before including juce_browser_plugin.h!"
 #endif
 
 /** JuceBrowserPlugin_Name
     This should be a quoted string containing the name of your plugin.
 */
 #ifndef JuceBrowserPlugin_Name
- #error "You must define the JuceBrowserPlugin_Name macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_Name macro before including juce_browser_plugin.h!"
 #endif
 
 /** JuceBrowserPlugin_Desc
     This should be a quoted string containing a description of your plugin.
 */
 #ifndef JuceBrowserPlugin_Desc
- #error "You must define the JuceBrowserPlugin_Desc macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_Desc macro before including juce_browser_plugin.h!"
 #endif
 
 
@@ -72,7 +72,7 @@
     The same version number must also be provided in the JuceBrowserPlugin_WinVersion setting.
 */
 #ifndef JuceBrowserPlugin_Version
- #error "You must define the JuceBrowserPlugin_Version macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_Version macro before including juce_browser_plugin.h!"
 #endif
 
 /** JuceBrowserPlugin_Desc
@@ -80,7 +80,7 @@
     It must be the same number as the JuceBrowserPlugin_Version setting.
 */
 #ifndef JuceBrowserPlugin_WinVersion
- #error "You must define the JuceBrowserPlugin_WinVersion macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_WinVersion macro before including juce_browser_plugin.h!"
 #endif
 
 //==============================================================================
@@ -92,7 +92,7 @@
     but JuceBrowserPlugin_MimeType_Raw must have no quotes, whereas JuceBrowserPlugin_MimeType must be quoted.
 */
 #ifndef JuceBrowserPlugin_MimeType_Raw
- #error "You must define the JuceBrowserPlugin_MimeType_Raw macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_MimeType_Raw macro before including juce_browser_plugin.h!"
 #endif
 
 /** JuceBrowserPlugin_MimeType
@@ -103,7 +103,7 @@
     but JuceBrowserPlugin_MimeType_Raw must have no quotes, whereas JuceBrowserPlugin_MimeType must be quoted.
 */
 #ifndef JuceBrowserPlugin_MimeType
- #error "You must define the JuceBrowserPlugin_MimeType macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_MimeType macro before including juce_browser_plugin.h!"
 #endif
 
 //==============================================================================
@@ -113,7 +113,7 @@
     must be quoted.
 */
 #ifndef JuceBrowserPlugin_FileSuffix
- #error "You must define the JuceBrowserPlugin_FileSuffix macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_FileSuffix macro before including juce_browser_plugin.h!"
 #endif
 
 /** JuceBrowserPlugin_ActiveXCLSID
@@ -122,14 +122,14 @@
     string, e.g. "F683B990-3ADF-11DE-BDFE-F9CB55D89593".
 */
 #if JUCE_BUILD_ACTIVEX && ! defined (JuceBrowserPlugin_ActiveXCLSID)
- #error "You must define the JuceBrowserPlugin_ActiveXCLSID macro before including juce_browser_plugin.h!"
+#error "You must define the JuceBrowserPlugin_ActiveXCLSID macro before including juce_browser_plugin.h!"
 #endif
 
 
 //=============================================================================
 namespace juce
 {
-    #include "wrapper/juce_BrowserPluginComponent.h"
+#include "wrapper/juce_BrowserPluginComponent.h"
 }
 
 //==============================================================================

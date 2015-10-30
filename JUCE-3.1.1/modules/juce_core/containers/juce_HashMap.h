@@ -39,13 +39,21 @@
 struct DefaultHashFunctions
 {
     /** Generates a simple hash from an integer. */
-    int generateHash (const int key, const int upperLimit) const noexcept        { return std::abs (key) % upperLimit; }
+    int generateHash (const int key, const int upperLimit) const noexcept        {
+        return std::abs (key) % upperLimit;
+    }
     /** Generates a simple hash from an int64. */
-    int generateHash (const int64 key, const int upperLimit) const noexcept      { return std::abs ((int) key) % upperLimit; }
+    int generateHash (const int64 key, const int upperLimit) const noexcept      {
+        return std::abs ((int) key) % upperLimit;
+    }
     /** Generates a simple hash from a string. */
-    int generateHash (const String& key, const int upperLimit) const noexcept    { return (int) (((uint32) key.hashCode()) % (uint32) upperLimit); }
+    int generateHash (const String& key, const int upperLimit) const noexcept    {
+        return (int) (((uint32) key.hashCode()) % (uint32) upperLimit);
+    }
     /** Generates a simple hash from a variant. */
-    int generateHash (const var& key, const int upperLimit) const noexcept       { return generateHash (key.toString(), upperLimit); }
+    int generateHash (const var& key, const int upperLimit) const noexcept       {
+        return generateHash (key.toString(), upperLimit);
+    }
 };
 
 
@@ -92,9 +100,9 @@ struct DefaultHashFunctions
     @see CriticalSection, DefaultHashFunctions, NamedValueSet, SortedSet
 */
 template <typename KeyType,
-          typename ValueType,
-          class HashFunctionType = DefaultHashFunctions,
-          class TypeOfCriticalSectionToUse = DummyCriticalSection>
+         typename ValueType,
+         class HashFunctionType = DefaultHashFunctions,
+         class TypeOfCriticalSectionToUse = DummyCriticalSection>
 class HashMap
 {
 private:
@@ -115,7 +123,7 @@ public:
     */
     explicit HashMap (int numberOfSlots = defaultHashTableSize,
                       HashFunctionType hashFunction = HashFunctionType())
-       : hashFunctionToUse (hashFunction), totalNumItems (0)
+        : hashFunctionToUse (hashFunction), totalNumItems (0)
     {
         hashSlots.insertMultiple (0, nullptr, numberOfSlots);
     }
@@ -333,7 +341,9 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return lock; }
+    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      {
+        return lock;
+    }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;

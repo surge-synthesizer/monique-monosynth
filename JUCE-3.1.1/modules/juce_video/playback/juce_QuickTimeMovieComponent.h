@@ -28,11 +28,11 @@
 // (NB: This stuff mustn't go inside the "#if QUICKTIME" block, or it'll break the
 // amalgamated build)
 #ifndef DOXYGEN
- #if JUCE_WINDOWS
-  typedef ActiveXControlComponent QTCompBaseClass;
- #elif JUCE_MAC
-  typedef NSViewComponent QTCompBaseClass;
- #endif
+#if JUCE_WINDOWS
+typedef ActiveXControlComponent QTCompBaseClass;
+#elif JUCE_MAC
+typedef NSViewComponent QTCompBaseClass;
+#endif
 #endif
 
 #if JUCE_QUICKTIME || DOXYGEN
@@ -200,7 +200,7 @@ private:
     File movieFile;
     bool movieLoaded, controllerVisible, looping;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     void parentHierarchyChanged() override;
     void visibilityChanged() override;
     void createControlIfNeeded();
@@ -209,9 +209,9 @@ private:
     class Pimpl;
     friend struct ContainerDeletePolicy<Pimpl>;
     ScopedPointer<Pimpl> pimpl;
-   #else
+#else
     void* movie;
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QuickTimeMovieComponent)
 };

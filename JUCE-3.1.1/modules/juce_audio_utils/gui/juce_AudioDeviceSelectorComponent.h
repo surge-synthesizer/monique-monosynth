@@ -36,8 +36,8 @@
     @see AudioDeviceManager
 */
 class JUCE_API  AudioDeviceSelectorComponent  : public Component,
-                                                private ComboBoxListener, // (can't use ComboBox::Listener due to idiotic VC2005 bug)
-                                                private ChangeListener
+    private ComboBoxListener, // (can't use ComboBox::Listener due to idiotic VC2005 bug)
+    private ChangeListener
 {
 public:
     //==============================================================================
@@ -79,7 +79,9 @@ public:
     void setItemHeight (int itemHeight);
 
     /** Returns the standard height used for items in the panel. */
-    int getItemHeight() const noexcept      { return itemHeight; }
+    int getItemHeight() const noexcept      {
+        return itemHeight;
+    }
 
     //==============================================================================
     /** @internal */

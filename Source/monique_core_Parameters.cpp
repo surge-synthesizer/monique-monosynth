@@ -64,6 +64,7 @@ COLD ParameterInfo::~ParameterInfo() noexcept {}
 //==============================================================================
 COLD ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
 :
+my_smoother(nullptr),
 current_modulation_amount(0),
 timeChanger(nullptr)
 {}

@@ -60,7 +60,9 @@ public:
 
         E.g. "AIFF"
     */
-    const String& getFormatName() const noexcept    { return formatName; }
+    const String& getFormatName() const noexcept    {
+        return formatName;
+    }
 
     //==============================================================================
     /** Reads samples from the stream.
@@ -274,8 +276,8 @@ protected:
         beyond the end of their available length.
     */
     static void clearSamplesBeyondAvailableLength (int** destSamples, int numDestChannels,
-                                                   int startOffsetInDestBuffer, int64 startSampleInFile,
-                                                   int& numSamples, int64 fileLengthInSamples)
+            int startOffsetInDestBuffer, int64 startSampleInFile,
+            int& numSamples, int64 fileLengthInSamples)
     {
         jassert (destSamples != nullptr);
         const int64 samplesAvailable = fileLengthInSamples - startSampleInFile;

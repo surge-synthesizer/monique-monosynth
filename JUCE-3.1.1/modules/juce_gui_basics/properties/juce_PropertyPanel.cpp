@@ -105,9 +105,9 @@ public:
     void mouseUp (const MouseEvent& e) override
     {
         if (e.getMouseDownX() < titleHeight
-             && e.x < titleHeight
-             && e.y < titleHeight
-             && e.getNumberOfClicks() != 2)
+                && e.x < titleHeight
+                && e.y < titleHeight
+                && e.getNumberOfClicks() != 2)
         {
             setOpen (! isOpen());
         }
@@ -168,8 +168,12 @@ public:
         addAndMakeVisible (newSection, 0);
     }
 
-    int getNumSections() const noexcept                     { return sections.size(); }
-    SectionComponent* getSection (const int index) const    { return sections [index]; }
+    int getNumSections() const noexcept                     {
+        return sections.size();
+    }
+    SectionComponent* getSection (const int index) const    {
+        return sections [index];
+    }
 
 private:
     OwnedArray<SectionComponent> sections;

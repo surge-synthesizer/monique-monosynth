@@ -147,7 +147,7 @@ public:
 
     /** Returns a copy of this transform with the specified translation matrix values. */
     AffineTransform withAbsoluteTranslation (float translationX,
-                                             float translationY) const noexcept;
+            float translationY) const noexcept;
 
     /** Returns a transform which is the same as this one followed by a rotation.
 
@@ -228,13 +228,13 @@ public:
         (1, 0) to (x10, y10), and (0, 1) to (x01, y01).
     */
     static AffineTransform fromTargetPoints (float x00, float y00,
-                                             float x10, float y10,
-                                             float x01, float y01) noexcept;
+            float x10, float y10,
+            float x01, float y01) noexcept;
 
     /** Returns the transform that will map three specified points onto three target points. */
     static AffineTransform fromTargetPoints (float sourceX1, float sourceY1, float targetX1, float targetY1,
-                                             float sourceX2, float sourceY2, float targetX2, float targetY2,
-                                             float sourceX3, float sourceY3, float targetX3, float targetY3) noexcept;
+            float sourceX2, float sourceY2, float targetX2, float targetY2,
+            float sourceX3, float sourceY3, float targetX3, float targetY3) noexcept;
 
     //==============================================================================
     /** Returns the result of concatenating another transformation after this one. */
@@ -253,12 +253,16 @@ public:
     /** If this transform is only a translation, this returns the X offset.
         @see isOnlyTranslation
     */
-    float getTranslationX() const noexcept                  { return mat02; }
+    float getTranslationX() const noexcept                  {
+        return mat02;
+    }
 
     /** If this transform is only a translation, this returns the X offset.
         @see isOnlyTranslation
     */
-    float getTranslationY() const noexcept                  { return mat12; }
+    float getTranslationY() const noexcept                  {
+        return mat12;
+    }
 
     /** Returns the approximate scale factor by which lengths will be transformed.
         Obviously a length may be scaled by entirely different amounts depending on its

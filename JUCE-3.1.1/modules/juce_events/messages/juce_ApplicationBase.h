@@ -232,7 +232,9 @@ public:
     /** Returns the value that has been set as the application's exit code.
         @see setApplicationReturnValue
     */
-    int getApplicationReturnValue() const noexcept              { return appReturnValue; }
+    int getApplicationReturnValue() const noexcept              {
+        return appReturnValue;
+    }
 
     //==============================================================================
     /** Returns true if this executable is running as an app (as opposed to being a plugin
@@ -245,11 +247,13 @@ public:
         This is handy for things like splash screens to know when the app's up-and-running
         properly.
     */
-    bool isInitialising() const noexcept                        { return stillInitialising; }
+    bool isInitialising() const noexcept                        {
+        return stillInitialising;
+    }
 
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     // The following methods are for internal use only...
     static int main();
     static int main (int argc, const char* argv[]);
@@ -261,7 +265,7 @@ public:
     virtual bool initialiseApp();
     static void JUCE_CALLTYPE sendUnhandledException (const std::exception*, const char* sourceFile, int lineNumber);
     bool sendCommandLineToPreexistingInstance();
-   #endif
+#endif
 
 private:
     //==============================================================================

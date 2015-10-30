@@ -102,8 +102,8 @@ public:
         g.setOpacity (1.0f);
         g.drawImageTransformed (colours,
                                 RectanglePlacement (RectanglePlacement::stretchToFit)
-                                    .getTransformToFit (colours.getBounds().toFloat(),
-                                                        getLocalBounds().reduced (edge).toFloat()),
+                                .getTransformToFit (colours.getBounds().toFloat(),
+                                        getLocalBounds().reduced (edge).toFloat()),
                                 false);
     }
 
@@ -418,7 +418,7 @@ void ColourSelector::update()
 
 //==============================================================================
 void ColourSelector::paint (Graphics& g)
-{ 
+{
     g.fillAll (Colour (0xff050505));
 
     if ((flags & showColourAtTop) != 0)

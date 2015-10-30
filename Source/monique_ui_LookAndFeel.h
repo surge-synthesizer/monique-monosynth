@@ -34,52 +34,226 @@
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct ComponentColours 
+
+#define VAR_INDEX_COLOUR_THEME "0"
+#define VAR_INDEX_SLIDER_TYPE "1"
+#define VAR_INDEX_OVERRIDE_BUTTON_COLOUR "2"
+#define VAR_INDEX_COLOUR_THEME_INVERTED "3"
+#define VAR_INDEX_SLIDER_LABEL_STYLE "4"
+
+enum COLOUR_THEMES
 {
-    Colour slider_track_colour;
-    Colour slider_track_colour_2;
-    Colour slider_track_colour_modulation;
+    OSC_THEME,
+    FM_THEME,
+    FILTER_THEME,
+    FX_THEME,
+    MASTER_THEME,
+    ARP_THEME,
+    MORPH_THEME,
+    BG_THEME,
+    DUMMY_THEME,
+    //OSZI_THEME,
+    //SETUP_THEME,
+    //MIDI_THEME,
+    //TOP_THEME,
+
+    SUM_OF
+};
+enum COLOUR_CODES
+{
+    AREA_COLOUR,
+    AREA_FONT_COLOUR,
+    VALUE_SLIDER_COLOUR,
+    VALUE_SLIDER_2_COLOUR,
+    MOD_SLIDER_COLOUR,
+    DISABLED_SLIDER_COLOUR,
+    SLIDER_BACKGROUND_COLOUR,
+    BUTTON_ON_COLOUR,
+    BUTTON_ON_FONT_COLOUR,
+    BUTTON_OFF_COLOUR,
+    BUTTON_OFF_FONT_COLOUR,
+};
+#define TOP_THEME ARP_THEME
+#define OSZI_THEME ARP_THEME
+#define SETUP_THEME ARP_THEME
+#define MIDI_THEME ARP_THEME
+#define POPUP_THEME ARP_THEME
+#define KEYBOARD_THEME ARP_THEME
+#define MORPH_EDITOR_THEME MORPH_THEME
+
+enum SLIDER_STYLES
+{
+    VALUE_SLIDER,
+    VALUE_SLIDER_WITHOUT_BACK_SLIDER,
+    VALUE_SLIDER_2,
+    MODULATION_SLIDER
+};
+enum SLIDER_LABEL_STYLES
+{
+    DONT_SHOW_TEXT,
+    SHOW_MIDDLE_TEXT_BOX,
+    JUST_HIDE_CENTER
+};
+
+struct SectionTheme
+{
+    const COLOUR_THEMES id;
+
+    Colour area_colour;
+    Colour area_font_colour;
+
+    Colour value_slider_track_colour;
+    Colour value_2_slider_track_colour;
+    Colour mod_slider_track_colour;
+    Colour disabled_track_colour;
+    Colour slider_bg_colour;
+
+    Colour button_on_font_colour;
     Colour button_on_colour;
+    Colour button_off_font_colour;
     Colour button_off_colour;
-    Colour label_text_colour;
+
+    Colour& get_color( COLOUR_CODES code_ ) noexcept
+    {
+        switch( code_ )
+        {
+        case COLOUR_CODES::AREA_COLOUR :
+            return area_colour;
+        case COLOUR_CODES::AREA_FONT_COLOUR :
+            return area_font_colour;
+        case COLOUR_CODES::VALUE_SLIDER_COLOUR :
+            return value_slider_track_colour;
+        case COLOUR_CODES::VALUE_SLIDER_2_COLOUR :
+            return value_2_slider_track_colour;
+        case COLOUR_CODES::MOD_SLIDER_COLOUR :
+            return mod_slider_track_colour;
+        case COLOUR_CODES::DISABLED_SLIDER_COLOUR :
+            return disabled_track_colour;
+        case COLOUR_CODES::SLIDER_BACKGROUND_COLOUR :
+            return slider_bg_colour;
+        case COLOUR_CODES::BUTTON_ON_COLOUR :
+            return button_on_colour;
+        case COLOUR_CODES::BUTTON_ON_FONT_COLOUR :
+            return button_on_font_colour;
+        case COLOUR_CODES::BUTTON_OFF_COLOUR :
+            return button_off_colour;
+        case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
+            return button_off_font_colour;
+        }
+    }
+    /*
+    const Colour& get_color( COLOUR_CODES code_ ) const noexcept
+    {
+        switch( code_ )
+        {
+        case COLOUR_CODES::AREA_COLOUR :
+            return area_colour;
+        case COLOUR_CODES::AREA_FONT_COLOUR :
+            return area_font_colour;
+        case COLOUR_CODES::VALUE_SLIDER_COLOUR :
+            return value_slider_track_colour;
+        case COLOUR_CODES::VALUE_SLIDER_2_COLOUR :
+            return value_2_slider_track_colour;
+        case COLOUR_CODES::MOD_SLIDER_COLOUR :
+            return mod_slider_track_colour;
+        case COLOUR_CODES::DISABLED_SLIDER_COLOUR :
+            return disabled_track_colour;
+        case COLOUR_CODES::SLIDER_BACKGROUND_COLOUR :
+            return slider_bg_colour;
+        case COLOUR_CODES::BUTTON_ON_COLOUR :
+            return button_on_font_colour;
+        case COLOUR_CODES::BUTTON_ON_FONT_COLOUR :
+            return button_on_colour;
+        case COLOUR_CODES::BUTTON_OFF_COLOUR :
+            return button_off_font_colour;
+        case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
+            return button_off_colour;
+        }
+    }
+    */
+
+    SectionTheme(COLOUR_THEMES id_)
+        : id( id_ ),
+
+          area_colour( 0xff333333 ),
+          area_font_colour( 0xffffffff ),
+
+          value_slider_track_colour( 0xffffffff ),
+          value_2_slider_track_colour( 0xffdddddd ),
+          mod_slider_track_colour( 0xffaaaaaa ),
+          disabled_track_colour( 0xff555555 ),
+          slider_bg_colour( 0xff050505 ),
+
+          button_on_font_colour( 0xff050505 ),
+          button_on_colour( 0xffffffff ),
+          button_off_font_colour( 0xffffffff ),
+          button_off_colour( 0xff050505 )
+    {
+    }
+};
+
+struct ComponentColours
+{
+    OwnedArray<SectionTheme> themes;
+
+    void init_themes() noexcept
+    {
+        //themes.add( new SectionTheme( TOP_THEME ) );
+        themes.add( new SectionTheme( OSC_THEME ) );
+        themes.add( new SectionTheme( FM_THEME ) );
+        themes.add( new SectionTheme( FILTER_THEME ) );
+        themes.add( new SectionTheme( FX_THEME ) );
+        themes.add( new SectionTheme( MASTER_THEME ) );
+        themes.add( new SectionTheme( ARP_THEME ) );
+        //themes.add( new SectionTheme( OSZI_THEME ) );
+        //themes.add( new SectionTheme( SETUP_THEME ) );
+        //themes.add( new SectionTheme( MIDI_THEME ) );
+        themes.add( new SectionTheme( MORPH_THEME ) );
+        themes.add( new SectionTheme( BG_THEME ) );
+	
+	SectionTheme*theme = new SectionTheme(DUMMY_THEME);
+	theme->area_colour = Colours::magenta;
+	theme->area_font_colour = Colours::magenta;
+	theme->value_slider_track_colour = Colours::magenta;
+	theme->value_2_slider_track_colour = Colours::magenta;
+	theme->mod_slider_track_colour = Colours::magenta;
+	theme->disabled_track_colour = Colours::magenta;
+	theme->slider_bg_colour = Colours::magenta;
+	theme->button_on_font_colour = Colours::magenta;
+	theme->button_on_colour = Colours::magenta;
+	theme->button_off_font_colour = Colours::magenta;
+	theme->button_off_colour = Colours::magenta;
+        themes.add( theme );
+    }
+    const SectionTheme& get_theme(COLOUR_THEMES id_) const noexcept
+    {
+        return *themes.getUnchecked( static_cast<int>(id_) );
+    }
+    SectionTheme& get_theme(COLOUR_THEMES id_) noexcept
+    {
+        return *themes.getUnchecked( static_cast<int>(id_) );
+    }
+
     Colour midi_learn;
-    Colour bg;
-    Colour bg_lines;
-    Colour signal_lines;
 
     COLD ComponentColours() noexcept;
     COLD ~ComponentColours() noexcept;
 
     COLD void read_from( XmlElement*xml_ ) noexcept;
     COLD void save_to( XmlElement*xml_ ) noexcept;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ComponentColours )
 };
 
 //==============================================================================
 // HACK 's
-enum MODULATION_SLIDER_STYLE 
+enum MODULATION_SLIDER_STYLE
 {
     MODULATION_SLIDER_IS_FIXED_CENTERED,
     MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO,
     MODULATION_SLIDER_MOVES_WITH_MASTER,
 };
 
-enum SLIDER_STYLES 
-{
-    VALUE_SLIDER,
-    MODULATION_SLIDER,
-    FIRST_MODULATION_BUT_HAS_SECOND_MODULATION,
-    VALUE_SLIDER_2,
-
-    UNDEFINED_SLIDER_STYLE
-};
-enum SLIDER_LABEL_STYLES 
-{
-    DONT_SHOW_TEXT = 0,
-    SHOW_MIDDLE_TEXT_BOX = 1,
-    JUST_HIDE_CENTER
-};
 
 #define IS_VALUE_LABEL "VL"
 #define IS_SECOND_VALUE_LABEL "SVL"
@@ -87,10 +261,6 @@ enum SLIDER_LABEL_STYLES
 
 #define GET_VALUE_TO_PAINT getName
 #define SET_VALUE_TO_PAINT setName
-#define SET_SLIDER_LABEL_STYLE(s,type) s->setTextBoxStyle(Slider::NoTextBox,true,s->getTextBoxWidth(),type)
-#define GET_SLIDER_LABEL_STYLE getTextBoxHeight
-#define GET_SLIDER_STYLE getTextBoxWidth
-#define SET_SLIDER_STYLE(s,type) s->setTextBoxStyle(Slider::NoTextBox,true,type,s->getTextBoxHeight())
 
 #define GET_LABEL_STYLE getName
 #define SET_LABEL_STYLE setName
@@ -98,7 +268,7 @@ enum SLIDER_LABEL_STYLES
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class UiLookAndFeel  : public LookAndFeel_V2 
+class UiLookAndFeel  : public LookAndFeel_V2
 {
 public:
     ComponentColours colours;

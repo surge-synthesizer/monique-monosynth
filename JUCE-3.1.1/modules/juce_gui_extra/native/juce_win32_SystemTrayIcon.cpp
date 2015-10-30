@@ -26,7 +26,7 @@ extern void* getUser32Function (const char*);
 
 namespace IconConverters
 {
-    extern HICON createHICONFromImage (const Image&, BOOL isIcon, int hotspotX, int hotspotY);
+extern HICON createHICONFromImage (const Image&, BOOL isIcon, int hotspotX, int hotspotY);
 }
 
 //==============================================================================
@@ -91,7 +91,7 @@ public:
         if (owner.isCurrentlyBlockedByAnotherModalComponent())
         {
             if (lParam == WM_LBUTTONDOWN || lParam == WM_RBUTTONDOWN
-                 || lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONDBLCLK)
+                    || lParam == WM_LBUTTONDBLCLK || lParam == WM_LBUTTONDBLCLK)
             {
                 if (Component* const current = Component::getCurrentlyModalComponent())
                     current->inputAttemptWhenModal();
@@ -151,7 +151,7 @@ public:
             return p->windowProc  (hwnd, message, wParam, lParam);
 
         return DefWindowProcW (hwnd, message, wParam, lParam);
-   }
+    }
 
     LRESULT windowProc (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     {

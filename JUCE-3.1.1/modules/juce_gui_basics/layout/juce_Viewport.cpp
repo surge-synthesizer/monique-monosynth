@@ -23,17 +23,17 @@
 */
 
 Viewport::Viewport (const String& name)
-  : Component (name),
-    scrollBarThickness (0),
-    singleStepX (16),
-    singleStepY (16),
-    showHScrollbar (true),
-    showVScrollbar (true),
-    deleteContent (true),
-    allowScrollingWithoutScrollbarV (false),
-    allowScrollingWithoutScrollbarH (false),
-    verticalScrollBar (true),
-    horizontalScrollBar (false)
+    : Component (name),
+      scrollBarThickness (0),
+      singleStepX (16),
+      singleStepY (16),
+      showHScrollbar (true),
+      showVScrollbar (true),
+      deleteContent (true),
+      allowScrollingWithoutScrollbarV (false),
+      allowScrollingWithoutScrollbarH (false),
+      verticalScrollBar (true),
+      horizontalScrollBar (false)
 {
     // content holder is used to clip the contents so they don't overlap the scrollbars
     addAndMakeVisible (contentHolder);
@@ -97,8 +97,12 @@ void Viewport::setViewedComponent (Component* const newViewedComponent, const bo
     }
 }
 
-int Viewport::getMaximumVisibleWidth() const    { return contentHolder.getWidth(); }
-int Viewport::getMaximumVisibleHeight() const   { return contentHolder.getHeight(); }
+int Viewport::getMaximumVisibleWidth() const    {
+    return contentHolder.getWidth();
+}
+int Viewport::getMaximumVisibleHeight() const   {
+    return contentHolder.getHeight();
+}
 
 Point<int> Viewport::viewportPosToCompPos (Point<int> pos) const
 {
@@ -304,7 +308,7 @@ void Viewport::setScrollBarsShown (const bool showVerticalScrollbarIfNeeded,
     allowScrollingWithoutScrollbarH = allowHorizontalScrollingWithoutScrollbar;
 
     if (showVScrollbar != showVerticalScrollbarIfNeeded
-         || showHScrollbar != showHorizontalScrollbarIfNeeded)
+            || showHScrollbar != showHorizontalScrollbarIfNeeded)
     {
         showVScrollbar = showVerticalScrollbarIfNeeded;
         showHScrollbar = showHorizontalScrollbarIfNeeded;
@@ -324,7 +328,7 @@ void Viewport::setScrollBarThickness (const int thickness)
 int Viewport::getScrollBarThickness() const
 {
     return scrollBarThickness > 0 ? scrollBarThickness
-                                  : getLookAndFeel().getDefaultScrollbarWidth();
+           : getLookAndFeel().getDefaultScrollbarWidth();
 }
 
 void Viewport::scrollBarMoved (ScrollBar* scrollBarThatHasMoved, double newRangeStart)
@@ -355,7 +359,7 @@ static int rescaleMouseWheelDistance (float distance, int singleStepSize) noexce
     distance *= 14.0f * singleStepSize;
 
     return roundToInt (distance < 0 ? jmin (distance, -1.0f)
-                                    : jmax (distance,  1.0f));
+    : jmax (distance,  1.0f));
 }
 
 // This puts a temporary component overlay over the content component, to prevent
@@ -429,17 +433,17 @@ bool Viewport::useMouseWheelMoveIfNeeded (const MouseEvent& e, const MouseWheelD
 static bool isUpDownKeyPress (const KeyPress& key)
 {
     return key == KeyPress::upKey
-        || key == KeyPress::downKey
-        || key == KeyPress::pageUpKey
-        || key == KeyPress::pageDownKey
-        || key == KeyPress::homeKey
-        || key == KeyPress::endKey;
+           || key == KeyPress::downKey
+           || key == KeyPress::pageUpKey
+           || key == KeyPress::pageDownKey
+           || key == KeyPress::homeKey
+           || key == KeyPress::endKey;
 }
 
 static bool isLeftRightKeyPress (const KeyPress& key)
 {
     return key == KeyPress::leftKey
-        || key == KeyPress::rightKey;
+           || key == KeyPress::rightKey;
 }
 
 bool Viewport::keyPressed (const KeyPress& key)

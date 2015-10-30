@@ -21,9 +21,9 @@
 #include "../../codec.h"
 
 typedef struct {
-  int n;
-  float *trigcache;
-  int *splitcache;
+    int n;
+    float *trigcache;
+    int *splitcache;
 } drft_lookup;
 
 extern void drft_forward(drft_lookup *l,float *data);

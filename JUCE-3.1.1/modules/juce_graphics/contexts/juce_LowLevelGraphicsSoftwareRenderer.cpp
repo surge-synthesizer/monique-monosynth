@@ -24,14 +24,14 @@
 
 LowLevelGraphicsSoftwareRenderer::LowLevelGraphicsSoftwareRenderer (const Image& image)
     : RenderingHelpers::StackBasedLowLevelGraphicsContext<RenderingHelpers::SoftwareRendererSavedState>
-        (new RenderingHelpers::SoftwareRendererSavedState (image, image.getBounds()))
+    (new RenderingHelpers::SoftwareRendererSavedState (image, image.getBounds()))
 {
 }
 
 LowLevelGraphicsSoftwareRenderer::LowLevelGraphicsSoftwareRenderer (const Image& image, Point<int> origin,
-                                                                    const RectangleList<int>& initialClip)
+        const RectangleList<int>& initialClip)
     : RenderingHelpers::StackBasedLowLevelGraphicsContext<RenderingHelpers::SoftwareRendererSavedState>
-        (new RenderingHelpers::SoftwareRendererSavedState (image, initialClip, origin))
+    (new RenderingHelpers::SoftwareRendererSavedState (image, initialClip, origin))
 {
 }
 

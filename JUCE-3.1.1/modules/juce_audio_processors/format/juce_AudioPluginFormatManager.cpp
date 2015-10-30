@@ -28,43 +28,43 @@ AudioPluginFormatManager::~AudioPluginFormatManager() {}
 //==============================================================================
 void AudioPluginFormatManager::addDefaultFormats()
 {
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     // you should only call this method once!
     for (int i = formats.size(); --i >= 0;)
     {
-       #if JUCE_PLUGINHOST_VST
+#if JUCE_PLUGINHOST_VST
         jassert (dynamic_cast <VSTPluginFormat*> (formats[i]) == nullptr);
-       #endif
+#endif
 
-       #if JUCE_PLUGINHOST_VST3
+#if JUCE_PLUGINHOST_VST3
         jassert (dynamic_cast <VST3PluginFormat*> (formats[i]) == nullptr);
-       #endif
+#endif
 
-       #if JUCE_PLUGINHOST_AU && JUCE_MAC
+#if JUCE_PLUGINHOST_AU && JUCE_MAC
         jassert (dynamic_cast <AudioUnitPluginFormat*> (formats[i]) == nullptr);
-       #endif
+#endif
 
-       #if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
+#if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
         jassert (dynamic_cast <LADSPAPluginFormat*> (formats[i]) == nullptr);
-       #endif
+#endif
     }
-   #endif
+#endif
 
-   #if JUCE_PLUGINHOST_AU && JUCE_MAC
+#if JUCE_PLUGINHOST_AU && JUCE_MAC
     formats.add (new AudioUnitPluginFormat());
-   #endif
+#endif
 
-   #if JUCE_PLUGINHOST_VST
+#if JUCE_PLUGINHOST_VST
     formats.add (new VSTPluginFormat());
-   #endif
+#endif
 
-   #if JUCE_PLUGINHOST_VST3
+#if JUCE_PLUGINHOST_VST3
     formats.add (new VST3PluginFormat());
-   #endif
+#endif
 
-   #if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
+#if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
     formats.add (new LADSPAPluginFormat());
-   #endif
+#endif
 }
 
 int AudioPluginFormatManager::getNumFormats()
@@ -83,14 +83,14 @@ void AudioPluginFormatManager::addFormat (AudioPluginFormat* const format)
 }
 
 AudioPluginInstance* AudioPluginFormatManager::createPluginInstance (const PluginDescription& description, double rate,
-                                                                     int blockSize, String& errorMessage) const
+        int blockSize, String& errorMessage) const
 {
     for (int i = 0; i < formats.size(); ++i)
         if (AudioPluginInstance* result = formats.getUnchecked(i)->createInstanceFromDescription (description, rate, blockSize))
             return result;
 
     errorMessage = doesPluginStillExist (description) ? TRANS ("This plug-in failed to load correctly")
-                                                      : TRANS ("This plug-in file no longer exists");
+                   : TRANS ("This plug-in file no longer exists");
     return nullptr;
 }
 

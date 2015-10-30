@@ -27,24 +27,24 @@
 */
 
 MemoryOutputStream::MemoryOutputStream (const size_t initialSize)
-  : blockToUse (&internalBlock), externalData (nullptr),
-    position (0), size (0), availableSize (0)
+    : blockToUse (&internalBlock), externalData (nullptr),
+      position (0), size (0), availableSize (0)
 {
     internalBlock.setSize (initialSize, false);
 }
 
 MemoryOutputStream::MemoryOutputStream (MemoryBlock& memoryBlockToWriteTo,
                                         const bool appendToExistingBlockContent)
-  : blockToUse (&memoryBlockToWriteTo), externalData (nullptr),
-    position (0), size (0), availableSize (0)
+    : blockToUse (&memoryBlockToWriteTo), externalData (nullptr),
+      position (0), size (0), availableSize (0)
 {
     if (appendToExistingBlockContent)
         position = size = memoryBlockToWriteTo.getSize();
 }
 
 MemoryOutputStream::MemoryOutputStream (void* destBuffer, size_t destBufferSize)
-  : blockToUse (nullptr), externalData (destBuffer),
-    position (0), size (0), availableSize (destBufferSize)
+    : blockToUse (nullptr), externalData (destBuffer),
+      position (0), size (0), availableSize (destBufferSize)
 {
     jassert (externalData != nullptr); // This must be a valid pointer.
 }

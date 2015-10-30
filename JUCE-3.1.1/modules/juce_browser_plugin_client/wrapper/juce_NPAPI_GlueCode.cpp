@@ -30,54 +30,58 @@
 */
 //==============================================================================
 #if defined (__APPLE__) && ! JUCE_NPAPI_WRAPPED_IN_MM
- #error "You mustn't compile this cpp file directly - use juce_browser_plugin.cpp instead"
+#error "You mustn't compile this cpp file directly - use juce_browser_plugin.cpp instead"
 #endif
 
 #define XPCOM_GLUE
 
 //==============================================================================
 #if _MSC_VER
- // Cunning trick used to add functions to export list and avoid messing about with .def files.
- // (can't add a declspec because the functions have already been pre-declared in the npapi headers).
- #define EXPORTED_FUNCTION comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
+// Cunning trick used to add functions to export list and avoid messing about with .def files.
+// (can't add a declspec because the functions have already been pre-declared in the npapi headers).
+#define EXPORTED_FUNCTION comment(linker, "/EXPORT:" __FUNCTION__ "=" __FUNCDNAME__)
 
 //==============================================================================
 #elif defined (__APPLE__)
- #define XP_MACOSX
- #define OSCALL
- #define Point CarbonDummyPointName
- #define Component CarbonDummyCompName
- #include <WebKit/npapi.h>
- #include <WebKit/npfunctions.h>
- #include <WebKit/npruntime.h>
- #undef Point
- #undef Component
+#define XP_MACOSX
+#define OSCALL
+#define Point CarbonDummyPointName
+#define Component CarbonDummyCompName
+#include <WebKit/npapi.h>
+#include <WebKit/npfunctions.h>
+#include <WebKit/npruntime.h>
+#undef Point
+#undef Component
 
 //==============================================================================
 #else
- #define XP_UNIX
- #include "npapi.h"
- #include "npupp.h"
- #include "npruntime.h"
+#define XP_UNIX
+#include "npapi.h"
+#include "npupp.h"
+#include "npruntime.h"
 
 #endif
 
 //==============================================================================
 #if JUCE_MAC && JUCE_DEBUG && 0
- #include <fstream>
- static void log (const String& s)
- {
-     std::ofstream file ("/Users/jules/Desktop/log.txt", std::ios::out | std::ios::app);
-     file << s << std::endl;
- }
+#include <fstream>
+static void log (const String& s)
+{
+    std::ofstream file ("/Users/jules/Desktop/log.txt", std::ios::out | std::ios::app);
+    file << s << std::endl;
+}
 #else
- #define log(a)
+#define log(a)
 #endif
 
 //==============================================================================
 #if JUCE_MAC
-static String nsStringToJuce (NSString* s)          { return String::fromUTF8 ([s UTF8String]); }
-static NSString* juceStringToNS (const String& s)   { return [NSString stringWithUTF8String: s.toUTF8()]; }
+static String nsStringToJuce (NSString* s)          {
+    return String::fromUTF8 ([s UTF8String]);
+}
+static NSString* juceStringToNS (const String& s)   {
+return [NSString stringWithUTF8String: s.toUTF8()];
+}
 
 #pragma export on
 extern "C"
@@ -89,14 +93,14 @@ extern "C"
 #pragma export off
 
 #ifndef NP_CLASS_STRUCT_VERSION_ENUM   // fill in some symbols that are missing from the OSX 10.4 SDK
-  #define NPNVpluginDrawingModel 1000
-  #define NPDrawingModelCoreGraphics 1
+#define NPNVpluginDrawingModel 1000
+#define NPDrawingModelCoreGraphics 1
 
-  typedef struct NP_CGContext
-  {
+typedef struct NP_CGContext
+{
     CGContextRef context;
     WindowRef window;
-  } NP_CGContext;
+} NP_CGContext;
 #endif
 
 #endif
@@ -114,9 +118,9 @@ NPError NP_GetValue (void* future, NPPVariable variable, void* value)
 #if JUCE_WINDOWS || JUCE_MAC
 NPError OSCALL NP_GetEntryPoints (NPPluginFuncs* funcs)
 {
-   #if JUCE_WINDOWS
-    #pragma EXPORTED_FUNCTION
-   #endif
+#if JUCE_WINDOWS
+#pragma EXPORTED_FUNCTION
+#endif
 
     log ("NP_GetEntryPoints");
     if (funcs == 0 || (funcs->size > 0 && funcs->size < sizeof (NPPluginFuncs)))
@@ -131,11 +135,11 @@ NPError OSCALL NP_GetEntryPoints (NPPluginFuncs* funcs)
     funcs->destroystream = NPP_DestroyStream;
     funcs->asfile        = NPP_StreamAsFile;
     funcs->writeready    = NPP_WriteReady;
-   #if JUCE_MAC
+#if JUCE_MAC
     funcs->write         = (NPP_WriteProcPtr) NPP_Write;
-   #else
+#else
     funcs->write         = NPP_Write;
-   #endif
+#endif
     funcs->print         = NPP_Print;
     funcs->event         = NPP_HandleEvent;
     funcs->urlnotify     = NPP_URLNotify;
@@ -148,14 +152,14 @@ NPError OSCALL NP_GetEntryPoints (NPPluginFuncs* funcs)
 #endif
 
 NPError OSCALL NP_Initialize (NPNetscapeFuncs* funcs
-                              #ifdef XP_UNIX
+#ifdef XP_UNIX
                               , NPPluginFuncs* pluginFuncs
-                              #endif
-                              )
+#endif
+                             )
 {
-   #if JUCE_WINDOWS
-    #pragma EXPORTED_FUNCTION
-   #endif
+#if JUCE_WINDOWS
+#pragma EXPORTED_FUNCTION
+#endif
 
     log ("NP_Initialize");
     if (funcs == 0)
@@ -167,7 +171,7 @@ NPError OSCALL NP_Initialize (NPNetscapeFuncs* funcs
     zerostruct (browser);
     memcpy (&browser, funcs, jmin ((size_t) funcs->size, sizeof (browser)));
 
-  #ifdef XP_UNIX
+#ifdef XP_UNIX
     pluginFuncs->version            = (NP_VERSION_MAJOR << 8) + NP_VERSION_MINOR;
     pluginFuncs->size               = sizeof (NPPluginFuncs);
     pluginFuncs->newp               = NewNPP_NewProc (NPP_New);
@@ -182,19 +186,19 @@ NPError OSCALL NP_Initialize (NPNetscapeFuncs* funcs
     pluginFuncs->urlnotify          = NewNPP_URLNotifyProc (NPP_URLNotify);
     pluginFuncs->event              = 0;
     pluginFuncs->getvalue           = NewNPP_GetValueProc (NPP_GetValue);
-  #ifdef OJI
+#ifdef OJI
     pluginFuncs->javaClass          = NPP_GetJavaClass();
-  #endif
- #endif
+#endif
+#endif
 
     return NPERR_NO_ERROR;
 }
 
 NPError OSCALL NP_Shutdown()
 {
-   #if JUCE_WINDOWS
-    #pragma EXPORTED_FUNCTION
-   #endif
+#if JUCE_WINDOWS
+#pragma EXPORTED_FUNCTION
+#endif
 
     log ("NP_Shutdown");
     return NPERR_NO_ERROR;
@@ -204,8 +208,8 @@ char* NP_GetMIMEDescription()
 {
     log ("NP_GetMIMEDescription");
     static String mimeDesc (String (JuceBrowserPlugin_MimeType)
-                                + ":" + String (JuceBrowserPlugin_FileSuffix)
-                                + ":" + String (JuceBrowserPlugin_Name));
+                            + ":" + String (JuceBrowserPlugin_FileSuffix)
+                            + ":" + String (JuceBrowserPlugin_Name));
 
     return (char*) (const char*) mimeDesc.toUTF8();
 }
@@ -258,12 +262,12 @@ public:
           isFirefox4 (false)
     {
         log ("BrowserPluginHolderComponent created");
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         parentHWND = 0;
         oldWinProc = 0;
-       #else
+#else
         currentParentView = nil;
-       #endif
+#endif
 
         setOpaque (true);
         setWantsKeyboardFocus (false);
@@ -271,11 +275,11 @@ public:
         addAndMakeVisible (child = createBrowserPlugin());
         jassert (child != nullptr);   // You have to create one of these!
 
-       #if JUCE_MAC
+#if JUCE_MAC
         const String browserVersion (child->getBrowserVersion());
         isFirefox4 = browserVersion.containsIgnoreCase("firefox/")
-                        && browserVersion.fromFirstOccurrenceOf ("firefox/", false, true).getIntValue() >= 4;
-       #endif
+                     && browserVersion.fromFirstOccurrenceOf ("firefox/", false, true).getIntValue() >= 4;
+#endif
     }
 
     ~BrowserPluginHolderComponent()
@@ -341,12 +345,12 @@ private:
         switch (msg)
         {
         case WM_PAINT:
-            {
-                PAINTSTRUCT ps;
-                HDC hdc = BeginPaint (hWnd, &ps);
-                EndPaint (hWnd, &ps);
-            }
-            return 0;
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint (hWnd, &ps);
+            EndPaint (hWnd, &ps);
+        }
+        return 0;
 
         case WM_ERASEBKGND:
             return 1;
@@ -354,11 +358,11 @@ private:
         case WM_WINDOWPOSCHANGING:
         case WM_WINDOWPOSCHANGED:
             //if ((((WINDOWPOS*) lParam)->flags & SWP_NOSIZE) == 0)
-            {
-                BrowserPluginHolderComponent* const comp = (BrowserPluginHolderComponent*) GetWindowLongPtr (hWnd, GWLP_USERDATA);
-                comp->resizeToParentWindow();
-            }
-            break;
+        {
+            BrowserPluginHolderComponent* const comp = (BrowserPluginHolderComponent*) GetWindowLongPtr (hWnd, GWLP_USERDATA);
+            comp->resizeToParentWindow();
+        }
+        break;
 
         default:
             break;
@@ -422,7 +426,7 @@ public:
 
             for (int i = [[parent subviews] count]; --i >= 0;)
             {
-                NSView* v = (NSView*) [[parent subviews] objectAtIndex: i];
+NSView* v = (NSView*) [[parent subviews] objectAtIndex: i];
 
                 if (v != (NSView*) getWindowHandle() && ! [v isHidden])
                 {
@@ -443,9 +447,9 @@ public:
 public:
     static bool isBrowserContentView (NSView* v)
     {
-        return [[v className] isEqualToString: @"WebNetscapePluginDocumentView"]
-            || [[v className] isEqualToString: @"WebPluginDocumentView"]
-            || ([[v className] isEqualToString: @"ChildView"] && ([v frame].origin.x != 0 && [v frame].origin.y != 0));
+return [[v className] isEqualToString: @"WebNetscapePluginDocumentView"]
+       || [[v className] isEqualToString: @"WebPluginDocumentView"]
+       || ([[v className] isEqualToString: @"ChildView"] && ([v frame].origin.x != 0 && [v frame].origin.y != 0));
     }
 
     static bool contains (NSView* parent, NSView* child)
@@ -454,7 +458,7 @@ public:
             return true;
 
         for (int i = [[parent subviews] count]; --i >= 0;)
-            if (contains ((NSView*) [[parent subviews] objectAtIndex: i], child))
+if (contains ((NSView*) [[parent subviews] objectAtIndex: i], child))
                 return true;
 
         return false;
@@ -470,19 +474,19 @@ public:
             NP_CGContext* const cgContext = (window != nullptr) ? (NP_CGContext*) window->window : nullptr;
             log ("NP_CGContext: " + String::toHexString ((pointer_sized_int) cgContext));
 
-           #if JUCE_USE_NPAPI_CARBON_UI
+#if JUCE_USE_NPAPI_CARBON_UI
             if (WindowRef windowRef = cgContext != nullptr ? (WindowRef) cgContext->window : 0)
             {
-                NSWindow* win = [[[NSWindow alloc] initWithWindowRef: windowRef] autorelease];
-           #else
+NSWindow* win = [[[NSWindow alloc] initWithWindowRef: windowRef] autorelease];
+#else
             if (NSWindow* win = cgContext != nullptr ? (NSWindow*) cgContext->window : nil)
             {
-           #endif
+#endif
                 log ("window: " + nsStringToJuce ([win description]));
 
                 const Rectangle<int> clip (window->clipRect.left, window->clipRect.top,
-                                           window->clipRect.right - window->clipRect.left,
-                                           window->clipRect.bottom - window->clipRect.top);
+                window->clipRect.right - window->clipRect.left,
+                window->clipRect.bottom - window->clipRect.top);
                 const Rectangle<int> target ((int) window->x, (int) window->y, (int) window->width, (int) window->height);
                 const Rectangle<int> intersection (clip.getIntersection (target));
 
@@ -500,11 +504,11 @@ public:
                     float wx = (float) intersection.getCentreX();
                     float wy = (float) intersection.getCentreY();
 
-                    NSRect v = [content convertRect: [content frame] toView: nil];
+NSRect v = [content convertRect: [content frame] toView: nil];
                     NSRect w = [win frame];
 
                     log ("content: " + Rectangle<int> (v.origin.x, v.origin.y, v.size.width, v.size.height).toString()
-                         + "   frame: " + Rectangle<int> (w.origin.x, w.origin.y, w.size.width, w.size.height).toString());
+                    + "   frame: " + Rectangle<int> (w.origin.x, w.origin.y, w.size.width, w.size.height).toString());
 
                     // adjust the requested window pos to deal with the content view's origin within the window
                     wy -= w.size.height - (v.origin.y + v.size.height);
@@ -557,7 +561,7 @@ public:
 
                     {
                         NSView* contentView = [[parentView window] contentView];
-                        NSRect v = [contentView convertRect: [contentView frame] toView: nil];
+NSRect v = [contentView convertRect: [contentView frame] toView: nil];
                         NSRect w = [[parentView window] frame];
 
                         clipToTargetOffset.setX ((int) v.origin.x);
@@ -569,9 +573,9 @@ public:
 
                     NSRect parentFrame = [parentView frame];
 
-                    [(NSView*) getWindowHandle() setFrame: NSMakeRect (clip.getX() - parentFrame.origin.x,
-                                                                       clip.getY() - parentFrame.origin.y,
-                                                                       clip.getWidth(), clip.getHeight())];
+[(NSView*) getWindowHandle() setFrame: NSMakeRect (clip.getX() - parentFrame.origin.x,
+                            clip.getY() - parentFrame.origin.y,
+                            clip.getWidth(), clip.getHeight())];
                 }
                 else
                 {
@@ -593,7 +597,7 @@ static var createValueFromNPVariant (NPP npp, const NPVariant& v);
 static void createNPVariantFromValue (NPP npp, NPVariant& out, const var& v);
 
 #if JUCE_DEBUG
- static int numDOWNP = 0, numJuceWDO = 0;
+static int numDOWNP = 0, numJuceWDO = 0;
 #endif
 
 //==============================================================================
@@ -728,8 +732,12 @@ private:
 
         struct ParamHolder
         {
-            ParamHolder (uint32_t num)  { params = new var [num]; }
-            ~ParamHolder()              { delete[] params; }
+            ParamHolder (uint32_t num)  {
+                params = new var [num];
+            }
+            ~ParamHolder()              {
+                delete[] params;
+            }
 
             var* params;
         };
@@ -816,37 +824,61 @@ private:
 
 public:
     //==============================================================================
-    static NPObject* createInstance (NPP npp, NPClass* aClass)  { return new NPObjectWrappingDynamicObject (npp); }
-    static void class_deallocate (NPObject* npobj)  { delete (NPObjectWrappingDynamicObject*) npobj; }
-    static void class_invalidate (NPObject* npobj)  { ((NPObjectWrappingDynamicObject*) npobj)->invalidate(); }
-    static bool class_hasMethod (NPObject* npobj, NPIdentifier name)    { return ((NPObjectWrappingDynamicObject*) npobj)->hasMethod (name); }
-    static bool class_invoke (NPObject* npobj, NPIdentifier name, const NPVariant* args, uint32_t argCount, NPVariant* result)  { return ((NPObjectWrappingDynamicObject*) npobj)->invoke (name, args, argCount, result); }
-    static bool class_invokeDefault (NPObject* npobj, const NPVariant* args, uint32_t argCount, NPVariant* result)  { return ((NPObjectWrappingDynamicObject*) npobj)->invokeDefault (args, argCount, result); }
-    static bool class_hasProperty (NPObject* npobj, NPIdentifier name)  { return ((NPObjectWrappingDynamicObject*) npobj)->hasProperty (name); }
-    static bool class_getProperty (NPObject* npobj, NPIdentifier name, NPVariant* result)   { return ((NPObjectWrappingDynamicObject*) npobj)->getProperty (name, result); }
-    static bool class_setProperty (NPObject* npobj, NPIdentifier name, const NPVariant* value)  { return ((NPObjectWrappingDynamicObject*) npobj)->setProperty (name, value); }
-    static bool class_removeProperty (NPObject* npobj, NPIdentifier name)   { return ((NPObjectWrappingDynamicObject*) npobj)->removeProperty (name); }
-    static bool class_enumerate (NPObject* npobj, NPIdentifier** identifier, uint32_t* count) { return ((NPObjectWrappingDynamicObject*) npobj)->enumerate (identifier, count); }
-    static bool class_construct (NPObject* npobj, const NPVariant* args, uint32_t argCount, NPVariant* result)  { return ((NPObjectWrappingDynamicObject*) npobj)->construct (args, argCount, result); }
+    static NPObject* createInstance (NPP npp, NPClass* aClass)  {
+        return new NPObjectWrappingDynamicObject (npp);
+    }
+    static void class_deallocate (NPObject* npobj)  {
+        delete (NPObjectWrappingDynamicObject*) npobj;
+    }
+    static void class_invalidate (NPObject* npobj)  {
+        ((NPObjectWrappingDynamicObject*) npobj)->invalidate();
+    }
+    static bool class_hasMethod (NPObject* npobj, NPIdentifier name)    {
+        return ((NPObjectWrappingDynamicObject*) npobj)->hasMethod (name);
+    }
+    static bool class_invoke (NPObject* npobj, NPIdentifier name, const NPVariant* args, uint32_t argCount, NPVariant* result)  {
+        return ((NPObjectWrappingDynamicObject*) npobj)->invoke (name, args, argCount, result);
+    }
+    static bool class_invokeDefault (NPObject* npobj, const NPVariant* args, uint32_t argCount, NPVariant* result)  {
+        return ((NPObjectWrappingDynamicObject*) npobj)->invokeDefault (args, argCount, result);
+    }
+    static bool class_hasProperty (NPObject* npobj, NPIdentifier name)  {
+        return ((NPObjectWrappingDynamicObject*) npobj)->hasProperty (name);
+    }
+    static bool class_getProperty (NPObject* npobj, NPIdentifier name, NPVariant* result)   {
+        return ((NPObjectWrappingDynamicObject*) npobj)->getProperty (name, result);
+    }
+    static bool class_setProperty (NPObject* npobj, NPIdentifier name, const NPVariant* value)  {
+        return ((NPObjectWrappingDynamicObject*) npobj)->setProperty (name, value);
+    }
+    static bool class_removeProperty (NPObject* npobj, NPIdentifier name)   {
+        return ((NPObjectWrappingDynamicObject*) npobj)->removeProperty (name);
+    }
+    static bool class_enumerate (NPObject* npobj, NPIdentifier** identifier, uint32_t* count) {
+        return ((NPObjectWrappingDynamicObject*) npobj)->enumerate (identifier, count);
+    }
+    static bool class_construct (NPObject* npobj, const NPVariant* args, uint32_t argCount, NPVariant* result)  {
+        return ((NPObjectWrappingDynamicObject*) npobj)->construct (args, argCount, result);
+    }
 };
 
 static NPClass sNPObjectWrappingDynamicObject_NPClass =
 {
-   #ifndef NP_CLASS_STRUCT_VERSION_ENUM
+#ifndef NP_CLASS_STRUCT_VERSION_ENUM
     NP_CLASS_STRUCT_VERSION, NPObjectWrappingDynamicObject::createInstance,
     NPObjectWrappingDynamicObject::class_deallocate, NPObjectWrappingDynamicObject::class_invalidate,
     NPObjectWrappingDynamicObject::class_hasMethod, NPObjectWrappingDynamicObject::class_invoke,
     NPObjectWrappingDynamicObject::class_invokeDefault, NPObjectWrappingDynamicObject::class_hasProperty,
     NPObjectWrappingDynamicObject::class_getProperty, NPObjectWrappingDynamicObject::class_setProperty,
     NPObjectWrappingDynamicObject::class_removeProperty
-   #else
+#else
     NP_CLASS_STRUCT_VERSION_ENUM, NPObjectWrappingDynamicObject::createInstance,
     NPObjectWrappingDynamicObject::class_deallocate, NPObjectWrappingDynamicObject::class_invalidate,
     NPObjectWrappingDynamicObject::class_hasMethod, NPObjectWrappingDynamicObject::class_invoke,
     NPObjectWrappingDynamicObject::class_invokeDefault, NPObjectWrappingDynamicObject::class_hasProperty,
     NPObjectWrappingDynamicObject::class_getProperty, NPObjectWrappingDynamicObject::class_setProperty,
     NPObjectWrappingDynamicObject::class_removeProperty, NPObjectWrappingDynamicObject::class_enumerate
-   #endif
+#endif
 };
 
 bool NPObjectWrappingDynamicObject::construct (const NPVariant* args, uint32_t argCount, NPVariant* result)
@@ -885,11 +917,11 @@ static var createValueFromNPVariant (NPP npp, const NPVariant& v)
     else if (NPVARIANT_IS_STRING (v))
     {
         return var (String::fromUTF8 ((const char*)
-           #if JUCE_MAC
-            (NPVARIANT_TO_STRING (v).UTF8Characters), (int) NPVARIANT_TO_STRING (v).UTF8Length));
-           #else
-            (NPVARIANT_TO_STRING (v).utf8characters), (int) NPVARIANT_TO_STRING (v).utf8length));
-           #endif
+#if JUCE_MAC
+                                      (NPVARIANT_TO_STRING (v).UTF8Characters), (int) NPVARIANT_TO_STRING (v).UTF8Length));
+#else
+                                      (NPVARIANT_TO_STRING (v).utf8characters), (int) NPVARIANT_TO_STRING (v).utf8length));
+#endif
     }
     else if (NPVARIANT_IS_OBJECT (v) && npp != nullptr)
         return var (new DynamicObjectWrappingNPObject (npp, NPVARIANT_TO_OBJECT (v)));
@@ -989,15 +1021,15 @@ NPError NPP_New (NPMIMEType pluginType, NPP npp, ::uint16 mode, ::int16 argc, ch
     if (npp == nullptr)
         return NPERR_INVALID_INSTANCE_ERROR;
 
-  #if JUCE_MAC
+#if JUCE_MAC
     browser.setvalue (npp, (NPPVariable) NPNVpluginDrawingModel, (void*) NPDrawingModelCoreGraphics);
 
-   #if JUCE_USE_NPAPI_CARBON_UI
+#if JUCE_USE_NPAPI_CARBON_UI
     browser.setvalue (npp, (NPPVariable) 1001 /*NPPVpluginEventModel*/, 0 /*NPEventModelCarbon*/);
-   #else
+#else
     browser.setvalue (npp, (NPPVariable) 1001 /*NPPVpluginEventModel*/, (void*) 1 /*NPEventModelCocoa*/);
-   #endif
-  #endif
+#endif
+#endif
 
     if (numPluginInstances++ == 0)
     {
@@ -1051,7 +1083,7 @@ NPError NPP_SetWindow (NPP npp, NPWindow* pNPWindow)
 
     currentlyInitialisingNPP = npp;
     NPError result = p->setWindow (pNPWindow) ? NPERR_NO_ERROR
-                                              : NPERR_MODULE_LOAD_FAILED_ERROR;
+                     : NPERR_MODULE_LOAD_FAILED_ERROR;
     currentlyInitialisingNPP = nullptr;
     return result;
 }
@@ -1069,10 +1101,17 @@ NPError NPP_GetValue (NPP npp, NPPVariable variable, void* value)
 
     switch (variable)
     {
-        case NPPVpluginNameString:          *((const char**) value) = JuceBrowserPlugin_Name; break;
-        case NPPVpluginDescriptionString:   *((const char**) value) = JuceBrowserPlugin_Desc; break;
-        case NPPVpluginScriptableNPObject:  *((NPObject**) value) = p->getScriptableObject(); break;
-        default:                            return NPERR_GENERIC_ERROR;
+    case NPPVpluginNameString:
+        *((const char**) value) = JuceBrowserPlugin_Name;
+        break;
+    case NPPVpluginDescriptionString:
+        *((const char**) value) = JuceBrowserPlugin_Desc;
+        break;
+    case NPPVpluginScriptableNPObject:
+        *((NPObject**) value) = p->getScriptableObject();
+        break;
+    default:
+        return NPERR_GENERIC_ERROR;
     }
 
     return NPERR_NO_ERROR;
@@ -1190,12 +1229,12 @@ String BrowserPluginComponent::getBrowserURL() const
 {
     String result;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     result = getActiveXBrowserURL (this);
 
     if (result.isNotEmpty())
         return result;
-   #endif
+#endif
 
     // (FireFox doesn't seem happy if you call this from a background thread..)
     jassert (MessageManager::getInstance()->isThisTheMessageThread());

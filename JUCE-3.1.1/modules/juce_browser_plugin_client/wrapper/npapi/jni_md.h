@@ -138,7 +138,7 @@
 #	ifndef IS_LITTLE_ENDIAN
 #		define IS_LITTLE_ENDIAN
 #	endif
-	/*  This is the stuff inherited from JavaSoft .. */
+/*  This is the stuff inherited from JavaSoft .. */
 #	define JNIEXPORT __declspec(dllexport)
 #	define JNIIMPORT __declspec(dllimport)
 
@@ -190,7 +190,7 @@
 #		error Unsupported Mac development environment.
 #	endif
 #	define JNICALL
-	/*  This is the stuff inherited from JavaSoft .. */
+/*  This is the stuff inherited from JavaSoft .. */
 #	define JNIEXPORT
 #	define JNIIMPORT
 
@@ -200,7 +200,7 @@
 #       define JNI_PUBLIC_VAR(VarType)                  VarType
 #       define JNI_NATIVE_STUB(ResultType)              ResultType
 #	define JNICALL
-	/*  This is the stuff inherited from JavaSoft .. */
+/*  This is the stuff inherited from JavaSoft .. */
 #	define JNIEXPORT
 #	define JNIIMPORT
 #endif

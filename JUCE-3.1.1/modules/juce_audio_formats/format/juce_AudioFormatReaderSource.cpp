@@ -23,7 +23,7 @@
 */
 
 AudioFormatReaderSource::AudioFormatReaderSource (AudioFormatReader* const r,
-                                                  const bool deleteReaderWhenThisIsDeleted)
+        const bool deleteReaderWhenThisIsDeleted)
     : reader (r, deleteReaderWhenThisIsDeleted),
       nextPlayPos (0),
       looping (false)
@@ -33,14 +33,20 @@ AudioFormatReaderSource::AudioFormatReaderSource (AudioFormatReader* const r,
 
 AudioFormatReaderSource::~AudioFormatReaderSource() {}
 
-int64 AudioFormatReaderSource::getTotalLength() const                   { return reader->lengthInSamples; }
-void AudioFormatReaderSource::setNextReadPosition (int64 newPosition)   { nextPlayPos = newPosition; }
-void AudioFormatReaderSource::setLooping (bool shouldLoop)              { looping = shouldLoop; }
+int64 AudioFormatReaderSource::getTotalLength() const                   {
+    return reader->lengthInSamples;
+}
+void AudioFormatReaderSource::setNextReadPosition (int64 newPosition)   {
+    nextPlayPos = newPosition;
+}
+void AudioFormatReaderSource::setLooping (bool shouldLoop)              {
+    looping = shouldLoop;
+}
 
 int64 AudioFormatReaderSource::getNextReadPosition() const
 {
     return looping ? nextPlayPos % reader->lengthInSamples
-                   : nextPlayPos;
+           : nextPlayPos;
 }
 
 void AudioFormatReaderSource::prepareToPlay (int /*samplesPerBlockExpected*/, double /*sampleRate*/) {}

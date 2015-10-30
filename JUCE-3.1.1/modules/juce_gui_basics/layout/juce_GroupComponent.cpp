@@ -59,8 +59,12 @@ void GroupComponent::setTextLabelPosition (Justification newJustification)
 void GroupComponent::paint (Graphics& g)
 {
     getLookAndFeel().drawGroupComponentOutline (g, getWidth(), getHeight(),
-                                                text, justification, *this);
+            text, justification, *this);
 }
 
-void GroupComponent::enablementChanged()    { repaint(); }
-void GroupComponent::colourChanged()        { repaint(); }
+void GroupComponent::enablementChanged()    {
+    repaint();
+}
+void GroupComponent::colourChanged()        {
+    repaint();
+}

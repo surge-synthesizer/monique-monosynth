@@ -23,12 +23,14 @@
 */
 
 TextLayout::Glyph::Glyph (const int glyphCode_, Point<float> anchor_, float width_) noexcept
-    : glyphCode (glyphCode_), anchor (anchor_), width (width_)
+:
+glyphCode (glyphCode_), anchor (anchor_), width (width_)
 {
 }
 
 TextLayout::Glyph::Glyph (const Glyph& other) noexcept
-    : glyphCode (other.glyphCode), anchor (other.anchor), width (other.width)
+:
+glyphCode (other.glyphCode), anchor (other.anchor), width (other.width)
 {
 }
 
@@ -44,7 +46,8 @@ TextLayout::Glyph::~Glyph() noexcept {}
 
 //==============================================================================
 TextLayout::Run::Run() noexcept
-    : colour (0xff000000)
+:
+colour (0xff000000)
 {
 }
 
@@ -66,7 +69,8 @@ TextLayout::Run::~Run() noexcept {}
 
 //==============================================================================
 TextLayout::Line::Line() noexcept
-    : ascent (0.0f), descent (0.0f), leading (0.0f)
+:
+ascent (0.0f), descent (0.0f), leading (0.0f)
 {
 }
 
@@ -142,7 +146,8 @@ TextLayout::TextLayout (const TextLayout& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 TextLayout::TextLayout (TextLayout&& other) noexcept
-    : lines (static_cast <OwnedArray<Line>&&> (other.lines)),
+:
+lines (static_cast <OwnedArray<Line>&&> (other.lines)),
       width (other.width),
       justification (other.justification)
 {
@@ -214,7 +219,7 @@ void TextLayout::draw (Graphics& g, const Rectangle<float>& area) const
             {
                 const Glyph& glyph = run.glyphs.getReference (k);
                 context.drawGlyph (glyph.glyphCode, AffineTransform::translation (lineOrigin.x + glyph.anchor.x +15,
-                                                                                  lineOrigin.y + glyph.anchor.y));
+                                   lineOrigin.y + glyph.anchor.y));
             }
         }
     }
@@ -235,330 +240,333 @@ void TextLayout::createLayout (const AttributedString& text, float maxWidth)
 //==============================================================================
 namespace TextLayoutHelpers
 {
-    struct FontAndColour
+struct FontAndColour
+{
+FontAndColour (const Font* f) noexcept   :
+    font (f), colour (0xff000000) {}
+
+    const Font* font;
+    Colour colour;
+
+    bool operator!= (const FontAndColour& other) const noexcept
     {
-        FontAndColour (const Font* f) noexcept   : font (f), colour (0xff000000) {}
+        return (font != other.font && *font != *other.font) || colour != other.colour;
+    }
+};
 
-        const Font* font;
-        Colour colour;
+struct RunAttribute
+{
+    RunAttribute (const FontAndColour& fc, const Range<int> r) noexcept
+:
+    fontAndColour (fc), range (r)
+    {}
 
-        bool operator!= (const FontAndColour& other) const noexcept
+    FontAndColour fontAndColour;
+    Range<int> range;
+};
+
+struct Token
+{
+    Token (const String& t, const Font& f, Colour c, const bool whitespace)
+        : text (t), font (f), colour (c),
+          area (font.getStringWidthFloat (t), f.getHeight()),
+          isWhitespace (whitespace),
+          isNewLine (t.containsChar ('\n') || t.containsChar ('\r'))
+    {}
+
+    const String text;
+    const Font font;
+    const Colour colour;
+    Rectangle<float> area;
+    int line;
+    float lineHeight;
+    const bool isWhitespace, isNewLine;
+
+private:
+    Token& operator= (const Token&);
+};
+
+class TokenList
+{
+public:
+TokenList() noexcept  :
+    totalLines (0) {}
+
+    void createLayout (const AttributedString& text, TextLayout& layout)
+    {
+        tokens.ensureStorageAllocated (64);
+        layout.ensureStorageAllocated (totalLines);
+
+        addTextRuns (text);
+        layoutRuns (layout.getWidth());
+
+        int charPosition = 0;
+        int lineStartPosition = 0;
+        int runStartPosition = 0;
+
+        ScopedPointer<TextLayout::Line> currentLine;
+        ScopedPointer<TextLayout::Run> currentRun;
+
+        bool needToSetLineOrigin = true;
+
+        for (int i = 0; i < tokens.size(); ++i)
         {
-            return (font != other.font && *font != *other.font) || colour != other.colour;
-        }
-    };
+            const Token& t = *tokens.getUnchecked (i);
 
-    struct RunAttribute
-    {
-        RunAttribute (const FontAndColour& fc, const Range<int> r) noexcept
-            : fontAndColour (fc), range (r)
-        {}
+            Array <int> newGlyphs;
+            Array <float> xOffsets;
+            t.font.getGlyphPositions (getTrimmedEndIfNotAllWhitespace (t.text), newGlyphs, xOffsets);
 
-        FontAndColour fontAndColour;
-        Range<int> range;
-    };
+            if (currentRun == nullptr)  currentRun  = new TextLayout::Run();
+            if (currentLine == nullptr) currentLine = new TextLayout::Line();
 
-    struct Token
-    {
-        Token (const String& t, const Font& f, Colour c, const bool whitespace)
-            : text (t), font (f), colour (c),
-              area (font.getStringWidthFloat (t), f.getHeight()),
-              isWhitespace (whitespace),
-              isNewLine (t.containsChar ('\n') || t.containsChar ('\r'))
-        {}
-
-        const String text;
-        const Font font;
-        const Colour colour;
-        Rectangle<float> area;
-        int line;
-        float lineHeight;
-        const bool isWhitespace, isNewLine;
-
-    private:
-        Token& operator= (const Token&);
-    };
-
-    class TokenList
-    {
-    public:
-        TokenList() noexcept  : totalLines (0) {}
-
-        void createLayout (const AttributedString& text, TextLayout& layout)
-        {
-            tokens.ensureStorageAllocated (64);
-            layout.ensureStorageAllocated (totalLines);
-
-            addTextRuns (text);
-            layoutRuns (layout.getWidth());
-
-            int charPosition = 0;
-            int lineStartPosition = 0;
-            int runStartPosition = 0;
-
-            ScopedPointer<TextLayout::Line> currentLine;
-            ScopedPointer<TextLayout::Run> currentRun;
-
-            bool needToSetLineOrigin = true;
-
-            for (int i = 0; i < tokens.size(); ++i)
+            if (newGlyphs.size() > 0)
             {
-                const Token& t = *tokens.getUnchecked (i);
+                currentRun->glyphs.ensureStorageAllocated (currentRun->glyphs.size() + newGlyphs.size());
+                const Point<float> tokenOrigin (t.area.getPosition().translated (0, t.font.getAscent()));
 
-                Array <int> newGlyphs;
-                Array <float> xOffsets;
-                t.font.getGlyphPositions (getTrimmedEndIfNotAllWhitespace (t.text), newGlyphs, xOffsets);
-
-                if (currentRun == nullptr)  currentRun  = new TextLayout::Run();
-                if (currentLine == nullptr) currentLine = new TextLayout::Line();
-
-                if (newGlyphs.size() > 0)
+                if (needToSetLineOrigin)
                 {
-                    currentRun->glyphs.ensureStorageAllocated (currentRun->glyphs.size() + newGlyphs.size());
-                    const Point<float> tokenOrigin (t.area.getPosition().translated (0, t.font.getAscent()));
-
-                    if (needToSetLineOrigin)
-                    {
-                        needToSetLineOrigin = false;
-                        currentLine->lineOrigin = tokenOrigin;
-                    }
-
-                    const Point<float> glyphOffset (tokenOrigin - currentLine->lineOrigin);
-
-                    for (int j = 0; j < newGlyphs.size(); ++j)
-                    {
-                        const float x = xOffsets.getUnchecked (j);
-                        currentRun->glyphs.add (TextLayout::Glyph (newGlyphs.getUnchecked(j),
-                                                                   glyphOffset.translated (x, 0),
-                                                                   xOffsets.getUnchecked (j + 1) - x));
-                    }
-
-                    charPosition += newGlyphs.size();
+                    needToSetLineOrigin = false;
+                    currentLine->lineOrigin = tokenOrigin;
                 }
 
-                if (t.isWhitespace || t.isNewLine)
-                    ++charPosition;
+                const Point<float> glyphOffset (tokenOrigin - currentLine->lineOrigin);
 
-                const Token* const nextToken = tokens [i + 1];
-
-                if (nextToken == nullptr) // this is the last token
+                for (int j = 0; j < newGlyphs.size(); ++j)
                 {
+                    const float x = xOffsets.getUnchecked (j);
+                    currentRun->glyphs.add (TextLayout::Glyph (newGlyphs.getUnchecked(j),
+                                            glyphOffset.translated (x, 0),
+                                            xOffsets.getUnchecked (j + 1) - x));
+                }
+
+                charPosition += newGlyphs.size();
+            }
+
+            if (t.isWhitespace || t.isNewLine)
+                ++charPosition;
+
+            const Token* const nextToken = tokens [i + 1];
+
+            if (nextToken == nullptr) // this is the last token
+            {
+                addRun (*currentLine, currentRun.release(), t, runStartPosition, charPosition);
+                currentLine->stringRange = Range<int> (lineStartPosition, charPosition);
+
+                if (! needToSetLineOrigin)
+                    layout.addLine (currentLine.release());
+
+                needToSetLineOrigin = true;
+            }
+            else
+            {
+                if (t.font != nextToken->font || t.colour != nextToken->colour)
+                {
+                    addRun (*currentLine, currentRun.release(), t, runStartPosition, charPosition);
+                    runStartPosition = charPosition;
+                }
+
+                if (t.line != nextToken->line)
+                {
+                    if (currentRun == nullptr)
+                        currentRun = new TextLayout::Run();
+
                     addRun (*currentLine, currentRun.release(), t, runStartPosition, charPosition);
                     currentLine->stringRange = Range<int> (lineStartPosition, charPosition);
 
                     if (! needToSetLineOrigin)
                         layout.addLine (currentLine.release());
 
+                    runStartPosition = charPosition;
+                    lineStartPosition = charPosition;
                     needToSetLineOrigin = true;
                 }
-                else
+            }
+        }
+
+        if ((text.getJustification().getFlags() & (Justification::right | Justification::horizontallyCentred)) != 0)
+        {
+            const float totalW = layout.getWidth();
+            const bool isCentred = (text.getJustification().getFlags() & Justification::horizontallyCentred) != 0;
+
+            for (int i = 0; i < layout.getNumLines(); ++i)
+            {
+                float dx = totalW - layout.getLine(i).getLineBoundsX().getLength();
+
+                if (isCentred)
+                    dx /= 2.0f;
+
+                layout.getLine(i).lineOrigin.x += dx;
+            }
+        }
+    }
+
+private:
+    static void addRun (TextLayout::Line& glyphLine, TextLayout::Run* glyphRun,
+                        const Token& t, const int start, const int end)
+    {
+        glyphRun->stringRange = Range<int> (start, end);
+        glyphRun->font = t.font;
+        glyphRun->colour = t.colour;
+        glyphLine.ascent  = jmax (glyphLine.ascent,  t.font.getAscent());
+        glyphLine.descent = jmax (glyphLine.descent, t.font.getDescent());
+        glyphLine.runs.add (glyphRun);
+    }
+
+    static int getCharacterType (const juce_wchar c) noexcept
+    {
+        if (c == '\r' || c == '\n')
+            return 0;
+
+        return CharacterFunctions::isWhitespace (c) ? 2 : 1;
+    }
+
+    void appendText (const AttributedString& text, const Range<int> stringRange,
+                     const Font& font, Colour colour)
+    {
+        const String stringText (text.getText().substring (stringRange.getStart(), stringRange.getEnd()));
+        String::CharPointerType t (stringText.getCharPointer());
+        String currentString;
+        int lastCharType = 0;
+
+        for (;;)
+        {
+            const juce_wchar c = t.getAndAdvance();
+            if (c == 0)
+                break;
+
+            const int charType = getCharacterType (c);
+
+            if (charType == 0 || charType != lastCharType)
+            {
+                if (currentString.isNotEmpty())
+                    tokens.add (new Token (currentString, font, colour,
+                                           lastCharType == 2 || lastCharType == 0));
+
+                currentString = String::charToString (c);
+
+                if (c == '\r' && *t == '\n')
+                    currentString += t.getAndAdvance();
+            }
+            else
+            {
+                currentString += c;
+            }
+
+            lastCharType = charType;
+        }
+
+        if (currentString.isNotEmpty())
+            tokens.add (new Token (currentString, font, colour, lastCharType == 2));
+    }
+
+    void layoutRuns (const float maxWidth)
+    {
+        float x = 0, y = 0, h = 0;
+        int i;
+
+        for (i = 0; i < tokens.size(); ++i)
+        {
+            Token& t = *tokens.getUnchecked(i);
+            t.area.setPosition (x, y);
+            t.line = totalLines;
+            x += t.area.getWidth();
+            h = jmax (h, t.area.getHeight());
+
+            const Token* const nextTok = tokens[i + 1];
+
+            if (nextTok == nullptr)
+                break;
+
+            if (t.isNewLine || ((! nextTok->isWhitespace) && x + nextTok->area.getWidth() > maxWidth))
+            {
+                setLastLineHeight (i + 1, h);
+                x = 0;
+                y += h;
+                h = 0;
+                ++totalLines;
+            }
+        }
+
+        setLastLineHeight (jmin (i + 1, tokens.size()), h);
+        ++totalLines;
+    }
+
+    void setLastLineHeight (int i, const float height) noexcept
+    {
+        while (--i >= 0)
+        {
+            Token& tok = *tokens.getUnchecked (i);
+
+            if (tok.line == totalLines)
+                tok.lineHeight = height;
+            else
+                break;
+        }
+    }
+
+    void addTextRuns (const AttributedString& text)
+    {
+        Font defaultFont;
+        Array<RunAttribute> runAttributes;
+
+        {
+            const int stringLength = text.getText().length();
+            int rangeStart = 0;
+            FontAndColour lastFontAndColour (&defaultFont);
+
+            // Iterate through every character in the string
+            for (int i = 0; i < stringLength; ++i)
+            {
+                FontAndColour newFontAndColour (&defaultFont);
+                const int numCharacterAttributes = text.getNumAttributes();
+
+                for (int j = 0; j < numCharacterAttributes; ++j)
                 {
-                    if (t.font != nextToken->font || t.colour != nextToken->colour)
+                    const AttributedString::Attribute& attr = *text.getAttribute (j);
+
+                    if (attr.range.contains (i))
                     {
-                        addRun (*currentLine, currentRun.release(), t, runStartPosition, charPosition);
-                        runStartPosition = charPosition;
-                    }
-
-                    if (t.line != nextToken->line)
-                    {
-                        if (currentRun == nullptr)
-                            currentRun = new TextLayout::Run();
-
-                        addRun (*currentLine, currentRun.release(), t, runStartPosition, charPosition);
-                        currentLine->stringRange = Range<int> (lineStartPosition, charPosition);
-
-                        if (! needToSetLineOrigin)
-                            layout.addLine (currentLine.release());
-
-                        runStartPosition = charPosition;
-                        lineStartPosition = charPosition;
-                        needToSetLineOrigin = true;
+                        if (const Font* f = attr.getFont())      newFontAndColour.font   = f;
+                        if (const Colour* c = attr.getColour())  newFontAndColour.colour = *c;
                     }
                 }
-            }
 
-            if ((text.getJustification().getFlags() & (Justification::right | Justification::horizontallyCentred)) != 0)
-            {
-                const float totalW = layout.getWidth();
-                const bool isCentred = (text.getJustification().getFlags() & Justification::horizontallyCentred) != 0;
-
-                for (int i = 0; i < layout.getNumLines(); ++i)
+                if (i > 0 && newFontAndColour != lastFontAndColour)
                 {
-                    float dx = totalW - layout.getLine(i).getLineBoundsX().getLength();
-
-                    if (isCentred)
-                        dx /= 2.0f;
-
-                    layout.getLine(i).lineOrigin.x += dx;
-                }
-            }
-        }
-
-    private:
-        static void addRun (TextLayout::Line& glyphLine, TextLayout::Run* glyphRun,
-                            const Token& t, const int start, const int end)
-        {
-            glyphRun->stringRange = Range<int> (start, end);
-            glyphRun->font = t.font;
-            glyphRun->colour = t.colour;
-            glyphLine.ascent  = jmax (glyphLine.ascent,  t.font.getAscent());
-            glyphLine.descent = jmax (glyphLine.descent, t.font.getDescent());
-            glyphLine.runs.add (glyphRun);
-        }
-
-        static int getCharacterType (const juce_wchar c) noexcept
-        {
-            if (c == '\r' || c == '\n')
-                return 0;
-
-            return CharacterFunctions::isWhitespace (c) ? 2 : 1;
-        }
-
-        void appendText (const AttributedString& text, const Range<int> stringRange,
-                         const Font& font, Colour colour)
-        {
-            const String stringText (text.getText().substring (stringRange.getStart(), stringRange.getEnd()));
-            String::CharPointerType t (stringText.getCharPointer());
-            String currentString;
-            int lastCharType = 0;
-
-            for (;;)
-            {
-                const juce_wchar c = t.getAndAdvance();
-                if (c == 0)
-                    break;
-
-                const int charType = getCharacterType (c);
-
-                if (charType == 0 || charType != lastCharType)
-                {
-                    if (currentString.isNotEmpty())
-                        tokens.add (new Token (currentString, font, colour,
-                                               lastCharType == 2 || lastCharType == 0));
-
-                    currentString = String::charToString (c);
-
-                    if (c == '\r' && *t == '\n')
-                        currentString += t.getAndAdvance();
-                }
-                else
-                {
-                    currentString += c;
+                    runAttributes.add (RunAttribute (lastFontAndColour, Range<int> (rangeStart, i)));
+                    rangeStart = i;
                 }
 
-                lastCharType = charType;
+                lastFontAndColour = newFontAndColour;
             }
 
-            if (currentString.isNotEmpty())
-                tokens.add (new Token (currentString, font, colour, lastCharType == 2));
+            if (rangeStart < stringLength)
+                runAttributes.add (RunAttribute (lastFontAndColour, Range<int> (rangeStart, stringLength)));
         }
 
-        void layoutRuns (const float maxWidth)
+        for (int i = 0; i < runAttributes.size(); ++i)
         {
-            float x = 0, y = 0, h = 0;
-            int i;
-
-            for (i = 0; i < tokens.size(); ++i)
-            {
-                Token& t = *tokens.getUnchecked(i);
-                t.area.setPosition (x, y);
-                t.line = totalLines;
-                x += t.area.getWidth();
-                h = jmax (h, t.area.getHeight());
-
-                const Token* const nextTok = tokens[i + 1];
-
-                if (nextTok == nullptr)
-                    break;
-
-                if (t.isNewLine || ((! nextTok->isWhitespace) && x + nextTok->area.getWidth() > maxWidth))
-                {
-                    setLastLineHeight (i + 1, h);
-                    x = 0;
-                    y += h;
-                    h = 0;
-                    ++totalLines;
-                }
-            }
-
-            setLastLineHeight (jmin (i + 1, tokens.size()), h);
-            ++totalLines;
+            const RunAttribute& r = runAttributes.getReference(i);
+            appendText (text, r.range, *(r.fontAndColour.font), r.fontAndColour.colour);
         }
+    }
 
-        void setLastLineHeight (int i, const float height) noexcept
-        {
-            while (--i >= 0)
-            {
-                Token& tok = *tokens.getUnchecked (i);
+    static String getTrimmedEndIfNotAllWhitespace (const String& s)
+    {
+        String trimmed (s.trimEnd());
+        if (trimmed.isEmpty() && ! s.isEmpty())
+            trimmed = s.replaceCharacters ("\r\n\t", "   ");
 
-                if (tok.line == totalLines)
-                    tok.lineHeight = height;
-                else
-                    break;
-            }
-        }
+        return trimmed;
+    }
 
-        void addTextRuns (const AttributedString& text)
-        {
-            Font defaultFont;
-            Array<RunAttribute> runAttributes;
+    OwnedArray<Token> tokens;
+    int totalLines;
 
-            {
-                const int stringLength = text.getText().length();
-                int rangeStart = 0;
-                FontAndColour lastFontAndColour (&defaultFont);
-
-                // Iterate through every character in the string
-                for (int i = 0; i < stringLength; ++i)
-                {
-                    FontAndColour newFontAndColour (&defaultFont);
-                    const int numCharacterAttributes = text.getNumAttributes();
-
-                    for (int j = 0; j < numCharacterAttributes; ++j)
-                    {
-                        const AttributedString::Attribute& attr = *text.getAttribute (j);
-
-                        if (attr.range.contains (i))
-                        {
-                            if (const Font* f = attr.getFont())      newFontAndColour.font   = f;
-                            if (const Colour* c = attr.getColour())  newFontAndColour.colour = *c;
-                        }
-                    }
-
-                    if (i > 0 && newFontAndColour != lastFontAndColour)
-                    {
-                        runAttributes.add (RunAttribute (lastFontAndColour, Range<int> (rangeStart, i)));
-                        rangeStart = i;
-                    }
-
-                    lastFontAndColour = newFontAndColour;
-                }
-
-                if (rangeStart < stringLength)
-                    runAttributes.add (RunAttribute (lastFontAndColour, Range<int> (rangeStart, stringLength)));
-            }
-
-            for (int i = 0; i < runAttributes.size(); ++i)
-            {
-                const RunAttribute& r = runAttributes.getReference(i);
-                appendText (text, r.range, *(r.fontAndColour.font), r.fontAndColour.colour);
-            }
-        }
-
-        static String getTrimmedEndIfNotAllWhitespace (const String& s)
-        {
-            String trimmed (s.trimEnd());
-            if (trimmed.isEmpty() && ! s.isEmpty())
-                trimmed = s.replaceCharacters ("\r\n\t", "   ");
-
-            return trimmed;
-        }
-
-        OwnedArray<Token> tokens;
-        int totalLines;
-
-        JUCE_DECLARE_NON_COPYABLE (TokenList)
-    };
+    JUCE_DECLARE_NON_COPYABLE (TokenList)
+};
 }
 
 //==============================================================================

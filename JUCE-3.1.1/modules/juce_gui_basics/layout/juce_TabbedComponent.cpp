@@ -24,28 +24,38 @@
 
 namespace TabbedComponentHelpers
 {
-    const Identifier deleteComponentId ("deleteByTabComp_");
+const Identifier deleteComponentId ("deleteByTabComp_");
 
-    static void deleteIfNecessary (Component* const comp)
+static void deleteIfNecessary (Component* const comp)
+{
+    if (comp != nullptr && (bool) comp->getProperties() [deleteComponentId])
+        delete comp;
+}
+
+static Rectangle<int> getTabArea (Rectangle<int>& content, BorderSize<int>& outline,
+                                  const TabbedButtonBar::Orientation orientation, const int tabDepth)
+{
+    switch (orientation)
     {
-        if (comp != nullptr && (bool) comp->getProperties() [deleteComponentId])
-            delete comp;
+    case TabbedButtonBar::TabsAtTop:
+        outline.setTop (0);
+        return content.removeFromTop (tabDepth);
+    case TabbedButtonBar::TabsAtBottom:
+        outline.setBottom (0);
+        return content.removeFromBottom (tabDepth);
+    case TabbedButtonBar::TabsAtLeft:
+        outline.setLeft (0);
+        return content.removeFromLeft (tabDepth);
+    case TabbedButtonBar::TabsAtRight:
+        outline.setRight (0);
+        return content.removeFromRight (tabDepth);
+    default:
+        jassertfalse;
+        break;
     }
 
-    static Rectangle<int> getTabArea (Rectangle<int>& content, BorderSize<int>& outline,
-                                      const TabbedButtonBar::Orientation orientation, const int tabDepth)
-    {
-        switch (orientation)
-        {
-            case TabbedButtonBar::TabsAtTop:    outline.setTop (0);     return content.removeFromTop (tabDepth);
-            case TabbedButtonBar::TabsAtBottom: outline.setBottom (0);  return content.removeFromBottom (tabDepth);
-            case TabbedButtonBar::TabsAtLeft:   outline.setLeft (0);    return content.removeFromLeft (tabDepth);
-            case TabbedButtonBar::TabsAtRight:  outline.setRight (0);   return content.removeFromRight (tabDepth);
-            default: jassertfalse; break;
-        }
-
-        return Rectangle<int>();
-    }
+    return Rectangle<int>();
+}
 }
 
 //==============================================================================

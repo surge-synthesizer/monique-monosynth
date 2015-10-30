@@ -33,10 +33,12 @@ struct TextDiffHelpers
     struct StringRegion
     {
         StringRegion (const String& s) noexcept
-            : text (s.getCharPointer()), start (0), length (s.length()) {}
+:
+        text (s.getCharPointer()), start (0), length (s.length()) {}
 
         StringRegion (const String::CharPointerType t, int s, int len)  noexcept
-            : text (t), start (s), length (len) {}
+:
+        text (t), start (s), length (len) {}
 
         String::CharPointerType text;
         int start, length;
@@ -70,7 +72,7 @@ struct TextDiffHelpers
             if (*sa != *sb)
             {
                 diffRecursively (td, StringRegion (sa, a.start + i, a.length - i),
-                                     StringRegion (sb, b.start + i, b.length - i));
+                                 StringRegion (sb, b.start + i, b.length - i));
                 break;
             }
         }
@@ -80,21 +82,21 @@ struct TextDiffHelpers
     {
         int indexA, indexB;
         const int len = findLongestCommonSubstring (a.text, a.length,
-                                                    b.text, b.length,
-                                                    indexA, indexB);
+                        b.text, b.length,
+                        indexA, indexB);
 
         if (len >= minLengthToMatch)
         {
             if (indexA > 0 && indexB > 0)
                 diffSkippingCommonStart (td, StringRegion (a.text, a.start, indexA),
-                                             StringRegion (b.text, b.start, indexB));
+                                         StringRegion (b.text, b.start, indexB));
             else if (indexA > 0)
                 addDeletion (td, b.start, indexA);
             else if (indexB > 0)
                 addInsertion (td, b.text, b.start, indexB);
 
             diffRecursively (td, StringRegion (a.text + indexA + len, a.start + indexA + len, a.length - indexA - len),
-                                 StringRegion (b.text + indexB + len, b.start + indexB + len, b.length - indexB - len));
+                             StringRegion (b.text + indexB + len, b.start + indexB + len, b.length - indexB - len));
         }
         else
         {
@@ -179,7 +181,7 @@ bool TextDiff::Change::isDeletion() const noexcept
 String TextDiff::Change::appliedTo (const String& text) const noexcept
 {
     return text.substring (0, start) + (isDeletion() ? text.substring (start + length)
-                                                     : (insertedText + text.substring (start)));
+                                        : (insertedText + text.substring (start)));
 }
 
 //==============================================================================

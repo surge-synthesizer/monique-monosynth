@@ -35,7 +35,7 @@ FileSearchPath::FileSearchPath (const String& path)
 }
 
 FileSearchPath::FileSearchPath (const FileSearchPath& other)
-   : directories (other.directories)
+    : directories (other.directories)
 {
 }
 

@@ -65,10 +65,10 @@ struct UndoManager::ActionSet
 //==============================================================================
 UndoManager::UndoManager (const int maxNumberOfUnitsToKeep,
                           const int minimumTransactions)
-   : totalUnitsStored (0),
-     nextIndex (0),
-     newTransaction (true),
-     reentrancyCheck (false)
+    : totalUnitsStored (0),
+      nextIndex (0),
+      newTransaction (true),
+      reentrancyCheck (false)
 {
     setMaxNumberOfStoredUnits (maxNumberOfUnitsToKeep,
                                minimumTransactions);
@@ -93,7 +93,7 @@ int UndoManager::getNumberOfUnitsTakenUpByStoredCommands() const
 }
 
 void UndoManager::setMaxNumberOfStoredUnits (const int maxNumberOfUnitsToKeep,
-                                             const int minimumTransactions)
+        const int minimumTransactions)
 {
     maxNumUnitsToKeep          = jmax (1, maxNumberOfUnitsToKeep);
     minimumTransactionsToKeep  = jmax (1, minimumTransactions);
@@ -122,7 +122,7 @@ bool UndoManager::perform (UndoableAction* const newAction)
         if (reentrancyCheck)
         {
             jassertfalse;  // don't call perform() recursively from the UndoableAction::perform()
-                           // or undo() methods, or else these actions will be discarded!
+            // or undo() methods, or else these actions will be discarded!
             return false;
         }
 
@@ -204,11 +204,19 @@ void UndoManager::setCurrentTransactionName (const String& newName) noexcept
 }
 
 //==============================================================================
-UndoManager::ActionSet* UndoManager::getCurrentSet() const noexcept     { return transactions [nextIndex - 1]; }
-UndoManager::ActionSet* UndoManager::getNextSet() const noexcept        { return transactions [nextIndex]; }
+UndoManager::ActionSet* UndoManager::getCurrentSet() const noexcept     {
+    return transactions [nextIndex - 1];
+}
+UndoManager::ActionSet* UndoManager::getNextSet() const noexcept        {
+    return transactions [nextIndex];
+}
 
-bool UndoManager::canUndo() const noexcept   { return getCurrentSet() != nullptr; }
-bool UndoManager::canRedo() const noexcept   { return getNextSet()    != nullptr; }
+bool UndoManager::canUndo() const noexcept   {
+    return getCurrentSet() != nullptr;
+}
+bool UndoManager::canRedo() const noexcept   {
+    return getNextSet()    != nullptr;
+}
 
 bool UndoManager::undo()
 {

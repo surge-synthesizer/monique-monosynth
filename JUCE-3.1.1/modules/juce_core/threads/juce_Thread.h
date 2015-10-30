@@ -144,7 +144,9 @@ public:
 
         @see signalThreadShouldExit
     */
-    inline bool threadShouldExit() const                { return shouldExit; }
+    inline bool threadShouldExit() const                {
+        return shouldExit;
+    }
 
     /** Waits for the thread to stop.
 
@@ -248,13 +250,17 @@ public:
 
         @see getCurrentThreadId
     */
-    ThreadID getThreadId() const noexcept                           { return threadId; }
+    ThreadID getThreadId() const noexcept                           {
+        return threadId;
+    }
 
     /** Returns the name of the thread.
 
         This is the name that gets set in the constructor.
     */
-    const String& getThreadName() const                             { return threadName; }
+    const String& getThreadName() const                             {
+        return threadName;
+    }
 
     /** Changes the name of the caller thread.
         Different OSes may place different length or content limits on this name.
@@ -273,9 +279,9 @@ private:
     uint32 affinityMask;
     bool volatile shouldExit;
 
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     friend void JUCE_API juce_threadEntryPoint (void*);
-   #endif
+#endif
 
     void launchThread();
     void closeThreadHandle();

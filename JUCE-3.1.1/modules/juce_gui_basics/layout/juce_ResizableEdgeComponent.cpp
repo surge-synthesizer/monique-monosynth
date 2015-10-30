@@ -23,15 +23,15 @@
 */
 
 ResizableEdgeComponent::ResizableEdgeComponent (Component* const componentToResize,
-                                                ComponentBoundsConstrainer* const constrainer_,
-                                                Edge edge_)
-   : component (componentToResize),
-     constrainer (constrainer_),
-     edge (edge_)
+        ComponentBoundsConstrainer* const constrainer_,
+        Edge edge_)
+    : component (componentToResize),
+      constrainer (constrainer_),
+      edge (edge_)
 {
     setRepaintsOnMouseActivity (true);
     setMouseCursor (isVertical() ? MouseCursor::LeftRightResizeCursor
-                                 : MouseCursor::UpDownResizeCursor);
+                    : MouseCursor::UpDownResizeCursor);
 }
 
 ResizableEdgeComponent::~ResizableEdgeComponent()
@@ -47,7 +47,7 @@ bool ResizableEdgeComponent::isVertical() const noexcept
 void ResizableEdgeComponent::paint (Graphics& g)
 {
     getLookAndFeel().drawStretchableLayoutResizerBar (g, getWidth(), getHeight(), isVertical(),
-                                                      isMouseOver(), isMouseButtonDown());
+            isMouseOver(), isMouseButtonDown());
 }
 
 void ResizableEdgeComponent::mouseDown (const MouseEvent&)
@@ -76,11 +76,21 @@ void ResizableEdgeComponent::mouseDrag (const MouseEvent& e)
 
     switch (edge)
     {
-        case leftEdge:      newBounds.setLeft (jmin (newBounds.getRight(), newBounds.getX() + e.getDistanceFromDragStartX())); break;
-        case rightEdge:     newBounds.setWidth (jmax (0, newBounds.getWidth() + e.getDistanceFromDragStartX())); break;
-        case topEdge:       newBounds.setTop (jmin (newBounds.getBottom(), newBounds.getY() + e.getDistanceFromDragStartY())); break;
-        case bottomEdge:    newBounds.setHeight (jmax (0, newBounds.getHeight() + e.getDistanceFromDragStartY())); break;
-        default:            jassertfalse; break;
+    case leftEdge:
+        newBounds.setLeft (jmin (newBounds.getRight(), newBounds.getX() + e.getDistanceFromDragStartX()));
+        break;
+    case rightEdge:
+        newBounds.setWidth (jmax (0, newBounds.getWidth() + e.getDistanceFromDragStartX()));
+        break;
+    case topEdge:
+        newBounds.setTop (jmin (newBounds.getBottom(), newBounds.getY() + e.getDistanceFromDragStartY()));
+        break;
+    case bottomEdge:
+        newBounds.setHeight (jmax (0, newBounds.getHeight() + e.getDistanceFromDragStartY()));
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 
     if (constrainer != nullptr)

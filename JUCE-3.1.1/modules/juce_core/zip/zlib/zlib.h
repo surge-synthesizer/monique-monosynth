@@ -158,7 +158,7 @@ typedef gz_header FAR *gz_headerp;
    a single step).
 */
 
-                        /* constants */
+/* constants */
 
 #define Z_NO_FLUSH      0
 #define Z_PARTIAL_FLUSH 1 /* will be removed, use Z_SYNC_FLUSH instead */
@@ -208,7 +208,7 @@ typedef gz_header FAR *gz_headerp;
 #define zlib_version zlibVersion()
 /* for compatibility with versions < 1.0.2 */
 
-                        /* basic functions */
+/* basic functions */
 
 //ZEXTERN const char * ZEXPORT zlibVersion OF((void));
 /* The application can compare zlibVersion and ZLIB_VERSION for consistency.
@@ -471,7 +471,7 @@ ZEXTERN int ZEXPORT inflateEnd OF((z_streamp strm));
    static string (which must not be deallocated).
 */
 
-                        /* Advanced functions */
+/* Advanced functions */
 
 /*
     The following functions are needed only in some special applications.
@@ -537,8 +537,8 @@ ZEXTERN int ZEXPORT deflateInit2 OF((z_streamp strm,
 */
 
 ZEXTERN int ZEXPORT deflateSetDictionary OF((z_streamp strm,
-                                             const Bytef *dictionary,
-                                             uInt  dictLength));
+        const Bytef *dictionary,
+        uInt  dictLength));
 /*
      Initializes the compression dictionary from the given byte sequence
    without producing any compressed output. This function must be called
@@ -668,7 +668,7 @@ ZEXTERN int ZEXPORT deflatePrime OF((z_streamp strm,
 */
 
 ZEXTERN int ZEXPORT deflateSetHeader OF((z_streamp strm,
-                                         gz_headerp head));
+                                        gz_headerp head));
 /*
       deflateSetHeader() provides gzip header information for when a gzip
    stream is requested by deflateInit2().  deflateSetHeader() may be called
@@ -735,8 +735,8 @@ ZEXTERN int ZEXPORT inflateInit2 OF((z_streamp strm,
 */
 
 ZEXTERN int ZEXPORT inflateSetDictionary OF((z_streamp strm,
-                                             const Bytef *dictionary,
-                                             uInt  dictLength));
+        const Bytef *dictionary,
+        uInt  dictLength));
 /*
      Initializes the decompression dictionary from the given uncompressed byte
    sequence. This function must be called immediately after a call of inflate,
@@ -814,7 +814,7 @@ ZEXTERN int ZEXPORT inflatePrime OF((z_streamp strm,
 */
 
 ZEXTERN int ZEXPORT inflateGetHeader OF((z_streamp strm,
-                                         gz_headerp head));
+                                        gz_headerp head));
 /*
       inflateGetHeader() requests that gzip header information be stored in the
    provided gz_header structure.  inflateGetHeader() may be called after
@@ -997,7 +997,7 @@ ZEXTERN int ZEXPORT inflateBackEnd OF((z_streamp strm));
  */
 
 
-                        /* utility functions */
+/* utility functions */
 
 /*
      The following utility functions are implemented on top of the
@@ -1250,7 +1250,7 @@ ZEXTERN void ZEXPORT gzclearerr OF((gzFile file));
    file that is being written concurrently.
 */
 
-                        /* checksum functions */
+/* checksum functions */
 
 /*
      These functions are not related to compression but are exported
@@ -1275,7 +1275,7 @@ ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, const Bytef *buf, uInt len));
 */
 
 ZEXTERN uLong ZEXPORT adler32_combine OF((uLong adler1, uLong adler2,
-                                          z_off_t len2));
+        z_off_t len2));
 /*
      Combine two Adler-32 checksums into one.  For two sequences of bytes, seq1
    and seq2 with lengths len1 and len2, Adler-32 checksums were calculated for
@@ -1310,7 +1310,7 @@ ZEXTERN uLong ZEXPORT crc32_combine OF((uLong crc1, uLong crc2, z_off_t len2));
 */
 
 
-                        /* various hacks, don't look :) */
+/* various hacks, don't look :) */
 
 /* deflateInit and inflateInit are macros to allow checking the zlib version
  * and the compiler's view of z_stream:
@@ -1326,9 +1326,9 @@ ZEXTERN int ZEXPORT deflateInit2_ OF((z_streamp strm, int  level, int  method,
 ZEXTERN int ZEXPORT inflateInit2_ OF((z_streamp strm, int  windowBits,
                                       const char *version, int stream_size));
 ZEXTERN int ZEXPORT inflateBackInit_ OF((z_streamp strm, int windowBits,
-                                         unsigned char FAR *window,
-                                         const char *version,
-                                         int stream_size));
+                                        unsigned char FAR *window,
+                                        const char *version,
+                                        int stream_size));
 #define deflateInit(strm, level) \
         deflateInit_((strm), (level),       ZLIB_VERSION, sizeof(z_stream))
 #define inflateInit(strm) \
@@ -1344,7 +1344,9 @@ ZEXTERN int ZEXPORT inflateBackInit_ OF((z_streamp strm, int windowBits,
 
 
 #if !defined(ZUTIL_H) && !defined(NO_DUMMY_DECL)
-    struct internal_state {int dummy;}; /* hack for buggy compilers */
+struct internal_state {
+    int dummy;
+}; /* hack for buggy compilers */
 #endif
 
 ZEXTERN const char   * ZEXPORT zError           OF((int));

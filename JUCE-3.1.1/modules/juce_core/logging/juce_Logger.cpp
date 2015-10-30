@@ -54,10 +54,10 @@ void JUCE_API JUCE_CALLTYPE logAssertion (const char* const filename, const int 
     String m ("JUCE Assertion failure in ");
     m << File::createFileWithoutCheckingPath (filename).getFileName() << ':' << lineNum;
 
-   #if JUCE_LOG_ASSERTIONS
+#if JUCE_LOG_ASSERTIONS
     Logger::writeToLog (m);
-   #else
+#else
     DBG (m);
-   #endif
+#endif
 }
 #endif

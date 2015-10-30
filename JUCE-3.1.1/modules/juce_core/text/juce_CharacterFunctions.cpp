@@ -28,8 +28,8 @@
 
 //==============================================================================
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4514 4996)
+#pragma warning (push)
+#pragma warning (disable: 4514 4996)
 #endif
 
 juce_wchar CharacterFunctions::toUpperCase (const juce_wchar character) noexcept
@@ -44,24 +44,24 @@ juce_wchar CharacterFunctions::toLowerCase (const juce_wchar character) noexcept
 
 bool CharacterFunctions::isUpperCase (const juce_wchar character) noexcept
 {
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     return iswupper ((wchar_t) character) != 0;
-   #else
+#else
     return toLowerCase (character) != character;
-   #endif
+#endif
 }
 
 bool CharacterFunctions::isLowerCase (const juce_wchar character) noexcept
 {
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     return iswlower ((wchar_t) character) != 0;
-   #else
+#else
     return toUpperCase (character) != character;
-   #endif
+#endif
 }
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 //==============================================================================
@@ -88,7 +88,7 @@ bool CharacterFunctions::isDigit (const juce_wchar character) noexcept
 bool CharacterFunctions::isLetter (const char character) noexcept
 {
     return (character >= 'a' && character <= 'z')
-        || (character >= 'A' && character <= 'Z');
+    || (character >= 'A' && character <= 'Z');
 }
 
 bool CharacterFunctions::isLetter (const juce_wchar character) noexcept
@@ -99,8 +99,8 @@ bool CharacterFunctions::isLetter (const juce_wchar character) noexcept
 bool CharacterFunctions::isLetterOrDigit (const char character) noexcept
 {
     return (character >= 'a' && character <= 'z')
-        || (character >= 'A' && character <= 'Z')
-        || (character >= '0' && character <= '9');
+    || (character >= 'A' && character <= 'Z')
+    || (character >= '0' && character <= '9');
 }
 
 bool CharacterFunctions::isLetterOrDigit (const juce_wchar character) noexcept

@@ -48,7 +48,9 @@ public:
     ~TabBarButton();
 
     /** Returns the bar that contains this button. */
-    TabbedButtonBar& getTabbedButtonBar() const   { return owner; }
+    TabbedButtonBar& getTabbedButtonBar() const   {
+        return owner;
+    }
 
     //==============================================================================
     /** When adding an extra component to the tab, this indicates which side of
@@ -70,10 +72,14 @@ public:
                             ExtraComponentPlacement extraComponentPlacement);
 
     /** Returns the custom component, if there is one. */
-    Component* getExtraComponent() const noexcept                           { return extraComponent; }
+    Component* getExtraComponent() const noexcept                           {
+        return extraComponent;
+    }
 
     /** Returns the placement of the custom component, if there is one. */
-    ExtraComponentPlacement getExtraComponentPlacement() const noexcept     { return extraCompPlacement; }
+    ExtraComponentPlacement getExtraComponentPlacement() const noexcept     {
+        return extraCompPlacement;
+    }
 
     /** Returns an area of the component that's safe to draw in.
 
@@ -145,7 +151,7 @@ private:
     @see TabbedComponent
 */
 class JUCE_API  TabbedButtonBar  : public Component,
-                                   public ChangeBroadcaster
+    public ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -181,13 +187,19 @@ public:
     /** Returns the bar's current orientation.
         @see setOrientation
     */
-    Orientation getOrientation() const noexcept         { return orientation; }
+    Orientation getOrientation() const noexcept         {
+        return orientation;
+    }
 
     /** Returns true if the orientation is TabsAtLeft or TabsAtRight. */
-    bool isVertical() const noexcept                    { return orientation == TabsAtLeft || orientation == TabsAtRight; }
+    bool isVertical() const noexcept                    {
+        return orientation == TabsAtLeft || orientation == TabsAtRight;
+    }
 
     /** Returns the thickness of the bar, which may be its width or height, depending on the orientation. */
-    int getThickness() const noexcept                   { return isVertical() ? getWidth() : getHeight(); }
+    int getThickness() const noexcept                   {
+        return isVertical() ? getWidth() : getHeight();
+    }
 
     /** Changes the minimum scale factor to which the tabs can be compressed when trying to
         fit a lot of tabs on-screen.
@@ -242,7 +254,9 @@ public:
     /** Returns the index of the currently selected tab.
         This could return -1 if none are selected.
     */
-    int getCurrentTabIndex() const noexcept             { return currentTabIndex; }
+    int getCurrentTabIndex() const noexcept             {
+        return currentTabIndex;
+    }
 
     /** Returns the button for a specific tab.
         The button that is returned may be deleted later by this component, so don't hang

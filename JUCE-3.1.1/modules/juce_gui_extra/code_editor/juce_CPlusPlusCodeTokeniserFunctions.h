@@ -34,64 +34,81 @@ struct CppTokeniserFunctions
     static bool isIdentifierStart (const juce_wchar c) noexcept
     {
         return CharacterFunctions::isLetter (c)
-                || c == '_' || c == '@';
+        || c == '_' || c == '@';
     }
 
     static bool isIdentifierBody (const juce_wchar c) noexcept
     {
         return CharacterFunctions::isLetterOrDigit (c)
-                || c == '_' || c == '@';
+        || c == '_' || c == '@';
     }
 
     static bool isReservedKeyword (String::CharPointerType token, const int tokenLength) noexcept
     {
         static const char* const keywords2Char[] =
-            { "if", "do", "or", nullptr };
+        { "if", "do", "or", nullptr };
 
         static const char* const keywords3Char[] =
-            { "for", "int", "new", "try", "xor", "and", "asm", "not", nullptr };
+        { "for", "int", "new", "try", "xor", "and", "asm", "not", nullptr };
 
         static const char* const keywords4Char[] =
-            { "bool", "void", "this", "true", "long", "else", "char",
-              "enum", "case", "goto", "auto", nullptr };
+        {   "bool", "void", "this", "true", "long", "else", "char",
+            "enum", "case", "goto", "auto", nullptr
+        };
 
         static const char* const keywords5Char[] =
-            { "float", "const", "while", "break", "false", "catch", "class", "bitor",
-              "compl", "or_eq", "short", "throw", "union", "using", "final", nullptr };
+        {   "float", "const", "while", "break", "false", "catch", "class", "bitor",
+            "compl", "or_eq", "short", "throw", "union", "using", "final", nullptr
+        };
 
         static const char* const keywords6Char[] =
-            { "return", "and_eq", "bitand", "delete", "double", "export", "extern",
-              "friend", "inline", "not_eq", "public", "signed", "sizeof", "static",
-              "struct", "switch", "typeid", "xor_eq", nullptr };
+        {   "return", "and_eq", "bitand", "delete", "double", "export", "extern",
+            "friend", "inline", "not_eq", "public", "signed", "sizeof", "static",
+            "struct", "switch", "typeid", "xor_eq", nullptr
+        };
 
         static const char* const keywords7Char[] =
-            { "nullptr", "alignas", "alignof", "default", "mutable", "private",
-              "typedef", "virtual", "wchar_t", nullptr };
+        {   "nullptr", "alignas", "alignof", "default", "mutable", "private",
+            "typedef", "virtual", "wchar_t", nullptr
+        };
 
         static const char* const keywordsOther[] =
-            { "char16_t", "char32_t", "const_cast", "constexpr", "continue", "decltype", "dynamic_cast",
-              "explicit", "namespace", "noexcept", "operator", "protected", "register", "reinterpret_cast",
-              "static_assert", "static_cast", "template", "thread_local", "typename", "unsigned", "volatile",
-              "@class", "@dynamic", "@end", "@implementation", "@interface", "@public", "@private",
-              "@protected", "@property", "@synthesize", nullptr };
+        {   "char16_t", "char32_t", "const_cast", "constexpr", "continue", "decltype", "dynamic_cast",
+            "explicit", "namespace", "noexcept", "operator", "protected", "register", "reinterpret_cast",
+            "static_assert", "static_cast", "template", "thread_local", "typename", "unsigned", "volatile",
+            "@class", "@dynamic", "@end", "@implementation", "@interface", "@public", "@private",
+            "@protected", "@property", "@synthesize", nullptr
+        };
 
         const char* const* k;
 
         switch (tokenLength)
         {
-            case 2:     k = keywords2Char; break;
-            case 3:     k = keywords3Char; break;
-            case 4:     k = keywords4Char; break;
-            case 5:     k = keywords5Char; break;
-            case 6:     k = keywords6Char; break;
-            case 7:     k = keywords7Char; break;
+        case 2:
+            k = keywords2Char;
+            break;
+        case 3:
+            k = keywords3Char;
+            break;
+        case 4:
+            k = keywords4Char;
+            break;
+        case 5:
+            k = keywords5Char;
+            break;
+        case 6:
+            k = keywords6Char;
+            break;
+        case 7:
+            k = keywords7Char;
+            break;
 
-            default:
-                if (tokenLength < 2 || tokenLength > 16)
-                    return false;
+        default:
+            if (tokenLength < 2 || tokenLength > 16)
+                return false;
 
-                k = keywordsOther;
-                break;
+            k = keywordsOther;
+            break;
         }
 
         for (int i = 0; k[i] != 0; ++i)
@@ -145,8 +162,8 @@ struct CppTokeniserFunctions
     static bool isHexDigit (const juce_wchar c) noexcept
     {
         return (c >= '0' && c <= '9')
-                || (c >= 'a' && c <= 'f')
-                || (c >= 'A' && c <= 'F');
+        || (c >= 'a' && c <= 'f')
+        || (c >= 'A' && c <= 'F');
     }
 
     template <typename Iterator>
@@ -407,8 +424,16 @@ struct CppTokeniserFunctions
         case 0:
             break;
 
-        case '0':   case '1':   case '2':   case '3':   case '4':
-        case '5':   case '6':   case '7':   case '8':   case '9':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
         case '.':
         {
             int result = parseNumber (source);
@@ -430,9 +455,12 @@ struct CppTokeniserFunctions
             source.skip();
             return CPlusPlusCodeTokeniser::tokenType_punctuation;
 
-        case '(':   case ')':
-        case '{':   case '}':
-        case '[':   case ']':
+        case '(':
+        case ')':
+        case '{':
+        case '}':
+        case '[':
+        case ']':
             source.skip();
             return CPlusPlusCodeTokeniser::tokenType_bracket;
 
@@ -460,8 +488,10 @@ struct CppTokeniserFunctions
             return result;
         }
 
-        case '*':   case '%':
-        case '=':   case '!':
+        case '*':
+        case '%':
+        case '=':
+        case '!':
             source.skip();
             skipIfNextCharMatches (source, '=');
             return CPlusPlusCodeTokeniser::tokenType_operator;
@@ -495,8 +525,11 @@ struct CppTokeniserFunctions
             source.skip();
             return CPlusPlusCodeTokeniser::tokenType_operator;
 
-        case '<':   case '>':
-        case '|':   case '&':   case '^':
+        case '<':
+        case '>':
+        case '|':
+        case '&':
+        case '^':
             source.skip();
             skipIfNextCharMatches (source, firstChar);
             skipIfNextCharMatches (source, '=');
@@ -522,15 +555,23 @@ struct CppTokeniserFunctions
     */
     struct StringIterator
     {
-        StringIterator (const String& s) noexcept            : t (s.getCharPointer()), numChars (0) {}
-        StringIterator (String::CharPointerType s) noexcept  : t (s), numChars (0) {}
+StringIterator (const String& s) noexcept            :
+        t (s.getCharPointer()), numChars (0) {}
+StringIterator (String::CharPointerType s) noexcept  :
+        t (s), numChars (0) {}
 
         juce_wchar nextChar() noexcept      { if (isEOF()) return 0; ++numChars; return t.getAndAdvance(); }
         juce_wchar peekNextChar()noexcept   { return *t; }
-        void skip() noexcept                { if (! isEOF()) { ++t; ++numChars; } }
-        void skipWhitespace() noexcept      { while (t.isWhitespace()) skip(); }
+            void skip() noexcept                { if (! isEOF()) {
+            ++t;
+            ++numChars;
+        }
+                                        }
+    void skipWhitespace() noexcept      { while (t.isWhitespace()) skip(); }
         void skipToEndOfLine() noexcept     { while (*t != '\r' && *t != '\n' && *t != 0) skip(); }
-        bool isEOF() const noexcept         { return t.isEmpty(); }
+            bool isEOF() const noexcept         {
+                return t.isEmpty();
+            }
 
         String::CharPointerType t;
         int numChars;
@@ -561,58 +602,79 @@ struct CppTokeniserFunctions
 
             switch (c)
             {
-                case '\t':  out << "\\t";  lastWasHexEscapeCode = false; charsOnLine += 2; break;
-                case '\r':  out << "\\r";  lastWasHexEscapeCode = false; charsOnLine += 2; break;
-                case '\n':  out << "\\n";  lastWasHexEscapeCode = false; charsOnLine += 2; startNewLine = breakAtNewLines; break;
-                case '\\':  out << "\\\\"; lastWasHexEscapeCode = false; charsOnLine += 2; break;
-                case '\"':  out << "\\\""; lastWasHexEscapeCode = false; charsOnLine += 2; break;
+            case '\t':
+                out << "\\t";
+                lastWasHexEscapeCode = false;
+                charsOnLine += 2;
+                break;
+            case '\r':
+                out << "\\r";
+                lastWasHexEscapeCode = false;
+                charsOnLine += 2;
+                break;
+            case '\n':
+                out << "\\n";
+                lastWasHexEscapeCode = false;
+                charsOnLine += 2;
+                startNewLine = breakAtNewLines;
+                break;
+            case '\\':
+                out << "\\\\";
+                lastWasHexEscapeCode = false;
+                charsOnLine += 2;
+                break;
+            case '\"':
+                out << "\\\"";
+                lastWasHexEscapeCode = false;
+                charsOnLine += 2;
+                break;
 
-                case 0:
-                    if (numBytesToRead < 0)
-                        return;
+            case 0:
+                if (numBytesToRead < 0)
+                    return;
 
-                    out << "\\0";
-                    lastWasHexEscapeCode = true;
+                out << "\\0";
+                lastWasHexEscapeCode = true;
+                charsOnLine += 2;
+                break;
+
+            case '\'':
+                if (replaceSingleQuotes)
+                {
+                    out << "\\\'";
+                    lastWasHexEscapeCode = false;
                     charsOnLine += 2;
                     break;
+                }
 
-                case '\'':
-                    if (replaceSingleQuotes)
-                    {
-                        out << "\\\'";
-                        lastWasHexEscapeCode = false;
-                        charsOnLine += 2;
-                        break;
-                    }
+                // deliberate fall-through...
 
-                    // deliberate fall-through...
+            default:
+                if (c >= 32 && c < 127 && ! (lastWasHexEscapeCode  // (have to avoid following a hex escape sequence with a valid hex digit)
+                                             && CharacterFunctions::getHexDigitValue (c) >= 0))
+                {
+                    out << (char) c;
+                    lastWasHexEscapeCode = false;
+                    ++charsOnLine;
+                }
+                else if (allowStringBreaks && lastWasHexEscapeCode && c >= 32 && c < 127)
+                {
+                    out << "\"\"" << (char) c;
+                    lastWasHexEscapeCode = false;
+                    charsOnLine += 3;
+                }
+                else
+                {
+                    out << (c < 16 ? "\\x0" : "\\x") << String::toHexString ((int) c);
+                    lastWasHexEscapeCode = true;
+                    charsOnLine += 4;
+                }
 
-                default:
-                    if (c >= 32 && c < 127 && ! (lastWasHexEscapeCode  // (have to avoid following a hex escape sequence with a valid hex digit)
-                                                   && CharacterFunctions::getHexDigitValue (c) >= 0))
-                    {
-                        out << (char) c;
-                        lastWasHexEscapeCode = false;
-                        ++charsOnLine;
-                    }
-                    else if (allowStringBreaks && lastWasHexEscapeCode && c >= 32 && c < 127)
-                    {
-                        out << "\"\"" << (char) c;
-                        lastWasHexEscapeCode = false;
-                        charsOnLine += 3;
-                    }
-                    else
-                    {
-                        out << (c < 16 ? "\\x0" : "\\x") << String::toHexString ((int) c);
-                        lastWasHexEscapeCode = true;
-                        charsOnLine += 4;
-                    }
-
-                    break;
+                break;
             }
 
             if ((startNewLine || (maxCharsOnLine > 0 && charsOnLine >= maxCharsOnLine))
-                 && (numBytesToRead < 0 || i < numBytesToRead - 1))
+                    && (numBytesToRead < 0 || i < numBytesToRead - 1))
             {
                 charsOnLine = 0;
                 out << "\"" << newLine << "\"";

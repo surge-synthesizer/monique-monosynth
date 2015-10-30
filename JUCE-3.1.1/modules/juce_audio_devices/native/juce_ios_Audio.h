@@ -25,18 +25,18 @@ public:
     Array<int> getAvailableBufferSizes() override;
 
     int getDefaultBufferSize() override;
-    
+
     String open (const BigInteger& inputChannelsWanted,
                  const BigInteger& outputChannelsWanted,
                  double targetSampleRate, int bufferSize) override;
-    
+
     void close() override;
     bool isOpen() override;
-    
+
     int getCurrentBufferSizeSamples() override;
     double getCurrentSampleRate() override;
     int getCurrentBitDepth() override;
-    
+
     BigInteger getActiveOutputChannels() const override;
     BigInteger getActiveInputChannels() const override;
 
@@ -57,7 +57,7 @@ public:
 private:
 
     //==================================================================================================
-    
+
     void* wrapper; //Objective C class for recieving notifications from AVAudioSession
     AVAudioSession* avAudioSession; //the shared AVAudioSession
     NSError* err;
@@ -114,7 +114,7 @@ private:
         static AudioSessionHolder audioSessionHolder;
         return audioSessionHolder;
     }
-    
+
     void interruptionListener (const UInt32 interruptionType);
 
     //==================================================================================================
@@ -131,7 +131,7 @@ private:
     //    {
     //        static_cast<iOSAudioIODevice*> (client)->routingChanged (propertyValue);
     //    }
-    
+
     //==================================================================================================
 
     void resetFormat (const int numChannels) noexcept;

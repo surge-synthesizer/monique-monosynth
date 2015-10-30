@@ -37,7 +37,7 @@
     @see VSTPluginFormat, VST3PluginFormat, AudioPluginFormat, AudioPluginFormatManager, JUCE_PLUGINHOST_AU, JUCE_PLUGINHOST_VST3
 */
 #ifndef JUCE_PLUGINHOST_VST
- #define JUCE_PLUGINHOST_VST 0
+#define JUCE_PLUGINHOST_VST 0
 #endif
 
 /** Config: JUCE_PLUGINHOST_VST3
@@ -47,7 +47,7 @@
     @see VSTPluginFormat, VST3PluginFormat, AudioPluginFormat, AudioPluginFormatManager, JUCE_PLUGINHOST_VST, JUCE_PLUGINHOST_AU
 */
 #ifndef JUCE_PLUGINHOST_VST3
- #define JUCE_PLUGINHOST_VST3 0
+#define JUCE_PLUGINHOST_VST3 0
 #endif
 
 /** Config: JUCE_PLUGINHOST_AU
@@ -56,7 +56,7 @@
     @see AudioUnitPluginFormat, AudioPluginFormat, AudioPluginFormatManager, JUCE_PLUGINHOST_VST, JUCE_PLUGINHOST_VST3
 */
 #ifndef JUCE_PLUGINHOST_AU
- #define JUCE_PLUGINHOST_AU 0
+#define JUCE_PLUGINHOST_AU 0
 #endif
 
 #if ! (JUCE_PLUGINHOST_AU || JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_VST3)
@@ -64,7 +64,7 @@
 #endif
 
 #if ! (defined (JUCE_SUPPORT_CARBON) || JUCE_64BIT)
- #define JUCE_SUPPORT_CARBON 1
+#define JUCE_SUPPORT_CARBON 1
 #endif
 
 //=============================================================================

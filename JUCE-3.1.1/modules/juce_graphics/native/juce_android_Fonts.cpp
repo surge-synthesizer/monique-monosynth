@@ -92,7 +92,7 @@ bool TextLayout::createNativeLayout (const AttributedString&)
 #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
  STATICMETHOD (create,          "create",           "(Ljava/lang/String;I)Landroid/graphics/Typeface;") \
  STATICMETHOD (createFromFile,  "createFromFile",   "(Ljava/lang/String;)Landroid/graphics/Typeface;") \
-
+ 
 DECLARE_JNI_CLASS (TypefaceClass, "android/graphics/Typeface");
 #undef JNI_CLASS_MEMBERS
 
@@ -106,7 +106,7 @@ StringArray Font::findAllTypefaceNames()
 
     for (int i = 0; i < fonts.size(); ++i)
         results.addIfNotAlreadyThere (fonts.getReference(i).getFileNameWithoutExtension()
-                                        .upToLastOccurrenceOf ("-", false, false));
+                                      .upToLastOccurrenceOf ("-", false, false));
 
     return results;
 }
@@ -120,7 +120,7 @@ StringArray Font::findAllTypefaceStyles (const String& family)
 
     for (int i = 0; i < fonts.size(); ++i)
         results.addIfNotAlreadyThere (fonts.getReference(i).getFileNameWithoutExtension()
-                                        .fromLastOccurrenceOf ("-", false, false));
+                                      .fromLastOccurrenceOf ("-", false, false));
 
     return results;
 }
@@ -148,11 +148,11 @@ public:
 
         if (fontFile.exists())
             typeface = GlobalRef (env->CallStaticObjectMethod (TypefaceClass, TypefaceClass.createFromFile,
-                                                               javaString (fontFile.getFullPathName()).get()));
+                                  javaString (fontFile.getFullPathName()).get()));
         else
             typeface = GlobalRef (env->CallStaticObjectMethod (TypefaceClass, TypefaceClass.create,
-                                                               javaString (getName()).get(),
-                                                               (isBold ? 1 : 0) + (isItalic ? 2 : 0)));
+                                  javaString (getName()).get(),
+                                  (isBold ? 1 : 0) + (isItalic ? 2 : 0)));
 
         rect = GlobalRef (env->NewObject (RectClass, RectClass.constructor, 0, 0, 0, 0));
 
@@ -170,9 +170,15 @@ public:
         heightToPointsFactor = referenceFontSize / totalHeight;
     }
 
-    float getAscent() const override                 { return ascent; }
-    float getDescent() const override                { return descent; }
-    float getHeightToPointsFactor() const override   { return heightToPointsFactor; }
+    float getAscent() const override                 {
+        return ascent;
+    }
+    float getDescent() const override                {
+        return descent;
+    }
+    float getHeightToPointsFactor() const override   {
+        return heightToPointsFactor;
+    }
 
     float getStringWidth (const String& text) override
     {
@@ -250,11 +256,11 @@ public:
 
             for (int y = top; y < bottom; ++y)
             {
-               #if JUCE_LITTLE_ENDIAN
+#if JUCE_LITTLE_ENDIAN
                 const uint8* const lineBytes = ((const uint8*) mask) + 3;
-               #else
+#else
                 const uint8* const lineBytes = (const uint8*) mask;
-               #endif
+#endif
 
                 et->clipLineToMask (left, y, lineBytes, 4, bounds.getWidth());
                 mask += bounds.getWidth();

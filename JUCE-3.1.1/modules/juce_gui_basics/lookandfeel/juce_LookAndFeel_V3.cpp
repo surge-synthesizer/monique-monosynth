@@ -40,10 +40,12 @@ LookAndFeel_V3::LookAndFeel_V3()
 
 LookAndFeel_V3::~LookAndFeel_V3() {}
 
-bool LookAndFeel_V3::areScrollbarButtonsVisible()        { return false; }
+bool LookAndFeel_V3::areScrollbarButtonsVisible()        {
+    return false;
+}
 
 void LookAndFeel_V3::drawStretchableLayoutResizerBar (Graphics& g, int /*w*/, int /*h*/, bool /*isVerticalBar*/,
-                                                      bool isMouseOver, bool isMouseDragging)
+        bool isMouseOver, bool isMouseDragging)
 {
     if (isMouseOver || isMouseDragging)
         g.fillAll (Colours::yellow.withAlpha (0.4f));
@@ -80,8 +82,8 @@ void LookAndFeel_V3::drawScrollbar (Graphics& g, ScrollBar& scrollbar, int x, in
 }
 
 void LookAndFeel_V3::drawConcertinaPanelHeader (Graphics& g, const Rectangle<int>& area,
-                                                bool isMouseOver, bool /*isMouseDown*/,
-                                                ConcertinaPanel&, Component& panel)
+        bool isMouseOver, bool /*isMouseDown*/,
+        ConcertinaPanel&, Component& panel)
 {
     const Colour bkg (Colours::grey);
 
@@ -109,17 +111,17 @@ static void drawButtonShape (Graphics& g, const Path& outline, Colour baseColour
 
     g.setColour (Colours::white.withAlpha (0.4f * mainAlpha * mainBrightness * mainBrightness));
     g.strokePath (outline, PathStrokeType (1.0f), AffineTransform::translation (0.0f, 1.0f)
-                                                        .scaled (1.0f, (height - 1.6f) / height));
+                  .scaled (1.0f, (height - 1.6f) / height));
 
     g.setColour (Colours::black.withAlpha (0.4f * mainAlpha));
     g.strokePath (outline, PathStrokeType (1.0f));
 }
 
 void LookAndFeel_V3::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
-                                           bool isMouseOverButton, bool isButtonDown)
+        bool isMouseOverButton, bool isButtonDown)
 {
     Colour baseColour (backgroundColour.withMultipliedSaturation (button.hasKeyboardFocus (true) ? 1.3f : 0.9f)
-                                       .withMultipliedAlpha (button.isEnabled() ? 0.9f : 0.5f));
+                       .withMultipliedAlpha (button.isEnabled() ? 0.9f : 0.5f));
 
     if (isButtonDown || isMouseOverButton)
         baseColour = baseColour.contrasting (isButtonDown ? 0.2f : 0.1f);
@@ -163,11 +165,15 @@ void LookAndFeel_V3::drawTableHeaderBackground (Graphics& g, TableHeaderComponen
         g.fillRect (header.getColumnPosition (i).removeFromRight (1));
 }
 
-int LookAndFeel_V3::getTabButtonOverlap (int /*tabDepth*/)            { return -1; }
-int LookAndFeel_V3::getTabButtonSpaceAroundImage()                    { return 0; }
+int LookAndFeel_V3::getTabButtonOverlap (int /*tabDepth*/)            {
+    return -1;
+}
+int LookAndFeel_V3::getTabButtonSpaceAroundImage()                    {
+    return 0;
+}
 
 void LookAndFeel_V3::createTabTextLayout (const TabBarButton& button, float length, float depth,
-                                          Colour colour, TextLayout& textLayout)
+        Colour colour, TextLayout& textLayout)
 {
     Font font (depth * 0.5f);
     font.setUnderline (button.hasKeyboardFocus (false));
@@ -197,11 +203,25 @@ void LookAndFeel_V3::drawTabButton (TabBarButton& button, Graphics& g, bool isMo
 
         switch (o)
         {
-            case TabbedButtonBar::TabsAtBottom:   p1 = activeArea.getBottomLeft(); p2 = activeArea.getTopLeft();    break;
-            case TabbedButtonBar::TabsAtTop:      p1 = activeArea.getTopLeft();    p2 = activeArea.getBottomLeft(); break;
-            case TabbedButtonBar::TabsAtRight:    p1 = activeArea.getTopRight();   p2 = activeArea.getTopLeft();    break;
-            case TabbedButtonBar::TabsAtLeft:     p1 = activeArea.getTopLeft();    p2 = activeArea.getTopRight();   break;
-            default:                              jassertfalse; break;
+        case TabbedButtonBar::TabsAtBottom:
+            p1 = activeArea.getBottomLeft();
+            p2 = activeArea.getTopLeft();
+            break;
+        case TabbedButtonBar::TabsAtTop:
+            p1 = activeArea.getTopLeft();
+            p2 = activeArea.getBottomLeft();
+            break;
+        case TabbedButtonBar::TabsAtRight:
+            p1 = activeArea.getTopRight();
+            p2 = activeArea.getTopLeft();
+            break;
+        case TabbedButtonBar::TabsAtLeft:
+            p1 = activeArea.getTopLeft();
+            p2 = activeArea.getTopRight();
+            break;
+        default:
+            jassertfalse;
+            break;
         }
 
         g.setGradientFill (ColourGradient (bkg.brighter (0.2f), (float) p1.x, (float) p1.y,
@@ -226,7 +246,7 @@ void LookAndFeel_V3::drawTabButton (TabBarButton& button, Graphics& g, bool isMo
     if (TabbedButtonBar* bar = button.findParentComponentOfClass<TabbedButtonBar>())
     {
         TabbedButtonBar::ColourIds colID = button.isFrontTab() ? TabbedButtonBar::frontTextColourId
-                                                               : TabbedButtonBar::tabTextColourId;
+                                           : TabbedButtonBar::tabTextColourId;
 
         if (bar->isColourSpecified (colID))
             col = bar->findColour (colID);
@@ -249,11 +269,19 @@ void LookAndFeel_V3::drawTabButton (TabBarButton& button, Graphics& g, bool isMo
 
     switch (o)
     {
-        case TabbedButtonBar::TabsAtLeft:   t = t.rotated (float_Pi * -0.5f).translated (area.getX(), area.getBottom()); break;
-        case TabbedButtonBar::TabsAtRight:  t = t.rotated (float_Pi *  0.5f).translated (area.getRight(), area.getY()); break;
-        case TabbedButtonBar::TabsAtTop:
-        case TabbedButtonBar::TabsAtBottom: t = t.translated (area.getX(), area.getY()); break;
-        default:                            jassertfalse; break;
+    case TabbedButtonBar::TabsAtLeft:
+        t = t.rotated (float_Pi * -0.5f).translated (area.getX(), area.getBottom());
+        break;
+    case TabbedButtonBar::TabsAtRight:
+        t = t.rotated (float_Pi *  0.5f).translated (area.getRight(), area.getY());
+        break;
+    case TabbedButtonBar::TabsAtTop:
+    case TabbedButtonBar::TabsAtBottom:
+        t = t.translated (area.getX(), area.getY());
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 
     g.addTransform (t);
@@ -270,33 +298,34 @@ void LookAndFeel_V3::drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphic
 
     switch (bar.getOrientation())
     {
-        case TabbedButtonBar::TabsAtLeft:
-            gradient.point1.x = (float) w;
-            gradient.point2.x = w * (1.0f - shadowSize);
-            shadowRect.setBounds ((int) gradient.point2.x, 0, w - (int) gradient.point2.x, h);
-            line.setBounds (w - 1, 0, 1, h);
-            break;
+    case TabbedButtonBar::TabsAtLeft:
+        gradient.point1.x = (float) w;
+        gradient.point2.x = w * (1.0f - shadowSize);
+        shadowRect.setBounds ((int) gradient.point2.x, 0, w - (int) gradient.point2.x, h);
+        line.setBounds (w - 1, 0, 1, h);
+        break;
 
-        case TabbedButtonBar::TabsAtRight:
-            gradient.point2.x = w * shadowSize;
-            shadowRect.setBounds (0, 0, (int) gradient.point2.x, h);
-            line.setBounds (0, 0, 1, h);
-            break;
+    case TabbedButtonBar::TabsAtRight:
+        gradient.point2.x = w * shadowSize;
+        shadowRect.setBounds (0, 0, (int) gradient.point2.x, h);
+        line.setBounds (0, 0, 1, h);
+        break;
 
-        case TabbedButtonBar::TabsAtTop:
-            gradient.point1.y = (float) h;
-            gradient.point2.y = h * (1.0f - shadowSize);
-            shadowRect.setBounds (0, (int) gradient.point2.y, w, h - (int) gradient.point2.y);
-            line.setBounds (0, h - 1, w, 1);
-            break;
+    case TabbedButtonBar::TabsAtTop:
+        gradient.point1.y = (float) h;
+        gradient.point2.y = h * (1.0f - shadowSize);
+        shadowRect.setBounds (0, (int) gradient.point2.y, w, h - (int) gradient.point2.y);
+        line.setBounds (0, h - 1, w, 1);
+        break;
 
-        case TabbedButtonBar::TabsAtBottom:
-            gradient.point2.y = h * shadowSize;
-            shadowRect.setBounds (0, 0, w, (int) gradient.point2.y);
-            line.setBounds (0, 0, w, 1);
-            break;
+    case TabbedButtonBar::TabsAtBottom:
+        gradient.point2.y = h * shadowSize;
+        shadowRect.setBounds (0, 0, w, (int) gradient.point2.y);
+        line.setBounds (0, 0, w, 1);
+        break;
 
-        default: break;
+    default:
+        break;
     }
 
     g.setGradientFill (gradient);
@@ -324,7 +353,7 @@ void LookAndFeel_V3::drawTextEditorOutline (Graphics& g, int width, int height, 
 }
 
 void LookAndFeel_V3::drawTreeviewPlusMinusBox (Graphics& g, const Rectangle<float>& area,
-                                               Colour backgroundColour, bool isOpen, bool isMouseOver)
+        Colour backgroundColour, bool isOpen, bool isMouseOver)
 {
     Path p;
     p.addTriangle (0.0f, 0.0f, 1.0f, isOpen ? 0.0f : 0.5f, isOpen ? 0.5f : 0.0f, 1.0f);
@@ -395,8 +424,8 @@ void LookAndFeel_V3::drawLinearSlider (Graphics& g, int x, int y, int width, int
             p.addRectangle (fx, fy, sliderPos - fx, fh);
 
         Colour baseColour (slider.findColour (Slider::thumbColourId)
-                                .withMultipliedSaturation (slider.isEnabled() ? 1.0f : 0.5f)
-                                .withMultipliedAlpha (0.8f));
+                           .withMultipliedSaturation (slider.isEnabled() ? 1.0f : 0.5f)
+                           .withMultipliedAlpha (0.8f));
 
         g.setGradientFill (ColourGradient (baseColour.brighter (0.08f), 0.0f, 0.0f,
                                            baseColour.darker (0.08f), 0.0f, (float) height, false));
@@ -417,10 +446,10 @@ void LookAndFeel_V3::drawLinearSlider (Graphics& g, int x, int y, int width, int
 }
 
 void LookAndFeel_V3::drawLinearSliderBackground (Graphics& g, int x, int y, int width, int height,
-                                                 float /*sliderPos*/,
-                                                 float /*minSliderPos*/,
-                                                 float /*maxSliderPos*/,
-                                                 const Slider::SliderStyle /*style*/, Slider& slider)
+        float /*sliderPos*/,
+        float /*minSliderPos*/,
+        float /*maxSliderPos*/,
+        const Slider::SliderStyle /*style*/, Slider& slider)
 {
     const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
 
@@ -457,16 +486,17 @@ void LookAndFeel_V3::drawLinearSliderBackground (Graphics& g, int x, int y, int 
 void LookAndFeel_V3::drawPopupMenuBackground (Graphics& g, int width, int height)
 {
     g.fillAll (findColour (PopupMenu::backgroundColourId));
-    (void) width; (void) height;
+    (void) width;
+    (void) height;
 
-   #if ! JUCE_MAC
+#if ! JUCE_MAC
     g.setColour (findColour (PopupMenu::textColourId).withAlpha (0.6f));
     g.drawRect (0, 0, width, height);
-   #endif
+#endif
 }
 
 void LookAndFeel_V3::drawMenuBarBackground (Graphics& g, int width, int height,
-                                            bool, MenuBarComponent& menuBar)
+        bool, MenuBarComponent& menuBar)
 {
     const Colour colour (menuBar.findColour (PopupMenu::backgroundColourId));
 
@@ -481,7 +511,7 @@ void LookAndFeel_V3::drawMenuBarBackground (Graphics& g, int width, int height,
 }
 
 void LookAndFeel_V3::drawKeymapChangeButton (Graphics& g, int width, int height,
-                                             Button& button, const String& keyDescription)
+        Button& button, const String& keyDescription)
 {
     const Colour textColour (button.findColour (0x100ad01 /*KeyMappingEditorComponent::textColourId*/, true));
 
@@ -557,7 +587,7 @@ public:
 
         float scale = 0.55f;
         g.fillPath (p, p.getTransformToScaleToFit (cx - diam * scale, cy - diam * scale,
-                                                   diam * 2.0f * scale, diam * 2.0f * scale, true));
+                    diam * 2.0f * scale, diam * 2.0f * scale, true));
     }
 
 private:
@@ -612,7 +642,8 @@ Path LookAndFeel_V3::getTickShape (const float height)
 {
     static const unsigned char pathData[]
         = { 110,109,32,210,202,64,126,183,148,64,108,39,244,247,64,245,76,124,64,108,178,131,27,65,246,76,252,64,108,175,242,4,65,246,76,252,
-            64,108,236,5,68,65,0,0,160,180,108,240,150,90,65,21,136,52,63,108,48,59,16,65,0,0,32,65,108,32,210,202,64,126,183,148,64, 99,101,0,0 };
+            64,108,236,5,68,65,0,0,160,180,108,240,150,90,65,21,136,52,63,108,48,59,16,65,0,0,32,65,108,32,210,202,64,126,183,148,64, 99,101,0,0
+          };
 
     Path p;
     p.loadPathFromData (pathData, sizeof (pathData));
@@ -624,7 +655,8 @@ Path LookAndFeel_V3::getCrossShape (const float height)
 {
     static const unsigned char pathData[]
         = { 110,109,88,57,198,65,29,90,171,65,108,63,53,154,65,8,172,126,65,108,76,55,198,65,215,163,38,65,108,141,151,175,65,82,184,242,64,108,117,147,131,65,90,100,81,65,108,184,30,47,65,82,184,242,64,108,59,223,1,65,215,163,38,65,108,84,227,89,65,8,172,126,65,
-            108,35,219,1,65,29,90,171,65,108,209,34,47,65,231,251,193,65,108,117,147,131,65,207,247,149,65,108,129,149,175,65,231,251,193,65,99,101,0,0 };
+            108,35,219,1,65,29,90,171,65,108,209,34,47,65,231,251,193,65,108,117,147,131,65,207,247,149,65,108,129,149,175,65,231,251,193,65,99,101,0,0
+          };
 
     Path p;
     p.loadPathFromData (pathData, sizeof (pathData));

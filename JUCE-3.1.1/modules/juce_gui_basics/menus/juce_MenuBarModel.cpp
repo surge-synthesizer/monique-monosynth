@@ -23,7 +23,8 @@
 */
 
 MenuBarModel::MenuBarModel() noexcept
-    : manager (nullptr)
+:
+manager (nullptr)
 {
 }
 

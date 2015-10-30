@@ -304,14 +304,14 @@ public:
         AtomicTester <int*>::testInteger (*this);
         beginTest ("Atomic float");
         AtomicTester <float>::testFloat (*this);
-      #if ! JUCE_64BIT_ATOMICS_UNAVAILABLE  // 64-bit intrinsics aren't available on some old platforms
+#if ! JUCE_64BIT_ATOMICS_UNAVAILABLE  // 64-bit intrinsics aren't available on some old platforms
         beginTest ("Atomic int64");
         AtomicTester <int64>::testInteger (*this);
         beginTest ("Atomic uint64");
         AtomicTester <uint64>::testInteger (*this);
         beginTest ("Atomic double");
         AtomicTester <double>::testFloat (*this);
-      #endif
+#endif
     }
 
     template <typename Type>

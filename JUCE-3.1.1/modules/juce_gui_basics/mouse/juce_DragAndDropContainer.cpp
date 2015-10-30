@@ -28,7 +28,7 @@ bool juce_performDragDropText (const String&, bool& shouldStop);
 
 //==============================================================================
 class DragAndDropContainer::DragImageComponent  : public Component,
-                                                  private Timer
+    private Timer
 {
 public:
     DragImageComponent (const Image& im,
@@ -141,7 +141,7 @@ public:
             currentlyOverComp = newTargetComp;
 
             if (newTarget != nullptr
-                  && newTarget->isInterestedInDragSource (details))
+                    && newTarget->isInterestedInDragSource (details))
                 newTarget->itemDragEnter (details);
         }
 
@@ -309,8 +309,8 @@ private:
                 bool canMoveFiles = false;
 
                 if (owner.shouldDropFilesWhenDraggedExternally (details, files, canMoveFiles)
-                      && files.size() > 0
-                      && ModifierKeys::getCurrentModifiersRealtime().isAnyMouseButtonDown())
+                        && files.size() > 0
+                        && ModifierKeys::getCurrentModifiersRealtime().isAnyMouseButtonDown())
                 {
                     (new ExternalDragAndDropMessage (files, canMoveFiles))->post();
                     deleteSelf();
@@ -360,10 +360,10 @@ DragAndDropContainer::~DragAndDropContainer()
 }
 
 void DragAndDropContainer::startDragging (const var& sourceDescription,
-                                          Component* sourceComponent,
-                                          Image dragImage,
-                                          const bool allowDraggingToExternalWindows,
-                                          const Point<int>* imageOffsetFromMouse)
+        Component* sourceComponent,
+        Image dragImage,
+        const bool allowDraggingToExternalWindows,
+        const Point<int>* imageOffsetFromMouse)
 {
     if (dragImageComponent == nullptr)
     {
@@ -381,7 +381,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
         if (dragImage.isNull())
         {
             dragImage = sourceComponent->createComponentSnapshot (sourceComponent->getLocalBounds())
-                            .convertedToFormat (Image::ARGB);
+                        .convertedToFormat (Image::ARGB);
 
             dragImage.multiplyAllAlphas (0.6f);
 
@@ -404,8 +404,8 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
                     if (distance > lo)
                     {
                         const float alpha = (distance > hi) ? 0
-                                                            : (hi - distance) / (float) (hi - lo)
-                                                                + random.nextFloat() * 0.008f;
+                                            : (hi - distance) / (float) (hi - lo)
+                                            + random.nextFloat() * 0.008f;
 
                         dragImage.multiplyAlphaAt (x, y, alpha);
                     }
@@ -423,7 +423,7 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
         }
 
         dragImageComponent = new DragImageComponent (dragImage, sourceDescription, sourceComponent,
-                                                     draggingSource->getComponentUnderMouse(), *this, imageOffset);
+                draggingSource->getComponentUnderMouse(), *this, imageOffset);
 
         if (allowDraggingToExternalWindows)
         {
@@ -431,8 +431,8 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
                 dragImageComponent->setOpaque (true);
 
             dragImageComponent->addToDesktop (ComponentPeer::windowIgnoresMouseClicks
-                                               | ComponentPeer::windowIsTemporary
-                                               | ComponentPeer::windowIgnoresKeyPresses);
+                                              | ComponentPeer::windowIsTemporary
+                                              | ComponentPeer::windowIgnoresKeyPresses);
         }
         else
         {
@@ -450,12 +450,12 @@ void DragAndDropContainer::startDragging (const var& sourceDescription,
         static_cast<DragImageComponent*> (dragImageComponent.get())->updateLocation (false, lastMouseDown);
         dragImageComponent->enterModalState();
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         // Under heavy load, the layered window's paint callback can often be lost by the OS,
         // so forcing a repaint at least once makes sure that the window becomes visible..
         if (ComponentPeer* const peer = dragImageComponent->getPeer())
             peer->performAnyPendingRepaintsNow();
-       #endif
+#endif
 
         dragOperationStarted();
     }
@@ -469,7 +469,7 @@ bool DragAndDropContainer::isDragAndDropActive() const
 var DragAndDropContainer::getCurrentDragDescription() const
 {
     return dragImageComponent != nullptr ? dragImageComponent->sourceDetails.description
-                                         : var();
+           : var();
 }
 
 DragAndDropContainer* DragAndDropContainer::findParentDragContainerFor (Component* c)
@@ -487,16 +487,19 @@ void DragAndDropContainer::dragOperationEnded()    {}
 
 //==============================================================================
 DragAndDropTarget::SourceDetails::SourceDetails (const var& desc, Component* comp, Point<int> pos) noexcept
-    : description (desc),
-      sourceComponent (comp),
-      localPosition (pos)
+:
+description (desc),
+            sourceComponent (comp),
+            localPosition (pos)
 {
 }
 
 void DragAndDropTarget::itemDragEnter (const SourceDetails&)  {}
 void DragAndDropTarget::itemDragMove  (const SourceDetails&)  {}
 void DragAndDropTarget::itemDragExit  (const SourceDetails&)  {}
-bool DragAndDropTarget::shouldDrawDragImageWhenOver()         { return true; }
+bool DragAndDropTarget::shouldDrawDragImageWhenOver()         {
+    return true;
+}
 
 //==============================================================================
 void FileDragAndDropTarget::fileDragEnter (const StringArray&, int, int)  {}

@@ -31,10 +31,10 @@ static StringArray readDeadMansPedalFile (const File& file)
 }
 
 PluginDirectoryScanner::PluginDirectoryScanner (KnownPluginList& listToAddTo,
-                                                AudioPluginFormat& formatToLookFor,
-                                                FileSearchPath directoriesToSearch,
-                                                const bool recursive,
-                                                const File& deadMansPedal)
+        AudioPluginFormat& formatToLookFor,
+        FileSearchPath directoriesToSearch,
+        const bool recursive,
+        const File& deadMansPedal)
     : list (listToAddTo),
       format (formatToLookFor),
       deadMansPedalFile (deadMansPedal),
@@ -78,7 +78,7 @@ void PluginDirectoryScanner::updateProgress()
 }
 
 bool PluginDirectoryScanner::scanNextFile (const bool dontRescanIfAlreadyInList,
-                                           String& nameOfPluginBeingScanned)
+        String& nameOfPluginBeingScanned)
 {
     const int index = --nextIndex;
 

@@ -24,107 +24,107 @@
 
 namespace FileChooserHelpers
 {
-    struct FileChooserCallbackInfo
+struct FileChooserCallbackInfo
+{
+    String initialPath;
+    String returnedString; // need this to get non-existent pathnames from the directory chooser
+    ScopedPointer<Component> customComponent;
+};
+
+static int CALLBACK browseCallbackProc (HWND hWnd, UINT msg, LPARAM lParam, LPARAM lpData)
+{
+    FileChooserCallbackInfo* info = (FileChooserCallbackInfo*) lpData;
+
+    if (msg == BFFM_INITIALIZED)
+        SendMessage (hWnd, BFFM_SETSELECTIONW, TRUE, (LPARAM) info->initialPath.toWideCharPointer());
+    else if (msg == BFFM_VALIDATEFAILEDW)
+        info->returnedString = (LPCWSTR) lParam;
+    else if (msg == BFFM_VALIDATEFAILEDA)
+        info->returnedString = (const char*) lParam;
+
+    return 0;
+}
+
+static UINT_PTR CALLBACK openCallback (HWND hdlg, UINT uiMsg, WPARAM /*wParam*/, LPARAM lParam)
+{
+    if (uiMsg == WM_INITDIALOG)
     {
-        String initialPath;
-        String returnedString; // need this to get non-existent pathnames from the directory chooser
-        ScopedPointer<Component> customComponent;
-    };
+        Component* customComp = ((FileChooserCallbackInfo*) (((OPENFILENAMEW*) lParam)->lCustData))->customComponent;
 
-    static int CALLBACK browseCallbackProc (HWND hWnd, UINT msg, LPARAM lParam, LPARAM lpData)
-    {
-        FileChooserCallbackInfo* info = (FileChooserCallbackInfo*) lpData;
+        HWND dialogH = GetParent (hdlg);
+        jassert (dialogH != 0);
+        if (dialogH == 0)
+            dialogH = hdlg;
 
-        if (msg == BFFM_INITIALIZED)
-            SendMessage (hWnd, BFFM_SETSELECTIONW, TRUE, (LPARAM) info->initialPath.toWideCharPointer());
-        else if (msg == BFFM_VALIDATEFAILEDW)
-            info->returnedString = (LPCWSTR) lParam;
-        else if (msg == BFFM_VALIDATEFAILEDA)
-            info->returnedString = (const char*) lParam;
+        RECT r, cr;
+        GetWindowRect (dialogH, &r);
+        GetClientRect (dialogH, &cr);
 
-        return 0;
+        SetWindowPos (dialogH, 0,
+                      r.left, r.top,
+                      customComp->getWidth() + jmax (150, (int) (r.right - r.left)),
+                      jmax (150, (int) (r.bottom - r.top)),
+                      SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+
+        customComp->setBounds (cr.right, cr.top, customComp->getWidth(), cr.bottom - cr.top);
+        customComp->addToDesktop (0, dialogH);
     }
-
-    static UINT_PTR CALLBACK openCallback (HWND hdlg, UINT uiMsg, WPARAM /*wParam*/, LPARAM lParam)
+    else if (uiMsg == WM_NOTIFY)
     {
-        if (uiMsg == WM_INITDIALOG)
+        LPOFNOTIFY ofn = (LPOFNOTIFY) lParam;
+
+        if (ofn->hdr.code == CDN_SELCHANGE)
         {
-            Component* customComp = ((FileChooserCallbackInfo*) (((OPENFILENAMEW*) lParam)->lCustData))->customComponent;
+            FileChooserCallbackInfo* info = (FileChooserCallbackInfo*) ofn->lpOFN->lCustData;
 
-            HWND dialogH = GetParent (hdlg);
-            jassert (dialogH != 0);
-            if (dialogH == 0)
-                dialogH = hdlg;
-
-            RECT r, cr;
-            GetWindowRect (dialogH, &r);
-            GetClientRect (dialogH, &cr);
-
-            SetWindowPos (dialogH, 0,
-                          r.left, r.top,
-                          customComp->getWidth() + jmax (150, (int) (r.right - r.left)),
-                          jmax (150, (int) (r.bottom - r.top)),
-                          SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-
-            customComp->setBounds (cr.right, cr.top, customComp->getWidth(), cr.bottom - cr.top);
-            customComp->addToDesktop (0, dialogH);
-        }
-        else if (uiMsg == WM_NOTIFY)
-        {
-            LPOFNOTIFY ofn = (LPOFNOTIFY) lParam;
-
-            if (ofn->hdr.code == CDN_SELCHANGE)
+            if (FilePreviewComponent* comp = dynamic_cast<FilePreviewComponent*> (info->customComponent->getChildComponent(0)))
             {
-                FileChooserCallbackInfo* info = (FileChooserCallbackInfo*) ofn->lpOFN->lCustData;
+                WCHAR path [MAX_PATH * 2] = { 0 };
+                CommDlg_OpenSave_GetFilePath (GetParent (hdlg), (LPARAM) &path, MAX_PATH);
 
-                if (FilePreviewComponent* comp = dynamic_cast<FilePreviewComponent*> (info->customComponent->getChildComponent(0)))
-                {
-                    WCHAR path [MAX_PATH * 2] = { 0 };
-                    CommDlg_OpenSave_GetFilePath (GetParent (hdlg), (LPARAM) &path, MAX_PATH);
-
-                    comp->selectedFileChanged (File (path));
-                }
+                comp->selectedFileChanged (File (path));
             }
         }
-
-        return 0;
     }
 
-    class CustomComponentHolder  : public Component
+    return 0;
+}
+
+class CustomComponentHolder  : public Component
+{
+public:
+    CustomComponentHolder (Component* const customComp)
     {
-    public:
-        CustomComponentHolder (Component* const customComp)
-        {
-            setVisible (true);
-            setOpaque (true);
-            addAndMakeVisible (customComp);
-            setSize (jlimit (20, 800, customComp->getWidth()), customComp->getHeight());
-        }
+        setVisible (true);
+        setOpaque (true);
+        addAndMakeVisible (customComp);
+        setSize (jlimit (20, 800, customComp->getWidth()), customComp->getHeight());
+    }
 
-        void paint (Graphics& g) override
-        {
-            g.fillAll (Colours::lightgrey);
-        }
+    void paint (Graphics& g) override
+    {
+        g.fillAll (Colours::lightgrey);
+    }
 
-        void resized() override
-        {
-            if (Component* const c = getChildComponent(0))
-                c->setBounds (getLocalBounds());
-        }
+    void resized() override
+    {
+        if (Component* const c = getChildComponent(0))
+            c->setBounds (getLocalBounds());
+    }
 
-    private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CustomComponentHolder)
-    };
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CustomComponentHolder)
+};
 }
 
 //==============================================================================
 bool FileChooser::isPlatformDialogAvailable()
 {
-   #if JUCE_DISABLE_NATIVE_FILECHOOSERS
+#if JUCE_DISABLE_NATIVE_FILECHOOSERS
     return false;
-   #else
+#else
     return true;
-   #endif
+#endif
 }
 
 void FileChooser::showPlatformDialog (Array<File>& results, const String& title_, const File& currentFileOrDirectory,
@@ -176,11 +176,11 @@ void FileChooser::showPlatformDialog (Array<File>& results, const String& title_
         bi.lpszTitle = title.toWideCharPointer();
         bi.lParam = (LPARAM) &info;
         bi.lpfn = browseCallbackProc;
-       #ifdef BIF_USENEWUI
+#ifdef BIF_USENEWUI
         bi.ulFlags = BIF_USENEWUI | BIF_VALIDATE;
-       #else
+#else
         bi.ulFlags = 0x50;
-       #endif
+#endif
 
         LPITEMIDLIST list = SHBrowseForFolder (&bi);
 
@@ -228,11 +228,11 @@ void FileChooser::showPlatformDialog (Array<File>& results, const String& title_
         OPENFILENAMEW of = { 0 };
         String localPath (info.initialPath);
 
-       #ifdef OPENFILENAME_SIZE_VERSION_400W
+#ifdef OPENFILENAME_SIZE_VERSION_400W
         of.lStructSize = OPENFILENAME_SIZE_VERSION_400W;
-       #else
+#else
         of.lStructSize = sizeof (of);
-       #endif
+#endif
         of.hwndOwner = (HWND) parentWindow.getWindowHandle();
         of.lpstrFilter = filters.getData();
         of.nFilterIndex = 1;

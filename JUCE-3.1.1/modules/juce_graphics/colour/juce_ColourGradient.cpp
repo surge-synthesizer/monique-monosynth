@@ -24,12 +24,12 @@
 
 ColourGradient::ColourGradient() noexcept
 {
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     point1.setX (987654.0f);
-    #define JUCE_COLOURGRADIENT_CHECK_COORDS_INITIALISED   jassert (point1.x != 987654.0f);
-   #else
-    #define JUCE_COLOURGRADIENT_CHECK_COORDS_INITIALISED
-   #endif
+#define JUCE_COLOURGRADIENT_CHECK_COORDS_INITIALISED   jassert (point1.x != 987654.0f);
+#else
+#define JUCE_COLOURGRADIENT_CHECK_COORDS_INITIALISED
+#endif
 }
 
 ColourGradient::ColourGradient (Colour colour1, const float x1_, const float y1_,
@@ -50,8 +50,8 @@ ColourGradient::~ColourGradient()
 bool ColourGradient::operator== (const ColourGradient& other) const noexcept
 {
     return point1 == other.point1 && point2 == other.point2
-            && isRadial == other.isRadial
-            && colours == other.colours;
+           && isRadial == other.isRadial
+           && colours == other.colours;
 }
 
 bool ColourGradient::operator!= (const ColourGradient& other) const noexcept
@@ -108,7 +108,7 @@ double ColourGradient::getColourPosition (const int index) const noexcept
         return colours.getReference (index).position;
 
     return 0;
- }
+}
 
 Colour ColourGradient::getColour (const int index) const noexcept
 {
@@ -185,7 +185,7 @@ int ColourGradient::createLookupTable (const AffineTransform& transform, HeapBlo
 
     const int numEntries = jlimit (1, jmax (1, (colours.size() - 1) << 8),
                                    3 * (int) point1.transformedBy (transform)
-                                                .getDistanceFrom (point2.transformedBy (transform)));
+                                   .getDistanceFrom (point2.transformedBy (transform)));
     lookupTable.malloc ((size_t) numEntries);
     createLookupTable (lookupTable, numEntries);
     return numEntries;

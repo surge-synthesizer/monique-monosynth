@@ -30,7 +30,7 @@
 #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
  METHOD (constructor, "<init>", "()V") \
  METHOD (toString, "toString", "()Ljava/lang/String;") \
-
+ 
 DECLARE_JNI_CLASS (StringBuffer, "java/lang/StringBuffer");
 #undef JNI_CLASS_MEMBERS
 
@@ -42,7 +42,7 @@ DECLARE_JNI_CLASS (StringBuffer, "java/lang/StringBuffer");
  METHOD (getTotalLength, "getTotalLength", "()J") \
  METHOD (isExhausted, "isExhausted", "()Z") \
  METHOD (setPosition, "setPosition", "(J)Z") \
-
+ 
 DECLARE_JNI_CLASS (HTTPStream, JUCE_ANDROID_ACTIVITY_CLASSPATH "$HTTPStream");
 #undef JNI_CLASS_MEMBERS
 
@@ -55,9 +55,9 @@ void MACAddress::findAllAddresses (Array<MACAddress>& result)
 
 
 JUCE_API bool JUCE_CALLTYPE Process::openEmailWithAttachments (const String& targetEmailAddress,
-                                                               const String& emailSubject,
-                                                               const String& bodyText,
-                                                               const StringArray& filesToAttach)
+        const String& emailSubject,
+        const String& bodyText,
+        const StringArray& filesToAttach)
 {
     // TODO
     return false;
@@ -96,14 +96,14 @@ public:
         jassert (statusCodeArray != 0);
 
         stream = GlobalRef (env->CallStaticObjectMethod (JuceAppActivity,
-                                                         JuceAppActivity.createHTTPStream,
-                                                         javaString (address).get(),
-                                                         (jboolean) isPost,
-                                                         postDataArray,
-                                                         javaString (headers).get(),
-                                                         (jint) timeOutMs,
-                                                         statusCodeArray,
-                                                         responseHeaderBuffer.get()));
+                            JuceAppActivity.createHTTPStream,
+                            javaString (address).get(),
+                            (jboolean) isPost,
+                            postDataArray,
+                            javaString (headers).get(),
+                            (jint) timeOutMs,
+                            statusCodeArray,
+                            responseHeaderBuffer.get()));
 
         jint* const statusCodeElements = env->GetIntArrayElements (statusCodeArray, 0);
         statusCode = statusCodeElements[0];
@@ -119,7 +119,7 @@ public:
 
             {
                 LocalRef<jstring> headersString ((jstring) env->CallObjectMethod (responseHeaderBuffer.get(),
-                                                                                  StringBuffer.toString));
+                                                 StringBuffer.toString));
                 headerLines.addLines (juceString (env, headersString));
             }
 
@@ -145,12 +145,22 @@ public:
     }
 
     //==============================================================================
-    bool isError() const                         { return stream == nullptr; }
+    bool isError() const                         {
+        return stream == nullptr;
+    }
 
-    bool isExhausted() override                  { return stream != nullptr && stream.callBooleanMethod (HTTPStream.isExhausted); }
-    int64 getTotalLength() override              { return stream != nullptr ? stream.callLongMethod (HTTPStream.getTotalLength) : 0; }
-    int64 getPosition() override                 { return stream != nullptr ? stream.callLongMethod (HTTPStream.getPosition) : 0; }
-    bool setPosition (int64 wantedPos) override  { return stream != nullptr && stream.callBooleanMethod (HTTPStream.setPosition, (jlong) wantedPos); }
+    bool isExhausted() override                  {
+        return stream != nullptr && stream.callBooleanMethod (HTTPStream.isExhausted);
+    }
+    int64 getTotalLength() override              {
+        return stream != nullptr ? stream.callLongMethod (HTTPStream.getTotalLength) : 0;
+    }
+    int64 getPosition() override                 {
+        return stream != nullptr ? stream.callLongMethod (HTTPStream.getPosition) : 0;
+    }
+    bool setPosition (int64 wantedPos) override  {
+        return stream != nullptr && stream.callBooleanMethod (HTTPStream.setPosition, (jlong) wantedPos);
+    }
 
     int read (void* buffer, int bytesToRead) override
     {

@@ -254,6 +254,9 @@ private:
     void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
 
+    // Binary resources:
+    static const char* bg_editors_svg;
+    static const int bg_editors_svgSize;
 
 
 private:
@@ -261,6 +264,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Component> drawing_area;
     ScopedPointer<Slider> sl_show_range;
     ScopedPointer<TextButton> osc_1;
     ScopedPointer<TextButton> osc_2;
@@ -274,7 +278,8 @@ private:
     ScopedPointer<TextButton> f_env_2;
     ScopedPointer<TextButton> f_env_3;
     ScopedPointer<TextButton> out_env;
-    ScopedPointer<Component> drawing_area;
+    Path internalPath1;
+    Path internalPath2;
 
 
     //==============================================================================

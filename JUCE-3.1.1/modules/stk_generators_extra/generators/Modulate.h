@@ -35,8 +35,8 @@ public:
     //! Reset internal state.
     void reset( void ) {
         lastFrame_[0] = 0.0;
-	// ADDED
-	vibrato_.reset();
+        // ADDED
+        vibrato_.reset();
     };
 
     //! Set the periodic (vibrato) rate or frequency in Hz.
@@ -60,7 +60,7 @@ public:
         return vibrato_.isNewCylce();
     }
     void clearNewCycleState() {
-      vibrato_.clearNewCycleState();
+        vibrato_.clearNewCycleState();
     }
     //! Compute and return one output sample.
     StkFloat tick( void );

@@ -26,23 +26,23 @@ namespace
 {
 
 #ifndef JUCE_ALSA_LOGGING
- #define JUCE_ALSA_LOGGING 0
+#define JUCE_ALSA_LOGGING 0
 #endif
 
 #if JUCE_ALSA_LOGGING
- #define JUCE_ALSA_LOG(dbgtext)   { juce::String tempDbgBuf ("ALSA: "); tempDbgBuf << dbgtext; Logger::writeToLog (tempDbgBuf); DBG (tempDbgBuf); }
- #define JUCE_CHECKED_RESULT(x)   (logErrorMessage (x, __LINE__))
+#define JUCE_ALSA_LOG(dbgtext)   { juce::String tempDbgBuf ("ALSA: "); tempDbgBuf << dbgtext; Logger::writeToLog (tempDbgBuf); DBG (tempDbgBuf); }
+#define JUCE_CHECKED_RESULT(x)   (logErrorMessage (x, __LINE__))
 
- static int logErrorMessage (int err, int lineNum)
- {
+static int logErrorMessage (int err, int lineNum)
+{
     if (err < 0)
         JUCE_ALSA_LOG ("Error: line " << lineNum << ": code " << err << " (" << snd_strerror (err) << ")");
 
     return err;
- }
+}
 #else
- #define JUCE_ALSA_LOG(x)         {}
- #define JUCE_CHECKED_RESULT(x)   (x)
+#define JUCE_ALSA_LOG(x)         {}
+#define JUCE_CHECKED_RESULT(x)   (x)
 #endif
 
 #define JUCE_ALSA_FAILED(x)  failed (x)
@@ -57,7 +57,7 @@ static void getDeviceSampleRates (snd_pcm_t* handle, Array<double>& rates)
     for (int i = 0; ratesToTry[i] != 0; ++i)
     {
         if (snd_pcm_hw_params_any (handle, hwParams) >= 0
-             && snd_pcm_hw_params_test_rate (handle, hwParams, ratesToTry[i], 0) == 0)
+                && snd_pcm_hw_params_test_rate (handle, hwParams, ratesToTry[i], 0) == 0)
         {
             rates.addIfNotAlreadyThere ((double) ratesToTry[i]);
         }
@@ -196,7 +196,7 @@ public:
             return false;
 
         JUCE_ALSA_LOG ("ALSADevice::setParameters(" << deviceID << ", "
-                         << (int) sampleRate << ", " << numChannels << ", " << bufferSize << ")");
+                       << (int) sampleRate << ", " << numChannels << ", " << bufferSize << ")");
 
         snd_pcm_hw_params_t* hwParams;
         snd_pcm_hw_params_alloca (&hwParams);
@@ -229,7 +229,8 @@ public:
                                      SND_PCM_FORMAT_S24_3BE,    24,
                                      SND_PCM_FORMAT_S24_LE,     32 | isLittleEndianBit | onlyUseLower24Bits,
                                      SND_PCM_FORMAT_S16_LE,     16 | isLittleEndianBit,
-                                     SND_PCM_FORMAT_S16_BE,     16 };
+                                     SND_PCM_FORMAT_S16_BE,     16
+                                   };
         bitDepth = 0;
 
         for (int i = 0; i < numElementsInArray (formatsToTry); i += 2)
@@ -260,10 +261,10 @@ public:
         snd_pcm_uframes_t samplesPerPeriod = bufferSize;
 
         if (JUCE_ALSA_FAILED (snd_pcm_hw_params_set_rate_near (handle, hwParams, &sampleRate, 0))
-            || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_channels (handle, hwParams, numChannels))
-            || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_periods_near (handle, hwParams, &periods, &dir))
-            || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_period_size_near (handle, hwParams, &samplesPerPeriod, &dir))
-            || JUCE_ALSA_FAILED (snd_pcm_hw_params (handle, hwParams)))
+                || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_channels (handle, hwParams, numChannels))
+                || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_periods_near (handle, hwParams, &periods, &dir))
+                || JUCE_ALSA_FAILED (snd_pcm_hw_params_set_period_size_near (handle, hwParams, &samplesPerPeriod, &dir))
+                || JUCE_ALSA_FAILED (snd_pcm_hw_params (handle, hwParams)))
         {
             return false;
         }
@@ -271,36 +272,36 @@ public:
         snd_pcm_uframes_t frames = 0;
 
         if (JUCE_ALSA_FAILED (snd_pcm_hw_params_get_period_size (hwParams, &frames, &dir))
-             || JUCE_ALSA_FAILED (snd_pcm_hw_params_get_periods (hwParams, &periods, &dir)))
+                || JUCE_ALSA_FAILED (snd_pcm_hw_params_get_periods (hwParams, &periods, &dir)))
             latency = 0;
         else
             latency = frames * (periods - 1); // (this is the method JACK uses to guess the latency..)
 
         JUCE_ALSA_LOG ("frames: " << (int) frames << ", periods: " << (int) periods
-                          << ", samplesPerPeriod: " << (int) samplesPerPeriod);
+                       << ", samplesPerPeriod: " << (int) samplesPerPeriod);
 
         snd_pcm_sw_params_t* swParams;
         snd_pcm_sw_params_alloca (&swParams);
         snd_pcm_uframes_t boundary;
 
         if (JUCE_ALSA_FAILED (snd_pcm_sw_params_current (handle, swParams))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params_get_boundary (swParams, &boundary))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_silence_threshold (handle, swParams, 0))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_silence_size (handle, swParams, boundary))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_start_threshold (handle, swParams, samplesPerPeriod))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_stop_threshold (handle, swParams, boundary))
-            || JUCE_ALSA_FAILED (snd_pcm_sw_params (handle, swParams)))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params_get_boundary (swParams, &boundary))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_silence_threshold (handle, swParams, 0))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_silence_size (handle, swParams, boundary))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_start_threshold (handle, swParams, samplesPerPeriod))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params_set_stop_threshold (handle, swParams, boundary))
+                || JUCE_ALSA_FAILED (snd_pcm_sw_params (handle, swParams)))
         {
             return false;
         }
 
-       #if JUCE_ALSA_LOGGING
+#if JUCE_ALSA_LOGGING
         // enable this to dump the config of the devices that get opened
         snd_output_t* out;
         snd_output_stdio_attach (&out, stderr, 0);
         snd_pcm_hw_params_dump (hwParams, out);
         snd_pcm_sw_params_dump (swParams, out);
-       #endif
+#endif
 
         numChannelsRunning = numChannels;
 
@@ -417,11 +418,11 @@ private:
     };
 
     static AudioData::Converter* createConverter (bool forInput, int bitDepth,
-                                                  bool isFloat, bool isLittleEndian, bool useOnlyLower24Bits,
-                                                  int numInterleavedChannels)
+            bool isFloat, bool isLittleEndian, bool useOnlyLower24Bits,
+            int numInterleavedChannels)
     {
         JUCE_ALSA_LOG ("format: bitDepth=" << bitDepth << ", isFloat=" << isFloat
-                        << ", isLittleEndian=" << isLittleEndian << ", numChannels=" << numInterleavedChannels);
+                       << ", isLittleEndian=" << isLittleEndian << ", numChannels=" << numInterleavedChannels);
 
         if (isFloat)         return ConverterHelper <AudioData::Float32>::createConverter (forInput, isLittleEndian, numInterleavedChannels);
         if (bitDepth == 16)  return ConverterHelper <AudioData::Int16>  ::createConverter (forInput, isLittleEndian, numInterleavedChannels);
@@ -799,10 +800,16 @@ public:
         close();
     }
 
-    StringArray getOutputChannelNames() override            { return internal.channelNamesOut; }
-    StringArray getInputChannelNames() override             { return internal.channelNamesIn; }
+    StringArray getOutputChannelNames() override            {
+        return internal.channelNamesOut;
+    }
+    StringArray getInputChannelNames() override             {
+        return internal.channelNamesIn;
+    }
 
-    Array<double> getAvailableSampleRates() override        { return internal.sampleRates; }
+    Array<double> getAvailableSampleRates() override        {
+        return internal.sampleRates;
+    }
 
     Array<int> getAvailableBufferSizes() override
     {
@@ -813,15 +820,17 @@ public:
         {
             r.add (n);
             n += n < 64 ? 16
-                        : (n < 512 ? 32
-                                   : (n < 1024 ? 64
-                                               : (n < 2048 ? 128 : 256)));
+                 : (n < 512 ? 32
+                    : (n < 1024 ? 64
+                       : (n < 2048 ? 128 : 256)));
         }
 
         return r;
     }
 
-    int getDefaultBufferSize() override                      { return 512; }
+    int getDefaultBufferSize() override                      {
+        return 512;
+    }
 
     String open (const BigInteger& inputChannels,
                  const BigInteger& outputChannels,
@@ -861,19 +870,39 @@ public:
         isOpen_ = false;
     }
 
-    bool isOpen() override                           { return isOpen_; }
-    bool isPlaying() override                        { return isStarted && internal.error.isEmpty(); }
-    String getLastError() override                   { return internal.error; }
+    bool isOpen() override                           {
+        return isOpen_;
+    }
+    bool isPlaying() override                        {
+        return isStarted && internal.error.isEmpty();
+    }
+    String getLastError() override                   {
+        return internal.error;
+    }
 
-    int getCurrentBufferSizeSamples() override       { return internal.bufferSize; }
-    double getCurrentSampleRate() override           { return internal.sampleRate; }
-    int getCurrentBitDepth() override                { return internal.getBitDepth(); }
+    int getCurrentBufferSizeSamples() override       {
+        return internal.bufferSize;
+    }
+    double getCurrentSampleRate() override           {
+        return internal.sampleRate;
+    }
+    int getCurrentBitDepth() override                {
+        return internal.getBitDepth();
+    }
 
-    BigInteger getActiveOutputChannels() const override    { return internal.currentOutputChans; }
-    BigInteger getActiveInputChannels() const override     { return internal.currentInputChans; }
+    BigInteger getActiveOutputChannels() const override    {
+        return internal.currentOutputChans;
+    }
+    BigInteger getActiveInputChannels() const override     {
+        return internal.currentInputChans;
+    }
 
-    int getOutputLatencyInSamples() override         { return internal.outputLatency; }
-    int getInputLatencyInSamples() override          { return internal.inputLatency; }
+    int getOutputLatencyInSamples() override         {
+        return internal.outputLatency;
+    }
+    int getInputLatencyInSamples() override          {
+        return internal.inputLatency;
+    }
 
     void start (AudioIODeviceCallback* callback) override
     {
@@ -915,16 +944,16 @@ public:
           hasScanned (false),
           listOnlySoundcards (onlySoundcards)
     {
-       #if ! JUCE_ALSA_LOGGING
+#if ! JUCE_ALSA_LOGGING
         snd_lib_error_set_handler (&silentErrorHandler);
-       #endif
+#endif
     }
 
     ~ALSAAudioIODeviceType()
     {
-       #if ! JUCE_ALSA_LOGGING
+#if ! JUCE_ALSA_LOGGING
         snd_lib_error_set_handler (nullptr);
-       #endif
+#endif
 
         snd_config_update_free_global(); // prevent valgrind from screaming about alsa leaks
     }
@@ -967,7 +996,9 @@ public:
         return idx >= 0 ? idx : 0;
     }
 
-    bool hasSeparateInputsAndOutputs() const    { return true; }
+    bool hasSeparateInputsAndOutputs() const    {
+        return true;
+    }
 
     int getIndexOfDevice (AudioIODevice* device, bool asInput) const
     {
@@ -975,7 +1006,7 @@ public:
 
         if (ALSAAudioIODevice* d = dynamic_cast <ALSAAudioIODevice*> (device))
             return asInput ? inputIds.indexOf (d->inputId)
-                           : outputIds.indexOf (d->outputId);
+                   : outputIds.indexOf (d->outputId);
 
         return -1;
     }
@@ -989,7 +1020,7 @@ public:
         const int outputIndex = outputNames.indexOf (outputDeviceName);
 
         String deviceName (outputIndex >= 0 ? outputDeviceName
-                                            : inputDeviceName);
+                           : inputDeviceName);
 
         if (inputIndex >= 0 || outputIndex >= 0)
             return new ALSAAudioIODevice (deviceName, getTypeName(),
@@ -1019,7 +1050,7 @@ private:
         if ((isInput || isOutput) && rates.size() > 0)
         {
             JUCE_ALSA_LOG ("testDevice: '" << id.toUTF8().getAddress() << "' -> isInput: "
-                            << isInput << ", isOutput: " << isOutput);
+                           << isInput << ", isOutput: " << isOutput);
 
             if (isInput)
             {
@@ -1110,7 +1141,7 @@ private:
                             }
 
                             JUCE_ALSA_LOG ("Soundcard ID: " << id << ", name: '" << name
-                                            << ", isInput:" << isInput << ", isOutput:" << isOutput << "\n");
+                                           << ", isInput:" << isInput << ", isOutput:" << isOutput << "\n");
 
                             if (isInput)
                             {
@@ -1151,11 +1182,11 @@ private:
                 JUCE_ALSA_LOG ("ID: " << id << "; desc: " << description << "; ioid: " << ioid);
 
                 String ss = id.fromFirstOccurrenceOf ("=", false, false)
-                              .upToFirstOccurrenceOf (",", false, false);
+                            .upToFirstOccurrenceOf (",", false, false);
 
                 if (id.isEmpty()
-                     || id.startsWith ("default:") || id.startsWith ("sysdefault:")
-                     || id.startsWith ("plughw:") || id == "null")
+                        || id.startsWith ("default:") || id.startsWith ("sysdefault:")
+                        || id.startsWith ("plughw:") || id == "null")
                     continue;
 
                 String name (description.replace ("\n", "; "));

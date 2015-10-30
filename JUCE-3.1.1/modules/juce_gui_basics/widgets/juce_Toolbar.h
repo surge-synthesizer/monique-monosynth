@@ -47,9 +47,9 @@ class ToolbarItemFactory;
     @see ToolbarItemFactory, ToolbarItemComponent, ToolbarItemPalette
 */
 class JUCE_API  Toolbar   : public Component,
-                            public DragAndDropContainer,
-                            public DragAndDropTarget,
-                            private ButtonListener  // (can't use Button::Listener due to idiotic VC2005 bug)
+    public DragAndDropContainer,
+    public DragAndDropTarget,
+    private ButtonListener  // (can't use Button::Listener due to idiotic VC2005 bug)
 {
 public:
     //==============================================================================
@@ -79,7 +79,9 @@ public:
 
         You can change the bar's orientation with setVertical().
     */
-    bool isVertical() const noexcept                 { return vertical; }
+    bool isVertical() const noexcept                 {
+        return vertical;
+    }
 
     /** Returns the depth of the bar.
 
@@ -172,7 +174,9 @@ public:
     /** Returns the toolbar's current style.
         @see ToolbarItemStyle, setStyle
     */
-    ToolbarItemStyle getStyle() const noexcept               { return toolbarStyle; }
+    ToolbarItemStyle getStyle() const noexcept               {
+        return toolbarStyle;
+    }
 
     /** Changes the toolbar's current style.
         @see ToolbarItemStyle, getStyle, ToolbarItemComponent::setStyle
@@ -278,8 +282,8 @@ public:
         virtual Button* createToolbarMissingItemsButton (Toolbar&) = 0;
 
         virtual void paintToolbarButtonBackground (Graphics&, int width, int height,
-                                                   bool isMouseOver, bool isMouseDown,
-                                                   ToolbarItemComponent&) = 0;
+                bool isMouseOver, bool isMouseDown,
+                ToolbarItemComponent&) = 0;
 
         virtual void paintToolbarButtonLabel (Graphics&, int x, int y, int width, int height,
                                               const String& text, ToolbarItemComponent&) = 0;

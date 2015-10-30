@@ -23,21 +23,24 @@
 */
 
 AffineTransform::AffineTransform() noexcept
-    : mat00 (1.0f), mat01 (0), mat02 (0),
+:
+mat00 (1.0f), mat01 (0), mat02 (0),
       mat10 (0), mat11 (1.0f), mat12 (0)
 {
 }
 
 AffineTransform::AffineTransform (const AffineTransform& other) noexcept
-  : mat00 (other.mat00), mat01 (other.mat01), mat02 (other.mat02),
-    mat10 (other.mat10), mat11 (other.mat11), mat12 (other.mat12)
+:
+mat00 (other.mat00), mat01 (other.mat01), mat02 (other.mat02),
+mat10 (other.mat10), mat11 (other.mat11), mat12 (other.mat12)
 {
 }
 
 AffineTransform::AffineTransform (const float m00, const float m01, const float m02,
                                   const float m10, const float m11, const float m12) noexcept
- :  mat00 (m00), mat01 (m01), mat02 (m02),
-    mat10 (m10), mat11 (m11), mat12 (m12)
+:
+mat00 (m00), mat01 (m01), mat02 (m02),
+mat10 (m10), mat11 (m11), mat12 (m12)
 {
 }
 
@@ -56,11 +59,11 @@ AffineTransform& AffineTransform::operator= (const AffineTransform& other) noexc
 bool AffineTransform::operator== (const AffineTransform& other) const noexcept
 {
     return mat00 == other.mat00
-        && mat01 == other.mat01
-        && mat02 == other.mat02
-        && mat10 == other.mat10
-        && mat11 == other.mat11
-        && mat12 == other.mat12;
+           && mat01 == other.mat01
+           && mat02 == other.mat02
+           && mat10 == other.mat10
+           && mat11 == other.mat11
+           && mat12 == other.mat12;
 }
 
 bool AffineTransform::operator!= (const AffineTransform& other) const noexcept
@@ -72,11 +75,11 @@ bool AffineTransform::operator!= (const AffineTransform& other) const noexcept
 bool AffineTransform::isIdentity() const noexcept
 {
     return (mat01 == 0)
-        && (mat02 == 0)
-        && (mat10 == 0)
-        && (mat12 == 0)
-        && (mat00 == 1.0f)
-        && (mat11 == 1.0f);
+           && (mat02 == 0)
+           && (mat10 == 0)
+           && (mat12 == 0)
+           && (mat00 == 1.0f)
+           && (mat11 == 1.0f);
 }
 
 const AffineTransform AffineTransform::identity;
@@ -101,7 +104,7 @@ AffineTransform AffineTransform::translated (const float dx, const float dy) con
 AffineTransform AffineTransform::translation (const float dx, const float dy) noexcept
 {
     return AffineTransform (1.0f, 0, dx,
-                            0, 1.0f, dy);
+    0, 1.0f, dy);
 }
 
 AffineTransform AffineTransform::withAbsoluteTranslation (const float tx, const float ty) const noexcept
@@ -129,7 +132,7 @@ AffineTransform AffineTransform::rotation (const float rad) noexcept
     const float sinRad = std::sin (rad);
 
     return AffineTransform (cosRad, -sinRad, 0,
-                            sinRad, cosRad, 0);
+    sinRad, cosRad, 0);
 }
 
 AffineTransform AffineTransform::rotation (const float rad, const float pivotX, const float pivotY) noexcept
@@ -138,7 +141,7 @@ AffineTransform AffineTransform::rotation (const float rad, const float pivotX, 
     const float sinRad = std::sin (rad);
 
     return AffineTransform (cosRad, -sinRad, -cosRad * pivotX + sinRad * pivotY + pivotX,
-                            sinRad, cosRad, -sinRad * pivotX + -cosRad * pivotY + pivotY);
+    sinRad, cosRad, -sinRad * pivotX + -cosRad * pivotY + pivotY);
 }
 
 AffineTransform AffineTransform::rotated (const float angle, const float pivotX, const float pivotY) const noexcept
@@ -169,7 +172,7 @@ AffineTransform AffineTransform::scale (const float factor) noexcept
 }
 
 AffineTransform AffineTransform::scaled (const float factorX, const float factorY,
-                                         const float pivotX, const float pivotY) const noexcept
+        const float pivotX, const float pivotY) const noexcept
 {
     return AffineTransform (factorX * mat00, factorX * mat01, factorX * mat02 + pivotX * (1.0f - factorX),
                             factorY * mat10, factorY * mat11, factorY * mat12 + pivotY * (1.0f - factorY));
@@ -179,13 +182,13 @@ AffineTransform AffineTransform::scale (const float factorX, const float factorY
                                         const float pivotX, const float pivotY) noexcept
 {
     return AffineTransform (factorX, 0, pivotX * (1.0f - factorX),
-                            0, factorY, pivotY * (1.0f - factorY));
+    0, factorY, pivotY * (1.0f - factorY));
 }
 
 AffineTransform AffineTransform::shear (float shearX, float shearY) noexcept
 {
     return AffineTransform (1.0f, shearX, 0,
-                            shearY, 1.0f, 0);
+    shearY, 1.0f, 0);
 }
 
 AffineTransform AffineTransform::sheared (const float shearX, const float shearY) const noexcept
@@ -232,28 +235,28 @@ bool AffineTransform::isSingularity() const noexcept
 }
 
 AffineTransform AffineTransform::fromTargetPoints (const float x00, const float y00,
-                                                   const float x10, const float y10,
-                                                   const float x01, const float y01) noexcept
+        const float x10, const float y10,
+        const float x01, const float y01) noexcept
 {
     return AffineTransform (x10 - x00, x01 - x00, x00,
-                            y10 - y00, y01 - y00, y00);
+    y10 - y00, y01 - y00, y00);
 }
 
 AffineTransform AffineTransform::fromTargetPoints (const float sx1, const float sy1, const float tx1, const float ty1,
-                                                   const float sx2, const float sy2, const float tx2, const float ty2,
-                                                   const float sx3, const float sy3, const float tx3, const float ty3) noexcept
+        const float sx2, const float sy2, const float tx2, const float ty2,
+        const float sx3, const float sy3, const float tx3, const float ty3) noexcept
 {
     return fromTargetPoints (sx1, sy1, sx2, sy2, sx3, sy3)
-            .inverted()
-            .followedBy (fromTargetPoints (tx1, ty1, tx2, ty2, tx3, ty3));
+    .inverted()
+    .followedBy (fromTargetPoints (tx1, ty1, tx2, ty2, tx3, ty3));
 }
 
 bool AffineTransform::isOnlyTranslation() const noexcept
 {
     return (mat01 == 0)
-        && (mat10 == 0)
-        && (mat00 == 1.0f)
-        && (mat11 == 1.0f);
+           && (mat10 == 0)
+           && (mat00 == 1.0f)
+           && (mat11 == 1.0f);
 }
 
 float AffineTransform::getScaleFactor() const noexcept

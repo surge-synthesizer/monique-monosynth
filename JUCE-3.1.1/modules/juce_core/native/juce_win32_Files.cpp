@@ -27,93 +27,93 @@
 */
 
 #ifndef INVALID_FILE_ATTRIBUTES
- #define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
+#define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
 #endif
 
 //==============================================================================
 namespace WindowsFileHelpers
 {
-    DWORD getAtts (const String& path)
-    {
-        return GetFileAttributes (path.toWideCharPointer());
-    }
+DWORD getAtts (const String& path)
+{
+    return GetFileAttributes (path.toWideCharPointer());
+}
 
-    int64 fileTimeToTime (const FILETIME* const ft)
-    {
-        static_jassert (sizeof (ULARGE_INTEGER) == sizeof (FILETIME)); // tell me if this fails!
+int64 fileTimeToTime (const FILETIME* const ft)
+{
+    static_jassert (sizeof (ULARGE_INTEGER) == sizeof (FILETIME)); // tell me if this fails!
 
-        return (int64) ((reinterpret_cast<const ULARGE_INTEGER*> (ft)->QuadPart - 116444736000000000LL) / 10000);
-    }
+    return (int64) ((reinterpret_cast<const ULARGE_INTEGER*> (ft)->QuadPart - 116444736000000000LL) / 10000);
+}
 
-    FILETIME* timeToFileTime (const int64 time, FILETIME* const ft) noexcept
-    {
-        if (time <= 0)
-            return nullptr;
+FILETIME* timeToFileTime (const int64 time, FILETIME* const ft) noexcept
+{
+    if (time <= 0)
+        return nullptr;
 
-        reinterpret_cast<ULARGE_INTEGER*> (ft)->QuadPart = (ULONGLONG) (time * 10000 + 116444736000000000LL);
-        return ft;
-    }
+    reinterpret_cast<ULARGE_INTEGER*> (ft)->QuadPart = (ULONGLONG) (time * 10000 + 116444736000000000LL);
+    return ft;
+}
 
-    String getDriveFromPath (String path)
-    {
-        if (path.isNotEmpty() && path[1] == ':' && path[2] == 0)
-            path << '\\';
+String getDriveFromPath (String path)
+{
+    if (path.isNotEmpty() && path[1] == ':' && path[2] == 0)
+        path << '\\';
 
-        const size_t numBytes = CharPointer_UTF16::getBytesRequiredFor (path.getCharPointer()) + 4;
-        HeapBlock<WCHAR> pathCopy;
-        pathCopy.calloc (numBytes, 1);
-        path.copyToUTF16 (pathCopy, numBytes);
+    const size_t numBytes = CharPointer_UTF16::getBytesRequiredFor (path.getCharPointer()) + 4;
+    HeapBlock<WCHAR> pathCopy;
+    pathCopy.calloc (numBytes, 1);
+    path.copyToUTF16 (pathCopy, numBytes);
 
-        if (PathStripToRoot (pathCopy))
-            path = static_cast <const WCHAR*> (pathCopy);
+    if (PathStripToRoot (pathCopy))
+        path = static_cast <const WCHAR*> (pathCopy);
 
-        return path;
-    }
+    return path;
+}
 
-    int64 getDiskSpaceInfo (const String& path, const bool total)
-    {
-        ULARGE_INTEGER spc, tot, totFree;
+int64 getDiskSpaceInfo (const String& path, const bool total)
+{
+    ULARGE_INTEGER spc, tot, totFree;
 
-        if (GetDiskFreeSpaceEx (getDriveFromPath (path).toWideCharPointer(), &spc, &tot, &totFree))
-            return total ? (int64) tot.QuadPart
-                         : (int64) spc.QuadPart;
+    if (GetDiskFreeSpaceEx (getDriveFromPath (path).toWideCharPointer(), &spc, &tot, &totFree))
+        return total ? (int64) tot.QuadPart
+               : (int64) spc.QuadPart;
 
-        return 0;
-    }
+    return 0;
+}
 
-    unsigned int getWindowsDriveType (const String& path)
-    {
-        return GetDriveType (getDriveFromPath (path).toWideCharPointer());
-    }
+unsigned int getWindowsDriveType (const String& path)
+{
+    return GetDriveType (getDriveFromPath (path).toWideCharPointer());
+}
 
-    File getSpecialFolderPath (int type)
-    {
-        WCHAR path [MAX_PATH + 256];
+File getSpecialFolderPath (int type)
+{
+    WCHAR path [MAX_PATH + 256];
 
-        if (SHGetSpecialFolderPath (0, path, type, FALSE))
-            return File (String (path));
+    if (SHGetSpecialFolderPath (0, path, type, FALSE))
+        return File (String (path));
 
-        return File();
-    }
+    return File();
+}
 
-    File getModuleFileName (HINSTANCE moduleHandle)
-    {
-        WCHAR dest [MAX_PATH + 256];
-        dest[0] = 0;
-        GetModuleFileName (moduleHandle, dest, (DWORD) numElementsInArray (dest));
-        return File (String (dest));
-    }
+File getModuleFileName (HINSTANCE moduleHandle)
+{
+    WCHAR dest [MAX_PATH + 256];
+    dest[0] = 0;
+    GetModuleFileName (moduleHandle, dest, (DWORD) numElementsInArray (dest));
+    return File (String (dest));
+}
 
-    Result getResultForLastError()
-    {
-        TCHAR messageBuffer [256] = { 0 };
+Result getResultForLastError()
+{
+    TCHAR messageBuffer [256] = { 0 };
 
-        FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, GetLastError(), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-                       messageBuffer, (DWORD) numElementsInArray (messageBuffer) - 1, nullptr);
+    FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                   nullptr, GetLastError(), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
+                   messageBuffer, (DWORD) numElementsInArray (messageBuffer) - 1, nullptr);
 
-        return Result::fail (String (messageBuffer));
-    }
+    return Result::fail (String (messageBuffer));
+}
 }
 
 //==============================================================================
@@ -125,13 +125,13 @@ const String File::separatorString ("\\");
 bool File::exists() const
 {
     return fullPath.isNotEmpty()
-            && WindowsFileHelpers::getAtts (fullPath) != INVALID_FILE_ATTRIBUTES;
+           && WindowsFileHelpers::getAtts (fullPath) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool File::existsAsFile() const
 {
     return fullPath.isNotEmpty()
-            && (WindowsFileHelpers::getAtts (fullPath) & FILE_ATTRIBUTE_DIRECTORY) == 0;
+           && (WindowsFileHelpers::getAtts (fullPath) & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
 bool File::isDirectory() const
@@ -158,9 +158,9 @@ bool File::setFileReadOnlyInternal (const bool shouldBeReadOnly) const
         return false;
 
     const DWORD newAtts = shouldBeReadOnly ? (oldAtts |  FILE_ATTRIBUTE_READONLY)
-                                           : (oldAtts & ~FILE_ATTRIBUTE_READONLY);
+                          : (oldAtts & ~FILE_ATTRIBUTE_READONLY);
     return newAtts == oldAtts
-            || SetFileAttributes (fullPath.toWideCharPointer(), newAtts) != FALSE;
+           || SetFileAttributes (fullPath.toWideCharPointer(), newAtts) != FALSE;
 }
 
 bool File::setFileExecutableInternal (bool /*shouldBeExecutable*/) const
@@ -181,7 +181,7 @@ bool File::deleteFile() const
         return true;
 
     return isDirectory() ? RemoveDirectory (fullPath.toWideCharPointer()) != 0
-                         : DeleteFile (fullPath.toWideCharPointer()) != 0;
+           : DeleteFile (fullPath.toWideCharPointer()) != 0;
 }
 
 bool File::moveToTrash() const
@@ -199,7 +199,7 @@ bool File::moveToTrash() const
     fos.wFunc = FO_DELETE;
     fos.pFrom = doubleNullTermPath;
     fos.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI | FOF_SILENT | FOF_NOCONFIRMATION
-                   | FOF_NOCONFIRMMKDIR | FOF_RENAMEONCOLLISION;
+                 | FOF_NOCONFIRMMKDIR | FOF_RENAMEONCOLLISION;
 
     return SHFileOperation (&fos) == 0;
 }
@@ -217,7 +217,7 @@ bool File::moveInternal (const File& dest) const
 Result File::createDirectoryInternal (const String& fileName) const
 {
     return CreateDirectory (fileName.toWideCharPointer(), 0) ? Result::ok()
-                                                             : WindowsFileHelpers::getResultForLastError();
+           : WindowsFileHelpers::getResultForLastError();
 }
 
 //==============================================================================
@@ -315,7 +315,7 @@ Result FileOutputStream::truncate()
 
     flush();
     return SetEndOfFile ((HANDLE) fileHandle) ? Result::ok()
-                                              : WindowsFileHelpers::getResultForLastError();
+           : WindowsFileHelpers::getResultForLastError();
 }
 
 //==============================================================================
@@ -529,9 +529,9 @@ bool File::isOnRemovableDrive() const
     const unsigned int n = WindowsFileHelpers::getWindowsDriveType (getFullPathName());
 
     return n == DRIVE_CDROM
-        || n == DRIVE_REMOTE
-        || n == DRIVE_REMOVABLE
-        || n == DRIVE_RAMDISK;
+           || n == DRIVE_REMOTE
+           || n == DRIVE_REMOVABLE
+           || n == DRIVE_RAMDISK;
 }
 
 //==============================================================================
@@ -541,44 +541,61 @@ File JUCE_CALLTYPE File::getSpecialLocation (const SpecialLocationType type)
 
     switch (type)
     {
-        case userHomeDirectory:                 csidlType = CSIDL_PROFILE; break;
-        case userDocumentsDirectory:            csidlType = CSIDL_PERSONAL; break;
-        case userDesktopDirectory:              csidlType = CSIDL_DESKTOP; break;
-        case userApplicationDataDirectory:      csidlType = CSIDL_APPDATA; break;
-        case commonApplicationDataDirectory:    csidlType = CSIDL_COMMON_APPDATA; break;
-        case commonDocumentsDirectory:          csidlType = CSIDL_COMMON_DOCUMENTS; break;
-        case globalApplicationsDirectory:       csidlType = CSIDL_PROGRAM_FILES; break;
-        case userMusicDirectory:                csidlType = 0x0d; /*CSIDL_MYMUSIC*/ break;
-        case userMoviesDirectory:               csidlType = 0x0e; /*CSIDL_MYVIDEO*/ break;
-        case userPicturesDirectory:             csidlType = 0x27; /*CSIDL_MYPICTURES*/ break;
+    case userHomeDirectory:
+        csidlType = CSIDL_PROFILE;
+        break;
+    case userDocumentsDirectory:
+        csidlType = CSIDL_PERSONAL;
+        break;
+    case userDesktopDirectory:
+        csidlType = CSIDL_DESKTOP;
+        break;
+    case userApplicationDataDirectory:
+        csidlType = CSIDL_APPDATA;
+        break;
+    case commonApplicationDataDirectory:
+        csidlType = CSIDL_COMMON_APPDATA;
+        break;
+    case commonDocumentsDirectory:
+        csidlType = CSIDL_COMMON_DOCUMENTS;
+        break;
+    case globalApplicationsDirectory:
+        csidlType = CSIDL_PROGRAM_FILES;
+        break;
+    case userMusicDirectory:
+        csidlType = 0x0d; /*CSIDL_MYMUSIC*/ break;
+    case userMoviesDirectory:
+        csidlType = 0x0e; /*CSIDL_MYVIDEO*/ break;
+    case userPicturesDirectory:
+        csidlType = 0x27; /*CSIDL_MYPICTURES*/ break;
 
-        case tempDirectory:
-        {
-            WCHAR dest [2048];
-            dest[0] = 0;
-            GetTempPath ((DWORD) numElementsInArray (dest), dest);
-            return File (String (dest));
-        }
+    case tempDirectory:
+    {
+        WCHAR dest [2048];
+        dest[0] = 0;
+        GetTempPath ((DWORD) numElementsInArray (dest), dest);
+        return File (String (dest));
+    }
 
-        case windowsSystemDirectory:
-        {
-            WCHAR dest [2048];
-            dest[0] = 0;
-            GetSystemDirectoryW (dest, (UINT) numElementsInArray (dest));
-            return File (String (dest));
-        }
+    case windowsSystemDirectory:
+    {
+        WCHAR dest [2048];
+        dest[0] = 0;
+        GetSystemDirectoryW (dest, (UINT) numElementsInArray (dest));
+        return File (String (dest));
+    }
 
-        case invokedExecutableFile:
-        case currentExecutableFile:
-        case currentApplicationFile:
-            return WindowsFileHelpers::getModuleFileName ((HINSTANCE) Process::getCurrentModuleInstanceHandle());
+    case invokedExecutableFile:
+    case currentExecutableFile:
+    case currentApplicationFile:
+        return WindowsFileHelpers::getModuleFileName ((HINSTANCE) Process::getCurrentModuleInstanceHandle());
 
-        case hostApplicationPath:
-            return WindowsFileHelpers::getModuleFileName (0);
+    case hostApplicationPath:
+        return WindowsFileHelpers::getModuleFileName (0);
 
-        default:
-            jassertfalse; // unknown type?
-            return File();
+    default:
+        jassertfalse; // unknown type?
+        return File();
     }
 
     return WindowsFileHelpers::getSpecialFolderPath (csidlType);
@@ -645,9 +662,9 @@ File File::getLinkedTarget() const
     ComSmartPtr<IPersistFile> persistFile;
 
     if (SUCCEEDED (shellLink.CoCreateInstance (CLSID_ShellLink))
-         && SUCCEEDED (shellLink.QueryInterface (persistFile))
-         && SUCCEEDED (persistFile->Load (p.toWideCharPointer(), STGM_READ))
-         && SUCCEEDED (shellLink->Resolve (0, SLR_ANY_MATCH | SLR_NO_UI)))
+            && SUCCEEDED (shellLink.QueryInterface (persistFile))
+            && SUCCEEDED (persistFile->Load (p.toWideCharPointer(), STGM_READ))
+            && SUCCEEDED (shellLink->Resolve (0, SLR_ANY_MATCH | SLR_NO_UI)))
     {
         WIN32_FIND_DATA winFindData;
         WCHAR resolvedPath [MAX_PATH];
@@ -669,10 +686,10 @@ bool File::createLink (const String& description, const File& linkFileToCreate) 
     CoInitialize (0);
 
     return SUCCEEDED (shellLink.CoCreateInstance (CLSID_ShellLink))
-        && SUCCEEDED (shellLink->SetPath (getFullPathName().toWideCharPointer()))
-        && SUCCEEDED (shellLink->SetDescription (description.toWideCharPointer()))
-        && SUCCEEDED (shellLink.QueryInterface (persistFile))
-        && SUCCEEDED (persistFile->Save (linkFileToCreate.getFullPathName().toWideCharPointer(), TRUE));
+           && SUCCEEDED (shellLink->SetPath (getFullPathName().toWideCharPointer()))
+           && SUCCEEDED (shellLink->SetDescription (description.toWideCharPointer()))
+           && SUCCEEDED (shellLink.QueryInterface (persistFile))
+           && SUCCEEDED (persistFile->Save (linkFileToCreate.getFullPathName().toWideCharPointer(), TRUE));
 }
 
 //==============================================================================
@@ -740,8 +757,8 @@ DirectoryIterator::NativeIterator::~NativeIterator()
 }
 
 bool DirectoryIterator::NativeIterator::next (String& filenameFound,
-                                              bool* const isDir, bool* const isHidden, int64* const fileSize,
-                                              Time* const modTime, Time* const creationTime, bool* const isReadOnly)
+        bool* const isDir, bool* const isHidden, int64* const fileSize,
+        Time* const modTime, Time* const creationTime, bool* const isReadOnly)
 {
     return pimpl->next (filenameFound, isDir, isHidden, fileSize, modTime, creationTime, isReadOnly);
 }
@@ -755,7 +772,7 @@ bool JUCE_CALLTYPE Process::openDocument (const String& fileName, const String& 
     JUCE_TRY
     {
         hInstance = ShellExecute (0, 0, fileName.toWideCharPointer(),
-                                  parameters.toWideCharPointer(), 0, SW_SHOWDEFAULT);
+        parameters.toWideCharPointer(), 0, SW_SHOWDEFAULT);
     }
     JUCE_CATCH_ALL
 
@@ -843,10 +860,15 @@ public:
             {
                 switch (GetLastError())
                 {
-                    case ERROR_PIPE_CONNECTED:   connected = true; break;
-                    case ERROR_IO_PENDING:
-                    case ERROR_PIPE_LISTENING:   connected = waitForIO (over, timeOutMs); break;
-                    default: break;
+                case ERROR_PIPE_CONNECTED:
+                    connected = true;
+                    break;
+                case ERROR_IO_PENDING:
+                case ERROR_PIPE_LISTENING:
+                    connected = waitForIO (over, timeOutMs);
+                    break;
+                default:
+                    break;
                 }
             }
         }
@@ -954,8 +976,8 @@ private:
 
         HANDLE handles[] = { over.over.hEvent, cancelEvent };
         DWORD waitResult = WaitForMultipleObjects (2, handles, FALSE,
-                                                   timeOutMilliseconds >= 0 ? timeOutMilliseconds
-                                                                            : INFINITE);
+                           timeOutMilliseconds >= 0 ? timeOutMilliseconds
+                           : INFINITE);
 
         if (waitResult == WAIT_OBJECT_0)
             return true;

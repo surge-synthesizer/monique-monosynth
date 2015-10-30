@@ -37,7 +37,7 @@
     @see FileListComponent, FileBrowserComponent
 */
 class JUCE_API  DirectoryContentsList   : public ChangeBroadcaster,
-                                          private TimeSliceClient
+    private TimeSliceClient
 {
 public:
     //==============================================================================
@@ -68,7 +68,9 @@ public:
 
     //==============================================================================
     /** Returns the directory that's currently being used. */
-    const File& getDirectory() const noexcept               { return root; }
+    const File& getDirectory() const noexcept               {
+        return root;
+    }
 
     /** Sets the directory to look in for files.
 
@@ -82,12 +84,16 @@ public:
     /** Returns true if this list contains directories.
         @see setDirectory
     */
-    bool isFindingDirectories() const noexcept              { return (fileTypeFlags & File::findDirectories) != 0; }
+    bool isFindingDirectories() const noexcept              {
+        return (fileTypeFlags & File::findDirectories) != 0;
+    }
 
     /** Returns true if this list contains files.
         @see setDirectory
     */
-    bool isFindingFiles() const noexcept                    { return (fileTypeFlags & File::findFiles) != 0; }
+    bool isFindingFiles() const noexcept                    {
+        return (fileTypeFlags & File::findFiles) != 0;
+    }
 
     /** Clears the list, and stops the thread scanning for files. */
     void clear();
@@ -162,7 +168,9 @@ public:
 
         @see getFileInfo, getFile
     */
-    int getNumFiles() const noexcept                        { return files.size(); }
+    int getNumFiles() const noexcept                        {
+        return files.size();
+    }
 
     /** Returns the cached information about one of the files in the list.
 
@@ -187,14 +195,18 @@ public:
     /** Returns the file filter being used.
         The filter is specified in the constructor.
     */
-    const FileFilter* getFilter() const noexcept            { return fileFilter; }
+    const FileFilter* getFilter() const noexcept            {
+        return fileFilter;
+    }
 
     /** Returns true if the list contains the specified file. */
     bool contains (const File&) const;
 
     //==============================================================================
     /** @internal */
-    TimeSliceThread& getTimeSliceThread() const noexcept    { return thread; }
+    TimeSliceThread& getTimeSliceThread() const noexcept    {
+        return thread;
+    }
 
 private:
     File root;

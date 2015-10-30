@@ -168,8 +168,8 @@ void DrawableText::paint (Graphics& g)
     const float h = Line<float> (resolvedPoints[0], resolvedPoints[2]).getLength();
 
     g.addTransform (AffineTransform::fromTargetPoints (0, 0, resolvedPoints[0].x, resolvedPoints[0].y,
-                                                       w, 0, resolvedPoints[1].x, resolvedPoints[1].y,
-                                                       0, h, resolvedPoints[2].x, resolvedPoints[2].y));
+                    w, 0, resolvedPoints[1].x, resolvedPoints[1].y,
+                    0, h, resolvedPoints[2].x, resolvedPoints[2].y));
     g.setFont (scaledFont);
     g.setColour (colour);
 
@@ -303,8 +303,8 @@ void DrawableText::refreshFromValueTree (const ValueTree& tree, ComponentBuilder
     const Font newFont (v.getFont());
 
     if (text != newText || font != newFont || justification != newJustification
-         || colour != newColour || bounds != newBounds
-         || newFontHeight != fontHeight || newFontHScale != fontHScale)
+            || colour != newColour || bounds != newBounds
+            || newFontHeight != fontHeight || newFontHScale != fontHScale)
     {
         setBoundingBox (newBounds);
         setFontHeight (newFontHeight);

@@ -27,12 +27,12 @@
 */
 
 #if defined (JUCE_CORE_H_INCLUDED) && ! JUCE_AMALGAMATED_INCLUDE
- /* When you add this cpp file to your project, you mustn't include it in a file where you've
-    already included any other headers - just put it inside a file on its own, possibly with your config
-    flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
-    header files that the compiler may be using.
- */
- #error "Incorrect use of JUCE cpp file"
+/* When you add this cpp file to your project, you mustn't include it in a file where you've
+   already included any other headers - just put it inside a file on its own, possibly with your config
+   flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
+   header files that the compiler may be using.
+*/
+#error "Incorrect use of JUCE cpp file"
 #endif
 
 // Your project must contain an AppConfig.h file with your project-specific settings in it,
@@ -48,63 +48,63 @@
 #include <sys/timeb.h>
 
 #if ! JUCE_ANDROID
- #include <cwctype>
+#include <cwctype>
 #endif
 
 #if JUCE_WINDOWS
- #include <ctime>
+#include <ctime>
 
- #define _WINSOCK_DEPRECATED_NO_WARNINGS 1
- #include <winsock2.h>
- #include <ws2tcpip.h>
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
- #if ! JUCE_MINGW
-  #include <Dbghelp.h>
+#if ! JUCE_MINGW
+#include <Dbghelp.h>
 
-  #if ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
-   #pragma comment (lib, "DbgHelp.lib")
-  #endif
- #endif
+#if ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+#pragma comment (lib, "DbgHelp.lib")
+#endif
+#endif
 
- #if JUCE_MINGW
-  #include <ws2spi.h>
- #endif
+#if JUCE_MINGW
+#include <ws2spi.h>
+#endif
 
 #else
- #if JUCE_LINUX || JUCE_ANDROID
-  #include <sys/types.h>
-  #include <sys/socket.h>
-  #include <sys/errno.h>
-  #include <unistd.h>
-  #include <netinet/in.h>
- #endif
+#if JUCE_LINUX || JUCE_ANDROID
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/errno.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#endif
 
- #if JUCE_LINUX
-  #include <langinfo.h>
-  #include <ifaddrs.h>
- #endif
+#if JUCE_LINUX
+#include <langinfo.h>
+#include <ifaddrs.h>
+#endif
 
- #include <pwd.h>
- #include <fcntl.h>
- #include <netdb.h>
- #include <arpa/inet.h>
- #include <netinet/tcp.h>
- #include <sys/time.h>
- #include <net/if.h>
- #include <sys/ioctl.h>
+#include <pwd.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#include <sys/time.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
 
- #if ! JUCE_ANDROID
-  #include <execinfo.h>
- #endif
+#if ! JUCE_ANDROID
+#include <execinfo.h>
+#endif
 #endif
 
 #if JUCE_MAC || JUCE_IOS
- #include <xlocale.h>
- #include <mach/mach.h>
+#include <xlocale.h>
+#include <mach/mach.h>
 #endif
 
 #if JUCE_ANDROID
- #include <android/log.h>
+#include <android/log.h>
 #endif
 
 

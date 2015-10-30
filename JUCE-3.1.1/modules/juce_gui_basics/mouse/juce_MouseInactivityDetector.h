@@ -39,7 +39,7 @@
     the activity status changes.
 */
 class JUCE_API  MouseInactivityDetector  : private Timer,
-                                           private MouseListener
+    private MouseListener
 {
 public:
     /** Creates an inactivity watcher, attached to the given component.
@@ -91,13 +91,27 @@ private:
     void wakeUp (const MouseEvent&, bool alwaysWake);
     void setActive (bool);
 
-    void mouseMove  (const MouseEvent& e) override   { wakeUp (e, false); }
-    void mouseEnter (const MouseEvent& e) override   { wakeUp (e, false); }
-    void mouseExit  (const MouseEvent& e) override   { wakeUp (e, false); }
-    void mouseDown  (const MouseEvent& e) override   { wakeUp (e, true); }
-    void mouseDrag  (const MouseEvent& e) override   { wakeUp (e, true); }
-    void mouseUp    (const MouseEvent& e) override   { wakeUp (e, true); }
-    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails&) override  { wakeUp (e, true); }
+    void mouseMove  (const MouseEvent& e) override   {
+        wakeUp (e, false);
+    }
+    void mouseEnter (const MouseEvent& e) override   {
+        wakeUp (e, false);
+    }
+    void mouseExit  (const MouseEvent& e) override   {
+        wakeUp (e, false);
+    }
+    void mouseDown  (const MouseEvent& e) override   {
+        wakeUp (e, true);
+    }
+    void mouseDrag  (const MouseEvent& e) override   {
+        wakeUp (e, true);
+    }
+    void mouseUp    (const MouseEvent& e) override   {
+        wakeUp (e, true);
+    }
+    void mouseWheelMove (const MouseEvent& e, const MouseWheelDetails&) override  {
+        wakeUp (e, true);
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MouseInactivityDetector)
 };

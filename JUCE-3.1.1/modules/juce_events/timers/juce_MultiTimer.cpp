@@ -25,7 +25,8 @@
 struct MultiTimerCallback    : public Timer
 {
     MultiTimerCallback (const int tid, MultiTimer& mt) noexcept
-        : owner (mt), timerID (tid)
+:
+    owner (mt), timerID (tid)
     {
     }
 

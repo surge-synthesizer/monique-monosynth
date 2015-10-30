@@ -31,9 +31,12 @@ public:
     {
         switch (RelativeCoordinate::StandardStrings::getTypeOf (symbol))
         {
-            case RelativeCoordinate::StandardStrings::width:  return Expression ((double) component.getWidth());
-            case RelativeCoordinate::StandardStrings::height: return Expression ((double) component.getHeight());
-            default: break;
+        case RelativeCoordinate::StandardStrings::width:
+            return Expression ((double) component.getWidth());
+        case RelativeCoordinate::StandardStrings::height:
+            return Expression ((double) component.getHeight());
+        default:
+            break;
         }
 
         MarkerList* list;
@@ -98,15 +101,22 @@ Expression RelativeCoordinatePositionerBase::ComponentScope::getSymbolValue (con
 {
     switch (RelativeCoordinate::StandardStrings::getTypeOf (symbol))
     {
-        case RelativeCoordinate::StandardStrings::x:
-        case RelativeCoordinate::StandardStrings::left:   return Expression ((double) component.getX());
-        case RelativeCoordinate::StandardStrings::y:
-        case RelativeCoordinate::StandardStrings::top:    return Expression ((double) component.getY());
-        case RelativeCoordinate::StandardStrings::width:  return Expression ((double) component.getWidth());
-        case RelativeCoordinate::StandardStrings::height: return Expression ((double) component.getHeight());
-        case RelativeCoordinate::StandardStrings::right:  return Expression ((double) component.getRight());
-        case RelativeCoordinate::StandardStrings::bottom: return Expression ((double) component.getBottom());
-        default: break;
+    case RelativeCoordinate::StandardStrings::x:
+    case RelativeCoordinate::StandardStrings::left:
+        return Expression ((double) component.getX());
+    case RelativeCoordinate::StandardStrings::y:
+    case RelativeCoordinate::StandardStrings::top:
+        return Expression ((double) component.getY());
+    case RelativeCoordinate::StandardStrings::width:
+        return Expression ((double) component.getWidth());
+    case RelativeCoordinate::StandardStrings::height:
+        return Expression ((double) component.getHeight());
+    case RelativeCoordinate::StandardStrings::right:
+        return Expression ((double) component.getRight());
+    case RelativeCoordinate::StandardStrings::bottom:
+        return Expression ((double) component.getBottom());
+    default:
+        break;
     }
 
     if (Component* const parent = component.getParentComponent())
@@ -126,8 +136,8 @@ Expression RelativeCoordinatePositionerBase::ComponentScope::getSymbolValue (con
 void RelativeCoordinatePositionerBase::ComponentScope::visitRelativeScope (const String& scopeName, Visitor& visitor) const
 {
     if (Component* const targetComp = (scopeName == RelativeCoordinate::Strings::parent)
-                                           ? component.getParentComponent()
-                                           : findSiblingComponent (scopeName))
+                                      ? component.getParentComponent()
+                                      : findSiblingComponent (scopeName))
         visitor.visit (ComponentScope (*targetComp));
     else
         Expression::Scope::visitRelativeScope (scopeName, visitor);
@@ -159,35 +169,35 @@ public:
     {
         switch (RelativeCoordinate::StandardStrings::getTypeOf (symbol))
         {
-            case RelativeCoordinate::StandardStrings::x:
-            case RelativeCoordinate::StandardStrings::left:
-            case RelativeCoordinate::StandardStrings::y:
-            case RelativeCoordinate::StandardStrings::top:
-            case RelativeCoordinate::StandardStrings::width:
-            case RelativeCoordinate::StandardStrings::height:
-            case RelativeCoordinate::StandardStrings::right:
-            case RelativeCoordinate::StandardStrings::bottom:
-                positioner.registerComponentListener (component);
-                break;
+        case RelativeCoordinate::StandardStrings::x:
+        case RelativeCoordinate::StandardStrings::left:
+        case RelativeCoordinate::StandardStrings::y:
+        case RelativeCoordinate::StandardStrings::top:
+        case RelativeCoordinate::StandardStrings::width:
+        case RelativeCoordinate::StandardStrings::height:
+        case RelativeCoordinate::StandardStrings::right:
+        case RelativeCoordinate::StandardStrings::bottom:
+            positioner.registerComponentListener (component);
+            break;
 
-            default:
-                if (Component* const parent = component.getParentComponent())
+        default:
+            if (Component* const parent = component.getParentComponent())
+            {
+                MarkerList* list;
+
+                if (MarkerListScope::findMarker (*parent, symbol, list) != nullptr)
                 {
-                    MarkerList* list;
-
-                    if (MarkerListScope::findMarker (*parent, symbol, list) != nullptr)
-                    {
-                        positioner.registerMarkerListListener (list);
-                    }
-                    else
-                    {
-                        // The marker we want doesn't exist, so watch all lists in case they change and the marker appears later..
-                        positioner.registerMarkerListListener (parent->getMarkers (true));
-                        positioner.registerMarkerListListener (parent->getMarkers (false));
-                        ok = false;
-                    }
+                    positioner.registerMarkerListListener (list);
                 }
-                break;
+                else
+                {
+                    // The marker we want doesn't exist, so watch all lists in case they change and the marker appears later..
+                    positioner.registerMarkerListListener (parent->getMarkers (true));
+                    positioner.registerMarkerListListener (parent->getMarkers (false));
+                    ok = false;
+                }
+            }
+            break;
         }
 
         return ComponentScope::getSymbolValue (symbol);
@@ -196,8 +206,8 @@ public:
     void visitRelativeScope (const String& scopeName, Visitor& visitor) const override
     {
         if (Component* const targetComp = (scopeName == RelativeCoordinate::Strings::parent)
-                                                ? component.getParentComponent()
-                                                : findSiblingComponent (scopeName))
+                                          ? component.getParentComponent()
+                                          : findSiblingComponent (scopeName))
         {
             visitor.visit (DependencyFinderScope (*targetComp, positioner, ok));
         }

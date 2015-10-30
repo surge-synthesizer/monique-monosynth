@@ -44,13 +44,13 @@ bool MidiKeyboardState::isNoteOn (const int midiChannel, const int n) const noex
     jassert (midiChannel >= 0 && midiChannel <= 16);
 
     return isPositiveAndBelow (n, (int) 128)
-            && (noteStates[n] & (1 << (midiChannel - 1))) != 0;
+           && (noteStates[n] & (1 << (midiChannel - 1))) != 0;
 }
 
 bool MidiKeyboardState::isNoteOnForChannels (const int midiChannelMask, const int n) const noexcept
 {
     return isPositiveAndBelow (n, (int) 128)
-            && (noteStates[n] & midiChannelMask) != 0;
+           && (noteStates[n] & midiChannelMask) != 0;
 }
 
 void MidiKeyboardState::noteOn (const int midiChannel, const int midiNoteNumber, const float velocity)
@@ -140,9 +140,9 @@ void MidiKeyboardState::processNextMidiEvent (const MidiMessage& message)
 }
 
 void MidiKeyboardState::processNextMidiBuffer (MidiBuffer& buffer,
-                                               const int startSample,
-                                               const int numSamples,
-                                               const bool injectIndirectEvents)
+        const int startSample,
+        const int numSamples,
+        const bool injectIndirectEvents)
 {
     MidiBuffer::Iterator i (buffer);
     MidiMessage message (0xf4, 0.0);

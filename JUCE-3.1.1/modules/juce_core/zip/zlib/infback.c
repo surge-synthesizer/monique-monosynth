@@ -30,10 +30,10 @@ int ZEXPORT inflateBackInit_(z_streamp strm, int windowBits, unsigned char FAR *
     struct inflate_state FAR *state;
 
     if (version == Z_NULL || version[0] != ZLIB_VERSION[0] ||
-        stream_size != (int)(sizeof(z_stream)))
+            stream_size != (int)(sizeof(z_stream)))
         return Z_VERSION_ERROR;
     if (strm == Z_NULL || window == Z_NULL ||
-        windowBits < 8 || windowBits > 15)
+            windowBits < 8 || windowBits > 15)
         return Z_STREAM_ERROR;
     strm->msg = Z_NULL;                 /* in case we return an error */
     if (strm->zalloc == (alloc_func)0) {
@@ -42,7 +42,7 @@ int ZEXPORT inflateBackInit_(z_streamp strm, int windowBits, unsigned char FAR *
     }
     if (strm->zfree == (free_func)0) strm->zfree = zcfree;
     state = (struct inflate_state FAR *)ZALLOC(strm, 1,
-                                               sizeof(struct inflate_state));
+            sizeof(struct inflate_state));
     if (state == Z_NULL) return Z_MEM_ERROR;
     Tracev((stderr, "inflate: allocated\n"));
     strm->state = (struct internal_state FAR *)state;
@@ -247,7 +247,7 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
     unsigned len;               /* length to copy for repeats, bits to drop */
     int ret;                    /* return code */
     static const unsigned short order[19] = /* permutation of code lengths */
-        {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
+    {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
 
     /* Check that the strm exists and that the state was initialized */
     if (strm == Z_NULL || strm->state == Z_NULL)
@@ -441,7 +441,7 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
             state->distcode = (code const FAR *)(state->next);
             state->distbits = 6;
             ret = inflate_table(DISTS, state->lens + state->nlen, state->ndist,
-                            &(state->next), &(state->distbits), state->work);
+                                &(state->next), &(state->distbits), state->work);
             if (ret) {
                 strm->msg = (char *)"invalid distances set";
                 state->mode = BAD;
@@ -471,7 +471,7 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
                 last = thisx;
                 for (;;) {
                     thisx = state->lencode[last.val +
-                            (BITS(last.bits + last.op) >> last.bits)];
+                                           (BITS(last.bits + last.op) >> last.bits)];
                     if ((unsigned)(last.bits + thisx.bits) <= bits) break;
                     PULLBYTE();
                 }
@@ -483,8 +483,8 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
             /* process literal */
             if (thisx.op == 0) {
                 Tracevv((stderr, thisx.val >= 0x20 && thisx.val < 0x7f ?
-                        "inflate:         literal '%c'\n" :
-                        "inflate:         literal 0x%02x\n", thisx.val));
+                         "inflate:         literal '%c'\n" :
+                         "inflate:         literal 0x%02x\n", thisx.val));
                 ROOM();
                 *put++ = (unsigned char)(state->length);
                 left--;
@@ -525,7 +525,7 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
                 last = thisx;
                 for (;;) {
                     thisx = state->distcode[last.val +
-                            (BITS(last.bits + last.op) >> last.bits)];
+                                            (BITS(last.bits + last.op) >> last.bits)];
                     if ((unsigned)(last.bits + thisx.bits) <= bits) break;
                     PULLBYTE();
                 }
@@ -594,7 +594,7 @@ int ZEXPORT inflateBack(z_streamp strm, in_func in, void FAR *in_desc, out_func 
         }
 
     /* Return unused input */
-  inf_leave:
+inf_leave:
     strm->next_in = next;
     strm->avail_in = have;
     return ret;

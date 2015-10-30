@@ -84,7 +84,9 @@ public:
 
         E.g. if it's a 3x3 kernel, this returns 3.
     */
-    int getKernelSize() const               { return size; }
+    int getKernelSize() const               {
+        return size;
+    }
 
     //==============================================================================
     /** Applies the kernel to an image.

@@ -48,10 +48,10 @@ public:
     /** Replaces this set with a copy of another set. */
     NamedValueSet& operator= (const NamedValueSet&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     NamedValueSet (NamedValueSet&&) noexcept;
     NamedValueSet& operator= (NamedValueSet&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~NamedValueSet() noexcept;
@@ -80,13 +80,13 @@ public:
     */
     bool set (Identifier name, const var& newValue);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     /** Changes or adds a named value.
         @returns    true if a value was changed or added; false if the
                     value was already set the value passed-in.
     */
     bool set (Identifier name, var&& newValue);
-   #endif
+#endif
 
     /** Returns true if the set contains an item with the specified name. */
     bool contains (const Identifier& name) const noexcept;

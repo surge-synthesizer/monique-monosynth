@@ -26,6 +26,7 @@ class MoniqueAudioProcessor;
 class MoniqueSynthData;
 class RuntimeInfo;
 class LFO;
+class MFO;
 class SecondOSC;
 class MasterOSC;
 class ENV;
@@ -61,6 +62,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     SecondOSC* second_osc;
     SecondOSC* third_osc;
     LFO** lfos;
+    MFO** mfos;
     FilterProcessor** filter_processors;
 
     //==============================================================================
@@ -91,7 +93,7 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
 public:
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
 private:
-    void start_internal( int midiNoteNumber, float velocity ) noexcept;
+    void start_internal( int midiNoteNumber, float velocity, int sample_number_ ) noexcept;
 public:
     void stopNote(float, bool allowTailOff) override;
     void stop_arp() noexcept;
@@ -120,11 +122,11 @@ public:
     // UI INFOS
     float get_filter_env_amp( int filter_id_ ) const noexcept;
     float get_lfo_amp( int lfo_id_ ) const noexcept;
+    float get_mfo_amp( int mfo_id_ ) const noexcept;
     float get_arp_sequence_amp( int step_ ) const noexcept;
     float get_current_frequency() const noexcept;
     float get_flt_input_env_amp( int flt_id_, int input_id_ ) const noexcept;
     float get_band_env_amp( int band_id_ ) const noexcept;
-    float get_chorus_modulation_env_amp() const noexcept;
 
 public:
     //==============================================================================

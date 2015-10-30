@@ -72,13 +72,15 @@ class ScopedPointer
 public:
     //==============================================================================
     /** Creates a ScopedPointer containing a null pointer. */
-    inline ScopedPointer() noexcept   : object (nullptr)
+inline ScopedPointer() noexcept   :
+    object (nullptr)
     {
     }
 
     /** Creates a ScopedPointer that owns the specified object. */
     inline ScopedPointer (ObjectType* const objectToTakePossessionOf) noexcept
-        : object (objectToTakePossessionOf)
+:
+    object (objectToTakePossessionOf)
     {
     }
 
@@ -89,7 +91,8 @@ public:
         be a null pointer.
     */
     ScopedPointer (ScopedPointer& objectToTransferFrom) noexcept
-        : object (objectToTransferFrom.object)
+:
+    object (objectToTransferFrom.object)
     {
         objectToTransferFrom.object = nullptr;
     }
@@ -97,7 +100,9 @@ public:
     /** Destructor.
         This will delete the object that this ScopedPointer currently refers to.
     */
-    inline ~ScopedPointer()                 { ContainerDeletePolicy<ObjectType>::destroy (object); }
+    inline ~ScopedPointer()                 {
+        ContainerDeletePolicy<ObjectType>::destroy (object);
+    }
 
     /** Changes this ScopedPointer to point to a new object.
 
@@ -144,9 +149,10 @@ public:
         return *this;
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     ScopedPointer (ScopedPointer&& other) noexcept
-        : object (other.object)
+:
+    object (other.object)
     {
         other.object = nullptr;
     }
@@ -157,20 +163,28 @@ public:
         other.object = nullptr;
         return *this;
     }
-   #endif
+#endif
 
     //==============================================================================
     /** Returns the object that this ScopedPointer refers to. */
-    inline operator ObjectType*() const noexcept                                    { return object; }
+    inline operator ObjectType*() const noexcept                                    {
+        return object;
+    }
 
     /** Returns the object that this ScopedPointer refers to. */
-    inline ObjectType* get() const noexcept                                         { return object; }
+    inline ObjectType* get() const noexcept                                         {
+        return object;
+    }
 
     /** Returns the object that this ScopedPointer refers to. */
-    inline ObjectType& operator*() const noexcept                                   { return *object; }
+    inline ObjectType& operator*() const noexcept                                   {
+        return *object;
+    }
 
     /** Lets you access methods and properties of the object that this ScopedPointer refers to. */
-    inline ObjectType* operator->() const noexcept                                  { return object; }
+    inline ObjectType* operator->() const noexcept                                  {
+        return object;
+    }
 
     //==============================================================================
     /** Removes the current object from this ScopedPointer without deleting it.
@@ -194,16 +208,20 @@ public:
     /** If the pointer is non-null, this will attempt to return a new copy of the object that is pointed to.
         If the pointer is null, this will safely return a nullptr.
     */
-    inline ObjectType* createCopy() const                                           { return createCopyIfNotNull (object); }
+    inline ObjectType* createCopy() const                                           {
+        return createCopyIfNotNull (object);
+    }
 
 private:
     //==============================================================================
     ObjectType* object;
 
     // (Required as an alternative to the overloaded & operator).
-    const ScopedPointer* getAddress() const noexcept                                { return this; }
+    const ScopedPointer* getAddress() const noexcept                                {
+        return this;
+    }
 
-  #if ! JUCE_MSVC  // (MSVC can't deal with multiple copy constructors)
+#if ! JUCE_MSVC  // (MSVC can't deal with multiple copy constructors)
     /* The copy constructors are private to stop people accidentally copying a const ScopedPointer
        (the compiler would let you do so by implicitly casting the source to its raw object pointer).
 
@@ -221,7 +239,7 @@ private:
        this is a better representation of the code that you actually want the compiler to produce.
     */
     JUCE_DECLARE_NON_COPYABLE (ScopedPointer)
-  #endif
+#endif
 };
 
 //==============================================================================
@@ -247,7 +265,9 @@ bool operator!= (const ScopedPointer<ObjectType>& pointer1, ObjectType* const po
 #ifndef DOXYGEN
 // NB: This is just here to prevent any silly attempts to call deleteAndZero() on a ScopedPointer.
 template <typename Type>
-void deleteAndZero (ScopedPointer<Type>&)  { static_jassert (sizeof (Type) == 12345); }
+void deleteAndZero (ScopedPointer<Type>&)  {
+    static_jassert (sizeof (Type) == 12345);
+}
 #endif
 
 #endif   // JUCE_SCOPEDPOINTER_H_INCLUDED

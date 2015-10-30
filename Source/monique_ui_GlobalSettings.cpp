@@ -33,18 +33,6 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
 {
     slider_glide_time->setValue( synth_data->glide_motor_time.get_value(), dontSendNotification );
     {
-        int motor_time = synth_data->morph_motor_time.get_value();
-        slider_morph_motor_time->setValue( motor_time, dontSendNotification );
-        if( motor_time > 999 )
-        {
-            slider_morph_motor_time->SET_VALUE_TO_PAINT( String( round01( float(motor_time) / 1000 ) ) + String("@") + String("s") );
-        }
-        else
-        {
-            slider_morph_motor_time->SET_VALUE_TO_PAINT( String(motor_time) + String("@") + String("ms") );
-        }
-    }
-    {
         int motor_time = synth_data->glide_motor_time.get_value();
         slider_glide_time->setValue( motor_time, dontSendNotification );
         if( motor_time > 999 )
@@ -74,30 +62,68 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
 #endif
 
     // COLOURS
+    bool repaint_buttons = force_repaint;
+    force_repaint = false;
     if( button_current_editor_color->isVisible() )
     {
-        button_current_editor_color->setColour( TextButton::buttonColourId, colour_selector->getCurrentColour() );
 
         if( current_edited_colour )
+        {
             *current_edited_colour = colour_selector->getCurrentColour();
+        }
 
         if( last_repainted_colour != *current_edited_colour )
         {
             last_repainted_colour = *current_edited_colour;
+            button_current_editor_color->setColour( TextButton::buttonColourId, last_repainted_colour );
+            if( toggle_for_all->getToggleState() and editable_theme != &look_and_feel->colours.get_theme( COLOUR_THEMES::BG_THEME ) )
+            {
+                for( int i = 0 ; i != COLOUR_THEMES::SUM_OF ; ++i )
+                {
+                    if( i == BG_THEME )
+                    {
+                        continue;
+                    }
+
+                    SectionTheme& theme = look_and_feel->colours.get_theme( static_cast< COLOUR_THEMES >( i ) );
+                    Colour& colour = theme.get_color( current_colour );
+
+                    colour = last_repainted_colour;
+                }
+            }
+
+            repaint_buttons = true;
             get_editor()->repaint();
         }
     }
-    else
+    if( repaint_buttons )
     {
-        button_colour_bg->setColour (TextButton::buttonColourId, look_and_feel->colours.bg);
-        button_colour_border->setColour (TextButton::buttonColourId,  look_and_feel->colours.bg_lines );
-        button_colour_buttons_on->setColour (TextButton::buttonColourId, look_and_feel->colours.button_on_colour);
-        button_colour_buttons_off->setColour (TextButton::buttonColourId, look_and_feel->colours.button_off_colour);
-        button_colour_slider_1->setColour (TextButton::buttonColourId, look_and_feel->colours.slider_track_colour);
-        button_colour_slider_2->setColour (TextButton::buttonColourId, look_and_feel->colours.slider_track_colour_2);
-        button_colour_slider_mod->setColour (TextButton::buttonColourId, look_and_feel->colours.slider_track_colour_modulation);
-        button_colour_signal_lines->setColour (TextButton::buttonColourId, look_and_feel->colours.signal_lines);
-        button_colour_labels->setColour (TextButton::buttonColourId, look_and_feel->colours.label_text_colour);
+        button_colour_background->setColour (TextButton::buttonColourId, editable_theme->area_colour );
+        button_colour_labels->setColour (TextButton::buttonColourId, editable_theme->area_font_colour );
+
+        button_colour_slider_disabled->setColour (TextButton::buttonColourId, editable_theme->disabled_track_colour);
+        button_colour_slider_bg->setColour (TextButton::buttonColourId, editable_theme->slider_bg_colour);
+        button_colour_slider_1->setColour (TextButton::buttonColourId, editable_theme->value_slider_track_colour);
+        button_colour_slider_2->setColour (TextButton::buttonColourId, editable_theme->value_2_slider_track_colour);
+        button_colour_slider_mod->setColour (TextButton::buttonColourId, editable_theme->mod_slider_track_colour);
+
+        button_colour_buttons_on->setColour (TextButton::buttonColourId, editable_theme->button_on_colour);
+        button_colour_buttons_font_on->setColour (TextButton::buttonColourId, editable_theme->button_on_font_colour);
+        button_colour_buttons_off->setColour (TextButton::buttonColourId, editable_theme->button_off_colour);
+        button_colour_buttons_font_off->setColour (TextButton::buttonColourId, editable_theme->button_off_font_colour);
+
+        button_colour_bg->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour);
+        button_colour_bg_svg_1->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME ).area_colour );
+        button_colour_bg_svg_2->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::FM_THEME ).area_colour);
+        button_colour_bg_svg_3->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::FM_THEME ).area_colour);
+        button_colour_bg_svg_4->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME ).area_colour);
+        button_colour_bg_svg_5->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::MORPH_THEME ).area_colour);
+        button_colour_bg_svg_6->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour);
+        button_colour_bg_svg_7->setColour (TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME ).area_colour);
+
+        label_section__->setColour (TextEditor::textColourId, editable_theme->area_font_colour);
+        label_slider__->setColour (TextEditor::textColourId, editable_theme->area_font_colour);
+        label_buttons__->setColour (TextEditor::textColourId, editable_theme->area_font_colour);
     }
 
     // THREADS
@@ -110,40 +136,27 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
     toggle_slider_rotary->setToggleState( synth_data->sliders_in_rotary_mode, dontSendNotification );
     toggle_slider_linear->setToggleState( not synth_data->sliders_in_rotary_mode, dontSendNotification );
     slider_sensitivity->setEnabled( not synth_data->sliders_in_rotary_mode );
+    slider_sensitivity->setValue( int(synth_data->sliders_sensitivity), dontSendNotification );
 }
 
 void Monique_Ui_GlobalSettings::handleAsyncUpdate()
 {
     update_audio_devices();
 }
-void Monique_Ui_GlobalSettings::open_colour_selector(Colour& colour_to_edit_)
+void Monique_Ui_GlobalSettings::open_colour_selector( COLOUR_CODES code_ )
 {
-    last_repainted_colour = colour_to_edit_;
+    current_colour = code_;
+    last_repainted_colour = editable_theme->get_color(current_colour);
 
-    colour_selector->setCurrentColour( colour_to_edit_ );
-    current_edited_colour = &colour_to_edit_;
+    colour_selector->setCurrentColour( last_repainted_colour );
+    current_edited_colour = &editable_theme->get_color(current_colour);
 
     colour_selector->setVisible(true);
     button_current_editor_color->setVisible(true);
-
-    label_colour_1->setVisible(false);
-    label_colour_2->setVisible(false);
-    label_colour_3->setVisible(false);
-    label_colour_4->setVisible(false);
-    label_colour_5->setVisible(false);
-    label_colour_6->setVisible(false);
-    label_colour_7->setVisible(false);
-    label_colour_8->setVisible(false);
-    label_colour_9->setVisible(false);
-    button_colour_bg->setVisible(false);
-    button_colour_border->setVisible(false);
-    button_colour_buttons_on->setVisible(false);
-    button_colour_buttons_off->setVisible(false);
-    button_colour_slider_1->setVisible(false);
-    button_colour_slider_2->setVisible(false);
-    button_colour_slider_mod->setVisible(false);
-    button_colour_signal_lines->setVisible(false);
-    button_colour_labels->setVisible(false);
+    copy->setVisible(true);
+    past->setVisible(true);
+    label_section->setVisible(false);
+    label_colour->setVisible(true);
 }
 
 void Monique_Ui_GlobalSettings::update_audio_devices()
@@ -295,7 +308,55 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
       original_w(1465), original_h(180)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    editable_theme = &ui_refresher_->look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME );
+    current_colour = COLOUR_CODES::AREA_COLOUR;
+    force_repaint = true;
+    colour_clipboard = 0xffffffff;
     //[/Constructor_pre]
+
+    addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
+    button_colour_bg->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg->setButtonText (String::empty);
+    button_colour_bg->addListener (this);
+
+    addAndMakeVisible (button_colour_background = new TextButton ("new button"));
+    button_colour_background->setTooltip (TRANS("Section BACKGROUND"));
+    button_colour_background->setButtonText (String::empty);
+    button_colour_background->addListener (this);
+
+    addAndMakeVisible (label_buttons__ = new Label (String::empty,
+                                                    TRANS("BUTTONS\n")));
+    label_buttons__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
+    label_buttons__->setFont (Font (30.00f, Font::plain));
+    label_buttons__->setJustificationType (Justification::centredRight);
+    label_buttons__->setEditable (false, false, false);
+    label_buttons__->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_buttons__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_buttons__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_slider__ = new Label (String::empty,
+                                                   TRANS("SLIDERS")));
+    label_slider__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
+    label_slider__->setFont (Font (30.00f, Font::plain));
+    label_slider__->setJustificationType (Justification::centredRight);
+    label_slider__->setEditable (false, false, false);
+    label_slider__->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_slider__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_slider__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_section__ = new Label (String::empty,
+                                                    TRANS("SECTION")));
+    label_section__->setTooltip (TRANS("Click a button on the right to change the colour for this element."));
+    label_section__->setFont (Font (30.00f, Font::plain));
+    label_section__->setJustificationType (Justification::centredRight);
+    label_section__->setEditable (false, false, false);
+    label_section__->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_section__->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_section__->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String::empty,
+                                                                URL ("http://monique-synthesizer.monoplugs.com")));
+    link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
 
     addAndMakeVisible (label_9 = new Label (String::empty,
                                             TRANS("BLOCK:")));
@@ -407,104 +468,26 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     combo_sample_rate->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     combo_sample_rate->addListener (this);
 
-    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
-                                                             ,0,7));
-
-    addAndMakeVisible (label_colour_4 = new Label (String::empty,
-                                                   TRANS("BUTTON ON")));
-    label_colour_4->setTooltip (TRANS("Click to change this colour."));
-    label_colour_4->setFont (Font (30.00f, Font::plain));
-    label_colour_4->setJustificationType (Justification::centredLeft);
-    label_colour_4->setEditable (false, false, false);
-    label_colour_4->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (button_current_editor_color = new TextButton (String::empty));
     button_current_editor_color->setButtonText (TRANS("OK"));
     button_current_editor_color->addListener (this);
-
-    addAndMakeVisible (label_colour_7 = new Label (String::empty,
-                                                   TRANS("VALUE SLIDER (FRONT)")));
-    label_colour_7->setTooltip (TRANS("Click to change this colour."));
-    label_colour_7->setFont (Font (30.00f, Font::plain));
-    label_colour_7->setJustificationType (Justification::centredLeft);
-    label_colour_7->setEditable (false, false, false);
-    label_colour_7->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_7->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_7->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_colour_9 = new Label (String::empty,
-                                                   TRANS("MODULATION SLIDER (BACK)")));
-    label_colour_9->setTooltip (TRANS("Click to change this colour."));
-    label_colour_9->setFont (Font (30.00f, Font::plain));
-    label_colour_9->setJustificationType (Justification::centredLeft);
-    label_colour_9->setEditable (false, false, false);
-    label_colour_9->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_colour_6 = new Label (String::empty,
-                                                   TRANS("LABELS")));
-    label_colour_6->setTooltip (TRANS("Click to change this colour."));
-    label_colour_6->setFont (Font (30.00f, Font::plain));
-    label_colour_6->setJustificationType (Justification::centredLeft);
-    label_colour_6->setEditable (false, false, false);
-    label_colour_6->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_colour_5 = new Label (String::empty,
-                                                   TRANS("BUTTON OFF")));
-    label_colour_5->setTooltip (TRANS("Click to change this colour."));
-    label_colour_5->setFont (Font (30.00f, Font::plain));
-    label_colour_5->setJustificationType (Justification::centredLeft);
-    label_colour_5->setEditable (false, false, false);
-    label_colour_5->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (slider_morph_motor_time = new Slider ("0"));
-    slider_morph_motor_time->setTooltip (TRANS("Define the MORPH MOTOR TIME.\n"
-    "\n"
-    "Morph motor time is the speed of the morph sliders if you morph via the morph pad or the horizontal slider below the morph sliders"));
-    slider_morph_motor_time->setRange (1, 20000, 1);
-    slider_morph_motor_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_morph_motor_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    slider_morph_motor_time->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
-    slider_morph_motor_time->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
-    slider_morph_motor_time->setColour (Slider::textBoxTextColourId, Colours::yellow);
-    slider_morph_motor_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
-    slider_morph_motor_time->addListener (this);
+    button_current_editor_color->setColour (TextButton::buttonColourId, Colours::green);
 
     addAndMakeVisible (slider_glide_time = new Slider ("0"));
-    slider_glide_time->setTooltip (TRANS("Define the GLIDE MOTOR TIME.\n"
-    "\n"
-    "Glide motor time is smoothes your inputs at many sliders on the main user interface. \n"
-    "\n"
-    "Set a large value here and try to change the MASTER VOLUME and do it again with a small one.\n"
+    slider_glide_time->setTooltip (TRANS("Define the paramter smoothtime. This will smooth your inputs.\n"
     "\n"
     "Affected: OSC sliders, FILTER sliders, EQ sliders, FX sliders, MASTER VOLUME"));
     slider_glide_time->setRange (1, 1000, 1);
     slider_glide_time->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_glide_time->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    slider_glide_time->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     slider_glide_time->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
     slider_glide_time->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
     slider_glide_time->setColour (Slider::textBoxTextColourId, Colours::yellow);
     slider_glide_time->setColour (Slider::textBoxBackgroundColourId, Colour (0xff161616));
     slider_glide_time->addListener (this);
 
-    addAndMakeVisible (label13 = new Label ("new label",
-                                            TRANS("MORPH MOTOR")));
-    label13->setFont (Font (15.00f, Font::plain));
-    label13->setJustificationType (Justification::centred);
-    label13->setEditable (false, false, false);
-    label13->setColour (Label::textColourId, Colours::yellow);
-    label13->setColour (TextEditor::textColourId, Colours::black);
-    label13->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label7 = new Label ("new label",
-                                           TRANS("GLIDE")));
+                                           TRANS("TIME")));
     label7->setFont (Font (15.00f, Font::plain));
     label7->setJustificationType (Justification::centred);
     label7->setEditable (false, false, false);
@@ -544,30 +527,30 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     "Press the \"CTRL\" + \"h\" on your keyboard to show the tooltip if this option is turned off."));
     toggle_show_tooltips->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_1 = new Label ("DL",
-                                                        TRANS("GLOBAL TIMES")));
+    addAndMakeVisible (label_ui_headline_1 = new Label (String::empty,
+                                                        TRANS("SMOOTH")));
     label_ui_headline_1->setFont (Font (30.00f, Font::plain));
     label_ui_headline_1->setJustificationType (Justification::centred);
     label_ui_headline_1->setEditable (false, false, false);
-    label_ui_headline_1->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_1->setColour (Label::textColourId, Colour (0xff050505));
     label_ui_headline_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_2 = new Label ("DL",
+    addAndMakeVisible (label_ui_headline_2 = new Label (String::empty,
                                                         TRANS("MISC")));
     label_ui_headline_2->setFont (Font (30.00f, Font::plain));
     label_ui_headline_2->setJustificationType (Justification::centred);
     label_ui_headline_2->setEditable (false, false, false);
-    label_ui_headline_2->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_2->setColour (Label::textColourId, Colour (0xff050505));
     label_ui_headline_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_ui_headline_4 = new Label ("DL",
+    addAndMakeVisible (label_ui_headline_4 = new Label (String::empty,
                                                         TRANS("SLIDERS")));
     label_ui_headline_4->setFont (Font (30.00f, Font::plain));
     label_ui_headline_4->setJustificationType (Justification::centred);
     label_ui_headline_4->setEditable (false, false, false);
-    label_ui_headline_4->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_4->setColour (Label::textColourId, Colour (0xff050505));
     label_ui_headline_4->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
@@ -575,7 +558,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     slider_sensitivity->setTooltip (TRANS("Define the sensitivity of each rotary slider. You can test the effect with this slider."));
     slider_sensitivity->setRange (100, 2000, 1);
     slider_sensitivity->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-    slider_sensitivity->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    slider_sensitivity->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     slider_sensitivity->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
     slider_sensitivity->setColour (Slider::rotarySliderOutlineColourId, Colour (0xff161616));
     slider_sensitivity->setColour (Slider::textBoxTextColourId, Colours::yellow);
@@ -623,106 +606,57 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     "(You can drag a slider by move the mouse around the slider)"));
     toggle_slider_rotary->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_5 = new Label ("DL",
+    addAndMakeVisible (label_ui_headline_5 = new Label (String::empty,
                                                         TRANS("COLOURS")));
     label_ui_headline_5->setFont (Font (30.00f, Font::plain));
     label_ui_headline_5->setJustificationType (Justification::centred);
     label_ui_headline_5->setEditable (false, false, false);
-    label_ui_headline_5->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_5->setColour (Label::textColourId, Colour (0xff050505));
     label_ui_headline_5->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_5->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (label_colour_1 = new Label (String::empty,
-                                                   TRANS("BACKGROUND")));
-    label_colour_1->setTooltip (TRANS("Click to change this colour."));
-    label_colour_1->setFont (Font (30.00f, Font::plain));
-    label_colour_1->setJustificationType (Justification::centredLeft);
-    label_colour_1->setEditable (false, false, false);
-    label_colour_1->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_colour_8 = new Label (String::empty,
-                                                   TRANS("VALUE SLIDER 2 (BACK)")));
-    label_colour_8->setTooltip (TRANS("Click to change this colour."));
-    label_colour_8->setFont (Font (30.00f, Font::plain));
-    label_colour_8->setJustificationType (Justification::centredLeft);
-    label_colour_8->setEditable (false, false, false);
-    label_colour_8->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_8->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_8->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_colour_2 = new Label (String::empty,
-                                                   TRANS("BORDERS")));
-    label_colour_2->setTooltip (TRANS("Click to change this colour."));
-    label_colour_2->setFont (Font (30.00f, Font::plain));
-    label_colour_2->setJustificationType (Justification::centredLeft);
-    label_colour_2->setEditable (false, false, false);
-    label_colour_2->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (button_colour_bg = new TextButton ("new button"));
-    button_colour_bg->setTooltip (TRANS("Click to change this colour."));
-    button_colour_bg->setButtonText (String::empty);
-    button_colour_bg->addListener (this);
-
-    addAndMakeVisible (button_colour_border = new TextButton ("new button"));
-    button_colour_border->setTooltip (TRANS("Click to change this colour."));
-    button_colour_border->setButtonText (String::empty);
-    button_colour_border->addListener (this);
-
     addAndMakeVisible (button_colour_buttons_on = new TextButton ("new button"));
-    button_colour_buttons_on->setTooltip (TRANS("Click to change this colour."));
-    button_colour_buttons_on->setButtonText (String::empty);
+    button_colour_buttons_on->setTooltip (TRANS("Button ON"));
+    button_colour_buttons_on->setButtonText (TRANS("O"));
+    button_colour_buttons_on->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_buttons_on->addListener (this);
 
     addAndMakeVisible (button_colour_slider_1 = new TextButton ("new button"));
-    button_colour_slider_1->setTooltip (TRANS("Click to change this colour."));
-    button_colour_slider_1->setButtonText (String::empty);
+    button_colour_slider_1->setTooltip (TRANS("FRONT slider"));
+    button_colour_slider_1->setButtonText (TRANS("1"));
+    button_colour_slider_1->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_slider_1->addListener (this);
 
     addAndMakeVisible (button_colour_slider_2 = new TextButton ("new button"));
-    button_colour_slider_2->setTooltip (TRANS("Click to change this colour."));
-    button_colour_slider_2->setButtonText (String::empty);
+    button_colour_slider_2->setTooltip (TRANS("BACK slider"));
+    button_colour_slider_2->setButtonText (TRANS("2"));
+    button_colour_slider_2->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_slider_2->addListener (this);
 
     addAndMakeVisible (button_colour_slider_mod = new TextButton ("new button"));
-    button_colour_slider_mod->setTooltip (TRANS("Click to change this colour."));
-    button_colour_slider_mod->setButtonText (String::empty);
+    button_colour_slider_mod->setTooltip (TRANS("MODULATION slider (back)"));
+    button_colour_slider_mod->setButtonText (TRANS("M"));
+    button_colour_slider_mod->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_slider_mod->addListener (this);
 
-    addAndMakeVisible (label_colour_3 = new Label (String::empty,
-                                                   TRANS("SIGNAL LINES")));
-    label_colour_3->setTooltip (TRANS("Click to change this colour."));
-    label_colour_3->setFont (Font (30.00f, Font::plain));
-    label_colour_3->setJustificationType (Justification::centredLeft);
-    label_colour_3->setEditable (false, false, false);
-    label_colour_3->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_colour_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_colour_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (button_colour_signal_lines = new TextButton ("new button"));
-    button_colour_signal_lines->setTooltip (TRANS("Click to change this colour."));
-    button_colour_signal_lines->setButtonText (String::empty);
-    button_colour_signal_lines->addListener (this);
-
-    addAndMakeVisible (button_colour_buttons_off = new TextButton ("new button"));
-    button_colour_buttons_off->setTooltip (TRANS("Click to change this colour."));
-    button_colour_buttons_off->setButtonText (String::empty);
-    button_colour_buttons_off->addListener (this);
+    addAndMakeVisible (button_colour_buttons_font_on = new TextButton ("new button"));
+    button_colour_buttons_font_on->setTooltip (TRANS("Button font ON "));
+    button_colour_buttons_font_on->setButtonText (TRANS("F"));
+    button_colour_buttons_font_on->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_buttons_font_on->addListener (this);
 
     addAndMakeVisible (button_colour_labels = new TextButton ("new button"));
-    button_colour_labels->setTooltip (TRANS("Click to change this colour."));
-    button_colour_labels->setButtonText (String::empty);
+    button_colour_labels->setTooltip (TRANS("Section FONT"));
+    button_colour_labels->setButtonText (TRANS("F"));
+    button_colour_labels->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
     button_colour_labels->addListener (this);
 
-    addAndMakeVisible (label_ui_headline_6 = new Label ("DL",
+    addAndMakeVisible (label_ui_headline_6 = new Label (String::empty,
                                                         TRANS("AUDIO & CPU")));
     label_ui_headline_6->setFont (Font (30.00f, Font::plain));
     label_ui_headline_6->setJustificationType (Justification::centred);
     label_ui_headline_6->setEditable (false, false, false);
-    label_ui_headline_6->setColour (Label::textColourId, Colour (0xff1111ff));
+    label_ui_headline_6->setColour (Label::textColourId, Colour (0xff050505));
     label_ui_headline_6->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_6->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
@@ -797,12 +731,156 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_ui_headline_9->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_ui_headline_9->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (link_to_monoplugs = new HyperlinkButton (String::empty,
-                                                                URL ("http://monique-synthesizer.monoplugs.com")));
-    link_to_monoplugs->setTooltip (TRANS("http://monique-synthesizer.monoplugs.com"));
+    addAndMakeVisible (button_colour_bg_svg_1 = new TextButton ("new button"));
+    button_colour_bg_svg_1->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_1->setButtonText (TRANS("FLT"));
+    button_colour_bg_svg_1->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnBottom);
+    button_colour_bg_svg_1->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_2 = new TextButton ("new button"));
+    button_colour_bg_svg_2->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_2->setButtonText (TRANS("FM"));
+    button_colour_bg_svg_2->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_bg_svg_2->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_3 = new TextButton ("new button"));
+    button_colour_bg_svg_3->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_3->setButtonText (TRANS("FX/EQ"));
+    button_colour_bg_svg_3->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_bg_svg_3->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_4 = new TextButton ("new button"));
+    button_colour_bg_svg_4->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_4->setButtonText (TRANS("ARP"));
+    button_colour_bg_svg_4->setConnectedEdges (Button::ConnectedOnTop);
+    button_colour_bg_svg_4->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_5 = new TextButton ("new button"));
+    button_colour_bg_svg_5->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_5->setButtonText (TRANS("MO"));
+    button_colour_bg_svg_5->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_bg_svg_5->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_6 = new TextButton ("new button"));
+    button_colour_bg_svg_6->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_6->setButtonText (TRANS("V"));
+    button_colour_bg_svg_6->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_bg_svg_6->addListener (this);
+
+    addAndMakeVisible (button_colour_bg_svg_7 = new TextButton ("new button"));
+    button_colour_bg_svg_7->setTooltip (TRANS("Click to change this colour."));
+    button_colour_bg_svg_7->setButtonText (TRANS("O"));
+    button_colour_bg_svg_7->setConnectedEdges (Button::ConnectedOnRight | Button::ConnectedOnBottom);
+    button_colour_bg_svg_7->addListener (this);
+
+    addAndMakeVisible (copy = new TextButton (String::empty));
+    copy->setTooltip (TRANS("Copy the current colour."));
+    copy->setButtonText (TRANS("COPY"));
+    copy->setConnectedEdges (Button::ConnectedOnBottom);
+    copy->addListener (this);
+    copy->setColour (TextButton::buttonColourId, Colours::cornflowerblue);
+    copy->setColour (TextButton::buttonOnColourId, Colours::green);
+    copy->setColour (TextButton::textColourOnId, Colours::black);
+    copy->setColour (TextButton::textColourOffId, Colours::black);
+
+    addAndMakeVisible (past = new TextButton (String::empty));
+    past->setTooltip (TRANS("Copy colour from clipboard."));
+    past->setButtonText (TRANS("PAST"));
+    past->setConnectedEdges (Button::ConnectedOnTop);
+    past->addListener (this);
+    past->setColour (TextButton::buttonColourId, Colours::blueviolet);
+    past->setColour (TextButton::buttonOnColourId, Colours::green);
+    past->setColour (TextButton::textColourOnId, Colours::black);
+    past->setColour (TextButton::textColourOffId, Colours::black);
+
+    addAndMakeVisible (button_colour_buttons_off = new TextButton ("new button"));
+    button_colour_buttons_off->setTooltip (TRANS("Button OFF or BACKGROUND"));
+    button_colour_buttons_off->setButtonText (TRANS("B"));
+    button_colour_buttons_off->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_buttons_off->addListener (this);
+
+    addAndMakeVisible (button_colour_buttons_font_off = new TextButton ("new button"));
+    button_colour_buttons_font_off->setTooltip (TRANS("Button font OFF"));
+    button_colour_buttons_font_off->setButtonText (TRANS("F"));
+    button_colour_buttons_font_off->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_buttons_font_off->addListener (this);
+
+    addAndMakeVisible (button_colour_slider_bg = new TextButton ("new button"));
+    button_colour_slider_bg->setTooltip (TRANS("Slider BACKGROUND"));
+    button_colour_slider_bg->setButtonText (TRANS("B"));
+    button_colour_slider_bg->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_slider_bg->addListener (this);
+
+    addAndMakeVisible (button_preset_4 = new TextButton ("new button"));
+    button_preset_4->setTooltip (TRANS("Click to load this preset."));
+    button_preset_4->setButtonText (TRANS("PRE4"));
+    button_preset_4->addListener (this);
+
+    addAndMakeVisible (label_11 = new Label (String::empty,
+                                             TRANS("FOR ALL")));
+    label_11->setTooltip (TRANS("Enable this option to change colours for an element over all sections."));
+    label_11->setFont (Font (30.00f, Font::plain));
+    label_11->setJustificationType (Justification::centredLeft);
+    label_11->setEditable (false, false, false);
+    label_11->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_11->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_11->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (toggle_for_all = new ToggleButton (String::empty));
+    toggle_for_all->setTooltip (TRANS("Enable this option to change colours for an element over all sections."));
+    toggle_for_all->addListener (this);
+
+    addAndMakeVisible (copy2 = new TextButton (String::empty));
+    copy2->setTooltip (TRANS("Copy this section colours to clipboard."));
+    copy2->setButtonText (TRANS("COPY"));
+    copy2->setConnectedEdges (Button::ConnectedOnRight);
+    copy2->addListener (this);
+    copy2->setColour (TextButton::buttonColourId, Colours::cornflowerblue);
+    copy2->setColour (TextButton::buttonOnColourId, Colours::green);
+    copy2->setColour (TextButton::textColourOnId, Colours::black);
+    copy2->setColour (TextButton::textColourOffId, Colours::black);
+
+    addAndMakeVisible (past2 = new TextButton (String::empty));
+    past2->setTooltip (TRANS("Past section colours from clipboard."));
+    past2->setButtonText (TRANS("PAST"));
+    past2->setConnectedEdges (Button::ConnectedOnLeft);
+    past2->addListener (this);
+    past2->setColour (TextButton::buttonColourId, Colours::blueviolet);
+    past2->setColour (TextButton::buttonOnColourId, Colours::green);
+    past2->setColour (TextButton::textColourOnId, Colours::black);
+    past2->setColour (TextButton::textColourOffId, Colours::black);
+
+    addAndMakeVisible (button_colour_slider_disabled = new TextButton ("new button"));
+    button_colour_slider_disabled->setTooltip (TRANS("Slider DISABLED (currently in background)"));
+    button_colour_slider_disabled->setButtonText (TRANS("D"));
+    button_colour_slider_disabled->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight | Button::ConnectedOnTop | Button::ConnectedOnBottom);
+    button_colour_slider_disabled->addListener (this);
+
+    addAndMakeVisible (label_section = new Label (String::empty,
+                                                  TRANS("Section: Filters")));
+    label_section->setFont (Font (30.00f, Font::plain));
+    label_section->setJustificationType (Justification::centred);
+    label_section->setEditable (false, false, false);
+    label_section->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_section->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_section->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_colour = new Label (String::empty,
+                                                 TRANS("Colour: Slider")));
+    label_colour->setFont (Font (30.00f, Font::plain));
+    label_colour->setJustificationType (Justification::centred);
+    label_colour->setEditable (false, false, false);
+    label_colour->setColour (Label::textColourId, Colour (0xffff3b00));
+    label_colour->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_colour->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (colour_selector = new ColourSelector (ColourSelector::showColourspace
+                                                             ,0,7));
 
 
     //[UserPreSize]
+
+
 #ifdef IS_STANDALONE
     label_ui_headline_3->setVisible(false);
     label_ui_headline_7->setVisible(false);
@@ -829,33 +907,54 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     label_ui_headline_6->setText(String("MONIQUE ")+String(ProjectInfo::versionString),dontSendNotification);
 #endif
 
-    SET_SLIDER_LABEL_STYLE(slider_glide_time,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
-    SET_SLIDER_LABEL_STYLE(slider_morph_motor_time,SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX);
+    slider_glide_time->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
+    //slider_sensitivity->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
 
+    /// COLOURS
+    {
+        colour_selector->setVisible(false);
+        button_current_editor_color->setVisible(false);
+        copy->setVisible(false);
+        past->setVisible(false);
+
+        current_edited_colour = nullptr;
+
+        button_preset_1->setColour( TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::SETUP_THEME  ).button_off_colour );
+        button_preset_2->setColour( TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::SETUP_THEME  ).button_off_colour );
+        button_preset_3->setColour( TextButton::buttonColourId, look_and_feel->colours.get_theme( COLOUR_THEMES::SETUP_THEME  ).button_off_colour );
+
+        label_colour->setVisible(false);
+    }
     setOpaque(true);
-    colour_selector->setVisible(false);
-    button_current_editor_color->setVisible(false);
-
-    current_edited_colour = nullptr;
-
-    for( int i = 0 ; i != getNumChildComponents() ; ++i ) {
-        getChildComponent(i)->setOpaque(true);
-
-        if( Slider* slider = dynamic_cast<Slider*>(getChildComponent(i)) )
+    for( int i = 0 ; i != getNumChildComponents() ; ++i )
+    {
+        Component*child = getChildComponent(i);
+        child->setOpaque(true);
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::SETUP_THEME );
+        if( Slider* slider = dynamic_cast<Slider*>(child) )
         {
-            SET_SLIDER_STYLE( slider, VALUE_SLIDER );
+            slider->getProperties().set( VAR_INDEX_SLIDER_TYPE, VALUE_SLIDER );
         }
     }
     image_vst->setOpaque(false);
+    label_ui_headline_1->setOpaque(false);
+    label_ui_headline_2->setOpaque(false);
+    label_ui_headline_4->setOpaque(false);
+    label_ui_headline_5->setOpaque(false);
+    label_ui_headline_6->setOpaque(false);
+    label_11->setOpaque(false);
+    label_section__->setOpaque(false);
+    label_slider__->setOpaque(false);
+    label_buttons__->setOpaque(false);
     link_to_monoplugs->setOpaque(false);
 
-    button_preset_1->setColour( TextButton::buttonColourId, look_and_feel->colours.button_off_colour );
-    button_preset_2->setColour( TextButton::buttonColourId, look_and_feel->colours.button_off_colour );
-    button_preset_3->setColour( TextButton::buttonColourId, look_and_feel->colours.button_off_colour );
-
     // CPU
-    for( int i = 0 ; i != THREAD_LIMIT ; ++i )
-        combo_multicore_cpus->addItem(String(i+1),i+1);
+    {
+        for( int i = 0 ; i != THREAD_LIMIT ; ++i )
+	{
+            combo_multicore_cpus->addItem(String(i+1),i+1);
+	}
+    }
 
     // AUDIO DEVICE
 #ifdef IS_PLUGIN
@@ -882,7 +981,7 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     /*
     //[/UserPreSize]
 
-    setSize (1465, 400);
+    setSize (1465, 380);
 
 
     //[Constructor] You can add your own custom stuff here..
@@ -895,6 +994,12 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    button_colour_bg = nullptr;
+    button_colour_background = nullptr;
+    label_buttons__ = nullptr;
+    label_slider__ = nullptr;
+    label_section__ = nullptr;
+    link_to_monoplugs = nullptr;
     label_9 = nullptr;
     label_2 = nullptr;
     label_4 = nullptr;
@@ -907,16 +1012,8 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_7 = nullptr;
     label_8 = nullptr;
     combo_sample_rate = nullptr;
-    colour_selector = nullptr;
-    label_colour_4 = nullptr;
     button_current_editor_color = nullptr;
-    label_colour_7 = nullptr;
-    label_colour_9 = nullptr;
-    label_colour_6 = nullptr;
-    label_colour_5 = nullptr;
-    slider_morph_motor_time = nullptr;
     slider_glide_time = nullptr;
-    label13 = nullptr;
     label7 = nullptr;
     label_16 = nullptr;
     toggle_animate_input_env = nullptr;
@@ -932,18 +1029,11 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     toggle_slider_linear = nullptr;
     toggle_slider_rotary = nullptr;
     label_ui_headline_5 = nullptr;
-    label_colour_1 = nullptr;
-    label_colour_8 = nullptr;
-    label_colour_2 = nullptr;
-    button_colour_bg = nullptr;
-    button_colour_border = nullptr;
     button_colour_buttons_on = nullptr;
     button_colour_slider_1 = nullptr;
     button_colour_slider_2 = nullptr;
     button_colour_slider_mod = nullptr;
-    label_colour_3 = nullptr;
-    button_colour_signal_lines = nullptr;
-    button_colour_buttons_off = nullptr;
+    button_colour_buttons_font_on = nullptr;
     button_colour_labels = nullptr;
     label_ui_headline_6 = nullptr;
     button_preset_1 = nullptr;
@@ -955,7 +1045,27 @@ Monique_Ui_GlobalSettings::~Monique_Ui_GlobalSettings()
     label_ui_headline_7 = nullptr;
     image_vst = nullptr;
     label_ui_headline_9 = nullptr;
-    link_to_monoplugs = nullptr;
+    button_colour_bg_svg_1 = nullptr;
+    button_colour_bg_svg_2 = nullptr;
+    button_colour_bg_svg_3 = nullptr;
+    button_colour_bg_svg_4 = nullptr;
+    button_colour_bg_svg_5 = nullptr;
+    button_colour_bg_svg_6 = nullptr;
+    button_colour_bg_svg_7 = nullptr;
+    copy = nullptr;
+    past = nullptr;
+    button_colour_buttons_off = nullptr;
+    button_colour_buttons_font_off = nullptr;
+    button_colour_slider_bg = nullptr;
+    button_preset_4 = nullptr;
+    label_11 = nullptr;
+    toggle_for_all = nullptr;
+    copy2 = nullptr;
+    past2 = nullptr;
+    button_colour_slider_disabled = nullptr;
+    label_section = nullptr;
+    label_colour = nullptr;
+    colour_selector = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -971,20 +1081,20 @@ void Monique_Ui_GlobalSettings::paint (Graphics& g)
 
     g.fillAll (Colour (0xff050505));
 
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (10.0f, 10.0f, 190.0f, 150.0f, 6.000f, 1.000f);
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (551.0f, 0.0f, 573.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (200.0f, 10.0f, 180.0f, 150.0f, 6.000f, 1.000f);
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (291.0f, 0.0f, 258.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (380.0f, 10.0f, 260.0f, 150.0f, 6.000f, 1.000f);
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (111.0f, 0.0f, 178.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (640.0f, 10.0f, 485.0f, 150.0f, 6.000f, 1.000f);
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (10.0f, 0.0f, 99.0f, 250.0f, 10.000f);
 
-    g.setColour (Colour (0xffff3b00));
-    g.drawRoundedRectangle (1125.0f, 10.0f, 330.0f, 150.0f, 6.000f, 1.000f);
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (1126.0f, 0.0f, 324.0f, 250.0f, 10.000f);
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -995,70 +1105,373 @@ void Monique_Ui_GlobalSettings::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label_9->setBounds (1290, 30, 60, 33);
-    label_2->setBounds (1290, 70, 60, 33);
-    label_4->setBounds (1290, 110, 60, 33);
-    combo_multicore_cpus->setBounds (1360, 110, 80, 30);
-    label_cpu_usage->setBounds (1360, 70, 80, 33);
-    combo_block_size->setBounds (1360, 30, 80, 30);
-    label_10->setBounds (1140, 30, 60, 33);
-    combo_audio_driver->setBounds (1210, 30, 80, 30);
-    combo_audio_device->setBounds (1210, 70, 80, 30);
-    label_7->setBounds (1140, 70, 60, 33);
-    label_8->setBounds (1140, 110, 60, 33);
-    combo_sample_rate->setBounds (1210, 110, 80, 30);
-    colour_selector->setBounds (660, 30, 270, 110);
-    label_colour_4->setBounds (810, 30, 90, 33);
-    button_current_editor_color->setBounds (940, 40, 90, 90);
-    label_colour_7->setBounds (930, 30, 120, 33);
-    label_colour_9->setBounds (930, 110, 120, 33);
-    label_colour_6->setBounds (810, 110, 90, 33);
-    label_colour_5->setBounds (810, 70, 90, 33);
-    slider_morph_motor_time->setBounds (30, 40, 60, 70);
-    slider_glide_time->setBounds (120, 40, 60, 70);
-    label13->setBounds (12, 110, 96, 33);
-    label7->setBounds (120, 110, 60, 33);
-    label_16->setBounds (260, 30, 100, 33);
-    toggle_animate_input_env->setBounds (220, 30, 33, 33);
-    label_18->setBounds (260, 70, 100, 33);
-    toggle_show_tooltips->setBounds (220, 70, 33, 33);
-    label_ui_headline_1->setBounds (30, -4, 150, 35);
-    label_ui_headline_2->setBounds (220, -4, 140, 35);
-    label_ui_headline_4->setBounds (430, -4, 170, 35);
-    slider_sensitivity->setBounds (410, 40, 60, 70);
-    label2->setBounds (390, 110, 100, 33);
-    label_3->setBounds (530, 50, 100, 33);
-    label_5->setBounds (530, 90, 100, 33);
-    toggle_slider_linear->setBounds (500, 50, 33, 33);
-    toggle_slider_rotary->setBounds (500, 90, 33, 33);
-    label_ui_headline_5->setBounds (790, -4, 182, 35);
-    label_colour_1->setBounds (690, 30, 90, 33);
-    label_colour_8->setBounds (930, 70, 120, 33);
-    label_colour_2->setBounds (690, 70, 90, 33);
-    button_colour_bg->setBounds (660, 30, 33, 30);
-    button_colour_border->setBounds (660, 70, 33, 30);
-    button_colour_buttons_on->setBounds (780, 30, 33, 30);
-    button_colour_slider_1->setBounds (900, 30, 33, 30);
-    button_colour_slider_2->setBounds (900, 70, 33, 30);
-    button_colour_slider_mod->setBounds (900, 110, 33, 30);
-    label_colour_3->setBounds (690, 110, 90, 33);
-    button_colour_signal_lines->setBounds (660, 110, 33, 30);
-    button_colour_buttons_off->setBounds (780, 70, 33, 30);
-    button_colour_labels->setBounds (780, 110, 33, 30);
-    label_ui_headline_6->setBounds (1210, -4, 170, 35);
-    button_preset_1->setBounds (1070, 30, 43, 30);
-    button_preset_2->setBounds (1070, 70, 43, 30);
-    button_preset_3->setBounds (1070, 110, 43, 30);
-    label_6->setBounds (260, 110, 100, 33);
-    toggle_one_pedal->setBounds (220, 110, 33, 33);
-    label_ui_headline_3->setBounds (1150, 30, 190, 38);
-    label_ui_headline_7->setBounds (1150, 70, 190, 33);
-    image_vst->setBounds (1350, 40, 90, 60);
-    label_ui_headline_9->setBounds (1150, 110, 290, 33);
-    link_to_monoplugs->setBounds (1140, 290, 280, 60);
+    button_colour_bg->setBounds (580, 50, 210, 120);
+    button_colour_background->setBounds (830, 80, 280, 90);
+    label_buttons__->setBounds (840, 140, 80, 30);
+    label_slider__->setBounds (840, 110, 80, 30);
+    label_section__->setBounds (840, 80, 80, 30);
+    link_to_monoplugs->setBounds (1150, 50, 280, 130);
+    label_9->setBounds (1290, 50, 60, 33);
+    label_2->setBounds (1290, 90, 60, 33);
+    label_4->setBounds (1290, 130, 60, 33);
+    combo_multicore_cpus->setBounds (1350, 130, 80, 30);
+    label_cpu_usage->setBounds (1350, 90, 80, 33);
+    combo_block_size->setBounds (1350, 50, 80, 30);
+    label_10->setBounds (1140, 50, 60, 33);
+    combo_audio_driver->setBounds (1200, 50, 80, 30);
+    combo_audio_device->setBounds (1200, 90, 80, 30);
+    label_7->setBounds (1140, 90, 60, 33);
+    label_8->setBounds (1140, 130, 60, 33);
+    combo_sample_rate->setBounds (1200, 130, 80, 30);
+    button_current_editor_color->setBounds (790, 50, 40, 60);
+    slider_glide_time->setBounds (30, 60, 60, 70);
+    label7->setBounds (30, 130, 60, 33);
+    label_16->setBounds (170, 50, 100, 33);
+    toggle_animate_input_env->setBounds (130, 50, 33, 33);
+    label_18->setBounds (170, 90, 100, 33);
+    toggle_show_tooltips->setBounds (130, 90, 33, 33);
+    label_ui_headline_1->setBounds (10, 0, 100, 35);
+    label_ui_headline_2->setBounds (110, 0, 180, 35);
+    label_ui_headline_4->setBounds (290, 0, 260, 35);
+    slider_sensitivity->setBounds (320, 60, 60, 70);
+    label2->setBounds (300, 130, 100, 33);
+    label_3->setBounds (440, 70, 100, 33);
+    label_5->setBounds (440, 110, 100, 33);
+    toggle_slider_linear->setBounds (410, 70, 33, 33);
+    toggle_slider_rotary->setBounds (410, 110, 33, 33);
+    label_ui_headline_5->setBounds (550, 0, 575, 35);
+    button_colour_buttons_on->setBounds (930, 140, 30, 30);
+    button_colour_slider_1->setBounds (930, 110, 30, 30);
+    button_colour_slider_2->setBounds (970, 110, 30, 30);
+    button_colour_slider_mod->setBounds (1000, 110, 30, 30);
+    button_colour_buttons_font_on->setBounds (960, 140, 30, 30);
+    button_colour_labels->setBounds (930, 80, 30, 30);
+    label_ui_headline_6->setBounds (1125, 0, 325, 35);
+    button_preset_1->setBounds (1060, 250, 53, 30);
+    button_preset_2->setBounds (1060, 280, 53, 30);
+    button_preset_3->setBounds (1060, 310, 53, 30);
+    label_6->setBounds (170, 130, 100, 33);
+    toggle_one_pedal->setBounds (130, 130, 33, 33);
+    label_ui_headline_3->setBounds (1150, 50, 190, 38);
+    label_ui_headline_7->setBounds (1150, 90, 190, 33);
+    image_vst->setBounds (1340, 60, 90, 60);
+    label_ui_headline_9->setBounds (1150, 130, 290, 33);
+    button_colour_bg_svg_1->setBounds (630, 60, 150, 30);
+    button_colour_bg_svg_2->setBounds (590, 90, 40, 30);
+    button_colour_bg_svg_3->setBounds (670, 90, 80, 30);
+    button_colour_bg_svg_4->setBounds (590, 120, 190, 30);
+    button_colour_bg_svg_5->setBounds (630, 90, 40, 30);
+    button_colour_bg_svg_6->setBounds (750, 90, 30, 30);
+    button_colour_bg_svg_7->setBounds (590, 60, 40, 30);
+    copy->setBounds (790, 130, 40, 20);
+    past->setBounds (790, 150, 40, 20);
+    button_colour_buttons_off->setBounds (1000, 140, 30, 30);
+    button_colour_buttons_font_off->setBounds (1030, 140, 30, 30);
+    button_colour_slider_bg->setBounds (1070, 110, 30, 30);
+    button_preset_4->setBounds (1060, 340, 53, 30);
+    label_11->setBounds (840, 50, 80, 30);
+    toggle_for_all->setBounds (930, 50, 30, 30);
+    copy2->setBounds (1000, 50, 50, 30);
+    past2->setBounds (1050, 50, 50, 30);
+    button_colour_slider_disabled->setBounds (1040, 110, 30, 30);
+    label_section->setBounds (580, 20, 210, 30);
+    label_colour->setBounds (580, 20, 210, 30);
+    colour_selector->setBounds (580, 50, 210, 120);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
+}
+
+void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
+{
+    //[UserbuttonClicked_Pre]
+    //[/UserbuttonClicked_Pre]
+
+    if (buttonThatWasClicked == button_colour_bg)
+    {
+        //[UserButtonCode_button_colour_bg] -- add your button handler code here..
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( BG_THEME );
+        label_section->setText("Section: BACKGROUND",dontSendNotification);
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg]
+    }
+    else if (buttonThatWasClicked == button_colour_background)
+    {
+        //[UserButtonCode_button_colour_background] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::AREA_COLOUR );
+        label_colour->setText("Colour: SECTION BACKGROUND",dontSendNotification);
+        //[/UserButtonCode_button_colour_background]
+    }
+    else if (buttonThatWasClicked == button_current_editor_color)
+    {
+        //[UserButtonCode_button_current_editor_color] -- add your button handler code here..
+        button_current_editor_color->setVisible(false);
+        colour_selector->setVisible(false);
+        copy->setVisible(false);
+        past->setVisible(false);
+        label_section->setVisible(true);
+        label_colour->setVisible(false);
+
+
+        current_edited_colour = nullptr;
+        //[/UserButtonCode_button_current_editor_color]
+    }
+    else if (buttonThatWasClicked == toggle_animate_input_env)
+    {
+        //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
+        synth_data->animate_envs = buttonThatWasClicked->getToggleState();
+        //[/UserButtonCode_toggle_animate_input_env]
+    }
+    else if (buttonThatWasClicked == toggle_show_tooltips)
+    {
+        //[UserButtonCode_toggle_show_tooltips] -- add your button handler code here..
+        synth_data->show_tooltips = buttonThatWasClicked->getToggleState();
+        get_editor()->update_tooltip_handling(false);
+        //[/UserButtonCode_toggle_show_tooltips]
+    }
+    else if (buttonThatWasClicked == toggle_slider_linear)
+    {
+        //[UserButtonCode_toggle_slider_linear] -- add your button handler code here..
+        synth_data->sliders_in_rotary_mode = false;
+        get_editor()->update_slider_handling();
+        //[/UserButtonCode_toggle_slider_linear]
+    }
+    else if (buttonThatWasClicked == toggle_slider_rotary)
+    {
+        //[UserButtonCode_toggle_slider_rotary] -- add your button handler code here..
+        synth_data->sliders_in_rotary_mode = true;
+        get_editor()->update_slider_handling();
+        //[/UserButtonCode_toggle_slider_rotary]
+    }
+    else if (buttonThatWasClicked == button_colour_buttons_on)
+    {
+        //[UserButtonCode_button_colour_buttons_on] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::BUTTON_ON_COLOUR );
+        label_colour->setText("Colour: BUTTON ON",dontSendNotification);
+        //[/UserButtonCode_button_colour_buttons_on]
+    }
+    else if (buttonThatWasClicked == button_colour_slider_1)
+    {
+        //[UserButtonCode_button_colour_slider_1] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::VALUE_SLIDER_COLOUR );
+        label_colour->setText("Colour: FRONT SLIDER",dontSendNotification);
+        //[/UserButtonCode_button_colour_slider_1]
+    }
+    else if (buttonThatWasClicked == button_colour_slider_2)
+    {
+        //[UserButtonCode_button_colour_slider_2] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::VALUE_SLIDER_2_COLOUR );
+        label_colour->setText("Colour: BACK SLIDER",dontSendNotification);
+        //[/UserButtonCode_button_colour_slider_2]
+    }
+    else if (buttonThatWasClicked == button_colour_slider_mod)
+    {
+        //[UserButtonCode_button_colour_slider_mod] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::MOD_SLIDER_COLOUR );
+        label_colour->setText("Colour: MODULATION SLIDER (back)",dontSendNotification);
+        //[/UserButtonCode_button_colour_slider_mod]
+    }
+    else if (buttonThatWasClicked == button_colour_buttons_font_on)
+    {
+        //[UserButtonCode_button_colour_buttons_font_on] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::BUTTON_ON_FONT_COLOUR );
+        label_colour->setText("Colour: BUTTON FONT ON",dontSendNotification);
+        //[/UserButtonCode_button_colour_buttons_font_on]
+    }
+    else if (buttonThatWasClicked == button_colour_labels)
+    {
+        //[UserButtonCode_button_colour_labels] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::AREA_FONT_COLOUR );
+        label_colour->setText("Colour: SECTION LABELS",dontSendNotification);
+        //[/UserButtonCode_button_colour_labels]
+    }
+    else if (buttonThatWasClicked == button_preset_1)
+    {
+        //[UserButtonCode_button_preset_1] -- add your button handler code here..
+        ComponentColours& colours( look_and_feel->colours );
+        /*
+        colours.slider_track_colour = Colour(4278251775);
+               colours.slider_track_colour_2 = Colour(0xffff6600);
+               colours.slider_track_colour_modulation = Colour(4294942532);
+               colours.button_on_colour = Colour(4294942532);
+               colours.button_off_colour = Colour(4279308561);
+               colours.label_text_colour = Colour(4294942532);
+               colours.midi_learn = Colours::red;
+               colours.bg = Colour(0xff050505);
+               colours.bg_lines = Colour(0xffff3b00);
+               colours.signal_lines = Colour(4278251775);
+
+
+               get_editor()->repaint();
+               */
+        //[/UserButtonCode_button_preset_1]
+    }
+    else if (buttonThatWasClicked == button_preset_2)
+    {
+        //[UserButtonCode_button_preset_2] -- add your button handler code here..
+        /*
+          ComponentColours& colours( look_and_feel->colours );
+          colours.slider_track_colour = Colour(0xffc8c8c8);
+          colours.slider_track_colour_2 = Colour(0xff989898);
+          colours.slider_track_colour_modulation = Colour(0xffae3500);
+          colours.button_on_colour = Colour(0xffbbbbbb);
+          colours.button_off_colour = Colour(0xff111111);
+          colours.label_text_colour = Colour(0xff989898);
+          colours.midi_learn = Colours::red;
+          colours.bg = Colour(0xff000000);
+          colours.bg_lines = Colour(0xff5a5a5a);
+          colours.signal_lines = Colour(0xffb03500);
+
+
+          get_editor()->repaint();
+        */
+        //[/UserButtonCode_button_preset_2]
+    }
+    else if (buttonThatWasClicked == button_preset_3)
+    {
+        //[UserButtonCode_button_preset_3] -- add your button handler code here..
+        /*
+          ComponentColours& colours( look_and_feel->colours );
+          colours.slider_track_colour = Colour(0xff00e2ff);
+          colours.slider_track_colour_2 = Colour(0xffefff00);
+          colours.slider_track_colour_modulation = Colour(0xffff8800);
+          colours.button_on_colour = Colour(0xffd86300);
+          colours.button_off_colour = Colour(0xff111111);
+          colours.label_text_colour = Colour(0xffffbe73);
+          colours.midi_learn = Colours::red;
+          colours.bg = Colour(0xff050505);
+          colours.bg_lines = Colour(0xffffc28f);
+          colours.signal_lines = Colour(0xffe26700);
+
+          get_editor()->repaint();
+        */
+        //[/UserButtonCode_button_preset_3]
+    }
+    else if (buttonThatWasClicked == toggle_one_pedal)
+    {
+        //[UserButtonCode_toggle_one_pedal] -- add your button handler code here..
+        synth_data->bind_sustain_and_sostenuto_pedal = buttonThatWasClicked->getToggleState();
+        //[/UserButtonCode_toggle_one_pedal]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_1)
+    {
+        //[UserButtonCode_button_colour_bg_svg_1] -- add your button handler code here..
+        label_section->setText("Section: FILTERS",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( FILTER_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_1]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_2)
+    {
+        //[UserButtonCode_button_colour_bg_svg_2] -- add your button handler code here..
+        label_section->setText("Section: FM",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( FM_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_2]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_3)
+    {
+        //[UserButtonCode_button_colour_bg_svg_3] -- add your button handler code here..
+        label_section->setText("Section: FX/EQ / AMP",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( FX_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_3]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_4)
+    {
+        //[UserButtonCode_button_colour_bg_svg_4] -- add your button handler code here..
+        label_section->setText("Section: ARPEGGIATOR",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( ARP_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_4]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_5)
+    {
+        //[UserButtonCode_button_colour_bg_svg_5] -- add your button handler code here..
+        label_section->setText("Section: MORPH",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( MORPH_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_5]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_6)
+    {
+        //[UserButtonCode_button_colour_bg_svg_6] -- add your button handler code here..
+        label_section->setText("Section: MASTER OUT",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( MASTER_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_6]
+    }
+    else if (buttonThatWasClicked == button_colour_bg_svg_7)
+    {
+        //[UserButtonCode_button_colour_bg_svg_7] -- add your button handler code here..
+        label_section->setText("Section: OSCILLATORS",dontSendNotification);
+        editable_theme = &ui_refresher->look_and_feel->colours.get_theme( OSC_THEME );
+        force_repaint = true;
+        //[/UserButtonCode_button_colour_bg_svg_7]
+    }
+    else if (buttonThatWasClicked == copy)
+    {
+        //[UserButtonCode_copy] -- add your button handler code here..
+        colour_clipboard = last_repainted_colour.getARGB();
+        //[/UserButtonCode_copy]
+    }
+    else if (buttonThatWasClicked == past)
+    {
+        //[UserButtonCode_past] -- add your button handler code here..
+        colour_selector->setCurrentColour(Colour(colour_clipboard));
+        //[/UserButtonCode_past]
+    }
+    else if (buttonThatWasClicked == button_colour_buttons_off)
+    {
+        //[UserButtonCode_button_colour_buttons_off] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::BUTTON_OFF_COLOUR );
+        label_colour->setText("Colour: BUTTON OFF",dontSendNotification);
+        //[/UserButtonCode_button_colour_buttons_off]
+    }
+    else if (buttonThatWasClicked == button_colour_buttons_font_off)
+    {
+        //[UserButtonCode_button_colour_buttons_font_off] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::BUTTON_OFF_FONT_COLOUR );
+        label_colour->setText("Colour: BUTTON FONT OFF",dontSendNotification);
+        //[/UserButtonCode_button_colour_buttons_font_off]
+    }
+    else if (buttonThatWasClicked == button_colour_slider_bg)
+    {
+        //[UserButtonCode_button_colour_slider_bg] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::SLIDER_BACKGROUND_COLOUR );
+        label_colour->setText("Colour: SLIDER BG",dontSendNotification);
+        //[/UserButtonCode_button_colour_slider_bg]
+    }
+    else if (buttonThatWasClicked == button_preset_4)
+    {
+        //[UserButtonCode_button_preset_4] -- add your button handler code here..
+        //[/UserButtonCode_button_preset_4]
+    }
+    else if (buttonThatWasClicked == toggle_for_all)
+    {
+        //[UserButtonCode_toggle_for_all] -- add your button handler code here..
+        //[/UserButtonCode_toggle_for_all]
+    }
+    else if (buttonThatWasClicked == copy2)
+    {
+        //[UserButtonCode_copy2] -- add your button handler code here..
+        //[/UserButtonCode_copy2]
+    }
+    else if (buttonThatWasClicked == past2)
+    {
+        //[UserButtonCode_past2] -- add your button handler code here..
+        //[/UserButtonCode_past2]
+    }
+    else if (buttonThatWasClicked == button_colour_slider_disabled)
+    {
+        //[UserButtonCode_button_colour_slider_disabled] -- add your button handler code here..
+        open_colour_selector( COLOUR_CODES::DISABLED_SLIDER_COLOUR );
+        label_colour->setText("Colour: SLIDER DISABLED",dontSendNotification);
+        //[/UserButtonCode_button_colour_slider_disabled]
+    }
+
+    //[UserbuttonClicked_Post]
+    //[/UserbuttonClicked_Post]
 }
 
 void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
@@ -1246,214 +1659,12 @@ void Monique_Ui_GlobalSettings::comboBoxChanged (ComboBox* comboBoxThatHasChange
     //[/UsercomboBoxChanged_Post]
 }
 
-void Monique_Ui_GlobalSettings::buttonClicked (Button* buttonThatWasClicked)
-{
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
-
-    if (buttonThatWasClicked == button_current_editor_color)
-    {
-        //[UserButtonCode_button_current_editor_color] -- add your button handler code here..
-        button_current_editor_color->setVisible(false);
-        colour_selector->setVisible(false);
-
-        label_colour_1->setVisible(true);
-        label_colour_2->setVisible(true);
-        label_colour_3->setVisible(true);
-        label_colour_4->setVisible(true);
-        label_colour_5->setVisible(true);
-        label_colour_6->setVisible(true);
-        label_colour_7->setVisible(true);
-        label_colour_8->setVisible(true);
-        label_colour_9->setVisible(true);
-        button_colour_bg->setVisible(true);
-        button_colour_border->setVisible(true);
-        button_colour_buttons_on->setVisible(true);
-        button_colour_buttons_off->setVisible(true);
-        button_colour_slider_1->setVisible(true);
-        button_colour_slider_2->setVisible(true);
-        button_colour_slider_mod->setVisible(true);
-        button_colour_signal_lines->setVisible(true);
-        button_colour_labels->setVisible(true);
-
-        current_edited_colour = nullptr;
-        //[/UserButtonCode_button_current_editor_color]
-    }
-    else if (buttonThatWasClicked == toggle_animate_input_env)
-    {
-        //[UserButtonCode_toggle_animate_input_env] -- add your button handler code here..
-        synth_data->animate_envs = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_animate_input_env]
-    }
-    else if (buttonThatWasClicked == toggle_show_tooltips)
-    {
-        //[UserButtonCode_toggle_show_tooltips] -- add your button handler code here..
-        synth_data->show_tooltips = buttonThatWasClicked->getToggleState();
-        get_editor()->update_tooltip_handling(false);
-        //[/UserButtonCode_toggle_show_tooltips]
-    }
-    else if (buttonThatWasClicked == toggle_slider_linear)
-    {
-        //[UserButtonCode_toggle_slider_linear] -- add your button handler code here..
-        synth_data->sliders_in_rotary_mode = false;
-        get_editor()->update_slider_handling();
-        //[/UserButtonCode_toggle_slider_linear]
-    }
-    else if (buttonThatWasClicked == toggle_slider_rotary)
-    {
-        //[UserButtonCode_toggle_slider_rotary] -- add your button handler code here..
-        synth_data->sliders_in_rotary_mode = true;
-        get_editor()->update_slider_handling();
-        //[/UserButtonCode_toggle_slider_rotary]
-    }
-    else if (buttonThatWasClicked == button_colour_bg)
-    {
-        //[UserButtonCode_button_colour_bg] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.bg );
-        //[/UserButtonCode_button_colour_bg]
-    }
-    else if (buttonThatWasClicked == button_colour_border)
-    {
-        //[UserButtonCode_button_colour_border] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.bg_lines );
-        //[/UserButtonCode_button_colour_border]
-    }
-    else if (buttonThatWasClicked == button_colour_buttons_on)
-    {
-        //[UserButtonCode_button_colour_buttons_on] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.button_on_colour );
-        //[/UserButtonCode_button_colour_buttons_on]
-    }
-    else if (buttonThatWasClicked == button_colour_slider_1)
-    {
-        //[UserButtonCode_button_colour_slider_1] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.slider_track_colour );
-        //[/UserButtonCode_button_colour_slider_1]
-    }
-    else if (buttonThatWasClicked == button_colour_slider_2)
-    {
-        //[UserButtonCode_button_colour_slider_2] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.slider_track_colour_2 );
-        //[/UserButtonCode_button_colour_slider_2]
-    }
-    else if (buttonThatWasClicked == button_colour_slider_mod)
-    {
-        //[UserButtonCode_button_colour_slider_mod] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.slider_track_colour_modulation );
-        //[/UserButtonCode_button_colour_slider_mod]
-    }
-    else if (buttonThatWasClicked == button_colour_signal_lines)
-    {
-        //[UserButtonCode_button_colour_signal_lines] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.signal_lines );
-        //[/UserButtonCode_button_colour_signal_lines]
-    }
-    else if (buttonThatWasClicked == button_colour_buttons_off)
-    {
-        //[UserButtonCode_button_colour_buttons_off] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.button_off_colour );
-        //[/UserButtonCode_button_colour_buttons_off]
-    }
-    else if (buttonThatWasClicked == button_colour_labels)
-    {
-        //[UserButtonCode_button_colour_labels] -- add your button handler code here..
-        open_colour_selector( look_and_feel->colours.label_text_colour );
-        //[/UserButtonCode_button_colour_labels]
-    }
-    else if (buttonThatWasClicked == button_preset_1)
-    {
-        //[UserButtonCode_button_preset_1] -- add your button handler code here..
-        ComponentColours& colours( look_and_feel->colours );
-        colours.slider_track_colour = Colour(4278251775);
-        colours.slider_track_colour_2 = Colour(0xffff6600);
-        colours.slider_track_colour_modulation = Colour(4294942532);
-        colours.button_on_colour = Colour(4294942532);
-        colours.button_off_colour = Colour(4279308561);
-        colours.label_text_colour = Colour(4294942532);
-        colours.midi_learn = Colours::red;
-        colours.bg = Colour(0xff050505);
-        colours.bg_lines = Colour(0xffff3b00);
-        colours.signal_lines = Colour(4278251775);
-
-        get_editor()->repaint();
-        //[/UserButtonCode_button_preset_1]
-    }
-    else if (buttonThatWasClicked == button_preset_2)
-    {
-        //[UserButtonCode_button_preset_2] -- add your button handler code here..
-        ComponentColours& colours( look_and_feel->colours );
-        colours.slider_track_colour = Colour(0xffc8c8c8);
-        colours.slider_track_colour_2 = Colour(0xff989898);
-        colours.slider_track_colour_modulation = Colour(0xffae3500);
-        colours.button_on_colour = Colour(0xffbbbbbb);
-        colours.button_off_colour = Colour(0xff111111);
-        colours.label_text_colour = Colour(0xff989898);
-        colours.midi_learn = Colours::red;
-        colours.bg = Colour(0xff000000);
-        colours.bg_lines = Colour(0xff5a5a5a);
-        colours.signal_lines = Colour(0xffb03500);
-
-        /*
-                 colours.slider_track_colour = Colour(4281270271);
-                colours.slider_track_colour_2 = Colour(4294966409);
-                colours.slider_track_colour_modulation = Colour(4294901760);
-                colours.button_on_colour = Colour(4282580976);
-                colours.button_off_colour = Colour(4279308561);
-                colours.label_text_colour = Colour(4294966408);
-                colours.midi_learn = Colours::red;
-                colours.bg = Colour(4278190080);
-                colours.bg_lines = Colour(4278245119);
-                colours.signal_lines = Colour(4289724416);
-                */
-
-        get_editor()->repaint();
-        //[/UserButtonCode_button_preset_2]
-    }
-    else if (buttonThatWasClicked == button_preset_3)
-    {
-        //[UserButtonCode_button_preset_3] -- add your button handler code here..
-        ComponentColours& colours( look_and_feel->colours );
-        colours.slider_track_colour = Colour(0xff00e2ff);
-        colours.slider_track_colour_2 = Colour(0xffefff00);
-        colours.slider_track_colour_modulation = Colour(0xffff8800);
-        colours.button_on_colour = Colour(0xffd86300);
-        colours.button_off_colour = Colour(0xff111111);
-        colours.label_text_colour = Colour(0xffffbe73);
-        colours.midi_learn = Colours::red;
-        colours.bg = Colour(0xff050505);
-        colours.bg_lines = Colour(0xffffc28f);
-        colours.signal_lines = Colour(0xffe26700);
-        /*
-        st_col="" st2_col="" stmod_col="" bon_col=""
-               boff_col="" ltx_col="" ml_col="" bg_col=""
-               bgl_col="" sigl_col=""/>
-               */
-        get_editor()->repaint();
-        //[/UserButtonCode_button_preset_3]
-    }
-    else if (buttonThatWasClicked == toggle_one_pedal)
-    {
-        //[UserButtonCode_toggle_one_pedal] -- add your button handler code here..
-        synth_data->bind_sustain_and_sostenuto_pedal = buttonThatWasClicked->getToggleState();
-        //[/UserButtonCode_toggle_one_pedal]
-    }
-
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
-}
-
 void Monique_Ui_GlobalSettings::sliderValueChanged (Slider* sliderThatWasMoved)
 {
     //[UsersliderValueChanged_Pre]
     //[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == slider_morph_motor_time)
-    {
-        //[UserSliderCode_slider_morph_motor_time] -- add your slider handling code here..
-        synth_data->morph_motor_time = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_slider_morph_motor_time]
-    }
-    else if (sliderThatWasMoved == slider_glide_time)
+    if (sliderThatWasMoved == slider_glide_time)
     {
         //[UserSliderCode_slider_glide_time] -- add your slider handling code here..
         synth_data->glide_motor_time = sliderThatWasMoved->getValue();
@@ -1490,287 +1701,308 @@ BEGIN_JUCER_METADATA
                  componentName="" parentClasses="public Component, public Monique_Ui_Refreshable, public AsyncUpdater"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_ " variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;original_w(1465), original_h(180)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="1" initialWidth="1465" initialHeight="400">
+                 fixedSize="1" initialWidth="1465" initialHeight="380">
   <BACKGROUND backgroundColour="ff050505">
-    <ROUNDRECT pos="10 10 190 150" cornerSize="6" fill="solid: 50505" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="200 10 180 150" cornerSize="6" fill="solid: 0" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="380 10 260 150" cornerSize="6" fill="solid: 0" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="640 10 485 150" cornerSize="6" fill="solid: 0" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
-    <ROUNDRECT pos="1125 10 330 150" cornerSize="6" fill="solid: 0" hasStroke="1"
-               stroke="1, mitered, butt" strokeColour="solid: ffff3b00"/>
+    <ROUNDRECT pos="551 0 573 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
+    <ROUNDRECT pos="291 0 258 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
+    <ROUNDRECT pos="111 0 178 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
+    <ROUNDRECT pos="10 0 99 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
+    <ROUNDRECT pos="1126 0 324 250" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
   </BACKGROUND>
+  <TEXTBUTTON name="new button" id="914ce4dd638de5f3" memberName="button_colour_bg"
+              virtualName="" explicitFocusOrder="0" pos="580 50 210 120" tooltip="Click to change this colour."
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="3ec96e4b24b77ca8" memberName="button_colour_background"
+              virtualName="" explicitFocusOrder="0" pos="830 80 280 90" tooltip="Section BACKGROUND"
+              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="" id="4164e3b93fd006e0" memberName="label_buttons__" virtualName=""
+         explicitFocusOrder="0" pos="840 140 80 30" tooltip="Click a button on the right to change the colour for this element."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTONS&#10;"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
+  <LABEL name="" id="bb43131d9973a62b" memberName="label_slider__" virtualName=""
+         explicitFocusOrder="0" pos="840 110 80 30" tooltip="Click a button on the right to change the colour for this element."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SLIDERS"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
+  <LABEL name="" id="62a873940890f9fe" memberName="label_section__" virtualName=""
+         explicitFocusOrder="0" pos="840 80 80 30" tooltip="Click a button on the right to change the colour for this element."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SECTION"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
+  <HYPERLINKBUTTON name="" id="c0eeed7d74bb8534" memberName="link_to_monoplugs"
+                   virtualName="" explicitFocusOrder="0" pos="1150 50 280 130" tooltip="http://monique-synthesizer.monoplugs.com"
+                   buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
+                   url="http://monique-synthesizer.monoplugs.com"/>
   <LABEL name="" id="9e7b39300fbdcd67" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="1290 30 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1290 50 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="BLOCK:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="a5e27df00dd3061" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="1290 70 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1290 90 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CPU:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="5a530fedc3a6cb0" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="1290 110 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1290 130 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="THREADS:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="78586adbf5ab9e5a" memberName="combo_multicore_cpus"
-            virtualName="" explicitFocusOrder="0" pos="1360 110 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
+            virtualName="" explicitFocusOrder="0" pos="1350 130 80 30" tooltip="Select the threads you like to spend to process Moniqiue. &#10;&#10;Note: Its recommended to use NOT more threads as your CPU has cores! &#10;Please take a look at the CPU usage and decide how many threads are the best for your CPU."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="6ddda2710d986dce" memberName="label_cpu_usage" virtualName=""
-         explicitFocusOrder="0" pos="1360 70 80 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1350 90 80 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="20%" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="" id="d76df912445a2ff8" memberName="combo_block_size" virtualName=""
-            explicitFocusOrder="0" pos="1360 30 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
+            explicitFocusOrder="0" pos="1350 50 80 30" tooltip="Select the block size you like to use for the audio playback.&#10;&#10;Note: smaller block sizes are more in time, but needs more CPU power."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="2c9d694778c498dc" memberName="label_10" virtualName=""
-         explicitFocusOrder="0" pos="1140 30 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1140 50 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DRIVER:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="f91daaa7098deafb" memberName="combo_audio_driver"
-            virtualName="" explicitFocusOrder="0" pos="1210 30 80 30" tooltip="Select an audio driver you like to use for the audio playback."
+            virtualName="" explicitFocusOrder="0" pos="1200 50 80 30" tooltip="Select an audio driver you like to use for the audio playback."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <COMBOBOX name="" id="efb590c00df9d613" memberName="combo_audio_device"
-            virtualName="" explicitFocusOrder="0" pos="1210 70 80 30" tooltip="Select an audio device you like to use for the audio playback."
+            virtualName="" explicitFocusOrder="0" pos="1200 90 80 30" tooltip="Select an audio device you like to use for the audio playback."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <LABEL name="" id="e0756600ee1aa0c2" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="1140 70 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1140 90 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DEVICE:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="49f12ab9e3d54910" memberName="label_8" virtualName=""
-         explicitFocusOrder="0" pos="1140 110 60 33" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1140 130 60 33" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RATE:" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <COMBOBOX name="" id="db95d5d8a64a8ebc" memberName="combo_sample_rate"
-            virtualName="" explicitFocusOrder="0" pos="1210 110 80 30" tooltip="Select the sample rate you like to use for the audio playback.&#10;&#10;Note: the quality of larger sample rates is better, but needs more CPU power."
+            virtualName="" explicitFocusOrder="0" pos="1200 130 80 30" tooltip="Select the sample rate you like to use for the audio playback.&#10;&#10;Note: the quality of larger sample rates is better, but needs more CPU power."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <GENERICCOMPONENT name="" id="f80f96857b452ce6" memberName="colour_selector" virtualName="ColourSelector"
-                    explicitFocusOrder="0" pos="660 30 270 110" class="ColourSelector"
-                    params="ColourSelector::showColourspace&#10;,0,7"/>
-  <LABEL name="" id="4164e3b93fd006e0" memberName="label_colour_4" virtualName=""
-         explicitFocusOrder="0" pos="810 30 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON ON"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TEXTBUTTON name="" id="63428e6e6c1ae9c4" memberName="button_current_editor_color"
-              virtualName="" explicitFocusOrder="0" pos="940 40 90 90" buttonText="OK"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="bb43131d9973a62b" memberName="label_colour_7" virtualName=""
-         explicitFocusOrder="0" pos="930 30 120 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER (FRONT)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="f570869fba483c15" memberName="label_colour_9" virtualName=""
-         explicitFocusOrder="0" pos="930 110 120 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="MODULATION SLIDER (BACK)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="62a873940890f9fe" memberName="label_colour_6" virtualName=""
-         explicitFocusOrder="0" pos="810 110 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="LABELS"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="d6b2a5702bcb546f" memberName="label_colour_5" virtualName=""
-         explicitFocusOrder="0" pos="810 70 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BUTTON OFF"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <SLIDER name="0" id="30eb597ef479a74e" memberName="slider_morph_motor_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="30 40 60 70"
-          tooltip="Define the MORPH MOTOR TIME.&#10;&#10;Morph motor time is the speed of the morph sliders if you morph via the morph pad or the horizontal slider below the morph sliders"
-          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="1" max="20000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+              virtualName="" explicitFocusOrder="0" pos="790 50 40 60" bgColOff="ff008000"
+              buttonText="OK" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <SLIDER name="0" id="c244467fb56dffee" memberName="slider_glide_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="120 40 60 70"
-          tooltip="Define the GLIDE MOTOR TIME.&#10;&#10;Glide motor time is smoothes your inputs at many sliders on the main user interface. &#10;&#10;Set a large value here and try to change the MASTER VOLUME and do it again with a small one.&#10;&#10;Affected: OSC sliders, FILTER sliders, EQ sliders, FX sliders, MASTER VOLUME"
+          virtualName="Slider" explicitFocusOrder="0" pos="30 60 60 70"
+          tooltip="Define the paramter smoothtime. This will smooth your inputs.&#10;&#10;Affected: OSC sliders, FILTER sliders, EQ sliders, FX sliders, MASTER VOLUME"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="1" max="1000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
+          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
-  <LABEL name="new label" id="796db125cec623bd" memberName="label13" virtualName=""
-         explicitFocusOrder="0" pos="12 110 96 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="MORPH MOTOR" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="new label" id="2c68301961d63e82" memberName="label7" virtualName=""
-         explicitFocusOrder="0" pos="120 110 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="GLIDE" editableSingleClick="0"
+         explicitFocusOrder="0" pos="30 130 60 33" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="TIME" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="dfd8e91824767f78" memberName="label_16" virtualName=""
-         explicitFocusOrder="0" pos="260 30 100 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
+         explicitFocusOrder="0" pos="170 50 100 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ANIMATE ENV'S"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="f342323c5495d0a1" memberName="toggle_animate_input_env"
-                virtualName="" explicitFocusOrder="0" pos="220 30 33 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
+                virtualName="" explicitFocusOrder="0" pos="130 50 33 33" tooltip="Turn amp animations at the FILTER INPUS on or off."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="" id="55ed48882dea6ac8" memberName="label_18" virtualName=""
-         explicitFocusOrder="0" pos="260 70 100 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
+         explicitFocusOrder="0" pos="170 90 100 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SHOW TOOLTIPS"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="80003915f6558086" memberName="toggle_show_tooltips"
-                virtualName="" explicitFocusOrder="0" pos="220 70 33 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
+                virtualName="" explicitFocusOrder="0" pos="130 90 33 33" tooltip="Turn tooltips on or off.&#10;&#10;Press the &quot;CTRL&quot; + &quot;h&quot; on your keyboard to show the tooltip if this option is turned off."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <LABEL name="DL" id="b59f286362d58d43" memberName="label_ui_headline_1"
-         virtualName="" explicitFocusOrder="0" pos="30 -4 150 35" textCol="ff1111ff"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="GLOBAL TIMES" editableSingleClick="0"
+  <LABEL name="" id="b59f286362d58d43" memberName="label_ui_headline_1"
+         virtualName="" explicitFocusOrder="0" pos="10 0 100 35" textCol="ff050505"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="SMOOTH" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="b5bc2cbedd6ff2b1" memberName="label_ui_headline_2"
-         virtualName="" explicitFocusOrder="0" pos="220 -4 140 35" textCol="ff1111ff"
+  <LABEL name="" id="b5bc2cbedd6ff2b1" memberName="label_ui_headline_2"
+         virtualName="" explicitFocusOrder="0" pos="110 0 180 35" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="MISC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="DL" id="dd5b53cdc2ebaa9f" memberName="label_ui_headline_4"
-         virtualName="" explicitFocusOrder="0" pos="430 -4 170 35" textCol="ff1111ff"
+  <LABEL name="" id="dd5b53cdc2ebaa9f" memberName="label_ui_headline_4"
+         virtualName="" explicitFocusOrder="0" pos="290 0 260 35" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SLIDERS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="ada70618221d405" memberName="slider_sensitivity"
-          virtualName="Slider" explicitFocusOrder="0" pos="410 40 60 70"
+          virtualName="Slider" explicitFocusOrder="0" pos="320 60 60 70"
           tooltip="Define the sensitivity of each rotary slider. You can test the effect with this slider."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="100" max="2000" int="1" style="RotaryHorizontalVerticalDrag"
-          textBoxPos="TextBoxBelow" textBoxEditable="1" textBoxWidth="80"
+          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="e594adc8a1c69523" memberName="label2" virtualName=""
-         explicitFocusOrder="0" pos="390 110 100 33" textCol="ffffff00"
+         explicitFocusOrder="0" pos="300 130 100 33" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SENSITIVITY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="308a6ce808eddf2e" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="530 50 100 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
+         explicitFocusOrder="0" pos="440 70 100 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="LINEAR DRAG"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="70949c3310a2e558" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="530 90 100 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
+         explicitFocusOrder="0" pos="440 110 100 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="ROTARY DRAG"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="992c96a954884e8b" memberName="toggle_slider_linear"
-                virtualName="" explicitFocusOrder="0" pos="500 50 33 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
+                virtualName="" explicitFocusOrder="0" pos="410 70 33 33" tooltip="Set the slider drag to linear (rotary sliders). &#10;(You can drag a slider by move the mouse up/down or left/right)"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="" id="83332647a3954a0b" memberName="toggle_slider_rotary"
-                virtualName="" explicitFocusOrder="0" pos="500 90 33 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
+                virtualName="" explicitFocusOrder="0" pos="410 110 33 33" tooltip="Set the slider drag to rotary (rotary sliders). &#10;(You can drag a slider by move the mouse around the slider)"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
-  <LABEL name="DL" id="9eb0361b7a0444ac" memberName="label_ui_headline_5"
-         virtualName="" explicitFocusOrder="0" pos="790 -4 182 35" textCol="ff1111ff"
+  <LABEL name="" id="9eb0361b7a0444ac" memberName="label_ui_headline_5"
+         virtualName="" explicitFocusOrder="0" pos="550 0 575 35" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="COLOURS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="55a3217ef78a3c61" memberName="label_colour_1" virtualName=""
-         explicitFocusOrder="0" pos="690 30 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BACKGROUND"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="414941fefbe1a3cf" memberName="label_colour_8" virtualName=""
-         explicitFocusOrder="0" pos="930 70 120 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="VALUE SLIDER 2 (BACK)"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <LABEL name="" id="2efba9c3ce22653b" memberName="label_colour_2" virtualName=""
-         explicitFocusOrder="0" pos="690 70 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BORDERS"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="new button" id="914ce4dd638de5f3" memberName="button_colour_bg"
-              virtualName="" explicitFocusOrder="0" pos="660 30 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="e427e1f8d74ea481" memberName="button_colour_border"
-              virtualName="" explicitFocusOrder="0" pos="660 70 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3891f5f1ede2a913" memberName="button_colour_buttons_on"
-              virtualName="" explicitFocusOrder="0" pos="780 30 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="930 140 30 30" tooltip="Button ON"
+              buttonText="O" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2bde73aa342c2457" memberName="button_colour_slider_1"
-              virtualName="" explicitFocusOrder="0" pos="900 30 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="930 110 30 30" tooltip="FRONT slider"
+              buttonText="1" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="8ddcc2620647afb5" memberName="button_colour_slider_2"
-              virtualName="" explicitFocusOrder="0" pos="900 70 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="970 110 30 30" tooltip="BACK slider"
+              buttonText="2" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="27311d6a38d6510d" memberName="button_colour_slider_mod"
-              virtualName="" explicitFocusOrder="0" pos="900 110 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="af67a383712e7be7" memberName="label_colour_3" virtualName=""
-         explicitFocusOrder="0" pos="690 110 90 33" tooltip="Click to change this colour."
-         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="SIGNAL LINES"
-         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
-         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <TEXTBUTTON name="new button" id="a907651961c48243" memberName="button_colour_signal_lines"
-              virtualName="" explicitFocusOrder="0" pos="660 110 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="new button" id="aa8131218b1a4e24" memberName="button_colour_buttons_off"
-              virtualName="" explicitFocusOrder="0" pos="780 70 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="1000 110 30 30" tooltip="MODULATION slider (back)"
+              buttonText="M" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="aa8131218b1a4e24" memberName="button_colour_buttons_font_on"
+              virtualName="" explicitFocusOrder="0" pos="960 140 30 30" tooltip="Button font ON "
+              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="16cb69a9f61a0c7f" memberName="button_colour_labels"
-              virtualName="" explicitFocusOrder="0" pos="780 110 33 30" tooltip="Click to change this colour."
-              buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="DL" id="668d26bcc5860c72" memberName="label_ui_headline_6"
-         virtualName="" explicitFocusOrder="0" pos="1210 -4 170 35" textCol="ff1111ff"
+              virtualName="" explicitFocusOrder="0" pos="930 80 30 30" tooltip="Section FONT"
+              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="" id="668d26bcc5860c72" memberName="label_ui_headline_6"
+         virtualName="" explicitFocusOrder="0" pos="1125 0 325 35" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="AUDIO &amp; CPU"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="new button" id="bd0d585ced4d3b09" memberName="button_preset_1"
-              virtualName="" explicitFocusOrder="0" pos="1070 30 43 30" tooltip="Click to load this preset."
+              virtualName="" explicitFocusOrder="0" pos="1060 250 53 30" tooltip="Click to load this preset."
               buttonText="PRE1" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="7a187799895dfa50" memberName="button_preset_2"
-              virtualName="" explicitFocusOrder="0" pos="1070 70 43 30" tooltip="Click to load this preset."
+              virtualName="" explicitFocusOrder="0" pos="1060 280 53 30" tooltip="Click to load this preset."
               buttonText="PRE2" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="202c6d241354941d" memberName="button_preset_3"
-              virtualName="" explicitFocusOrder="0" pos="1070 110 43 30" tooltip="Click to load this preset."
+              virtualName="" explicitFocusOrder="0" pos="1060 310 53 30" tooltip="Click to load this preset."
               buttonText="PRE3" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="caaf1edf55d35c5f" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="260 110 100 33" tooltip="If you only have a sustain pedal you CAN activate this option to bind the sostenuto pedal to the sustain pedal.&#10;The sostenuto pedal controls the filter envelope like the sustain pedal the main envelope.&#10;&#10;See: O-TUNE, a soft pedal option.&#10;See: BIND"
+         explicitFocusOrder="0" pos="170 130 100 33" tooltip="If you only have a sustain pedal you CAN activate this option to bind the sostenuto pedal to the sustain pedal.&#10;The sostenuto pedal controls the filter envelope like the sustain pedal the main envelope.&#10;&#10;See: O-TUNE, a soft pedal option.&#10;See: BIND"
          textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="BIND PEDALS"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="f2eadca2a245268" memberName="toggle_one_pedal" virtualName=""
-                explicitFocusOrder="0" pos="220 110 33 33" tooltip="If you only have one pedal you CAN activate this option to bind the sostenuto pedal to the sustain pedal.&#10;The sostenuto pedal controls the filter envelope like the sustain pedal the main envelope.&#10;&#10;See: O-TUNE, a soft pedal option.&#10;See: BIND"
+                explicitFocusOrder="0" pos="130 130 33 33" tooltip="If you only have one pedal you CAN activate this option to bind the sostenuto pedal to the sustain pedal.&#10;The sostenuto pedal controls the filter envelope like the sustain pedal the main envelope.&#10;&#10;See: O-TUNE, a soft pedal option.&#10;See: BIND"
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="DL" id="7e5a2ac3e4741d59" memberName="label_ui_headline_3"
-         virtualName="" explicitFocusOrder="0" pos="1150 30 190 38" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1150 50 190 38" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="Aus Liebe zur Musik."
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="DL" id="191728a9e80d3f82" memberName="label_ui_headline_7"
-         virtualName="" explicitFocusOrder="0" pos="1150 70 190 33" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1150 90 190 33" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="Thomas Arndt | Monoplugs"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <IMAGEBUTTON name="new button" id="bab1ab6909a963b5" memberName="image_vst"
-               virtualName="" explicitFocusOrder="0" pos="1350 40 90 60" buttonText=""
+               virtualName="" explicitFocusOrder="0" pos="1340 60 90 60" buttonText=""
                connectedEdges="0" needsCallback="0" radioGroupId="0" keepProportions="1"
                resourceNormal="vst_logo_100x_png" opacityNormal="1" colourNormal="0"
                resourceOver="" opacityOver="1" colourOver="0" resourceDown=""
                opacityDown="1" colourDown="0"/>
   <LABEL name="DL" id="2d28c9ae6faef00d" memberName="label_ui_headline_9"
-         virtualName="" explicitFocusOrder="0" pos="1150 110 290 33" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="1150 130 290 33" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="VST is a trademark of Steinberg Media Technologies GmbH"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
-  <HYPERLINKBUTTON name="" id="c0eeed7d74bb8534" memberName="link_to_monoplugs"
-                   virtualName="" explicitFocusOrder="0" pos="1140 290 280 60" tooltip="http://monique-synthesizer.monoplugs.com"
-                   buttonText="" connectedEdges="0" needsCallback="0" radioGroupId="0"
-                   url="http://monique-synthesizer.monoplugs.com"/>
+  <TEXTBUTTON name="new button" id="fd4b76365c4c2a5e" memberName="button_colour_bg_svg_1"
+              virtualName="" explicitFocusOrder="0" pos="630 60 150 30" tooltip="Click to change this colour."
+              buttonText="FLT" connectedEdges="9" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="e3c6c1baaac01d56" memberName="button_colour_bg_svg_2"
+              virtualName="" explicitFocusOrder="0" pos="590 90 40 30" tooltip="Click to change this colour."
+              buttonText="FM" connectedEdges="14" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="fe1f29d9b8f708b3" memberName="button_colour_bg_svg_3"
+              virtualName="" explicitFocusOrder="0" pos="670 90 80 30" tooltip="Click to change this colour."
+              buttonText="FX/EQ" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="80f61ac5e64e6a34" memberName="button_colour_bg_svg_4"
+              virtualName="" explicitFocusOrder="0" pos="590 120 190 30" tooltip="Click to change this colour."
+              buttonText="ARP" connectedEdges="4" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="44f7c17040ebf13c" memberName="button_colour_bg_svg_5"
+              virtualName="" explicitFocusOrder="0" pos="630 90 40 30" tooltip="Click to change this colour."
+              buttonText="MO" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="6727f30ac42caa0d" memberName="button_colour_bg_svg_6"
+              virtualName="" explicitFocusOrder="0" pos="750 90 30 30" tooltip="Click to change this colour."
+              buttonText="V" connectedEdges="13" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="c717d250fbd1db93" memberName="button_colour_bg_svg_7"
+              virtualName="" explicitFocusOrder="0" pos="590 60 40 30" tooltip="Click to change this colour."
+              buttonText="O" connectedEdges="10" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b19da151b3279272" memberName="copy" virtualName=""
+              explicitFocusOrder="0" pos="790 130 40 20" tooltip="Copy the current colour."
+              bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
+              buttonText="COPY" connectedEdges="8" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
+              explicitFocusOrder="0" pos="790 150 40 20" tooltip="Copy colour from clipboard."
+              bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
+              buttonText="PAST" connectedEdges="4" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="7d731c5ccb2764a7" memberName="button_colour_buttons_off"
+              virtualName="" explicitFocusOrder="0" pos="1000 140 30 30" tooltip="Button OFF or BACKGROUND"
+              buttonText="B" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="3957685351d64b5" memberName="button_colour_buttons_font_off"
+              virtualName="" explicitFocusOrder="0" pos="1030 140 30 30" tooltip="Button font OFF"
+              buttonText="F" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="3bc5199278f4fec2" memberName="button_colour_slider_bg"
+              virtualName="" explicitFocusOrder="0" pos="1070 110 30 30" tooltip="Slider BACKGROUND"
+              buttonText="B" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="dc03718552ee7376" memberName="button_preset_4"
+              virtualName="" explicitFocusOrder="0" pos="1060 340 53 30" tooltip="Click to load this preset."
+              buttonText="PRE4" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="" id="469942994b9d3ab6" memberName="label_11" virtualName=""
+         explicitFocusOrder="0" pos="840 50 80 30" tooltip="Enable this option to change colours for an element over all sections."
+         textCol="ffff3b00" edTextCol="ffff3b00" edBkgCol="0" labelText="FOR ALL"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
+  <TOGGLEBUTTON name="" id="6ce0794e47e964c1" memberName="toggle_for_all" virtualName=""
+                explicitFocusOrder="0" pos="930 50 30 30" tooltip="Enable this option to change colours for an element over all sections."
+                buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
+                state="0"/>
+  <TEXTBUTTON name="" id="fc890749322b9a94" memberName="copy2" virtualName=""
+              explicitFocusOrder="0" pos="1000 50 50 30" tooltip="Copy this section colours to clipboard."
+              bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
+              buttonText="COPY" connectedEdges="2" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="9b18f825a99d66b3" memberName="past2" virtualName=""
+              explicitFocusOrder="0" pos="1050 50 50 30" tooltip="Past section colours from clipboard."
+              bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
+              buttonText="PAST" connectedEdges="1" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="new button" id="cb7727cac6ed885c" memberName="button_colour_slider_disabled"
+              virtualName="" explicitFocusOrder="0" pos="1040 110 30 30" tooltip="Slider DISABLED (currently in background)"
+              buttonText="D" connectedEdges="15" needsCallback="1" radioGroupId="0"/>
+  <LABEL name="" id="43f371944c5349a0" memberName="label_section" virtualName=""
+         explicitFocusOrder="0" pos="580 20 210 30" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Section: Filters"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="3df2195659f98455" memberName="label_colour" virtualName=""
+         explicitFocusOrder="0" pos="580 20 210 30" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Colour: Slider"
+         editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
+         fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
+  <GENERICCOMPONENT name="" id="f80f96857b452ce6" memberName="colour_selector" virtualName="ColourSelector"
+                    explicitFocusOrder="0" pos="580 50 210 120" class="ColourSelector"
+                    params="ColourSelector::showColourspace&#10;,0,7"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

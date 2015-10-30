@@ -55,7 +55,9 @@ public:
     explicit MACAddress (const uint8 bytes[6]);
 
     /** Returns a pointer to the 6 bytes that make up this address. */
-    const uint8* getBytes() const noexcept        { return address; }
+    const uint8* getBytes() const noexcept        {
+        return address;
+    }
 
     /** Returns a dash-separated string in the form "11-22-33-44-55-66" */
     String toString() const;

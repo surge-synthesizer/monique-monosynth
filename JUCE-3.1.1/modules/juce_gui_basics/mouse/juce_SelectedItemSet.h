@@ -246,25 +246,37 @@ public:
     /** Returns the number of currently selected items.
         @see getSelectedItem
     */
-    int getNumSelected() const noexcept                         { return selectedItems.size(); }
+    int getNumSelected() const noexcept                         {
+        return selectedItems.size();
+    }
 
     /** Returns one of the currently selected items.
         If the index is out-of-range, this returns a default-constructed SelectableItemType.
         @see getNumSelected
     */
-    SelectableItemType getSelectedItem (const int index) const  { return selectedItems [index]; }
+    SelectableItemType getSelectedItem (const int index) const  {
+        return selectedItems [index];
+    }
 
     /** True if this item is currently selected. */
-    bool isSelected (ParameterType item) const noexcept         { return selectedItems.contains (item); }
+    bool isSelected (ParameterType item) const noexcept         {
+        return selectedItems.contains (item);
+    }
 
     /** Provides access to the array of items. */
-    const ItemArray& getItemArray() const noexcept              { return selectedItems; }
+    const ItemArray& getItemArray() const noexcept              {
+        return selectedItems;
+    }
 
     /** Provides iterator access to the array of items. */
-    SelectableItemType* begin() const noexcept                  { return selectedItems.begin(); }
+    SelectableItemType* begin() const noexcept                  {
+        return selectedItems.begin();
+    }
 
     /** Provides iterator access to the array of items. */
-    SelectableItemType* end() const noexcept                    { return selectedItems.end(); }
+    SelectableItemType* end() const noexcept                    {
+        return selectedItems.end();
+    }
 
     //==============================================================================
     /** Can be overridden to do special handling when an item is selected.

@@ -30,7 +30,7 @@
 /**
 */
 class JUCE_API  CaretComponent   : public Component,
-                                   private Timer
+    private Timer
 {
 public:
     //==============================================================================

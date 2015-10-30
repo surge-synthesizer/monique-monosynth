@@ -72,7 +72,9 @@ public:
 
         @see activeWindowStatusChanged
     */
-    bool isActiveWindow() const noexcept                    { return isCurrentlyActive; }
+    bool isActiveWindow() const noexcept                    {
+        return isCurrentlyActive;
+    }
 
     //==============================================================================
     /** This will set the bounds of the window so that it's centred in front of another
@@ -94,7 +96,9 @@ public:
     void setDropShadowEnabled (bool useShadow);
 
     /** True if drop-shadowing is enabled. */
-    bool isDropShadowEnabled() const noexcept               { return useDropShadow; }
+    bool isDropShadowEnabled() const noexcept               {
+        return useDropShadow;
+    }
 
     /** Sets whether an OS-native title bar will be used, or a Juce one.
         @see isUsingNativeTitleBar

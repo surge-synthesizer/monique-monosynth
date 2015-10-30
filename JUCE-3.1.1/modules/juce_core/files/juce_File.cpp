@@ -57,7 +57,8 @@ File& File::operator= (const File& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 File::File (File&& other) noexcept
-    : fullPath (static_cast <String&&> (other.fullPath))
+:
+fullPath (static_cast <String&&> (other.fullPath))
 {
 }
 
@@ -126,7 +127,7 @@ String File::parseAbsolutePath (const String& p)
         {
             // expand a name of the form "~/abc"
             path = File::getSpecialLocation (File::userHomeDirectory).getFullPathName()
-                    + path.substring (1);
+                   + path.substring (1);
         }
         else
         {
@@ -139,7 +140,7 @@ String File::parseAbsolutePath (const String& p)
     }
     else if (! path.startsWithChar (separator))
     {
-       #if JUCE_DEBUG || JUCE_LOG_ASSERTIONS
+#if JUCE_DEBUG || JUCE_LOG_ASSERTIONS
         if (! (path.startsWith ("./") || path.startsWith ("../")))
         {
             /*  When you supply a raw string to the File object constructor, it must be an absolute path.
@@ -151,11 +152,11 @@ String File::parseAbsolutePath (const String& p)
             */
             //jassertfalse;
 
-           #if JUCE_LOG_ASSERTIONS
+#if JUCE_LOG_ASSERTIONS
             Logger::writeToLog ("Illegal absolute path: " + path);
-           #endif
+#endif
         }
-       #endif
+#endif
 
         return File::getCurrentWorkingDirectory().getChildFile (path).getFullPathName();
     }
@@ -170,36 +171,44 @@ String File::parseAbsolutePath (const String& p)
 String File::addTrailingSeparator (const String& path)
 {
     return path.endsWithChar (separator) ? path
-                                         : path + separator;
+           : path + separator;
 }
 
 //==============================================================================
 #if JUCE_LINUX
- #define NAMES_ARE_CASE_SENSITIVE 1
+#define NAMES_ARE_CASE_SENSITIVE 1
 #endif
 
 bool File::areFileNamesCaseSensitive()
 {
-   #if NAMES_ARE_CASE_SENSITIVE
+#if NAMES_ARE_CASE_SENSITIVE
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 static int compareFilenames (const String& name1, const String& name2) noexcept
 {
-   #if NAMES_ARE_CASE_SENSITIVE
+#if NAMES_ARE_CASE_SENSITIVE
     return name1.compare (name2);
-   #else
+#else
     return name1.compareIgnoreCase (name2);
-   #endif
+#endif
 }
 
-bool File::operator== (const File& other) const     { return compareFilenames (fullPath, other.fullPath) == 0; }
-bool File::operator!= (const File& other) const     { return compareFilenames (fullPath, other.fullPath) != 0; }
-bool File::operator<  (const File& other) const     { return compareFilenames (fullPath, other.fullPath) <  0; }
-bool File::operator>  (const File& other) const     { return compareFilenames (fullPath, other.fullPath) >  0; }
+bool File::operator== (const File& other) const     {
+    return compareFilenames (fullPath, other.fullPath) == 0;
+}
+bool File::operator!= (const File& other) const     {
+    return compareFilenames (fullPath, other.fullPath) != 0;
+}
+bool File::operator<  (const File& other) const     {
+    return compareFilenames (fullPath, other.fullPath) <  0;
+}
+bool File::operator>  (const File& other) const     {
+    return compareFilenames (fullPath, other.fullPath) >  0;
+}
 
 //==============================================================================
 bool File::setReadOnly (const bool shouldBeReadOnly,
@@ -248,9 +257,9 @@ bool File::moveFileTo (const File& newFile) const
     if (! exists())
         return false;
 
-   #if ! NAMES_ARE_CASE_SENSITIVE
+#if ! NAMES_ARE_CASE_SENSITIVE
     if (*this != newFile)
-   #endif
+#endif
         if (! newFile.deleteFile())
             return false;
 
@@ -260,7 +269,7 @@ bool File::moveFileTo (const File& newFile) const
 bool File::copyFileTo (const File& newFile) const
 {
     return (*this == newFile)
-            || (exists() && newFile.deleteFile() && copyInternal (newFile));
+           || (exists() && newFile.deleteFile() && copyInternal (newFile));
 }
 
 bool File::copyDirectoryTo (const File& newDirectory) const
@@ -341,18 +350,22 @@ bool File::isAChildOf (const File& potentialParent) const
     return getParentDirectory().isAChildOf (potentialParent);
 }
 
-int   File::hashCode() const    { return fullPath.hashCode(); }
-int64 File::hashCode64() const  { return fullPath.hashCode64(); }
+int   File::hashCode() const    {
+    return fullPath.hashCode();
+}
+int64 File::hashCode64() const  {
+    return fullPath.hashCode64();
+}
 
 //==============================================================================
 bool File::isAbsolutePath (StringRef path)
 {
     return path.text[0] == separator
-           #if JUCE_WINDOWS
-            || (path.isNotEmpty() && path.text[1] == ':');
-           #else
-            || path.text[0] == '~';
-           #endif
+#if JUCE_WINDOWS
+           || (path.isNotEmpty() && path.text[1] == ':');
+#else
+           || path.text[0] == '~';
+#endif
 }
 
 File File::getChildFile (StringRef relativePath) const
@@ -366,10 +379,10 @@ File File::getChildFile (StringRef relativePath) const
     String path (fullPath);
 
     // It's relative, so remove any ../ or ./ bits at the start..
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     if (relativePath.text.indexOf ((juce_wchar) '/') >= 0)
         return getChildFile (String (relativePath.text).replaceCharacter ('/', '\\'));
-   #endif
+#endif
 
     while (relativePath[0] == '.')
     {
@@ -416,11 +429,24 @@ String File::descriptionOfSizeInBytes (const int64 bytes)
     const char* suffix;
     double divisor = 0;
 
-    if (bytes == 1)                       { suffix = " byte"; }
-    else if (bytes < 1024)                { suffix = " bytes"; }
-    else if (bytes < 1024 * 1024)         { suffix = " KB"; divisor = 1024.0; }
-    else if (bytes < 1024 * 1024 * 1024)  { suffix = " MB"; divisor = 1024.0 * 1024.0; }
-    else                                  { suffix = " GB"; divisor = 1024.0 * 1024.0 * 1024.0; }
+    if (bytes == 1)                       {
+        suffix = " byte";
+    }
+    else if (bytes < 1024)                {
+        suffix = " bytes";
+    }
+    else if (bytes < 1024 * 1024)         {
+        suffix = " KB";
+        divisor = 1024.0;
+    }
+    else if (bytes < 1024 * 1024 * 1024)  {
+        suffix = " MB";
+        divisor = 1024.0 * 1024.0;
+    }
+    else                                  {
+        suffix = " GB";
+        divisor = 1024.0 * 1024.0 * 1024.0;
+    }
 
     return (divisor > 0 ? String (bytes / divisor, 1) : String (bytes)) + suffix;
 }
@@ -466,13 +492,31 @@ Result File::createDirectory() const
 }
 
 //==============================================================================
-Time File::getLastModificationTime() const           { int64 m, a, c; getFileTimesInternal (m, a, c); return Time (m); }
-Time File::getLastAccessTime() const                 { int64 m, a, c; getFileTimesInternal (m, a, c); return Time (a); }
-Time File::getCreationTime() const                   { int64 m, a, c; getFileTimesInternal (m, a, c); return Time (c); }
+Time File::getLastModificationTime() const           {
+    int64 m, a, c;
+    getFileTimesInternal (m, a, c);
+    return Time (m);
+}
+Time File::getLastAccessTime() const                 {
+    int64 m, a, c;
+    getFileTimesInternal (m, a, c);
+    return Time (a);
+}
+Time File::getCreationTime() const                   {
+    int64 m, a, c;
+    getFileTimesInternal (m, a, c);
+    return Time (c);
+}
 
-bool File::setLastModificationTime (Time t) const    { return setFileTimesInternal (t.toMilliseconds(), 0, 0); }
-bool File::setLastAccessTime (Time t) const          { return setFileTimesInternal (0, t.toMilliseconds(), 0); }
-bool File::setCreationTime (Time t) const            { return setFileTimesInternal (0, 0, t.toMilliseconds()); }
+bool File::setLastModificationTime (Time t) const    {
+    return setFileTimesInternal (t.toMilliseconds(), 0, 0);
+}
+bool File::setLastAccessTime (Time t) const          {
+    return setFileTimesInternal (0, t.toMilliseconds(), 0);
+}
+bool File::setCreationTime (Time t) const            {
+    return setFileTimesInternal (0, 0, t.toMilliseconds());
+}
 
 //==============================================================================
 bool File::loadFileAsData (MemoryBlock& destBlock) const
@@ -491,7 +535,7 @@ String File::loadFileAsString() const
 
     FileInputStream in (*this);
     return in.openedOk() ? in.readEntireStreamAsString()
-                         : String();
+           : String();
 }
 
 void File::readLines (StringArray& destLines) const
@@ -556,8 +600,8 @@ File File::getNonexistentChildFile (const String& suggestedPrefix,
             const int closeBracks = prefix.lastIndexOfChar (')');
 
             if (openBracks > 0
-                 && closeBracks > openBracks
-                 && prefix.substring (openBracks + 1, closeBracks).containsOnly ("0123456789"))
+                    && closeBracks > openBracks
+                    && prefix.substring (openBracks + 1, closeBracks).containsOnly ("0123456789"))
             {
                 number = prefix.substring (openBracks + 1, closeBracks).getIntValue();
                 prefix = prefix.substring (0, openBracks);
@@ -566,7 +610,7 @@ File File::getNonexistentChildFile (const String& suggestedPrefix,
 
         // also use brackets if it ends in a digit.
         putNumbersInBrackets = putNumbersInBrackets
-                                 || CharacterFunctions::isDigit (prefix.getLastCharacter());
+                               || CharacterFunctions::isDigit (prefix.getLastCharacter());
 
         do
         {
@@ -591,8 +635,8 @@ File File::getNonexistentSibling (const bool putNumbersInBrackets) const
         return *this;
 
     return getParentDirectory().getNonexistentChildFile (getFileNameWithoutExtension(),
-                                                         getFileExtension(),
-                                                         putNumbersInBrackets);
+            getFileExtension(),
+            putNumbersInBrackets);
 }
 
 //==============================================================================
@@ -615,7 +659,7 @@ bool File::hasFileExtension (StringRef possibleSuffix) const
 
     if (semicolon >= 0)
         return hasFileExtension (String (possibleSuffix.text).substring (0, semicolon).trimEnd())
-                || hasFileExtension ((possibleSuffix.text + (semicolon + 1)).findEndOfWhitespace());
+               || hasFileExtension ((possibleSuffix.text + (semicolon + 1)).findEndOfWhitespace());
 
     if (fullPath.endsWithIgnoreCase (possibleSuffix))
     {
@@ -670,7 +714,7 @@ FileOutputStream* File::createOutputStream (const size_t bufferSize) const
     ScopedPointer<FileOutputStream> out (new FileOutputStream (*this, bufferSize));
 
     return out->failedToOpen() ? nullptr
-                               : out.release();
+           : out.release();
 }
 
 //==============================================================================
@@ -766,7 +810,7 @@ String File::createLegalPathName (const String& original)
     }
 
     return start + s.removeCharacters ("\"#@,;:<>*^|?")
-                    .substring (0, 1024);
+           .substring (0, 1024);
 }
 
 String File::createLegalFileName (const String& original)
@@ -783,7 +827,7 @@ String File::createLegalFileName (const String& original)
         if (lastDot > jmax (0, len - 12))
         {
             s = s.substring (0, maxLength - (len - lastDot))
-                 + s.substring (lastDot);
+                + s.substring (lastDot);
         }
         else
         {
@@ -821,7 +865,7 @@ String File::getRelativePathFrom (const File& dir)  const
         thisPath = thisPath.dropLastCharacters (1);
 
     String dirPath (addTrailingSeparator (dir.existsAsFile() ? dir.getParentDirectory().getFullPathName()
-                                                             : dir.fullPath));
+                                          : dir.fullPath));
 
     int commonBitLength = 0;
     String::CharPointerType thisPathAfterCommon (thisPath.getCharPointer());
@@ -836,12 +880,12 @@ String File::getRelativePathFrom (const File& dir)  const
             const juce_wchar c1 = thisPathIter.getAndAdvance();
             const juce_wchar c2 = dirPathIter.getAndAdvance();
 
-           #if NAMES_ARE_CASE_SENSITIVE
+#if NAMES_ARE_CASE_SENSITIVE
             if (c1 != c2
-           #else
+#else
             if ((c1 != c2 && CharacterFunctions::toLowerCase (c1) != CharacterFunctions::toLowerCase (c2))
-           #endif
-                 || c1 == 0)
+#endif
+                    || c1 == 0)
                 break;
 
             ++i;
@@ -864,11 +908,11 @@ String File::getRelativePathFrom (const File& dir)  const
     if (numUpDirectoriesNeeded == 0)
         return thisPathAfterCommon;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     String s (String::repeatedString ("..\\", numUpDirectoriesNeeded));
-   #else
+#else
     String s (String::repeatedString ("../",  numUpDirectoriesNeeded));
-   #endif
+#endif
     s.appendCharPointer (thisPathAfterCommon);
     return s;
 }
@@ -877,8 +921,8 @@ String File::getRelativePathFrom (const File& dir)  const
 File File::createTempFile (StringRef fileNameEnding)
 {
     const File tempFile (getSpecialLocation (tempDirectory)
-                            .getChildFile ("temp_" + String::toHexString (Random::getSystemRandom().nextInt()))
-                            .withFileExtension (fileNameEnding));
+                         .getChildFile ("temp_" + String::toHexString (Random::getSystemRandom().nextInt()))
+                         .withFileExtension (fileNameEnding));
 
     if (tempFile.exists())
         return createTempFile (fileNameEnding);

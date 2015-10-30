@@ -23,9 +23,9 @@
 */
 
 class Button::CallbackHelper  : public Timer,
-                                public ApplicationCommandManagerListener,
-                                public ValueListener,
-                                public KeyListener
+    public ApplicationCommandManagerListener,
+    public ValueListener,
+    public KeyListener
 {
 public:
     CallbackHelper (Button& b) : button (b)   {}
@@ -55,7 +55,7 @@ public:
     void applicationCommandInvoked (const ApplicationCommandTarget::InvocationInfo& info) override
     {
         if (info.commandID == button.commandID
-             && (info.commandFlags & ApplicationCommandInfo::dontTriggerVisualFeedback) == 0)
+                && (info.commandFlags & ApplicationCommandInfo::dontTriggerVisualFeedback) == 0)
             button.flashButtonState();
     }
 
@@ -72,25 +72,25 @@ private:
 
 //==============================================================================
 Button::Button (const String& name)
-  : Component (name),
-    text (name),
-    buttonPressTime (0),
-    lastRepeatTime (0),
-    commandManagerToUse (nullptr),
-    autoRepeatDelay (-1),
-    autoRepeatSpeed (0),
-    autoRepeatMinimumDelay (-1),
-    radioGroupId (0),
-    connectedEdgeFlags (0),
-    commandID(),
-    buttonState (buttonNormal),
-    lastToggleState (false),
-    clickTogglesState (false),
-    needsToRelease (false),
-    needsRepainting (false),
-    isKeyDown (false),
-    triggerOnMouseDown (false),
-    generateTooltip (false)
+    : Component (name),
+      text (name),
+      buttonPressTime (0),
+      lastRepeatTime (0),
+      commandManagerToUse (nullptr),
+      autoRepeatDelay (-1),
+      autoRepeatSpeed (0),
+      autoRepeatMinimumDelay (-1),
+      radioGroupId (0),
+      connectedEdgeFlags (0),
+      commandID(),
+      buttonState (buttonNormal),
+      lastToggleState (false),
+      clickTogglesState (false),
+      needsToRelease (false),
+      needsRepainting (false),
+      isKeyDown (false),
+      triggerOnMouseDown (false),
+      generateTooltip (false)
 {
     callbackHelper = new CallbackHelper (*this);
 
@@ -130,7 +130,7 @@ void Button::updateAutomaticTooltip (const ApplicationCommandInfo& info)
     if (generateTooltip && commandManagerToUse != nullptr)
     {
         String tt (info.description.isNotEmpty() ? info.description
-                                                 : info.shortName);
+                   : info.shortName);
 
         Array<KeyPress> keyPresses (commandManagerToUse->getKeyMappings()->getKeyPressesAssignedToCommand (commandID));
 
@@ -305,8 +305,12 @@ void Button::setState (const ButtonState newState)
     }
 }
 
-bool Button::isDown() const noexcept    { return buttonState == buttonDown; }
-bool Button::isOver() const noexcept    { return buttonState != buttonNormal; }
+bool Button::isDown() const noexcept    {
+    return buttonState == buttonDown;
+}
+bool Button::isOver() const noexcept    {
+    return buttonState != buttonNormal;
+}
 
 void Button::buttonStateChanged() {}
 
@@ -433,8 +437,12 @@ void Button::paint (Graphics& g)
 }
 
 //==============================================================================
-void Button::mouseEnter (const MouseEvent&)     { updateState (true,  false); }
-void Button::mouseExit (const MouseEvent&)      { updateState (false, false); }
+void Button::mouseEnter (const MouseEvent&)     {
+    updateState (true,  false);
+}
+void Button::mouseExit (const MouseEvent&)      {
+    updateState (false, false);
+}
 
 void Button::mouseDown (const MouseEvent& e)
 {

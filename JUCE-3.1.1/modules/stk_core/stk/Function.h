@@ -19,19 +19,23 @@ namespace stk {
 
 class Function : public Stk
 {
- public:
-  //! Class constructor.
-  Function( void ) { lastFrame_.resize( 1, 1, 0.0 ); };
+public:
+    //! Class constructor.
+    Function( void ) {
+        lastFrame_.resize( 1, 1, 0.0 );
+    };
 
-  //! Return the last computed output sample.
-  StkFloat lastOut( void ) const { return lastFrame_[0]; };
+    //! Return the last computed output sample.
+    StkFloat lastOut( void ) const {
+        return lastFrame_[0];
+    };
 
-  //! Take one sample input and compute one sample of output.
-  virtual StkFloat tick( StkFloat input ) = 0;
+    //! Take one sample input and compute one sample of output.
+    virtual StkFloat tick( StkFloat input ) = 0;
 
- protected:
+protected:
 
-  StkFrames lastFrame_;
+    StkFrames lastFrame_;
 
 };
 

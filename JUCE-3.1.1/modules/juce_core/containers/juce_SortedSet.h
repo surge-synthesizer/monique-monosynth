@@ -30,8 +30,8 @@
 #define JUCE_SORTEDSET_H_INCLUDED
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4512)
+#pragma warning (push)
+#pragma warning (disable: 4512)
 #endif
 
 //==============================================================================
@@ -476,7 +476,9 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return data.getLock(); }
+    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      {
+        return data.getLock();
+    }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;
@@ -488,7 +490,7 @@ private:
 };
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 #endif   // JUCE_SORTEDSET_H_INCLUDED

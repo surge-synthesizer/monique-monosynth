@@ -36,7 +36,7 @@
     you'd rather use libpng, libjpeg, etc.
 */
 #ifndef JUCE_USE_COREIMAGE_LOADER
- #define JUCE_USE_COREIMAGE_LOADER 1
+#define JUCE_USE_COREIMAGE_LOADER 1
 #endif
 
 /** Config: JUCE_USE_DIRECTWRITE
@@ -45,19 +45,19 @@
     management and layout.
 */
 #ifndef JUCE_USE_DIRECTWRITE
- #define JUCE_USE_DIRECTWRITE 1
+#define JUCE_USE_DIRECTWRITE 1
 #endif
 
 #ifndef JUCE_INCLUDE_PNGLIB_CODE
- #define JUCE_INCLUDE_PNGLIB_CODE 1
+#define JUCE_INCLUDE_PNGLIB_CODE 1
 #endif
 
 #ifndef JUCE_INCLUDE_JPEGLIB_CODE
- #define JUCE_INCLUDE_JPEGLIB_CODE 1
+#define JUCE_INCLUDE_JPEGLIB_CODE 1
 #endif
 
 #ifndef USE_COREGRAPHICS_RENDERING
- #define USE_COREGRAPHICS_RENDERING 1
+#define USE_COREGRAPHICS_RENDERING 1
 #endif
 
 //=============================================================================

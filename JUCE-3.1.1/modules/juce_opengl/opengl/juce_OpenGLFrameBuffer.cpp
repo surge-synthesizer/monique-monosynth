@@ -35,10 +35,10 @@ public:
         // context. You'll need to create this object in one of the OpenGLContext's callbacks.
         jassert (OpenGLHelpers::isContextActive());
 
-       #if JUCE_WINDOWS || JUCE_LINUX
+#if JUCE_WINDOWS || JUCE_LINUX
         if (context.extensions.glGenFramebuffers == nullptr)
             return;
-       #endif
+#endif
 
         context.extensions.glGenFramebuffers (1, &frameBufferID);
         bind();
@@ -65,13 +65,13 @@ public:
             jassert (context.extensions.glIsRenderbuffer (depthOrStencilBuffer));
 
             context.extensions.glRenderbufferStorage (GL_RENDERBUFFER,
-                                      (wantsDepthBuffer && wantsStencilBuffer) ? GL_DEPTH24_STENCIL8
-                                                                              #if JUCE_OPENGL_ES
-                                                                               : GL_DEPTH_COMPONENT16,
-                                                                              #else
-                                                                               : GL_DEPTH_COMPONENT,
-                                                                              #endif
-                                      width, height);
+                    (wantsDepthBuffer && wantsStencilBuffer) ? GL_DEPTH24_STENCIL8
+#if JUCE_OPENGL_ES
+                    : GL_DEPTH_COMPONENT16,
+#else
+                    : GL_DEPTH_COMPONENT,
+#endif
+                    width, height);
 
             GLint params = 0;
             context.extensions.glGetRenderbufferParameteriv (GL_RENDERBUFFER, GL_RENDERBUFFER_DEPTH_SIZE, &params);
@@ -132,7 +132,7 @@ private:
         const GLenum status = context.extensions.glCheckFramebufferStatus (GL_FRAMEBUFFER);
 
         return status == GL_NO_ERROR
-            || status == GL_FRAMEBUFFER_COMPLETE;
+        || status == GL_FRAMEBUFFER_COMPLETE;
     }
 
     JUCE_DECLARE_NON_COPYABLE (Pimpl)
@@ -192,7 +192,7 @@ bool OpenGLFrameBuffer::initialise (OpenGLContext& context, const Image& image)
     Image::BitmapData bitmap (image, Image::BitmapData::readOnly);
 
     return initialise (context, bitmap.width, bitmap.height)
-            && writePixels ((const PixelARGB*) bitmap.data, image.getBounds());
+           && writePixels ((const PixelARGB*) bitmap.data, image.getBounds());
 }
 
 bool OpenGLFrameBuffer::initialise (OpenGLFrameBuffer& other)
@@ -211,10 +211,10 @@ bool OpenGLFrameBuffer::initialise (OpenGLFrameBuffer& other)
     {
         pimpl->bind();
 
-       #if ! JUCE_ANDROID
+#if ! JUCE_ANDROID
         glEnable (GL_TEXTURE_2D);
         clearGLError();
-       #endif
+#endif
         glBindTexture (GL_TEXTURE_2D, p->textureID);
         pimpl->context.copyTexture (area, area, area.getWidth(), area.getHeight(), false);
         glBindTexture (GL_TEXTURE_2D, 0);
@@ -257,9 +257,15 @@ bool OpenGLFrameBuffer::reloadSavedCopy (OpenGLContext& context)
     return false;
 }
 
-int OpenGLFrameBuffer::getWidth() const noexcept            { return pimpl != nullptr ? pimpl->width : 0; }
-int OpenGLFrameBuffer::getHeight() const noexcept           { return pimpl != nullptr ? pimpl->height : 0; }
-GLuint OpenGLFrameBuffer::getTextureID() const noexcept     { return pimpl != nullptr ? pimpl->textureID : 0; }
+int OpenGLFrameBuffer::getWidth() const noexcept            {
+    return pimpl != nullptr ? pimpl->width : 0;
+}
+int OpenGLFrameBuffer::getHeight() const noexcept           {
+    return pimpl != nullptr ? pimpl->height : 0;
+}
+GLuint OpenGLFrameBuffer::getTextureID() const noexcept     {
+    return pimpl != nullptr ? pimpl->textureID : 0;
+}
 
 bool OpenGLFrameBuffer::makeCurrentRenderingTarget()
 {
@@ -339,7 +345,7 @@ bool OpenGLFrameBuffer::writePixels (const PixelARGB* data, const Rectangle<int>
 
     glViewport (0, 0, pimpl->width, pimpl->height);
     pimpl->context.copyTexture (area, Rectangle<int> (area.getX(), area.getY(),
-                                                      tex.getWidth(), tex.getHeight()),
+                                tex.getWidth(), tex.getHeight()),
                                 pimpl->width, pimpl->height, true);
 
     JUCE_CHECK_OPENGL_ERROR

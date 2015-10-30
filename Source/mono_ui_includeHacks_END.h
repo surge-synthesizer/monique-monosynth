@@ -11,6 +11,7 @@
 #undef drawRect
 #undef fillEllipse
 #undef drawEllipse
+#undef ColourGradient
 #undef WIDTH_AND_HIGHT_FACTORS
 
 // resize

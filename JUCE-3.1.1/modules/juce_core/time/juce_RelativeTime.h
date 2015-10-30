@@ -103,7 +103,9 @@ public:
     /** Returns the number of seconds this time represents.
         @see inMilliseconds, inMinutes, inHours, inDays, inWeeks
     */
-    double inSeconds() const noexcept       { return numSeconds; }
+    double inSeconds() const noexcept       {
+        return numSeconds;
+    }
 
     /** Returns the number of minutes this time represents.
         @see inMilliseconds, inSeconds, inHours, inDays, inWeeks

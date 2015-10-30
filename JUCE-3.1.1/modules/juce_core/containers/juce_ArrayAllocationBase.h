@@ -49,7 +49,8 @@ public:
     //==============================================================================
     /** Creates an empty array. */
     ArrayAllocationBase() noexcept
-        : numAllocated (0)
+:
+    numAllocated (0)
     {
     }
 
@@ -58,10 +59,11 @@ public:
     {
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     ArrayAllocationBase (ArrayAllocationBase<ElementType, TypeOfCriticalSectionToUse>&& other) noexcept
-        : elements (static_cast <HeapBlock <ElementType>&&> (other.elements)),
-          numAllocated (other.numAllocated)
+:
+    elements (static_cast <HeapBlock <ElementType>&&> (other.elements)),
+             numAllocated (other.numAllocated)
     {
     }
 
@@ -71,7 +73,7 @@ public:
         numAllocated = other.numAllocated;
         return *this;
     }
-   #endif
+#endif
 
     //==============================================================================
     /** Changes the amount of storage allocated.

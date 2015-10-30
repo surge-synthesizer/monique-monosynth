@@ -87,7 +87,7 @@ void inflate_fast (z_streamp strm, unsigned start)
     unsigned dmask;             /* mask for first level of distance codes */
     code thisx;                  /* retrieved table entry */
     unsigned op;                /* code bits, operation, extra bits, or */
-                                /*  window position, window bytes to copy */
+    /*  window position, window bytes to copy */
     unsigned len;               /* match length, unused bytes */
     unsigned dist;              /* match distance */
     unsigned char FAR *from;    /* where to copy match from */
@@ -123,15 +123,15 @@ void inflate_fast (z_streamp strm, unsigned start)
             bits += 8;
         }
         thisx = lcode[hold & lmask];
-      dolen:
+dolen:
         op = (unsigned)(thisx.bits);
         hold >>= op;
         bits -= op;
         op = (unsigned)(thisx.op);
         if (op == 0) {                          /* literal */
             Tracevv((stderr, thisx.val >= 0x20 && thisx.val < 0x7f ?
-                    "inflate:         literal '%c'\n" :
-                    "inflate:         literal 0x%02x\n", thisx.val));
+                     "inflate:         literal '%c'\n" :
+                     "inflate:         literal 0x%02x\n", thisx.val));
             PUP(out) = (unsigned char)(thisx.val);
         }
         else if (op & 16) {                     /* length base */
@@ -154,7 +154,7 @@ void inflate_fast (z_streamp strm, unsigned start)
                 bits += 8;
             }
             thisx = dcode[hold & dmask];
-          dodist:
+dodist:
             op = (unsigned)(thisx.bits);
             hold >>= op;
             bits -= op;

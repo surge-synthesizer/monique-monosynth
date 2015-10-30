@@ -284,14 +284,14 @@ void Toolbar::addItemInternal (ToolbarItemFactory& factory,
 
     if (ToolbarItemComponent* const tc = createItem (factory, itemId))
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         Array<int> allowedIds;
         factory.getAllToolbarItemIds (allowedIds);
 
         // If your factory can create an item for a given ID, it must also return
         // that ID from its getAllToolbarItemIds() method!
         jassert (allowedIds.contains (itemId));
-       #endif
+#endif
 
         items.insert (insertIndex, tc);
         addAndMakeVisible (tc, insertIndex);
@@ -451,7 +451,7 @@ void Toolbar::updateAllItemPositions (const bool animate)
             ToolbarItemComponent* const tc = items.getUnchecked(i);
 
             tc->setEditingMode (isEditingActive ? ToolbarItemComponent::editableOnToolbar
-                                                : ToolbarItemComponent::normalMode);
+                                : ToolbarItemComponent::normalMode);
 
             tc->setStyle (toolbarStyle);
 
@@ -495,8 +495,8 @@ void Toolbar::updateAllItemPositions (const bool animate)
                                                    getHeight() / 2);
 
         const int maxLength = itemsOffTheEnd ? (vertical ? missingItemsButton->getY()
-                                                         : missingItemsButton->getX()) - 4
-                                             : getLength();
+                                                : missingItemsButton->getX()) - 4
+                      : getLength();
 
         int pos = 0, activeIndex = 0;
         for (int i = 0; i < items.size(); ++i)
@@ -527,8 +527,8 @@ void Toolbar::updateAllItemPositions (const bool animate)
 
                 pos += size;
                 tc->setVisible (pos <= maxLength
-                                 && ((! tc->isBeingDragged)
-                                      || tc->getEditingMode() == ToolbarItemComponent::editableOnPalette));
+                                && ((! tc->isBeingDragged)
+                                    || tc->getEditingMode() == ToolbarItemComponent::editableOnPalette));
             }
         }
     }
@@ -582,7 +582,7 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
             int newIndex = currentIndex;
 
             const int dragObjectLeft = vertical ? (dragSourceDetails.localPosition.getY() - tc->dragOffsetY)
-                                                : (dragSourceDetails.localPosition.getX() - tc->dragOffsetX);
+                                       : (dragSourceDetails.localPosition.getX() - tc->dragOffsetX);
             const int dragObjectRight = dragObjectLeft + (vertical ? tc->getHeight() : tc->getWidth());
 
             const Rectangle<int> current (animator.getComponentDestination (getChildComponent (newIndex)));
@@ -592,7 +592,7 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
                 const Rectangle<int> previousPos (animator.getComponentDestination (prev));
 
                 if (std::abs (dragObjectLeft - (vertical ? previousPos.getY() : previousPos.getX()))
-                     < std::abs (dragObjectRight - (vertical ? current.getBottom() : current.getRight())))
+                        < std::abs (dragObjectRight - (vertical ? current.getBottom() : current.getRight())))
                 {
                     newIndex = getIndexOfChildComponent (prev);
                 }
@@ -603,7 +603,7 @@ void Toolbar::itemDragMove (const SourceDetails& dragSourceDetails)
                 const Rectangle<int> nextPos (animator.getComponentDestination (next));
 
                 if (std::abs (dragObjectLeft - (vertical ? current.getY() : current.getX()))
-                     > std::abs (dragObjectRight - (vertical ? nextPos.getBottom() : nextPos.getRight())))
+                        > std::abs (dragObjectRight - (vertical ? nextPos.getBottom() : nextPos.getRight())))
                 {
                     newIndex = getIndexOfChildComponent (next) + 1;
                 }
@@ -669,7 +669,7 @@ public:
     bool canModalEventBeSentToComponent (const Component* comp) override
     {
         return toolbar.isParentOf (comp)
-                 || dynamic_cast <const ToolbarItemComponent::ItemDragAndDropOverlayComponent*> (comp) != nullptr;
+               || dynamic_cast <const ToolbarItemComponent::ItemDragAndDropOverlayComponent*> (comp) != nullptr;
     }
 
     void positionNearBar()
@@ -702,22 +702,22 @@ private:
     Toolbar& toolbar;
 
     class CustomiserPanel  : public Component,
-                             private ComboBoxListener, // (can't use ComboBox::Listener due to idiotic VC2005 bug)
-                             private ButtonListener
+        private ComboBoxListener, // (can't use ComboBox::Listener due to idiotic VC2005 bug)
+        private ButtonListener
     {
     public:
         CustomiserPanel (ToolbarItemFactory& tbf, Toolbar& bar, int optionFlags)
-          : factory (tbf), toolbar (bar), palette (tbf, bar),
-            instructions (String::empty, TRANS ("You can drag the items above and drop them onto a toolbar to add them.")
-                                          + "\n\n"
-                                          + TRANS ("Items on the toolbar can also be dragged around to change their order, or dragged off the edge to delete them.")),
-            defaultButton (TRANS ("Restore to default set of items"))
+            : factory (tbf), toolbar (bar), palette (tbf, bar),
+              instructions (String::empty, TRANS ("You can drag the items above and drop them onto a toolbar to add them.")
+                            + "\n\n"
+                            + TRANS ("Items on the toolbar can also be dragged around to change their order, or dragged off the edge to delete them.")),
+              defaultButton (TRANS ("Restore to default set of items"))
         {
             addAndMakeVisible (palette);
 
             if ((optionFlags & (Toolbar::allowIconsOnlyChoice
-                                 | Toolbar::allowIconsWithTextChoice
-                                 | Toolbar::allowTextOnlyChoice)) != 0)
+                                | Toolbar::allowIconsWithTextChoice
+                                | Toolbar::allowTextOnlyChoice)) != 0)
             {
                 addAndMakeVisible (styleBox);
                 styleBox.setEditableText (false);
@@ -729,9 +729,15 @@ private:
                 int selectedStyle = 0;
                 switch (bar.getStyle())
                 {
-                    case Toolbar::iconsOnly:        selectedStyle = 1; break;
-                    case Toolbar::iconsWithText:    selectedStyle = 2; break;
-                    case Toolbar::textOnly:         selectedStyle = 3; break;
+                case Toolbar::iconsOnly:
+                    selectedStyle = 1;
+                    break;
+                case Toolbar::iconsWithText:
+                    selectedStyle = 2;
+                    break;
+                case Toolbar::textOnly:
+                    selectedStyle = 3;
+                    break;
                 }
 
                 styleBox.setSelectedId (selectedStyle);
@@ -755,9 +761,15 @@ private:
         {
             switch (styleBox.getSelectedId())
             {
-                case 1:   toolbar.setStyle (Toolbar::iconsOnly); break;
-                case 2:   toolbar.setStyle (Toolbar::iconsWithText); break;
-                case 3:   toolbar.setStyle (Toolbar::textOnly); break;
+            case 1:
+                toolbar.setStyle (Toolbar::iconsOnly);
+                break;
+            case 2:
+                toolbar.setStyle (Toolbar::iconsWithText);
+                break;
+            case 3:
+                toolbar.setStyle (Toolbar::textOnly);
+                break;
             }
 
             palette.resized(); // to make it update the styles
@@ -806,5 +818,5 @@ void Toolbar::showCustomisationDialog (ToolbarItemFactory& factory, const int op
     setEditingActive (true);
 
     (new CustomisationDialog (factory, *this, optionFlags))
-        ->enterModalState (true, nullptr, true);
+    ->enterModalState (true, nullptr, true);
 }

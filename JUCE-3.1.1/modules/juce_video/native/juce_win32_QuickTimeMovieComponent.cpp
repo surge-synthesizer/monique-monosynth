@@ -114,7 +114,7 @@ bool QuickTimeMovieComponent::isControlCreated() const
 }
 
 bool QuickTimeMovieComponent::loadMovie (InputStream* movieStream,
-                                         const bool isControllerVisible)
+        const bool isControllerVisible)
 {
     const ScopedPointer<InputStream> movieStreamDeleter (movieStream);
 
@@ -140,7 +140,7 @@ bool QuickTimeMovieComponent::loadMovie (InputStream* movieStream,
 
                 if (pimpl->qtMovie != 0)
                     pimpl->qtMovie->PutMovieControllerType (isControllerVisible ? qtMovieControllerTypeStandard
-                                                                                : qtMovieControllerTypeNone);
+                                                            : qtMovieControllerTypeNone);
             }
 
             if (movie == 0)
@@ -303,17 +303,17 @@ static Handle createHandleDataRef (Handle dataHandle, const char* fileName)
     {
         Str255 suffix;
 
-       #if JUCE_MSVC
-        #pragma warning (push)
-        #pragma warning (disable: 4244 4996)
-       #endif
+#if JUCE_MSVC
+#pragma warning (push)
+#pragma warning (disable: 4244 4996)
+#endif
 
         suffix[0] = strlen (fileName);
         strncpy ((char*) suffix + 1, fileName, 128);
 
-       #if JUCE_MSVC
-        #pragma warning (pop)
-       #endif
+#if JUCE_MSVC
+#pragma warning (pop)
+#endif
 
         err = PtrAndHand (suffix, dataRef, suffix[0] + 1);
 
@@ -420,7 +420,8 @@ bool juce_OpenQuickTimeMovieFromStream (InputStream* input, Movie& movie, Handle
         // working out in advance which one the stream contains, rather than just trying
         // each one)
         static const char* const suffixesToTry[] = { "\04.mov", "\04.mp3",
-                                                     "\04.avi", "\04.m4a" };
+                "\04.avi", "\04.m4a"
+                                                   };
 
         for (int i = 0; i < numElementsInArray (suffixesToTry) && ! ok; ++i)
         {
@@ -450,7 +451,7 @@ bool juce_OpenQuickTimeMovieFromStream (InputStream* input, Movie& movie, Handle
 }
 
 bool QuickTimeMovieComponent::loadMovie (const File& movieFile_,
-                                         const bool isControllerVisible)
+        const bool isControllerVisible)
 {
     const bool ok = loadMovie (static_cast <InputStream*> (movieFile_.createInputStream()), isControllerVisible);
     movieFile = movieFile_;
@@ -458,7 +459,7 @@ bool QuickTimeMovieComponent::loadMovie (const File& movieFile_,
 }
 
 bool QuickTimeMovieComponent::loadMovie (const URL& movieURL,
-                                         const bool isControllerVisible)
+        const bool isControllerVisible)
 {
     return loadMovie (static_cast <InputStream*> (movieURL.createInputStream (false)), isControllerVisible);
 }
@@ -469,7 +470,7 @@ void QuickTimeMovieComponent::goToStart()
 }
 
 void QuickTimeMovieComponent::setBoundsWithCorrectAspectRatio (const Rectangle<int>& spaceToFitWithin,
-                                                               RectanglePlacement placement)
+        RectanglePlacement placement)
 {
     int normalWidth, normalHeight;
     getMovieNormalSize (normalWidth, normalHeight);

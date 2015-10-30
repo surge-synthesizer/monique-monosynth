@@ -37,11 +37,11 @@
     @see FileChooserDialogBox, FileChooser, FileListComponent
 */
 class JUCE_API  FileBrowserComponent  : public Component,
-                                        private FileBrowserListener,
-                                        private TextEditorListener,
-                                        private ButtonListener,
-                                        private ComboBoxListener,  // (can't use ComboBox::Listener due to idiotic VC2005 bug)
-                                        private FileFilter
+    private FileBrowserListener,
+    private TextEditorListener,
+    private ButtonListener,
+    private ComboBoxListener,  // (can't use ComboBox::Listener due to idiotic VC2005 bug)
+    private FileFilter
 {
 public:
     //==============================================================================
@@ -191,7 +191,7 @@ public:
         virtual const Drawable* getDefaultDocumentFileImage() = 0;
 
         virtual AttributedString createFileChooserHeaderText (const String& title,
-                                                              const String& instructions) = 0;
+                const String& instructions) = 0;
 
         virtual void drawFileBrowserRow (Graphics&, int width, int height,
                                          const String& filename,
@@ -206,11 +206,11 @@ public:
         virtual Button* createFileBrowserGoUpButton() = 0;
 
         virtual void layoutFileBrowserComponent (FileBrowserComponent& browserComp,
-                                                 DirectoryContentsDisplayComponent* fileListComponent,
-                                                 FilePreviewComponent* previewComp,
-                                                 ComboBox* currentPathBox,
-                                                 TextEditor* filenameBox,
-                                                 Button* goUpButton) = 0;
+                DirectoryContentsDisplayComponent* fileListComponent,
+                FilePreviewComponent* previewComp,
+                ComboBox* currentPathBox,
+                TextEditor* filenameBox,
+                Button* goUpButton) = 0;
     };
 
     //==============================================================================

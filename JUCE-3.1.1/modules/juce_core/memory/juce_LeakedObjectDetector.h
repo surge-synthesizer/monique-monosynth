@@ -83,7 +83,7 @@ private:
         {
             if (numObjects.value > 0)
             {
-                 DBG(  "*** Leaked objects detected: " << int( numObjects.value ) << " instance(s) of class " << getLeakedObjectClassName() );
+                DBG(  "*** Leaked objects detected: " << int( numObjects.value ) << " instance(s) of class " << getLeakedObjectClassName() );
 
                 /** If you hit this, then you've leaked one or more objects of the type specified by
                     the 'OwnerClass' template parameter - the name should have been printed by the line above.
@@ -113,33 +113,33 @@ private:
 
 //==============================================================================
 #if DOXYGEN || ! defined (JUCE_LEAK_DETECTOR)
- #if (DOXYGEN || JUCE_CHECK_MEMORY_LEAKS)
-  /** This macro lets you embed a leak-detecting object inside a class.
+#if (DOXYGEN || JUCE_CHECK_MEMORY_LEAKS)
+/** This macro lets you embed a leak-detecting object inside a class.
 
-      To use it, simply declare a JUCE_LEAK_DETECTOR(YourClassName) inside a private section
-      of the class declaration. E.g.
+    To use it, simply declare a JUCE_LEAK_DETECTOR(YourClassName) inside a private section
+    of the class declaration. E.g.
 
-      @code
-      class MyClass
-      {
-      public:
-          MyClass();
-          void blahBlah();
+    @code
+    class MyClass
+    {
+    public:
+        MyClass();
+        void blahBlah();
 
-      private:
-          JUCE_LEAK_DETECTOR (MyClass)
-      };
-      @endcode
+    private:
+        JUCE_LEAK_DETECTOR (MyClass)
+    };
+    @endcode
 
-      @see JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR, LeakedObjectDetector
-  */
-  #define JUCE_LEAK_DETECTOR(OwnerClass) \
+    @see JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR, LeakedObjectDetector
+*/
+#define JUCE_LEAK_DETECTOR(OwnerClass) \
         friend class juce::LeakedObjectDetector<OwnerClass>; \
         static const char* getLeakedObjectClassName() noexcept { return #OwnerClass; } \
         juce::LeakedObjectDetector<OwnerClass> JUCE_JOIN_MACRO (leakDetector, __LINE__);
- #else
-  #define JUCE_LEAK_DETECTOR(OwnerClass)
- #endif
+#else
+#define JUCE_LEAK_DETECTOR(OwnerClass)
+#endif
 #endif
 
 

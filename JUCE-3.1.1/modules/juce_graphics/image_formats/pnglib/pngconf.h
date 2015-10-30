@@ -63,17 +63,17 @@
  */
 
 #ifdef PNG_STDIO_SUPPORTED
-   /* Required for the definition of FILE: */
+/* Required for the definition of FILE: */
 #  include <stdio.h>
 #endif
 
 #ifdef PNG_SETJMP_SUPPORTED
-   /* Required for the definition of jmp_buf and the declaration of longjmp: */
+/* Required for the definition of jmp_buf and the declaration of longjmp: */
 #  include <setjmp.h>
 #endif
 
 #ifdef PNG_CONVERT_tIME_SUPPORTED
-   /* Required for struct tm: */
+/* Required for struct tm: */
 #  include <time.h>
 #endif
 
@@ -204,33 +204,33 @@
  */
 #if defined(_Windows) || defined(_WINDOWS) || defined(WIN32) ||\
     defined(_WIN32) || defined(__WIN32__) || defined(__CYGWIN__)
-  /* Windows system (DOS doesn't support DLLs).  Includes builds under Cygwin or
-   * MinGW on any architecture currently supported by Windows.  Also includes
-   * Watcom builds but these need special treatment because they are not
-   * compatible with GCC or Visual C because of different calling conventions.
-   */
+/* Windows system (DOS doesn't support DLLs).  Includes builds under Cygwin or
+ * MinGW on any architecture currently supported by Windows.  Also includes
+ * Watcom builds but these need special treatment because they are not
+ * compatible with GCC or Visual C because of different calling conventions.
+ */
 #  if PNG_API_RULE == 2
-    /* If this line results in an error, either because __watcall is not
-     * understood or because of a redefine just below you cannot use *this*
-     * build of the library with the compiler you are using.  *This* build was
-     * build using Watcom and applications must also be built using Watcom!
-     */
+/* If this line results in an error, either because __watcall is not
+ * understood or because of a redefine just below you cannot use *this*
+ * build of the library with the compiler you are using.  *This* build was
+ * build using Watcom and applications must also be built using Watcom!
+ */
 #    define PNGCAPI __watcall
 #  endif
 
 #  if defined(__GNUC__) || (defined(_MSC_VER) && (_MSC_VER >= 800))
 #    define PNGCAPI __cdecl
 #    if PNG_API_RULE == 1
-       /* If this line results in an error __stdcall is not understood and
-        * PNG_API_RULE should not have been set to '1'.
-        */
+/* If this line results in an error __stdcall is not understood and
+ * PNG_API_RULE should not have been set to '1'.
+ */
 #      define PNGAPI __stdcall
 #    endif
 #  else
-    /* An older compiler, or one not detected (erroneously) above,
-     * if necessary override on the command line to get the correct
-     * variants for the compiler.
-     */
+/* An older compiler, or one not detected (erroneously) above,
+ * if necessary override on the command line to get the correct
+ * variants for the compiler.
+ */
 #    ifndef PNGCAPI
 #      define PNGCAPI _cdecl
 #    endif
@@ -238,7 +238,7 @@
 #      define PNGAPI _stdcall
 #    endif
 #  endif /* compiler/api */
-  /* NOTE: PNGCBAPI always defaults to PNGCAPI. */
+/* NOTE: PNGCBAPI always defaults to PNGCAPI. */
 
 #  if defined(PNGAPI) && !defined(PNG_USER_PRIVATEBUILD)
 #     error "PNG_USER_PRIVATEBUILD must be defined if PNGAPI is changed"
@@ -246,10 +246,10 @@
 
 #  if (defined(_MSC_VER) && _MSC_VER < 800) ||\
       (defined(__BORLANDC__) && __BORLANDC__ < 0x500)
-    /* older Borland and MSC
-     * compilers used '__export' and required this to be after
-     * the type.
-     */
+/* older Borland and MSC
+ * compilers used '__export' and required this to be after
+ * the type.
+ */
 #    ifndef PNG_EXPORT_TYPE
 #      define PNG_EXPORT_TYPE(type) type PNG_IMPEXP
 #    endif
@@ -265,9 +265,9 @@
 #  if (defined(__IBMC__) || defined(__IBMCPP__)) && defined(__OS2__)
 #    define PNGAPI _System
 #  else /* !Windows/x86 && !OS/2 */
-    /* Use the defaults, or define PNG*API on the command line (but
-     * this will have to be done for every compile!)
-     */
+/* Use the defaults, or define PNG*API on the command line (but
+ * this will have to be done for every compile!)
+ */
 #  endif /* other system, !OS/2 */
 #endif /* !Windows/x86 */
 
@@ -288,7 +288,7 @@
  */
 #ifndef PNG_IMPEXP
 #  if defined(PNG_USE_DLL) && defined(PNG_DLL_IMPORT)
-     /* This forces use of a DLL, disallowing static linking */
+/* This forces use of a DLL, disallowing static linking */
 #    define PNG_IMPEXP PNG_DLL_IMPORT
 #  endif
 
@@ -312,10 +312,10 @@
 #  define PNG_EXPORT_TYPE(type) PNG_IMPEXP type
 #endif
 
-   /* The ordinal value is only relevant when preprocessing png.h for symbol
-    * table entries, so we discard it here.  See the .dfn files in the
-    * scripts directory.
-    */
+/* The ordinal value is only relevant when preprocessing png.h for symbol
+ * table entries, so we discard it here.  See the .dfn files in the
+ * scripts directory.
+ */
 #ifndef PNG_EXPORTA
 
 #  define PNG_EXPORTA(ordinal, type, name, args, attributes)\
@@ -354,12 +354,12 @@
 #endif
 
 #ifdef PNG_PEDANTIC_WARNINGS_SUPPORTED
-  /* Support for compiler specific function attributes.  These are used
-   * so that where compiler support is available, incorrect use of API
-   * functions in png.h will generate compiler warnings.  Added at libpng
-   * version 1.2.41.  Disabling these removes the warnings but may also produce
-   * less efficient code.
-   */
+/* Support for compiler specific function attributes.  These are used
+ * so that where compiler support is available, incorrect use of API
+ * functions in png.h will generate compiler warnings.  Added at libpng
+ * version 1.2.41.  Disabling these removes the warnings but may also produce
+ * less efficient code.
+ */
 #  if defined(__GNUC__)
 #    ifndef PNG_USE_RESULT
 #      define PNG_USE_RESULT __attribute__((__warn_unused_result__))
@@ -472,39 +472,39 @@
  * standard.
  */
 #if CHAR_BIT == 8 && UCHAR_MAX == 255
-   typedef unsigned char png_byte;
+typedef unsigned char png_byte;
 #else
 #  error "libpng requires 8 bit bytes"
 #endif
 
 #if INT_MIN == -32768 && INT_MAX == 32767
-   typedef int png_int_16;
+typedef int png_int_16;
 #elif SHRT_MIN == -32768 && SHRT_MAX == 32767
-   typedef short png_int_16;
+typedef short png_int_16;
 #else
 #  error "libpng requires a signed 16 bit type"
 #endif
 
 #if UINT_MAX == 65535
-   typedef unsigned int png_uint_16;
+typedef unsigned int png_uint_16;
 #elif USHRT_MAX == 65535
-   typedef unsigned short png_uint_16;
+typedef unsigned short png_uint_16;
 #else
 #  error "libpng requires an unsigned 16 bit type"
 #endif
 
 #if INT_MIN < -2147483646 && INT_MAX > 2147483646
-   typedef int png_int_32;
+typedef int png_int_32;
 #elif LONG_MIN < -2147483646 && LONG_MAX > 2147483646
-   typedef long int png_int_32;
+typedef long int png_int_32;
 #else
 #  error "libpng requires a signed 32 bit (or more) type"
 #endif
 
 #if UINT_MAX > 4294967294
-   typedef unsigned int png_uint_32;
+typedef unsigned int png_uint_32;
 #elif ULONG_MAX > 4294967294
-   typedef unsigned long int png_uint_32;
+typedef unsigned long int png_uint_32;
 #else
 #  error "libpng requires an unsigned 32 bit (or more) type"
 #endif
@@ -521,10 +521,10 @@ typedef ptrdiff_t png_ptrdiff_t;
  * direct application control of this through png_set_user_limits().
  */
 #ifndef PNG_SMALL_SIZE_T
-   /* Compiler specific tests for systems where size_t is known to be less than
-    * 32 bits (some of these systems may no longer work because of the lack of
-    * 'far' support; see above.)
-    */
+/* Compiler specific tests for systems where size_t is known to be less than
+ * 32 bits (some of these systems may no longer work because of the lack of
+ * 'far' support; see above.)
+ */
 #  if (defined(__TURBOC__) && !defined(__FLAT__)) ||\
    (defined(_MSC_VER) && defined(MAXSEG_64K))
 #     define PNG_SMALL_SIZE_T
@@ -545,9 +545,9 @@ typedef ptrdiff_t png_ptrdiff_t;
  * 4294967295 - i.e. less than the maximum value of png_uint_32.
  */
 #ifdef PNG_SMALL_SIZE_T
-   typedef png_uint_32 png_alloc_size_t;
+typedef png_uint_32 png_alloc_size_t;
 #else
-   typedef png_size_t png_alloc_size_t;
+typedef png_size_t png_alloc_size_t;
 #endif
 
 /* Prior to 1.6.0 libpng offered limited support for Microsoft C compiler

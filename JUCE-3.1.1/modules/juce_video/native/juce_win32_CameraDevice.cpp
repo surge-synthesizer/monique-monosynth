@@ -22,13 +22,15 @@
   ==============================================================================
 */
 
-interface ISampleGrabberCB  : public IUnknown
+interface ISampleGrabberCB  :
+public IUnknown
 {
     virtual STDMETHODIMP SampleCB (double, IMediaSample*) = 0;
     virtual STDMETHODIMP BufferCB (double, BYTE*, long) = 0;
 };
 
-interface ISampleGrabber  : public IUnknown
+interface ISampleGrabber  :
+public IUnknown
 {
     virtual HRESULT STDMETHODCALLTYPE SetOneShot (BOOL) = 0;
     virtual HRESULT STDMETHODCALLTYPE SetMediaType (const AM_MEDIA_TYPE*) = 0;
@@ -50,13 +52,13 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
     Pimpl (const String&, int index,
            int minWidth, int minHeight,
            int maxWidth, int maxHeight)
-       : isRecording (false),
-         openedSuccessfully (false),
-         imageNeedsFlipping (false),
-         width (0), height (0),
-         activeUsers (0),
-         recordNextFrameTime (false),
-         previewMaxFPS (60)
+        : isRecording (false),
+          openedSuccessfully (false),
+          imageNeedsFlipping (false),
+          width (0), height (0),
+          activeUsers (0),
+          recordNextFrameTime (false),
+          previewMaxFPS (60)
     {
         HRESULT hr = captureGraphBuilder.CoCreateInstance (CLSID_CaptureGraphBuilder2);
         if (FAILED (hr))
@@ -82,7 +84,7 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
             ComSmartPtr<IAMStreamConfig> streamConfig;
 
             hr = captureGraphBuilder->FindInterface (&PIN_CATEGORY_CAPTURE, 0, filter,
-                                                     IID_IAMStreamConfig, (void**) streamConfig.resetAndGetPointerAddress());
+                    IID_IAMStreamConfig, (void**) streamConfig.resetAndGetPointerAddress());
 
             if (streamConfig != nullptr)
             {
@@ -153,7 +155,7 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
         hr = graphBuilder->AddFilter (nullFilter, _T("Null Renderer"));
 
         if (connectFilters (sampleGrabberBase, nullFilter)
-              && addGraphToRot())
+                && addGraphToRot())
         {
             activeImage = Image (Image::RGB, width, height, true);
             loadingImage = Image (Image::RGB, width, height, true);
@@ -187,7 +189,9 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
         asfWriter = nullptr;
     }
 
-    bool openedOk() const noexcept       { return openedSuccessfully; }
+    bool openedOk() const noexcept       {
+        return openedSuccessfully;
+    }
 
     void startRecordingToFile (const File& file, int quality)
     {
@@ -308,7 +312,7 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
         }
 
         Rectangle<int> centred (RectanglePlacement (RectanglePlacement::centred)
-                                    .appliedTo (Rectangle<int> (width, height), area));
+                                .appliedTo (Rectangle<int> (width, height), area));
 
         RectangleList<int> borders (area);
         borders.subtract (centred);
@@ -353,21 +357,21 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
 
                         // This gibberish is the DirectShow profile for a video-only wmv file.
                         String prof ("<profile version=\"589824\" storageformat=\"1\" name=\"Quality\" description=\"Quality type for output.\">"
-                                       "<streamconfig majortype=\"{73646976-0000-0010-8000-00AA00389B71}\" streamnumber=\"1\" "
-                                                     "streamname=\"Video Stream\" inputname=\"Video409\" bitrate=\"894960\" "
-                                                     "bufferwindow=\"0\" reliabletransport=\"1\" decodercomplexity=\"AU\" rfc1766langid=\"en-us\">"
-                                         "<videomediaprops maxkeyframespacing=\"50000000\" quality=\"90\"/>"
-                                         "<wmmediatype subtype=\"{33564D57-0000-0010-8000-00AA00389B71}\" bfixedsizesamples=\"0\" "
-                                                      "btemporalcompression=\"1\" lsamplesize=\"0\">"
-                                         "<videoinfoheader dwbitrate=\"894960\" dwbiterrorrate=\"0\" avgtimeperframe=\"$AVGTIMEPERFRAME\">"
-                                             "<rcsource left=\"0\" top=\"0\" right=\"$WIDTH\" bottom=\"$HEIGHT\"/>"
-                                             "<rctarget left=\"0\" top=\"0\" right=\"$WIDTH\" bottom=\"$HEIGHT\"/>"
-                                             "<bitmapinfoheader biwidth=\"$WIDTH\" biheight=\"$HEIGHT\" biplanes=\"1\" bibitcount=\"24\" "
-                                                               "bicompression=\"WMV3\" bisizeimage=\"0\" bixpelspermeter=\"0\" biypelspermeter=\"0\" "
-                                                               "biclrused=\"0\" biclrimportant=\"0\"/>"
-                                           "</videoinfoheader>"
-                                         "</wmmediatype>"
-                                       "</streamconfig>"
+                                     "<streamconfig majortype=\"{73646976-0000-0010-8000-00AA00389B71}\" streamnumber=\"1\" "
+                                     "streamname=\"Video Stream\" inputname=\"Video409\" bitrate=\"894960\" "
+                                     "bufferwindow=\"0\" reliabletransport=\"1\" decodercomplexity=\"AU\" rfc1766langid=\"en-us\">"
+                                     "<videomediaprops maxkeyframespacing=\"50000000\" quality=\"90\"/>"
+                                     "<wmmediatype subtype=\"{33564D57-0000-0010-8000-00AA00389B71}\" bfixedsizesamples=\"0\" "
+                                     "btemporalcompression=\"1\" lsamplesize=\"0\">"
+                                     "<videoinfoheader dwbitrate=\"894960\" dwbiterrorrate=\"0\" avgtimeperframe=\"$AVGTIMEPERFRAME\">"
+                                     "<rcsource left=\"0\" top=\"0\" right=\"$WIDTH\" bottom=\"$HEIGHT\"/>"
+                                     "<rctarget left=\"0\" top=\"0\" right=\"$WIDTH\" bottom=\"$HEIGHT\"/>"
+                                     "<bitmapinfoheader biwidth=\"$WIDTH\" biheight=\"$HEIGHT\" biplanes=\"1\" bibitcount=\"24\" "
+                                     "bicompression=\"WMV3\" bisizeimage=\"0\" bixpelspermeter=\"0\" biypelspermeter=\"0\" "
+                                     "biclrused=\"0\" biclrimportant=\"0\"/>"
+                                     "</videoinfoheader>"
+                                     "</wmmediatype>"
+                                     "</streamconfig>"
                                      "</profile>");
 
                         const int fps[] = { 10, 15, 30 };
@@ -377,8 +381,8 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
                             maxFramesPerSecond = (quality >> 24) & 0xff;
 
                         prof = prof.replace ("$WIDTH", String (width))
-                                   .replace ("$HEIGHT", String (height))
-                                   .replace ("$AVGTIMEPERFRAME", String (10000000 / maxFramesPerSecond));
+                               .replace ("$HEIGHT", String (height))
+                               .replace ("$AVGTIMEPERFRAME", String (10000000 / maxFramesPerSecond));
 
                         ComSmartPtr<IWMProfile> currentProfile;
                         hr = profileManager->LoadProfileByData (prof.toWideCharPointer(), currentProfile.resetAndGetPointerAddress());
@@ -393,7 +397,7 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
                                 hr = graphBuilder->Connect (smartTeeCaptureOutputPin, asfWriterInputPin);
 
                                 if (SUCCEEDED (hr) && openedSuccessfully && activeUsers > 0
-                                     && SUCCEEDED (mediaControl->Run()))
+                                        && SUCCEEDED (mediaControl->Run()))
                                 {
                                     previewMaxFPS = (quality < 2) ? 15 : 25; // throttle back the preview comps to try to leave the cpu free for encoding
 
@@ -506,7 +510,9 @@ struct CameraDevice::Pimpl  : public ChangeBroadcaster
             return ComBaseClassHelperBase<ISampleGrabberCB>::QueryInterface (refId, result);
         }
 
-        STDMETHODIMP SampleCB (double, IMediaSample*)  { return E_FAIL; }
+        STDMETHODIMP SampleCB (double, IMediaSample*)  {
+            return E_FAIL;
+        }
 
         STDMETHODIMP BufferCB (double time, BYTE* buffer, long bufferSize)
         {
@@ -613,9 +619,9 @@ private:
                 if (SUCCEEDED (hr))
                 {
                     if (scc.InputSize.cx >= minWidth
-                         && scc.InputSize.cy >= minHeight
-                         && scc.InputSize.cx <= maxWidth
-                         && scc.InputSize.cy <= maxHeight)
+                            && scc.InputSize.cy >= minHeight
+                            && scc.InputSize.cx <= maxWidth
+                            && scc.InputSize.cy <= maxHeight)
                     {
                         int area = scc.InputSize.cx * scc.InputSize.cy;
                         if (area > bestArea)
@@ -676,8 +682,8 @@ private:
         ComSmartPtr<IPin> in, out;
 
         return getPin (first, PINDIR_OUTPUT, out)
-                && getPin (second, PINDIR_INPUT, in)
-                && SUCCEEDED (graphBuilder->Connect (out, in));
+               && getPin (second, PINDIR_INPUT, in)
+               && SUCCEEDED (graphBuilder->Connect (out, in));
     }
 
     bool addGraphToRot()
@@ -722,10 +728,10 @@ private:
 
 //==============================================================================
 struct CameraDevice::ViewerComponent  : public Component,
-                                        public ChangeListener
+    public ChangeListener
 {
     ViewerComponent (CameraDevice& d)
-       : owner (d.pimpl), maxFPS (15), lastRepaintTime (0)
+        : owner (d.pimpl), maxFPS (15), lastRepaintTime (0)
     {
         setOpaque (true);
         owner->addChangeListener (this);

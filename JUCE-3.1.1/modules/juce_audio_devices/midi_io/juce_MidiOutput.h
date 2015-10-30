@@ -67,7 +67,7 @@ public:
     static MidiOutput* openDevice (int deviceIndex);
 
 
-   #if JUCE_LINUX || JUCE_MAC || JUCE_IOS || DOXYGEN
+#if JUCE_LINUX || JUCE_MAC || JUCE_IOS || DOXYGEN
     /** This will try to create a new midi output device (Not available on Windows).
 
         This will attempt to create a new midi output device that other apps can connect
@@ -78,7 +78,7 @@ public:
         @param deviceName   the name to use for the new device
     */
     static MidiOutput* createNewDevice (const String& deviceName);
-   #endif
+#endif
 
     //==============================================================================
     /** Destructor. */

@@ -69,10 +69,14 @@ public:
 
     //==============================================================================
     /** Assigns a new tooltip to this object. */
-    virtual void setTooltip (const String& newTooltip)              { tooltipString = newTooltip; }
+    virtual void setTooltip (const String& newTooltip)              {
+        tooltipString = newTooltip;
+    }
 
     /** Returns the tooltip assigned to this object. */
-    virtual String getTooltip()                                     { return tooltipString; }
+    virtual String getTooltip()                                     {
+        return tooltipString;
+    }
 
 protected:
     SettableTooltipClient() {}

@@ -404,139 +404,139 @@ struct java_lang_Object;
 struct java_lang_String;
 
 struct JRIEnvInterface {
-	void*	reserved0;
-	void*	reserved1;
-	void*	reserved2;
-	void*	reserved3;
-	struct java_lang_Class*	(*FindClass)(JRIEnv* env, jint op, const char* a);
-	void	(*Throw)(JRIEnv* env, jint op, struct java_lang_Throwable* a);
-	void	(*ThrowNew)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b);
-	struct java_lang_Throwable*	(*ExceptionOccurred)(JRIEnv* env, jint op);
-	void	(*ExceptionDescribe)(JRIEnv* env, jint op);
-	void	(*ExceptionClear)(JRIEnv* env, jint op);
-	jglobal	(*NewGlobalRef)(JRIEnv* env, jint op, void* a);
-	void	(*DisposeGlobalRef)(JRIEnv* env, jint op, jglobal a);
-	void*	(*GetGlobalRef)(JRIEnv* env, jint op, jglobal a);
-	void	(*SetGlobalRef)(JRIEnv* env, jint op, jglobal a, void* b);
-	jbool	(*IsSameObject)(JRIEnv* env, jint op, void* a, void* b);
-	void*	(*NewObject)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	void*	(*NewObjectV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	void*	(*NewObjectA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	struct java_lang_Class*	(*GetObjectClass)(JRIEnv* env, jint op, void* a);
-	jbool	(*IsInstanceOf)(JRIEnv* env, jint op, void* a, struct java_lang_Class* b);
-	jint	(*GetMethodID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
-	void*	(*CallMethod)(JRIEnv* env, jint op, void* a, jint b, ...);
-	void*	(*CallMethodV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	void*	(*CallMethodA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jbool	(*CallMethodBoolean)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jbool	(*CallMethodBooleanV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jbool	(*CallMethodBooleanA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jbyte	(*CallMethodByte)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jbyte	(*CallMethodByteV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jbyte	(*CallMethodByteA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jchar	(*CallMethodChar)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jchar	(*CallMethodCharV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jchar	(*CallMethodCharA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jshort	(*CallMethodShort)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jshort	(*CallMethodShortV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jshort	(*CallMethodShortA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jint	(*CallMethodInt)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jint	(*CallMethodIntV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jint	(*CallMethodIntA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jlong	(*CallMethodLong)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jlong	(*CallMethodLongV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jlong	(*CallMethodLongA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jfloat	(*CallMethodFloat)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jfloat	(*CallMethodFloatV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jfloat	(*CallMethodFloatA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jdouble	(*CallMethodDouble)(JRIEnv* env, jint op, void* a, jint b, ...);
-	jdouble	(*CallMethodDoubleV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
-	jdouble	(*CallMethodDoubleA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
-	jint	(*GetFieldID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
-	void*	(*GetField)(JRIEnv* env, jint op, void* a, jint b);
-	jbool	(*GetFieldBoolean)(JRIEnv* env, jint op, void* a, jint b);
-	jbyte	(*GetFieldByte)(JRIEnv* env, jint op, void* a, jint b);
-	jchar	(*GetFieldChar)(JRIEnv* env, jint op, void* a, jint b);
-	jshort	(*GetFieldShort)(JRIEnv* env, jint op, void* a, jint b);
-	jint	(*GetFieldInt)(JRIEnv* env, jint op, void* a, jint b);
-	jlong	(*GetFieldLong)(JRIEnv* env, jint op, void* a, jint b);
-	jfloat	(*GetFieldFloat)(JRIEnv* env, jint op, void* a, jint b);
-	jdouble	(*GetFieldDouble)(JRIEnv* env, jint op, void* a, jint b);
-	void	(*SetField)(JRIEnv* env, jint op, void* a, jint b, void* c);
-	void	(*SetFieldBoolean)(JRIEnv* env, jint op, void* a, jint b, jbool c);
-	void	(*SetFieldByte)(JRIEnv* env, jint op, void* a, jint b, jbyte c);
-	void	(*SetFieldChar)(JRIEnv* env, jint op, void* a, jint b, jchar c);
-	void	(*SetFieldShort)(JRIEnv* env, jint op, void* a, jint b, jshort c);
-	void	(*SetFieldInt)(JRIEnv* env, jint op, void* a, jint b, jint c);
-	void	(*SetFieldLong)(JRIEnv* env, jint op, void* a, jint b, jlong c);
-	void	(*SetFieldFloat)(JRIEnv* env, jint op, void* a, jint b, jfloat c);
-	void	(*SetFieldDouble)(JRIEnv* env, jint op, void* a, jint b, jdouble c);
-	jbool	(*IsSubclassOf)(JRIEnv* env, jint op, struct java_lang_Class* a, struct java_lang_Class* b);
-	jint	(*GetStaticMethodID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
-	void*	(*CallStaticMethod)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	void*	(*CallStaticMethodV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	void*	(*CallStaticMethodA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jbool	(*CallStaticMethodBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jbool	(*CallStaticMethodBooleanV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jbool	(*CallStaticMethodBooleanA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jbyte	(*CallStaticMethodByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jbyte	(*CallStaticMethodByteV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jbyte	(*CallStaticMethodByteA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jchar	(*CallStaticMethodChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jchar	(*CallStaticMethodCharV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jchar	(*CallStaticMethodCharA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jshort	(*CallStaticMethodShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jshort	(*CallStaticMethodShortV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jshort	(*CallStaticMethodShortA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jint	(*CallStaticMethodInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jint	(*CallStaticMethodIntV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jint	(*CallStaticMethodIntA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jlong	(*CallStaticMethodLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jlong	(*CallStaticMethodLongV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jlong	(*CallStaticMethodLongA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jfloat	(*CallStaticMethodFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jfloat	(*CallStaticMethodFloatV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jfloat	(*CallStaticMethodFloatA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jdouble	(*CallStaticMethodDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
-	jdouble	(*CallStaticMethodDoubleV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
-	jdouble	(*CallStaticMethodDoubleA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
-	jint	(*GetStaticFieldID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
-	void*	(*GetStaticField)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jbool	(*GetStaticFieldBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jbyte	(*GetStaticFieldByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jchar	(*GetStaticFieldChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jshort	(*GetStaticFieldShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jint	(*GetStaticFieldInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jlong	(*GetStaticFieldLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jfloat	(*GetStaticFieldFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	jdouble	(*GetStaticFieldDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
-	void	(*SetStaticField)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, void* c);
-	void	(*SetStaticFieldBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jbool c);
-	void	(*SetStaticFieldByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jbyte c);
-	void	(*SetStaticFieldChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jchar c);
-	void	(*SetStaticFieldShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jshort c);
-	void	(*SetStaticFieldInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jint c);
-	void	(*SetStaticFieldLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jlong c);
-	void	(*SetStaticFieldFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jfloat c);
-	void	(*SetStaticFieldDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jdouble c);
-	struct java_lang_String*	(*NewString)(JRIEnv* env, jint op, const jchar* a, jint b);
-	jint	(*GetStringLength)(JRIEnv* env, jint op, struct java_lang_String* a);
-	const jchar*	(*GetStringChars)(JRIEnv* env, jint op, struct java_lang_String* a);
-	struct java_lang_String*	(*NewStringUTF)(JRIEnv* env, jint op, const jbyte* a, jint b);
-	jint	(*GetStringUTFLength)(JRIEnv* env, jint op, struct java_lang_String* a);
-	const jbyte*	(*GetStringUTFChars)(JRIEnv* env, jint op, struct java_lang_String* a);
-	void*	(*NewScalarArray)(JRIEnv* env, jint op, jint a, const char* b, const jbyte* c);
-	jint	(*GetScalarArrayLength)(JRIEnv* env, jint op, void* a);
-	jbyte*	(*GetScalarArrayElements)(JRIEnv* env, jint op, void* a);
-	void*	(*NewObjectArray)(JRIEnv* env, jint op, jint a, struct java_lang_Class* b, void* c);
-	jint	(*GetObjectArrayLength)(JRIEnv* env, jint op, void* a);
-	void*	(*GetObjectArrayElement)(JRIEnv* env, jint op, void* a, jint b);
-	void	(*SetObjectArrayElement)(JRIEnv* env, jint op, void* a, jint b, void* c);
-	void	(*RegisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a, char** b, void** c);
-	void	(*UnregisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a);
-	struct java_lang_Class*	(*DefineClass)(JRIEnv* env, jint op, struct java_lang_ClassLoader* a, jbyte* b, jsize bLen);
-	struct java_lang_String*	(*NewStringPlatform)(JRIEnv* env, jint op, const jbyte* a, jint b, const jbyte* c, jint d);
-	const jbyte*	(*GetStringPlatformChars)(JRIEnv* env, jint op, struct java_lang_String* a, const jbyte* b, jint c);
+    void*	reserved0;
+    void*	reserved1;
+    void*	reserved2;
+    void*	reserved3;
+    struct java_lang_Class*	(*FindClass)(JRIEnv* env, jint op, const char* a);
+    void	(*Throw)(JRIEnv* env, jint op, struct java_lang_Throwable* a);
+    void	(*ThrowNew)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b);
+    struct java_lang_Throwable*	(*ExceptionOccurred)(JRIEnv* env, jint op);
+    void	(*ExceptionDescribe)(JRIEnv* env, jint op);
+    void	(*ExceptionClear)(JRIEnv* env, jint op);
+    jglobal	(*NewGlobalRef)(JRIEnv* env, jint op, void* a);
+    void	(*DisposeGlobalRef)(JRIEnv* env, jint op, jglobal a);
+    void*	(*GetGlobalRef)(JRIEnv* env, jint op, jglobal a);
+    void	(*SetGlobalRef)(JRIEnv* env, jint op, jglobal a, void* b);
+    jbool	(*IsSameObject)(JRIEnv* env, jint op, void* a, void* b);
+    void*	(*NewObject)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    void*	(*NewObjectV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    void*	(*NewObjectA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    struct java_lang_Class*	(*GetObjectClass)(JRIEnv* env, jint op, void* a);
+    jbool	(*IsInstanceOf)(JRIEnv* env, jint op, void* a, struct java_lang_Class* b);
+    jint	(*GetMethodID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
+    void*	(*CallMethod)(JRIEnv* env, jint op, void* a, jint b, ...);
+    void*	(*CallMethodV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    void*	(*CallMethodA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jbool	(*CallMethodBoolean)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jbool	(*CallMethodBooleanV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jbool	(*CallMethodBooleanA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jbyte	(*CallMethodByte)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jbyte	(*CallMethodByteV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jbyte	(*CallMethodByteA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jchar	(*CallMethodChar)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jchar	(*CallMethodCharV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jchar	(*CallMethodCharA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jshort	(*CallMethodShort)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jshort	(*CallMethodShortV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jshort	(*CallMethodShortA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jint	(*CallMethodInt)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jint	(*CallMethodIntV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jint	(*CallMethodIntA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jlong	(*CallMethodLong)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jlong	(*CallMethodLongV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jlong	(*CallMethodLongA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jfloat	(*CallMethodFloat)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jfloat	(*CallMethodFloatV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jfloat	(*CallMethodFloatA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jdouble	(*CallMethodDouble)(JRIEnv* env, jint op, void* a, jint b, ...);
+    jdouble	(*CallMethodDoubleV)(JRIEnv* env, jint op, void* a, jint b, va_list c);
+    jdouble	(*CallMethodDoubleA)(JRIEnv* env, jint op, void* a, jint b, JRIValue* c);
+    jint	(*GetFieldID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
+    void*	(*GetField)(JRIEnv* env, jint op, void* a, jint b);
+    jbool	(*GetFieldBoolean)(JRIEnv* env, jint op, void* a, jint b);
+    jbyte	(*GetFieldByte)(JRIEnv* env, jint op, void* a, jint b);
+    jchar	(*GetFieldChar)(JRIEnv* env, jint op, void* a, jint b);
+    jshort	(*GetFieldShort)(JRIEnv* env, jint op, void* a, jint b);
+    jint	(*GetFieldInt)(JRIEnv* env, jint op, void* a, jint b);
+    jlong	(*GetFieldLong)(JRIEnv* env, jint op, void* a, jint b);
+    jfloat	(*GetFieldFloat)(JRIEnv* env, jint op, void* a, jint b);
+    jdouble	(*GetFieldDouble)(JRIEnv* env, jint op, void* a, jint b);
+    void	(*SetField)(JRIEnv* env, jint op, void* a, jint b, void* c);
+    void	(*SetFieldBoolean)(JRIEnv* env, jint op, void* a, jint b, jbool c);
+    void	(*SetFieldByte)(JRIEnv* env, jint op, void* a, jint b, jbyte c);
+    void	(*SetFieldChar)(JRIEnv* env, jint op, void* a, jint b, jchar c);
+    void	(*SetFieldShort)(JRIEnv* env, jint op, void* a, jint b, jshort c);
+    void	(*SetFieldInt)(JRIEnv* env, jint op, void* a, jint b, jint c);
+    void	(*SetFieldLong)(JRIEnv* env, jint op, void* a, jint b, jlong c);
+    void	(*SetFieldFloat)(JRIEnv* env, jint op, void* a, jint b, jfloat c);
+    void	(*SetFieldDouble)(JRIEnv* env, jint op, void* a, jint b, jdouble c);
+    jbool	(*IsSubclassOf)(JRIEnv* env, jint op, struct java_lang_Class* a, struct java_lang_Class* b);
+    jint	(*GetStaticMethodID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
+    void*	(*CallStaticMethod)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    void*	(*CallStaticMethodV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    void*	(*CallStaticMethodA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jbool	(*CallStaticMethodBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jbool	(*CallStaticMethodBooleanV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jbool	(*CallStaticMethodBooleanA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jbyte	(*CallStaticMethodByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jbyte	(*CallStaticMethodByteV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jbyte	(*CallStaticMethodByteA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jchar	(*CallStaticMethodChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jchar	(*CallStaticMethodCharV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jchar	(*CallStaticMethodCharA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jshort	(*CallStaticMethodShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jshort	(*CallStaticMethodShortV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jshort	(*CallStaticMethodShortA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jint	(*CallStaticMethodInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jint	(*CallStaticMethodIntV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jint	(*CallStaticMethodIntA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jlong	(*CallStaticMethodLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jlong	(*CallStaticMethodLongV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jlong	(*CallStaticMethodLongA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jfloat	(*CallStaticMethodFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jfloat	(*CallStaticMethodFloatV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jfloat	(*CallStaticMethodFloatA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jdouble	(*CallStaticMethodDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, ...);
+    jdouble	(*CallStaticMethodDoubleV)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, va_list c);
+    jdouble	(*CallStaticMethodDoubleA)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, JRIValue* c);
+    jint	(*GetStaticFieldID)(JRIEnv* env, jint op, struct java_lang_Class* a, const char* b, const char* c);
+    void*	(*GetStaticField)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jbool	(*GetStaticFieldBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jbyte	(*GetStaticFieldByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jchar	(*GetStaticFieldChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jshort	(*GetStaticFieldShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jint	(*GetStaticFieldInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jlong	(*GetStaticFieldLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jfloat	(*GetStaticFieldFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    jdouble	(*GetStaticFieldDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b);
+    void	(*SetStaticField)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, void* c);
+    void	(*SetStaticFieldBoolean)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jbool c);
+    void	(*SetStaticFieldByte)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jbyte c);
+    void	(*SetStaticFieldChar)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jchar c);
+    void	(*SetStaticFieldShort)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jshort c);
+    void	(*SetStaticFieldInt)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jint c);
+    void	(*SetStaticFieldLong)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jlong c);
+    void	(*SetStaticFieldFloat)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jfloat c);
+    void	(*SetStaticFieldDouble)(JRIEnv* env, jint op, struct java_lang_Class* a, jint b, jdouble c);
+    struct java_lang_String*	(*NewString)(JRIEnv* env, jint op, const jchar* a, jint b);
+    jint	(*GetStringLength)(JRIEnv* env, jint op, struct java_lang_String* a);
+    const jchar*	(*GetStringChars)(JRIEnv* env, jint op, struct java_lang_String* a);
+    struct java_lang_String*	(*NewStringUTF)(JRIEnv* env, jint op, const jbyte* a, jint b);
+    jint	(*GetStringUTFLength)(JRIEnv* env, jint op, struct java_lang_String* a);
+    const jbyte*	(*GetStringUTFChars)(JRIEnv* env, jint op, struct java_lang_String* a);
+    void*	(*NewScalarArray)(JRIEnv* env, jint op, jint a, const char* b, const jbyte* c);
+    jint	(*GetScalarArrayLength)(JRIEnv* env, jint op, void* a);
+    jbyte*	(*GetScalarArrayElements)(JRIEnv* env, jint op, void* a);
+    void*	(*NewObjectArray)(JRIEnv* env, jint op, jint a, struct java_lang_Class* b, void* c);
+    jint	(*GetObjectArrayLength)(JRIEnv* env, jint op, void* a);
+    void*	(*GetObjectArrayElement)(JRIEnv* env, jint op, void* a, jint b);
+    void	(*SetObjectArrayElement)(JRIEnv* env, jint op, void* a, jint b, void* c);
+    void	(*RegisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a, char** b, void** c);
+    void	(*UnregisterNatives)(JRIEnv* env, jint op, struct java_lang_Class* a);
+    struct java_lang_Class*	(*DefineClass)(JRIEnv* env, jint op, struct java_lang_ClassLoader* a, jbyte* b, jsize bLen);
+    struct java_lang_String*	(*NewStringPlatform)(JRIEnv* env, jint op, const jbyte* a, jint b, const jbyte* c, jint d);
+    const jbyte*	(*GetStringPlatformChars)(JRIEnv* env, jint op, struct java_lang_String* a, const jbyte* b, jint c);
 };
 
 /*
@@ -546,139 +546,139 @@ struct JRIEnvInterface {
 */
 
 typedef enum JRIEnvOperations {
-	JRI_Reserved0_op,
-	JRI_Reserved1_op,
-	JRI_Reserved2_op,
-	JRI_Reserved3_op,
-	JRI_FindClass_op,
-	JRI_Throw_op,
-	JRI_ThrowNew_op,
-	JRI_ExceptionOccurred_op,
-	JRI_ExceptionDescribe_op,
-	JRI_ExceptionClear_op,
-	JRI_NewGlobalRef_op,
-	JRI_DisposeGlobalRef_op,
-	JRI_GetGlobalRef_op,
-	JRI_SetGlobalRef_op,
-	JRI_IsSameObject_op,
-	JRI_NewObject_op,
-	JRI_NewObject_op_va_list,
-	JRI_NewObject_op_array,
-	JRI_GetObjectClass_op,
-	JRI_IsInstanceOf_op,
-	JRI_GetMethodID_op,
-	JRI_CallMethod_op,
-	JRI_CallMethod_op_va_list,
-	JRI_CallMethod_op_array,
-	JRI_CallMethodBoolean_op,
-	JRI_CallMethodBoolean_op_va_list,
-	JRI_CallMethodBoolean_op_array,
-	JRI_CallMethodByte_op,
-	JRI_CallMethodByte_op_va_list,
-	JRI_CallMethodByte_op_array,
-	JRI_CallMethodChar_op,
-	JRI_CallMethodChar_op_va_list,
-	JRI_CallMethodChar_op_array,
-	JRI_CallMethodShort_op,
-	JRI_CallMethodShort_op_va_list,
-	JRI_CallMethodShort_op_array,
-	JRI_CallMethodInt_op,
-	JRI_CallMethodInt_op_va_list,
-	JRI_CallMethodInt_op_array,
-	JRI_CallMethodLong_op,
-	JRI_CallMethodLong_op_va_list,
-	JRI_CallMethodLong_op_array,
-	JRI_CallMethodFloat_op,
-	JRI_CallMethodFloat_op_va_list,
-	JRI_CallMethodFloat_op_array,
-	JRI_CallMethodDouble_op,
-	JRI_CallMethodDouble_op_va_list,
-	JRI_CallMethodDouble_op_array,
-	JRI_GetFieldID_op,
-	JRI_GetField_op,
-	JRI_GetFieldBoolean_op,
-	JRI_GetFieldByte_op,
-	JRI_GetFieldChar_op,
-	JRI_GetFieldShort_op,
-	JRI_GetFieldInt_op,
-	JRI_GetFieldLong_op,
-	JRI_GetFieldFloat_op,
-	JRI_GetFieldDouble_op,
-	JRI_SetField_op,
-	JRI_SetFieldBoolean_op,
-	JRI_SetFieldByte_op,
-	JRI_SetFieldChar_op,
-	JRI_SetFieldShort_op,
-	JRI_SetFieldInt_op,
-	JRI_SetFieldLong_op,
-	JRI_SetFieldFloat_op,
-	JRI_SetFieldDouble_op,
-	JRI_IsSubclassOf_op,
-	JRI_GetStaticMethodID_op,
-	JRI_CallStaticMethod_op,
-	JRI_CallStaticMethod_op_va_list,
-	JRI_CallStaticMethod_op_array,
-	JRI_CallStaticMethodBoolean_op,
-	JRI_CallStaticMethodBoolean_op_va_list,
-	JRI_CallStaticMethodBoolean_op_array,
-	JRI_CallStaticMethodByte_op,
-	JRI_CallStaticMethodByte_op_va_list,
-	JRI_CallStaticMethodByte_op_array,
-	JRI_CallStaticMethodChar_op,
-	JRI_CallStaticMethodChar_op_va_list,
-	JRI_CallStaticMethodChar_op_array,
-	JRI_CallStaticMethodShort_op,
-	JRI_CallStaticMethodShort_op_va_list,
-	JRI_CallStaticMethodShort_op_array,
-	JRI_CallStaticMethodInt_op,
-	JRI_CallStaticMethodInt_op_va_list,
-	JRI_CallStaticMethodInt_op_array,
-	JRI_CallStaticMethodLong_op,
-	JRI_CallStaticMethodLong_op_va_list,
-	JRI_CallStaticMethodLong_op_array,
-	JRI_CallStaticMethodFloat_op,
-	JRI_CallStaticMethodFloat_op_va_list,
-	JRI_CallStaticMethodFloat_op_array,
-	JRI_CallStaticMethodDouble_op,
-	JRI_CallStaticMethodDouble_op_va_list,
-	JRI_CallStaticMethodDouble_op_array,
-	JRI_GetStaticFieldID_op,
-	JRI_GetStaticField_op,
-	JRI_GetStaticFieldBoolean_op,
-	JRI_GetStaticFieldByte_op,
-	JRI_GetStaticFieldChar_op,
-	JRI_GetStaticFieldShort_op,
-	JRI_GetStaticFieldInt_op,
-	JRI_GetStaticFieldLong_op,
-	JRI_GetStaticFieldFloat_op,
-	JRI_GetStaticFieldDouble_op,
-	JRI_SetStaticField_op,
-	JRI_SetStaticFieldBoolean_op,
-	JRI_SetStaticFieldByte_op,
-	JRI_SetStaticFieldChar_op,
-	JRI_SetStaticFieldShort_op,
-	JRI_SetStaticFieldInt_op,
-	JRI_SetStaticFieldLong_op,
-	JRI_SetStaticFieldFloat_op,
-	JRI_SetStaticFieldDouble_op,
-	JRI_NewString_op,
-	JRI_GetStringLength_op,
-	JRI_GetStringChars_op,
-	JRI_NewStringUTF_op,
-	JRI_GetStringUTFLength_op,
-	JRI_GetStringUTFChars_op,
-	JRI_NewScalarArray_op,
-	JRI_GetScalarArrayLength_op,
-	JRI_GetScalarArrayElements_op,
-	JRI_NewObjectArray_op,
-	JRI_GetObjectArrayLength_op,
-	JRI_GetObjectArrayElement_op,
-	JRI_SetObjectArrayElement_op,
-	JRI_RegisterNatives_op,
-	JRI_UnregisterNatives_op,
-	JRI_DefineClass_op,
-	JRI_NewStringPlatform_op,
-	JRI_GetStringPlatformChars_op
+    JRI_Reserved0_op,
+    JRI_Reserved1_op,
+    JRI_Reserved2_op,
+    JRI_Reserved3_op,
+    JRI_FindClass_op,
+    JRI_Throw_op,
+    JRI_ThrowNew_op,
+    JRI_ExceptionOccurred_op,
+    JRI_ExceptionDescribe_op,
+    JRI_ExceptionClear_op,
+    JRI_NewGlobalRef_op,
+    JRI_DisposeGlobalRef_op,
+    JRI_GetGlobalRef_op,
+    JRI_SetGlobalRef_op,
+    JRI_IsSameObject_op,
+    JRI_NewObject_op,
+    JRI_NewObject_op_va_list,
+    JRI_NewObject_op_array,
+    JRI_GetObjectClass_op,
+    JRI_IsInstanceOf_op,
+    JRI_GetMethodID_op,
+    JRI_CallMethod_op,
+    JRI_CallMethod_op_va_list,
+    JRI_CallMethod_op_array,
+    JRI_CallMethodBoolean_op,
+    JRI_CallMethodBoolean_op_va_list,
+    JRI_CallMethodBoolean_op_array,
+    JRI_CallMethodByte_op,
+    JRI_CallMethodByte_op_va_list,
+    JRI_CallMethodByte_op_array,
+    JRI_CallMethodChar_op,
+    JRI_CallMethodChar_op_va_list,
+    JRI_CallMethodChar_op_array,
+    JRI_CallMethodShort_op,
+    JRI_CallMethodShort_op_va_list,
+    JRI_CallMethodShort_op_array,
+    JRI_CallMethodInt_op,
+    JRI_CallMethodInt_op_va_list,
+    JRI_CallMethodInt_op_array,
+    JRI_CallMethodLong_op,
+    JRI_CallMethodLong_op_va_list,
+    JRI_CallMethodLong_op_array,
+    JRI_CallMethodFloat_op,
+    JRI_CallMethodFloat_op_va_list,
+    JRI_CallMethodFloat_op_array,
+    JRI_CallMethodDouble_op,
+    JRI_CallMethodDouble_op_va_list,
+    JRI_CallMethodDouble_op_array,
+    JRI_GetFieldID_op,
+    JRI_GetField_op,
+    JRI_GetFieldBoolean_op,
+    JRI_GetFieldByte_op,
+    JRI_GetFieldChar_op,
+    JRI_GetFieldShort_op,
+    JRI_GetFieldInt_op,
+    JRI_GetFieldLong_op,
+    JRI_GetFieldFloat_op,
+    JRI_GetFieldDouble_op,
+    JRI_SetField_op,
+    JRI_SetFieldBoolean_op,
+    JRI_SetFieldByte_op,
+    JRI_SetFieldChar_op,
+    JRI_SetFieldShort_op,
+    JRI_SetFieldInt_op,
+    JRI_SetFieldLong_op,
+    JRI_SetFieldFloat_op,
+    JRI_SetFieldDouble_op,
+    JRI_IsSubclassOf_op,
+    JRI_GetStaticMethodID_op,
+    JRI_CallStaticMethod_op,
+    JRI_CallStaticMethod_op_va_list,
+    JRI_CallStaticMethod_op_array,
+    JRI_CallStaticMethodBoolean_op,
+    JRI_CallStaticMethodBoolean_op_va_list,
+    JRI_CallStaticMethodBoolean_op_array,
+    JRI_CallStaticMethodByte_op,
+    JRI_CallStaticMethodByte_op_va_list,
+    JRI_CallStaticMethodByte_op_array,
+    JRI_CallStaticMethodChar_op,
+    JRI_CallStaticMethodChar_op_va_list,
+    JRI_CallStaticMethodChar_op_array,
+    JRI_CallStaticMethodShort_op,
+    JRI_CallStaticMethodShort_op_va_list,
+    JRI_CallStaticMethodShort_op_array,
+    JRI_CallStaticMethodInt_op,
+    JRI_CallStaticMethodInt_op_va_list,
+    JRI_CallStaticMethodInt_op_array,
+    JRI_CallStaticMethodLong_op,
+    JRI_CallStaticMethodLong_op_va_list,
+    JRI_CallStaticMethodLong_op_array,
+    JRI_CallStaticMethodFloat_op,
+    JRI_CallStaticMethodFloat_op_va_list,
+    JRI_CallStaticMethodFloat_op_array,
+    JRI_CallStaticMethodDouble_op,
+    JRI_CallStaticMethodDouble_op_va_list,
+    JRI_CallStaticMethodDouble_op_array,
+    JRI_GetStaticFieldID_op,
+    JRI_GetStaticField_op,
+    JRI_GetStaticFieldBoolean_op,
+    JRI_GetStaticFieldByte_op,
+    JRI_GetStaticFieldChar_op,
+    JRI_GetStaticFieldShort_op,
+    JRI_GetStaticFieldInt_op,
+    JRI_GetStaticFieldLong_op,
+    JRI_GetStaticFieldFloat_op,
+    JRI_GetStaticFieldDouble_op,
+    JRI_SetStaticField_op,
+    JRI_SetStaticFieldBoolean_op,
+    JRI_SetStaticFieldByte_op,
+    JRI_SetStaticFieldChar_op,
+    JRI_SetStaticFieldShort_op,
+    JRI_SetStaticFieldInt_op,
+    JRI_SetStaticFieldLong_op,
+    JRI_SetStaticFieldFloat_op,
+    JRI_SetStaticFieldDouble_op,
+    JRI_NewString_op,
+    JRI_GetStringLength_op,
+    JRI_GetStringChars_op,
+    JRI_NewStringUTF_op,
+    JRI_GetStringUTFLength_op,
+    JRI_GetStringUTFChars_op,
+    JRI_NewScalarArray_op,
+    JRI_GetScalarArrayLength_op,
+    JRI_GetScalarArrayElements_op,
+    JRI_NewObjectArray_op,
+    JRI_GetObjectArrayLength_op,
+    JRI_GetObjectArrayElement_op,
+    JRI_SetObjectArrayElement_op,
+    JRI_RegisterNatives_op,
+    JRI_UnregisterNatives_op,
+    JRI_DefineClass_op,
+    JRI_NewStringPlatform_op,
+    JRI_GetStringPlatformChars_op
 } JRIEnvOperations;
 
 #ifdef __cplusplus

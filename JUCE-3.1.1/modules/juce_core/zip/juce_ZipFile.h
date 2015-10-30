@@ -239,7 +239,7 @@ private:
     ScopedPointer <InputStream> streamToDelete;
     ScopedPointer <InputSource> inputSource;
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     struct OpenStreamCounter
     {
         OpenStreamCounter() : numOpenStreams (0) {}
@@ -249,7 +249,7 @@ private:
     };
 
     OpenStreamCounter streamCounter;
-   #endif
+#endif
 
     void init();
 

@@ -146,8 +146,8 @@ DirectoryIterator::NativeIterator::NativeIterator (const File& directory, const 
 DirectoryIterator::NativeIterator::~NativeIterator() {}
 
 bool DirectoryIterator::NativeIterator::next (String& filenameFound,
-                                              bool* isDir, bool* isHidden, int64* fileSize,
-                                              Time* modTime, Time* creationTime, bool* isReadOnly)
+        bool* isDir, bool* isHidden, int64* fileSize,
+        Time* modTime, Time* creationTime, bool* isReadOnly)
 {
     return pimpl->next (filenameFound, isDir, isHidden, fileSize, modTime, creationTime, isReadOnly);
 }

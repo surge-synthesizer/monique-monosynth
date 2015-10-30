@@ -105,16 +105,24 @@ public:
 
     //==============================================================================
     /** Returns the object that this pointer is managing. */
-    inline operator ObjectType*() const noexcept                    { return object; }
+    inline operator ObjectType*() const noexcept                    {
+        return object;
+    }
 
     /** Returns the object that this pointer is managing. */
-    inline ObjectType* get() const noexcept                         { return object; }
+    inline ObjectType* get() const noexcept                         {
+        return object;
+    }
 
     /** Returns the object that this pointer is managing. */
-    inline ObjectType& operator*() const noexcept                   { return *object; }
+    inline ObjectType& operator*() const noexcept                   {
+        return *object;
+    }
 
     /** Lets you access methods and properties of the object that this pointer is holding. */
-    inline ObjectType* operator->() const noexcept                  { return object; }
+    inline ObjectType* operator->() const noexcept                  {
+        return object;
+    }
 
     //==============================================================================
     /** Removes the current object from this OptionalScopedPointer without deleting it.
@@ -164,7 +172,9 @@ public:
     /** Returns true if the target object will be deleted when this pointer
         object is deleted.
     */
-    bool willDeleteObject() const noexcept                          { return shouldDelete; }
+    bool willDeleteObject() const noexcept                          {
+        return shouldDelete;
+    }
 
     //==============================================================================
     /** Swaps this object with another OptionalScopedPointer.

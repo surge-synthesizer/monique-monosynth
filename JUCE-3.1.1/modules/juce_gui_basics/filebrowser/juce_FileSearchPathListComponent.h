@@ -34,10 +34,10 @@
     @see FileSearchPath
 */
 class JUCE_API  FileSearchPathListComponent  : public Component,
-                                               public SettableTooltipClient,
-                                               public FileDragAndDropTarget,
-                                               private ButtonListener,  // (can't use Button::Listener due to idiotic VC2005 bug)
-                                               private ListBoxModel
+    public SettableTooltipClient,
+    public FileDragAndDropTarget,
+    private ButtonListener,  // (can't use Button::Listener due to idiotic VC2005 bug)
+    private ListBoxModel
 {
 public:
     //==============================================================================
@@ -49,7 +49,9 @@ public:
 
     //==============================================================================
     /** Returns the path as it is currently shown. */
-    const FileSearchPath& getPath() const noexcept                  { return path; }
+    const FileSearchPath& getPath() const noexcept                  {
+        return path;
+    }
 
     /** Changes the current path. */
     void setPath (const FileSearchPath& newPath);

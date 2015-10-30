@@ -185,7 +185,9 @@ public:
 
         @see getParameterValues, withParameter
     */
-    const StringArray& getParameterNames() const noexcept       { return parameterNames; }
+    const StringArray& getParameterNames() const noexcept       {
+        return parameterNames;
+    }
 
     /** Returns an array of the values of all the URL's parameters.
 
@@ -199,7 +201,9 @@ public:
 
         @see getParameterNames, withParameter
     */
-    const StringArray& getParameterValues() const noexcept      { return parameterValues; }
+    const StringArray& getParameterValues() const noexcept      {
+        return parameterValues;
+    }
 
     /** Returns a copy of this URL, with a block of data to send as the POST data.
 
@@ -216,7 +220,9 @@ public:
     URL withPOSTData (const String& postData) const;
 
     /** Returns the data that was set using withPOSTData(). */
-    const String& getPostData() const noexcept                  { return postData; }
+    const String& getPostData() const noexcept                  {
+        return postData;
+    }
 
     //==============================================================================
     /** Tries to launch the system's default browser to open the URL.

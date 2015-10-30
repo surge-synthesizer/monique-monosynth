@@ -39,10 +39,12 @@ class JUCE_API  RectanglePlacement
 public:
     //==============================================================================
     /** Creates a RectanglePlacement object using a combination of flags from the Flags enum. */
-    inline RectanglePlacement (int placementFlags) noexcept  : flags (placementFlags) {}
+inline RectanglePlacement (int placementFlags) noexcept  :
+    flags (placementFlags) {}
 
     /** Creates a default RectanglePlacement object, which is equivalent to using the 'centred' flag. */
-    inline RectanglePlacement() noexcept                     : flags (centred) {}
+inline RectanglePlacement() noexcept                     :
+    flags (centred) {}
 
     /** Creates a copy of another RectanglePlacement object. */
     RectanglePlacement (const RectanglePlacement&) noexcept;
@@ -119,13 +121,17 @@ public:
 
     //==============================================================================
     /** Returns the raw flags that are set for this object. */
-    inline int getFlags() const noexcept                            { return flags; }
+    inline int getFlags() const noexcept                            {
+        return flags;
+    }
 
     /** Tests a set of flags for this object.
 
         @returns true if any of the flags passed in are set on this object.
     */
-    inline bool testFlags (int flagsToTest) const noexcept          { return (flags & flagsToTest) != 0; }
+    inline bool testFlags (int flagsToTest) const noexcept          {
+        return (flags & flagsToTest) != 0;
+    }
 
 
     //==============================================================================

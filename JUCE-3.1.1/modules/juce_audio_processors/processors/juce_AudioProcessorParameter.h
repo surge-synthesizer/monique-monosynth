@@ -144,7 +144,9 @@ public:
     virtual bool isMetaParameter() const;
 
     /** Returns the index of this parameter in its parent processor's parameter list. */
-    int getParameterIndex() const noexcept              { return parameterIndex; }
+    int getParameterIndex() const noexcept              {
+        return parameterIndex;
+    }
 
 private:
     friend class AudioProcessor;

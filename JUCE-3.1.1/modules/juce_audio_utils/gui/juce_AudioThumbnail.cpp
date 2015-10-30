@@ -36,8 +36,12 @@ struct AudioThumbnail::MinMaxValue
         values[1] = newMax;
     }
 
-    inline char getMinValue() const noexcept        { return values[0]; }
-    inline char getMaxValue() const noexcept        { return values[1]; }
+    inline char getMinValue() const noexcept        {
+        return values[0];
+    }
+    inline char getMaxValue() const noexcept        {
+        return values[1];
+    }
 
     inline void setFloat (Range<float> newRange) noexcept
     {
@@ -64,8 +68,12 @@ struct AudioThumbnail::MinMaxValue
                      std::abs ((int) values[1]));
     }
 
-    inline void read (InputStream& input)      { input.read (values, 2); }
-    inline void write (OutputStream& output)   { output.write (values, 2); }
+    inline void read (InputStream& input)      {
+        input.read (values, 2);
+    }
+    inline void write (OutputStream& output)   {
+        output.write (values, 2);
+    }
 
 private:
     char values[2];
@@ -379,7 +387,7 @@ public:
     {
         if (refillCache (area.getWidth(), startTime, endTime, rate,
                          numChans, sampsPerThumbSample, levelData, chans)
-             && isPositiveAndBelow (channelNum, numChannelsCached))
+                && isPositiveAndBelow (channelNum, numChannelsCached))
         {
             const Rectangle<int> clip (g.getClipBounds().getIntersection (area.withWidth (jmin (numSamplesCached, area.getWidth()))));
 
@@ -435,10 +443,10 @@ private:
         }
 
         if (numSamples == numSamplesCached
-             && numChannelsCached == numChans
-             && startTime == cachedStart
-             && timePerPixel == cachedTimePerPixel
-             && ! cacheNeedsRefilling)
+                && numChannelsCached == numChans
+                && startTime == cachedStart
+                && timePerPixel == cachedTimePerPixel
+                && ! cacheNeedsRefilling)
         {
             return ! cacheNeedsRefilling;
         }
@@ -520,7 +528,7 @@ private:
         jassert (isPositiveAndBelow (channelNum, numChannelsCached) && isPositiveAndBelow (cacheIndex, data.size()));
 
         return data.getRawDataPointer() + channelNum * numSamplesCached
-                                        + cacheIndex;
+        + cacheIndex;
     }
 
     void ensureSize (const int numSamples)
@@ -779,7 +787,7 @@ float AudioThumbnail::getApproximatePeak() const
 }
 
 void AudioThumbnail::getApproximateMinMax (const double startTime, const double endTime, const int channelIndex,
-                                           float& minValue, float& maxValue) const noexcept
+        float& minValue, float& maxValue) const noexcept
 {
     const ScopedLock sl (lock);
     MinMaxValue result;

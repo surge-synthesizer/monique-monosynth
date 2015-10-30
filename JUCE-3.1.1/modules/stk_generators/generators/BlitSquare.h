@@ -70,7 +70,7 @@ public:
         return _isNewCylce;
     };
     void clearNewCycleState() {
-      _isNewCylce = false;
+        _isNewCylce = false;
     }
     //! Set the impulse train rate in terms of a frequency in Hz.
     void setFrequency( StkFloat frequency );

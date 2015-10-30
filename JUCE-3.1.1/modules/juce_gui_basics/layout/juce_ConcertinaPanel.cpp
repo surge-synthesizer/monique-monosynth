@@ -29,7 +29,8 @@ struct ConcertinaPanel::PanelSizes
         Panel() noexcept {}
 
         Panel (const int sz, const int mn, const int mx) noexcept
-            : size (sz), minSize (mn), maxSize (mx) {}
+:
+        size (sz), minSize (mn), maxSize (mx) {}
 
         int setSize (const int newSize) noexcept
         {
@@ -53,15 +54,21 @@ struct ConcertinaPanel::PanelSizes
             return amount;
         }
 
-        bool canExpand() const noexcept     { return size < maxSize; }
-        bool isMinimised() const noexcept   { return size <= minSize; }
+        bool canExpand() const noexcept     {
+            return size < maxSize;
+        }
+        bool isMinimised() const noexcept   {
+            return size <= minSize;
+        }
 
         int size, minSize, maxSize;
     };
 
     Array<Panel> sizes;
 
-    Panel& get (const int index) const noexcept    { return sizes.getReference(index); }
+    Panel& get (const int index) const noexcept    {
+        return sizes.getReference(index);
+    }
 
     PanelSizes withMovedPanel (const int index, int targetPosition, int totalSpace) const
     {
@@ -223,7 +230,7 @@ public:
         g.reduceClipRegion (area);
 
         getLookAndFeel().drawConcertinaPanelHeader (g, area, isMouseOver(), isMouseButtonDown(),
-                                                    getPanel(), *component);
+                getPanel(), *component);
     }
 
     void resized() override
@@ -241,8 +248,8 @@ public:
     {
         ConcertinaPanel& panel = getPanel();
         panel.setLayout (dragStartSizes.withMovedPanel (panel.holders.indexOf (this),
-                                                        mouseDownY + e.getDistanceFromDragStartY(),
-                                                        panel.getHeight()), false);
+                         mouseDownY + e.getDistanceFromDragStartY(),
+                         panel.getHeight()), false);
     }
 
     void mouseDoubleClick (const MouseEvent&) override

@@ -35,7 +35,7 @@
     to take care of continuously repainting itself.
 */
 class OpenGLAppComponent   : public Component,
-                             private OpenGLRenderer
+    private OpenGLRenderer
 {
 public:
     OpenGLAppComponent();
@@ -44,7 +44,9 @@ public:
     /** Returns the number of times that the render method has been called since
         the component started running.
     */
-    int getFrameCounter() const noexcept        { return frameCounter; }
+    int getFrameCounter() const noexcept        {
+        return frameCounter;
+    }
 
     void shutdownOpenGL();
 

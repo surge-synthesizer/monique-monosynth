@@ -23,7 +23,7 @@
 */
 
 #include "monique_ui_LookAndFeel.h"
-
+#define CAN_OPAQUE true
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -51,7 +51,7 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
     s.setJustification (Justification::centredLeft);
     s.append
     (
-        text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips you can disable in the setup."),								
+        text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips you can disable in the setup."),
         Font(Typeface::createSystemTypefaceFor(BinaryData::SourceCodeProMedium_otf, BinaryData::SourceCodeProMedium_otfSize)).withHeight(15.0f),
         colour
     );
@@ -66,17 +66,10 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
 //==============================================================================
 //==============================================================================
 ComponentColours::ComponentColours() noexcept :
-slider_track_colour( 4278251775 ),
-                     slider_track_colour_2( Colour(0xffff6600) ),
-                     slider_track_colour_modulation( 4290445124 ),
-                     button_on_colour( 4294942532 ),
-                     button_off_colour( 4279308561 ),
-                     label_text_colour( 4294942532 ),
-                     midi_learn( Colours::red ),
-                     bg( 0xff050505 ),
-                     bg_lines( 0xffff3b00 ),
-                     signal_lines( 4278251775 )
-{}
+midi_learn( Colours::red )
+{
+    init_themes();
+}
 ComponentColours::~ComponentColours() noexcept {}
 
 //==============================================================================
@@ -85,19 +78,24 @@ void ComponentColours::read_from(XmlElement* xml_) noexcept
     XmlElement* xml = xml_->getChildByName("COLOURS");
     if( xml )
     {
-        slider_track_colour = Colour::fromString( xml->getStringAttribute( "st_col", slider_track_colour.toString()  ) );
-        slider_track_colour_2 = Colour::fromString( xml->getStringAttribute( "st2_col", slider_track_colour_2.toString()  ) );
-        slider_track_colour_modulation = Colour::fromString( xml->getStringAttribute( "stmod_col", slider_track_colour_modulation.toString()  ) );
+        for( int i = 0 ; i != themes.size() ; ++i )
+        {
+            SectionTheme* theme = themes.getUnchecked(i);
 
-        button_on_colour = Colour::fromString( xml->getStringAttribute( "bon_col", button_on_colour.toString()  ) );
-        button_off_colour = Colour::fromString( xml->getStringAttribute( "boff_col", button_off_colour.toString()  ) );
-        label_text_colour = Colour::fromString( xml->getStringAttribute( "ltx_col", label_text_colour.toString()  ) );
+            theme->area_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_area_colour", theme->area_colour.toString()  ) );
+            theme->area_font_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_area_font_colour", theme->area_font_colour.toString()  ) );
+            theme->value_slider_track_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_value_slider_track_colour", theme->value_slider_track_colour.toString()  ) );
+            theme->value_2_slider_track_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_value_2_slider_track_colour", theme->value_2_slider_track_colour.toString()  ) );
+            theme->mod_slider_track_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString()  ) );
+            theme->disabled_track_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_disabled_track_colour", theme->disabled_track_colour.toString()  ) );
+            theme->slider_bg_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_slider_bg_colour", theme->slider_bg_colour.toString()  ) );
+            theme->button_on_font_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_on_font_colour", theme->button_on_font_colour.toString()  ) );
+            theme->button_on_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_on_colour", theme->button_on_colour.toString()  ) );
+            theme->button_off_font_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString()  ) );
+            theme->button_off_colour = Colour::fromString( xml->getStringAttribute( String(i) + "_button_off_colour", theme->button_off_colour.toString()  ) );
+        }
 
         midi_learn = Colour::fromString( xml->getStringAttribute( "ml_col", Colours::red.toString() ) );
-
-        bg = Colour::fromString( xml->getStringAttribute( "bg_col", bg.toString()  ) );
-        bg_lines = Colour::fromString( xml->getStringAttribute( "bgl_col", bg_lines.toString()  ) );
-        signal_lines = Colour::fromString( xml->getStringAttribute( "sigl_col", signal_lines.toString()  ) );
     }
 }
 void ComponentColours::save_to(XmlElement* xml_) noexcept
@@ -105,19 +103,22 @@ void ComponentColours::save_to(XmlElement* xml_) noexcept
     XmlElement* xml = xml_->createNewChildElement("COLOURS");
     if( xml )
     {
-        xml->setAttribute( "st_col", slider_track_colour.toString() );
-        xml->setAttribute( "st2_col", slider_track_colour_2.toString() );
-        xml->setAttribute( "stmod_col", slider_track_colour_modulation.toString() );
+        for( int i = 0 ; i != themes.size() ; ++i )
+        {
+            SectionTheme* theme = themes.getUnchecked(i);
 
-        xml->setAttribute( "bon_col", button_on_colour.toString() );
-        xml->setAttribute( "boff_col", button_off_colour.toString() );
-        xml->setAttribute( "ltx_col", label_text_colour.toString() );
-
-        xml->setAttribute( "ml_col", midi_learn.toString() );
-
-        xml->setAttribute( "bg_col", bg.toString() );
-        xml->setAttribute( "bgl_col", bg_lines.toString() );
-        xml->setAttribute( "sigl_col", signal_lines.toString() );
+            xml->setAttribute(  String(i) + "_area_colour", theme->area_colour.toString() );
+            xml->setAttribute(  String(i) + "_area_font_colour", theme->area_font_colour.toString() );
+            xml->setAttribute(  String(i) + "_value_slider_track_colour", theme->value_slider_track_colour.toString() );
+            xml->setAttribute(  String(i) + "_value_2_slider_track_colour", theme->value_2_slider_track_colour.toString() );
+            xml->setAttribute(  String(i) + "_mod_slider_track_colour", theme->mod_slider_track_colour.toString() );
+            xml->setAttribute(  String(i) + "_disabled_track_colour", theme->disabled_track_colour.toString() );
+            xml->setAttribute(  String(i) + "_slider_bg_colour", theme->slider_bg_colour.toString() );
+            xml->setAttribute(  String(i) + "_button_on_font_colour", theme->button_on_font_colour.toString() );
+            xml->setAttribute(  String(i) + "_button_on_colour", theme->button_on_colour.toString() );
+            xml->setAttribute(  String(i) + "_button_off_font_colour", theme->button_off_font_colour.toString() );
+            xml->setAttribute(  String(i) + "_button_off_colour", theme->button_off_colour.toString() );
+        }
     }
 }
 
@@ -143,7 +144,7 @@ UiLookAndFeel::UiLookAndFeel() noexcept
         ToggleButton::textColourId,                 0xff000000,
 
         TextEditor::backgroundColourId,             0xffffffff,
-        TextEditor::textColourId,                   colours.label_text_colour.getARGB(),
+        TextEditor::textColourId,                   colours.get_theme(COLOUR_THEMES::BG_THEME).area_font_colour.getARGB(),
         TextEditor::highlightColourId,              0x66ff0000,
         TextEditor::highlightedTextColourId,        0xffffffff,
         TextEditor::outlineColourId,                0x00000000,
@@ -244,13 +245,13 @@ UiLookAndFeel::UiLookAndFeel() noexcept
 
         0x1005000, /*MidiKeyboardComponent::whiteNoteColourId*/               0xffffffff,
         0x1005001, /*MidiKeyboardComponent::blackNoteColourId*/               0xff000000,
-        0x1005002, /*MidiKeyboardComponent::keySeparatorLineColourId*/        colours.bg.getARGB(),
-        0x1005003, /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/     colours.button_on_colour.getARGB(),
-        0x1005004, /*MidiKeyboardComponent::keyDownOverlayColourId*/          colours.button_on_colour.withAlpha(0.5f).getARGB(),
+        0x1005002, /*MidiKeyboardComponent::keySeparatorLineColourId*/        colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
+        0x1005003, /*MidiKeyboardComponent::mouseOverKeyOverlayColourId*/     colours.get_theme( COLOUR_THEMES::KEYBOARD_THEME  ).button_on_colour.getARGB(),
+        0x1005004, /*MidiKeyboardComponent::keyDownOverlayColourId*/          colours.get_theme( COLOUR_THEMES::KEYBOARD_THEME  ).button_on_colour.withAlpha(0.5f).getARGB(),
         0x1005005, /*MidiKeyboardComponent::textLabelColourId*/               0xff000000,
-        0x1005006, /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/  colours.bg.getARGB(),
-        0x1005007, /*MidiKeyboardComponent::upDownButtonArrowColourId*/       colours.button_on_colour.getARGB(),
-        0x1005008, /*MidiKeyboardComponent::shadowColourId*/                  colours.bg.getARGB(),
+        0x1005006, /*MidiKeyboardComponent::upDownButtonBackgroundColourId*/  colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
+        0x1005007, /*MidiKeyboardComponent::upDownButtonArrowColourId*/       colours.get_theme( COLOUR_THEMES::KEYBOARD_THEME  ).button_on_colour.withAlpha(0.5f).getARGB(),
+        0x1005008, /*MidiKeyboardComponent::shadowColourId*/                  colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour.getARGB(),
 
         0x1004500, /*CodeEditorComponent::backgroundColourId*/                0xffffffff,
         0x1004502, /*CodeEditorComponent::highlightColourId*/                 textHighlightColour,
@@ -275,7 +276,9 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     for (int i = 0; i < numElementsInArray (standardColours); i += 2)
         setColour ((int) standardColours [i], Colour ((uint32) standardColours [i + 1]));
 
-    defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::FjallaOneRegular_otf,BinaryData::FjallaOneRegular_otfSize));
+    defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,BinaryData::LatoSemibold_ttfSize));
+    // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
+    // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Segoe,BinaryData::SegoeSize));
 }
 UiLookAndFeel::~UiLookAndFeel() noexcept {}
 
@@ -286,72 +289,52 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
         bool isMouseOverButton,
         bool isButtonDown)
 {
-    /*
-      g.setImageResamplingQuality( Graphics::highResamplingQuality );
-
-      if( button.isOpaque() )
-          g.fillAll (colours.bg);
-
-      int name = button.getName().getIntValue();
-      bool is_midi_learn_mode = name >= MIDI_LEARN_NAME_OFFSET;
-
-      // isMouseOverButton
-      Colour color_1;
-      if( is_midi_learn_mode )
-          color_1 =  isButtonDown ? colours.midi_learn.darker (0.4f) : colours.midi_learn.brighter (0.25f);
-      else
-          color_1 =  isButtonDown ? Colour(backgroundColour).darker (0.4f) : Colour(backgroundColour).brighter (0.25f);
-        //color_1 =  isButtonDown ? Colour(backgroundColour).darker (0.4f) : Colour(backgroundColour).darker (0.3f);
-
-      const int width = button.getWidth();
-      const int height = button.getHeight();
-
-      g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, Colour (backgroundColour).darker (0.3f), 0.0f, height, false));
-      //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
-      g.fillRoundedRectangle (1, 1, width-2, height-2, 4);
-
-      g.setColour (Colour(0xff333333));
-      g.drawRoundedRectangle (1, 1, width-2, height-2, 4, 1.5);
-      */
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
     if( button.isOpaque() )
-        g.fillAll (colours.bg);
-
+    {
+        g.fillAll( theme.area_colour );
+    }
 
     const bool is_midi_learn_mode = static_cast< Component* >( &button ) == midi_learn_comp;
 
     // isMouseOverButton
     Colour color_1;
     if( is_midi_learn_mode )
-        color_1 =  isButtonDown ? colours.midi_learn.darker (0.4f) : colours.midi_learn.brighter (0.25f);
-    else
-        color_1 =  isButtonDown ? Colour(backgroundColour).darker (0.4f) : Colour(backgroundColour).brighter (0.25f);
-    //color_1 =  isButtonDown ? Colour(backgroundColour).darker (0.4f) : Colour(backgroundColour).darker (0.3f);
-
-    const int width = button.getWidth();
-    const int height = button.getHeight();
-
-    Rectangle<int> rect(1, 1, width-2, height-2);
-    Rectangle<float> rect_float(1, 1, width-2, height-2);
-
-    if( button.isEnabled() && backgroundColour != colours.button_off_colour )
     {
-        Path blur_rect;
-        blur_rect.addRoundedRectangle(2, 2, width-4, height-4, 3 );
-        DropShadow drop_shadow( color_1, 2, Point<int>(0,0) );
-        drop_shadow.drawForPath( g, blur_rect );
+        color_1 = isButtonDown ? colours.midi_learn.darker (0.4f) : colours.midi_learn.brighter (0.25f);
+    }
+    else // if( not override_theme_colour )
+    {
+        color_1 = Colour(backgroundColour);
     }
 
-    g.setGradientFill (ColourGradient (color_1.darker (0.3f), 0.0f, 0.0f, Colour (backgroundColour), 0.0f, height, false));
-    //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
-    g.fillRoundedRectangle (rect_float, 2);
+    /*
+    else if( not button.isEnabled() )
+    {
+        color_1 =  Colour(backgroundColour).withAlpha(0.5f);
+    }
+    else
+    {
+        color_1 =  isButtonDown ? Colour(backgroundColour).darker (0.4f) : Colour(backgroundColour);
+    }
+    */
 
     {
-        if( backgroundColour != colours.button_off_colour )
-            g.setColour (color_1.darker (0.6f));
-        else
-            g.setColour (color_1.darker (4.6f));
+        g.setColour (color_1) ;
 
-        g.drawRoundedRectangle (rect_float, 2, 1);
+        const bool flatOnLeft = button.isConnectedOnLeft();
+        const float flatOnRight = button.isConnectedOnRight();
+        const float flatOnTop = button.isConnectedOnTop();
+        const float flatOnBottom = button.isConnectedOnBottom();
+        Path highlight;
+        highlight.addRoundedRectangle (1, 1, button.getWidth()-2, button.getHeight()-2, 4, 4,
+                                       ! (flatOnLeft || flatOnTop),
+                                       ! (flatOnRight || flatOnTop),
+                                       ! (flatOnLeft || flatOnBottom),
+                                       ! (flatOnRight || flatOnBottom));
+
+        g.fillPath (highlight);
     }
 }
 
@@ -359,44 +342,28 @@ Font UiLookAndFeel::getTextButtonFont (TextButton& button, int buttonHeigh)
 {
     return defaultFont; // button.getFont();
 }
-
+#define FONT_SCALE 0.6f
+#define IDENT_SCALE (1.0f-FONT_SCALE)*0.5
 void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
-    Font font (getTextButtonFont (button));
-    g.setFont (font.withHeight(jmin(int(0.7*button.getHeight()),20)));
+    const float height = button.getHeight();
+    const float width = button.getWidth();
+    const float fontHeight = FONT_SCALE * height;
+    const float yIndent = IDENT_SCALE*height;
+    const float cornerSize = jmin (height, width) * 0.2;
+    const float leftIndent  = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
+    const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
 
-    bool is_bg_button = button.findColour( TextButton::buttonColourId ) == colours.button_off_colour;
-    Colour color_1;
-    if( ! button.isEnabled() )
-        color_1 = Colour (0xff414141);
-    else if( is_bg_button )
-        color_1 = colours.label_text_colour;
-    else
-        color_1 = colours.button_off_colour;
+    const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    Colour color_1 = theme.button_off_font_colour;
+    if( button.findColour(TextButton::buttonColourId) != theme.button_off_colour )
+    {
+        color_1 = theme.button_on_font_colour;
+    }
 
-    const int yIndent = jmin (4, button.proportionOfHeight (0.33f));
-    const int cornerSize = jmin (button.getHeight(), button.getWidth()) / 2;
-
-    const int fontHeight = roundToInt (font.getHeight() * 0.6f);
-    const int leftIndent  = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnLeft() ? 4 : 2));
-    const int rightIndent = jmin (fontHeight, 2 + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
-    /*
-        g.setColour(color_1.contrasting(0.1));
-        g.drawFittedText (button.getButtonText(),
-                          leftIndent,
-                          yIndent,
-                          button.getWidth() - leftIndent - rightIndent,
-                          button.getHeight() - yIndent * 2,
-                          Justification::centred, 3, 0.5);
-    */
+    g.setFont (defaultFont.withHeight(fontHeight));
     g.setColour(color_1);
-    g.drawFittedText (button.getButtonText(),
-                      leftIndent,
-                      yIndent,
-                      button.getWidth() - leftIndent - rightIndent,
-                      button.getHeight() - yIndent * 2,
-                      Justification::centred, 3, 0.5);
-
+    g.drawText (button.getButtonText(),   Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),   Justification::centred, false);
 }
 
 void UiLookAndFeel::drawTickBox (Graphics& g, Component& component,
@@ -406,21 +373,25 @@ void UiLookAndFeel::drawTickBox (Graphics& g, Component& component,
                                  const bool isMouseOverButton,
                                  const bool isButtonDown)
 {
-    if (ticked)
-        g.setColour (colours.label_text_colour);
-    else
-        g.setColour (Colours::black);
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(component.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    if( component.isOpaque() )
+    {
+        g.fillAll( theme.area_colour );
+    }
+
+    g.setColour (ticked ? theme.button_on_colour : theme.area_colour );
+
     g.fillRect (int(x)-1, int(y)-1, int(w), int(h) );
 
-    g.setColour (Colour (colours.label_text_colour));
+    g.setColour (ticked ? theme.button_off_colour : theme.button_on_colour);
     g.drawRect (int(x)-1, int(y)-1, int(w), int(h), 1);
 }
 
 void UiLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
                                       bool isMouseOverButton, bool isButtonDown)
 {
-    if( button.isOpaque() )
-        g.fillAll (colours.bg);
+    //if( CAN_OPAQUE and button.isOpaque() )
+    //    g.fillAll (colours.bg);
 
     float prop_h = 1.f/25.f*button.getHeight();
     float top = prop_h*4.f;
@@ -729,7 +700,7 @@ void UiLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
 //==============================================================================
 void UiLookAndFeel::fillTextEditorBackground (Graphics& g, int /*width*/, int /*height*/, TextEditor& textEditor)
 {
-    textEditor.setColour (TextEditor::textColourId, colours.bg_lines);
+    textEditor.setColour (TextEditor::textColourId, colours.get_theme(BG_THEME).area_colour );
     g.fillAll (textEditor.findColour (TextEditor::backgroundColourId));
 }
 
@@ -767,12 +738,15 @@ CaretComponent* UiLookAndFeel::createCaretComponent (Component* keyFocusOwner)
 void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool isButtonDown,
                                   int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& box)
 {
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(box.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     if( box.isOpaque() )
-        g.fillAll (colours.bg);
+    {
+        g.fillAll( theme.area_colour );
+    }
 
     const float outlineThickness =1; // box.isEnabled() ? (isButtonDown ? 1.2f : 0.8f) : 0.3f;
 
-    g.setColour (box.findColour (ComboBox::backgroundColourId));
+    g.setColour (theme.button_off_colour);
     g.fillRoundedRectangle (1, 1, width-2, height-2, 4);
 
     drawGlassLozenge (g,
@@ -783,7 +757,7 @@ void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool
 
     if (box.isEnabled() && box.hasKeyboardFocus (false))
     {
-        g.setColour (box.findColour (ComboBox::buttonColourId));
+        g.setColour (theme.button_on_colour);
         g.drawRoundedRectangle (1, 1, width-2, height-2, 4, 1.5);
     }
     else
@@ -806,7 +780,7 @@ void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool
                        buttonX + buttonW * (1.0f - arrowX), buttonY + buttonH * 0.55f,
                        buttonX + buttonW * arrowX,          buttonY + buttonH * 0.55f);
 
-        g.setColour (Colours::yellow);
+        g.setColour (theme.button_on_font_colour);
         g.fillPath (p);
     }
 }
@@ -838,49 +812,26 @@ Font UiLookAndFeel::getLabelFont (Label& label)
 
 void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
 {
-    String labelStyle = label.GET_LABEL_STYLE();
-    if( label.isOpaque() and labelStyle != "I" )
-        g.fillAll (colours.bg);
-
-    if (! label.isBeingEdited())
+    const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    const bool is_inverted = label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME_INVERTED,false);
+    if( label.isOpaque() )
     {
+        g.fillAll( not is_inverted ? theme.area_colour : theme.area_font_colour );
+    }
 
+    if (not label.isBeingEdited())
+    {
+        const float height = label.getHeight();
+        const float width = label.getWidth();
+        const float fontHeight = FONT_SCALE * height;
+        const float yIndent = IDENT_SCALE*height;
+        const float cornerSize = jmin (height, width) * 0.2;
+        const float leftIndent  = jmin (fontHeight, 1.0f + cornerSize / 4);
+        const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / 4);
 
-        const Font font (getLabelFont (label));
-
-        Colour col = colours.label_text_colour;
-        if( labelStyle ==  IS_VALUE_LABEL )
-            col = colours.slider_track_colour;
-        else if( labelStyle == IS_SECOND_VALUE_LABEL )
-        {
-            col = colours.slider_track_colour_2;
-        }
-        else if( labelStyle == "I" )
-        {
-            col = Colour(0xffffffff);
-        }
-        else if( labelStyle == IS_DESCRIPTION_LABEL )
-        {
-            //   col = Colour(0xffff3b00);
-        }
-
-        Rectangle<int> textArea (label.getBorderSize().subtractedFrom (label.getLocalBounds()));
-        g.setColour (col);
-        Path text_path;
-        GlyphArrangement glyphs;
-        glyphs.addFittedText( font.withHeight(0.6f*textArea.getHeight()),
-                              label.getText(),
-                              textArea.getX(),textArea.getY(),textArea.getWidth(),textArea.getHeight(),
-                              label.getJustificationType(), 1, 0.5f);
-        glyphs.createPath(text_path);
-
-        if( labelStyle == IS_VALUE_LABEL )
-        {
-            DropShadow drop_shadow( col, 1, Point<int>(0,0) );
-            drop_shadow.drawForPath( g, text_path );
-        }
-
-        g.fillPath(text_path);
+        g.setFont (defaultFont.withHeight(fontHeight));
+        g.setColour( is_inverted ? theme.area_colour : theme.area_font_colour);
+        g.drawText (label.getText(),   Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),   Justification::centred, false);
     }
 }
 
@@ -889,26 +840,32 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
         float sliderPos, float minSliderPos, float maxSliderPos,
         const Slider::SliderStyle /*style*/, Slider& slider)
 {
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(slider.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::FILTER_THEME) ) ) );
+    if( slider.isOpaque() )
+    {
+        g.fillAll( theme.area_colour );
+    }
+
     const bool is_midi_learn_mode = static_cast< Component* >( &slider ) == midi_learn_comp;
 
-    Colour col = colours.slider_track_colour;
+    Colour col;
     const bool is_enabled = slider.isEnabled();
-    int slider_type = slider.GET_SLIDER_STYLE();
+    const int slider_type = slider.getProperties().getWithDefault( VAR_INDEX_SLIDER_TYPE , VALUE_SLIDER );
     if( is_midi_learn_mode )
     {
         col = colours.midi_learn;
     }
     else
     {
-        if( slider_type == VALUE_SLIDER )
-            col = colours.slider_track_colour; //.brighter (0.4f);
+        if( ! is_enabled )
+            col = theme.disabled_track_colour;
+        else  if( slider_type == VALUE_SLIDER )
+            col = theme.value_slider_track_colour;
         else if( slider_type == VALUE_SLIDER_2 )
-            col = colours.slider_track_colour_2; //.brighter (0.4f);
+            col = theme.value_2_slider_track_colour;
         else
-            col = colours.label_text_colour; //.brighter (0.4f);
+            col = theme.mod_slider_track_colour;
     }
-    if( ! is_enabled )
-        col = Colour(0xff777777);
 
     const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
     Path indent;
@@ -918,51 +875,48 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
         const float iy = y + height * 0.5f - sliderRadius * 0.5f;
         const float ih = sliderRadius;
 
-        g.setColour (Colour (0xff222222) ) ;
+        g.setColour (theme.slider_bg_colour) ;
         indent.addRoundedRectangle (x - sliderRadius, iy,
                                     width + sliderRadius*2, ih,
                                     5.0f);
 
         g.fillPath (indent);
+        g.strokePath(indent,PathStrokeType(2.5f));
 
         //g.setColour (Colour (colours.bg_lines));
-        g.setColour (Colour(0xff777777).darker(7.8));
-        g.strokePath (indent, PathStrokeType (1.0f));
+        //g.setColour (Colour(0xff777777).darker(7.8));
+        //g.strokePath (indent, PathStrokeType (1.0f));
     }
     else
     {
-        const float ix = x + width * 0.5f - sliderRadius * 0.5f;
-        const float iw = sliderRadius;
+        const float ix = x + width * 0.5f - sliderRadius*0.75;
+        const float iw = sliderRadius*1.5;
 
         {
+            g.setColour (theme.slider_bg_colour) ;
+            indent.addRoundedRectangle (ix, 2, iw, slider.getHeight() - 4, 2 );
+            g.fillPath (indent);
+            g.strokePath(indent,PathStrokeType(2.5f));
+            indent.clear();
+            /*
+
+                  g.setColour (col) ;
+                  indent.addRectangle (ix, float(y) - sliderRadius + sliderPos,
+                                       iw, float(height) + sliderRadius*2.5 - sliderPos);
+                                       */
+
             g.setColour (col) ;
-            indent.addRoundedRectangle (ix, y - sliderRadius + sliderPos,
-                                        iw, height + sliderRadius*2 - sliderPos,
-                                        5.0f);
+            float height =  slider.getHeight() - 4;
+            const float value = slider.getValue();
+            float scale = value > 0 ? 0.02 : 0;
+            const float real_scale = 1.0f/slider.getMaximum()*slider.getValue();
+            if(real_scale > 0.02 )
+                scale = real_scale;
 
-            if( is_enabled )
-            {
-                DropShadow drop_shadow( col, 1, Point<int>(0,0) );
-                drop_shadow.drawForPath( g, indent );
-            }
+            float slider_pos = height * scale;
+            indent.addRoundedRectangle (ix, height-slider_pos + 2, iw, slider_pos, 2 );
 
             g.fillPath (indent);
-            g.setColour (col.darker(6.6f).withAlpha(0.4f));
-            g.strokePath (indent, PathStrokeType (1.0f));
-        }
-
-        indent.clear();
-        if( slider.isOpaque() )
-        {
-            g.setColour (Colour (0xff222222) ) ;
-            indent.addRoundedRectangle (ix, y - sliderRadius,
-                                        iw, sliderPos,
-                                        5.0f);
-            g.fillPath (indent);
-
-            //g.setColour (Colour (colours.bg_lines));
-            g.setColour (Colour(0xff777777).darker(7.8));
-            g.strokePath (indent, PathStrokeType (1.0f));
         }
     }
 }
@@ -971,6 +925,8 @@ void UiLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int width,
         float sliderPos, float minSliderPos, float maxSliderPos,
         const Slider::SliderStyle style, Slider& slider)
 {
+    /*
+
     const float sliderRadius = (float) (getSliderThumbRadius (slider) - 2);
 
     const float outlineThickness = slider.isEnabled() ? 0.8f : 0.3f;
@@ -1012,14 +968,19 @@ void UiLookAndFeel::drawLinearSliderThumb (Graphics& g, int x, int y, int width,
                      ky - sliderRadius,
                      sliderRadius * 2.0f,
                      col, outlineThickness);
+
+                     */
 }
 
 void UiLookAndFeel::drawLinearSlider (Graphics& g, int x, int y, int width, int height,
                                       float sliderPos, float minSliderPos, float maxSliderPos,
                                       const Slider::SliderStyle style, Slider& slider)
 {
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(slider.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     if( slider.isOpaque() )
-        g.fillAll( colours.bg );
+    {
+        g.fillAll( theme.area_colour );
+    }
 
     if (style == Slider::LinearBar || style == Slider::LinearBarVertical)
     {
@@ -1058,18 +1019,20 @@ int UiLookAndFeel::getSliderThumbRadius (Slider& slider)
 
 void UiLookAndFeel::drawRotarySlider (Graphics& g,
                                       int x, int y, int width, int height,
-                                      float sliderPos,
-                                      const float rotaryStartAngle, const float rotaryEndAngle,
+                                      float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle,
                                       Slider& slider)
 {
+    NamedValueSet& properties = slider.getProperties();
+    const SectionTheme& theme = colours.get_theme( static_cast< COLOUR_THEMES >( int(properties.getWithDefault( VAR_INDEX_COLOUR_THEME, DUMMY_THEME )) ) );
+    const int slider_type = slider.getProperties().getWithDefault( VAR_INDEX_SLIDER_TYPE , VALUE_SLIDER );
     if( slider.isOpaque() )
-        g.fillAll (colours.bg);
+    {
+        g.fillAll( theme.area_colour );
+    }
 
     float slider_value = slider.getValue();
     float rotaryStartAngle_ = rotaryStartAngle;
     float rotaryEndAngle_ = rotaryEndAngle;
-
-    int slider_type = slider.GET_SLIDER_STYLE();
 
     const bool is_midi_learn_mode = static_cast< Component* >( &slider ) == midi_learn_comp;
 
@@ -1089,12 +1052,12 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         }
     }
 
-    const float radius = jmin (width * 0.5f, height * 0.5f) - 2.0f;
-    const float centreX = x + width * 0.5f;
-    const float centreY = y + height * 0.5f;
-    const float rx = centreX - radius;
-    const float ry = centreY - radius;
-    const float rw = radius * 2.0f;
+    float radius = jmin (width * 0.5f, height * 0.5f) - 2.0f;
+    float centreX = x + width * 0.5f;
+    float centreY = y + height * 0.5f;
+    float rx = centreX - radius;
+    float ry = centreY - radius;
+    float rw = radius * 2.0f;
     float angle = rotaryStartAngle_ + sliderPos * (rotaryEndAngle_ - rotaryStartAngle_);
 
     Colour SliderCol;
@@ -1104,59 +1067,72 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
     }
     else
     {
-        if( slider_type == VALUE_SLIDER )
-            SliderCol = colours.slider_track_colour; //.brighter (0.4f);
+        if ( ! slider.isEnabled())
+        {
+            SliderCol = theme.disabled_track_colour;
+        }
+        else if( slider_type == VALUE_SLIDER )
+        {
+            SliderCol = theme.value_slider_track_colour;
+        }
         else if( slider_type == VALUE_SLIDER_2 )
-            SliderCol = colours.slider_track_colour_2; //.brighter (0.4f);
+        {
+            SliderCol = theme.value_2_slider_track_colour;
+        }
         else
-            SliderCol = colours.slider_track_colour_modulation; //.brighter (0.4f);
+        {
+            SliderCol = theme.mod_slider_track_colour;
+        }
     }
 
-#define THICKNESS 0.85f /* (1.f/40*slider.getWidth()); // 0.7f; */
+#define THICKNESS 0.79f /* (1.f/40*slider.getWidth()); // 0.7f; */
 
-    if ( ! slider.isEnabled())
-        SliderCol = Colour(0xff444444);
+
     {
-
         Path filledArc;
         if( slider.isOpaque() )
         {
-            filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle, rotaryEndAngle, THICKNESS);
-            //g.setColour(Colours::black.withAlpha(0.2f));
+            filledArc.addPieSegment (rx, ry, rw, rw, 0, double_Pi*2, THICKNESS );
+
+            //g.setColour(colours.bg.withAlpha(0.2f));
             //g.setColour (SliderCol.darker (5.f).withAlpha(0.5f));
-            g.setColour (Colour (0xff222222) ) ; //.interpolatedWith(SliderCol.darker(0.8),0.2));
+            g.setColour ( theme.slider_bg_colour ) ; //.interpolatedWith(SliderCol.darker(0.8),0.2));
             g.fillPath (filledArc);
-            g.setColour(Colour(0xff444444).darker(7.8));
-            g.strokePath(filledArc,PathStrokeType(1.f));
+            g.strokePath(filledArc,PathStrokeType(1.5f));
+            // g.setColour(Colour(0xff444444).darker(7.8));
+            //  g.strokePath(filledArc,PathStrokeType(1.f));
         }
 
-        g.setColour (SliderCol);
         filledArc.clear();
-        filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
-
-        //g.fillPath (filledArc);
-        //if( slider.isEnabled() )
+        if( sliderPos )
         {
+            if( slider_type != VALUE_SLIDER )
             {
-                DropShadow drop_shadow( SliderCol, 1, Point<int>(0,0) );
-                drop_shadow.drawForPath( g, filledArc );
+                float _radius = radius * 0.75;
+                float rx = centreX - _radius;
+                float ry = centreY - _radius;
+                float rw = _radius * 2.0f;
+                filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
+                g.setColour ( theme.slider_bg_colour );
+                g.strokePath(filledArc,PathStrokeType(1.5f));
             }
+            else
             {
-                g.setColour (SliderCol.darker(6.6f).withAlpha(0.4f));
-                g.strokePath (filledArc, PathStrokeType (1.0f));
+                filledArc.addPieSegment (rx, ry, rw, rw, rotaryStartAngle_, angle, THICKNESS);
+                g.setColour ( theme.slider_bg_colour );
+                g.strokePath(filledArc,PathStrokeType(2.5f));
             }
-        }
 
-
-        {
-            g.setColour (SliderCol);
-            g.fillPath (filledArc);
+            {
+                g.setColour (SliderCol);
+                g.fillPath (filledArc);
+            }
         }
     }
 
     // DRAW LABEL, WAVE OR CENTER TRIANGLE
     {
-        const int slider_label_style = slider.GET_SLIDER_LABEL_STYLE();
+        const int slider_label_style = slider.getProperties().getWithDefault( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::DONT_SHOW_TEXT );
         if( slider_label_style == SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX )
         {
             String value_to_paint = slider.GET_VALUE_TO_PAINT();
@@ -1274,8 +1250,8 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
 
                 g.setColour( SliderCol );
                 g.strokePath(wave_path,PathStrokeType(1.f));
-                g.setColour( SliderCol.withAlpha(0.6f) );
-                g.strokePath(wave_path,PathStrokeType(3.0f));
+                //g.setColour( SliderCol.withAlpha(0.6f) );
+                //g.strokePath(wave_path,PathStrokeType(3.0f));
             }
             // DRAW VALUE
             else
@@ -1289,10 +1265,16 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                 glyphs.addFittedText( defaultFont.withHeight(font_height_factor*height),
                                       value_to_paint,
                                       label_x_ident, label_y_ident, label_w, label_h,
-                                      Justification::centred, 1, 0.5f);
+                                      Justification::centred, 1, 0.2f);
+                /*
+                        glyphs.addCurtailedLineOfText( defaultFont.withHeight(font_height_factor*height),
+                                              value_to_paint,
+                                              label_x_ident, label_y_ident, width, false);
+                                              */
                 glyphs.createPath(text_path);
-                DropShadow drop_shadow( SliderCol, 1, Point<int>(0,0) );
-                drop_shadow.drawForPath( g, text_path );
+                // DropShadow drop_shadow( colours.bg, 1, Point<int>(0,0) );
+                //  drop_shadow.drawForPath( g, text_path );
+                // g.setColour( SliderCol );
                 g.fillPath(text_path);
 
                 // DRAW SUFFIX
@@ -1311,8 +1293,9 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                                           left_right_ident, height - height/4, width -left_right_ident*2, height/4,
                                           Justification::centred, 1, 0.5f);
                     glyphs.createPath(text_path);
-                    DropShadow drop_shadow( SliderCol, 1, Point<int>(0,0) );
-                    drop_shadow.drawForPath( g, text_path );
+                    // DropShadow drop_shadow( colours.bg, 1, Point<int>(0,0) );
+                    // drop_shadow.drawForPath( g, text_path );
+                    // g.setColour( SliderCol );
                     g.fillPath(text_path);
                 }
             }
@@ -1324,23 +1307,29 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         }
         else
         {
-            const float innerRadius = radius * 0.2f;
-            Path p;
-            p.addTriangle (-innerRadius, 0.0f,
-                           0.0f, -radius * THICKNESS * 0.7f,
-                           innerRadius, 0.0f);
+            /*
+                  const float innerRadius = radius * 0.2f;
+                  Path p;
+                  p.addTriangle (-innerRadius, 0.0f,
+                                 0.0f, -radius * THICKNESS * 0.7f,
+                                 innerRadius, 0.0f);
 
-            p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
-            p.applyTransform( AffineTransform::rotation (angle).translated (centreX, centreY) );
+                  p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
+                  p.applyTransform( AffineTransform::rotation (angle).translated (centreX, centreY) );
+                  */
+            /*
             if( slider.isEnabled() )
             {
                 DropShadow drop_shadow( SliderCol.darker(), 1, Point<int>(0,0) );
                 drop_shadow.drawForPath( g, p );
             }
+            */
+            /*
             {
                 g.setColour (SliderCol);
                 g.fillPath (p);
             }
+            */
         }
     }
 }
@@ -1386,7 +1375,7 @@ void UiLookAndFeel::drawCornerResizer (Graphics& g,
 
     for (float i = 0.0f; i < 1.0f; i += 0.3f)
     {
-        g.setColour (colours.bg_lines);
+        g.setColour (colours.get_theme(BG_THEME).area_font_colour);
         g.drawLine (w * i + lineThickness,
                     h + 1.0f,
                     w + 1.0f,
@@ -1720,4 +1709,7 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
+
+
+
 

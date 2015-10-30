@@ -27,61 +27,61 @@
 */
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4309 4305 4365)
+#pragma warning (push)
+#pragma warning (disable: 4309 4305 4365)
 #endif
 
 namespace zlibNamespace
 {
- #if JUCE_INCLUDE_ZLIB_CODE
-  #if JUCE_CLANG
-   #pragma clang diagnostic push
-   #pragma clang diagnostic ignored "-Wconversion"
-   #pragma clang diagnostic ignored "-Wshadow"
-   #pragma clang diagnostic ignored "-Wdeprecated-register"
-  #endif
+#if JUCE_INCLUDE_ZLIB_CODE
+#if JUCE_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
-  #undef OS_CODE
-  #undef fdopen
-  #define ZLIB_INTERNAL
-  #define NO_DUMMY_DECL
-  #include "zlib/zlib.h"
-  #include "zlib/adler32.c"
-  #include "zlib/compress.c"
-  #undef DO1
-  #undef DO8
-  #include "zlib/crc32.c"
-  #include "zlib/deflate.c"
-  #include "zlib/inffast.c"
-  #undef PULLBYTE
-  #undef LOAD
-  #undef RESTORE
-  #undef INITBITS
-  #undef NEEDBITS
-  #undef DROPBITS
-  #undef BYTEBITS
-  #include "zlib/inflate.c"
-  #include "zlib/inftrees.c"
-  #include "zlib/trees.c"
-  #include "zlib/zutil.c"
-  #undef Byte
-  #undef fdopen
-  #undef local
-  #undef Freq
-  #undef Code
-  #undef Dad
-  #undef Len
+#undef OS_CODE
+#undef fdopen
+#define ZLIB_INTERNAL
+#define NO_DUMMY_DECL
+#include "zlib/zlib.h"
+#include "zlib/adler32.c"
+#include "zlib/compress.c"
+#undef DO1
+#undef DO8
+#include "zlib/crc32.c"
+#include "zlib/deflate.c"
+#include "zlib/inffast.c"
+#undef PULLBYTE
+#undef LOAD
+#undef RESTORE
+#undef INITBITS
+#undef NEEDBITS
+#undef DROPBITS
+#undef BYTEBITS
+#include "zlib/inflate.c"
+#include "zlib/inftrees.c"
+#include "zlib/trees.c"
+#include "zlib/zutil.c"
+#undef Byte
+#undef fdopen
+#undef local
+#undef Freq
+#undef Code
+#undef Dad
+#undef Len
 
-  #if JUCE_CLANG
-   #pragma clang diagnostic pop
-  #endif
- #else
-  #include JUCE_ZLIB_INCLUDE_PATH
- #endif
+#if JUCE_CLANG
+#pragma clang diagnostic pop
+#endif
+#else
+#include JUCE_ZLIB_INCLUDE_PATH
+#endif
 }
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 //==============================================================================
@@ -111,7 +111,9 @@ public:
             inflateEnd (&stream);
     }
 
-    bool needsInput() const noexcept        { return dataSize <= 0; }
+    bool needsInput() const noexcept        {
+        return dataSize <= 0;
+    }
 
     void setInput (uint8* const data_, const size_t size) noexcept
     {
@@ -171,31 +173,31 @@ private:
 
 //==============================================================================
 GZIPDecompressorInputStream::GZIPDecompressorInputStream (InputStream* const source,
-                                                          const bool deleteSourceWhenDestroyed,
-                                                          const bool noWrap_,
-                                                          const int64 uncompressedStreamLength_)
-  : sourceStream (source, deleteSourceWhenDestroyed),
-    uncompressedStreamLength (uncompressedStreamLength_),
-    noWrap (noWrap_),
-    isEof (false),
-    activeBufferSize (0),
-    originalSourcePos (source->getPosition()),
-    currentPos (0),
-    buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
-    helper (new GZIPDecompressHelper (noWrap_))
+        const bool deleteSourceWhenDestroyed,
+        const bool noWrap_,
+        const int64 uncompressedStreamLength_)
+    : sourceStream (source, deleteSourceWhenDestroyed),
+      uncompressedStreamLength (uncompressedStreamLength_),
+      noWrap (noWrap_),
+      isEof (false),
+      activeBufferSize (0),
+      originalSourcePos (source->getPosition()),
+      currentPos (0),
+      buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
+      helper (new GZIPDecompressHelper (noWrap_))
 {
 }
 
 GZIPDecompressorInputStream::GZIPDecompressorInputStream (InputStream& source)
-  : sourceStream (&source, false),
-    uncompressedStreamLength (-1),
-    noWrap (false),
-    isEof (false),
-    activeBufferSize (0),
-    originalSourcePos (source.getPosition()),
-    currentPos (0),
-    buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
-    helper (new GZIPDecompressHelper (false))
+    : sourceStream (&source, false),
+      uncompressedStreamLength (-1),
+      noWrap (false),
+      isEof (false),
+      activeBufferSize (0),
+      originalSourcePos (source.getPosition()),
+      currentPos (0),
+      buffer ((size_t) GZIPDecompressHelper::gzipDecompBufferSize),
+      helper (new GZIPDecompressHelper (false))
 {
 }
 

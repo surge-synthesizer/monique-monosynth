@@ -23,7 +23,7 @@
 */
 
 ButtonPropertyComponent::ButtonPropertyComponent (const String& name,
-                                                  const bool triggerOnMouseDown)
+        const bool triggerOnMouseDown)
     : PropertyComponent (name)
 {
     addAndMakeVisible (button);

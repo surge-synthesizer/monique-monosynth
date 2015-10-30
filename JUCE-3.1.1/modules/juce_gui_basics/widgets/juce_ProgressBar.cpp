@@ -23,9 +23,9 @@
 */
 
 ProgressBar::ProgressBar (double& progress_)
-   : progress (progress_),
-     displayPercentage (true),
-     lastCallbackTime (0)
+    : progress (progress_),
+      displayPercentage (true),
+      lastCallbackTime (0)
 {
     currentValue = jlimit (0.0, 1.0, progress);
 }
@@ -93,12 +93,12 @@ void ProgressBar::timerCallback()
     lastCallbackTime = now;
 
     if (currentValue != newProgress
-         || newProgress < 0 || newProgress >= 1.0
-         || currentMessage != displayedMessage)
+            || newProgress < 0 || newProgress >= 1.0
+            || currentMessage != displayedMessage)
     {
         if (currentValue < newProgress
-             && newProgress >= 0 && newProgress < 1.0
-             && currentValue >= 0 && currentValue < 1.0)
+                && newProgress >= 0 && newProgress < 1.0
+                && currentValue >= 0 && currentValue < 1.0)
         {
             newProgress = jmin (currentValue + 0.0008 * timeSinceLastCallback,
                                 newProgress);

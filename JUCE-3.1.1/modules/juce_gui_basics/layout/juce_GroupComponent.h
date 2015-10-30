@@ -66,7 +66,9 @@ public:
 
         @see setTextLabelPosition
     */
-    Justification getTextLabelPosition() const noexcept           { return justification; }
+    Justification getTextLabelPosition() const noexcept           {
+        return justification;
+    }
 
     //==============================================================================
     /** A set of colour IDs to use to change the colour of various aspects of the component.

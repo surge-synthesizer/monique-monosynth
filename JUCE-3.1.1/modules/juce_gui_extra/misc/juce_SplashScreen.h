@@ -68,8 +68,8 @@
     @endcode
 */
 class JUCE_API  SplashScreen  : public Component,
-                                private Timer,
-                                private DeletedAtShutdown
+    private Timer,
+    private DeletedAtShutdown
 {
 public:
     //==============================================================================

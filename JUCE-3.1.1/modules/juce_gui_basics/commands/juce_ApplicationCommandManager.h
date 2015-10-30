@@ -82,7 +82,7 @@
     @see ApplicationCommandTarget, ApplicationCommandInfo
 */
 class JUCE_API  ApplicationCommandManager   : private AsyncUpdater,
-                                              private FocusChangeListener
+    private FocusChangeListener
 {
 public:
     //==============================================================================
@@ -143,12 +143,16 @@ public:
     /** Returns the number of commands that have been registered.
         @see registerCommand
     */
-    int getNumCommands() const noexcept                                             { return commands.size(); }
+    int getNumCommands() const noexcept                                             {
+        return commands.size();
+    }
 
     /** Returns the details about one of the registered commands.
         The index is between 0 and (getNumCommands() - 1).
     */
-    const ApplicationCommandInfo* getCommandForIndex (int index) const noexcept     { return commands [index]; }
+    const ApplicationCommandInfo* getCommandForIndex (int index) const noexcept     {
+        return commands [index];
+    }
 
     /** Returns the details about a given command ID.
 
@@ -197,7 +201,9 @@ public:
 
         @see KeyPressMappingSet
     */
-    KeyPressMappingSet* getKeyMappings() const noexcept                         { return keyMappings; }
+    KeyPressMappingSet* getKeyMappings() const noexcept                         {
+        return keyMappings;
+    }
 
 
     //==============================================================================
@@ -269,7 +275,7 @@ public:
         whether the command is disabled, ticked, etc.
     */
     ApplicationCommandTarget* getTargetForCommand (CommandID commandID,
-                                                   ApplicationCommandInfo& upToDateInfo);
+            ApplicationCommandInfo& upToDateInfo);
 
     //==============================================================================
     /** Registers a listener that will be called when various events occur. */
@@ -310,11 +316,13 @@ private:
     void globalFocusChanged (Component*) override;
     ApplicationCommandInfo* getMutableCommandForID (CommandID) const noexcept;
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This is just here to cause a compile error in old code that hasn't been changed to use the new
     // version of this method.
-    virtual short getFirstCommandTarget() { return 0; }
-   #endif
+    virtual short getFirstCommandTarget() {
+        return 0;
+    }
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ApplicationCommandManager)
 };

@@ -27,59 +27,59 @@
 */
 enum MissingOpenGLDefinitions
 {
-   #ifndef GL_CLAMP_TO_EDGE
+#ifndef GL_CLAMP_TO_EDGE
     GL_CLAMP_TO_EDGE                = 0x812f,
-   #endif
+#endif
 
-   #ifndef GL_NUM_EXTENSIONS
+#ifndef GL_NUM_EXTENSIONS
     GL_NUM_EXTENSIONS               = 0x821d,
-   #endif
+#endif
 
-   #ifndef GL_BGRA_EXT
+#ifndef GL_BGRA_EXT
     GL_BGRA_EXT                     = 0x80e1,
-   #endif
+#endif
 
-   #ifndef GL_DEPTH24_STENCIL8
+#ifndef GL_DEPTH24_STENCIL8
     GL_DEPTH24_STENCIL8             = 0x88F0,
-   #endif
+#endif
 
-   #ifndef GL_RGBA8
+#ifndef GL_RGBA8
     GL_RGBA8                        = GL_RGBA,
-   #endif
+#endif
 
-   #ifndef GL_COLOR_ATTACHMENT0
+#ifndef GL_COLOR_ATTACHMENT0
     GL_COLOR_ATTACHMENT0            = 0x8CE0,
-   #endif
+#endif
 
-   #ifndef GL_DEPTH_ATTACHMENT
+#ifndef GL_DEPTH_ATTACHMENT
     GL_DEPTH_ATTACHMENT             = 0x8D00,
-   #endif
+#endif
 
-   #ifndef GL_FRAMEBUFFER
+#ifndef GL_FRAMEBUFFER
     GL_FRAMEBUFFER                  = 0x8D40,
-   #endif
+#endif
 
-   #ifndef GL_FRAMEBUFFER_BINDING
+#ifndef GL_FRAMEBUFFER_BINDING
     GL_FRAMEBUFFER_BINDING          = 0x8CA6,
-   #endif
+#endif
 
-   #ifndef GL_FRAMEBUFFER_COMPLETE
+#ifndef GL_FRAMEBUFFER_COMPLETE
     GL_FRAMEBUFFER_COMPLETE         = 0x8CD5,
-   #endif
+#endif
 
-   #ifndef GL_RENDERBUFFER
+#ifndef GL_RENDERBUFFER
     GL_RENDERBUFFER                 = 0x8D41,
-   #endif
+#endif
 
-   #ifndef GL_RENDERBUFFER_DEPTH_SIZE
+#ifndef GL_RENDERBUFFER_DEPTH_SIZE
     GL_RENDERBUFFER_DEPTH_SIZE      = 0x8D54,
-   #endif
+#endif
 
-   #ifndef GL_STENCIL_ATTACHMENT
+#ifndef GL_STENCIL_ATTACHMENT
     GL_STENCIL_ATTACHMENT           = 0x8D20,
-   #endif
+#endif
 
-   #if JUCE_WINDOWS && ! defined (GL_TEXTURE0)
+#if JUCE_WINDOWS && ! defined (GL_TEXTURE0)
     GL_OPERAND0_RGB                 = 0x8590,
     GL_OPERAND1_RGB                 = 0x8591,
     GL_OPERAND0_ALPHA               = 0x8598,
@@ -132,17 +132,17 @@ enum MissingOpenGLDefinitions
     WGL_CONTEXT_MAJOR_VERSION_ARB   = 0x2091,
     WGL_CONTEXT_MINOR_VERSION_ARB   = 0x2092,
     WGL_CONTEXT_PROFILE_MASK_ARB    = 0x9126,
-   #endif
+#endif
 
-   #if JUCE_ANDROID
+#if JUCE_ANDROID
     JUCE_RGBA_FORMAT                = GL_RGBA
-   #else
+#else
     JUCE_RGBA_FORMAT                = GL_BGRA_EXT
-   #endif
+#endif
 };
 
 #if JUCE_WINDOWS
- typedef char GLchar;
- typedef pointer_sized_int GLsizeiptr;
- typedef pointer_sized_int GLintptr;
+typedef char GLchar;
+typedef pointer_sized_int GLsizeiptr;
+typedef pointer_sized_int GLintptr;
 #endif

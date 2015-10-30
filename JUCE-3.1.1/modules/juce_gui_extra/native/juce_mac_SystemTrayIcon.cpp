@@ -24,7 +24,7 @@
 
 namespace MouseCursorHelpers
 {
-    extern NSImage* createNSImage (const Image&);
+extern NSImage* createNSImage (const Image&);
 }
 
 class SystemTrayIconComponent::Pimpl
@@ -42,19 +42,19 @@ public:
 
         setIconSize();
 
-        statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength] retain];
-        [statusItem setView: view];
+statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength] retain];
+[statusItem setView: view];
 
-        [[NSNotificationCenter defaultCenter]  addObserver: view
-                                                  selector: @selector (frameChanged:)
-                                                      name: NSWindowDidMoveNotification
-                                                    object: nil];
+[[NSNotificationCenter defaultCenter]  addObserver: view
+ selector: @selector (frameChanged:)
+ name: NSWindowDidMoveNotification
+ object: nil];
     }
 
     ~Pimpl()
     {
-        [[NSNotificationCenter defaultCenter]  removeObserver: view];
-        [[NSStatusBar systemStatusBar] removeStatusItem: statusItem];
+[[NSNotificationCenter defaultCenter]  removeObserver: view];
+[[NSStatusBar systemStatusBar] removeStatusItem: statusItem];
         SystemTrayViewClass::setOwner (view, nullptr);
         SystemTrayViewClass::setImage (view, nil);
         [statusItem release];
@@ -73,7 +73,7 @@ public:
     void setHighlighted (bool shouldHighlight)
     {
         isHighlighted = shouldHighlight;
-        [view setNeedsDisplay: true];
+[view setNeedsDisplay: true];
     }
 
     void handleStatusItemAction (NSEvent* e)
@@ -104,7 +104,7 @@ public:
             {
                 owner.mouseDown (MouseEvent (mouseSource, Point<float>(),
                                              eventMods.withFlags (isLeft ? ModifierKeys::leftButtonModifier
-                                                                         : ModifierKeys::rightButtonModifier),
+                                                     : ModifierKeys::rightButtonModifier),
                                              &owner, &owner, now,
                                              Point<float>(), now, 1, false));
 
@@ -131,7 +131,7 @@ private:
 
     void setIconSize()
     {
-        [statusIcon setSize: NSMakeSize (20.0f, 20.0f)];
+[statusIcon setSize: NSMakeSize (20.0f, 20.0f)];
     }
 
     struct SystemTrayViewClass : public ObjCClass <NSControl>
@@ -141,18 +141,26 @@ private:
             addIvar<Pimpl*> ("owner");
             addIvar<NSImage*> ("image");
 
-            addMethod (@selector (mouseDown:),      handleEventDown, "v@:@");
-            addMethod (@selector (rightMouseDown:), handleEventDown, "v@:@");
-            addMethod (@selector (drawRect:),       drawRect,        "v@:@");
-            addMethod (@selector (frameChanged:),   frameChanged,    "v@:@");
+addMethod (@selector (mouseDown:),      handleEventDown, "v@:@");
+addMethod (@selector (rightMouseDown:), handleEventDown, "v@:@");
+addMethod (@selector (drawRect:),       drawRect,        "v@:@");
+addMethod (@selector (frameChanged:),   frameChanged,    "v@:@");
 
             registerClass();
         }
 
-        static Pimpl* getOwner (id self)                { return getIvar<Pimpl*> (self, "owner"); }
-        static NSImage* getImage (id self)              { return getIvar<NSImage*> (self, "image"); }
-        static void setOwner (id self, Pimpl* owner)    { object_setInstanceVariable (self, "owner", owner); }
-        static void setImage (id self, NSImage* image)  { object_setInstanceVariable (self, "image", image); }
+        static Pimpl* getOwner (id self)                {
+            return getIvar<Pimpl*> (self, "owner");
+        }
+        static NSImage* getImage (id self)              {
+            return getIvar<NSImage*> (self, "image");
+        }
+        static void setOwner (id self, Pimpl* owner)    {
+            object_setInstanceVariable (self, "owner", owner);
+        }
+        static void setImage (id self, NSImage* image)  {
+            object_setInstanceVariable (self, "image", image);
+        }
 
     private:
         static void handleEventDown (id self, SEL, NSEvent* e)
@@ -169,19 +177,19 @@ private:
             NSRect bounds = [self bounds];
 
             if (Pimpl* const owner = getOwner (self))
-                [owner->statusItem drawStatusBarBackgroundInRect: bounds
-                                                   withHighlight: owner->isHighlighted];
+[owner->statusItem drawStatusBarBackgroundInRect: bounds
+ withHighlight: owner->isHighlighted];
 
             if (NSImage* const im = getImage (self))
             {
                 NSSize imageSize = [im size];
 
-                [im drawInRect: NSMakeRect (bounds.origin.x + ((bounds.size.width  - imageSize.width)  / 2.0f),
+[im drawInRect: NSMakeRect (bounds.origin.x + ((bounds.size.width  - imageSize.width)  / 2.0f),
                                             bounds.origin.y + ((bounds.size.height - imageSize.height) / 2.0f),
                                             imageSize.width, imageSize.height)
-                      fromRect: NSZeroRect
-                     operation: NSCompositeSourceOver
-                      fraction: 1.0f];
+ fromRect: NSZeroRect
+ operation: NSCompositeSourceOver
+                 fraction: 1.0f];
             }
         }
 

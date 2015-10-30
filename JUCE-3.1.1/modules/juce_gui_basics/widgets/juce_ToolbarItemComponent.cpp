@@ -42,11 +42,11 @@ public:
         if (ToolbarItemComponent* const tc = getToolbarItemComponent())
         {
             if (isMouseOverOrDragging()
-                  && tc->getEditingMode() == ToolbarItemComponent::editableOnToolbar)
+                    && tc->getEditingMode() == ToolbarItemComponent::editableOnToolbar)
             {
                 g.setColour (findColour (Toolbar::editingModeOutlineColourId, true));
                 g.drawRect (getLocalBounds(), jmin (2, (getWidth() - 1) / 2,
-                                                       (getHeight() - 1) / 2));
+                                                    (getHeight() - 1) / 2));
             }
         }
     }
@@ -118,8 +118,8 @@ private:
 
 //==============================================================================
 ToolbarItemComponent::ToolbarItemComponent (const int itemId_,
-                                            const String& labelText,
-                                            const bool isBeingUsedAsAButton_)
+        const String& labelText,
+        const bool isBeingUsedAsAButton_)
     : Button (labelText),
       itemId (itemId_),
       mode (normalMode),
@@ -164,7 +164,7 @@ void ToolbarItemComponent::paintButton (Graphics& g, const bool over, const bool
 {
     if (isBeingUsedAsAButton)
         getLookAndFeel().paintToolbarButtonBackground (g, getWidth(), getHeight(),
-                                                       over, down, *this);
+                over, down, *this);
 
     if (toolbarStyle != Toolbar::iconsOnly)
     {
@@ -179,7 +179,7 @@ void ToolbarItemComponent::paintButton (Graphics& g, const bool over, const bool
         }
 
         getLookAndFeel().paintToolbarButtonLabel (g, indent, y, getWidth() - indent * 2, h,
-                                                  getButtonText(), *this);
+                getButtonText(), *this);
     }
 
     if (! contentArea.isEmpty())
@@ -203,7 +203,7 @@ void ToolbarItemComponent::resized()
         contentArea = Rectangle<int> (indent, indent,
                                       getWidth() - indent * 2,
                                       toolbarStyle == Toolbar::iconsWithText ? proportionOfHeight (0.55f)
-                                                                             : (getHeight() - indent * 2));
+                                      : (getHeight() - indent * 2));
     }
     else
     {

@@ -117,17 +117,25 @@ public:
     }
 
     /** Returns the shared object. */
-    operator SharedObjectType*() const noexcept         { return sharedObject; }
+    operator SharedObjectType*() const noexcept         {
+        return sharedObject;
+    }
 
     /** Returns the shared object. */
-    SharedObjectType& get() const noexcept              { return *sharedObject; }
+    SharedObjectType& get() const noexcept              {
+        return *sharedObject;
+    }
 
     /** Returns the object that this pointer references.
         The pointer returned may be zero, of course.
     */
-    SharedObjectType& getObject() const noexcept        { return *sharedObject; }
+    SharedObjectType& getObject() const noexcept        {
+        return *sharedObject;
+    }
 
-    SharedObjectType* operator->() const noexcept       { return sharedObject; }
+    SharedObjectType* operator->() const noexcept       {
+        return sharedObject;
+    }
 
 private:
     struct SharedObjectHolder  : public ReferenceCountedObject

@@ -54,5 +54,5 @@ void CaretComponent::setCaretPosition (const Rectangle<int>& characterArea)
 bool CaretComponent::shouldBeShown() const
 {
     return owner == nullptr || (owner->hasKeyboardFocus (false)
-                                 && ! owner->isCurrentlyBlockedByAnotherModalComponent());
+                                && ! owner->isCurrentlyBlockedByAnotherModalComponent());
 }

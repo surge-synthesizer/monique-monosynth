@@ -60,7 +60,9 @@ public:
     /** Returns the number of items that this list will store.
         @see setMaxNumberOfItems
     */
-    int getMaxNumberOfItems() const noexcept                            { return maxNumberOfItems; }
+    int getMaxNumberOfItems() const noexcept                            {
+        return maxNumberOfItems;
+    }
 
     /** Returns the number of files in the list.
 
@@ -76,7 +78,9 @@ public:
 
     /** Returns an array of all the absolute pathnames in the list.
     */
-    const StringArray& getAllFilenames() const noexcept                 { return files; }
+    const StringArray& getAllFilenames() const noexcept                 {
+        return files;
+    }
 
     /** Clears all the files from the list. */
     void clear();

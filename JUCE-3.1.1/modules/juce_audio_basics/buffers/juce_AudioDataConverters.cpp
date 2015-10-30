@@ -182,9 +182,9 @@ void AudioDataConverters::convertFloatToFloat32LE (const float* source, void* de
     {
         *(float*) d = source[i];
 
-       #if JUCE_BIG_ENDIAN
+#if JUCE_BIG_ENDIAN
         *(uint32*) d = ByteOrder::swap (*(uint32*) d);
-       #endif
+#endif
 
         d += destBytesPerSample;
     }
@@ -200,9 +200,9 @@ void AudioDataConverters::convertFloatToFloat32BE (const float* source, void* de
     {
         *(float*) d = source[i];
 
-       #if JUCE_LITTLE_ENDIAN
+#if JUCE_LITTLE_ENDIAN
         *(uint32*) d = ByteOrder::swap (*(uint32*) d);
-       #endif
+#endif
 
         d += destBytesPerSample;
     }
@@ -367,10 +367,10 @@ void AudioDataConverters::convertFloat32LEToFloat (const void* const source, flo
     {
         dest[i] = *(float*)s;
 
-       #if JUCE_BIG_ENDIAN
+#if JUCE_BIG_ENDIAN
         uint32* const d = (uint32*) (dest + i);
         *d = ByteOrder::swap (*d);
-       #endif
+#endif
 
         s += srcBytesPerSample;
     }
@@ -384,10 +384,10 @@ void AudioDataConverters::convertFloat32BEToFloat (const void* const source, flo
     {
         dest[i] = *(float*)s;
 
-       #if JUCE_LITTLE_ENDIAN
+#if JUCE_LITTLE_ENDIAN
         uint32* const d = (uint32*) (dest + i);
         *d = ByteOrder::swap (*d);
-       #endif
+#endif
 
         s += srcBytesPerSample;
     }
@@ -396,48 +396,84 @@ void AudioDataConverters::convertFloat32BEToFloat (const void* const source, flo
 
 //==============================================================================
 void AudioDataConverters::convertFloatToFormat (const DataFormat destFormat,
-                                                const float* const source,
-                                                void* const dest,
-                                                const int numSamples)
+        const float* const source,
+        void* const dest,
+        const int numSamples)
 {
     switch (destFormat)
     {
-        case int16LE:       convertFloatToInt16LE   (source, dest, numSamples); break;
-        case int16BE:       convertFloatToInt16BE   (source, dest, numSamples); break;
-        case int24LE:       convertFloatToInt24LE   (source, dest, numSamples); break;
-        case int24BE:       convertFloatToInt24BE   (source, dest, numSamples); break;
-        case int32LE:       convertFloatToInt32LE   (source, dest, numSamples); break;
-        case int32BE:       convertFloatToInt32BE   (source, dest, numSamples); break;
-        case float32LE:     convertFloatToFloat32LE (source, dest, numSamples); break;
-        case float32BE:     convertFloatToFloat32BE (source, dest, numSamples); break;
-        default:            jassertfalse; break;
+    case int16LE:
+        convertFloatToInt16LE   (source, dest, numSamples);
+        break;
+    case int16BE:
+        convertFloatToInt16BE   (source, dest, numSamples);
+        break;
+    case int24LE:
+        convertFloatToInt24LE   (source, dest, numSamples);
+        break;
+    case int24BE:
+        convertFloatToInt24BE   (source, dest, numSamples);
+        break;
+    case int32LE:
+        convertFloatToInt32LE   (source, dest, numSamples);
+        break;
+    case int32BE:
+        convertFloatToInt32BE   (source, dest, numSamples);
+        break;
+    case float32LE:
+        convertFloatToFloat32LE (source, dest, numSamples);
+        break;
+    case float32BE:
+        convertFloatToFloat32BE (source, dest, numSamples);
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 }
 
 void AudioDataConverters::convertFormatToFloat (const DataFormat sourceFormat,
-                                                const void* const source,
-                                                float* const dest,
-                                                const int numSamples)
+        const void* const source,
+        float* const dest,
+        const int numSamples)
 {
     switch (sourceFormat)
     {
-        case int16LE:       convertInt16LEToFloat   (source, dest, numSamples); break;
-        case int16BE:       convertInt16BEToFloat   (source, dest, numSamples); break;
-        case int24LE:       convertInt24LEToFloat   (source, dest, numSamples); break;
-        case int24BE:       convertInt24BEToFloat   (source, dest, numSamples); break;
-        case int32LE:       convertInt32LEToFloat   (source, dest, numSamples); break;
-        case int32BE:       convertInt32BEToFloat   (source, dest, numSamples); break;
-        case float32LE:     convertFloat32LEToFloat (source, dest, numSamples); break;
-        case float32BE:     convertFloat32BEToFloat (source, dest, numSamples); break;
-        default:            jassertfalse; break;
+    case int16LE:
+        convertInt16LEToFloat   (source, dest, numSamples);
+        break;
+    case int16BE:
+        convertInt16BEToFloat   (source, dest, numSamples);
+        break;
+    case int24LE:
+        convertInt24LEToFloat   (source, dest, numSamples);
+        break;
+    case int24BE:
+        convertInt24BEToFloat   (source, dest, numSamples);
+        break;
+    case int32LE:
+        convertInt32LEToFloat   (source, dest, numSamples);
+        break;
+    case int32BE:
+        convertInt32BEToFloat   (source, dest, numSamples);
+        break;
+    case float32LE:
+        convertFloat32LEToFloat (source, dest, numSamples);
+        break;
+    case float32BE:
+        convertFloat32BEToFloat (source, dest, numSamples);
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 }
 
 //==============================================================================
 void AudioDataConverters::interleaveSamples (const float** const source,
-                                             float* const dest,
-                                             const int numSamples,
-                                             const int numChannels)
+        float* const dest,
+        const int numSamples,
+        const int numChannels)
 {
     for (int chan = 0; chan < numChannels; ++chan)
     {
@@ -453,9 +489,9 @@ void AudioDataConverters::interleaveSamples (const float** const source,
 }
 
 void AudioDataConverters::deinterleaveSamples (const float* const source,
-                                               float** const dest,
-                                               const int numSamples,
-                                               const int numChannels)
+        float** const dest,
+        const int numSamples,
+        const int numChannels)
 {
     for (int chan = 0; chan < numChannels; ++chan)
     {
@@ -514,12 +550,12 @@ public:
 
             // convert data from the source to dest format..
             ScopedPointer<AudioData::Converter> conv (new AudioData::ConverterInstance <AudioData::Pointer<F1, E1, AudioData::NonInterleaved, AudioData::Const>,
-                                                                                        AudioData::Pointer<F2, E2, AudioData::NonInterleaved, AudioData::NonConst> >());
+                    AudioData::Pointer<F2, E2, AudioData::NonInterleaved, AudioData::NonConst> >());
             conv->convertSamples (inPlace ? reversed : converted, original, numSamples);
 
             // ..and back again..
             conv = new AudioData::ConverterInstance <AudioData::Pointer<F2, E2, AudioData::NonInterleaved, AudioData::Const>,
-                                                     AudioData::Pointer<F1, E1, AudioData::NonInterleaved, AudioData::NonConst> >();
+            AudioData::Pointer<F1, E1, AudioData::NonInterleaved, AudioData::NonConst> >();
             if (! inPlace)
                 zeromem (reversed, sizeof (reversed));
 
@@ -531,7 +567,7 @@ public:
                 AudioData::Pointer<F1, E1, AudioData::NonInterleaved, AudioData::Const> d2 (reversed);
 
                 const int errorMargin = 2 * AudioData::Pointer<F1, E1, AudioData::NonInterleaved, AudioData::Const>::get32BitResolution()
-                                            + AudioData::Pointer<F2, E2, AudioData::NonInterleaved, AudioData::Const>::get32BitResolution();
+                                        + AudioData::Pointer<F2, E2, AudioData::NonInterleaved, AudioData::Const>::get32BitResolution();
 
                 for (int i = 0; i < numSamples; ++i)
                 {

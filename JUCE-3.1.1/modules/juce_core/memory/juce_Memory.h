@@ -43,7 +43,10 @@ inline void zerostruct (Type& structure) noexcept                   { memset (&s
     or other automatic lifetime-management system rather than resorting to deleting raw pointers!
 */
 template <typename Type>
-inline void deleteAndZero (Type& pointer)                           { delete pointer; pointer = nullptr; }
+inline void deleteAndZero (Type& pointer)                           {
+    delete pointer;
+    pointer = nullptr;
+}
 
 /** A handy function which adds a number of bytes to any type of pointer and returns the result.
     This can be useful to avoid casting pointers to a char* and back when you want to move them by
@@ -62,39 +65,41 @@ inline int getAddressDifference (Type1* pointer1, Type2* pointer2) noexcept  { r
     nullptr if the pointer is null.
 */
 template <class Type>
-inline Type* createCopyIfNotNull (const Type* pointer)     { return pointer != nullptr ? new Type (*pointer) : nullptr; }
+inline Type* createCopyIfNotNull (const Type* pointer)     {
+    return pointer != nullptr ? new Type (*pointer) : nullptr;
+}
 
 //==============================================================================
 #if JUCE_MAC || JUCE_IOS || DOXYGEN
 
- /** A handy C++ wrapper that creates and deletes an NSAutoreleasePool object using RAII.
-     You should use the JUCE_AUTORELEASEPOOL macro to create a local auto-release pool on the stack.
- */
- class JUCE_API  ScopedAutoReleasePool
- {
- public:
-     ScopedAutoReleasePool();
-     ~ScopedAutoReleasePool();
+/** A handy C++ wrapper that creates and deletes an NSAutoreleasePool object using RAII.
+    You should use the JUCE_AUTORELEASEPOOL macro to create a local auto-release pool on the stack.
+*/
+class JUCE_API  ScopedAutoReleasePool
+{
+public:
+    ScopedAutoReleasePool();
+    ~ScopedAutoReleasePool();
 
- private:
-     void* pool;
+private:
+    void* pool;
 
-     JUCE_DECLARE_NON_COPYABLE (ScopedAutoReleasePool)
- };
+    JUCE_DECLARE_NON_COPYABLE (ScopedAutoReleasePool)
+};
 
- /** A macro that can be used to easily declare a local ScopedAutoReleasePool
-     object for RAII-based obj-C autoreleasing.
-     Because this may use the \@autoreleasepool syntax, you must follow the macro with
-     a set of braces to mark the scope of the pool.
- */
+/** A macro that can be used to easily declare a local ScopedAutoReleasePool
+    object for RAII-based obj-C autoreleasing.
+    Because this may use the \@autoreleasepool syntax, you must follow the macro with
+    a set of braces to mark the scope of the pool.
+*/
 #if (JUCE_COMPILER_SUPPORTS_ARC && defined (__OBJC__)) || DOXYGEN
- #define JUCE_AUTORELEASEPOOL  @autoreleasepool
+#define JUCE_AUTORELEASEPOOL  @autoreleasepool
 #else
- #define JUCE_AUTORELEASEPOOL  const juce::ScopedAutoReleasePool JUCE_JOIN_MACRO (autoReleasePool_, __LINE__);
+#define JUCE_AUTORELEASEPOOL  const juce::ScopedAutoReleasePool JUCE_JOIN_MACRO (autoReleasePool_, __LINE__);
 #endif
 
 #else
- #define JUCE_AUTORELEASEPOOL
+#define JUCE_AUTORELEASEPOOL
 #endif
 
 //==============================================================================
@@ -104,10 +109,10 @@ inline Type* createCopyIfNotNull (const Type* pointer)     { return pointer != n
    By piggy-backing on the JUCE_LEAK_DETECTOR macro, these allocators can be injected into most juce classes.
 */
 #if JUCE_MSVC && (defined (JUCE_DLL) || defined (JUCE_DLL_BUILD)) && ! (JUCE_DISABLE_DLL_ALLOCATORS || DOXYGEN)
- extern JUCE_API void* juceDLL_malloc (size_t);
- extern JUCE_API void  juceDLL_free (void*);
+extern JUCE_API void* juceDLL_malloc (size_t);
+extern JUCE_API void  juceDLL_free (void*);
 
- #define JUCE_LEAK_DETECTOR(OwnerClass)  public:\
+#define JUCE_LEAK_DETECTOR(OwnerClass)  public:\
     static void* operator new (size_t sz)           { return juce::juceDLL_malloc (sz); } \
     static void* operator new (size_t, void* p)     { return p; } \
     static void operator delete (void* p)           { juce::juceDLL_free (p); } \
@@ -119,7 +124,7 @@ inline Type* createCopyIfNotNull (const Type* pointer)     { return pointer != n
     use the JUCE_LEAK_DETECTOR instead.
 */
 #ifndef juce_UseDebuggingNewOperator
- #define juce_UseDebuggingNewOperator
+#define juce_UseDebuggingNewOperator
 #endif
 
 

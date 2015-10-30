@@ -28,7 +28,8 @@ public:
     typedef ReferenceCountedObjectPtr<SharedObject> Ptr;
 
     explicit SharedObject (Identifier t) noexcept
-        : type (t), parent (nullptr)
+:
+    type (t), parent (nullptr)
     {
     }
 
@@ -207,7 +208,7 @@ public:
         {
             for (int i = properties.size(); --i >= 0;)
                 undoManager->perform (new SetPropertyAction (this, properties.getName(i), var(),
-                                                             properties.getValueAt(i), false, true));
+                                      properties.getValueAt(i), false, true));
         }
     }
 
@@ -345,7 +346,7 @@ public:
         jassert (isPositiveAndBelow (currentIndex, children.size()));
 
         if (currentIndex != newIndex
-             && isPositiveAndBelow (currentIndex, children.size()))
+                && isPositiveAndBelow (currentIndex, children.size()))
         {
             if (undoManager == nullptr)
             {
@@ -395,9 +396,9 @@ public:
     bool isEquivalentTo (const SharedObject& other) const
     {
         if (type != other.type
-             || properties.size() != other.properties.size()
-             || children.size() != other.children.size()
-             || properties != other.properties)
+                || properties.size() != other.properties.size()
+                || children.size() != other.children.size()
+                || properties != other.properties)
             return false;
 
         for (int i = 0; i < children.size(); ++i)
@@ -494,7 +495,7 @@ public:
             {
                 if (SetPropertyAction* const next = dynamic_cast <SetPropertyAction*> (nextAction))
                     if (next->target == target && next->name == name
-                          && ! (next->isAddingNewProperty || next->isDeletingProperty))
+                            && ! (next->isAddingNewProperty || next->isDeletingProperty))
                         return new SetPropertyAction (target, name, next->newValue, oldValue, false, false);
             }
 
@@ -569,7 +570,8 @@ public:
     {
     public:
         MoveChildAction (SharedObject* parentObject, int fromIndex, int toIndex) noexcept
-            : parent (parentObject), startIndex (fromIndex), endIndex (toIndex)
+    :
+        parent (parentObject), startIndex (fromIndex), endIndex (toIndex)
         {
         }
 
@@ -665,7 +667,8 @@ ValueTree& ValueTree::operator= (const ValueTree& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 ValueTree::ValueTree (ValueTree&& other) noexcept
-    : object (static_cast<SharedObject::Ptr&&> (other.object))
+:
+object (static_cast<SharedObject::Ptr&&> (other.object))
 {
 }
 #endif
@@ -689,8 +692,8 @@ bool ValueTree::operator!= (const ValueTree& other) const noexcept
 bool ValueTree::isEquivalentTo (const ValueTree& other) const
 {
     return object == other.object
-            || (object != nullptr && other.object != nullptr
-                 && object->isEquivalentTo (*other.object));
+           || (object != nullptr && other.object != nullptr
+               && object->isEquivalentTo (*other.object));
 }
 
 ValueTree ValueTree::createCopy() const
@@ -711,7 +714,7 @@ Identifier ValueTree::getType() const
 ValueTree ValueTree::getParent() const
 {
     return ValueTree (object != nullptr ? object->parent
-                                        : static_cast <SharedObject*> (nullptr));
+                      : static_cast <SharedObject*> (nullptr));
 }
 
 ValueTree ValueTree::getSibling (const int delta) const
@@ -736,7 +739,7 @@ const var& ValueTree::getProperty (const Identifier name) const
 var ValueTree::getProperty (const Identifier name, const var& defaultReturnValue) const
 {
     return object == nullptr ? defaultReturnValue
-                             : object->properties.getWithDefault (name, defaultReturnValue);
+           : object->properties.getWithDefault (name, defaultReturnValue);
 }
 
 ValueTree& ValueTree::setProperty (const Identifier name, const var& newValue,
@@ -776,7 +779,7 @@ int ValueTree::getNumProperties() const
 Identifier ValueTree::getPropertyName (const int index) const
 {
     return object == nullptr ? Identifier()
-                             : object->properties.getName (index);
+           : object->properties.getName (index);
 }
 
 void ValueTree::copyPropertiesFrom (const ValueTree& source, UndoManager* const undoManager)
@@ -796,7 +799,7 @@ int ValueTree::getReferenceCount() const noexcept
 
 //==============================================================================
 class ValueTreePropertyValueSource  : public Value::ValueSource,
-                                      private ValueTree::Listener
+    private ValueTree::Listener
 {
 public:
     ValueTreePropertyValueSource (const ValueTree& vt, const Identifier prop, UndoManager* um)
@@ -810,8 +813,12 @@ public:
         tree.removeListener (this);
     }
 
-    var getValue() const                 { return tree [property]; }
-    void setValue (const var& newValue)  { tree.setProperty (property, newValue, undoManager); }
+    var getValue() const                 {
+        return tree [property];
+    }
+    void setValue (const var& newValue)  {
+        tree.setProperty (property, newValue, undoManager);
+    }
 
 private:
     ValueTree tree;
@@ -846,7 +853,7 @@ int ValueTree::getNumChildren() const
 ValueTree ValueTree::getChild (int index) const
 {
     return ValueTree (object != nullptr ? object->children.getObjectPointer (index)
-                                        : static_cast <SharedObject*> (nullptr));
+                      : static_cast <SharedObject*> (nullptr));
 }
 
 ValueTree ValueTree::getChildWithName (const Identifier type) const
@@ -962,7 +969,7 @@ ValueTree ValueTree::fromXml (const XmlElement& xml)
     v.object->properties.setFromXmlAttributes (xml);
 
     forEachXmlChildElement (xml, e)
-        v.addChild (fromXml (*e), -1, nullptr);
+    v.addChild (fromXml (*e), -1, nullptr);
 
     return v;
 }
@@ -1081,12 +1088,23 @@ public:
         {
             switch (r.nextInt (5))
             {
-                case 0: v.setProperty (createRandomIdentifier (r), createRandomWideCharString (r), undoManager); break;
-                case 1: v.setProperty (createRandomIdentifier (r), r.nextInt(), undoManager); break;
-                case 2: if (depth < 5) v.addChild (createRandomTree (undoManager, depth + 1, r), r.nextInt (v.getNumChildren() + 1), undoManager); break;
-                case 3: v.setProperty (createRandomIdentifier (r), r.nextBool(), undoManager); break;
-                case 4: v.setProperty (createRandomIdentifier (r), r.nextDouble(), undoManager); break;
-                default: break;
+            case 0:
+                v.setProperty (createRandomIdentifier (r), createRandomWideCharString (r), undoManager);
+                break;
+            case 1:
+                v.setProperty (createRandomIdentifier (r), r.nextInt(), undoManager);
+                break;
+            case 2:
+                if (depth < 5) v.addChild (createRandomTree (undoManager, depth + 1, r), r.nextInt (v.getNumChildren() + 1), undoManager);
+                break;
+            case 3:
+                v.setProperty (createRandomIdentifier (r), r.nextBool(), undoManager);
+                break;
+            case 4:
+                v.setProperty (createRandomIdentifier (r), r.nextDouble(), undoManager);
+                break;
+            default:
+                break;
             }
         }
 

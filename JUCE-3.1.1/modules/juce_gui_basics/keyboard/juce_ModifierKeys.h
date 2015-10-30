@@ -63,7 +63,9 @@ public:
         preferred command-key modifier - so on the Mac it tests for the Apple key, on
         Windows/Linux, it's actually checking for the CTRL key.
     */
-    inline bool isCommandDown() const noexcept          { return testFlags (commandModifier); }
+    inline bool isCommandDown() const noexcept          {
+        return testFlags (commandModifier);
+    }
 
     /** Checks whether the user is trying to launch a pop-up menu.
 
@@ -73,28 +75,42 @@ public:
         So on Windows/Linux, this method is really testing for a right-click.
         On the Mac, it tests for either the CTRL key being down, or a right-click.
     */
-    inline bool isPopupMenu() const noexcept            { return testFlags (popupMenuClickModifier); }
+    inline bool isPopupMenu() const noexcept            {
+        return testFlags (popupMenuClickModifier);
+    }
 
     /** Checks whether the flag is set for the left mouse-button. */
-    inline bool isLeftButtonDown() const noexcept       { return testFlags (leftButtonModifier); }
+    inline bool isLeftButtonDown() const noexcept       {
+        return testFlags (leftButtonModifier);
+    }
 
     /** Checks whether the flag is set for the right mouse-button.
 
         Note that for detecting popup-menu clicks, you should be using isPopupMenu() instead, as
         this is platform-independent (and makes your code more explanatory too).
     */
-    inline bool isRightButtonDown() const noexcept      { return testFlags (rightButtonModifier); }
+    inline bool isRightButtonDown() const noexcept      {
+        return testFlags (rightButtonModifier);
+    }
 
-    inline bool isMiddleButtonDown() const noexcept     { return testFlags (middleButtonModifier); }
+    inline bool isMiddleButtonDown() const noexcept     {
+        return testFlags (middleButtonModifier);
+    }
 
     /** Tests for any of the mouse-button flags. */
-    inline bool isAnyMouseButtonDown() const noexcept   { return testFlags (allMouseButtonModifiers); }
+    inline bool isAnyMouseButtonDown() const noexcept   {
+        return testFlags (allMouseButtonModifiers);
+    }
 
     /** Tests for any of the modifier key flags. */
-    inline bool isAnyModifierKeyDown() const noexcept   { return testFlags ((shiftModifier | ctrlModifier | altModifier | commandModifier)); }
+    inline bool isAnyModifierKeyDown() const noexcept   {
+        return testFlags ((shiftModifier | ctrlModifier | altModifier | commandModifier));
+    }
 
     /** Checks whether the shift key's flag is set. */
-    inline bool isShiftDown() const noexcept            { return testFlags (shiftModifier); }
+    inline bool isShiftDown() const noexcept            {
+        return testFlags (shiftModifier);
+    }
 
     /** Checks whether the CTRL key's flag is set.
 
@@ -103,10 +119,14 @@ public:
 
         @see isCommandDown, isPopupMenu
     */
-    inline bool isCtrlDown() const noexcept             { return testFlags (ctrlModifier); }
+    inline bool isCtrlDown() const noexcept             {
+        return testFlags (ctrlModifier);
+    }
 
     /** Checks whether the ALT key's flag is set. */
-    inline bool isAltDown() const noexcept              { return testFlags (altModifier); }
+    inline bool isAltDown() const noexcept              {
+        return testFlags (altModifier);
+    }
 
     //==============================================================================
     /** Flags that represent the different keys. */
@@ -133,21 +153,21 @@ public:
         /** Middle mouse button flag. */
         middleButtonModifier                    = 64,
 
-       #if JUCE_MAC
+#if JUCE_MAC
         /** Command key flag - on windows this is the same as the CTRL key flag. */
         commandModifier                         = 8,
 
         /** Popup menu flag - on windows this is the same as rightButtonModifier, on the
             Mac it's the same as (rightButtonModifier | ctrlModifier). */
         popupMenuClickModifier                  = rightButtonModifier | ctrlModifier,
-       #else
+#else
         /** Command key flag - on windows this is the same as the CTRL key flag. */
         commandModifier                         = ctrlModifier,
 
         /** Popup menu flag - on windows this is the same as rightButtonModifier, on the
             Mac it's the same as (rightButtonModifier | ctrlModifier). */
         popupMenuClickModifier                  = rightButtonModifier,
-       #endif
+#endif
 
         /** Represents a combination of all the shift, alt, ctrl and command key modifiers. */
         allKeyboardModifiers                    = shiftModifier | ctrlModifier | altModifier | commandModifier,
@@ -161,23 +181,39 @@ public:
 
     //==============================================================================
     /** Returns a copy of only the mouse-button flags */
-    ModifierKeys withOnlyMouseButtons() const noexcept                  { return ModifierKeys (flags & allMouseButtonModifiers); }
+    ModifierKeys withOnlyMouseButtons() const noexcept                  {
+        return ModifierKeys (flags & allMouseButtonModifiers);
+    }
 
     /** Returns a copy of only the non-mouse flags */
-    ModifierKeys withoutMouseButtons() const noexcept                   { return ModifierKeys (flags & ~allMouseButtonModifiers); }
+    ModifierKeys withoutMouseButtons() const noexcept                   {
+        return ModifierKeys (flags & ~allMouseButtonModifiers);
+    }
 
-    bool operator== (const ModifierKeys other) const noexcept           { return flags == other.flags; }
-    bool operator!= (const ModifierKeys other) const noexcept           { return flags != other.flags; }
+    bool operator== (const ModifierKeys other) const noexcept           {
+        return flags == other.flags;
+    }
+    bool operator!= (const ModifierKeys other) const noexcept           {
+        return flags != other.flags;
+    }
 
     //==============================================================================
     /** Returns the raw flags for direct testing. */
-    inline int getRawFlags() const noexcept                             { return flags; }
+    inline int getRawFlags() const noexcept                             {
+        return flags;
+    }
 
-    ModifierKeys withoutFlags (int rawFlagsToClear) const noexcept      { return ModifierKeys (flags & ~rawFlagsToClear); }
-    ModifierKeys withFlags (int rawFlagsToSet) const noexcept           { return ModifierKeys (flags | rawFlagsToSet); }
+    ModifierKeys withoutFlags (int rawFlagsToClear) const noexcept      {
+        return ModifierKeys (flags & ~rawFlagsToClear);
+    }
+    ModifierKeys withFlags (int rawFlagsToSet) const noexcept           {
+        return ModifierKeys (flags | rawFlagsToSet);
+    }
 
     /** Tests a combination of flags and returns true if any of them are set. */
-    bool testFlags (int flagsToTest) const noexcept                     { return (flags & flagsToTest) != 0; }
+    bool testFlags (int flagsToTest) const noexcept                     {
+        return (flags & flagsToTest) != 0;
+    }
 
     /** Returns the total number of mouse buttons that are down. */
     int getNumMouseButtonsDown() const noexcept;

@@ -84,7 +84,9 @@ public:
         return r;
     }
 
-    int getDefaultBufferSize() override         { return 1024; }
+    int getDefaultBufferSize() override         {
+        return 1024;
+    }
 
     String open (const BigInteger& inputChannelsWanted,
                  const BigInteger& outputChannelsWanted,
@@ -157,17 +159,33 @@ public:
         }
     }
 
-    bool isOpen() override                       { return isRunning; }
+    bool isOpen() override                       {
+        return isRunning;
+    }
 
-    int getCurrentBufferSizeSamples() override   { return actualBufferSize; }
-    double getCurrentSampleRate() override       { return sampleRate; }
-    int getCurrentBitDepth() override            { return 16; }
+    int getCurrentBufferSizeSamples() override   {
+        return actualBufferSize;
+    }
+    double getCurrentSampleRate() override       {
+        return sampleRate;
+    }
+    int getCurrentBitDepth() override            {
+        return 16;
+    }
 
-    BigInteger getActiveOutputChannels() const override    { return activeOutputChans; }
-    BigInteger getActiveInputChannels() const override     { return activeInputChans; }
+    BigInteger getActiveOutputChannels() const override    {
+        return activeOutputChans;
+    }
+    BigInteger getActiveInputChannels() const override     {
+        return activeInputChans;
+    }
 
-    int getOutputLatencyInSamples() override    { return getLatency (kAudioSessionProperty_CurrentHardwareOutputLatency); }
-    int getInputLatencyInSamples() override     { return getLatency (kAudioSessionProperty_CurrentHardwareInputLatency); }
+    int getOutputLatencyInSamples() override    {
+        return getLatency (kAudioSessionProperty_CurrentHardwareOutputLatency);
+    }
+    int getInputLatencyInSamples() override     {
+        return getLatency (kAudioSessionProperty_CurrentHardwareInputLatency);
+    }
 
     int getLatency (AudioSessionPropertyID propID)
     {
@@ -205,13 +223,17 @@ public:
         }
     }
 
-    bool isPlaying() override            { return isRunning && callback != nullptr; }
-    String getLastError() override       { return lastError; }
+    bool isPlaying() override            {
+        return isRunning && callback != nullptr;
+    }
+    String getLastError() override       {
+        return lastError;
+    }
 
     bool setAudioPreprocessingEnabled (bool enable) override
     {
         return setSessionUInt32Property (kAudioSessionProperty_Mode, enable ? kAudioSessionMode_Default
-                                                                            : kAudioSessionMode_Measurement);
+                                         : kAudioSessionMode_Measurement);
     }
 
 private:
@@ -354,7 +376,7 @@ private:
         {
             CFDictionaryRef routeChangeDictionary = (CFDictionaryRef) propertyValue;
             CFNumberRef routeChangeReasonRef = (CFNumberRef) CFDictionaryGetValue (routeChangeDictionary,
-                                                                                   CFSTR (kAudioSession_AudioRouteChangeKey_Reason));
+                                               CFSTR (kAudioSession_AudioRouteChangeKey_Reason));
 
             SInt32 routeChangeReason;
             CFNumberGetValue (routeChangeReasonRef, kCFNumberSInt32Type, &routeChangeReason);
@@ -522,7 +544,7 @@ private:
 
             //DBG ("audio route: " + nsStringToJuce (route));
 
-            if ([route hasPrefix: @"Receiver"])
+if ([route hasPrefix: @"Receiver"])
                 setSessionUInt32Property (kAudioSessionProperty_OverrideAudioRoute, kAudioSessionOverrideAudioRoute_Speaker);
 
             CFRelease (audioRoute);
@@ -551,16 +573,24 @@ public:
     iOSAudioIODeviceType()  : AudioIODeviceType ("iOS Audio") {}
 
     void scanForDevices() {}
-    StringArray getDeviceNames (bool /*wantInputNames*/) const       { return StringArray ("iOS Audio"); }
-    int getDefaultDeviceIndex (bool /*forInput*/) const              { return 0; }
-    int getIndexOfDevice (AudioIODevice* d, bool /*asInput*/) const  { return d != nullptr ? 0 : -1; }
-    bool hasSeparateInputsAndOutputs() const                         { return false; }
+    StringArray getDeviceNames (bool /*wantInputNames*/) const       {
+        return StringArray ("iOS Audio");
+    }
+    int getDefaultDeviceIndex (bool /*forInput*/) const              {
+        return 0;
+    }
+    int getIndexOfDevice (AudioIODevice* d, bool /*asInput*/) const  {
+        return d != nullptr ? 0 : -1;
+    }
+    bool hasSeparateInputsAndOutputs() const                         {
+        return false;
+    }
 
     AudioIODevice* createDevice (const String& outputDeviceName, const String& inputDeviceName)
     {
         if (outputDeviceName.isNotEmpty() || inputDeviceName.isNotEmpty())
             return new iOSAudioIODevice (outputDeviceName.isNotEmpty() ? outputDeviceName
-                                                                       : inputDeviceName);
+                                         : inputDeviceName);
 
         return nullptr;
     }

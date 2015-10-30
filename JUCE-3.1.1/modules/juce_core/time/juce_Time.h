@@ -109,7 +109,9 @@ public:
                     midnight jan 1st 1970.
         @see getMilliseconds
     */
-    int64 toMilliseconds() const noexcept                           { return millisSinceEpoch; }
+    int64 toMilliseconds() const noexcept                           {
+        return millisSinceEpoch;
+    }
 
     /** Returns the year.
 

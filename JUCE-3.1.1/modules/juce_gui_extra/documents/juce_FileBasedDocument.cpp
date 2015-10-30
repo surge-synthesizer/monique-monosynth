@@ -95,9 +95,9 @@ Result FileBasedDocument::loadFrom (const File& newFile, const bool showMessageO
         AlertWindow::showMessageBoxAsync (AlertWindow::WarningIcon,
                                           TRANS("Failed to open file..."),
                                           TRANS("There was an error while trying to load the file: FLNM")
-                                              .replace ("FLNM", "\n" + newFile.getFullPathName())
-                                            + "\n\n"
-                                            + result.getErrorMessage());
+                                          .replace ("FLNM", "\n" + newFile.getFullPathName())
+                                          + "\n\n"
+                                          + result.getErrorMessage());
 
     return result;
 }
@@ -118,18 +118,18 @@ Result FileBasedDocument::loadFromUserSpecifiedFile (const bool showMessageOnFai
 static bool askToOverwriteFile (const File& newFile)
 {
     return AlertWindow::showOkCancelBox (AlertWindow::WarningIcon,
-                                            TRANS("File already exists"),
-                                            TRANS("There's already a file called: FLNM")
-                                                .replace ("FLNM", newFile.getFullPathName())
-                                             + "\n\n"
-                                             + TRANS("Are you sure you want to overwrite it?"),
-                                            TRANS("Overwrite"),
-                                            TRANS("Cancel"));
+                                         TRANS("File already exists"),
+                                         TRANS("There's already a file called: FLNM")
+                                         .replace ("FLNM", newFile.getFullPathName())
+                                         + "\n\n"
+                                         + TRANS("Are you sure you want to overwrite it?"),
+                                         TRANS("Overwrite"),
+                                         TRANS("Cancel"));
 }
 
 //==============================================================================
 FileBasedDocument::SaveResult FileBasedDocument::save (const bool askUserForFileIfNotSpecified,
-                                                       const bool showMessageOnFailure)
+        const bool showMessageOnFailure)
 {
     return saveAs (documentFile,
                    false,
@@ -138,9 +138,9 @@ FileBasedDocument::SaveResult FileBasedDocument::save (const bool askUserForFile
 }
 
 FileBasedDocument::SaveResult FileBasedDocument::saveAs (const File& newFile,
-                                                         const bool warnAboutOverwritingExistingFiles,
-                                                         const bool askUserForFileIfNotSpecified,
-                                                         const bool showMessageOnFailure)
+        const bool warnAboutOverwritingExistingFiles,
+        const bool askUserForFileIfNotSpecified,
+        const bool showMessageOnFailure)
 {
     if (newFile == File::nonexistent)
     {
@@ -153,8 +153,8 @@ FileBasedDocument::SaveResult FileBasedDocument::saveAs (const File& newFile,
     }
 
     if (warnAboutOverwritingExistingFiles
-          && newFile.exists()
-          && ! askToOverwriteFile (newFile))
+            && newFile.exists()
+            && ! askToOverwriteFile (newFile))
         return userCancelledSave;
 
     MouseCursor::showWaitCursor();
@@ -179,10 +179,10 @@ FileBasedDocument::SaveResult FileBasedDocument::saveAs (const File& newFile,
         AlertWindow::showMessageBoxAsync (AlertWindow::WarningIcon,
                                           TRANS("Error writing to file..."),
                                           TRANS("An error occurred while trying to save \"DCNM\" to the file: FLNM")
-                                            .replace ("DCNM", getDocumentTitle())
-                                            .replace ("FLNM", "\n" + newFile.getFullPathName())
-                                           + "\n\n"
-                                           + result.getErrorMessage());
+                                          .replace ("DCNM", getDocumentTitle())
+                                          .replace ("FLNM", "\n" + newFile.getFullPathName())
+                                          + "\n\n"
+                                          + result.getErrorMessage());
 
     return failedToWriteToFile;
 }
@@ -193,12 +193,12 @@ FileBasedDocument::SaveResult FileBasedDocument::saveIfNeededAndUserAgrees()
         return savedOk;
 
     const int r = AlertWindow::showYesNoCancelBox (AlertWindow::QuestionIcon,
-                                                   TRANS("Closing document..."),
-                                                   TRANS("Do you want to save the changes to \"DCNM\"?")
-                                                    .replace ("DCNM", getDocumentTitle()),
-                                                   TRANS("Save"),
-                                                   TRANS("Discard changes"),
-                                                   TRANS("Cancel"));
+                  TRANS("Closing document..."),
+                  TRANS("Do you want to save the changes to \"DCNM\"?")
+                  .replace ("DCNM", getDocumentTitle()),
+                  TRANS("Save"),
+                  TRANS("Discard changes"),
+                  TRANS("Cancel"));
 
     if (r == 1)  // save changes
         return save (true, true);

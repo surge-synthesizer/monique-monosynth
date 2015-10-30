@@ -50,6 +50,7 @@ protected:
 // ==============================================================================
 // ==============================================================================
 class ChangeParamOverTime;
+class SmoothedParameter;
 struct ParameterInfo
 {
     const TYPES_DEF type;
@@ -90,6 +91,8 @@ private:
 class ParameterRuntimeInfo
 {
 public:
+    SmoothedParameter*my_smoother;
+    
     // ==============================================================================
     inline void set_last_modulation_amount( float current_modulation_amount_ ) noexcept
     {

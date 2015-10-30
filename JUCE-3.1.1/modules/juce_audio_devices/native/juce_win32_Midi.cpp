@@ -300,8 +300,12 @@ MidiInput::~MidiInput()
     delete static_cast<MidiInCollector*> (internal);
 }
 
-void MidiInput::start()     { static_cast<MidiInCollector*> (internal)->start(); }
-void MidiInput::stop()      { static_cast<MidiInCollector*> (internal)->stop(); }
+void MidiInput::start()     {
+    static_cast<MidiInCollector*> (internal)->start();
+}
+void MidiInput::stop()      {
+    static_cast<MidiInCollector*> (internal)->stop();
+}
 
 
 //==============================================================================
@@ -350,7 +354,7 @@ int MidiOutput::getDefaultDeviceIndex()
             if ((mc.wTechnology & MOD_MAPPER) != 0)
                 return n;
 
-             ++n;
+            ++n;
         }
     }
 

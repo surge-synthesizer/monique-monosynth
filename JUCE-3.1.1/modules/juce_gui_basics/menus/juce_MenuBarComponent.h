@@ -33,8 +33,8 @@
     @see MenuBarModel
 */
 class JUCE_API  MenuBarComponent  : public Component,
-                                    private MenuBarModel::Listener,
-                                    private Timer
+    private MenuBarModel::Listener,
+    private Timer
 {
 public:
     //==============================================================================

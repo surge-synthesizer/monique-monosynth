@@ -218,9 +218,9 @@ typedef long int32;
 #ifdef XP_MACOSX
 typedef enum {
 #ifndef NP_NO_QUICKDRAW
-  NPDrawingModelQuickDraw = 0,
+    NPDrawingModelQuickDraw = 0,
 #endif
-  NPDrawingModelCoreGraphics = 1
+    NPDrawingModelCoreGraphics = 1
 } NPDrawingModel;
 #endif
 
@@ -240,8 +240,8 @@ typedef char*			NPMIMEType;
  */
 typedef struct _NPP
 {
-  void*	pdata;      /* plug-in private data */
-  void*	ndata;      /* netscape private data */
+    void*	pdata;      /* plug-in private data */
+    void*	ndata;      /* netscape private data */
 } NPP_t;
 
 typedef NPP_t*  NPP;
@@ -249,13 +249,13 @@ typedef NPP_t*  NPP;
 
 typedef struct _NPStream
 {
-  void*  pdata; /* plug-in private data */
-  void*  ndata; /* netscape private data */
-  const  char* url;
-  uint32 end;
-  uint32 lastmodified;
-  void*  notifyData;
-  const  char* headers; /* Response headers from host.
+    void*  pdata; /* plug-in private data */
+    void*  ndata; /* netscape private data */
+    const  char* url;
+    uint32 end;
+    uint32 lastmodified;
+    void*  notifyData;
+    const  char* headers; /* Response headers from host.
                          * Exists only for >= NPVERS_HAS_RESPONSE_HEADERS.
                          * Used for HTTP only; NULL for non-HTTP.
                          * Available from NPP_NewStream onwards.
@@ -270,31 +270,31 @@ typedef struct _NPStream
 
 typedef struct _NPByteRange
 {
-  int32  offset; /* negative offset means from the end */
-  uint32 length;
-  struct _NPByteRange* next;
+    int32  offset; /* negative offset means from the end */
+    uint32 length;
+    struct _NPByteRange* next;
 } NPByteRange;
 
 
 typedef struct _NPSavedData
 {
-  int32	len;
-  void*	buf;
+    int32	len;
+    void*	buf;
 } NPSavedData;
 
 
 typedef struct _NPRect
 {
-  uint16 top;
-  uint16 left;
-  uint16 bottom;
-  uint16 right;
+    uint16 top;
+    uint16 left;
+    uint16 bottom;
+    uint16 right;
 } NPRect;
 
 typedef struct _NPSize
 {
-  int32 width;
-  int32 height;
+    int32 width;
+    int32 height;
 } NPSize;
 
 #ifdef XP_UNIX
@@ -308,30 +308,30 @@ typedef struct _NPSize
  * These are used to pass additional platform specific information.
  */
 enum {
-  NP_SETWINDOW = 1,
-  NP_PRINT
+    NP_SETWINDOW = 1,
+    NP_PRINT
 };
 
 typedef struct
 {
-  int32 type;
+    int32 type;
 } NPAnyCallbackStruct;
 
 typedef struct
 {
-  int32        type;
+    int32        type;
 #ifdef MOZ_X11
-  Display*     display;
-  Visual*      visual;
-  Colormap     colormap;
-  unsigned int depth;
+    Display*     display;
+    Visual*      visual;
+    Colormap     colormap;
+    unsigned int depth;
 #endif
 } NPSetWindowCallbackStruct;
 
 typedef struct
 {
-  int32 type;
-  FILE* fp;
+    int32 type;
+    FILE* fp;
 } NPPrintCallbackStruct;
 
 #endif /* XP_UNIX */
@@ -383,38 +383,38 @@ typedef struct
  * List of variable names for which NPP_GetValue shall be implemented
  */
 typedef enum {
-  NPPVpluginNameString = 1,
-  NPPVpluginDescriptionString,
-  NPPVpluginWindowBool,
-  NPPVpluginTransparentBool,
-  NPPVjavaClass,                /* Not implemented in Mozilla 1.0 */
-  NPPVpluginWindowSize,
-  NPPVpluginTimerInterval,
+    NPPVpluginNameString = 1,
+    NPPVpluginDescriptionString,
+    NPPVpluginWindowBool,
+    NPPVpluginTransparentBool,
+    NPPVjavaClass,                /* Not implemented in Mozilla 1.0 */
+    NPPVpluginWindowSize,
+    NPPVpluginTimerInterval,
 
-  NPPVpluginScriptableInstance = (10 | NP_ABI_MASK),
-  NPPVpluginScriptableIID = 11,
+    NPPVpluginScriptableInstance = (10 | NP_ABI_MASK),
+    NPPVpluginScriptableIID = 11,
 
-  /* Introduced in Mozilla 0.9.9 */
-  NPPVjavascriptPushCallerBool = 12,
+    /* Introduced in Mozilla 0.9.9 */
+    NPPVjavascriptPushCallerBool = 12,
 
-  /* Introduced in Mozilla 1.0 */
-  NPPVpluginKeepLibraryInMemory = 13,
-  NPPVpluginNeedsXEmbed         = 14,
+    /* Introduced in Mozilla 1.0 */
+    NPPVpluginKeepLibraryInMemory = 13,
+    NPPVpluginNeedsXEmbed         = 14,
 
-  /* Get the NPObject for scripting the plugin. Introduced in Firefox
-   * 1.0 (NPAPI minor version 14).
-   */
-  NPPVpluginScriptableNPObject  = 15,
+    /* Get the NPObject for scripting the plugin. Introduced in Firefox
+     * 1.0 (NPAPI minor version 14).
+     */
+    NPPVpluginScriptableNPObject  = 15,
 
-  /* Get the plugin value (as \0-terminated UTF-8 string data) for
-   * form submission if the plugin is part of a form. Use
-   * NPN_MemAlloc() to allocate memory for the string data. Introduced
-   * in Mozilla 1.8b2 (NPAPI minor version 15).
-   */
-  NPPVformValue = 16
+    /* Get the plugin value (as \0-terminated UTF-8 string data) for
+     * form submission if the plugin is part of a form. Use
+     * NPN_MemAlloc() to allocate memory for the string data. Introduced
+     * in Mozilla 1.8b2 (NPAPI minor version 15).
+     */
+    NPPVformValue = 16
 #ifdef XP_MACOSX
-  /* Used for negotiating drawing models */
-  , NPPVpluginDrawingModel = 1000
+                    /* Used for negotiating drawing models */
+                    , NPPVpluginDrawingModel = 1000
 #endif
 } NPPVariable;
 
@@ -422,35 +422,35 @@ typedef enum {
  * List of variable names for which NPN_GetValue is implemented by Mozilla
  */
 typedef enum {
-  NPNVxDisplay = 1,
-  NPNVxtAppContext,
-  NPNVnetscapeWindow,
-  NPNVjavascriptEnabledBool,
-  NPNVasdEnabledBool,
-  NPNVisOfflineBool,
+    NPNVxDisplay = 1,
+    NPNVxtAppContext,
+    NPNVnetscapeWindow,
+    NPNVjavascriptEnabledBool,
+    NPNVasdEnabledBool,
+    NPNVisOfflineBool,
 
-  /* 10 and over are available on Mozilla builds starting with 0.9.4 */
-  NPNVserviceManager = (10 | NP_ABI_MASK),
-  NPNVDOMElement     = (11 | NP_ABI_MASK),   /* available in Mozilla 1.2 */
-  NPNVDOMWindow      = (12 | NP_ABI_MASK),
-  NPNVToolkit        = (13 | NP_ABI_MASK),
-  NPNVSupportsXEmbedBool = 14,
+    /* 10 and over are available on Mozilla builds starting with 0.9.4 */
+    NPNVserviceManager = (10 | NP_ABI_MASK),
+    NPNVDOMElement     = (11 | NP_ABI_MASK),   /* available in Mozilla 1.2 */
+    NPNVDOMWindow      = (12 | NP_ABI_MASK),
+    NPNVToolkit        = (13 | NP_ABI_MASK),
+    NPNVSupportsXEmbedBool = 14,
 
-  /* Get the NPObject wrapper for the browser window. */
-  NPNVWindowNPObject = 15,
+    /* Get the NPObject wrapper for the browser window. */
+    NPNVWindowNPObject = 15,
 
-  /* Get the NPObject wrapper for the plugins DOM element. */
-  NPNVPluginElementNPObject = 16,
+    /* Get the NPObject wrapper for the plugins DOM element. */
+    NPNVPluginElementNPObject = 16,
 
-  NPNVSupportsWindowless = 17
+    NPNVSupportsWindowless = 17
 
 #ifdef XP_MACOSX
-  /* Used for negotiating drawing models */
-  , NPNVpluginDrawingModel = 1000
+                             /* Used for negotiating drawing models */
+                             , NPNVpluginDrawingModel = 1000
 #ifndef NP_NO_QUICKDRAW
-  , NPNVsupportsQuickDrawBool = 2000
+                                     , NPNVsupportsQuickDrawBool = 2000
 #endif
-  , NPNVsupportsCoreGraphicsBool = 2001
+                                             , NPNVsupportsCoreGraphicsBool = 2001
 #endif
 } NPNVariable;
 
@@ -458,8 +458,8 @@ typedef enum {
  * The type of Tookkit the widgets use
  */
 typedef enum {
-  NPNVGtk12 = 1,
-  NPNVGtk2
+    NPNVGtk12 = 1,
+    NPNVGtk2
 } NPNToolkitType;
 
 /*
@@ -467,49 +467,49 @@ typedef enum {
  * returned in the window field.
  */
 typedef enum {
-  NPWindowTypeWindow = 1,
-  NPWindowTypeDrawable
+    NPWindowTypeWindow = 1,
+    NPWindowTypeDrawable
 } NPWindowType;
 
 typedef struct _NPWindow
 {
-  void* window;  /* Platform specific window handle */
-                 /* OS/2: x - Position of bottom left corner  */
-                 /* OS/2: y - relative to visible netscape window */
-  int32 x;       /* Position of top left corner relative */
-  int32 y;       /* to a netscape page.					*/
-  uint32 width;  /* Maximum window size */
-  uint32 height;
-  NPRect clipRect; /* Clipping rectangle in port coordinates */
-                   /* Used by MAC only.			  */
+    void* window;  /* Platform specific window handle */
+    /* OS/2: x - Position of bottom left corner  */
+    /* OS/2: y - relative to visible netscape window */
+    int32 x;       /* Position of top left corner relative */
+    int32 y;       /* to a netscape page.					*/
+    uint32 width;  /* Maximum window size */
+    uint32 height;
+    NPRect clipRect; /* Clipping rectangle in port coordinates */
+    /* Used by MAC only.			  */
 #if defined(XP_UNIX) && !defined(XP_MACOSX)
-  void * ws_info; /* Platform-dependent additonal data */
+    void * ws_info; /* Platform-dependent additonal data */
 #endif /* XP_UNIX */
-  NPWindowType type; /* Is this a window or a drawable? */
+    NPWindowType type; /* Is this a window or a drawable? */
 } NPWindow;
 
 
 typedef struct _NPFullPrint
 {
-  NPBool pluginPrinted;/* Set TRUE if plugin handled fullscreen printing */
-  NPBool printOne;		 /* TRUE if plugin should print one copy to default printer */
-  void* platformPrint; /* Platform-specific printing info */
+    NPBool pluginPrinted;/* Set TRUE if plugin handled fullscreen printing */
+    NPBool printOne;		 /* TRUE if plugin should print one copy to default printer */
+    void* platformPrint; /* Platform-specific printing info */
 } NPFullPrint;
 
 typedef struct _NPEmbedPrint
 {
-  NPWindow window;
-  void* platformPrint; /* Platform-specific printing info */
+    NPWindow window;
+    void* platformPrint; /* Platform-specific printing info */
 } NPEmbedPrint;
 
 typedef struct _NPPrint
 {
-  uint16 mode;               /* NP_FULL or NP_EMBED */
-  union
-  {
-    NPFullPrint fullPrint;   /* if mode is NP_FULL */
-    NPEmbedPrint embedPrint; /* if mode is NP_EMBED */
-  } print;
+    uint16 mode;               /* NP_FULL or NP_EMBED */
+    union
+    {
+        NPFullPrint fullPrint;   /* if mode is NP_FULL */
+        NPEmbedPrint embedPrint; /* if mode is NP_EMBED */
+    } print;
 } NPPrint;
 
 #ifdef XP_MACOSX
@@ -517,16 +517,16 @@ typedef EventRecord	NPEvent;
 #elif defined(XP_WIN)
 typedef struct _NPEvent
 {
-  uint16 event;
-  uint32 wParam;
-  uint32 lParam;
+    uint16 event;
+    uint32 wParam;
+    uint32 lParam;
 } NPEvent;
 #elif defined(XP_OS2)
 typedef struct _NPEvent
 {
-  uint32 event;
-  uint32 wParam;
-  uint32 lParam;
+    uint32 event;
+    uint32 wParam;
+    uint32 lParam;
 } NPEvent;
 #elif defined (XP_UNIX) && defined(MOZ_X11)
 typedef XEvent NPEvent;
@@ -555,15 +555,15 @@ typedef void *NPRegion;
 
 typedef struct NP_Port
 {
-  CGrafPtr port; /* Grafport */
-  int32 portx;   /* position inside the topmost window */
-  int32 porty;
+    CGrafPtr port; /* Grafport */
+    int32 portx;   /* position inside the topmost window */
+    int32 porty;
 } NP_Port;
 
 typedef struct NP_CGContext
 {
-  CGContextRef context;
-  WindowRef window;
+    CGContextRef context;
+    WindowRef window;
 } NP_CGContext;
 
 /*
@@ -571,13 +571,13 @@ typedef struct NP_CGContext
  */
 
 enum NPEventType {
-  NPEventType_GetFocusEvent = (osEvt + 16),
-  NPEventType_LoseFocusEvent,
-  NPEventType_AdjustCursorEvent,
-  NPEventType_MenuCommandEvent,
-  NPEventType_ClippingChangedEvent,
-  NPEventType_ScrollingBeginsEvent = 1000,
-  NPEventType_ScrollingEndsEvent
+    NPEventType_GetFocusEvent = (osEvt + 16),
+    NPEventType_LoseFocusEvent,
+    NPEventType_AdjustCursorEvent,
+    NPEventType_MenuCommandEvent,
+    NPEventType_ClippingChangedEvent,
+    NPEventType_ScrollingBeginsEvent = 1000,
+    NPEventType_ScrollingEndsEvent
 };
 
 #ifdef OBSOLETE
@@ -751,8 +751,8 @@ void    NP_LOADDS NPN_ForceRedraw(NPP instance);
 void    NP_LOADDS NPN_PushPopupsEnabledState(NPP instance, NPBool enabled);
 void    NP_LOADDS NPN_PopPopupsEnabledState(NPP instance);
 void    NP_LOADDS NPN_PluginThreadAsyncCall(NPP instance,
-                                            void (*func) (void *),
-                                            void *userData);
+        void (*func) (void *),
+        void *userData);
 
 #ifdef __cplusplus
 }  /* end extern "C" */

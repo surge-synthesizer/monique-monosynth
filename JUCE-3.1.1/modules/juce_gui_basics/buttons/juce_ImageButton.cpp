@@ -94,13 +94,13 @@ Image ImageButton::getNormalImage() const
 Image ImageButton::getOverImage() const
 {
     return overImage.isValid() ? overImage
-                               : normalImage;
+           : normalImage;
 }
 
 Image ImageButton::getDownImage() const
 {
     return downImage.isValid() ? downImage
-                               : getOverImage();
+           : getOverImage();
 }
 
 void ImageButton::paintButton (Graphics& g,
@@ -167,11 +167,11 @@ void ImageButton::paintButton (Graphics& g,
 
         getLookAndFeel().drawImageButton (g, &im, x, y, w, h,
                                           useDownImage ? downOverlay
-                                                       : (isMouseOverButton ? overOverlay
-                                                                            : normalOverlay),
+                                          : (isMouseOverButton ? overOverlay
+                                             : normalOverlay),
                                           useDownImage ? downOpacity
-                                                       : (isMouseOverButton ? overOpacity
-                                                                            : normalOpacity),
+                                          : (isMouseOverButton ? overOpacity
+                                             : normalOpacity),
                                           *this);
     }
 }
@@ -184,6 +184,6 @@ bool ImageButton::hitTest (int x, int y)
     Image im (getCurrentImage());
 
     return im.isNull() || ((! imageBounds.isEmpty())
-                            && alphaThreshold < im.getPixelAt (((x - imageBounds.getX()) * im.getWidth()) / imageBounds.getWidth(),
-                                                               ((y - imageBounds.getY()) * im.getHeight()) / imageBounds.getHeight()).getAlpha());
+                           && alphaThreshold < im.getPixelAt (((x - imageBounds.getX()) * im.getWidth()) / imageBounds.getWidth(),
+                                   ((y - imageBounds.getY()) * im.getHeight()) / imageBounds.getHeight()).getAlpha());
 }

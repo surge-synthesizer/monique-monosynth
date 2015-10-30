@@ -41,39 +41,39 @@ FileChooser::~FileChooser() {}
 bool FileChooser::browseForFileToOpen (FilePreviewComponent* previewComp)
 {
     return showDialog (FileBrowserComponent::openMode
-                        | FileBrowserComponent::canSelectFiles,
+                       | FileBrowserComponent::canSelectFiles,
                        previewComp);
 }
 
 bool FileChooser::browseForMultipleFilesToOpen (FilePreviewComponent* previewComp)
 {
     return showDialog (FileBrowserComponent::openMode
-                        | FileBrowserComponent::canSelectFiles
-                        | FileBrowserComponent::canSelectMultipleItems,
+                       | FileBrowserComponent::canSelectFiles
+                       | FileBrowserComponent::canSelectMultipleItems,
                        previewComp);
 }
 
 bool FileChooser::browseForMultipleFilesOrDirectories (FilePreviewComponent* previewComp)
 {
     return showDialog (FileBrowserComponent::openMode
-                        | FileBrowserComponent::canSelectFiles
-                        | FileBrowserComponent::canSelectDirectories
-                        | FileBrowserComponent::canSelectMultipleItems,
+                       | FileBrowserComponent::canSelectFiles
+                       | FileBrowserComponent::canSelectDirectories
+                       | FileBrowserComponent::canSelectMultipleItems,
                        previewComp);
 }
 
 bool FileChooser::browseForFileToSave (const bool warnAboutOverwrite)
 {
     return showDialog (FileBrowserComponent::saveMode
-                        | FileBrowserComponent::canSelectFiles
-                        | (warnAboutOverwrite ? FileBrowserComponent::warnAboutOverwriting : 0),
+                       | FileBrowserComponent::canSelectFiles
+                       | (warnAboutOverwrite ? FileBrowserComponent::warnAboutOverwriting : 0),
                        nullptr);
 }
 
 bool FileChooser::browseForDirectory()
 {
     return showDialog (FileBrowserComponent::openMode
-                        | FileBrowserComponent::canSelectDirectories,
+                       | FileBrowserComponent::canSelectDirectories,
                        nullptr);
 }
 
@@ -85,7 +85,7 @@ bool FileChooser::showDialog (const int flags, FilePreviewComponent* const previ
 
     // the preview component needs to be the right size before you pass it in here..
     jassert (previewComp == nullptr || (previewComp->getWidth() > 10
-                                         && previewComp->getHeight() > 10));
+                                        && previewComp->getHeight() > 10));
 
     const bool selectsDirectories = (flags & FileBrowserComponent::canSelectDirectories) != 0;
     const bool selectsFiles       = (flags & FileBrowserComponent::canSelectFiles) != 0;
@@ -96,13 +96,13 @@ bool FileChooser::showDialog (const int flags, FilePreviewComponent* const previ
     // You've set the flags for both saveMode and openMode!
     jassert (! (isSave && (flags & FileBrowserComponent::openMode) != 0));
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     if (useNativeDialogBox && ! (selectsFiles && selectsDirectories))
-   #elif JUCE_MAC || JUCE_LINUX
+#elif JUCE_MAC || JUCE_LINUX
     if (useNativeDialogBox && (previewComp == nullptr))
-   #else
+#else
     if (false)
-   #endif
+#endif
     {
         showPlatformDialog (results, title, startingFile, filters,
                             selectsDirectories, selectsFiles, isSave,

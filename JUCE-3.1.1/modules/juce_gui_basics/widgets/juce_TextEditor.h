@@ -36,8 +36,8 @@
     @see TextEditor::Listener, Label
 */
 class JUCE_API  TextEditor  : public Component,
-                              public TextInputTarget,
-                              public SettableTooltipClient
+    public TextInputTarget,
+    public SettableTooltipClient
 {
 public:
     //==============================================================================
@@ -87,7 +87,9 @@ public:
     /** Returns the value set by setReturnKeyStartsNewLine().
         See setReturnKeyStartsNewLine() for more info.
     */
-    bool getReturnKeyStartsNewLine() const                      { return returnKeyStartsNewLine; }
+    bool getReturnKeyStartsNewLine() const                      {
+        return returnKeyStartsNewLine;
+    }
 
     /** Indicates whether the tab key should be accepted and used to input a tab character,
         or whether it gets ignored.
@@ -100,7 +102,9 @@ public:
     /** Returns true if the tab key is being used for input.
         @see setTabKeyUsedAsCharacter
     */
-    bool isTabKeyUsedAsCharacter() const                        { return tabKeyUsed; }
+    bool isTabKeyUsedAsCharacter() const                        {
+        return tabKeyUsed;
+    }
 
     /** This can be used to change whether escape and return keypress events are
         propagated up to the parent component.
@@ -135,7 +139,9 @@ public:
     /** Returns true if the caret is enabled.
         @see setCaretVisible
     */
-    bool isCaretVisible() const noexcept                            { return caret != nullptr; }
+    bool isCaretVisible() const noexcept                            {
+        return caret != nullptr;
+    }
 
     //==============================================================================
     /** Enables/disables a vertical scrollbar.
@@ -151,7 +157,9 @@ public:
     /** Returns true if scrollbars are enabled.
         @see setScrollbarsShown
     */
-    bool areScrollbarsShown() const noexcept                        { return scrollbarVisible; }
+    bool areScrollbarsShown() const noexcept                        {
+        return scrollbarVisible;
+    }
 
 
     /** Changes the password character used to disguise the text.
@@ -168,7 +176,9 @@ public:
     /** Returns the current password character.
         @see setPasswordCharacter
     */
-    juce_wchar getPasswordCharacter() const noexcept                { return passwordCharacter; }
+    juce_wchar getPasswordCharacter() const noexcept                {
+        return passwordCharacter;
+    }
 
 
     //==============================================================================
@@ -184,10 +194,14 @@ public:
     /** Returns true if the right-click menu is enabled.
         @see setPopupMenuEnabled
     */
-    bool isPopupMenuEnabled() const noexcept                        { return popupMenuEnabled; }
+    bool isPopupMenuEnabled() const noexcept                        {
+        return popupMenuEnabled;
+    }
 
     /** Returns true if a popup-menu is currently being displayed. */
-    bool isPopupMenuCurrentlyActive() const noexcept                { return menuActive; }
+    bool isPopupMenuCurrentlyActive() const noexcept                {
+        return menuActive;
+    }
 
     //==============================================================================
     /** A set of colour IDs to use to change the colour of various aspects of the editor.
@@ -243,7 +257,9 @@ public:
     /** Returns the font that's currently being used for new text.
         @see setFont
     */
-    const Font& getFont() const noexcept            { return currentFont; }
+    const Font& getFont() const noexcept            {
+        return currentFont;
+    }
 
     //==============================================================================
     /** If set to true, focusing on the editor will highlight all its text.
@@ -408,7 +424,9 @@ public:
         If nothing is selected, this will return an empty range.
         @see setHighlightedRegion
     */
-    Range<int> getHighlightedRegion() const override            { return selection; }
+    Range<int> getHighlightedRegion() const override            {
+        return selection;
+    }
 
     /** Returns the section of text that is currently selected. */
     String getHighlightedText() const;
@@ -569,7 +587,9 @@ public:
     void setInputFilter (InputFilter* newFilter, bool takeOwnership);
 
     /** Returns the current InputFilter, as set by setInputFilter(). */
-    InputFilter* getInputFilter() const noexcept            { return inputFilter; }
+    InputFilter* getInputFilter() const noexcept            {
+        return inputFilter;
+    }
 
     /** Sets limits on the characters that can be entered.
         This is just a shortcut that passes an instance of the LengthAndCharacterRestriction

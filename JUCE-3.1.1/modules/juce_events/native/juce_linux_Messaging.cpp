@@ -23,7 +23,7 @@
 */
 
 #if JUCE_DEBUG && ! defined (JUCE_DEBUG_XERRORS)
- #define JUCE_DEBUG_XERRORS 1
+#define JUCE_DEBUG_XERRORS 1
 #endif
 
 Display* display = nullptr;
@@ -37,8 +37,12 @@ typedef void (*SelectionRequestCallback) (XSelectionRequestEvent&);
 SelectionRequestCallback handleSelectionRequest = nullptr;
 
 //==============================================================================
-ScopedXLock::ScopedXLock()       { XLockDisplay (display); }
-ScopedXLock::~ScopedXLock()      { XUnlockDisplay (display); }
+ScopedXLock::ScopedXLock()       {
+    XLockDisplay (display);
+}
+ScopedXLock::~ScopedXLock()      {
+    XUnlockDisplay (display);
+}
 
 //==============================================================================
 class InternalMessageQueue
@@ -49,7 +53,8 @@ public:
           totalEventCount (0)
     {
         int ret = ::socketpair (AF_LOCAL, SOCK_STREAM, 0, fd);
-        (void) ret; jassert (ret == 0);
+        (void) ret;
+        jassert (ret == 0);
     }
 
     ~InternalMessageQueue()
@@ -140,7 +145,9 @@ private:
     int bytesInSocket;
     int totalEventCount;
 
-    int getWaitHandle() const noexcept      { return fd[1]; }
+    int getWaitHandle() const noexcept      {
+        return fd[1];
+    }
 
     static bool setNonBlocking (int handle)
     {
@@ -168,7 +175,7 @@ private:
         }
 
         if (evt.type == SelectionRequest && evt.xany.window == juce_messageWindowHandle
-              && handleSelectionRequest != nullptr)
+                && handleSelectionRequest != nullptr)
             handleSelectionRequest (evt.xselectionrequest);
         else if (evt.xany.window != juce_messageWindowHandle && dispatchWindowMessage != nullptr)
             dispatchWindowMessage (evt);
@@ -215,73 +222,73 @@ juce_ImplementSingleton_SingleThreaded (InternalMessageQueue)
 //==============================================================================
 namespace LinuxErrorHandling
 {
-    static bool errorOccurred = false;
-    static bool keyboardBreakOccurred = false;
-    static XErrorHandler oldErrorHandler = (XErrorHandler) 0;
-    static XIOErrorHandler oldIOErrorHandler = (XIOErrorHandler) 0;
+static bool errorOccurred = false;
+static bool keyboardBreakOccurred = false;
+static XErrorHandler oldErrorHandler = (XErrorHandler) 0;
+static XIOErrorHandler oldIOErrorHandler = (XIOErrorHandler) 0;
 
-    //==============================================================================
-    // Usually happens when client-server connection is broken
-    int ioErrorHandler (Display*)
+//==============================================================================
+// Usually happens when client-server connection is broken
+int ioErrorHandler (Display*)
+{
+    DBG ("ERROR: connection to X server broken.. terminating.");
+
+    if (JUCEApplicationBase::isStandaloneApp())
+        MessageManager::getInstance()->stopDispatchLoop();
+
+    errorOccurred = true;
+    return 0;
+}
+
+int errorHandler (Display* display, XErrorEvent* event)
+{
+#if JUCE_DEBUG_XERRORS
+    char errorStr[64] = { 0 };
+    char requestStr[64] = { 0 };
+
+    XGetErrorText (display, event->error_code, errorStr, 64);
+    XGetErrorDatabaseText (display, "XRequest", String (event->request_code).toUTF8(), "Unknown", requestStr, 64);
+    DBG ("ERROR: X returned " << errorStr << " for operation " << requestStr);
+#endif
+
+    return 0;
+}
+
+void installXErrorHandlers()
+{
+    oldIOErrorHandler = XSetIOErrorHandler (ioErrorHandler);
+    oldErrorHandler = XSetErrorHandler (errorHandler);
+}
+
+void removeXErrorHandlers()
+{
+    if (JUCEApplicationBase::isStandaloneApp())
     {
-        DBG ("ERROR: connection to X server broken.. terminating.");
+        XSetIOErrorHandler (oldIOErrorHandler);
+        oldIOErrorHandler = 0;
 
-        if (JUCEApplicationBase::isStandaloneApp())
-            MessageManager::getInstance()->stopDispatchLoop();
-
-        errorOccurred = true;
-        return 0;
+        XSetErrorHandler (oldErrorHandler);
+        oldErrorHandler = 0;
     }
+}
 
-    int errorHandler (Display* display, XErrorEvent* event)
-    {
-       #if JUCE_DEBUG_XERRORS
-        char errorStr[64] = { 0 };
-        char requestStr[64] = { 0 };
+//==============================================================================
+void keyboardBreakSignalHandler (int sig)
+{
+    if (sig == SIGINT)
+        keyboardBreakOccurred = true;
+}
 
-        XGetErrorText (display, event->error_code, errorStr, 64);
-        XGetErrorDatabaseText (display, "XRequest", String (event->request_code).toUTF8(), "Unknown", requestStr, 64);
-        DBG ("ERROR: X returned " << errorStr << " for operation " << requestStr);
-       #endif
-
-        return 0;
-    }
-
-    void installXErrorHandlers()
-    {
-        oldIOErrorHandler = XSetIOErrorHandler (ioErrorHandler);
-        oldErrorHandler = XSetErrorHandler (errorHandler);
-    }
-
-    void removeXErrorHandlers()
-    {
-        if (JUCEApplicationBase::isStandaloneApp())
-        {
-            XSetIOErrorHandler (oldIOErrorHandler);
-            oldIOErrorHandler = 0;
-
-            XSetErrorHandler (oldErrorHandler);
-            oldErrorHandler = 0;
-        }
-    }
-
-    //==============================================================================
-    void keyboardBreakSignalHandler (int sig)
-    {
-        if (sig == SIGINT)
-            keyboardBreakOccurred = true;
-    }
-
-    void installKeyboardBreakHandler()
-    {
-        struct sigaction saction;
-        sigset_t maskSet;
-        sigemptyset (&maskSet);
-        saction.sa_handler = keyboardBreakSignalHandler;
-        saction.sa_mask = maskSet;
-        saction.sa_flags = 0;
-        sigaction (SIGINT, &saction, 0);
-    }
+void installKeyboardBreakHandler()
+{
+    struct sigaction saction;
+    sigset_t maskSet;
+    sigemptyset (&maskSet);
+    saction.sa_handler = keyboardBreakSignalHandler;
+    saction.sa_mask = maskSet;
+    saction.sa_flags = 0;
+    sigaction (SIGINT, &saction, 0);
+}
 }
 
 //==============================================================================
@@ -331,9 +338,9 @@ void MessageManager::doPlatformSpecificInitialisation()
         // Create our message window (this will never be mapped)
         const int screen = DefaultScreen (display);
         juce_messageWindowHandle = XCreateWindow (display, RootWindow (display, screen),
-                                                  0, 0, 1, 1, 0, 0, InputOnly,
-                                                  DefaultVisual (display, screen),
-                                                  CWEventMask, &swa);
+                                   0, 0, 1, 1, 0, 0, InputOnly,
+                                   DefaultVisual (display, screen),
+                                   CWEventMask, &swa);
     }
 }
 

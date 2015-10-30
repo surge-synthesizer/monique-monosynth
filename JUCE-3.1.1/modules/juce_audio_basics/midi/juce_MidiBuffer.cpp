@@ -24,64 +24,65 @@
 
 namespace MidiBufferHelpers
 {
-    inline int getEventTime (const void* const d) noexcept
+inline int getEventTime (const void* const d) noexcept
+{
+    return *static_cast<const int32*> (d);
+}
+
+inline uint16 getEventDataSize (const void* const d) noexcept
+{
+    return *reinterpret_cast<const uint16*> (static_cast<const char*> (d) + sizeof (int32));
+}
+
+inline uint16 getEventTotalSize (const void* const d) noexcept
+{
+    return getEventDataSize (d) + sizeof (int32) + sizeof (uint16);
+}
+
+static int findActualEventLength (const uint8* const data, const int maxBytes) noexcept
+{
+    unsigned int byte = (unsigned int) *data;
+    int size = 0;
+
+    if (byte == 0xf0 || byte == 0xf7)
     {
-        return *static_cast<const int32*> (d);
+        const uint8* d = data + 1;
+
+        while (d < data + maxBytes)
+            if (*d++ == 0xf7)
+                break;
+
+        size = (int) (d - data);
+    }
+    else if (byte == 0xff)
+    {
+        int n;
+        const int bytesLeft = MidiMessage::readVariableLengthVal (data + 1, n);
+        size = jmin (maxBytes, n + 2 + bytesLeft);
+    }
+    else if (byte >= 0x80)
+    {
+        size = jmin (maxBytes, MidiMessage::getMessageLengthFromFirstByte ((uint8) byte));
     }
 
-    inline uint16 getEventDataSize (const void* const d) noexcept
-    {
-        return *reinterpret_cast<const uint16*> (static_cast<const char*> (d) + sizeof (int32));
-    }
+    return size;
+}
 
-    inline uint16 getEventTotalSize (const void* const d) noexcept
-    {
-        return getEventDataSize (d) + sizeof (int32) + sizeof (uint16);
-    }
+static uint8* findEventAfter (uint8* d, uint8* endData, const int samplePosition) noexcept
+{
+    while (d < endData && getEventTime (d) <= samplePosition)
+        d += getEventTotalSize (d);
 
-    static int findActualEventLength (const uint8* const data, const int maxBytes) noexcept
-    {
-        unsigned int byte = (unsigned int) *data;
-        int size = 0;
-
-        if (byte == 0xf0 || byte == 0xf7)
-        {
-            const uint8* d = data + 1;
-
-            while (d < data + maxBytes)
-                if (*d++ == 0xf7)
-                    break;
-
-            size = (int) (d - data);
-        }
-        else if (byte == 0xff)
-        {
-            int n;
-            const int bytesLeft = MidiMessage::readVariableLengthVal (data + 1, n);
-            size = jmin (maxBytes, n + 2 + bytesLeft);
-        }
-        else if (byte >= 0x80)
-        {
-            size = jmin (maxBytes, MidiMessage::getMessageLengthFromFirstByte ((uint8) byte));
-        }
-
-        return size;
-    }
-
-    static uint8* findEventAfter (uint8* d, uint8* endData, const int samplePosition) noexcept
-    {
-        while (d < endData && getEventTime (d) <= samplePosition)
-            d += getEventTotalSize (d);
-
-        return d;
-    }
+    return d;
+}
 }
 
 //==============================================================================
 MidiBuffer::MidiBuffer() noexcept {}
 MidiBuffer::~MidiBuffer() {}
 
-MidiBuffer::MidiBuffer (const MidiBuffer& other) noexcept  : data (other.data) {}
+MidiBuffer::MidiBuffer (const MidiBuffer& other) noexcept  :
+data (other.data) {}
 
 MidiBuffer& MidiBuffer::operator= (const MidiBuffer& other) noexcept
 {
@@ -96,8 +97,12 @@ MidiBuffer::MidiBuffer (const MidiMessage& message) noexcept
 
 void MidiBuffer::swapWith (MidiBuffer& other) noexcept      { data.swapWith (other.data); }
 void MidiBuffer::clear() noexcept                           { data.clearQuick(); }
-void MidiBuffer::ensureSize (size_t minimumNumBytes)        { data.ensureStorageAllocated ((int) minimumNumBytes); }
-bool MidiBuffer::isEmpty() const noexcept                   { return data.size() == 0; }
+void MidiBuffer::ensureSize (size_t minimumNumBytes)        {
+    data.ensureStorageAllocated ((int) minimumNumBytes);
+}
+bool MidiBuffer::isEmpty() const noexcept                   {
+    return data.size() == 0;
+}
 
 void MidiBuffer::clear (const int startSample, const int numSamples)
 {
@@ -184,7 +189,8 @@ int MidiBuffer::getLastEventTime() const noexcept
 
 //==============================================================================
 MidiBuffer::Iterator::Iterator (const MidiBuffer& b) noexcept
-    : buffer (b), data (b.data.begin())
+:
+buffer (b), data (b.data.begin())
 {
 }
 

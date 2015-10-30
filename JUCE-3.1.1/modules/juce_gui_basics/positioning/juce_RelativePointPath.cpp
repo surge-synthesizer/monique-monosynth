@@ -44,12 +44,24 @@ RelativePointPath::RelativePointPath (const Path& path)
     {
         switch (i.elementType)
         {
-            case Path::Iterator::startNewSubPath:   elements.add (new StartSubPath (RelativePoint (i.x1, i.y1))); break;
-            case Path::Iterator::lineTo:            elements.add (new LineTo (RelativePoint (i.x1, i.y1))); break;
-            case Path::Iterator::quadraticTo:       elements.add (new QuadraticTo (RelativePoint (i.x1, i.y1), RelativePoint (i.x2, i.y2))); break;
-            case Path::Iterator::cubicTo:           elements.add (new CubicTo (RelativePoint (i.x1, i.y1), RelativePoint (i.x2, i.y2), RelativePoint (i.x3, i.y3))); break;
-            case Path::Iterator::closePath:         elements.add (new CloseSubPath()); break;
-            default:                                jassertfalse; break;
+        case Path::Iterator::startNewSubPath:
+            elements.add (new StartSubPath (RelativePoint (i.x1, i.y1)));
+            break;
+        case Path::Iterator::lineTo:
+            elements.add (new LineTo (RelativePoint (i.x1, i.y1)));
+            break;
+        case Path::Iterator::quadraticTo:
+            elements.add (new QuadraticTo (RelativePoint (i.x1, i.y1), RelativePoint (i.x2, i.y2)));
+            break;
+        case Path::Iterator::cubicTo:
+            elements.add (new CubicTo (RelativePoint (i.x1, i.y1), RelativePoint (i.x2, i.y2), RelativePoint (i.x3, i.y3)));
+            break;
+        case Path::Iterator::closePath:
+            elements.add (new CloseSubPath());
+            break;
+        default:
+            jassertfalse;
+            break;
         }
     }
 }
@@ -61,8 +73,8 @@ RelativePointPath::~RelativePointPath()
 bool RelativePointPath::operator== (const RelativePointPath& other) const noexcept
 {
     if (elements.size() != other.elements.size()
-         || usesNonZeroWinding != other.usesNonZeroWinding
-         || containsDynamicPoints != other.containsDynamicPoints)
+            || usesNonZeroWinding != other.usesNonZeroWinding
+            || containsDynamicPoints != other.containsDynamicPoints)
         return false;
 
     for (int i = 0; i < elements.size(); ++i)

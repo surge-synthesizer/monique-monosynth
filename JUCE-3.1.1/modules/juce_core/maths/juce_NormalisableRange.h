@@ -45,11 +45,13 @@ class NormalisableRange
 {
 public:
     /** Creates a continuous range that performs a dummy mapping. */
-    NormalisableRange() noexcept  : start(), end (1), interval(), skew (static_cast<ValueType> (1)) {}
+NormalisableRange() noexcept  :
+    start(), end (1), interval(), skew (static_cast<ValueType> (1)) {}
 
     /** Creates a copy of another range. */
     NormalisableRange (const NormalisableRange& other) noexcept
-        : start (other.start), end (other.end),
+:
+    start (other.start), end (other.end),
           interval (other.interval), skew (other.skew)
     {
         checkInvariants();
@@ -71,8 +73,9 @@ public:
                        ValueType rangeEnd,
                        ValueType intervalValue,
                        ValueType skewFactor) noexcept
-        : start (rangeStart), end (rangeEnd),
-          interval (intervalValue), skew (skewFactor)
+:
+    start (rangeStart), end (rangeEnd),
+    interval (intervalValue), skew (skewFactor)
     {
         checkInvariants();
     }
@@ -81,8 +84,9 @@ public:
     NormalisableRange (ValueType rangeStart,
                        ValueType rangeEnd,
                        ValueType intervalValue) noexcept
-        : start (rangeStart), end (rangeEnd),
-          interval (intervalValue), skew (static_cast<ValueType> (1))
+:
+    start (rangeStart), end (rangeEnd),
+    interval (intervalValue), skew (static_cast<ValueType> (1))
     {
         checkInvariants();
     }
@@ -90,8 +94,9 @@ public:
     /** Creates a NormalisableRange with a given range, continuous interval, but a dummy skew-factor. */
     NormalisableRange (ValueType rangeStart,
                        ValueType rangeEnd) noexcept
-        : start (rangeStart), end (rangeEnd),
-          interval(), skew (static_cast<ValueType> (1))
+:
+    start (rangeStart), end (rangeEnd),
+    interval(), skew (static_cast<ValueType> (1))
     {
         checkInvariants();
     }

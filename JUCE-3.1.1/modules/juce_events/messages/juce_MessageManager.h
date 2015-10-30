@@ -79,24 +79,26 @@ public:
 
     /** Returns true if the stopDispatchLoop() method has been called.
     */
-    bool hasStopMessageBeenSent() const noexcept        { return quitMessagePosted; }
+    bool hasStopMessageBeenSent() const noexcept        {
+        return quitMessagePosted;
+    }
 
-   #if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
+#if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
     /** Synchronously dispatches messages until a given time has elapsed.
 
         Returns false if a quit message has been posted by a call to stopDispatchLoop(),
         otherwise returns true.
     */
     bool runDispatchLoopUntil (int millisecondsToRunFor);
-   #endif
+#endif
 
     //==============================================================================
-    #if JUCE_COMPILER_SUPPORTS_LAMBDAS
+#if JUCE_COMPILER_SUPPORTS_LAMBDAS
     /** Asynchronously invokes a function or C++11 lambda on the message thread.
         Internally this uses the CallbackMessage class to invoke the callback.
     */
     static void callAsync (std::function<void(void)>);
-    #endif
+#endif
 
     /** Calls a function using the message-thread.
 
@@ -133,7 +135,9 @@ public:
         (Best to ignore this method unless you really know what you're doing..)
         @see setCurrentThreadAsMessageThread
     */
-    Thread::ThreadID getCurrentMessageThread() const noexcept            { return messageThreadId; }
+    Thread::ThreadID getCurrentMessageThread() const noexcept            {
+        return messageThreadId;
+    }
 
     /** Returns true if the caller thread has currently got the message manager locked.
 
@@ -185,11 +189,11 @@ public:
     };
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     // Internal methods - do not use!
     void deliverBroadcastMessage (const String&);
     ~MessageManager() noexcept;
-   #endif
+#endif
 
 private:
     //==============================================================================
@@ -311,14 +315,16 @@ public:
 
         Make sure this object is created and deleted by the same thread,
         otherwise there are no guarantees what will happen!
-   */
+    */
     ~MessageManagerLock() noexcept;
 
     //==============================================================================
     /** Returns true if the lock was successfully acquired.
         (See the constructor that takes a Thread for more info).
     */
-    bool lockWasGained() const noexcept                     { return locked; }
+    bool lockWasGained() const noexcept                     {
+        return locked;
+    }
 
 private:
     class BlockingMessage;

@@ -38,7 +38,7 @@ static String getCommandLinePrefix (const String& commandLineUniqueID)
 // This thread sends and receives ping messages every second, so that it
 // can find out if the other process has stopped running.
 struct ChildProcessPingThread  : public Thread,
-                                 private AsyncUpdater
+    private AsyncUpdater
 {
     ChildProcessPingThread (int timeout)  : Thread ("IPC ping"), timeoutMs (timeout)
     {
@@ -51,7 +51,9 @@ struct ChildProcessPingThread  : public Thread,
     }
 
     void pingReceived() noexcept            { countdown = timeoutMs / 1000 + 1; }
-    void triggerConnectionLostMessage()     { triggerAsyncUpdate(); }
+    void triggerConnectionLostMessage()     {
+        triggerAsyncUpdate();
+    }
 
     virtual bool sendPingMessage (const MemoryBlock&) = 0;
     virtual void pingFailed() = 0;
@@ -61,7 +63,9 @@ struct ChildProcessPingThread  : public Thread,
 private:
     Atomic<int> countdown;
 
-    void handleAsyncUpdate() override   { pingFailed(); }
+    void handleAsyncUpdate() override   {
+        pingFailed();
+    }
 
     void run() override
     {
@@ -82,7 +86,7 @@ private:
 
 //==============================================================================
 struct ChildProcessMaster::Connection  : public InterprocessConnection,
-                                         private ChildProcessPingThread
+    private ChildProcessPingThread
 {
     Connection (ChildProcessMaster& m, const String& pipeName, int timeout)
         : InterprocessConnection (false, magicMastSlaveConnectionHeader),
@@ -100,10 +104,16 @@ struct ChildProcessMaster::Connection  : public InterprocessConnection,
 
 private:
     void connectionMade() override  {}
-    void connectionLost() override  { owner.handleConnectionLost(); }
+    void connectionLost() override  {
+        owner.handleConnectionLost();
+    }
 
-    bool sendPingMessage (const MemoryBlock& m) override    { return owner.sendMessageToSlave (m); }
-    void pingFailed() override                              { connectionLost(); }
+    bool sendPingMessage (const MemoryBlock& m) override    {
+        return owner.sendMessageToSlave (m);
+    }
+    void pingFailed() override                              {
+        connectionLost();
+    }
 
     void messageReceived (const MemoryBlock& m) override
     {
@@ -171,7 +181,7 @@ bool ChildProcessMaster::launchSlaveProcess (const File& executable, const Strin
 
 //==============================================================================
 struct ChildProcessSlave::Connection  : public InterprocessConnection,
-                                        private ChildProcessPingThread
+    private ChildProcessPingThread
 {
     Connection (ChildProcessSlave& p, const String& pipeName, int timeout)
         : InterprocessConnection (false, magicMastSlaveConnectionHeader),
@@ -191,10 +201,16 @@ private:
     ChildProcessSlave& owner;
 
     void connectionMade() override  {}
-    void connectionLost() override  { owner.handleConnectionLost(); }
+    void connectionLost() override  {
+        owner.handleConnectionLost();
+    }
 
-    bool sendPingMessage (const MemoryBlock& m) override    { return owner.sendMessageToMaster (m); }
-    void pingFailed() override                              { connectionLost(); }
+    bool sendPingMessage (const MemoryBlock& m) override    {
+        return owner.sendMessageToMaster (m);
+    }
+    void pingFailed() override                              {
+        connectionLost();
+    }
 
     void messageReceived (const MemoryBlock& m) override
     {
@@ -241,15 +257,15 @@ bool ChildProcessSlave::sendMessageToMaster (const MemoryBlock& mb)
 }
 
 bool ChildProcessSlave::initialiseFromCommandLine (const String& commandLine,
-                                                   const String& commandLineUniqueID,
-                                                   int timeoutMs)
+        const String& commandLineUniqueID,
+        int timeoutMs)
 {
     String prefix (getCommandLinePrefix (commandLineUniqueID));
 
     if (commandLine.trim().startsWith (prefix))
     {
         String pipeName (commandLine.fromFirstOccurrenceOf (prefix, false, false)
-                                    .upToFirstOccurrenceOf (" ", false, false).trim());
+                         .upToFirstOccurrenceOf (" ", false, false).trim());
 
         if (pipeName.isNotEmpty())
         {

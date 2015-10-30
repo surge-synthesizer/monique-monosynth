@@ -23,8 +23,8 @@
 */
 
 GlowEffect::GlowEffect()
-  : radius (2.0f),
-    colour (Colours::white)
+    : radius (2.0f),
+      colour (Colours::white)
 {
 }
 

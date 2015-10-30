@@ -36,11 +36,19 @@ public:
 
     struct XmlPath
     {
-        XmlPath (const XmlElement* e, const XmlPath* p) noexcept : xml (e), parent (p)  {}
+XmlPath (const XmlElement* e, const XmlPath* p) noexcept :
+        xml (e), parent (p)  {}
 
-        const XmlElement& operator*() const noexcept            { jassert (xml != nullptr); return *xml; }
-        const XmlElement* operator->() const noexcept           { return xml; }
-        XmlPath getChild (const XmlElement* e) const noexcept   { return XmlPath (e, this); }
+        const XmlElement& operator*() const noexcept            {
+            jassert (xml != nullptr);
+            return *xml;
+        }
+        const XmlElement* operator->() const noexcept           {
+            return xml;
+        }
+        XmlPath getChild (const XmlElement* e) const noexcept   {
+            return XmlPath (e, this);
+        }
 
         const XmlElement* xml;
         const XmlPath* parent;
@@ -78,9 +86,9 @@ public:
             Point<float> vwh;
 
             if (parseCoords (viewParams, viewboxXY, true)
-                 && parseCoords (viewParams, vwh, true)
-                 && vwh.x > 0
-                 && vwh.y > 0)
+                    && parseCoords (viewParams, vwh, true)
+                    && vwh.x > 0
+                    && vwh.y > 0)
             {
                 newState.viewBoxW = vwh.x;
                 newState.viewBoxH = vwh.y;
@@ -89,9 +97,9 @@ public:
 
                 if (placementFlags != 0)
                     newState.transform = RectanglePlacement (placementFlags)
-                                            .getTransformToFit (Rectangle<float> (viewboxXY.x, viewboxXY.y, vwh.x, vwh.y),
-                                                                Rectangle<float> (newState.width, newState.height))
-                                            .followedBy (newState.transform);
+                                         .getTransformToFit (Rectangle<float> (viewboxXY.x, viewboxXY.y, vwh.x, vwh.y),
+                                                 Rectangle<float> (newState.width, newState.height))
+                                         .followedBy (newState.transform);
             }
         }
         else
@@ -103,9 +111,9 @@ public:
         newState.parseSubElements (xml, *drawable);
 
         drawable->setContentArea (RelativeRectangle (RelativeCoordinate (viewboxXY.x),
-                                                     RelativeCoordinate (viewboxXY.x + newState.viewBoxW),
-                                                     RelativeCoordinate (viewboxXY.y),
-                                                     RelativeCoordinate (viewboxXY.y + newState.viewBoxH)));
+                                  RelativeCoordinate (viewboxXY.x + newState.viewBoxW),
+                                  RelativeCoordinate (viewboxXY.y),
+                                  RelativeCoordinate (viewboxXY.y + newState.viewBoxH)));
         drawable->resetBoundingBoxToContentArea();
 
         return drawable;
@@ -195,8 +203,8 @@ public:
             case 'C':
             case 'c':
                 if (parseCoordsOrSkip (d, p1, false)
-                     && parseCoordsOrSkip (d, p2, false)
-                     && parseCoordsOrSkip (d, p3, false))
+                        && parseCoordsOrSkip (d, p2, false)
+                        && parseCoordsOrSkip (d, p3, false))
                 {
                     if (isRelative)
                     {
@@ -215,7 +223,7 @@ public:
             case 'S':
             case 's':
                 if (parseCoordsOrSkip (d, p1, false)
-                     && parseCoordsOrSkip (d, p3, false))
+                        && parseCoordsOrSkip (d, p3, false))
                 {
                     if (isRelative)
                     {
@@ -234,7 +242,7 @@ public:
             case 'Q':
             case 'q':
                 if (parseCoordsOrSkip (d, p1, false)
-                     && parseCoordsOrSkip (d, p2, false))
+                        && parseCoordsOrSkip (d, p2, false))
                 {
                     if (isRelative)
                     {
@@ -356,7 +364,7 @@ private:
     void parseSubElements (const XmlPath& xml, DrawableComposite& parentDrawable)
     {
         forEachXmlChildElement (*xml, e)
-            parentDrawable.addAndMakeVisible (parseSubElement (xml.getChild (e)));
+        parentDrawable.addAndMakeVisible (parseSubElement (xml.getChild (e)));
     }
 
     Drawable* parseSubElement (const XmlPath& xml)
@@ -547,7 +555,7 @@ private:
                                       getStyleAttribute (xml, "fill-opacity"),
                                       getStyleAttribute (xml, "opacity"),
                                       pathContainsClosedSubPath (path) ? Colours::black
-                                                                       : Colours::transparentBlack));
+                                      : Colours::transparentBlack));
 
         const String strokeType (getStyleAttribute (xml, "stroke"));
 
@@ -698,7 +706,7 @@ private:
         FillType type (gradient);
 
         const AffineTransform gradientTransform (parseTransform (fillXml->getStringAttribute ("gradientTransform"))
-                                                    .followedBy (transform));
+                .followedBy (transform));
 
         if (gradient.isRadial)
         {
@@ -709,8 +717,8 @@ private:
             // Transform the perpendicular vector into the new coordinate space for the gradient.
             // This vector is now the slope of the linear gradient as it should appear in the new coord space
             const Point<float> perpendicular (Point<float> (gradient.point2.y - gradient.point1.y,
-                                                            gradient.point1.x - gradient.point2.x)
-                                                  .transformedBy (gradientTransform.withAbsoluteTranslation (0, 0)));
+                                              gradient.point1.x - gradient.point2.x)
+                                              .transformedBy (gradientTransform.withAbsoluteTranslation (0, 0)));
 
             const Point<float> newGradPoint1 (gradient.point1.transformedBy (gradientTransform));
             const Point<float> newGradPoint2 (gradient.point2.transformedBy (gradientTransform));
@@ -718,7 +726,7 @@ private:
             // Project the transformed gradient vector onto the transformed slope of the linear
             // gradient as it should appear in the new coordinate space
             const float scale = perpendicular.getDotProduct (newGradPoint2 - newGradPoint1)
-                                  / perpendicular.getDotProduct (perpendicular);
+                                / perpendicular.getDotProduct (perpendicular);
 
             type.gradient->point1 = newGradPoint1;
             type.gradient->point2 = newGradPoint2 - perpendicular * scale;
@@ -737,7 +745,7 @@ private:
         void operator() (const XmlPath& xml)
         {
             if (xml->hasTagNameIgnoringNamespace ("linearGradient")
-                 || xml->hasTagNameIgnoringNamespace ("radialGradient"))
+                    || xml->hasTagNameIgnoringNamespace ("radialGradient"))
                 *dest = state->getGradientFillType (xml, *path, opacity);
         }
     };
@@ -759,7 +767,7 @@ private:
         if (fill.startsWithIgnoreCase ("url"))
         {
             const String id (fill.fromFirstOccurrenceOf ("#", false, false)
-                                 .upToLastOccurrenceOf (")", false, false).trim());
+                             .upToLastOccurrenceOf (")", false, false).trim());
 
             FillType result;
             GetFillTypeOp op = { this, &result, &path, opacity };
@@ -841,7 +849,7 @@ private:
     void addTransform (const XmlPath& xml)
     {
         transform = parseTransform (xml->getStringAttribute ("transform"))
-                        .followedBy (transform);
+                    .followedBy (transform);
     }
 
     //==============================================================================
@@ -862,7 +870,7 @@ private:
     bool parseCoords (String::CharPointerType& s, Point<float>& p, const bool allowUnits) const
     {
         return parseCoord (s, p.x, allowUnits, true)
-            && parseCoord (s, p.y, allowUnits, false);
+               && parseCoord (s, p.y, allowUnits, false);
     }
 
     bool parseCoordsOrSkip (String::CharPointerType& s, Point<float>& p, const bool allowUnits) const
@@ -923,7 +931,7 @@ private:
         while (! source.isEmpty())
         {
             if (source.getAndAdvance() == '.'
-                 && CharacterFunctions::compareIgnoreCaseUpTo (source, name, nameLength) == 0)
+                    && CharacterFunctions::compareIgnoreCaseUpTo (source, name, nameLength) == 0)
             {
                 String::CharPointerType endOfName ((source + nameLength).findEndOfWhitespace());
 
@@ -953,7 +961,7 @@ private:
         else if (xml->hasAttribute ("class"))
         {
             String::CharPointerType openBrace = findStyleItem (cssStyleText.getCharPointer(),
-                                                               xml->getStringAttribute ("class").getCharPointer());
+                                                xml->getStringAttribute ("class").getCharPointer());
 
             if (! openBrace.isEmpty())
             {
@@ -962,7 +970,7 @@ private:
                 if (closeBrace != openBrace)
                 {
                     const String value (getAttributeFromStyleList (String (openBrace + 1, closeBrace),
-                                                                   attributeName, defaultValue));
+                                        attributeName, defaultValue));
                     if (value.isNotEmpty())
                         return value;
                 }
@@ -995,12 +1003,12 @@ private:
             return RectanglePlacement::stretchToFit;
 
         return (align.containsIgnoreCase ("slice") ? RectanglePlacement::fillDestination : 0)
-             | (align.containsIgnoreCase ("xMin")  ? RectanglePlacement::xLeft
-                                                   : (align.containsIgnoreCase ("xMax") ? RectanglePlacement::xRight
-                                                                                        : RectanglePlacement::xMid))
-             | (align.containsIgnoreCase ("yMin")  ? RectanglePlacement::yTop
-                                                   : (align.containsIgnoreCase ("yMax") ? RectanglePlacement::yBottom
-                                                                                        : RectanglePlacement::yMid));
+        | (align.containsIgnoreCase ("xMin")  ? RectanglePlacement::xLeft
+        : (align.containsIgnoreCase ("xMax") ? RectanglePlacement::xRight
+        : RectanglePlacement::xMid))
+        | (align.containsIgnoreCase ("yMin")  ? RectanglePlacement::yTop
+        : (align.containsIgnoreCase ("yMax") ? RectanglePlacement::yBottom
+        : RectanglePlacement::yMid));
     }
 
     //==============================================================================
@@ -1021,7 +1029,7 @@ private:
                 break;
 
             if ((i == 0 || (i > 0 && ! isIdentifierChar (list [i - 1])))
-                 && ! isIdentifierChar (list [i + attributeName.length()]))
+                    && ! isIdentifierChar (list [i + attributeName.length()]))
             {
                 i = list.indexOfChar (i, ':');
 
@@ -1059,7 +1067,7 @@ private:
             ++s;
 
         if ((*s == 'e' || *s == 'E')
-             && ((s + 1).isDigit() || s[1] == '-' || s[1] == '+'))
+                && ((s + 1).isDigit() || s[1] == '-' || s[1] == '+'))
         {
             s += 2;
 
@@ -1115,8 +1123,8 @@ private:
         }
 
         if (s [index] == 'r'
-              && s [index + 1] == 'g'
-              && s [index + 2] == 'b')
+                && s [index + 1] == 'g'
+                && s [index + 2] == 'b')
         {
             const int openBracket = s.indexOfChar (index, '(');
             const int closeBracket = s.indexOfChar (openBracket, ')');
@@ -1152,7 +1160,7 @@ private:
         {
             StringArray tokens;
             tokens.addTokens (t.fromFirstOccurrenceOf ("(", false, false)
-                               .upToFirstOccurrenceOf (")", false, false),
+                              .upToFirstOccurrenceOf (")", false, false),
                               ", ", "");
 
             tokens.removeEmptyStrings (true);
@@ -1224,7 +1232,7 @@ private:
         if (s <= 1.0)
         {
             c = std::sqrt (jmax (0.0, ((rx2 * ry2) - (rx2 * yp2) - (ry2 * xp2))
-                                         / (( rx2 * yp2) + (ry2 * xp2))));
+            / (( rx2 * yp2) + (ry2 * xp2))));
 
             if (largeArc == sweep)
                 c = -c;
@@ -1258,7 +1266,7 @@ private:
         startAngle += double_Pi * 0.5;
 
         deltaAngle = acos (jlimit (-1.0, 1.0, ((ux * vx) + (uy * vy))
-                                                / (length * juce_hypot (vx, vy))));
+        / (length * juce_hypot (vx, vy))));
 
         if ((ux * vy) - (uy * vx) < 0)
             deltaAngle = -deltaAngle;

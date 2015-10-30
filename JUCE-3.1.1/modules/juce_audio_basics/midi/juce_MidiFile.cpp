@@ -24,153 +24,153 @@
 
 namespace MidiFileHelpers
 {
-    static void writeVariableLengthInt (OutputStream& out, unsigned int v)
+static void writeVariableLengthInt (OutputStream& out, unsigned int v)
+{
+    unsigned int buffer = v & 0x7f;
+
+    while ((v >>= 7) != 0)
     {
-        unsigned int buffer = v & 0x7f;
-
-        while ((v >>= 7) != 0)
-        {
-            buffer <<= 8;
-            buffer |= ((v & 0x7f) | 0x80);
-        }
-
-        for (;;)
-        {
-            out.writeByte ((char) buffer);
-
-            if (buffer & 0x80)
-                buffer >>= 8;
-            else
-                break;
-        }
+        buffer <<= 8;
+        buffer |= ((v & 0x7f) | 0x80);
     }
 
-    static bool parseMidiHeader (const uint8* &data, short& timeFormat, short& fileType, short& numberOfTracks) noexcept
+    for (;;)
     {
-        unsigned int ch = ByteOrder::bigEndianInt (data);
-        data += 4;
+        out.writeByte ((char) buffer);
 
-        if (ch != ByteOrder::bigEndianInt ("MThd"))
+        if (buffer & 0x80)
+            buffer >>= 8;
+        else
+            break;
+    }
+}
+
+static bool parseMidiHeader (const uint8* &data, short& timeFormat, short& fileType, short& numberOfTracks) noexcept
+{
+    unsigned int ch = ByteOrder::bigEndianInt (data);
+    data += 4;
+
+    if (ch != ByteOrder::bigEndianInt ("MThd"))
+    {
+        bool ok = false;
+
+        if (ch == ByteOrder::bigEndianInt ("RIFF"))
         {
-            bool ok = false;
-
-            if (ch == ByteOrder::bigEndianInt ("RIFF"))
+            for (int i = 0; i < 8; ++i)
             {
-                for (int i = 0; i < 8; ++i)
-                {
-                    ch = ByteOrder::bigEndianInt (data);
-                    data += 4;
+                ch = ByteOrder::bigEndianInt (data);
+                data += 4;
 
-                    if (ch == ByteOrder::bigEndianInt ("MThd"))
-                    {
-                        ok = true;
-                        break;
-                    }
+                if (ch == ByteOrder::bigEndianInt ("MThd"))
+                {
+                    ok = true;
+                    break;
                 }
             }
-
-            if (! ok)
-                return false;
         }
 
-        unsigned int bytesRemaining = ByteOrder::bigEndianInt (data);
-        data += 4;
-        fileType = (short) ByteOrder::bigEndianShort (data);
-        data += 2;
-        numberOfTracks = (short) ByteOrder::bigEndianShort (data);
-        data += 2;
-        timeFormat = (short) ByteOrder::bigEndianShort (data);
-        data += 2;
-        bytesRemaining -= 6;
-        data += bytesRemaining;
-
-        return true;
+        if (! ok)
+            return false;
     }
 
-    static double convertTicksToSeconds (const double time,
-                                         const MidiMessageSequence& tempoEvents,
-                                         const int timeFormat)
+    unsigned int bytesRemaining = ByteOrder::bigEndianInt (data);
+    data += 4;
+    fileType = (short) ByteOrder::bigEndianShort (data);
+    data += 2;
+    numberOfTracks = (short) ByteOrder::bigEndianShort (data);
+    data += 2;
+    timeFormat = (short) ByteOrder::bigEndianShort (data);
+    data += 2;
+    bytesRemaining -= 6;
+    data += bytesRemaining;
+
+    return true;
+}
+
+static double convertTicksToSeconds (const double time,
+                                     const MidiMessageSequence& tempoEvents,
+                                     const int timeFormat)
+{
+    if (timeFormat < 0)
+        return time / (-(timeFormat >> 8) * (timeFormat & 0xff));
+
+    double lastTime = 0.0, correctedTime = 0.0;
+    const double tickLen = 1.0 / (timeFormat & 0x7fff);
+    double secsPerTick = 0.5 * tickLen;
+    const int numEvents = tempoEvents.getNumEvents();
+
+    for (int i = 0; i < numEvents; ++i)
     {
-        if (timeFormat < 0)
-            return time / (-(timeFormat >> 8) * (timeFormat & 0xff));
+        const MidiMessage& m = tempoEvents.getEventPointer(i)->message;
+        const double eventTime = m.getTimeStamp();
 
-        double lastTime = 0.0, correctedTime = 0.0;
-        const double tickLen = 1.0 / (timeFormat & 0x7fff);
-        double secsPerTick = 0.5 * tickLen;
-        const int numEvents = tempoEvents.getNumEvents();
+        if (eventTime >= time)
+            break;
 
-        for (int i = 0; i < numEvents; ++i)
+        correctedTime += (eventTime - lastTime) * secsPerTick;
+        lastTime = eventTime;
+
+        if (m.isTempoMetaEvent())
+            secsPerTick = tickLen * m.getTempoSecondsPerQuarterNote();
+
+        while (i + 1 < numEvents)
         {
-            const MidiMessage& m = tempoEvents.getEventPointer(i)->message;
-            const double eventTime = m.getTimeStamp();
+            const MidiMessage& m2 = tempoEvents.getEventPointer(i + 1)->message;
 
-            if (eventTime >= time)
+            if (m2.getTimeStamp() != eventTime)
                 break;
 
-            correctedTime += (eventTime - lastTime) * secsPerTick;
-            lastTime = eventTime;
+            if (m2.isTempoMetaEvent())
+                secsPerTick = tickLen * m2.getTempoSecondsPerQuarterNote();
 
-            if (m.isTempoMetaEvent())
-                secsPerTick = tickLen * m.getTempoSecondsPerQuarterNote();
-
-            while (i + 1 < numEvents)
-            {
-                const MidiMessage& m2 = tempoEvents.getEventPointer(i + 1)->message;
-
-                if (m2.getTimeStamp() != eventTime)
-                    break;
-
-                if (m2.isTempoMetaEvent())
-                    secsPerTick = tickLen * m2.getTempoSecondsPerQuarterNote();
-
-                ++i;
-            }
-        }
-
-        return correctedTime + (time - lastTime) * secsPerTick;
-    }
-
-    // a comparator that puts all the note-offs before note-ons that have the same time
-    struct Sorter
-    {
-        static int compareElements (const MidiMessageSequence::MidiEventHolder* const first,
-                                    const MidiMessageSequence::MidiEventHolder* const second) noexcept
-        {
-            const double diff = (first->message.getTimeStamp() - second->message.getTimeStamp());
-
-            if (diff > 0) return 1;
-            if (diff < 0) return -1;
-            if (first->message.isNoteOff() && second->message.isNoteOn())   return -1;
-            if (first->message.isNoteOn()  && second->message.isNoteOff())  return 1;
-
-            return 0;
-        }
-    };
-
-    template <typename MethodType>
-    static void findAllMatchingEvents (const OwnedArray<MidiMessageSequence>& tracks,
-                                       MidiMessageSequence& results,
-                                       MethodType method)
-    {
-        for (int i = 0; i < tracks.size(); ++i)
-        {
-            const MidiMessageSequence& track = *tracks.getUnchecked(i);
-            const int numEvents = track.getNumEvents();
-
-            for (int j = 0; j < numEvents; ++j)
-            {
-                const MidiMessage& m = track.getEventPointer(j)->message;
-
-                if ((m.*method)())
-                    results.addEvent (m);
-            }
+            ++i;
         }
     }
+
+    return correctedTime + (time - lastTime) * secsPerTick;
+}
+
+// a comparator that puts all the note-offs before note-ons that have the same time
+struct Sorter
+{
+    static int compareElements (const MidiMessageSequence::MidiEventHolder* const first,
+                                const MidiMessageSequence::MidiEventHolder* const second) noexcept
+    {
+        const double diff = (first->message.getTimeStamp() - second->message.getTimeStamp());
+
+        if (diff > 0) return 1;
+        if (diff < 0) return -1;
+        if (first->message.isNoteOff() && second->message.isNoteOn())   return -1;
+        if (first->message.isNoteOn()  && second->message.isNoteOff())  return 1;
+
+        return 0;
+    }
+};
+
+template <typename MethodType>
+static void findAllMatchingEvents (const OwnedArray<MidiMessageSequence>& tracks,
+                                   MidiMessageSequence& results,
+                                   MethodType method)
+{
+    for (int i = 0; i < tracks.size(); ++i)
+    {
+        const MidiMessageSequence& track = *tracks.getUnchecked(i);
+        const int numEvents = track.getNumEvents();
+
+        for (int j = 0; j < numEvents; ++j)
+        {
+            const MidiMessage& m = track.getEventPointer(j)->message;
+
+            if ((m.*method)())
+                results.addEvent (m);
+        }
+    }
+}
 }
 
 //==============================================================================
 MidiFile::MidiFile()
-   : timeFormat ((short) (unsigned short) 0xe728)
+    : timeFormat ((short) (unsigned short) 0xe728)
 {
 }
 
@@ -394,9 +394,9 @@ void MidiFile::writeTrack (OutputStream& mainOut, const int trackNum)
         const uint8 statusByte = data[0];
 
         if (statusByte == lastStatusByte
-             && (statusByte & 0xf0) != 0xf0
-             && dataSize > 1
-             && i > 0)
+                && (statusByte & 0xf0) != 0xf0
+                && dataSize > 1
+                && i > 0)
         {
             ++data;
             --dataSize;

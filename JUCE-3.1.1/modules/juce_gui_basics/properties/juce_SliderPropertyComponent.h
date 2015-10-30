@@ -33,7 +33,7 @@
     @see PropertyComponent, Slider
 */
 class JUCE_API  SliderPropertyComponent   : public PropertyComponent,
-                                            private SliderListener  // (can't use Slider::Listener due to idiotic VC2005 bug)
+    private SliderListener  // (can't use Slider::Listener due to idiotic VC2005 bug)
 {
 protected:
     //==============================================================================

@@ -36,7 +36,9 @@ public:
     ~LADSPAPluginFormat();
 
     //==============================================================================
-    String getName() const override                { return "LADSPA"; }
+    String getName() const override                {
+        return "LADSPA";
+    }
     void findAllTypesForFile (OwnedArray<PluginDescription>&, const String& fileOrIdentifier) override;
     AudioPluginInstance* createInstanceFromDescription (const PluginDescription&, double, int) override;
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override;
@@ -45,7 +47,9 @@ public:
     StringArray searchPathsForPlugins (const FileSearchPath&, bool recursive) override;
     bool doesPluginStillExist (const PluginDescription&) override;
     FileSearchPath getDefaultLocationsToSearch() override;
-    bool canScanForPlugins() const override        { return true; }
+    bool canScanForPlugins() const override        {
+        return true;
+    }
 
 private:
     void recursiveFileSearch (StringArray&, const File&, bool recursive);

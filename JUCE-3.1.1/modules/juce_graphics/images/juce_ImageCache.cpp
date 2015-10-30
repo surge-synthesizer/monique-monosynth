@@ -23,7 +23,7 @@
 */
 
 class ImageCache::Pimpl     : private Timer,
-                              private DeletedAtShutdown
+    private DeletedAtShutdown
 {
 public:
     Pimpl()  : cacheTimeout (5000)

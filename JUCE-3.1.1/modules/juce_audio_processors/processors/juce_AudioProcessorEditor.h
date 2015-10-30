@@ -58,7 +58,9 @@ public:
         This method is here to support legacy code, but it's easier to just use the
         AudioProcessorEditor::processor member variable directly to get this object.
     */
-    AudioProcessor* getAudioProcessor() const noexcept        { return &processor; }
+    AudioProcessor* getAudioProcessor() const noexcept        {
+        return &processor;
+    }
 
     //==============================================================================
     /** Used by the setParameterHighlighting() method. */

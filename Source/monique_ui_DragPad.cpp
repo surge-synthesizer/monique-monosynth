@@ -211,7 +211,7 @@ void Monique_Ui_DragPad::paint (Graphics& g)
         x+w*left2right_state,
         y+h*top2bottom_state,
         w_h,
-        colours_.slider_track_colour, 0.3f
+        colours_.get_theme( COLOUR_THEMES::MORPH_THEME  ).area_colour, 0.3f
     );
 #include "mono_ui_includeHacks_BEGIN.h"
     /*

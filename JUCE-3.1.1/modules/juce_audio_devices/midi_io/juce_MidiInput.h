@@ -75,7 +75,10 @@ public:
                                             double timestamp)
     {
         // (this bit is just to avoid compiler warnings about unused variables)
-        (void) source; (void) messageData; (void) numBytesSoFar; (void) timestamp;
+        (void) source;
+        (void) messageData;
+        (void) numBytesSoFar;
+        (void) timestamp;
     }
 };
 
@@ -122,7 +125,7 @@ public:
     static MidiInput* openDevice (int deviceIndex,
                                   MidiInputCallback* callback);
 
-   #if JUCE_LINUX || JUCE_MAC || JUCE_IOS || DOXYGEN
+#if JUCE_LINUX || JUCE_MAC || JUCE_IOS || DOXYGEN
     /** This will try to create a new midi input device (Not available on Windows).
 
         This will attempt to create a new midi input device with the specified name,
@@ -135,14 +138,16 @@ public:
     */
     static MidiInput* createNewDevice (const String& deviceName,
                                        MidiInputCallback* callback);
-   #endif
+#endif
 
     //==============================================================================
     /** Destructor. */
     virtual ~MidiInput();
 
     /** Returns the name of this device. */
-    const String& getName() const noexcept                      { return name; }
+    const String& getName() const noexcept                      {
+        return name;
+    }
 
     /** Allows you to set a custom name for the device, in case you don't like the name
         it was given when created.

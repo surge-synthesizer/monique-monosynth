@@ -120,12 +120,12 @@ public:
         @param mode                 the WoW64 mode to use for choosing the database
     */
     static bool JUCE_CALLTYPE registerFileAssociation (const String& fileExtension,
-                                                       const String& symbolicDescription,
-                                                       const String& fullDescription,
-                                                       const File& targetExecutable,
-                                                       int iconResourceNumber,
-                                                       bool registerForCurrentUserOnly,
-                                                       WoW64Mode mode = WoW64_Default);
+            const String& symbolicDescription,
+            const String& fullDescription,
+            const File& targetExecutable,
+            int iconResourceNumber,
+            bool registerForCurrentUserOnly,
+            WoW64Mode mode = WoW64_Default);
 
     // DEPRECATED: use the other methods with a WoW64Mode parameter of WoW64_64bit instead.
     JUCE_DEPRECATED (static String getValueWow64 (const String&, const String& defaultValue = String::empty));

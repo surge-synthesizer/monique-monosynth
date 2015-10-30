@@ -120,14 +120,14 @@ void ComponentPeer::handlePaint (LowLevelGraphicsContext& contextToPaintTo)
         g.addTransform (AffineTransform::scale (peerBounds.getWidth()  / (float) component.getWidth(),
                                                 peerBounds.getHeight() / (float) component.getHeight()));
 
-  #if JUCE_ENABLE_REPAINT_DEBUGGING
-   #ifdef JUCE_IS_REPAINT_DEBUGGING_ACTIVE
+#if JUCE_ENABLE_REPAINT_DEBUGGING
+#ifdef JUCE_IS_REPAINT_DEBUGGING_ACTIVE
     if (JUCE_IS_REPAINT_DEBUGGING_ACTIVE)
-   #endif
+#endif
     {
         g.saveState();
     }
-  #endif
+#endif
 
     JUCE_TRY
     {
@@ -135,10 +135,10 @@ void ComponentPeer::handlePaint (LowLevelGraphicsContext& contextToPaintTo)
     }
     JUCE_CATCH_EXCEPTION
 
-  #if JUCE_ENABLE_REPAINT_DEBUGGING
-   #ifdef JUCE_IS_REPAINT_DEBUGGING_ACTIVE
+#if JUCE_ENABLE_REPAINT_DEBUGGING
+#ifdef JUCE_IS_REPAINT_DEBUGGING_ACTIVE
     if (JUCE_IS_REPAINT_DEBUGGING_ACTIVE)
-   #endif
+#endif
     {
         // enabling this code will fill all areas that get repainted with a colour overlay, to show
         // clearly when things are being repainted.
@@ -151,7 +151,7 @@ void ComponentPeer::handlePaint (LowLevelGraphicsContext& contextToPaintTo)
                            (uint8) rng.nextInt (255),
                            (uint8) 0x50));
     }
-  #endif
+#endif
 
     /** If this fails, it's probably be because your CPU floating-point precision mode has
         been set to low.. This setting is sometimes changed by things like Direct3D, and can
@@ -377,8 +377,8 @@ void ComponentPeer::handleFocusLoss()
 Component* ComponentPeer::getLastFocusedSubcomponent() const noexcept
 {
     return (component.isParentOf (lastFocusedComponent) && lastFocusedComponent->isShowing())
-                ? static_cast <Component*> (lastFocusedComponent)
-                : &component;
+           ? static_cast <Component*> (lastFocusedComponent)
+           : &component;
 }
 
 void ComponentPeer::handleScreenSizeChange()
@@ -399,8 +399,12 @@ const Rectangle<int>& ComponentPeer::getNonFullScreenBounds() const noexcept
     return lastNonFullscreenBounds;
 }
 
-Point<int> ComponentPeer::localToGlobal (Point<int> p)   { return localToGlobal (p.toFloat()).roundToInt(); }
-Point<int> ComponentPeer::globalToLocal (Point<int> p)   { return globalToLocal (p.toFloat()).roundToInt(); }
+Point<int> ComponentPeer::localToGlobal (Point<int> p)   {
+    return localToGlobal (p.toFloat()).roundToInt();
+}
+Point<int> ComponentPeer::globalToLocal (Point<int> p)   {
+    return globalToLocal (p.toFloat()).roundToInt();
+}
 
 Rectangle<int> ComponentPeer::localToGlobal (const Rectangle<int>& relativePosition)
 {
@@ -415,62 +419,62 @@ Rectangle<int> ComponentPeer::globalToLocal (const Rectangle<int>& screenPositio
 Rectangle<int> ComponentPeer::getAreaCoveredBy (Component& subComponent) const
 {
     return ScalingHelpers::scaledScreenPosToUnscaled
-            (component, component.getLocalArea (&subComponent, subComponent.getLocalBounds()));
+           (component, component.getLocalArea (&subComponent, subComponent.getLocalBounds()));
 }
 
 //==============================================================================
 namespace DragHelpers
 {
-    static bool isFileDrag (const ComponentPeer::DragInfo& info)
+static bool isFileDrag (const ComponentPeer::DragInfo& info)
+{
+    return info.files.size() > 0;
+}
+
+static bool isSuitableTarget (const ComponentPeer::DragInfo& info, Component* target)
+{
+    return isFileDrag (info) ? dynamic_cast <FileDragAndDropTarget*> (target) != nullptr
+           : dynamic_cast <TextDragAndDropTarget*> (target) != nullptr;
+}
+
+static bool isInterested (const ComponentPeer::DragInfo& info, Component* target)
+{
+    return isFileDrag (info) ? dynamic_cast <FileDragAndDropTarget*> (target)->isInterestedInFileDrag (info.files)
+           : dynamic_cast <TextDragAndDropTarget*> (target)->isInterestedInTextDrag (info.text);
+}
+
+static Component* findDragAndDropTarget (Component* c, const ComponentPeer::DragInfo& info, Component* const lastOne)
+{
+    for (; c != nullptr; c = c->getParentComponent())
+        if (isSuitableTarget (info, c) && (c == lastOne || isInterested (info, c)))
+            return c;
+
+    return nullptr;
+}
+
+// We'll use an async message to deliver the drop, because if the target decides
+// to run a modal loop, it can gum-up the operating system..
+class AsyncDropMessage  : public CallbackMessage
+{
+public:
+    AsyncDropMessage (Component* c, const ComponentPeer::DragInfo& d)  : target (c), info (d) {}
+
+    void messageCallback() override
     {
-        return info.files.size() > 0;
-    }
-
-    static bool isSuitableTarget (const ComponentPeer::DragInfo& info, Component* target)
-    {
-        return isFileDrag (info) ? dynamic_cast <FileDragAndDropTarget*> (target) != nullptr
-                                 : dynamic_cast <TextDragAndDropTarget*> (target) != nullptr;
-    }
-
-    static bool isInterested (const ComponentPeer::DragInfo& info, Component* target)
-    {
-        return isFileDrag (info) ? dynamic_cast <FileDragAndDropTarget*> (target)->isInterestedInFileDrag (info.files)
-                                 : dynamic_cast <TextDragAndDropTarget*> (target)->isInterestedInTextDrag (info.text);
-    }
-
-    static Component* findDragAndDropTarget (Component* c, const ComponentPeer::DragInfo& info, Component* const lastOne)
-    {
-        for (; c != nullptr; c = c->getParentComponent())
-            if (isSuitableTarget (info, c) && (c == lastOne || isInterested (info, c)))
-                return c;
-
-        return nullptr;
-    }
-
-    // We'll use an async message to deliver the drop, because if the target decides
-    // to run a modal loop, it can gum-up the operating system..
-    class AsyncDropMessage  : public CallbackMessage
-    {
-    public:
-        AsyncDropMessage (Component* c, const ComponentPeer::DragInfo& d)  : target (c), info (d) {}
-
-        void messageCallback() override
+        if (Component* const c = target.get())
         {
-            if (Component* const c = target.get())
-            {
-                if (isFileDrag (info))
-                    dynamic_cast <FileDragAndDropTarget*> (c)->filesDropped (info.files, info.position.x, info.position.y);
-                else
-                    dynamic_cast <TextDragAndDropTarget*> (c)->textDropped (info.text, info.position.x, info.position.y);
-            }
+            if (isFileDrag (info))
+                dynamic_cast <FileDragAndDropTarget*> (c)->filesDropped (info.files, info.position.x, info.position.y);
+            else
+                dynamic_cast <TextDragAndDropTarget*> (c)->textDropped (info.text, info.position.x, info.position.y);
         }
+    }
 
-    private:
-        WeakReference<Component> target;
-        const ComponentPeer::DragInfo info;
+private:
+    WeakReference<Component> target;
+    const ComponentPeer::DragInfo info;
 
-        JUCE_DECLARE_NON_COPYABLE (AsyncDropMessage)
-    };
+    JUCE_DECLARE_NON_COPYABLE (AsyncDropMessage)
+};
 }
 
 bool ComponentPeer::handleDragMove (const ComponentPeer::DragInfo& info)
@@ -587,5 +591,10 @@ void ComponentPeer::setRepresentedFile (const File&)
 }
 
 //==============================================================================
-int ComponentPeer::getCurrentRenderingEngine() const            { return 0; }
-void ComponentPeer::setCurrentRenderingEngine (int index)       { jassert (index == 0); (void) index; }
+int ComponentPeer::getCurrentRenderingEngine() const            {
+    return 0;
+}
+void ComponentPeer::setCurrentRenderingEngine (int index)       {
+    jassert (index == 0);
+    (void) index;
+}

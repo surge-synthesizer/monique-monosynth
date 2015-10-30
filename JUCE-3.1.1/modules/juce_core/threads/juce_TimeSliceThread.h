@@ -130,9 +130,9 @@ public:
     TimeSliceClient* getClient (int index) const;
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     void run() override;
-   #endif
+#endif
 
     //==============================================================================
 private:

@@ -23,7 +23,7 @@
 */
 
 class TextPropertyComponent::LabelComp  : public Label,
-                                          public FileDragAndDropTarget
+    public FileDragAndDropTarget
 {
 public:
     LabelComp (TextPropertyComponent& tpc, const int charLimit, const bool multiline)
@@ -77,17 +77,17 @@ private:
 
 //==============================================================================
 TextPropertyComponent::TextPropertyComponent (const String& name,
-                                              const int maxNumChars,
-                                              const bool isMultiLine)
+        const int maxNumChars,
+        const bool isMultiLine)
     : PropertyComponent (name)
 {
     createEditor (maxNumChars, isMultiLine);
 }
 
 TextPropertyComponent::TextPropertyComponent (const Value& valueToControl,
-                                              const String& name,
-                                              const int maxNumChars,
-                                              const bool isMultiLine)
+        const String& name,
+        const int maxNumChars,
+        const bool isMultiLine)
     : PropertyComponent (name)
 {
     createEditor (maxNumChars, isMultiLine);

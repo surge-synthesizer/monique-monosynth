@@ -46,19 +46,22 @@ class Range
 public:
     //==============================================================================
     /** Constructs an empty range. */
-    Range() noexcept  : start(), end()
+Range() noexcept  :
+    start(), end()
     {
     }
 
     /** Constructs a range with given start and end values. */
     Range (const ValueType startValue, const ValueType endValue) noexcept
-        : start (startValue), end (jmax (startValue, endValue))
+:
+    start (startValue), end (jmax (startValue, endValue))
     {
     }
 
     /** Constructs a copy of another range. */
     Range (const Range& other) noexcept
-        : start (other.start), end (other.end)
+:
+    start (other.start), end (other.end)
     {
     }
 
@@ -74,7 +77,7 @@ public:
     static Range between (const ValueType position1, const ValueType position2) noexcept
     {
         return position1 < position2 ? Range (position1, position2)
-                                     : Range (position2, position1);
+        : Range (position2, position1);
     }
 
     /** Returns a range with a given start and length. */
@@ -92,16 +95,24 @@ public:
 
     //==============================================================================
     /** Returns the start of the range. */
-    inline ValueType getStart() const noexcept          { return start; }
+    inline ValueType getStart() const noexcept          {
+        return start;
+    }
 
     /** Returns the length of the range. */
-    inline ValueType getLength() const noexcept         { return end - start; }
+    inline ValueType getLength() const noexcept         {
+        return end - start;
+    }
 
     /** Returns the end of the range. */
-    inline ValueType getEnd() const noexcept            { return end; }
+    inline ValueType getEnd() const noexcept            {
+        return end;
+    }
 
     /** Returns true if the range has a length of zero. */
-    inline bool isEmpty() const noexcept                { return start == end; }
+    inline bool isEmpty() const noexcept                {
+        return start == end;
+    }
 
     //==============================================================================
     /** Changes the start position of the range, leaving the end position unchanged.
@@ -204,8 +215,12 @@ public:
         return Range (start - amountToSubtract, end - amountToSubtract);
     }
 
-    bool operator== (Range other) const noexcept     { return start == other.start && end == other.end; }
-    bool operator!= (Range other) const noexcept     { return start != other.start || end != other.end; }
+    bool operator== (Range other) const noexcept     {
+        return start == other.start && end == other.end;
+    }
+    bool operator!= (Range other) const noexcept     {
+        return start != other.start || end != other.end;
+    }
 
     //==============================================================================
     /** Returns true if the given position lies inside this range. */
@@ -271,8 +286,8 @@ public:
     {
         const ValueType otherLen = rangeToConstrain.getLength();
         return getLength() <= otherLen
-                ? *this
-                : rangeToConstrain.movedToStartAt (jlimit (start, end - otherLen, rangeToConstrain.getStart()));
+               ? *this
+               : rangeToConstrain.movedToStartAt (jlimit (start, end - otherLen, rangeToConstrain.getStart()));
     }
 
     /** Scans an array of values for its min and max, and returns these as a Range. */

@@ -29,28 +29,28 @@
 //==============================================================================
 namespace PathHelpers
 {
-    const float ellipseAngularIncrement = 0.05f;
+const float ellipseAngularIncrement = 0.05f;
 
-    static String nextToken (String::CharPointerType& t)
+static String nextToken (String::CharPointerType& t)
+{
+    t = t.findEndOfWhitespace();
+
+    String::CharPointerType start (t);
+    size_t numChars = 0;
+
+    while (! (t.isEmpty() || t.isWhitespace()))
     {
-        t = t.findEndOfWhitespace();
-
-        String::CharPointerType start (t);
-        size_t numChars = 0;
-
-        while (! (t.isEmpty() || t.isWhitespace()))
-        {
-            ++t;
-            ++numChars;
-        }
-
-        return String (start, numChars);
+        ++t;
+        ++numChars;
     }
 
-    inline double lengthOf (float x1, float y1, float x2, float y2) noexcept
-    {
-        return juce_hypot ((double) (x1 - x2), (double) (y1 - y2));
-    }
+    return String (start, numChars);
+}
+
+inline double lengthOf (float x1, float y1, float x2, float y2) noexcept
+{
+    return juce_hypot ((double) (x1 - x2), (double) (y1 - y2));
+}
 }
 
 //==============================================================================
@@ -62,7 +62,8 @@ const float Path::closeSubPathMarker   = 100005.0f;
 
 //==============================================================================
 Path::PathBounds::PathBounds() noexcept
-    : pathXMin (0), pathXMax (0), pathYMin (0), pathYMax (0)
+:
+pathXMin (0), pathXMax (0), pathYMin (0), pathYMax (0)
 {
 }
 
@@ -117,7 +118,7 @@ void Path::PathBounds::extend (const float x1, const float y1, const float x2, c
 
 //==============================================================================
 Path::Path()
-   : numElements (0), useNonZeroWinding (true)
+    : numElements (0), useNonZeroWinding (true)
 {
 }
 
@@ -156,10 +157,11 @@ Path& Path::operator= (const Path& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 Path::Path (Path&& other) noexcept
-    : data (static_cast <ArrayAllocationBase <float, DummyCriticalSection>&&> (other.data)),
-      numElements (other.numElements),
-      bounds (other.bounds),
-      useNonZeroWinding (other.useNonZeroWinding)
+:
+data (static_cast <ArrayAllocationBase <float, DummyCriticalSection>&&> (other.data)),
+     numElements (other.numElements),
+     bounds (other.bounds),
+     useNonZeroWinding (other.useNonZeroWinding)
 {
 }
 
@@ -365,7 +367,7 @@ void Path::cubicTo (const Point<float> controlPoint1,
 void Path::closeSubPath()
 {
     if (numElements > 0
-         && data.elements [numElements - 1] != closeSubPathMarker)
+            && data.elements [numElements - 1] != closeSubPathMarker)
     {
         preallocateSpace (1);
         data.elements [numElements++] = closeSubPathMarker;
@@ -753,7 +755,7 @@ void Path::addBubble (const Rectangle<float>& bodyArea,
     startNewSubPath (bodyArea.getX() + cornerSizeW, bodyArea.getY());
 
     const Rectangle<float> targetLimit (bodyArea.reduced (jmin (halfW - 1.0f, cornerSizeW + arrowBaseWidth),
-                                                          jmin (halfH - 1.0f, cornerSizeH + arrowBaseWidth)));
+                                        jmin (halfH - 1.0f, cornerSizeH + arrowBaseWidth)));
 
     if (Rectangle<float> (targetLimit.getX(), maximumArea.getY(),
                           targetLimit.getWidth(), bodyArea.getY() - maximumArea.getY()).contains (arrowTip))
@@ -951,16 +953,16 @@ void Path::applyTransform (const AffineTransform& transform) noexcept
 
 //==============================================================================
 AffineTransform Path::getTransformToScaleToFit (const Rectangle<float>& area,
-                                                bool preserveProportions, Justification justification) const
+        bool preserveProportions, Justification justification) const
 {
     return getTransformToScaleToFit (area.getX(), area.getY(), area.getWidth(), area.getHeight(),
                                      preserveProportions, justification);
 }
 
 AffineTransform Path::getTransformToScaleToFit (const float x, const float y,
-                                                const float w, const float h,
-                                                const bool preserveProportions,
-                                                Justification justification) const
+        const float w, const float h,
+        const bool preserveProportions,
+        Justification justification) const
 {
     Rectangle<float> boundsRect (getBounds());
 
@@ -996,16 +998,16 @@ AffineTransform Path::getTransformToScaleToFit (const float x, const float y,
 
         return AffineTransform::translation (boundsRect.getWidth()  * -0.5f - boundsRect.getX(),
                                              boundsRect.getHeight() * -0.5f - boundsRect.getY())
-                    .scaled (newW / boundsRect.getWidth(),
-                             newH / boundsRect.getHeight())
-                    .translated (newXCentre, newYCentre);
+               .scaled (newW / boundsRect.getWidth(),
+                        newH / boundsRect.getHeight())
+               .translated (newXCentre, newYCentre);
     }
     else
     {
         return AffineTransform::translation (-boundsRect.getX(), -boundsRect.getY())
-                    .scaled (w / boundsRect.getWidth(),
-                             h / boundsRect.getHeight())
-                    .translated (x, y);
+               .scaled (w / boundsRect.getWidth(),
+                        h / boundsRect.getHeight())
+               .translated (x, y);
     }
 }
 
@@ -1013,7 +1015,7 @@ AffineTransform Path::getTransformToScaleToFit (const float x, const float y,
 bool Path::contains (const float x, const float y, const float tolerance) const
 {
     if (x <= bounds.pathXMin || x >= bounds.pathXMax
-         || y <= bounds.pathYMin || y >= bounds.pathYMax)
+            || y <= bounds.pathYMin || y >= bounds.pathYMax)
         return false;
 
     PathFlatteningIterator i (*this, AffineTransform::identity, tolerance);
@@ -1038,7 +1040,7 @@ bool Path::contains (const float x, const float y, const float tolerance) const
     }
 
     return useNonZeroWinding ? (negativeCrossings != positiveCrossings)
-                             : ((negativeCrossings + positiveCrossings) & 1) != 0;
+           : ((negativeCrossings + positiveCrossings) & 1) != 0;
 }
 
 bool Path::contains (const Point<float> point, const float tolerance) const
@@ -1542,12 +1544,24 @@ void Path::restoreFromString (StringRef stringVersion)
 
         switch (marker)
         {
-            case 'm':   startNewSubPath (values[0], values[1]); break;
-            case 'l':   lineTo (values[0], values[1]); break;
-            case 'q':   quadraticTo (values[0], values[1], values[2], values[3]); break;
-            case 'c':   cubicTo (values[0], values[1], values[2], values[3], values[4], values[5]); break;
-            case 'z':   closeSubPath(); break;
-            default:    jassertfalse; break; // illegal string format?
+        case 'm':
+            startNewSubPath (values[0], values[1]);
+            break;
+        case 'l':
+            lineTo (values[0], values[1]);
+            break;
+        case 'q':
+            quadraticTo (values[0], values[1], values[2], values[3]);
+            break;
+        case 'c':
+            cubicTo (values[0], values[1], values[2], values[3], values[4], values[5]);
+            break;
+        case 'z':
+            closeSubPath();
+            break;
+        default:
+            jassertfalse;
+            break; // illegal string format?
         }
     }
 }

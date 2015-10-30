@@ -82,7 +82,7 @@ public:
         using Component::setInterceptsMouseClicks().
     */
     virtual Component* refreshComponentForRow (int rowNumber, bool isRowSelected,
-                                               Component* existingComponentToUpdate);
+            Component* existingComponentToUpdate);
 
     /** This can be overridden to react to the user clicking on a row.
         @see listBoxItemDoubleClicked
@@ -157,10 +157,10 @@ public:
     virtual MouseCursor getMouseCursorForRow (int row);
 
 private:
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This method's signature has changed to take a MouseEvent parameter - please update your code!
     JUCE_DEPRECATED_WITH_BODY (virtual int backgroundClicked(), { return 0; })
-   #endif
+#endif
 };
 
 
@@ -175,7 +175,7 @@ private:
     @see ComboBox, TableListBox
 */
 class JUCE_API  ListBox  : public Component,
-                           public SettableTooltipClient
+    public SettableTooltipClient
 {
 public:
     //==============================================================================
@@ -196,7 +196,9 @@ public:
     void setModel (ListBoxModel* newModel);
 
     /** Returns the current list model. */
-    ListBoxModel* getModel() const noexcept                     { return model; }
+    ListBoxModel* getModel() const noexcept                     {
+        return model;
+    }
 
 
     //==============================================================================
@@ -437,7 +439,9 @@ public:
     /** Returns the height of a row in the list.
         @see setRowHeight
     */
-    int getRowHeight() const noexcept                   { return rowHeight; }
+    int getRowHeight() const noexcept                   {
+        return rowHeight;
+    }
 
     /** Returns the number of rows actually visible.
 
@@ -474,7 +478,9 @@ public:
 
         @see setOutlineColour
     */
-    int getOutlineThickness() const noexcept            { return outlineThickness; }
+    int getOutlineThickness() const noexcept            {
+        return outlineThickness;
+    }
 
     /** Sets a component that the list should use as a header.
 
@@ -575,10 +581,10 @@ private:
     void selectRowInternal (int rowNumber, bool dontScrollToShowThisRow,
                             bool deselectOthersFirst, bool isMouseClick);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This method's bool parameter has changed: see the new method signature.
     JUCE_DEPRECATED (void setSelectedRows (const SparseSet<int>&, bool));
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ListBox)
 };

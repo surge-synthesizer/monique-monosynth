@@ -59,9 +59,9 @@ void MACAddress::findAllAddresses (Array<MACAddress>& result)
 
 
 bool JUCE_CALLTYPE Process::openEmailWithAttachments (const String& /* targetEmailAddress */,
-                                                      const String& /* emailSubject */,
-                                                      const String& /* bodyText */,
-                                                      const StringArray& /* filesToAttach */)
+        const String& /* emailSubject */,
+        const String& /* bodyText */,
+        const StringArray& /* filesToAttach */)
 {
     jassertfalse;    // xxx todo
     return false;
@@ -75,9 +75,9 @@ public:
     WebInputStream (const String& address_, bool isPost_, const MemoryBlock& postData_,
                     URL::OpenStreamProgressCallback* progressCallback, void* progressCallbackContext,
                     const String& headers_, int timeOutMs_, StringPairArray* responseHeaders)
-      : statusCode (0), socketHandle (-1), levelsOfRedirection (0),
-        address (address_), headers (headers_), postData (postData_), position (0),
-        finished (false), isPost (isPost_), timeOutMs (timeOutMs_)
+        : statusCode (0), socketHandle (-1), levelsOfRedirection (0),
+          address (address_), headers (headers_), postData (postData_), position (0),
+          finished (false), isPost (isPost_), timeOutMs (timeOutMs_)
     {
         statusCode = createConnection (progressCallback, progressCallbackContext);
 
@@ -100,9 +100,15 @@ public:
     }
 
     //==============================================================================
-    bool isError() const                 { return socketHandle < 0; }
-    bool isExhausted() override          { return finished; }
-    int64 getPosition() override         { return position; }
+    bool isError() const                 {
+        return socketHandle < 0;
+    }
+    bool isExhausted() override          {
+        return finished;
+    }
+    int64 getPosition() override         {
+        return position;
+    }
 
     int64 getTotalLength() override
     {
@@ -238,9 +244,9 @@ private:
         setsockopt (socketHandle, SOL_SOCKET, SO_RCVBUF, (char*) &receiveBufferSize, sizeof (receiveBufferSize));
         setsockopt (socketHandle, SOL_SOCKET, SO_KEEPALIVE, 0, 0);
 
-      #if JUCE_MAC
+#if JUCE_MAC
         setsockopt (socketHandle, SOL_SOCKET, SO_NOSIGPIPE, 0, 0);
-      #endif
+#endif
 
         if (connect (socketHandle, result->ai_addr, result->ai_addrlen) == -1)
         {
@@ -253,7 +259,7 @@ private:
 
         {
             const MemoryBlock requestHeader (createRequestHeader (hostName, hostPort, proxyName, proxyPort,
-                                                                  hostPath, address, headers, postData, isPost));
+                                             hostPath, address, headers, postData, isPost));
 
             if (! sendHeader (socketHandle, requestHeader, timeOutTime,
                               progressCallback, progressCallbackContext))
@@ -271,7 +277,7 @@ private:
             headerLines = StringArray::fromLines (responseHeader);
 
             const int status = responseHeader.fromFirstOccurrenceOf (" ", false, false)
-                                             .substring (0, 3).getIntValue();
+                               .substring (0, 3).getIntValue();
 
             //int contentLength = findHeaderItem (lines, "Content-Length:").getIntValue();
             //bool isChunked = findHeaderItem (lines, "Transfer-Encoding:").equalsIgnoreCase ("chunked");
@@ -279,7 +285,7 @@ private:
             String location (findHeaderItem (headerLines, "Location:"));
 
             if (status >= 300 && status < 400
-                 && location.isNotEmpty() && location != address)
+                    && location.isNotEmpty() && location != address)
             {
                 if (! location.startsWithIgnoreCase ("http://"))
                     location = "http://" + location;
@@ -358,8 +364,8 @@ private:
             writeHost (header, isPost, originalURL, proxyName, proxyPort);
 
         writeValueIfNotPresent (header, userHeaders, "User-Agent:", "JUCE/" JUCE_STRINGIFY(JUCE_MAJOR_VERSION)
-                                                                        "." JUCE_STRINGIFY(JUCE_MINOR_VERSION)
-                                                                        "." JUCE_STRINGIFY(JUCE_BUILDNUMBER));
+                                "." JUCE_STRINGIFY(JUCE_MINOR_VERSION)
+                                "." JUCE_STRINGIFY(JUCE_BUILDNUMBER));
         writeValueIfNotPresent (header, userHeaders, "Connection:", "close");
 
         if (isPost)

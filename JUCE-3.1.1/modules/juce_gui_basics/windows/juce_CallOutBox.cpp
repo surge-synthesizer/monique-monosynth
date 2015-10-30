@@ -38,7 +38,7 @@ CallOutBox::CallOutBox (Component& c, const Rectangle<int>& area, Component* con
         setAlwaysOnTop (juce_areThereAnyAlwaysOnTopWindows());
 
         updatePosition (area, Desktop::getInstance().getDisplays()
-                                .getDisplayContaining (area.getCentre()).userArea);
+                        .getDisplayContaining (area.getCentre()).userArea);
 
         addToDesktop (ComponentPeer::windowIsTemporary);
     }
@@ -50,7 +50,7 @@ CallOutBox::~CallOutBox()
 
 //==============================================================================
 class CallOutBoxCallback  : public ModalComponentManager::Callback,
-                            private Timer
+    private Timer
 {
 public:
     CallOutBoxCallback (Component* c, const Rectangle<int>& area, Component* parent)
@@ -124,7 +124,7 @@ bool CallOutBox::hitTest (int x, int y)
 void CallOutBox::inputAttemptWhenModal()
 {
     if (dismissalMouseClicksAreAlwaysConsumed
-         || targetArea.contains (getMouseXYRelative() + getBounds().getPosition()))
+            || targetArea.contains (getMouseXYRelative() + getBounds().getPosition()))
     {
         // if you click on the area that originally popped-up the callout, you expect it
         // to get rid of the box, but deleting the box here allows the click to pass through and
@@ -191,12 +191,14 @@ void CallOutBox::updatePosition (const Rectangle<int>& newAreaToPointTo, const R
     Point<float> targets[4] = { Point<float> ((float) targetArea.getCentreX(), (float) targetArea.getBottom()),
                                 Point<float> ((float) targetArea.getRight(),   (float) targetArea.getCentreY()),
                                 Point<float> ((float) targetArea.getX(),       (float) targetArea.getCentreY()),
-                                Point<float> ((float) targetArea.getCentreX(), (float) targetArea.getY()) };
+                                Point<float> ((float) targetArea.getCentreX(), (float) targetArea.getY())
+                              };
 
     Line<float> lines[4] = { Line<float> (targets[0].translated (-hwReduced, hh - arrowIndent),    targets[0].translated (hwReduced, hh - arrowIndent)),
                              Line<float> (targets[1].translated (hw - arrowIndent, -hhReduced),    targets[1].translated (hw - arrowIndent, hhReduced)),
                              Line<float> (targets[2].translated (-(hw - arrowIndent), -hhReduced), targets[2].translated (-(hw - arrowIndent), hhReduced)),
-                             Line<float> (targets[3].translated (-hwReduced, -(hh - arrowIndent)), targets[3].translated (hwReduced, -(hh - arrowIndent))) };
+                             Line<float> (targets[3].translated (-hwReduced, -(hh - arrowIndent)), targets[3].translated (hwReduced, -(hh - arrowIndent)))
+                           };
 
     const Rectangle<float> centrePointArea (newAreaToFitIn.reduced (hw, hh).toFloat());
     const Point<float> targetCentre (targetArea.getCentre().toFloat());

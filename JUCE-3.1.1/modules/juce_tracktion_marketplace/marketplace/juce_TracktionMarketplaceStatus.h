@@ -119,7 +119,9 @@ public:
         changed by a cracker in order to unlock your app, so the more places you call this
         method, the more hassle it will be for them to find and crack them all.
     */
-    inline var isUnlocked() const       { return status[unlockedProp]; }
+    inline var isUnlocked() const       {
+        return status[unlockedProp];
+    }
 
     /** Optionally allows the app to provide the user's email address if
         it is known.

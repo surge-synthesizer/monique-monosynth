@@ -31,15 +31,15 @@
 #if JucePlugin_Build_RTAS
 
 #ifdef _MSC_VER
- // (this is a workaround for a build problem in VC9)
- #define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
- #include <intrin.h>
+// (this is a workaround for a build problem in VC9)
+#define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
+#include <intrin.h>
 #endif
 
 #include "juce_RTAS_DigiCode_Header.h"
 
 #ifdef _MSC_VER
- #include <Mac2Win.H>
+#include <Mac2Win.H>
 #endif
 
 /* Note about include paths
@@ -91,35 +91,35 @@
 
 //==============================================================================
 #ifdef _MSC_VER
- #pragma pack (push, 8)
- #pragma warning (disable: 4263 4264)
+#pragma pack (push, 8)
+#pragma warning (disable: 4263 4264)
 #endif
 
 #include "../utility/juce_IncludeModuleHeaders.h"
 
 #ifdef _MSC_VER
- #pragma pack (pop)
+#pragma pack (pop)
 
- // This JUCE_RTAS_LINK_TO_DEBUG_LIB setting can be used to force linkage
- // against only the release build of the RTAS lib, since in older SDKs there
- // can be problems with the debug build.
- #if JUCE_DEBUG && ! defined (JUCE_RTAS_LINK_TO_DEBUG_LIB)
-  #define JUCE_RTAS_LINK_TO_DEBUG_LIB 1
- #endif
+// This JUCE_RTAS_LINK_TO_DEBUG_LIB setting can be used to force linkage
+// against only the release build of the RTAS lib, since in older SDKs there
+// can be problems with the debug build.
+#if JUCE_DEBUG && ! defined (JUCE_RTAS_LINK_TO_DEBUG_LIB)
+#define JUCE_RTAS_LINK_TO_DEBUG_LIB 1
+#endif
 
- #if JUCE_RTAS_LINK_TO_DEBUG_LIB
-  #define PT_LIB_PATH  JucePlugin_WinBag_path "\\Debug\\lib\\"
- #else
-  #define PT_LIB_PATH  JucePlugin_WinBag_path "\\Release\\lib\\"
- #endif
+#if JUCE_RTAS_LINK_TO_DEBUG_LIB
+#define PT_LIB_PATH  JucePlugin_WinBag_path "\\Debug\\lib\\"
+#else
+#define PT_LIB_PATH  JucePlugin_WinBag_path "\\Release\\lib\\"
+#endif
 
- #pragma comment(lib, PT_LIB_PATH "DAE.lib")
- #pragma comment(lib, PT_LIB_PATH "DigiExt.lib")
- #pragma comment(lib, PT_LIB_PATH "DSI.lib")
- #pragma comment(lib, PT_LIB_PATH "PluginLib.lib")
- #pragma comment(lib, PT_LIB_PATH "DSPManager.lib")
- #pragma comment(lib, PT_LIB_PATH "DSPManagerClientLib.lib")
- #pragma comment(lib, PT_LIB_PATH "RTASClientLib.lib")
+#pragma comment(lib, PT_LIB_PATH "DAE.lib")
+#pragma comment(lib, PT_LIB_PATH "DigiExt.lib")
+#pragma comment(lib, PT_LIB_PATH "DSI.lib")
+#pragma comment(lib, PT_LIB_PATH "PluginLib.lib")
+#pragma comment(lib, PT_LIB_PATH "DSPManager.lib")
+#pragma comment(lib, PT_LIB_PATH "DSPManagerClientLib.lib")
+#pragma comment(lib, PT_LIB_PATH "RTASClientLib.lib")
 #endif
 
 #undef Component
@@ -127,19 +127,19 @@
 
 //==============================================================================
 #if JUCE_WINDOWS
-  extern void JUCE_CALLTYPE attachSubWindow (void* hostWindow, int& titleW, int& titleH, juce::Component* comp);
-  extern void JUCE_CALLTYPE resizeHostWindow (void* hostWindow, int& titleW, int& titleH, juce::Component* comp);
- #if ! JucePlugin_EditorRequiresKeyboardFocus
-  extern void JUCE_CALLTYPE passFocusToHostWindow (void* hostWindow);
- #endif
+extern void JUCE_CALLTYPE attachSubWindow (void* hostWindow, int& titleW, int& titleH, juce::Component* comp);
+extern void JUCE_CALLTYPE resizeHostWindow (void* hostWindow, int& titleW, int& titleH, juce::Component* comp);
+#if ! JucePlugin_EditorRequiresKeyboardFocus
+extern void JUCE_CALLTYPE passFocusToHostWindow (void* hostWindow);
+#endif
 #else
-  extern void* attachSubWindow (void* hostWindowRef, juce::Component* comp);
-  extern void removeSubWindow (void* nsWindow, juce::Component* comp);
-  extern void forwardCurrentKeyEventToHostWindow();
+extern void* attachSubWindow (void* hostWindowRef, juce::Component* comp);
+extern void removeSubWindow (void* nsWindow, juce::Component* comp);
+extern void forwardCurrentKeyEventToHostWindow();
 #endif
 
 #if ! (JUCE_DEBUG || defined (JUCE_RTAS_PLUGINGESTALT_IS_CACHEABLE))
- #define JUCE_RTAS_PLUGINGESTALT_IS_CACHEABLE 1
+#define JUCE_RTAS_PLUGINGESTALT_IS_CACHEABLE 1
 #endif
 
 const int midiBufferSize = 1024;
@@ -150,9 +150,9 @@ static int numInstances = 0;
 
 //==============================================================================
 class JucePlugInProcess  : public CEffectProcessMIDI,
-                           public CEffectProcessRTAS,
-                           public AudioProcessorListener,
-                           public AudioPlayHead
+    public CEffectProcessRTAS,
+    public AudioProcessorListener,
+    public AudioPlayHead
 {
 public:
     //==============================================================================
@@ -184,11 +184,11 @@ public:
 
             if (--numInstances == 0)
             {
-               #if JUCE_MAC
+#if JUCE_MAC
                 // Hack to allow any NSWindows to clear themselves up before returning to PT..
                 for (int i = 20; --i >= 0;)
                     MessageManager::getInstance()->runDispatchLoopUntil (1);
-               #endif
+#endif
 
                 shutdownJuce_GUI();
             }
@@ -197,7 +197,7 @@ public:
 
     //==============================================================================
     class JuceCustomUIView  : public CCustomView,
-                              public Timer
+        public Timer
     {
     public:
         //==============================================================================
@@ -258,11 +258,11 @@ public:
                 {
                     updateSize();
 
-                   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
                     void* const hostWindow = (void*) ASI_GethWnd ((WindowPtr) port);
-                   #else
+#else
                     void* const hostWindow = (void*) GetWindowFromPort (port);
-                   #endif
+#endif
                     wrapper = nullptr;
                     wrapper = new EditorCompWrapper (hostWindow, editorComp, this);
                 }
@@ -275,13 +275,13 @@ public:
 
         void DrawContents (Rect*)
         {
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             if (wrapper != nullptr)
             {
                 if (ComponentPeer* const peer = wrapper->getPeer())
                     peer->repaint (wrapper->getLocalBounds());  // (seems to be required in PT6.4, but not in 7.x)
             }
-           #endif
+#endif
         }
 
         void DrawBackground (Rect*)  {}
@@ -316,9 +316,9 @@ public:
         // A component to hold the AudioProcessorEditor, and cope with some housekeeping
         // chores when it changes or repaints.
         class EditorCompWrapper  : public juce::Component
-                                 #if ! JUCE_MAC
-                                   , public FocusChangeListener
-                                 #endif
+#if ! JUCE_MAC
+            , public FocusChangeListener
+#endif
         {
         public:
             EditorCompWrapper (void* const hostWindow_,
@@ -329,39 +329,39 @@ public:
                   titleW (0),
                   titleH (0)
             {
-               #if ! JucePlugin_EditorRequiresKeyboardFocus
+#if ! JucePlugin_EditorRequiresKeyboardFocus
                 setMouseClickGrabsKeyboardFocus (false);
                 setWantsKeyboardFocus (false);
-               #endif
+#endif
                 setOpaque (true);
                 setBroughtToFrontOnMouseClick (true);
                 setBounds (editorComp->getBounds());
                 editorComp->setTopLeftPosition (0, 0);
                 addAndMakeVisible (editorComp);
 
-               #if JUCE_WINDOWS
+#if JUCE_WINDOWS
                 attachSubWindow (hostWindow, titleW, titleH, this);
-               #else
+#else
                 nsWindow = attachSubWindow (hostWindow, this);
-               #endif
+#endif
                 setVisible (true);
 
-               #if JUCE_WINDOWS && ! JucePlugin_EditorRequiresKeyboardFocus
+#if JUCE_WINDOWS && ! JucePlugin_EditorRequiresKeyboardFocus
                 Desktop::getInstance().addFocusChangeListener (this);
-               #endif
+#endif
             }
 
             ~EditorCompWrapper()
             {
                 removeChildComponent (getEditor());
 
-               #if JUCE_WINDOWS && ! JucePlugin_EditorRequiresKeyboardFocus
+#if JUCE_WINDOWS && ! JucePlugin_EditorRequiresKeyboardFocus
                 Desktop::getInstance().removeFocusChangeListener (this);
-               #endif
+#endif
 
-               #if JUCE_MAC
+#if JUCE_MAC
                 removeSubWindow (nsWindow, this);
-               #endif
+#endif
             }
 
             void paint (Graphics&) override {}
@@ -374,37 +374,37 @@ public:
                 repaint();
             }
 
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             void globalFocusChanged (juce::Component*) override
             {
-               #if ! JucePlugin_EditorRequiresKeyboardFocus
+#if ! JucePlugin_EditorRequiresKeyboardFocus
                 if (hasKeyboardFocus (true))
                     passFocusToHostWindow (hostWindow);
-               #endif
+#endif
             }
-           #endif
+#endif
 
             void childBoundsChanged (juce::Component* child) override
             {
                 setSize (child->getWidth(), child->getHeight());
                 child->setTopLeftPosition (0, 0);
 
-               #if JUCE_WINDOWS
+#if JUCE_WINDOWS
                 resizeHostWindow (hostWindow, titleW, titleH, this);
-               #endif
+#endif
                 owner->updateSize();
             }
 
             void userTriedToCloseWindow() override {}
 
-           #if JUCE_MAC && JucePlugin_EditorRequiresKeyboardFocus
+#if JUCE_MAC && JucePlugin_EditorRequiresKeyboardFocus
             bool keyPressed (const KeyPress& kp) override
             {
                 owner->updateSize();
                 forwardCurrentKeyEventToHostWindow();
                 return true;
             }
-           #endif
+#endif
 
         private:
             //==============================================================================
@@ -413,7 +413,9 @@ public:
             JuceCustomUIView* const owner;
             int titleW, titleH;
 
-            juce::Component* getEditor() const        { return getChildComponent (0); }
+            juce::Component* getEditor() const        {
+                return getChildComponent (0);
+            }
 
             JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorCompWrapper)
         };
@@ -477,7 +479,7 @@ public:
         // the plugin actually uses midi...
         if (MIDILogIn() == noErr)
         {
-           #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
             if (CEffectType* const type = dynamic_cast <CEffectType*> (this->GetProcessType()))
             {
                 char nodeName [64];
@@ -485,14 +487,14 @@ public:
                 p2cstrcpy (nodeName, reinterpret_cast <unsigned char*> (nodeName));
 
                 midiBufferNode = new CEffectMIDIOtherBufferedNode (&mMIDIWorld,
-                                                                   8192,
-                                                                   eLocalNode,
-                                                                   nodeName,
-                                                                   midiBuffer);
+                        8192,
+                        eLocalNode,
+                        nodeName,
+                        midiBuffer);
 
                 midiBufferNode->Initialize (0xffff, true);
             }
-           #endif
+#endif
         }
 
         midiTransport = new CEffectMIDITransport (&mMIDIWorld);
@@ -509,7 +511,7 @@ public:
 
     void RenderAudio (float** inputs, float** outputs, long numSamples) override
     {
-       #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
         midiEvents.clear();
 
         const Cmn_UInt32 bufferSize = mRTGlobals->mHWBufferSizeInSamples;
@@ -535,12 +537,12 @@ public:
                 }
             }
         }
-       #endif
+#endif
 
-       #if JUCE_DEBUG || JUCE_LOG_ASSERTIONS
+#if JUCE_DEBUG || JUCE_LOG_ASSERTIONS
         const int numMidiEventsComingIn = midiEvents.getNumEvents();
         (void) numMidiEventsComingIn;
-       #endif
+#endif
 
         {
             const ScopedLock sl (juceFilter->getCallbackLock());
@@ -581,7 +583,7 @@ public:
 
         if (! midiEvents.isEmpty())
         {
-           #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
             const juce::uint8* midiEventData;
             int midiEventSize, midiEventPosition;
             MidiBuffer::Iterator i (midiEvents);
@@ -590,12 +592,12 @@ public:
             {
                 //jassert (midiEventPosition >= 0 && midiEventPosition < (int) numSamples);
             }
-           #elif JUCE_DEBUG || JUCE_LOG_ASSERTIONS
+#elif JUCE_DEBUG || JUCE_LOG_ASSERTIONS
             // if your plugin creates midi messages, you'll need to set
             // the JucePlugin_ProducesMidiOutput macro to 1 in your
             // JucePluginCharacteristics.h file
             jassert (midiEvents.getNumEvents() <= numMidiEventsComingIn);
-           #endif
+#endif
 
             midiEvents.clear();
         }
@@ -663,7 +665,7 @@ public:
         return CProcess::UpdateControlValue (controlIndex, value);
     }
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     Boolean HandleKeystroke (EventRecord* e) override
     {
         if (juce::Component* modalComp = juce::Component::getCurrentlyModalComponent())
@@ -672,10 +674,15 @@ public:
             {
                 switch (e->message & charCodeMask)
                 {
-                    case kReturnCharCode:
-                    case kEnterCharCode:    focused->keyPressed (KeyPress (KeyPress::returnKey)); break;
-                    case kEscapeCharCode:   focused->keyPressed (KeyPress (KeyPress::escapeKey)); break;
-                    default: break;
+                case kReturnCharCode:
+                case kEnterCharCode:
+                    focused->keyPressed (KeyPress (KeyPress::returnKey));
+                    break;
+                case kEscapeCharCode:
+                    focused->keyPressed (KeyPress (KeyPress::escapeKey));
+                    break;
+                default:
+                    break;
                 }
 
                 return true;
@@ -684,7 +691,7 @@ public:
 
         return false;
     }
-   #endif
+#endif
 
     //==============================================================================
     bool getCurrentPosition (AudioPlayHead::CurrentPositionInfo& info) override
@@ -734,14 +741,36 @@ public:
 
         switch (fTimeCodeInfo.mFrameRate)
         {
-            case ficFrameRate_24Frame:       info.frameRate = AudioPlayHead::fps24;       break;
-            case ficFrameRate_25Frame:       info.frameRate = AudioPlayHead::fps25;       framesPerSec = 25.0; break;
-            case ficFrameRate_2997NonDrop:   info.frameRate = AudioPlayHead::fps2997;     framesPerSec = 29.97002997; break;
-            case ficFrameRate_2997DropFrame: info.frameRate = AudioPlayHead::fps2997drop; framesPerSec = 29.97002997; break;
-            case ficFrameRate_30NonDrop:     info.frameRate = AudioPlayHead::fps30;       framesPerSec = 30.0; break;
-            case ficFrameRate_30DropFrame:   info.frameRate = AudioPlayHead::fps30drop;   framesPerSec = 30.0; break;
-            case ficFrameRate_23976:         info.frameRate = AudioPlayHead::fps24;       framesPerSec = 23.976; break;
-            default:                         info.frameRate = AudioPlayHead::fpsUnknown;  break;
+        case ficFrameRate_24Frame:
+            info.frameRate = AudioPlayHead::fps24;
+            break;
+        case ficFrameRate_25Frame:
+            info.frameRate = AudioPlayHead::fps25;
+            framesPerSec = 25.0;
+            break;
+        case ficFrameRate_2997NonDrop:
+            info.frameRate = AudioPlayHead::fps2997;
+            framesPerSec = 29.97002997;
+            break;
+        case ficFrameRate_2997DropFrame:
+            info.frameRate = AudioPlayHead::fps2997drop;
+            framesPerSec = 29.97002997;
+            break;
+        case ficFrameRate_30NonDrop:
+            info.frameRate = AudioPlayHead::fps30;
+            framesPerSec = 30.0;
+            break;
+        case ficFrameRate_30DropFrame:
+            info.frameRate = AudioPlayHead::fps30drop;
+            framesPerSec = 30.0;
+            break;
+        case ficFrameRate_23976:
+            info.frameRate = AudioPlayHead::fps24;
+            framesPerSec = 23.976;
+            break;
+        default:
+            info.frameRate = AudioPlayHead::fpsUnknown;
+            break;
         }
 
         info.editOriginTime = fTimeCodeInfo.mFrameOffset / framesPerSec;
@@ -788,7 +817,7 @@ private:
     static long floatToLong (const float n) noexcept
     {
         return roundToInt (jlimit (-(double) 0x80000000, (double) 0x7fffffff,
-                                   n * (double) 0xffffffff - (double) 0x80000000));
+        n * (double) 0xffffffff - (double) 0x80000000));
     }
 
     void bypassBuffers (float** const inputs, float** const outputs, const long numSamples) const
@@ -814,17 +843,25 @@ private:
         }
 
         //==============================================================================
-        OSType GetID() const            { return index + 1; }
-        long GetDefaultValue() const    { return floatToLong (juceFilter->getParameterDefaultValue (index)); }
+        OSType GetID() const            {
+            return index + 1;
+        }
+        long GetDefaultValue() const    {
+            return floatToLong (juceFilter->getParameterDefaultValue (index));
+        }
         void SetDefaultValue (long)     {}
-        long GetNumSteps() const        { return juceFilter->getParameterNumSteps (index); }
+        long GetNumSteps() const        {
+            return juceFilter->getParameterNumSteps (index);
+        }
 
         long ConvertStringToValue (const char* valueString) const
         {
             return floatToLong (String (valueString).getFloatValue());
         }
 
-        Cmn_Bool IsKeyValid (long key) const    { return true; }
+        Cmn_Bool IsKeyValid (long key) const    {
+            return true;
+        }
 
         void GetNameOfLength (char* name, int maxLength, OSType inControllerType) const
         {
@@ -834,16 +871,20 @@ private:
             juceFilter->getParameterName (index, maxLength).copyToUTF8 (name, (size_t) maxLength + 1);
         }
 
-        long GetPriority() const        { return kFicCooperativeTaskPriority; }
+        long GetPriority() const        {
+            return kFicCooperativeTaskPriority;
+        }
 
         long GetOrientation() const
         {
             return juceFilter->isParameterOrientationInverted (index)
-                     ? kDAE_RightMinLeftMax | kDAE_TopMinBottomMax | kDAE_RotarySingleDotMode | kDAE_RotaryRightMinLeftMax
-                     : kDAE_LeftMinRightMax | kDAE_BottomMinTopMax | kDAE_RotarySingleDotMode | kDAE_RotaryLeftMinRightMax;
+                   ? kDAE_RightMinLeftMax | kDAE_TopMinBottomMax | kDAE_RotarySingleDotMode | kDAE_RotaryRightMinLeftMax
+                   : kDAE_LeftMinRightMax | kDAE_BottomMinTopMax | kDAE_RotarySingleDotMode | kDAE_RotaryLeftMinRightMax;
         }
 
-        long GetControlType() const     { return kDAE_ContinuousValues; }
+        long GetControlType() const     {
+            return kDAE_ContinuousValues;
+        }
 
         void GetValueString (char* valueString, int maxLength, long value) const
         {
@@ -874,9 +915,9 @@ public:
         DefineManufacturerNamesAndID (JucePlugin_Manufacturer, JucePlugin_RTASManufacturerCode);
         DefinePlugInNamesAndVersion (createRTASName().toUTF8(), JucePlugin_VersionCode);
 
-       #if JUCE_RTAS_PLUGINGESTALT_IS_CACHEABLE
+#if JUCE_RTAS_PLUGINGESTALT_IS_CACHEABLE
         AddGestalt (pluginGestalt_IsCacheable);
-       #endif
+#endif
     }
 
     ~JucePlugInGroup()
@@ -909,13 +950,13 @@ public:
                 type->DefineStemFormats (getFormatForChans (channelConfigs [i][0] != 0 ? channelConfigs [i][0] : channelConfigs [i][1]),
                                          getFormatForChans (channelConfigs [i][1] != 0 ? channelConfigs [i][1] : channelConfigs [i][0]));
 
-               #if ! JucePlugin_RTASDisableBypass
+#if ! JucePlugin_RTASDisableBypass
                 type->AddGestalt (pluginGestalt_CanBypass);
-               #endif
+#endif
 
-               #if JucePlugin_RTASDisableMultiMono
+#if JucePlugin_RTASDisableMultiMono
                 type->AddGestalt (pluginGestalt_DoesntSupportMultiMono);
-               #endif
+#endif
 
                 type->AddGestalt (pluginGestalt_SupportsVariableQuanta);
                 type->AttachEffectProcessCreator (createNewProcess);
@@ -934,9 +975,9 @@ public:
 private:
     static CEffectProcess* createNewProcess()
     {
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         Process::setCurrentModuleInstanceHandle (gThisModule);
-       #endif
+#endif
 
         initialiseJuce_GUI();
 
@@ -946,30 +987,43 @@ private:
     static String createRTASName()
     {
         return String (JucePlugin_Name) + "\n"
-                 + String (JucePlugin_Desc);
+               + String (JucePlugin_Desc);
     }
 
     static EPlugIn_StemFormat getFormatForChans (const int numChans) noexcept
     {
         switch (numChans)
         {
-            case 0:   return ePlugIn_StemFormat_Generic;
-            case 1:   return ePlugIn_StemFormat_Mono;
-            case 2:   return ePlugIn_StemFormat_Stereo;
-            case 3:   return ePlugIn_StemFormat_LCR;
-            case 4:   return ePlugIn_StemFormat_Quad;
-            case 5:   return ePlugIn_StemFormat_5dot0;
-            case 6:   return ePlugIn_StemFormat_5dot1;
+        case 0:
+            return ePlugIn_StemFormat_Generic;
+        case 1:
+            return ePlugIn_StemFormat_Mono;
+        case 2:
+            return ePlugIn_StemFormat_Stereo;
+        case 3:
+            return ePlugIn_StemFormat_LCR;
+        case 4:
+            return ePlugIn_StemFormat_Quad;
+        case 5:
+            return ePlugIn_StemFormat_5dot0;
+        case 6:
+            return ePlugIn_StemFormat_5dot1;
 
-           #if PT_VERS_MAJOR >= 9
-            case 7:   return ePlugIn_StemFormat_7dot0DTS;
-            case 8:   return ePlugIn_StemFormat_7dot1DTS;
-           #else
-            case 7:   return ePlugIn_StemFormat_7dot0;
-            case 8:   return ePlugIn_StemFormat_7dot1;
-           #endif
+#if PT_VERS_MAJOR >= 9
+        case 7:
+            return ePlugIn_StemFormat_7dot0DTS;
+        case 8:
+            return ePlugIn_StemFormat_7dot1DTS;
+#else
+        case 7:
+            return ePlugIn_StemFormat_7dot0;
+        case 8:
+            return ePlugIn_StemFormat_7dot1;
+#endif
 
-            default:  jassertfalse; break; // hmm - not a valid number of chans for RTAS..
+        default:
+            jassertfalse;
+            break; // hmm - not a valid number of chans for RTAS..
         }
 
         return ePlugIn_StemFormat_Generic;
@@ -980,9 +1034,9 @@ void initialiseMacRTAS();
 
 CProcessGroupInterface* CProcessGroup::CreateProcessGroup()
 {
-   #if JUCE_MAC
+#if JUCE_MAC
     initialiseMacRTAS();
-   #endif
+#endif
 
     return new JucePlugInGroup();
 }

@@ -116,7 +116,7 @@ void DrawableButton::resized()
         else
             currentImage->setTransformToFit (getImageBounds(),
                                              style == ImageStretched ? RectanglePlacement::stretchToFit
-                                                                     : RectanglePlacement::centred);
+                                             : RectanglePlacement::centred);
     }
 }
 
@@ -134,7 +134,7 @@ void DrawableButton::buttonStateChanged()
     else
     {
         imageToDraw = getToggleState() ? disabledImageOn
-                                       : disabledImage;
+                      : disabledImage;
 
         if (imageToDraw == nullptr)
         {
@@ -180,7 +180,7 @@ void DrawableButton::paintButton (Graphics& g,
     if (style == ImageOnButtonBackground)
         lf.drawButtonBackground (g, *this,
                                  findColour (getToggleState() ? TextButton::buttonOnColourId
-                                                              : TextButton::buttonColourId),
+                                             : TextButton::buttonColourId),
                                  isMouseOverButton, isButtonDown);
     else
         lf.drawDrawableButton (g, *this, isMouseOverButton, isButtonDown);
@@ -198,7 +198,7 @@ Drawable* DrawableButton::getCurrentImage() const noexcept
 Drawable* DrawableButton::getNormalImage() const noexcept
 {
     return (getToggleState() && normalImageOn != nullptr) ? normalImageOn
-                                                          : normalImage;
+           : normalImage;
 }
 
 Drawable* DrawableButton::getOverImage() const noexcept

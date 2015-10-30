@@ -24,13 +24,13 @@
 
 namespace RelativePointHelpers
 {
-    inline void skipComma (String::CharPointerType& s)
-    {
-        s = s.findEndOfWhitespace();
+inline void skipComma (String::CharPointerType& s)
+{
+    s = s.findEndOfWhitespace();
 
-        if (*s == ',')
-            ++s;
-    }
+    if (*s == ',')
+        ++s;
+}
 }
 
 //==============================================================================

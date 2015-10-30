@@ -23,7 +23,8 @@
 */
 
 ApplicationCommandInfo::ApplicationCommandInfo (const CommandID cid) noexcept
-    : commandID (cid), flags (0)
+:
+commandID (cid), flags (0)
 {
 }
 

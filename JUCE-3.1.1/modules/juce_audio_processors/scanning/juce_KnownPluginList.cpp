@@ -79,7 +79,7 @@ void KnownPluginList::removeType (const int index)
 }
 
 bool KnownPluginList::isListingUpToDate (const String& fileOrIdentifier,
-                                         AudioPluginFormat& formatToUse) const
+        AudioPluginFormat& formatToUse) const
 {
     if (getTypeForFile (fileOrIdentifier) == nullptr)
         return false;
@@ -89,7 +89,7 @@ bool KnownPluginList::isListingUpToDate (const String& fileOrIdentifier,
         const PluginDescription* const d = types.getUnchecked(i);
 
         if (d->fileOrIdentifier == fileOrIdentifier
-             && formatToUse.pluginNeedsRescanning (*d))
+                && formatToUse.pluginNeedsRescanning (*d))
             return false;
     }
 
@@ -109,7 +109,7 @@ bool KnownPluginList::scanAndAddFile (const String& fileOrIdentifier,
     const ScopedLock sl (scanLock);
 
     if (dontRescanIfAlreadyInList
-         && getTypeForFile (fileOrIdentifier) != nullptr)
+            && getTypeForFile (fileOrIdentifier) != nullptr)
     {
         bool needsRescanning = false;
 
@@ -162,8 +162,8 @@ bool KnownPluginList::scanAndAddFile (const String& fileOrIdentifier,
 }
 
 void KnownPluginList::scanAndAddDragAndDroppedFiles (AudioPluginFormatManager& formatManager,
-                                                     const StringArray& files,
-                                                     OwnedArray <PluginDescription>& typesFound)
+        const StringArray& files,
+        OwnedArray <PluginDescription>& typesFound)
 {
     for (int i = 0; i < files.size(); ++i)
     {
@@ -175,7 +175,7 @@ void KnownPluginList::scanAndAddDragAndDroppedFiles (AudioPluginFormatManager& f
             AudioPluginFormat* const format = formatManager.getFormat (j);
 
             if (format->fileMightContainThisPluginType (filenameOrID)
-                 && scanAndAddFile (filenameOrID, true, typesFound, *format))
+                    && scanAndAddFile (filenameOrID, true, typesFound, *format))
             {
                 found = true;
                 break;
@@ -250,7 +250,8 @@ void KnownPluginList::clearBlacklistedFiles()
 struct PluginSorter
 {
     PluginSorter (KnownPluginList::SortMethod sortMethod, bool forwards) noexcept
-        : method (sortMethod), direction (forwards ? 1 : -1) {}
+:
+    method (sortMethod), direction (forwards ? 1 : -1) {}
 
     int compareElements (const PluginDescription* const first,
                          const PluginDescription* const second) const
@@ -259,11 +260,20 @@ struct PluginSorter
 
         switch (method)
         {
-            case KnownPluginList::sortByCategory:           diff = first->category.compareNatural (second->category); break;
-            case KnownPluginList::sortByManufacturer:       diff = first->manufacturerName.compareNatural (second->manufacturerName); break;
-            case KnownPluginList::sortByFormat:             diff = first->pluginFormatName.compare (second->pluginFormatName); break;
-            case KnownPluginList::sortByFileSystemLocation: diff = lastPathPart (first->fileOrIdentifier).compare (lastPathPart (second->fileOrIdentifier)); break;
-            default: break;
+        case KnownPluginList::sortByCategory:
+            diff = first->category.compareNatural (second->category);
+            break;
+        case KnownPluginList::sortByManufacturer:
+            diff = first->manufacturerName.compareNatural (second->manufacturerName);
+            break;
+        case KnownPluginList::sortByFormat:
+            diff = first->pluginFormatName.compare (second->pluginFormatName);
+            break;
+        case KnownPluginList::sortByFileSystemLocation:
+            diff = lastPathPart (first->fileOrIdentifier).compare (lastPathPart (second->fileOrIdentifier));
+            break;
+        default:
+            break;
         }
 
         if (diff == 0)
@@ -346,7 +356,7 @@ struct PluginTreeUtils
             PluginDescription* const pd = allPlugins.getUnchecked (i);
 
             String path (pd->fileOrIdentifier.replaceCharacter ('\\', '/')
-                                             .upToLastOccurrenceOf ("/", false, false));
+                         .upToLastOccurrenceOf ("/", false, false));
 
             if (path.substring (1, 2) == ":")
                 path = path.substring (2);
@@ -393,7 +403,7 @@ struct PluginTreeUtils
         {
             const PluginDescription* const pd = sorted.getUnchecked(i);
             String thisType (sortMethod == KnownPluginList::sortByCategory ? pd->category
-                                                                           : pd->manufacturerName);
+                             : pd->manufacturerName);
 
             if (! thisType.containsNonWhitespaceChars())
                 thisType = "Other";
@@ -428,10 +438,10 @@ struct PluginTreeUtils
         }
         else
         {
-           #if JUCE_MAC
+#if JUCE_MAC
             if (path.containsChar (':'))
                 path = path.fromFirstOccurrenceOf (":", false, false); // avoid the special AU formatting nonsense on Mac..
-           #endif
+#endif
 
             const String firstSubFolder (path.upToFirstOccurrenceOf ("/", false, false));
             const String remainingPath  (path.fromFirstOccurrenceOf ("/", false, false));

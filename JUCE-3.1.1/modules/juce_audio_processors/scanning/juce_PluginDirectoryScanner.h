@@ -96,16 +96,20 @@ public:
     String getNextPluginFileThatWillBeScanned() const;
 
     /** Returns the estimated progress, between 0 and 1. */
-    float getProgress() const                                       { return progress; }
+    float getProgress() const                                       {
+        return progress;
+    }
 
     /** This returns a list of all the filenames of things that looked like being
         a plugin file, but which failed to open for some reason.
     */
-    const StringArray& getFailedFiles() const noexcept              { return failedFiles; }
+    const StringArray& getFailedFiles() const noexcept              {
+        return failedFiles;
+    }
 
     /** Reads the given dead-mans-pedal file and applies its contents to the list. */
     static void applyBlacklistingsFromDeadMansPedal (KnownPluginList& listToApplyTo,
-                                                     const File& deadMansPedalFile);
+            const File& deadMansPedalFile);
 
 private:
     //==============================================================================

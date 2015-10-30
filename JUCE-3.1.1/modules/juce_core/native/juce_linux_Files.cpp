@@ -39,7 +39,7 @@ bool File::isOnCDRomDrive() const
     struct statfs buf;
 
     return statfs (getFullPathName().toUTF8(), &buf) == 0
-             && buf.f_type == (short) U_ISOFS_SUPER_MAGIC;
+           && buf.f_type == (short) U_ISOFS_SUPER_MAGIC;
 }
 
 bool File::isOnHardDisk() const
@@ -50,13 +50,14 @@ bool File::isOnHardDisk() const
     {
         switch (buf.f_type)
         {
-            case U_ISOFS_SUPER_MAGIC:   // CD-ROM
-            case U_MSDOS_SUPER_MAGIC:   // Probably floppy (but could be mounted FAT filesystem)
-            case U_NFS_SUPER_MAGIC:     // Network NFS
-            case U_SMB_SUPER_MAGIC:     // Network Samba
-                return false;
+        case U_ISOFS_SUPER_MAGIC:   // CD-ROM
+        case U_MSDOS_SUPER_MAGIC:   // Probably floppy (but could be mounted FAT filesystem)
+        case U_NFS_SUPER_MAGIC:     // Network NFS
+        case U_SMB_SUPER_MAGIC:     // Network Samba
+            return false;
 
-            default: break;
+        default:
+            break;
         }
     }
 
@@ -89,8 +90,8 @@ static File resolveXDGFolder (const char* const type, const char* const fallback
         {
             // eg. resolve XDG_MUSIC_DIR="$HOME/Music" to /home/user/Music
             const File f (line.replace ("$HOME", File ("~").getFullPathName())
-                              .fromFirstOccurrenceOf ("=", false, false)
-                              .trim().unquoted());
+                          .fromFirstOccurrenceOf ("=", false, false)
+                          .trim().unquoted());
 
             if (f.isDirectory())
                 return f;
@@ -107,60 +108,68 @@ File File::getSpecialLocation (const SpecialLocationType type)
 {
     switch (type)
     {
-        case userHomeDirectory:
+    case userHomeDirectory:
+    {
+        if (const char* homeDir = getenv ("HOME"))
+            return File (CharPointer_UTF8 (homeDir));
+
+        if (struct passwd* const pw = getpwuid (getuid()))
+            return File (CharPointer_UTF8 (pw->pw_dir));
+
+        return File();
+    }
+
+    case userDocumentsDirectory:
+        return resolveXDGFolder ("XDG_DOCUMENTS_DIR", "~");
+    case userMusicDirectory:
+        return resolveXDGFolder ("XDG_MUSIC_DIR",     "~");
+    case userMoviesDirectory:
+        return resolveXDGFolder ("XDG_VIDEOS_DIR",    "~");
+    case userPicturesDirectory:
+        return resolveXDGFolder ("XDG_PICTURES_DIR",  "~");
+    case userDesktopDirectory:
+        return resolveXDGFolder ("XDG_DESKTOP_DIR",   "~/Desktop");
+    case userApplicationDataDirectory:
+        return resolveXDGFolder ("XDG_CONFIG_HOME",   "~");
+    case commonDocumentsDirectory:
+    case commonApplicationDataDirectory:
+        return File ("/var");
+    case globalApplicationsDirectory:
+        return File ("/usr");
+
+    case tempDirectory:
+    {
+        File tmp ("/var/tmp");
+
+        if (! tmp.isDirectory())
         {
-            if (const char* homeDir = getenv ("HOME"))
-                return File (CharPointer_UTF8 (homeDir));
-
-            if (struct passwd* const pw = getpwuid (getuid()))
-                return File (CharPointer_UTF8 (pw->pw_dir));
-
-            return File();
-        }
-
-        case userDocumentsDirectory:          return resolveXDGFolder ("XDG_DOCUMENTS_DIR", "~");
-        case userMusicDirectory:              return resolveXDGFolder ("XDG_MUSIC_DIR",     "~");
-        case userMoviesDirectory:             return resolveXDGFolder ("XDG_VIDEOS_DIR",    "~");
-        case userPicturesDirectory:           return resolveXDGFolder ("XDG_PICTURES_DIR",  "~");
-        case userDesktopDirectory:            return resolveXDGFolder ("XDG_DESKTOP_DIR",   "~/Desktop");
-        case userApplicationDataDirectory:    return resolveXDGFolder ("XDG_CONFIG_HOME",   "~");
-        case commonDocumentsDirectory:
-        case commonApplicationDataDirectory:  return File ("/var");
-        case globalApplicationsDirectory:     return File ("/usr");
-
-        case tempDirectory:
-        {
-            File tmp ("/var/tmp");
+            tmp = "/tmp";
 
             if (! tmp.isDirectory())
-            {
-                tmp = "/tmp";
-
-                if (! tmp.isDirectory())
-                    tmp = File::getCurrentWorkingDirectory();
-            }
-
-            return tmp;
+                tmp = File::getCurrentWorkingDirectory();
         }
 
-        case invokedExecutableFile:
-            if (juce_argv != nullptr && juce_argc > 0)
-                return File (CharPointer_UTF8 (juce_argv[0]));
-            // deliberate fall-through...
+        return tmp;
+    }
 
-        case currentExecutableFile:
-        case currentApplicationFile:
-            return juce_getExecutableFile();
+    case invokedExecutableFile:
+        if (juce_argv != nullptr && juce_argc > 0)
+            return File (CharPointer_UTF8 (juce_argv[0]));
+        // deliberate fall-through...
 
-        case hostApplicationPath:
-        {
-            const File f ("/proc/self/exe");
-            return f.isLink() ? f.getLinkedTarget() : juce_getExecutableFile();
-        }
+    case currentExecutableFile:
+    case currentApplicationFile:
+        return juce_getExecutableFile();
 
-        default:
-            jassertfalse; // unknown type?
-            break;
+    case hostApplicationPath:
+    {
+        const File f ("/proc/self/exe");
+        return f.isLink() ? f.getLinkedTarget() : juce_getExecutableFile();
+    }
+
+    default:
+        jassertfalse; // unknown type?
+        break;
     }
 
     return File();
@@ -181,7 +190,7 @@ bool File::moveToTrash() const
         return false;
 
     return moveFileTo (trashCan.getNonexistentChildFile (getFileNameWithoutExtension(),
-                                                         getFileExtension()));
+                       getFileExtension()));
 }
 
 //==============================================================================
@@ -190,8 +199,8 @@ static bool isFileExecutable (const String& filename)
     juce_statStruct info;
 
     return juce_stat (filename, info)
-            && S_ISREG (info.st_mode)
-            && access (filename.toUTF8(), X_OK) == 0;
+           && S_ISREG (info.st_mode)
+           && access (filename.toUTF8(), X_OK) == 0;
 }
 
 bool Process::openDocument (const String& fileName, const String& parameters)
@@ -200,14 +209,15 @@ bool Process::openDocument (const String& fileName, const String& parameters)
     cmdString << " " << parameters;
 
     if (URL::isProbablyAWebsiteURL (fileName)
-         || cmdString.startsWithIgnoreCase ("file:")
-         || URL::isProbablyAnEmailAddress (fileName)
-         || File::createFileWithoutCheckingPath (fileName).isDirectory()
-         || ! isFileExecutable (fileName))
+            || cmdString.startsWithIgnoreCase ("file:")
+            || URL::isProbablyAnEmailAddress (fileName)
+            || File::createFileWithoutCheckingPath (fileName).isDirectory()
+            || ! isFileExecutable (fileName))
     {
         // create a command that tries to launch a bunch of likely browsers
         static const char* const browserNames[] = { "xdg-open", "/etc/alternatives/x-www-browser", "firefox", "mozilla",
-                                                    "google-chrome", "chromium-browser", "opera", "konqueror" };
+                "google-chrome", "chromium-browser", "opera", "konqueror"
+                                                  };
         StringArray cmdLines;
 
         for (int i = 0; i < numElementsInArray (browserNames); ++i)

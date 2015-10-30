@@ -49,13 +49,17 @@ public:
 
     //==============================================================================
     /** Returns the parameters from the reverb. */
-    const Reverb::Parameters& getParameters() const noexcept    { return reverb.getParameters(); }
+    const Reverb::Parameters& getParameters() const noexcept    {
+        return reverb.getParameters();
+    }
 
     /** Changes the reverb's parameters. */
     void setParameters (const Reverb::Parameters& newParams);
 
     void setBypassed (bool isBypassed) noexcept;
-    bool isBypassed() const noexcept                            { return bypass; }
+    bool isBypassed() const noexcept                            {
+        return bypass;
+    }
 
     //==============================================================================
     void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;

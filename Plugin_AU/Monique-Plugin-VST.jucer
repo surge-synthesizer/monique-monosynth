@@ -63,6 +63,10 @@
               file="../Source/monique_ui_MainWindow.cpp"/>
         <FILE id="KuDZ4f" name="monique_ui_MainWindow.h" compile="0" resource="0"
               file="../Source/monique_ui_MainWindow.h"/>
+        <FILE id="ykmTcd" name="monique_ui_MFOPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MFOPopup.cpp"/>
+        <FILE id="FKYLgD" name="monique_ui_MFOPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_MFOPopup.h"/>
         <FILE id="cNv2QT" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="eN6BoE" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -106,8 +110,6 @@
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
       <FILE id="KeQDOj" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../Files/FACTORTY DEFAULT.mlprog"/>
-      <FILE id="iSXn87" name="SourceCodePro-Medium.otf" compile="0" resource="1"
-            file="../Fonts/source-code-pro/SourceCodePro-Medium.otf"/>
       <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"
             file="../Fonts/FjallaOne-Regular.otf"/>
     </GROUP>

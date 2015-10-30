@@ -76,10 +76,10 @@ void RecentlyOpenedFilesList::removeNonExistentFiles()
 
 //==============================================================================
 int RecentlyOpenedFilesList::createPopupMenuItems (PopupMenu& menuToAddTo,
-                                                   const int baseItemId,
-                                                   const bool showFullPaths,
-                                                   const bool dontAddNonExistentFiles,
-                                                   const File** filesToAvoid)
+        const int baseItemId,
+        const bool showFullPaths,
+        const bool dontAddNonExistentFiles,
+        const File** filesToAvoid)
 {
     int num = 0;
 
@@ -107,7 +107,7 @@ int RecentlyOpenedFilesList::createPopupMenuItems (PopupMenu& menuToAddTo,
             {
                 menuToAddTo.addItem (baseItemId + i,
                                      showFullPaths ? f.getFullPathName()
-                                                   : f.getFileName());
+                                     : f.getFileName());
                 ++num;
             }
         }
@@ -134,13 +134,13 @@ void RecentlyOpenedFilesList::restoreFromString (const String& stringifiedVersio
 //==============================================================================
 void RecentlyOpenedFilesList::registerRecentFileNatively (const File& file)
 {
-   #if JUCE_MAC
+#if JUCE_MAC
     JUCE_AUTORELEASEPOOL
     {
         [[NSDocumentController sharedDocumentController]
-            noteNewRecentDocumentURL: [NSURL fileURLWithPath: juceStringToNS (file.getFullPathName())]];
+noteNewRecentDocumentURL: [NSURL fileURLWithPath: juceStringToNS (file.getFullPathName())]];
     }
-   #else
+#else
     (void) file;
-   #endif
+#endif
 }

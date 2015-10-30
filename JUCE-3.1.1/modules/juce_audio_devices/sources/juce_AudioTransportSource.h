@@ -40,7 +40,7 @@
     @see AudioSource, AudioSourcePlayer
 */
 class JUCE_API  AudioTransportSource  : public PositionableAudioSource,
-                                        public ChangeBroadcaster
+    public ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -101,7 +101,9 @@ public:
     double getLengthInSeconds() const;
 
     /** Returns true if the player has stopped because its input stream ran out of data. */
-    bool hasStreamFinished() const noexcept             { return inputStreamEOF; }
+    bool hasStreamFinished() const noexcept             {
+        return inputStreamEOF;
+    }
 
     //==============================================================================
     /** Starts playing (if a source has been selected).
@@ -119,7 +121,9 @@ public:
     void stop();
 
     /** Returns true if it's currently playing. */
-    bool isPlaying() const noexcept     { return playing; }
+    bool isPlaying() const noexcept     {
+        return playing;
+    }
 
     //==============================================================================
     /** Changes the gain to apply to the output.
@@ -131,7 +135,9 @@ public:
     /** Returns the current gain setting.
         @see setGain
     */
-    float getGain() const noexcept      { return gain; }
+    float getGain() const noexcept      {
+        return gain;
+    }
 
     //==============================================================================
     /** Implementation of the AudioSource method. */

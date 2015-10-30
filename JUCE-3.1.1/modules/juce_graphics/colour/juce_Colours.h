@@ -93,7 +93,7 @@ public:
         colour passed in as the defaultColour parameter is returned.
     */
     static JUCE_API Colour findColourForName (const String& colourName,
-                                              Colour defaultColour);
+            Colour defaultColour);
 
 private:
     //==============================================================================

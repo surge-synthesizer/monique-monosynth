@@ -32,39 +32,39 @@
 
 //==============================================================================
 #if JUCE_WINDOWS && ! DOXYGEN
- #define JUCE_NATIVE_WCHAR_IS_UTF8      0
- #define JUCE_NATIVE_WCHAR_IS_UTF16     1
- #define JUCE_NATIVE_WCHAR_IS_UTF32     0
+#define JUCE_NATIVE_WCHAR_IS_UTF8      0
+#define JUCE_NATIVE_WCHAR_IS_UTF16     1
+#define JUCE_NATIVE_WCHAR_IS_UTF32     0
 #else
- /** This macro will be set to 1 if the compiler's native wchar_t is an 8-bit type. */
- #define JUCE_NATIVE_WCHAR_IS_UTF8      0
- /** This macro will be set to 1 if the compiler's native wchar_t is a 16-bit type. */
- #define JUCE_NATIVE_WCHAR_IS_UTF16     0
- /** This macro will be set to 1 if the compiler's native wchar_t is a 32-bit type. */
- #define JUCE_NATIVE_WCHAR_IS_UTF32     1
+/** This macro will be set to 1 if the compiler's native wchar_t is an 8-bit type. */
+#define JUCE_NATIVE_WCHAR_IS_UTF8      0
+/** This macro will be set to 1 if the compiler's native wchar_t is a 16-bit type. */
+#define JUCE_NATIVE_WCHAR_IS_UTF16     0
+/** This macro will be set to 1 if the compiler's native wchar_t is a 32-bit type. */
+#define JUCE_NATIVE_WCHAR_IS_UTF32     1
 #endif
 
 #if JUCE_NATIVE_WCHAR_IS_UTF32 || DOXYGEN
- /** A platform-independent 32-bit unicode character type. */
- typedef wchar_t        juce_wchar;
+/** A platform-independent 32-bit unicode character type. */
+typedef wchar_t        juce_wchar;
 #else
- typedef uint32         juce_wchar;
+typedef uint32         juce_wchar;
 #endif
 
 #ifndef DOXYGEN
- /** This macro is deprecated, but preserved for compatibility with old code. */
- #define JUCE_T(stringLiteral)   (L##stringLiteral)
+/** This macro is deprecated, but preserved for compatibility with old code. */
+#define JUCE_T(stringLiteral)   (L##stringLiteral)
 #endif
 
 #if JUCE_DEFINE_T_MACRO
- /** The 'T' macro is an alternative for using the "L" prefix in front of a string literal.
+/** The 'T' macro is an alternative for using the "L" prefix in front of a string literal.
 
-     This macro is deprecated, but available for compatibility with old code if you set
-     JUCE_DEFINE_T_MACRO = 1. The fastest, most portable and best way to write your string
-     literals is as standard char strings, using escaped utf-8 character sequences for extended
-     characters, rather than trying to store them as wide-char strings.
- */
- #define T(stringLiteral)   JUCE_T(stringLiteral)
+    This macro is deprecated, but available for compatibility with old code if you set
+    JUCE_DEFINE_T_MACRO = 1. The fastest, most portable and best way to write your string
+    literals is as standard char strings, using escaped utf-8 character sequences for extended
+    characters, rather than trying to store them as wide-char strings.
+*/
+#define T(stringLiteral)   JUCE_T(stringLiteral)
 #endif
 
 //==============================================================================
@@ -133,23 +133,25 @@ public:
 
         switch (c)
         {
-            case '-':   isNegative = true; // fall-through..
-            case '+':   c = *++text;
+        case '-':
+            isNegative = true; // fall-through..
+        case '+':
+            c = *++text;
         }
 
         switch (c)
         {
-            case 'n':
-            case 'N':
-                if ((text[1] == 'a' || text[1] == 'A') && (text[2] == 'n' || text[2] == 'N'))
-                    return std::numeric_limits<double>::quiet_NaN();
-                break;
+        case 'n':
+        case 'N':
+            if ((text[1] == 'a' || text[1] == 'A') && (text[2] == 'n' || text[2] == 'N'))
+                return std::numeric_limits<double>::quiet_NaN();
+            break;
 
-            case 'i':
-            case 'I':
-                if ((text[1] == 'n' || text[1] == 'N') && (text[2] == 'f' || text[2] == 'F'))
-                    return std::numeric_limits<double>::infinity();
-                break;
+        case 'i':
+        case 'I':
+            if ((text[1] == 'n' || text[1] == 'N') && (text[2] == 'f' || text[2] == 'F'))
+                return std::numeric_limits<double>::infinity();
+            break;
         }
 
         for (;;)
@@ -191,7 +193,7 @@ public:
                     if (accumulator [decPointIndex] > maxAccumulatorValue)
                     {
                         result [decPointIndex] = mulexp10 (result [decPointIndex], exponentAccumulator [decPointIndex])
-                                                    + accumulator [decPointIndex];
+                                                 + accumulator [decPointIndex];
                         accumulator [decPointIndex] = 0;
                         exponentAccumulator [decPointIndex] = 0;
                     }
@@ -230,8 +232,10 @@ public:
 
             switch (*++text)
             {
-                case '-':   negativeExponent = true; // fall-through..
-                case '+':   ++text;
+            case '-':
+                negativeExponent = true; // fall-through..
+            case '+':
+                ++text;
             }
 
             while (text.isDigit())
@@ -368,7 +372,7 @@ public:
         dest.writeNull();
 
         return (size_t) getAddressDifference (dest.getAddress(), startAddress)
-                 + sizeof (typename DestCharPointerType::CharType);
+        + sizeof (typename DestCharPointerType::CharType);
     }
 
     /** Copies characters from one string to another, up to a null terminator
@@ -435,7 +439,8 @@ public:
             if (diff != 0)  return diff < 0 ? -1 : 1;
             if (c1 == 0)    break;
 
-             ++s1; ++s2;
+            ++s1;
+            ++s2;
         }
 
         return 0;
@@ -454,7 +459,8 @@ public:
             if (diff != 0)  return diff < 0 ? -1 : 1;
             if (c1 == 0)    break;
 
-             ++s1; ++s2;
+            ++s1;
+            ++s2;
         }
 
         return 0;
@@ -491,7 +497,7 @@ public:
         const int substringLength = (int) substringToLookFor.length();
 
         while (textToSearch.compareUpTo (substringToLookFor, substringLength) != 0
-                 && ! textToSearch.isEmpty())
+        && ! textToSearch.isEmpty())
             ++textToSearch;
 
         return textToSearch;

@@ -36,10 +36,14 @@ template <typename Type>
 class Quaternion
 {
 public:
-    Quaternion() noexcept  : scalar() {}
-    Quaternion (const Quaternion& other) noexcept                                     : vector (other.vector), scalar (other.scalar) {}
-    Quaternion (const Vector3D<Type>& vectorPart, const Type& scalarPart) noexcept    : vector (vectorPart), scalar (scalarPart) {}
-    Quaternion (const Type& x, const Type& y, const Type& z, const Type& w) noexcept  : vector (x, y, z), scalar (w) {}
+Quaternion() noexcept  :
+    scalar() {}
+Quaternion (const Quaternion& other) noexcept                                     :
+    vector (other.vector), scalar (other.scalar) {}
+Quaternion (const Vector3D<Type>& vectorPart, const Type& scalarPart) noexcept    :
+    vector (vectorPart), scalar (scalarPart) {}
+Quaternion (const Type& x, const Type& y, const Type& z, const Type& w) noexcept  :
+    vector (x, y, z), scalar (w) {}
 
     /** Creates a quaternion from an angle and an axis. */
     static Quaternion fromAngle (const Type& angle, const Vector3D<Type>& axis) noexcept
@@ -62,8 +66,12 @@ public:
         return *this;
     }
 
-    Type length() const noexcept        { return std::sqrt (normal()); }
-    Type normal() const noexcept        { return scalar * scalar + vector.lengthSquared(); }
+    Type length() const noexcept        {
+        return std::sqrt (normal());
+    }
+    Type normal() const noexcept        {
+        return scalar * scalar + vector.lengthSquared();
+    }
 
     Quaternion normalised() const noexcept
     {

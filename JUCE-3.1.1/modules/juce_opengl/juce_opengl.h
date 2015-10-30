@@ -31,51 +31,51 @@
 #define JUCE_OPENGL 1
 
 #if JUCE_IOS || JUCE_ANDROID
- #define JUCE_OPENGL_ES 1
+#define JUCE_OPENGL_ES 1
 #endif
 
 #if JUCE_WINDOWS
- #ifndef APIENTRY
-  #define APIENTRY __stdcall
-  #define CLEAR_TEMP_APIENTRY 1
- #endif
- #ifndef WINGDIAPI
-  #define WINGDIAPI __declspec(dllimport)
-  #define CLEAR_TEMP_WINGDIAPI 1
- #endif
- #include <gl/GL.h>
- #ifdef CLEAR_TEMP_WINGDIAPI
-  #undef WINGDIAPI
-  #undef CLEAR_TEMP_WINGDIAPI
- #endif
- #ifdef CLEAR_TEMP_APIENTRY
-  #undef APIENTRY
-  #undef CLEAR_TEMP_APIENTRY
- #endif
+#ifndef APIENTRY
+#define APIENTRY __stdcall
+#define CLEAR_TEMP_APIENTRY 1
+#endif
+#ifndef WINGDIAPI
+#define WINGDIAPI __declspec(dllimport)
+#define CLEAR_TEMP_WINGDIAPI 1
+#endif
+#include <gl/GL.h>
+#ifdef CLEAR_TEMP_WINGDIAPI
+#undef WINGDIAPI
+#undef CLEAR_TEMP_WINGDIAPI
+#endif
+#ifdef CLEAR_TEMP_APIENTRY
+#undef APIENTRY
+#undef CLEAR_TEMP_APIENTRY
+#endif
 #elif JUCE_LINUX
- #include <GL/gl.h>
- #undef KeyPress
+#include <GL/gl.h>
+#undef KeyPress
 #elif JUCE_IOS
- #if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
-  #include <OpenGLES/ES3/gl.h>
- #else
-  #include <OpenGLES/ES2/gl.h>
- #endif
+#if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+#include <OpenGLES/ES3/gl.h>
+#else
+#include <OpenGLES/ES2/gl.h>
+#endif
 #elif JUCE_MAC
- #if defined (MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_7)
-  #define JUCE_OPENGL3 1
-  #include <OpenGL/gl3.h>
-  #include <OpenGL/gl3ext.h>
- #else
-  #include <OpenGL/gl.h>
-  #include <OpenGL/glext.h>
- #endif
+#if defined (MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_7)
+#define JUCE_OPENGL3 1
+#include <OpenGL/gl3.h>
+#include <OpenGL/gl3ext.h>
+#else
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#endif
 #elif JUCE_ANDROID
- #include <GLES2/gl2.h>
+#include <GLES2/gl2.h>
 #endif
 
 #if GL_ES_VERSION_3_0
- #define JUCE_OPENGL3 1
+#define JUCE_OPENGL3 1
 #endif
 
 //=============================================================================
@@ -83,38 +83,38 @@
     It's mandatory in OpenGL 3.0 to specify the GLSL version.
 */
 #if JUCE_OPENGL3
- #if JUCE_OPENGL_ES
-  #define JUCE_GLSL_VERSION "#version 300 es"
- #else
-  #define JUCE_GLSL_VERSION "#version 150"
- #endif
+#if JUCE_OPENGL_ES
+#define JUCE_GLSL_VERSION "#version 300 es"
 #else
- #define JUCE_GLSL_VERSION ""
+#define JUCE_GLSL_VERSION "#version 150"
+#endif
+#else
+#define JUCE_GLSL_VERSION ""
 #endif
 
 //=============================================================================
 #if JUCE_OPENGL_ES || defined (DOXYGEN)
- /** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
-     Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
-     these macros define the various precision keywords only on GLES.
- */
- #define JUCE_MEDIUMP  "mediump"
+/** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
+    Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
+    these macros define the various precision keywords only on GLES.
+*/
+#define JUCE_MEDIUMP  "mediump"
 
- /** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
-     Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
-     these macros define the various precision keywords only on GLES.
- */
- #define JUCE_HIGHP    "highp"
+/** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
+    Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
+    these macros define the various precision keywords only on GLES.
+*/
+#define JUCE_HIGHP    "highp"
 
- /** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
-     Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
-     these macros define the various precision keywords only on GLES.
- */
- #define JUCE_LOWP     "lowp"
+/** This macro is a helper for use in GLSL shader code which needs to compile on both GLES and desktop GL.
+    Since it's mandatory in GLES to mark a variable with a precision, but the keywords don't exist in normal GLSL,
+    these macros define the various precision keywords only on GLES.
+*/
+#define JUCE_LOWP     "lowp"
 #else
- #define JUCE_MEDIUMP
- #define JUCE_HIGHP
- #define JUCE_LOWP
+#define JUCE_MEDIUMP
+#define JUCE_HIGHP
+#define JUCE_LOWP
 #endif
 
 //=============================================================================

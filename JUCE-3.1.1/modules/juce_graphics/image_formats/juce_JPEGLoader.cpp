@@ -23,103 +23,103 @@
 */
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4365)
+#pragma warning (push)
+#pragma warning (disable: 4365)
 #endif
 
 namespace jpeglibNamespace
 {
 #if JUCE_INCLUDE_JPEGLIB_CODE || ! defined (JUCE_INCLUDE_JPEGLIB_CODE)
-   #if JUCE_MINGW
-    typedef unsigned char boolean;
-   #endif
+#if JUCE_MINGW
+typedef unsigned char boolean;
+#endif
 
-   #if JUCE_CLANG
-    #pragma clang diagnostic push
-    #pragma clang diagnostic ignored "-Wconversion"
-    #pragma clang diagnostic ignored "-Wdeprecated-register"
-   #endif
+#if JUCE_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
-    #define JPEG_INTERNALS
-    #undef FAR
-    #include "jpglib/jpeglib.h"
+#define JPEG_INTERNALS
+#undef FAR
+#include "jpglib/jpeglib.h"
 
-    #include "jpglib/jcapimin.c"
-    #include "jpglib/jcapistd.c"
-    #include "jpglib/jccoefct.c"
-    #include "jpglib/jccolor.c"
-    #undef FIX
-    #include "jpglib/jcdctmgr.c"
-    #undef CONST_BITS
-    #include "jpglib/jchuff.c"
-    #undef emit_byte
-    #include "jpglib/jcinit.c"
-    #include "jpglib/jcmainct.c"
-    #include "jpglib/jcmarker.c"
-    #include "jpglib/jcmaster.c"
-    #include "jpglib/jcomapi.c"
-    #include "jpglib/jcparam.c"
-    #include "jpglib/jcphuff.c"
-    #include "jpglib/jcprepct.c"
-    #include "jpglib/jcsample.c"
-    #include "jpglib/jctrans.c"
-    #include "jpglib/jdapistd.c"
-    #include "jpglib/jdapimin.c"
-    #include "jpglib/jdatasrc.c"
-    #include "jpglib/jdcoefct.c"
-    #undef FIX
-    #include "jpglib/jdcolor.c"
-    #undef FIX
-    #include "jpglib/jddctmgr.c"
-    #undef CONST_BITS
-    #undef ASSIGN_STATE
-    #include "jpglib/jdhuff.c"
-    #include "jpglib/jdinput.c"
-    #include "jpglib/jdmainct.c"
-    #include "jpglib/jdmarker.c"
-    #include "jpglib/jdmaster.c"
-    #undef FIX
-    #include "jpglib/jdmerge.c"
-    #undef ASSIGN_STATE
-    #include "jpglib/jdphuff.c"
-    #include "jpglib/jdpostct.c"
-    #undef FIX
-    #include "jpglib/jdsample.c"
-    #include "jpglib/jdtrans.c"
-    #include "jpglib/jfdctflt.c"
-    #include "jpglib/jfdctint.c"
-    #undef CONST_BITS
-    #undef MULTIPLY
-    #undef FIX_0_541196100
-    #include "jpglib/jfdctfst.c"
-    #undef FIX_0_541196100
-    #include "jpglib/jidctflt.c"
-    #undef CONST_BITS
-    #undef FIX_1_847759065
-    #undef MULTIPLY
-    #undef DEQUANTIZE
-    #undef DESCALE
-    #include "jpglib/jidctfst.c"
-    #undef CONST_BITS
-    #undef FIX_1_847759065
-    #undef MULTIPLY
-    #undef DEQUANTIZE
-    #include "jpglib/jidctint.c"
-    #include "jpglib/jidctred.c"
-    #include "jpglib/jmemmgr.c"
-    #include "jpglib/jmemnobs.c"
-    #include "jpglib/jquant1.c"
-    #include "jpglib/jquant2.c"
-    #include "jpglib/jutils.c"
-    #include "jpglib/transupp.c"
+#include "jpglib/jcapimin.c"
+#include "jpglib/jcapistd.c"
+#include "jpglib/jccoefct.c"
+#include "jpglib/jccolor.c"
+#undef FIX
+#include "jpglib/jcdctmgr.c"
+#undef CONST_BITS
+#include "jpglib/jchuff.c"
+#undef emit_byte
+#include "jpglib/jcinit.c"
+#include "jpglib/jcmainct.c"
+#include "jpglib/jcmarker.c"
+#include "jpglib/jcmaster.c"
+#include "jpglib/jcomapi.c"
+#include "jpglib/jcparam.c"
+#include "jpglib/jcphuff.c"
+#include "jpglib/jcprepct.c"
+#include "jpglib/jcsample.c"
+#include "jpglib/jctrans.c"
+#include "jpglib/jdapistd.c"
+#include "jpglib/jdapimin.c"
+#include "jpglib/jdatasrc.c"
+#include "jpglib/jdcoefct.c"
+#undef FIX
+#include "jpglib/jdcolor.c"
+#undef FIX
+#include "jpglib/jddctmgr.c"
+#undef CONST_BITS
+#undef ASSIGN_STATE
+#include "jpglib/jdhuff.c"
+#include "jpglib/jdinput.c"
+#include "jpglib/jdmainct.c"
+#include "jpglib/jdmarker.c"
+#include "jpglib/jdmaster.c"
+#undef FIX
+#include "jpglib/jdmerge.c"
+#undef ASSIGN_STATE
+#include "jpglib/jdphuff.c"
+#include "jpglib/jdpostct.c"
+#undef FIX
+#include "jpglib/jdsample.c"
+#include "jpglib/jdtrans.c"
+#include "jpglib/jfdctflt.c"
+#include "jpglib/jfdctint.c"
+#undef CONST_BITS
+#undef MULTIPLY
+#undef FIX_0_541196100
+#include "jpglib/jfdctfst.c"
+#undef FIX_0_541196100
+#include "jpglib/jidctflt.c"
+#undef CONST_BITS
+#undef FIX_1_847759065
+#undef MULTIPLY
+#undef DEQUANTIZE
+#undef DESCALE
+#include "jpglib/jidctfst.c"
+#undef CONST_BITS
+#undef FIX_1_847759065
+#undef MULTIPLY
+#undef DEQUANTIZE
+#include "jpglib/jidctint.c"
+#include "jpglib/jidctred.c"
+#include "jpglib/jmemmgr.c"
+#include "jpglib/jmemnobs.c"
+#include "jpglib/jquant1.c"
+#include "jpglib/jquant2.c"
+#include "jpglib/jutils.c"
+#include "jpglib/transupp.c"
 
-   #if JUCE_CLANG
-    #pragma clang diagnostic pop
-   #endif
+#if JUCE_CLANG
+#pragma clang diagnostic pop
+#endif
 #else
-    #define JPEG_INTERNALS
-    #undef FAR
-    #include <jpeglib.h>
+#define JPEG_INTERNALS
+#undef FAR
+#include <jpeglib.h>
 #endif
 }
 
@@ -127,84 +127,86 @@ namespace jpeglibNamespace
 #undef min
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 //==============================================================================
 namespace JPEGHelpers
 {
-    using namespace jpeglibNamespace;
+using namespace jpeglibNamespace;
 
-   #if ! JUCE_MSVC
-    using jpeglibNamespace::boolean;
-   #endif
+#if ! JUCE_MSVC
+using jpeglibNamespace::boolean;
+#endif
 
-    struct JPEGDecodingFailure {};
+struct JPEGDecodingFailure {};
 
-    static void fatalErrorHandler (j_common_ptr)            { throw JPEGDecodingFailure(); }
-    static void silentErrorCallback1 (j_common_ptr)         {}
-    static void silentErrorCallback2 (j_common_ptr, int)    {}
-    static void silentErrorCallback3 (j_common_ptr, char*)  {}
+static void fatalErrorHandler (j_common_ptr)            {
+    throw JPEGDecodingFailure();
+}
+static void silentErrorCallback1 (j_common_ptr)         {}
+static void silentErrorCallback2 (j_common_ptr, int)    {}
+static void silentErrorCallback3 (j_common_ptr, char*)  {}
 
-    static void setupSilentErrorHandler (struct jpeg_error_mgr& err)
-    {
-        zerostruct (err);
+static void setupSilentErrorHandler (struct jpeg_error_mgr& err)
+{
+    zerostruct (err);
 
-        err.error_exit      = fatalErrorHandler;
-        err.emit_message    = silentErrorCallback2;
-        err.output_message  = silentErrorCallback1;
-        err.format_message  = silentErrorCallback3;
-        err.reset_error_mgr = silentErrorCallback1;
-    }
+    err.error_exit      = fatalErrorHandler;
+    err.emit_message    = silentErrorCallback2;
+    err.output_message  = silentErrorCallback1;
+    err.format_message  = silentErrorCallback3;
+    err.reset_error_mgr = silentErrorCallback1;
+}
 
-    //==============================================================================
-   #if ! JUCE_USING_COREIMAGE_LOADER
-    static void dummyCallback1 (j_decompress_ptr) {}
+//==============================================================================
+#if ! JUCE_USING_COREIMAGE_LOADER
+static void dummyCallback1 (j_decompress_ptr) {}
 
-    static void jpegSkip (j_decompress_ptr decompStruct, long num)
-    {
-        decompStruct->src->next_input_byte += num;
+static void jpegSkip (j_decompress_ptr decompStruct, long num)
+{
+    decompStruct->src->next_input_byte += num;
 
-        num = jmin (num, (long) decompStruct->src->bytes_in_buffer);
-        decompStruct->src->bytes_in_buffer -= (size_t) num;
-    }
+    num = jmin (num, (long) decompStruct->src->bytes_in_buffer);
+    decompStruct->src->bytes_in_buffer -= (size_t) num;
+}
 
-    static boolean jpegFill (j_decompress_ptr)
-    {
-        return 0;
-    }
-   #endif
+static boolean jpegFill (j_decompress_ptr)
+{
+    return 0;
+}
+#endif
 
-    //==============================================================================
-    const int jpegBufferSize = 512;
+//==============================================================================
+const int jpegBufferSize = 512;
 
-    struct JuceJpegDest  : public jpeg_destination_mgr
-    {
-        OutputStream* output;
-        char* buffer;
-    };
+struct JuceJpegDest  : public jpeg_destination_mgr
+{
+    OutputStream* output;
+    char* buffer;
+};
 
-    static void jpegWriteInit (j_compress_ptr) {}
+static void jpegWriteInit (j_compress_ptr) {}
 
-    static void jpegWriteTerminate (j_compress_ptr cinfo)
-    {
-        JuceJpegDest* const dest = static_cast <JuceJpegDest*> (cinfo->dest);
+static void jpegWriteTerminate (j_compress_ptr cinfo)
+{
+    JuceJpegDest* const dest = static_cast <JuceJpegDest*> (cinfo->dest);
 
-        const size_t numToWrite = jpegBufferSize - dest->free_in_buffer;
-        dest->output->write (dest->buffer, numToWrite);
-    }
+    const size_t numToWrite = jpegBufferSize - dest->free_in_buffer;
+    dest->output->write (dest->buffer, numToWrite);
+}
 
-    static boolean jpegWriteFlush (j_compress_ptr cinfo)
-    {
-        JuceJpegDest* const dest = static_cast <JuceJpegDest*> (cinfo->dest);
+static boolean jpegWriteFlush (j_compress_ptr cinfo)
+{
+    JuceJpegDest* const dest = static_cast <JuceJpegDest*> (cinfo->dest);
 
-        const int numToWrite = jpegBufferSize;
+    const int numToWrite = jpegBufferSize;
 
-        dest->next_output_byte = reinterpret_cast <JOCTET*> (dest->buffer);
-        dest->free_in_buffer = jpegBufferSize;
+    dest->next_output_byte = reinterpret_cast <JOCTET*> (dest->buffer);
+    dest->free_in_buffer = jpegBufferSize;
 
-        return (boolean) dest->output->write (dest->buffer, (size_t) numToWrite);
-    }
+    return (boolean) dest->output->write (dest->buffer, (size_t) numToWrite);
+}
 }
 
 //==============================================================================
@@ -220,8 +222,12 @@ void JPEGImageFormat::setQuality (const float newQuality)
     quality = newQuality;
 }
 
-String JPEGImageFormat::getFormatName()                   { return "JPEG"; }
-bool JPEGImageFormat::usesFileExtension (const File& f)   { return f.hasFileExtension ("jpeg;jpg"); }
+String JPEGImageFormat::getFormatName()                   {
+    return "JPEG";
+}
+bool JPEGImageFormat::usesFileExtension (const File& f)   {
+    return f.hasFileExtension ("jpeg;jpg");
+}
 
 bool JPEGImageFormat::canUnderstand (InputStream& in)
 {
@@ -229,13 +235,13 @@ bool JPEGImageFormat::canUnderstand (InputStream& in)
     uint8 header [bytesNeeded];
 
     return in.read (header, bytesNeeded) == bytesNeeded
-            && header[0] == 0xff
-            && header[1] == 0xd8
-            && header[2] == 0xff;
+           && header[0] == 0xff
+           && header[1] == 0xd8
+           && header[2] == 0xff;
 }
 
 #if JUCE_USING_COREIMAGE_LOADER
- Image juce_loadWithCoreImage (InputStream& input);
+Image juce_loadWithCoreImage (InputStream& input);
 #endif
 
 Image JPEGImageFormat::decodeImage (InputStream& in)
@@ -262,7 +268,7 @@ Image JPEGImageFormat::decodeImage (InputStream& in)
         jpeg_create_decompress (&jpegDecompStruct);
 
         jpegDecompStruct.src = (jpeg_source_mgr*)(jpegDecompStruct.mem->alloc_small)
-            ((j_common_ptr)(&jpegDecompStruct), JPOOL_PERMANENT, sizeof (jpeg_source_mgr));
+                               ((j_common_ptr)(&jpegDecompStruct), JPOOL_PERMANENT, sizeof (jpeg_source_mgr));
 
         jpegDecompStruct.src->init_source       = dummyCallback1;
         jpegDecompStruct.src->fill_input_buffer = jpegFill;
@@ -286,8 +292,8 @@ Image JPEGImageFormat::decodeImage (InputStream& in)
 
             JSAMPARRAY buffer
                 = (*jpegDecompStruct.mem->alloc_sarray) ((j_common_ptr) &jpegDecompStruct,
-                                                         JPOOL_IMAGE,
-                                                         (JDIMENSION) width * 3, 1);
+                        JPOOL_IMAGE,
+                        (JDIMENSION) width * 3, 1);
 
             if (jpeg_start_decompress (&jpegDecompStruct))
             {
@@ -389,7 +395,7 @@ bool JPEGImageFormat::writeImageToStream (const Image& image, OutputStream& out)
     const int strideBytes = (int) (jpegCompStruct.image_width * (unsigned int) jpegCompStruct.input_components);
 
     JSAMPARRAY buffer = (*jpegCompStruct.mem->alloc_sarray) ((j_common_ptr) &jpegCompStruct,
-                                                             JPOOL_IMAGE, (JDIMENSION) strideBytes, 1);
+                        JPOOL_IMAGE, (JDIMENSION) strideBytes, 1);
 
     const Image::BitmapData srcData (image, Image::BitmapData::readOnly);
 

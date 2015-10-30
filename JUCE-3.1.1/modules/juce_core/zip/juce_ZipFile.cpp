@@ -74,40 +74,40 @@ private:
 //==============================================================================
 namespace
 {
-    int findEndOfZipEntryTable (InputStream& input, int& numEntries)
+int findEndOfZipEntryTable (InputStream& input, int& numEntries)
+{
+    BufferedInputStream in (input, 8192);
+
+    in.setPosition (in.getTotalLength());
+    int64 pos = in.getPosition();
+    const int64 lowestPos = jmax ((int64) 0, pos - 1024);
+
+    char buffer [32] = { 0 };
+
+    while (pos > lowestPos)
     {
-        BufferedInputStream in (input, 8192);
+        in.setPosition (pos - 22);
+        pos = in.getPosition();
+        memcpy (buffer + 22, buffer, 4);
 
-        in.setPosition (in.getTotalLength());
-        int64 pos = in.getPosition();
-        const int64 lowestPos = jmax ((int64) 0, pos - 1024);
+        if (in.read (buffer, 22) != 22)
+            return 0;
 
-        char buffer [32] = { 0 };
-
-        while (pos > lowestPos)
+        for (int i = 0; i < 22; ++i)
         {
-            in.setPosition (pos - 22);
-            pos = in.getPosition();
-            memcpy (buffer + 22, buffer, 4);
-
-            if (in.read (buffer, 22) != 22)
-                return 0;
-
-            for (int i = 0; i < 22; ++i)
+            if (ByteOrder::littleEndianInt (buffer + i) == 0x06054b50)
             {
-                if (ByteOrder::littleEndianInt (buffer + i) == 0x06054b50)
-                {
-                    in.setPosition (pos + i);
-                    in.read (buffer, 22);
-                    numEntries = ByteOrder::littleEndianShort (buffer + 10);
+                in.setPosition (pos + i);
+                in.read (buffer, 22);
+                numEntries = ByteOrder::littleEndianShort (buffer + 10);
 
-                    return (int) ByteOrder::littleEndianInt (buffer + 16);
-                }
+                return (int) ByteOrder::littleEndianInt (buffer + 16);
             }
         }
-
-        return 0;
     }
+
+    return 0;
+}
 }
 
 //==============================================================================
@@ -127,29 +127,29 @@ public:
         }
         else
         {
-           #if JUCE_DEBUG
+#if JUCE_DEBUG
             zf.streamCounter.numOpenStreams++;
-           #endif
+#endif
         }
 
         char buffer [30];
 
         if (inputStream != nullptr
-             && inputStream->setPosition ((int64) zei.streamOffset)
-             && inputStream->read (buffer, 30) == 30
-             && ByteOrder::littleEndianInt (buffer) == 0x04034b50)
+                && inputStream->setPosition ((int64) zei.streamOffset)
+                && inputStream->read (buffer, 30) == 30
+                && ByteOrder::littleEndianInt (buffer) == 0x04034b50)
         {
             headerSize = 30 + ByteOrder::littleEndianShort (buffer + 26)
-                            + ByteOrder::littleEndianShort (buffer + 28);
+                         + ByteOrder::littleEndianShort (buffer + 28);
         }
     }
 
     ~ZipInputStream()
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         if (inputStream != nullptr && inputStream == file.inputStream)
             file.streamCounter.numOpenStreams--;
-       #endif
+#endif
     }
 
     int64 getTotalLength()
@@ -215,7 +215,7 @@ private:
 
 //==============================================================================
 ZipFile::ZipFile (InputStream* const stream, const bool deleteStreamWhenDestroyed)
-   : inputStream (stream)
+    : inputStream (stream)
 {
     if (deleteStreamWhenDestroyed)
         streamToDelete = inputStream;
@@ -224,7 +224,7 @@ ZipFile::ZipFile (InputStream* const stream, const bool deleteStreamWhenDestroye
 }
 
 ZipFile::ZipFile (InputStream& stream)
-   : inputStream (&stream)
+    : inputStream (&stream)
 {
     init();
 }
@@ -366,8 +366,8 @@ void ZipFile::init()
                     entries.add (new ZipEntryHolder (buffer, fileNameLen));
 
                     pos += 46 + fileNameLen
-                            + ByteOrder::littleEndianShort (buffer + 30)
-                            + ByteOrder::littleEndianShort (buffer + 32);
+                           + ByteOrder::littleEndianShort (buffer + 30)
+                           + ByteOrder::littleEndianShort (buffer + 32);
                 }
             }
         }
@@ -393,11 +393,11 @@ Result ZipFile::uncompressEntry (const int index,
 {
     const ZipEntryHolder* zei = entries.getUnchecked (index);
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     const String entryPath (zei->entry.filename);
-   #else
+#else
     const String entryPath (zei->entry.filename.replaceCharacter ('\\', '/'));
-   #endif
+#endif
 
     const File targetFile (targetDirectory.getChildFile (entryPath));
 

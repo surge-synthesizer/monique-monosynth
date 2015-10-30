@@ -42,10 +42,10 @@ public:
     RelativeCoordinate (const RelativeCoordinate&);
     RelativeCoordinate& operator= (const RelativeCoordinate&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     RelativeCoordinate (RelativeCoordinate&&) noexcept;
     RelativeCoordinate& operator= (RelativeCoordinate&&) noexcept;
-   #endif
+#endif
 
     /** Creates an absolute position from the parent origin on either the X or Y axis.
 
@@ -95,7 +95,9 @@ public:
     void moveToAbsolute (double absoluteTargetPosition, const Expression::Scope* evaluationScope);
 
     /** Returns the expression that defines this coordinate. */
-    const Expression& getExpression() const         { return term; }
+    const Expression& getExpression() const         {
+        return term;
+    }
 
 
     //==============================================================================

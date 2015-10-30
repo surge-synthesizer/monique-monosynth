@@ -23,7 +23,7 @@
 */
 
 class ListBox::RowComponent  : public Component,
-                               public TooltipClient
+    public TooltipClient
 {
 public:
     RowComponent (ListBox& lb)
@@ -169,7 +169,7 @@ public:
     RowComponent* getComponentForRowIfOnscreen (const int row) const noexcept
     {
         return (row >= firstIndex && row < firstIndex + rows.size())
-                 ? getComponentForRow (row) : nullptr;
+               ? getComponentForRow (row) : nullptr;
     }
 
     int getRowNumberOfComponent (Component* const rowComponent) const noexcept
@@ -270,8 +270,8 @@ public:
             const int rowsOnScreen = lastWholeIndex - firstWholeIndex;
 
             if (row >= lastSelectedRow + rowsOnScreen
-                 && rowsOnScreen < totalRows - 1
-                 && ! isMouseClick)
+                    && rowsOnScreen < totalRows - 1
+                    && ! isMouseClick)
             {
                 setViewPosition (getViewPositionX(),
                                  jlimit (0, jmax (0, totalRows - rowsOnScreen), row) * rowH);
@@ -438,7 +438,7 @@ void ListBox::paintOverChildren (Graphics& g)
 void ListBox::resized()
 {
     viewport->setBoundsInset (BorderSize<int> (outlineThickness + (headerComponent != nullptr ? headerComponent->getHeight() : 0),
-                                               outlineThickness, outlineThickness, outlineThickness));
+                              outlineThickness, outlineThickness, outlineThickness));
 
     viewport->setSingleStepSizes (20, getRowHeight());
 
@@ -492,7 +492,7 @@ void ListBox::selectRowInternal (const int row,
         deselectOthersFirst = true;
 
     if ((! isRowSelected (row))
-         || (deselectOthersFirst && getNumSelectedRows() > 1))
+            || (deselectOthersFirst && getNumSelectedRows() > 1))
     {
         if (isPositiveAndBelow (row, totalItems))
         {
@@ -592,8 +592,8 @@ void ListBox::deselectAllRows()
 }
 
 void ListBox::selectRowsBasedOnModifierKeys (const int row,
-                                             ModifierKeys mods,
-                                             const bool isMouseUpEvent)
+        ModifierKeys mods,
+        const bool isMouseUpEvent)
 {
     if (multipleSelection && (mods.isCommandDown() || alwaysFlipSelection))
     {
@@ -617,7 +617,7 @@ int ListBox::getNumSelectedRows() const
 int ListBox::getSelectedRow (const int index) const
 {
     return (isPositiveAndBelow (index, selected.size()))
-                ? selected [index] : -1;
+           ? selected [index] : -1;
 }
 
 bool ListBox::isRowSelected (const int row) const
@@ -693,7 +693,7 @@ double ListBox::getVerticalPosition() const
     const int offscreen = viewport->getViewedComponent()->getHeight() - viewport->getHeight();
 
     return (offscreen > 0) ? viewport->getViewPositionY() / (double) offscreen
-                           : 0;
+           : 0;
 }
 
 int ListBox::getVisibleRowWidth() const noexcept
@@ -712,8 +712,8 @@ bool ListBox::keyPressed (const KeyPress& key)
     const int numVisibleRows = viewport->getHeight() / getRowHeight();
 
     const bool multiple = multipleSelection
-                            && lastRowSelected >= 0
-                            && key.getModifiers().isShiftDown();
+                          && lastRowSelected >= 0
+                          && key.getModifiers().isShiftDown();
 
     if (key.isKeyCode (KeyPress::upKey))
     {
@@ -763,7 +763,7 @@ bool ListBox::keyPressed (const KeyPress& key)
             model->returnKeyPressed (lastRowSelected);
     }
     else if ((key.isKeyCode (KeyPress::deleteKey) || key.isKeyCode (KeyPress::backspaceKey))
-               && isRowSelected (lastRowSelected))
+             && isRowSelected (lastRowSelected))
     {
         if (model != nullptr)
             model->deleteKeyPressed (lastRowSelected);
@@ -783,13 +783,13 @@ bool ListBox::keyPressed (const KeyPress& key)
 bool ListBox::keyStateChanged (const bool isKeyDown)
 {
     return isKeyDown
-            && (KeyPress::isKeyCurrentlyDown (KeyPress::upKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::pageUpKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::downKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::pageDownKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::homeKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::endKey)
-                || KeyPress::isKeyCurrentlyDown (KeyPress::returnKey));
+           && (KeyPress::isKeyCurrentlyDown (KeyPress::upKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::pageUpKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::downKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::pageDownKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::homeKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::endKey)
+               || KeyPress::isKeyCurrentlyDown (KeyPress::returnKey));
 }
 
 void ListBox::mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel)
@@ -963,6 +963,12 @@ void ListBoxModel::selectedRowsChanged (int) {}
 void ListBoxModel::deleteKeyPressed (int) {}
 void ListBoxModel::returnKeyPressed (int) {}
 void ListBoxModel::listWasScrolled() {}
-var ListBoxModel::getDragSourceDescription (const SparseSet<int>&)      { return var(); }
-String ListBoxModel::getTooltipForRow (int)                             { return String::empty; }
-MouseCursor ListBoxModel::getMouseCursorForRow (int)                    { return MouseCursor::NormalCursor; }
+var ListBoxModel::getDragSourceDescription (const SparseSet<int>&)      {
+    return var();
+}
+String ListBoxModel::getTooltipForRow (int)                             {
+    return String::empty;
+}
+MouseCursor ListBoxModel::getMouseCursorForRow (int)                    {
+    return MouseCursor::NormalCursor;
+}

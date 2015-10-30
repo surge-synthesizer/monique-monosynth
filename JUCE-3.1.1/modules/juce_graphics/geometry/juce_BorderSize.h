@@ -44,49 +44,67 @@ public:
         All sizes are left as 0.
     */
     BorderSize() noexcept
-        : top(), left(), bottom(), right()
+:
+    top(), left(), bottom(), right()
     {
     }
 
     /** Creates a copy of another border. */
     BorderSize (const BorderSize& other) noexcept
-        : top (other.top), left (other.left), bottom (other.bottom), right (other.right)
+:
+    top (other.top), left (other.left), bottom (other.bottom), right (other.right)
     {
     }
 
     /** Creates a border with the given gaps. */
     BorderSize (ValueType topGap, ValueType leftGap, ValueType bottomGap, ValueType rightGap) noexcept
-        : top (topGap), left (leftGap), bottom (bottomGap), right (rightGap)
+:
+    top (topGap), left (leftGap), bottom (bottomGap), right (rightGap)
     {
     }
 
     /** Creates a border with the given gap on all sides. */
     explicit BorderSize (ValueType allGaps) noexcept
-        : top (allGaps), left (allGaps), bottom (allGaps), right (allGaps)
+:
+    top (allGaps), left (allGaps), bottom (allGaps), right (allGaps)
     {
     }
 
     //==============================================================================
     /** Returns the gap that should be left at the top of the region. */
-    ValueType getTop() const noexcept                   { return top; }
+    ValueType getTop() const noexcept                   {
+        return top;
+    }
 
     /** Returns the gap that should be left at the top of the region. */
-    ValueType getLeft() const noexcept                  { return left; }
+    ValueType getLeft() const noexcept                  {
+        return left;
+    }
 
     /** Returns the gap that should be left at the top of the region. */
-    ValueType getBottom() const noexcept                { return bottom; }
+    ValueType getBottom() const noexcept                {
+        return bottom;
+    }
 
     /** Returns the gap that should be left at the top of the region. */
-    ValueType getRight() const noexcept                 { return right; }
+    ValueType getRight() const noexcept                 {
+        return right;
+    }
 
     /** Returns the sum of the top and bottom gaps. */
-    ValueType getTopAndBottom() const noexcept          { return top + bottom; }
+    ValueType getTopAndBottom() const noexcept          {
+        return top + bottom;
+    }
 
     /** Returns the sum of the left and right gaps. */
-    ValueType getLeftAndRight() const noexcept          { return left + right; }
+    ValueType getLeftAndRight() const noexcept          {
+        return left + right;
+    }
 
     /** Returns true if this border has no thickness along any edge. */
-    bool isEmpty() const noexcept                       { return left + right + top + bottom == ValueType(); }
+    bool isEmpty() const noexcept                       {
+        return left + right + top + bottom == ValueType();
+    }
 
     //==============================================================================
     /** Changes the top gap. */

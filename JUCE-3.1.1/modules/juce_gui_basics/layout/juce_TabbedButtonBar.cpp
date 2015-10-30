@@ -30,9 +30,15 @@ TabBarButton::TabBarButton (const String& name, TabbedButtonBar& owner_)
 
 TabBarButton::~TabBarButton() {}
 
-int TabBarButton::getIndex() const                      { return owner.indexOfTabButton (this); }
-Colour TabBarButton::getTabBackgroundColour() const     { return owner.getTabBackgroundColour (getIndex()); }
-bool TabBarButton::isFrontTab() const                   { return getToggleState(); }
+int TabBarButton::getIndex() const                      {
+    return owner.indexOfTabButton (this);
+}
+Colour TabBarButton::getTabBackgroundColour() const     {
+    return owner.getTabBackgroundColour (getIndex());
+}
+bool TabBarButton::isFrontTab() const                   {
+    return getToggleState();
+}
 
 void TabBarButton::paintButton (Graphics& g, const bool isMouseOverButton, const bool isButtonDown)
 {
@@ -54,13 +60,13 @@ bool TabBarButton::hitTest (int mx, int my)
     if (owner.isVertical())
     {
         if (isPositiveAndBelow (mx, getWidth())
-             && my >= area.getY() + overlapPixels && my < area.getBottom() - overlapPixels)
+                && my >= area.getY() + overlapPixels && my < area.getBottom() - overlapPixels)
             return true;
     }
     else
     {
         if (isPositiveAndBelow (my, getHeight())
-             && mx >= area.getX() + overlapPixels && mx < area.getRight() - overlapPixels)
+                && mx >= area.getX() + overlapPixels && mx < area.getRight() - overlapPixels)
             return true;
     }
 
@@ -167,7 +173,7 @@ void TabBarButton::resized()
 
 //==============================================================================
 class TabbedButtonBar::BehindFrontTabComp  : public Component,
-                                             public ButtonListener // (can't use Button::Listener due to idiotic VC2005 bug)
+    public ButtonListener // (can't use Button::Listener due to idiotic VC2005 bug)
 {
 public:
     BehindFrontTabComp (TabbedButtonBar& tb)  : owner (tb)
@@ -489,7 +495,7 @@ void TabbedButtonBar::updateTabPositions (bool animate)
             if (i < numVisibleButtons)
             {
                 const Rectangle<int> newBounds (isVertical() ? Rectangle<int> (0, pos, getWidth(), bestLength)
-                                                             : Rectangle<int> (pos, 0, bestLength, getHeight()));
+                                                : Rectangle<int> (pos, 0, bestLength, getHeight()));
 
                 if (animate)
                 {

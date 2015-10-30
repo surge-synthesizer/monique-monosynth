@@ -26,11 +26,11 @@
 
 // You can define these strings in your app if you want to override the default names:
 #undef JUCE_ALSA_MIDI_INPUT_NAME
- #define JUCE_ALSA_MIDI_INPUT_NAME  "Monique MIDI IN"
+#define JUCE_ALSA_MIDI_INPUT_NAME  "Monique MIDI IN"
 //#endif
 
 #undef JUCE_ALSA_MIDI_OUTPUT_NAME
- #define JUCE_ALSA_MIDI_OUTPUT_NAME "Monique MIDI OUT"
+#define JUCE_ALSA_MIDI_OUTPUT_NAME "Monique MIDI OUT"
 //#endif
 
 //==============================================================================
@@ -49,7 +49,7 @@ public:
         : input (forInput), handle (nullptr)
     {
         snd_seq_open (&handle, "default", forInput ? SND_SEQ_OPEN_INPUT
-                                                   : SND_SEQ_OPEN_OUTPUT, 0);
+                      : SND_SEQ_OPEN_OUTPUT, 0);
     }
 
     ~AlsaClient()
@@ -69,7 +69,9 @@ public:
         }
     }
 
-    bool isInput() const noexcept    { return input; }
+    bool isInput() const noexcept    {
+        return input;
+    }
 
     void setName (const String& name)
     {
@@ -106,7 +108,9 @@ public:
 
     void handleIncomingMidiMessage (const MidiMessage& message, int port);
 
-    snd_seq_t* get() const noexcept     { return handle; }
+    snd_seq_t* get() const noexcept     {
+        return handle;
+    }
 
 private:
     bool input;
@@ -150,7 +154,7 @@ private:
 
                         do
                         {
-			    double time = Time::getMillisecondCounterHiRes()* 0.001;
+                            double time = Time::getMillisecondCounterHiRes()* 0.001;
                             snd_seq_event_t* inputEvent = nullptr;
 
                             if (snd_seq_event_input (seqHandle, &inputEvent) >= 0)
@@ -201,7 +205,7 @@ static AlsaClient::Ptr globalAlsaSequencerOut()
 static AlsaClient::Ptr globalAlsaSequencer (bool input)
 {
     return input ? globalAlsaSequencerIn()
-                 : globalAlsaSequencerOut();
+           : globalAlsaSequencerOut();
 }
 
 //==============================================================================
@@ -209,8 +213,10 @@ static AlsaClient::Ptr globalAlsaSequencer (bool input)
 class AlsaPort
 {
 public:
-    AlsaPort() noexcept  : portId (-1)  {}
-    AlsaPort (const AlsaClient::Ptr& c, int port) noexcept  : client (c), portId (port) {}
+AlsaPort() noexcept  :
+    portId (-1)  {}
+AlsaPort (const AlsaClient::Ptr& c, int port) noexcept  :
+    client (c), portId (port) {}
 
     void createPort (const AlsaClient::Ptr& c, const String& name, bool forInput)
     {
@@ -219,7 +225,7 @@ public:
         if (snd_seq_t* handle = client->get())
             portId = snd_seq_create_simple_port (handle, name.toUTF8(),
                                                  forInput ? (SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE)
-                                                          : (SND_SEQ_PORT_CAP_READ  | SND_SEQ_PORT_CAP_SUBS_READ),
+                                                 : (SND_SEQ_PORT_CAP_READ  | SND_SEQ_PORT_CAP_SUBS_READ),
                                                  SND_SEQ_PORT_TYPE_MIDI_GENERIC);
     }
 
@@ -322,8 +328,8 @@ static AlsaPort iterateMidiClient (const AlsaClient::Ptr& seq,
         while (--numPorts >= 0)
         {
             if (snd_seq_query_next_port (seqHandle, portInfo) == 0
-                && (snd_seq_port_info_get_capability (portInfo) & (forInput ? SND_SEQ_PORT_CAP_READ
-                                                                            : SND_SEQ_PORT_CAP_WRITE)) != 0)
+                    && (snd_seq_port_info_get_capability (portInfo) & (forInput ? SND_SEQ_PORT_CAP_READ
+                            : SND_SEQ_PORT_CAP_WRITE)) != 0)
             {
                 deviceNamesFound.add (snd_seq_client_info_get_name (clientInfo));
 
@@ -335,7 +341,7 @@ static AlsaPort iterateMidiClient (const AlsaClient::Ptr& seq,
                     if (sourcePort != -1)
                     {
                         const String name (forInput ? JUCE_ALSA_MIDI_INPUT_NAME
-                                                    : JUCE_ALSA_MIDI_OUTPUT_NAME);
+                                           : JUCE_ALSA_MIDI_OUTPUT_NAME);
                         seq->setName (name);
                         port.createPort (seq, name, forInput);
                         port.connectWith (sourceClient, sourcePort);
@@ -365,7 +371,7 @@ static AlsaPort iterateMidiDevices (const bool forInput,
         if (snd_seq_system_info_malloc (&systemInfo) == 0)
         {
             if (snd_seq_system_info (seqHandle, systemInfo) == 0
-                 && snd_seq_client_info_malloc (&clientInfo) == 0)
+                    && snd_seq_client_info_malloc (&clientInfo) == 0)
             {
                 int numClients = snd_seq_system_info_get_cur_clients (systemInfo);
 
@@ -602,10 +608,18 @@ MidiInput* MidiInput::createNewDevice (const String& deviceName, MidiInputCallba
 
 // (These are just stub functions if ALSA is unavailable...)
 
-StringArray MidiOutput::getDevices()                                { return StringArray(); }
-int MidiOutput::getDefaultDeviceIndex()                             { return 0; }
-MidiOutput* MidiOutput::openDevice (int)                            { return nullptr; }
-MidiOutput* MidiOutput::createNewDevice (const String&)             { return nullptr; }
+StringArray MidiOutput::getDevices()                                {
+    return StringArray();
+}
+int MidiOutput::getDefaultDeviceIndex()                             {
+    return 0;
+}
+MidiOutput* MidiOutput::openDevice (int)                            {
+    return nullptr;
+}
+MidiOutput* MidiOutput::createNewDevice (const String&)             {
+    return nullptr;
+}
 MidiOutput::~MidiOutput()   {}
 void MidiOutput::sendMessageNow (const MidiMessage&)    {}
 
@@ -613,9 +627,17 @@ MidiInput::MidiInput (const String& nm) : name (nm), internal (nullptr)  {}
 MidiInput::~MidiInput() {}
 void MidiInput::start() {}
 void MidiInput::stop()  {}
-int MidiInput::getDefaultDeviceIndex()      { return 0; }
-StringArray MidiInput::getDevices()         { return StringArray(); }
-MidiInput* MidiInput::openDevice (int, MidiInputCallback*)                  { return nullptr; }
-MidiInput* MidiInput::createNewDevice (const String&, MidiInputCallback*)   { return nullptr; }
+int MidiInput::getDefaultDeviceIndex()      {
+    return 0;
+}
+StringArray MidiInput::getDevices()         {
+    return StringArray();
+}
+MidiInput* MidiInput::openDevice (int, MidiInputCallback*)                  {
+    return nullptr;
+}
+MidiInput* MidiInput::createNewDevice (const String&, MidiInputCallback*)   {
+    return nullptr;
+}
 
 #endif

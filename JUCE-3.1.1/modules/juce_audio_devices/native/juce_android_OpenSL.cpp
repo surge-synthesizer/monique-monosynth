@@ -32,7 +32,7 @@ bool isOpenSLAvailable()
 
 //==============================================================================
 class OpenSLAudioIODevice  : public AudioIODevice,
-                             public Thread
+    public Thread
 {
 public:
     OpenSLAudioIODevice (const String& deviceName)
@@ -61,7 +61,9 @@ public:
         close();
     }
 
-    bool openedOk() const       { return engine.outputMixObject != nullptr; }
+    bool openedOk() const       {
+        return engine.outputMixObject != nullptr;
+    }
 
     StringArray getOutputChannelNames() override
     {
@@ -134,17 +136,39 @@ public:
         player = nullptr;
     }
 
-    int getDefaultBufferSize() override                 { return 1024; }
-    int getOutputLatencyInSamples() override            { return outputLatency; }
-    int getInputLatencyInSamples() override             { return inputLatency; }
-    bool isOpen() override                              { return deviceOpen; }
-    int getCurrentBufferSizeSamples() override          { return actualBufferSize; }
-    int getCurrentBitDepth() override                   { return 16; }
-    double getCurrentSampleRate() override              { return sampleRate; }
-    BigInteger getActiveOutputChannels() const override { return activeOutputChans; }
-    BigInteger getActiveInputChannels() const override  { return activeInputChans; }
-    String getLastError() override                      { return lastError; }
-    bool isPlaying() override                           { return callback != nullptr; }
+    int getDefaultBufferSize() override                 {
+        return 1024;
+    }
+    int getOutputLatencyInSamples() override            {
+        return outputLatency;
+    }
+    int getInputLatencyInSamples() override             {
+        return inputLatency;
+    }
+    bool isOpen() override                              {
+        return deviceOpen;
+    }
+    int getCurrentBufferSizeSamples() override          {
+        return actualBufferSize;
+    }
+    int getCurrentBitDepth() override                   {
+        return 16;
+    }
+    double getCurrentSampleRate() override              {
+        return sampleRate;
+    }
+    BigInteger getActiveOutputChannels() const override {
+        return activeOutputChans;
+    }
+    BigInteger getActiveInputChannels() const override  {
+        return activeInputChans;
+    }
+    String getLastError() override                      {
+        return lastError;
+    }
+    bool isPlaying() override                           {
+        return callback != nullptr;
+    }
 
     void start (AudioIODeviceCallback* newCallback) override
     {
@@ -314,10 +338,18 @@ private:
             return bufferSpace + nextBlock * numChannels * numSamples;
         }
 
-        void bufferReturned()           { --numBlocksOut; dataArrived.signal(); }
-        void bufferSent()               { ++numBlocksOut; dataArrived.signal(); }
+        void bufferReturned()           {
+            --numBlocksOut;
+            dataArrived.signal();
+        }
+        void bufferSent()               {
+            ++numBlocksOut;
+            dataArrived.signal();
+        }
 
-        int getBufferSizeBytes() const  { return numChannels * numSamples * sizeof (int16); }
+        int getBufferSizeBytes() const  {
+            return numChannels * numSamples * sizeof (int16);
+        }
 
         const int numChannels;
         enum { numSamples = 256, numBuffers = 16 };
@@ -360,7 +392,7 @@ private:
             const SLboolean flags[] = { SL_BOOLEAN_TRUE };
 
             check ((*engine.engineInterface)->CreateAudioPlayer (engine.engineInterface, &playerObject, &audioSrc, &audioSink,
-                                                                 1, interfaceIDs, flags));
+                    1, interfaceIDs, flags));
 
             check ((*playerObject)->Realize (playerObject, SL_BOOLEAN_FALSE));
             check ((*playerObject)->GetInterface (playerObject, *engine.SL_IID_PLAY, &playerPlay));
@@ -380,7 +412,9 @@ private:
                 (*playerObject)->Destroy (playerObject);
         }
 
-        bool openedOk() const noexcept      { return playerBufferQueue != nullptr; }
+        bool openedOk() const noexcept      {
+            return playerBufferQueue != nullptr;
+        }
 
         void start()
         {
@@ -430,7 +464,8 @@ private:
 
         static void staticCallback (SLAndroidSimpleBufferQueueItf queue, void* context)
         {
-            jassert (queue == static_cast <Player*> (context)->playerBufferQueue); (void) queue;
+            jassert (queue == static_cast <Player*> (context)->playerBufferQueue);
+            (void) queue;
             static_cast <Player*> (context)->bufferList.bufferReturned();
         }
 
@@ -468,7 +503,7 @@ private:
             const SLboolean flags[] = { SL_BOOLEAN_TRUE };
 
             if (check ((*engine.engineInterface)->CreateAudioRecorder (engine.engineInterface, &recorderObject, &audioSrc,
-                                                                       &audioSink, 1, interfaceIDs, flags)))
+                       &audioSink, 1, interfaceIDs, flags)))
             {
                 if (check ((*recorderObject)->Realize (recorderObject, SL_BOOLEAN_FALSE)))
                 {
@@ -500,7 +535,9 @@ private:
                 (*recorderObject)->Destroy (recorderObject);
         }
 
-        bool openedOk() const noexcept      { return recorderBufferQueue != nullptr; }
+        bool openedOk() const noexcept      {
+            return recorderBufferQueue != nullptr;
+        }
 
         void start()
         {
@@ -544,10 +581,10 @@ private:
         bool setAudioPreprocessingEnabled (bool enable)
         {
             SLuint32 mode = enable ? SL_ANDROID_RECORDING_PRESET_GENERIC
-                                   : SL_ANDROID_RECORDING_PRESET_VOICE_RECOGNITION;
+                            : SL_ANDROID_RECORDING_PRESET_VOICE_RECOGNITION;
 
             return configObject != nullptr
-                     && check ((*configObject)->SetConfiguration (configObject, SL_ANDROID_KEY_RECORDING_PRESET, &mode, sizeof (mode)));
+                   && check ((*configObject)->SetConfiguration (configObject, SL_ANDROID_KEY_RECORDING_PRESET, &mode, sizeof (mode)));
         }
 
     private:
@@ -566,7 +603,8 @@ private:
 
         static void staticCallback (SLAndroidSimpleBufferQueueItf queue, void* context)
         {
-            jassert (queue == static_cast <Recorder*> (context)->recorderBufferQueue); (void) queue;
+            jassert (queue == static_cast <Recorder*> (context)->recorderBufferQueue);
+            (void) queue;
             static_cast <Recorder*> (context)->bufferList.bufferReturned();
         }
 
@@ -599,10 +637,18 @@ public:
 
     //==============================================================================
     void scanForDevices() {}
-    StringArray getDeviceNames (bool wantInputNames) const              { return StringArray (openSLTypeName); }
-    int getDefaultDeviceIndex (bool forInput) const                     { return 0; }
-    int getIndexOfDevice (AudioIODevice* device, bool asInput) const    { return device != nullptr ? 0 : -1; }
-    bool hasSeparateInputsAndOutputs() const                            { return false; }
+    StringArray getDeviceNames (bool wantInputNames) const              {
+        return StringArray (openSLTypeName);
+    }
+    int getDefaultDeviceIndex (bool forInput) const                     {
+        return 0;
+    }
+    int getIndexOfDevice (AudioIODevice* device, bool asInput) const    {
+        return device != nullptr ? 0 : -1;
+    }
+    bool hasSeparateInputsAndOutputs() const                            {
+        return false;
+    }
 
     AudioIODevice* createDevice (const String& outputDeviceName,
                                  const String& inputDeviceName)
@@ -612,7 +658,7 @@ public:
         if (outputDeviceName.isNotEmpty() || inputDeviceName.isNotEmpty())
         {
             dev = new OpenSLAudioIODevice (outputDeviceName.isNotEmpty() ? outputDeviceName
-                                                                         : inputDeviceName);
+                                           : inputDeviceName);
             if (! dev->openedOk())
                 dev = nullptr;
         }

@@ -56,8 +56,8 @@
 //==============================================================================
 // Now we'll include some common OS headers..
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4514 4245 4100)
+#pragma warning (push)
+#pragma warning (disable: 4514 4245 4100)
 #endif
 
 #include <cstdlib>
@@ -76,36 +76,36 @@
 #include <functional>
 
 #if JUCE_USE_MSVC_INTRINSICS
- #include <intrin.h>
+#include <intrin.h>
 #endif
 
 #if JUCE_MAC || JUCE_IOS
- #include <libkern/OSAtomic.h>
+#include <libkern/OSAtomic.h>
 #endif
 
 #if JUCE_LINUX
- #include <signal.h>
+#include <signal.h>
 
- #if __INTEL_COMPILER
-  #if __ia64__
-   #include <ia64intrin.h>
-  #else
-   #include <ia32intrin.h>
-  #endif
- #endif
+#if __INTEL_COMPILER
+#if __ia64__
+#include <ia64intrin.h>
+#else
+#include <ia32intrin.h>
+#endif
+#endif
 #endif
 
 #if JUCE_MSVC && JUCE_DEBUG
- #include <crtdbg.h>
+#include <crtdbg.h>
 #endif
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 #if JUCE_ANDROID
- #include <sys/atomics.h>
- #include <byteswap.h>
+#include <sys/atomics.h>
+#include <byteswap.h>
 #endif
 
 // undef symbols that are sometimes set by misguided 3rd-party headers..
@@ -117,43 +117,43 @@
 //==============================================================================
 // DLL building settings on Windows
 #if JUCE_MSVC
- #ifdef JUCE_DLL_BUILD
-  #define JUCE_API __declspec (dllexport)
-  #pragma warning (disable: 4251)
- #elif defined (JUCE_DLL)
-  #define JUCE_API __declspec (dllimport)
-  #pragma warning (disable: 4251)
- #endif
- #ifdef __INTEL_COMPILER
-  #pragma warning (disable: 1125) // (virtual override warning)
- #endif
+#ifdef JUCE_DLL_BUILD
+#define JUCE_API __declspec (dllexport)
+#pragma warning (disable: 4251)
+#elif defined (JUCE_DLL)
+#define JUCE_API __declspec (dllimport)
+#pragma warning (disable: 4251)
+#endif
+#ifdef __INTEL_COMPILER
+#pragma warning (disable: 1125) // (virtual override warning)
+#endif
 #elif defined (JUCE_DLL) || defined (JUCE_DLL_BUILD)
- #define JUCE_API __attribute__ ((visibility("default")))
+#define JUCE_API __attribute__ ((visibility("default")))
 #endif
 
 //==============================================================================
 #ifndef JUCE_API
- #define JUCE_API   /**< This macro is added to all juce public class declarations. */
+#define JUCE_API   /**< This macro is added to all juce public class declarations. */
 #endif
 
 #if JUCE_MSVC && JUCE_DLL_BUILD
- #define JUCE_PUBLIC_IN_DLL_BUILD(declaration)  public: declaration; private:
+#define JUCE_PUBLIC_IN_DLL_BUILD(declaration)  public: declaration; private:
 #else
- #define JUCE_PUBLIC_IN_DLL_BUILD(declaration)  declaration;
+#define JUCE_PUBLIC_IN_DLL_BUILD(declaration)  declaration;
 #endif
 
 /** This macro is added to all juce public function declarations. */
 #define JUCE_PUBLIC_FUNCTION        JUCE_API JUCE_CALLTYPE
 
 #if (! defined (JUCE_CATCH_DEPRECATED_CODE_MISUSE)) && JUCE_DEBUG && ! DOXYGEN
- /** This turns on some non-essential bits of code that should prevent old code from compiling
-     in cases where method signatures have changed, etc.
- */
- #define JUCE_CATCH_DEPRECATED_CODE_MISUSE 1
+/** This turns on some non-essential bits of code that should prevent old code from compiling
+    in cases where method signatures have changed, etc.
+*/
+#define JUCE_CATCH_DEPRECATED_CODE_MISUSE 1
 #endif
 
 #ifndef DOXYGEN
- #define JUCE_NAMESPACE juce  // This old macro is deprecated: you should just use the juce namespace directly.
+#define JUCE_NAMESPACE juce  // This old macro is deprecated: you should just use the juce namespace directly.
 #endif
 
 #endif   // JUCE_STANDARDHEADER_H_INCLUDED

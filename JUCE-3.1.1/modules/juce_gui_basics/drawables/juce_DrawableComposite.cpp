@@ -62,7 +62,7 @@ Rectangle<float> DrawableComposite::getDrawableBounds() const
     for (int i = getNumChildComponents(); --i >= 0;)
         if (const Drawable* const d = dynamic_cast <const Drawable*> (getChildComponent(i)))
             r = r.getUnion (d->isTransformed() ? d->getDrawableBounds().transformedBy (d->getTransform())
-                                               : d->getDrawableBounds());
+                            : d->getDrawableBounds());
 
     return r;
 }
@@ -144,8 +144,8 @@ void DrawableComposite::recalculateCoordinates (Expression::Scope* scope)
     const Rectangle<float> content (getContentArea().resolve (scope));
 
     AffineTransform t (AffineTransform::fromTargetPoints (content.getX(),     content.getY(),      resolved[0].x, resolved[0].y,
-                                                          content.getRight(), content.getY(),      resolved[1].x, resolved[1].y,
-                                                          content.getX(),     content.getBottom(), resolved[2].x, resolved[2].y));
+                       content.getRight(), content.getY(),      resolved[1].x, resolved[1].y,
+                       content.getX(),     content.getBottom(), resolved[2].x, resolved[2].y));
 
     if (t.isSingularity())
         t = AffineTransform::identity;

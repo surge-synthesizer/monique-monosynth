@@ -30,20 +30,20 @@
     The caller is responsible for deleting this object when no longer needed.
 */
 LowLevelGraphicsContext* createOpenGLGraphicsContext (OpenGLContext& target,
-                                                      int width, int height);
+        int width, int height);
 
 /** Creates a graphics context object that will render into the given OpenGL target.
     The caller is responsible for deleting this object when no longer needed.
 */
 LowLevelGraphicsContext* createOpenGLGraphicsContext (OpenGLContext& context,
-                                                      OpenGLFrameBuffer& target);
+        OpenGLFrameBuffer& target);
 
 /** Creates a graphics context object that will render into the given OpenGL target.
     The caller is responsible for deleting this object when no longer needed.
 */
 LowLevelGraphicsContext* createOpenGLGraphicsContext (OpenGLContext& context,
-                                                      unsigned int frameBufferID,
-                                                      int width, int height);
+        unsigned int frameBufferID,
+        int width, int height);
 
 
 //==============================================================================
@@ -84,7 +84,9 @@ struct JUCE_API  OpenGLGraphicsContextCustomShader
     Result checkCompilation (LowLevelGraphicsContext&);
 
     /** Returns the code that was used to create this object. */
-    const String& getFragmentShaderCode() const noexcept           { return code; }
+    const String& getFragmentShaderCode() const noexcept           {
+        return code;
+    }
 
 private:
     String code, hashName;

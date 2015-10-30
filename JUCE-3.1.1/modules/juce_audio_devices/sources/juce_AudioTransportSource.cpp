@@ -82,7 +82,7 @@ void AudioTransportSource::setSource (PositionableAudioSource* const newSource,
             jassert (readAheadThread != nullptr);
 
             newPositionableSource = newBufferingSource
-                = new BufferingAudioSource (newPositionableSource, *readAheadThread,
+                                    = new BufferingAudioSource (newPositionableSource, *readAheadThread,
                                             false, readAheadSize, maxNumChannels);
         }
 
@@ -90,7 +90,7 @@ void AudioTransportSource::setSource (PositionableAudioSource* const newSource,
 
         if (sourceSampleRateToCorrectFor > 0)
             newMasterSource = newResamplerSource
-                = new ResamplingAudioSource (newPositionableSource, false, maxNumChannels);
+                              = new ResamplingAudioSource (newPositionableSource, false, maxNumChannels);
         else
             newMasterSource = newPositionableSource;
 
@@ -276,7 +276,7 @@ void AudioTransportSource::getNextAudioBlock (const AudioSourceChannelInfo& info
         }
 
         if (positionableSource->getNextReadPosition() > positionableSource->getTotalLength() + 1
-              && ! positionableSource->isLooping())
+                && ! positionableSource->isLooping())
         {
             playing = false;
             inputStreamEOF = true;

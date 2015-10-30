@@ -23,44 +23,44 @@
 */
 
 #if JUCE_WINDOWS
- #undef _WIN32_WINNT
- #define _WIN32_WINNT 0x500
- #undef STRICT
- #define STRICT 1
- #include <windows.h>
- #include <float.h>
- #pragma warning (disable : 4312 4355)
- #ifdef __INTEL_COMPILER
-  #pragma warning (disable : 1899)
- #endif
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x500
+#undef STRICT
+#define STRICT 1
+#include <windows.h>
+#include <float.h>
+#pragma warning (disable : 4312 4355)
+#ifdef __INTEL_COMPILER
+#pragma warning (disable : 1899)
+#endif
 
 #elif JUCE_LINUX
- #include <float.h>
- #include <sys/time.h>
- #include <X11/Xlib.h>
- #include <X11/Xutil.h>
- #include <X11/Xatom.h>
- #undef Font
- #undef KeyPress
- #undef Drawable
- #undef Time
+#include <float.h>
+#include <sys/time.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#undef Font
+#undef KeyPress
+#undef Drawable
+#undef Time
 
 #else
- #if ! (defined (JUCE_SUPPORT_CARBON) || defined (__LP64__))
-  #define JUCE_SUPPORT_CARBON 1
- #endif
+#if ! (defined (JUCE_SUPPORT_CARBON) || defined (__LP64__))
+#define JUCE_SUPPORT_CARBON 1
+#endif
 
- #if JUCE_SUPPORT_CARBON
-  #define Point CarbonDummyPointName
-  #define Component CarbonDummyCompName
-  #include <Cocoa/Cocoa.h>
-  #include <Carbon/Carbon.h>
-  #undef Point
-  #undef Component
- #else
-  #include <Cocoa/Cocoa.h>
- #endif
- #include <objc/runtime.h>
- #include <objc/objc.h>
- #include <objc/message.h>
+#if JUCE_SUPPORT_CARBON
+#define Point CarbonDummyPointName
+#define Component CarbonDummyCompName
+#include <Cocoa/Cocoa.h>
+#include <Carbon/Carbon.h>
+#undef Point
+#undef Component
+#else
+#include <Cocoa/Cocoa.h>
+#endif
+#include <objc/runtime.h>
+#include <objc/objc.h>
+#include <objc/message.h>
 #endif

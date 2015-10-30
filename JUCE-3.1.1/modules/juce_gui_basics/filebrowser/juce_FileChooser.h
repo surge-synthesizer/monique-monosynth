@@ -175,7 +175,9 @@ public:
 
         @see getResult
     */
-    const Array<File>& getResults() const noexcept      { return results; }
+    const Array<File>& getResults() const noexcept      {
+        return results;
+    }
 
 private:
     //==============================================================================

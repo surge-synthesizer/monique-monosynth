@@ -23,12 +23,12 @@
 */
 
 AudioFormat::AudioFormat (String name, StringArray extensions)
-   : formatName (name), fileExtensions (extensions)
+    : formatName (name), fileExtensions (extensions)
 {
 }
 
 AudioFormat::AudioFormat (StringRef name, StringRef extensions)
-   : formatName (name.text), fileExtensions (StringArray::fromTokens (extensions, false))
+    : formatName (name.text), fileExtensions (StringArray::fromTokens (extensions, false))
 {
 }
 
@@ -45,10 +45,18 @@ bool AudioFormat::canHandleFile (const File& f)
     return false;
 }
 
-const String& AudioFormat::getFormatName() const                { return formatName; }
-const StringArray& AudioFormat::getFileExtensions() const       { return fileExtensions; }
-bool AudioFormat::isCompressed()                                { return false; }
-StringArray AudioFormat::getQualityOptions()                    { return StringArray(); }
+const String& AudioFormat::getFormatName() const                {
+    return formatName;
+}
+const StringArray& AudioFormat::getFileExtensions() const       {
+    return fileExtensions;
+}
+bool AudioFormat::isCompressed()                                {
+    return false;
+}
+StringArray AudioFormat::getQualityOptions()                    {
+    return StringArray();
+}
 
 MemoryMappedAudioFormatReader* AudioFormat::createMemoryMappedReader (const File&)
 {

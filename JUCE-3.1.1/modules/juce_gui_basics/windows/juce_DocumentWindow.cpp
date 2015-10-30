@@ -49,11 +49,11 @@ DocumentWindow::DocumentWindow (const String& title,
       titleBarHeight (26),
       menuBarHeight (24),
       requiredButtons (requiredButtons_),
-     #if JUCE_MAC
+#if JUCE_MAC
       positionTitleBarButtonsOnLeft (true),
-     #else
+#else
       positionTitleBarButtonsOnLeft (false),
-     #endif
+#endif
       drawTitleTextCentred (true),
       menuBarModel (nullptr)
 {
@@ -128,7 +128,7 @@ void DocumentWindow::setMenuBar (MenuBarModel* newMenuBarModel, const int newMen
 
         menuBarModel = newMenuBarModel;
         menuBarHeight = newMenuBarHeight > 0 ? newMenuBarHeight
-                                             : getLookAndFeel().getDefaultMenuBarHeight();
+                        : getLookAndFeel().getDefaultMenuBarHeight();
 
         if (menuBarModel != nullptr)
             setMenuBarComponent (new MenuBarComponent (menuBarModel));
@@ -216,12 +216,12 @@ void DocumentWindow::paint (Graphics& g)
     }
 
     getLookAndFeel().drawDocumentWindowTitleBar (*this, g,
-                                                 titleBarArea.getWidth(),
-                                                 titleBarArea.getHeight(),
-                                                 titleSpaceX1,
-                                                 jmax (1, titleSpaceX2 - titleSpaceX1),
-                                                 titleBarIcon.isValid() ? &titleBarIcon : 0,
-                                                 ! drawTitleTextCentred);
+            titleBarArea.getWidth(),
+            titleBarArea.getHeight(),
+            titleSpaceX1,
+            jmax (1, titleSpaceX2 - titleSpaceX1),
+            titleBarIcon.isValid() ? &titleBarIcon : 0,
+            ! drawTitleTextCentred);
 }
 
 void DocumentWindow::resized()
@@ -234,13 +234,13 @@ void DocumentWindow::resized()
     const Rectangle<int> titleBarArea (getTitleBarArea());
 
     getLookAndFeel()
-        .positionDocumentWindowButtons (*this,
-                                        titleBarArea.getX(), titleBarArea.getY(),
-                                        titleBarArea.getWidth(), titleBarArea.getHeight(),
-                                        titleBarButtons[0],
-                                        titleBarButtons[1],
-                                        titleBarButtons[2],
-                                        positionTitleBarButtonsOnLeft);
+    .positionDocumentWindowButtons (*this,
+                                    titleBarArea.getX(), titleBarArea.getY(),
+                                    titleBarArea.getWidth(), titleBarArea.getHeight(),
+                                    titleBarButtons[0],
+                                    titleBarButtons[1],
+                                    titleBarButtons[2],
+                                    positionTitleBarButtonsOnLeft);
 
     if (menuBar != nullptr)
         menuBar->setBounds (titleBarArea.getX(), titleBarArea.getBottom(),
@@ -258,8 +258,8 @@ BorderSize<int> DocumentWindow::getContentComponentBorder()
 
     if (! isKioskMode())
         border.setTop (border.getTop()
-                        + (isUsingNativeTitleBar() ? 0 : titleBarHeight)
-                        + (menuBar != nullptr ? menuBarHeight : 0));
+                       + (isUsingNativeTitleBar() ? 0 : titleBarHeight)
+                       + (menuBar != nullptr ? menuBarHeight : 0));
 
     return border;
 }
@@ -280,9 +280,15 @@ Rectangle<int> DocumentWindow::getTitleBarArea()
                            getWidth() - border.getLeftAndRight(), getTitleBarHeight());
 }
 
-Button* DocumentWindow::getCloseButton()    const noexcept  { return titleBarButtons[2]; }
-Button* DocumentWindow::getMinimiseButton() const noexcept  { return titleBarButtons[0]; }
-Button* DocumentWindow::getMaximiseButton() const noexcept  { return titleBarButtons[1]; }
+Button* DocumentWindow::getCloseButton()    const noexcept  {
+    return titleBarButtons[2];
+}
+Button* DocumentWindow::getMinimiseButton() const noexcept  {
+    return titleBarButtons[0];
+}
+Button* DocumentWindow::getMaximiseButton() const noexcept  {
+    return titleBarButtons[1];
+}
 
 int DocumentWindow::getDesktopWindowStyleFlags() const
 {
@@ -325,11 +331,11 @@ void DocumentWindow::lookAndFeelChanged()
 
         if (Button* const b = getCloseButton())
         {
-           #if JUCE_MAC
+#if JUCE_MAC
             b->addShortcut (KeyPress ('w', ModifierKeys::commandModifier, 0));
-           #else
+#else
             b->addShortcut (KeyPress (KeyPress::F4Key, ModifierKeys::altModifier, 0));
-           #endif
+#endif
         }
     }
 

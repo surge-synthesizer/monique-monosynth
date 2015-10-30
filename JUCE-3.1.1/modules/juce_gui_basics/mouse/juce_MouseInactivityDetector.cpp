@@ -39,8 +39,12 @@ void MouseInactivityDetector::setDelay (int newDelayMilliseconds)
 }
 
 
-void MouseInactivityDetector::addListener    (Listener* l)   { listenerList.add (l); }
-void MouseInactivityDetector::removeListener (Listener* l)   { listenerList.remove (l); }
+void MouseInactivityDetector::addListener    (Listener* l)   {
+    listenerList.add (l);
+}
+void MouseInactivityDetector::removeListener (Listener* l)   {
+    listenerList.remove (l);
+}
 
 void MouseInactivityDetector::timerCallback()
 {
@@ -68,6 +72,6 @@ void MouseInactivityDetector::setActive (bool b)
         isActive = b;
 
         listenerList.call (b ? &Listener::mouseBecameActive
-                             : &Listener::mouseBecameInactive);
+                           : &Listener::mouseBecameInactive);
     }
 }

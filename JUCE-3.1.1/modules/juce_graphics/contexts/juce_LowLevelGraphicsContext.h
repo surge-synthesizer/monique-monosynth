@@ -94,7 +94,9 @@ public:
     virtual void setFont (const Font&) = 0;
     virtual const Font& getFont() = 0;
     virtual void drawGlyph (int glyphNumber, const AffineTransform&) = 0;
-    virtual bool drawTextLayout (const AttributedString&, const Rectangle<float>&)  { return false; }
+    virtual bool drawTextLayout (const AttributedString&, const Rectangle<float>&)  {
+        return false;
+    }
 };
 
 

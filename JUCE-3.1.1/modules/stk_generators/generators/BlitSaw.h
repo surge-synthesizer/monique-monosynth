@@ -50,12 +50,12 @@ public:
     void setPhase( StkFloat phase ) {
         phase_ = PI * phase;
     };
-    
+
     bool isNewCylce() const {
         return _isNewCylce;
     };
     void clearNewCycleState() {
-      _isNewCylce = false;
+        _isNewCylce = false;
     }
     //! Set the number of harmonics generated in the signal.
     /*!
@@ -137,11 +137,11 @@ inline StkFloat BlitSaw :: tick( bool blit_on_ )
 
     phase_ += rate_;
     if ( phase_ >= PI ) {
-      phase_ -= PI;
-      _isNewCylce = true;
+        phase_ -= PI;
+        _isNewCylce = true;
     }
     else
-      _isNewCylce = false;
+        _isNewCylce = false;
 
     if( blit_on_ )
         lastFrame_[0] = tmp;

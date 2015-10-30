@@ -63,21 +63,33 @@ public:
         {
             switch (columnId)
             {
-                case nameCol:         text = desc->name; break;
-                case typeCol:         text = desc->pluginFormatName; break;
-                case categoryCol:     text = desc->category.isNotEmpty() ? desc->category : "-"; break;
-                case manufacturerCol: text = desc->manufacturerName; break;
-                case descCol:         text = getPluginDescription (*desc); break;
+            case nameCol:
+                text = desc->name;
+                break;
+            case typeCol:
+                text = desc->pluginFormatName;
+                break;
+            case categoryCol:
+                text = desc->category.isNotEmpty() ? desc->category : "-";
+                break;
+            case manufacturerCol:
+                text = desc->manufacturerName;
+                break;
+            case descCol:
+                text = getPluginDescription (*desc);
+                break;
 
-                default: jassertfalse; break;
+            default:
+                jassertfalse;
+                break;
             }
         }
 
         if (text.isNotEmpty())
         {
             g.setColour (isBlacklisted ? Colours::red
-                                       : columnId == nameCol ? Colours::black
-                                                             : Colours::grey);
+                         : columnId == nameCol ? Colours::black
+                         : Colours::grey);
             g.setFont (Font (height * 0.7f, Font::bold));
             g.drawFittedText (text, 4, 0, width - 6, height, Justification::centredLeft, 1, 0.9f);
         }
@@ -92,13 +104,24 @@ public:
     {
         switch (newSortColumnId)
         {
-            case nameCol:         list.sort (KnownPluginList::sortAlphabetically, isForwards); break;
-            case typeCol:         list.sort (KnownPluginList::sortByFormat, isForwards); break;
-            case categoryCol:     list.sort (KnownPluginList::sortByCategory, isForwards); break;
-            case manufacturerCol: list.sort (KnownPluginList::sortByManufacturer, isForwards); break;
-            case descCol:         break;
+        case nameCol:
+            list.sort (KnownPluginList::sortAlphabetically, isForwards);
+            break;
+        case typeCol:
+            list.sort (KnownPluginList::sortByFormat, isForwards);
+            break;
+        case categoryCol:
+            list.sort (KnownPluginList::sortByCategory, isForwards);
+            break;
+        case manufacturerCol:
+            list.sort (KnownPluginList::sortByManufacturer, isForwards);
+            break;
+        case descCol:
+            break;
 
-            default: jassertfalse; break;
+        default:
+            jassertfalse;
+            break;
         }
     }
 
@@ -131,7 +154,7 @@ public:
 
 //==============================================================================
 PluginListComponent::PluginListComponent (AudioPluginFormatManager& manager, KnownPluginList& listToEdit,
-                                          const File& deadMansPedal, PropertiesFile* const props)
+        const File& deadMansPedal, PropertiesFile* const props)
     : formatManager (manager),
       list (listToEdit),
       deadMansPedalFile (deadMansPedal),
@@ -248,17 +271,26 @@ void PluginListComponent::optionsMenuCallback (int result)
 {
     switch (result)
     {
-        case 0:   break;
-        case 1:   list.clear(); break;
-        case 2:   removeSelected(); break;
-        case 3:   showSelectedFolder(); break;
-        case 4:   removeMissingPlugins(); break;
+    case 0:
+        break;
+    case 1:
+        list.clear();
+        break;
+    case 2:
+        removeSelected();
+        break;
+    case 3:
+        showSelectedFolder();
+        break;
+    case 4:
+        removeMissingPlugins();
+        break;
 
-        default:
-            if (AudioPluginFormat* format = formatManager.getFormat (result - 10))
-                scanFor (*format);
+    default:
+        if (AudioPluginFormat* format = formatManager.getFormat (result - 10))
+            scanFor (*format);
 
-            break;
+        break;
     }
 }
 
@@ -300,11 +332,11 @@ void PluginListComponent::filesDropped (const StringArray& files, int, int)
 FileSearchPath PluginListComponent::getLastSearchPath (PropertiesFile& properties, AudioPluginFormat& format)
 {
     return FileSearchPath (properties.getValue ("lastPluginScanPath_" + format.getName(),
-                                                format.getDefaultLocationsToSearch().toString()));
+                           format.getDefaultLocationsToSearch().toString()));
 }
 
 void PluginListComponent::setLastSearchPath (PropertiesFile& properties, AudioPluginFormat& format,
-                                             const FileSearchPath& newPath)
+        const FileSearchPath& newPath)
 {
     properties.setValue ("lastPluginScanPath_" + format.getName(), newPath.toString());
 }
@@ -336,7 +368,7 @@ public:
 
             pathChooserWindow.enterModalState (true,
                                                ModalCallbackFunction::forComponent (startScanCallback,
-                                                                                    &pathChooserWindow, this),
+                                                       &pathChooserWindow, this),
                                                false);
         }
         else
@@ -392,9 +424,9 @@ private:
                                               TRANS("If you choose to scan folders that contain non-plugin files, "
                                                     "then scanning may take a long time, and can cause crashes when "
                                                     "attempting to load unsuitable files.")
-                                                + newLine
-                                                + TRANS ("Are you sure you want to scan the folder \"XYZ\"?")
-                                                   .replace ("XYZ", f.getFullPathName()),
+                                              + newLine
+                                              + TRANS ("Are you sure you want to scan the folder \"XYZ\"?")
+                                              .replace ("XYZ", f.getFullPathName()),
                                               TRANS ("Scan"),
                                               String::empty,
                                               nullptr,
@@ -422,7 +454,8 @@ private:
                 File::tempDirectory,
                 File::userMusicDirectory,
                 File::userMoviesDirectory,
-                File::userPicturesDirectory };
+                File::userPicturesDirectory
+              };
 
         for (int i = 0; i < numElementsInArray (pathsThatWouldBeStupidToScan); ++i)
         {
@@ -474,7 +507,7 @@ private:
     void finishedScan()
     {
         owner.scanFinished (scanner != nullptr ? scanner->getFailedFiles()
-                                               : StringArray());
+                            : StringArray());
     }
 
     void timerCallback() override
@@ -549,6 +582,6 @@ void PluginListComponent::scanFinished (const StringArray& failedFiles)
         AlertWindow::showMessageBoxAsync (AlertWindow::InfoIcon,
                                           TRANS("Scan complete"),
                                           TRANS("Note that the following files appeared to be plugin files, but failed to load correctly")
-                                            + ":\n\n"
-                                            + shortNames.joinIntoString (", "));
+                                          + ":\n\n"
+                                          + shortNames.joinIntoString (", "));
 }

@@ -41,17 +41,17 @@
 #include "../juce_data_structures/juce_data_structures.h"
 
 #if JUCE_MODULE_AVAILABLE_juce_gui_extra
- #include "../juce_gui_extra/juce_gui_extra.h"
+#include "../juce_gui_extra/juce_gui_extra.h"
 #endif
 
 namespace juce
 {
-    #include "marketplace/juce_TracktionMarketplaceStatus.h"
-    #include "marketplace/juce_TracktionMarketplaceServer.h"
+#include "marketplace/juce_TracktionMarketplaceStatus.h"
+#include "marketplace/juce_TracktionMarketplaceServer.h"
 
-    #if JUCE_MODULE_AVAILABLE_juce_gui_extra
-     #include "marketplace/juce_TracktionMarketplaceUnlockForm.h"
-    #endif
+#if JUCE_MODULE_AVAILABLE_juce_gui_extra
+#include "marketplace/juce_TracktionMarketplaceUnlockForm.h"
+#endif
 }
 
 

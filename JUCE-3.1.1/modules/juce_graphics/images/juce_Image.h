@@ -116,19 +116,23 @@ public:
     */
     Image& operator= (const Image&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     Image (Image&&) noexcept;
     Image& operator= (Image&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~Image();
 
     /** Returns true if the two images are referring to the same internal, shared image. */
-    bool operator== (const Image& other) const noexcept     { return image == other.image; }
+    bool operator== (const Image& other) const noexcept     {
+        return image == other.image;
+    }
 
     /** Returns true if the two images are not referring to the same internal, shared image. */
-    bool operator!= (const Image& other) const noexcept     { return image != other.image; }
+    bool operator!= (const Image& other) const noexcept     {
+        return image != other.image;
+    }
 
     /** Returns true if this image isn't null.
         If you create an Image with the default constructor, it has no size or content, and is null
@@ -136,7 +140,9 @@ public:
         The isNull() method is the opposite of isValid().
         @see isNull
     */
-    inline bool isValid() const noexcept                    { return image != nullptr; }
+    inline bool isValid() const noexcept                    {
+        return image != nullptr;
+    }
 
     /** Returns true if this image is not valid.
         If you create an Image with the default constructor, it has no size or content, and is null
@@ -144,7 +150,9 @@ public:
         The isNull() method is the opposite of isValid().
         @see isValid
     */
-    inline bool isNull() const noexcept                     { return image == nullptr; }
+    inline bool isNull() const noexcept                     {
+        return image == nullptr;
+    }
 
     /** A null Image object that can be used when you need to return an invalid image.
         This object is the equivalient to an Image created with the default constructor.
@@ -322,13 +330,17 @@ public:
             The coordinate you provide here isn't checked, so it's the caller's responsibility to make
             sure it's not out-of-range.
         */
-        inline uint8* getLinePointer (int y) const noexcept                 { return data + y * lineStride; }
+        inline uint8* getLinePointer (int y) const noexcept                 {
+            return data + y * lineStride;
+        }
 
         /** Returns a pointer to a pixel in the image.
             The coordinates you give here are not checked, so it's the caller's responsibility to make sure they're
             not out-of-range.
         */
-        inline uint8* getPixelPointer (int x, int y) const noexcept         { return data + y * lineStride + x * pixelStride; }
+        inline uint8* getPixelPointer (int x, int y) const noexcept         {
+            return data + y * lineStride + x * pixelStride;
+        }
 
         /** Returns the colour of a given pixel.
             For performance reasons, this won't do any bounds-checking on the coordinates, so it's the caller's
@@ -343,7 +355,9 @@ public:
         void setPixelColour (int x, int y, Colour colour) const noexcept;
 
         /** Returns the size of the bitmap. */
-        Rectangle<int> getBounds() const noexcept                           { return Rectangle<int> (width, height); }
+        Rectangle<int> getBounds() const noexcept                           {
+            return Rectangle<int> (width, height);
+        }
 
         uint8* data;             /**< The raw pixel data, packed according to the image's pixel format. */
         PixelFormat pixelFormat; /**< The format of the data. */
@@ -405,7 +419,9 @@ public:
 
     //==============================================================================
     /** @internal */
-    ImagePixelData* getPixelData() const noexcept       { return image; }
+    ImagePixelData* getPixelData() const noexcept       {
+        return image;
+    }
 
     /** @internal */
     explicit Image (ImagePixelData*) noexcept;

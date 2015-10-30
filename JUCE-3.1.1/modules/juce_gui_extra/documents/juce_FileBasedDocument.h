@@ -70,7 +70,9 @@ public:
 
         @see setChangedFlag, changed
     */
-    bool hasChangedSinceSaved() const                           { return changedSinceSave; }
+    bool hasChangedSinceSaved() const                           {
+        return changedSinceSave;
+    }
 
     /** Called to indicate that the document has changed and needs saving.
 
@@ -208,7 +210,9 @@ public:
         It is changed when one of the load or save methods is used, or when setFile()
         is used to explicitly set it.
     */
-    const File& getFile() const                             { return documentFile; }
+    const File& getFile() const                             {
+        return documentFile;
+    }
 
     /** Sets the file that this document thinks it was loaded from.
 
@@ -271,7 +275,7 @@ protected:
     */
     virtual void setLastDocumentOpened (const File& file) = 0;
 
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     /** This is called by saveAsInteractive() to allow you to optionally customise the
         filename that the user is presented with in the save dialog.
         The defaultFile parameter is an initial suggestion based on what the class knows
@@ -279,7 +283,7 @@ protected:
         extension, etc, or just return something completely different.
     */
     virtual File getSuggestedSaveAsFile (const File& defaultFile);
-   #endif
+#endif
 
 private:
     //==============================================================================

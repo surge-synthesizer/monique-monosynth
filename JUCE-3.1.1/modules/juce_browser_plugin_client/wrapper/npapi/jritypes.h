@@ -68,15 +68,15 @@ typedef jint		JRIMethodID;
 typedef JRIGlobalRef	jglobal;
 
 typedef union JRIValue {
-	jbool			z;
-	jbyte			b;
-	jchar			c;
-	jshort			s;
-	jint			i;
-	jlong			l;
-	jfloat			f;
-	jdouble			d;
-	jref			r;
+    jbool			z;
+    jbyte			b;
+    jchar			c;
+    jshort			s;
+    jint			i;
+    jlong			l;
+    jfloat			f;
+    jdouble			d;
+    jref			r;
 } JRIValue;
 
 typedef enum JRIBoolean {
@@ -85,7 +85,7 @@ typedef enum JRIBoolean {
 } JRIBoolean;
 
 typedef enum JRIConstant {
-	JRIUninitialized	= -1
+    JRIUninitialized	= -1
 } JRIConstant;
 
 /* convenience types (these must be distinct struct types for c++ overloading): */

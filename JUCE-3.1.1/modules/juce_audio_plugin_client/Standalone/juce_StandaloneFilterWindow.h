@@ -163,12 +163,12 @@ public:
     {
         DialogWindow::LaunchOptions o;
         o.content.setOwned (new AudioDeviceSelectorComponent (deviceManager,
-                                                              processor->getNumInputChannels(),
-                                                              processor->getNumInputChannels(),
-                                                              processor->getNumOutputChannels(),
-                                                              processor->getNumOutputChannels(),
-                                                              true, false,
-                                                              true, false));
+                            processor->getNumInputChannels(),
+                            processor->getNumInputChannels(),
+                            processor->getNumOutputChannels(),
+                            processor->getNumOutputChannels(),
+                            true, false,
+                            true, false));
         o.content->setSize (500, 450);
 
         o.dialogTitle                   = TRANS("Audio Settings");
@@ -261,7 +261,7 @@ private:
     that the other plugin wrappers use.
 */
 class StandaloneFilterWindow    : public DocumentWindow,
-                                  public ButtonListener   // (can't use Button::Listener due to VC2005 bug)
+    public ButtonListener   // (can't use Button::Listener due to VC2005 bug)
 {
 public:
     //==============================================================================
@@ -317,8 +317,12 @@ public:
     }
 
     //==============================================================================
-    AudioProcessor* getAudioProcessor() const noexcept      { return pluginHolder->processor; }
-    AudioDeviceManager& getDeviceManager() const noexcept   { return pluginHolder->deviceManager; }
+    AudioProcessor* getAudioProcessor() const noexcept      {
+        return pluginHolder->processor;
+    }
+    AudioDeviceManager& getDeviceManager() const noexcept   {
+        return pluginHolder->deviceManager;
+    }
 
     void createEditorComp()
     {
@@ -367,11 +371,20 @@ public:
 
         switch (m.showAt (&optionsButton))
         {
-            case 1:  pluginHolder->showAudioSettingsDialog(); break;
-            case 2:  pluginHolder->askUserToSaveState(); break;
-            case 3:  pluginHolder->askUserToLoadState(); break;
-            case 4:  resetToDefaultState(); break;
-            default: break;
+        case 1:
+            pluginHolder->showAudioSettingsDialog();
+            break;
+        case 2:
+            pluginHolder->askUserToSaveState();
+            break;
+        case 3:
+            pluginHolder->askUserToLoadState();
+            break;
+        case 4:
+            resetToDefaultState();
+            break;
+        default:
+            break;
         }
     }
 

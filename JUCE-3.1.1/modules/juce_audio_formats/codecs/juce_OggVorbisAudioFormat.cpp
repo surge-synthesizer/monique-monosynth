@@ -25,63 +25,63 @@
 #if JUCE_USE_OGGVORBIS
 
 #if JUCE_MAC && ! defined (__MACOSX__)
- #define __MACOSX__ 1
+#define __MACOSX__ 1
 #endif
 
 namespace OggVorbisNamespace
 {
 #if JUCE_INCLUDE_OGGVORBIS_CODE || ! defined (JUCE_INCLUDE_OGGVORBIS_CODE)
- #if JUCE_MSVC
-  #pragma warning (push)
-  #pragma warning (disable: 4267 4127 4244 4996 4100 4701 4702 4013 4133 4206 4305 4189 4706 4995 4365)
- #endif
+#if JUCE_MSVC
+#pragma warning (push)
+#pragma warning (disable: 4267 4127 4244 4996 4100 4701 4702 4013 4133 4206 4305 4189 4706 4995 4365)
+#endif
 
- #if JUCE_CLANG
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wconversion"
-  #pragma clang diagnostic ignored "-Wshadow"
-  #pragma clang diagnostic ignored "-Wdeprecated-register"
- #endif
+#if JUCE_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
- #include "oggvorbis/vorbisenc.h"
- #include "oggvorbis/codec.h"
- #include "oggvorbis/vorbisfile.h"
+#include "oggvorbis/vorbisenc.h"
+#include "oggvorbis/codec.h"
+#include "oggvorbis/vorbisfile.h"
 
- #include "oggvorbis/bitwise.c"
- #include "oggvorbis/framing.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/analysis.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/bitrate.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/block.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/codebook.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/envelope.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/floor0.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/floor1.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/info.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/lpc.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/lsp.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/mapping0.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/mdct.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/psy.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/registry.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/res0.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/sharedbook.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/smallft.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/synthesis.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/vorbisenc.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/vorbisfile.c"
- #include "oggvorbis/libvorbis-1.3.2/lib/window.c"
+#include "oggvorbis/bitwise.c"
+#include "oggvorbis/framing.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/analysis.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/bitrate.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/block.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/codebook.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/envelope.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/floor0.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/floor1.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/info.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/lpc.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/lsp.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/mapping0.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/mdct.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/psy.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/registry.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/res0.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/sharedbook.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/smallft.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/synthesis.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/vorbisenc.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/vorbisfile.c"
+#include "oggvorbis/libvorbis-1.3.2/lib/window.c"
 
- #if JUCE_MSVC
-  #pragma warning (pop)
- #endif
+#if JUCE_MSVC
+#pragma warning (pop)
+#endif
 
- #if JUCE_CLANG
-  #pragma clang diagnostic pop
- #endif
+#if JUCE_CLANG
+#pragma clang diagnostic pop
+#endif
 #else
- #include <vorbis/vorbisenc.h>
- #include <vorbis/codec.h>
- #include <vorbis/vorbisfile.h>
+#include <vorbis/vorbisenc.h>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisfile.h>
 #endif
 }
 
@@ -184,7 +184,7 @@ public:
             }
 
             if (startSampleInFile < reservoirStart
-                || startSampleInFile + numSamples > reservoirStart + samplesInReservoir)
+                    || startSampleInFile + numSamples > reservoirStart + samplesInReservoir)
             {
                 // buffer miss, so refill the reservoir
                 int bitStream = 0;
@@ -347,7 +347,7 @@ public:
         {
             vorbis_info_clear (&vi);
             output = nullptr; // to stop the base class deleting this, as it needs to be returned
-                              // to the caller of createWriter()
+            // to the caller of createWriter()
         }
     }
 
@@ -447,7 +447,8 @@ OggVorbisAudioFormat::~OggVorbisAudioFormat()
 Array<int> OggVorbisAudioFormat::getPossibleSampleRates()
 {
     const int rates[] = { 8000, 11025, 12000, 16000, 22050, 32000,
-                          44100, 48000, 88200, 96000, 176400, 192000 };
+                          44100, 48000, 88200, 96000, 176400, 192000
+                        };
 
     return Array<int> (rates, numElementsInArray (rates));
 }
@@ -459,9 +460,15 @@ Array<int> OggVorbisAudioFormat::getPossibleBitDepths()
     return Array<int> (depths, numElementsInArray (depths));
 }
 
-bool OggVorbisAudioFormat::canDoStereo()    { return true; }
-bool OggVorbisAudioFormat::canDoMono()      { return true; }
-bool OggVorbisAudioFormat::isCompressed()   { return true; }
+bool OggVorbisAudioFormat::canDoStereo()    {
+    return true;
+}
+bool OggVorbisAudioFormat::canDoMono()      {
+    return true;
+}
+bool OggVorbisAudioFormat::isCompressed()   {
+    return true;
+}
 
 AudioFormatReader* OggVorbisAudioFormat::createReaderFor (InputStream* in, const bool deleteStreamIfOpeningFails)
 {
@@ -477,14 +484,14 @@ AudioFormatReader* OggVorbisAudioFormat::createReaderFor (InputStream* in, const
 }
 
 AudioFormatWriter* OggVorbisAudioFormat::createWriterFor (OutputStream* out,
-                                                          double sampleRate,
-                                                          unsigned int numChannels,
-                                                          int bitsPerSample,
-                                                          const StringPairArray& metadataValues,
-                                                          int qualityOptionIndex)
+        double sampleRate,
+        unsigned int numChannels,
+        int bitsPerSample,
+        const StringPairArray& metadataValues,
+        int qualityOptionIndex)
 {
     ScopedPointer <OggWriter> w (new OggWriter (out, sampleRate, numChannels,
-                                                (unsigned int) bitsPerSample, qualityOptionIndex, metadataValues));
+                                 (unsigned int) bitsPerSample, qualityOptionIndex, metadataValues));
 
     return w->ok ? w.release() : nullptr;
 }
@@ -492,7 +499,8 @@ AudioFormatWriter* OggVorbisAudioFormat::createWriterFor (OutputStream* out,
 StringArray OggVorbisAudioFormat::getQualityOptions()
 {
     static const char* options[] = { "64 kbps", "80 kbps", "96 kbps", "112 kbps", "128 kbps", "160 kbps",
-                                     "192 kbps", "224 kbps", "256 kbps", "320 kbps", "500 kbps", 0 };
+                                     "192 kbps", "224 kbps", "256 kbps", "320 kbps", "500 kbps", 0
+                                   };
     return StringArray (options);
 }
 

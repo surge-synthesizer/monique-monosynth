@@ -52,13 +52,17 @@ public:
     /** Returns the font family of the typeface.
         @see Font::getTypefaceName
     */
-    const String& getName() const noexcept      { return name; }
+    const String& getName() const noexcept      {
+        return name;
+    }
 
     //==============================================================================
     /** Returns the font style of the typeface.
         @see Font::getTypefaceStyle
     */
-    const String& getStyle() const noexcept     { return style; }
+    const String& getStyle() const noexcept     {
+        return style;
+    }
 
     //==============================================================================
     /** Creates a new system typeface. */
@@ -78,7 +82,9 @@ public:
         When called, the font will already have been checked to make sure that its name and
         style flags match the typeface.
     */
-    virtual bool isSuitableForFont (const Font&) const          { return true; }
+    virtual bool isSuitableForFont (const Font&) const          {
+        return true;
+    }
 
     /** Returns the ascent of the font, as a proportion of its height.
         The height is considered to always be normalised as 1.0, so this will be a
@@ -120,7 +126,9 @@ public:
     virtual EdgeTable* getEdgeTableForGlyph (int glyphNumber, const AffineTransform& transform, float fontHeight);
 
     /** Returns true if the typeface uses hinting. */
-    virtual bool isHinted() const                           { return false; }
+    virtual bool isHinted() const                           {
+        return false;
+    }
 
     //==============================================================================
     /** Changes the number of fonts that are cached in memory. */

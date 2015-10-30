@@ -59,10 +59,10 @@ public:
     /** Creates a Value that is set to the specified value. */
     explicit Value (const var& initialValue);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     Value (Value&&) noexcept;
     Value& operator= (Value&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~Value();
@@ -168,7 +168,7 @@ public:
         ValueSource classes to allow Value objects to represent your own custom data items.
     */
     class JUCE_API  ValueSource   : public ReferenceCountedObject,
-                                    private AsyncUpdater
+        private AsyncUpdater
     {
     public:
         ValueSource();

@@ -27,26 +27,26 @@
 //==============================================================================
 namespace
 {
-    const char* const coreAudioFormatName = "CoreAudio supported file";
+const char* const coreAudioFormatName = "CoreAudio supported file";
 
-    StringArray findFileExtensionsForCoreAudioCodecs()
+StringArray findFileExtensionsForCoreAudioCodecs()
+{
+    StringArray extensionsArray;
+    CFArrayRef extensions = nullptr;
+    UInt32 sizeOfArray = sizeof (extensions);
+
+    if (AudioFileGetGlobalInfo (kAudioFileGlobalInfo_AllExtensions, 0, 0, &sizeOfArray, &extensions) == noErr)
     {
-        StringArray extensionsArray;
-        CFArrayRef extensions = nullptr;
-        UInt32 sizeOfArray = sizeof (extensions);
+        const CFIndex numValues = CFArrayGetCount (extensions);
 
-        if (AudioFileGetGlobalInfo (kAudioFileGlobalInfo_AllExtensions, 0, 0, &sizeOfArray, &extensions) == noErr)
-        {
-            const CFIndex numValues = CFArrayGetCount (extensions);
+        for (CFIndex i = 0; i < numValues; ++i)
+            extensionsArray.add ("." + String::fromCFString ((CFStringRef) CFArrayGetValueAtIndex (extensions, i)));
 
-            for (CFIndex i = 0; i < numValues; ++i)
-                extensionsArray.add ("." + String::fromCFString ((CFStringRef) CFArrayGetValueAtIndex (extensions, i)));
-
-            CFRelease (extensions);
-        }
-
-        return extensionsArray;
+        CFRelease (extensions);
     }
+
+    return extensionsArray;
+}
 }
 
 //==============================================================================
@@ -240,7 +240,7 @@ struct CoreAudioFormatMetatdata
             static const char* minorKeys[] = { "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#" };
 
             String keySigString (isMajor ? majorKeys[key]
-                                         : minorKeys[key]);
+                                 : minorKeys[key]);
 
             if (! isMajor)
                 keySigString << 'm';
@@ -337,12 +337,12 @@ public:
             CoreAudioFormatMetatdata::read (*input, metadataValues);
 
         OSStatus status = AudioFileOpenWithCallbacks (this,
-                                                      &readCallback,
-                                                      nullptr,  // write needs to be null to avoid permisisions errors
-                                                      &getSizeCallback,
-                                                      nullptr,  // setSize needs to be null to avoid permisisions errors
-                                                      0,        // AudioFileTypeID inFileTypeHint
-                                                      &audioFileID);
+                          &readCallback,
+                          nullptr,  // write needs to be null to avoid permisisions errors
+                          &getSizeCallback,
+                          nullptr,  // setSize needs to be null to avoid permisisions errors
+                          0,        // AudioFileTypeID inFileTypeHint
+                          &audioFileID);
         if (status == noErr)
         {
             status = ExtAudioFileWrapAudioFileID (audioFileID, false, &audioFileRef);
@@ -493,15 +493,23 @@ CoreAudioFormat::CoreAudioFormat()
 
 CoreAudioFormat::~CoreAudioFormat() {}
 
-Array<int> CoreAudioFormat::getPossibleSampleRates()    { return Array<int>(); }
-Array<int> CoreAudioFormat::getPossibleBitDepths()      { return Array<int>(); }
+Array<int> CoreAudioFormat::getPossibleSampleRates()    {
+    return Array<int>();
+}
+Array<int> CoreAudioFormat::getPossibleBitDepths()      {
+    return Array<int>();
+}
 
-bool CoreAudioFormat::canDoStereo()     { return true; }
-bool CoreAudioFormat::canDoMono()       { return true; }
+bool CoreAudioFormat::canDoStereo()     {
+    return true;
+}
+bool CoreAudioFormat::canDoMono()       {
+    return true;
+}
 
 //==============================================================================
 AudioFormatReader* CoreAudioFormat::createReaderFor (InputStream* sourceStream,
-                                                     bool deleteStreamIfOpeningFails)
+        bool deleteStreamIfOpeningFails)
 {
     ScopedPointer<CoreAudioReader> r (new CoreAudioReader (sourceStream));
 
@@ -515,11 +523,11 @@ AudioFormatReader* CoreAudioFormat::createReaderFor (InputStream* sourceStream,
 }
 
 AudioFormatWriter* CoreAudioFormat::createWriterFor (OutputStream*,
-                                                     double /*sampleRateToUse*/,
-                                                     unsigned int /*numberOfChannels*/,
-                                                     int /*bitsPerSample*/,
-                                                     const StringPairArray& /*metadataValues*/,
-                                                     int /*qualityOptionIndex*/)
+        double /*sampleRateToUse*/,
+        unsigned int /*numberOfChannels*/,
+        int /*bitsPerSample*/,
+        const StringPairArray& /*metadataValues*/,
+        int /*qualityOptionIndex*/)
 {
     jassertfalse; // not yet implemented!
     return nullptr;

@@ -242,10 +242,10 @@ typedef PRWord prword_t;
 
 #if defined(XP_MAC)
 #ifndef TRUE				/* Mac standard is lower case true */
-	#define TRUE 1
+#define TRUE 1
 #endif
 #ifndef FALSE				/* Mac standard is lower case false */
-	#define FALSE 0
+#define FALSE 0
 #endif
 #endif
 

@@ -78,10 +78,16 @@ public:
     void unbind() const;
 
     /** Returns the GL texture ID number. */
-    GLuint getTextureID() const noexcept        { return textureID; }
+    GLuint getTextureID() const noexcept        {
+        return textureID;
+    }
 
-    int getWidth() const noexcept               { return width; }
-    int getHeight() const noexcept              { return height; }
+    int getWidth() const noexcept               {
+        return width;
+    }
+    int getHeight() const noexcept              {
+        return height;
+    }
 
     /** Returns true if a texture can be created with the given size.
         Some systems may require that the sizes are powers-of-two.

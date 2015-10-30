@@ -237,12 +237,16 @@ public:
 
 
     /** Returns the currently-active audio device. */
-    AudioIODevice* getCurrentAudioDevice() const noexcept               { return currentAudioDevice; }
+    AudioIODevice* getCurrentAudioDevice() const noexcept               {
+        return currentAudioDevice;
+    }
 
     /** Returns the type of audio device currently in use.
         @see setCurrentAudioDeviceType
     */
-    String getCurrentAudioDeviceType() const                            { return currentDeviceType; }
+    String getCurrentAudioDeviceType() const                            {
+        return currentDeviceType;
+    }
 
     /** Returns the currently active audio device type object.
         Don't keep a copy of this pointer - it's owned by the device manager and could
@@ -369,13 +373,17 @@ public:
     /** Returns the name of the default midi output.
         @see setDefaultMidiOutput, getDefaultMidiOutput
     */
-    const String& getDefaultMidiOutputName() const noexcept         { return defaultMidiOutputName; }
+    const String& getDefaultMidiOutputName() const noexcept         {
+        return defaultMidiOutputName;
+    }
 
     /** Returns the current default midi output device.
         If no device has been selected, or the device can't be opened, this will return nullptr.
         @see getDefaultMidiOutputName
     */
-    MidiOutput* getDefaultMidiOutput() const noexcept               { return defaultMidiOutput; }
+    MidiOutput* getDefaultMidiOutput() const noexcept               {
+        return defaultMidiOutput;
+    }
 
     /** Returns a list of the types of device supported. */
     const OwnedArray<AudioIODeviceType>& getAvailableDeviceTypes();

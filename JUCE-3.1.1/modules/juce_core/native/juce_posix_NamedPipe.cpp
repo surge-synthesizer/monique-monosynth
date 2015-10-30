@@ -30,11 +30,11 @@ class NamedPipe::Pimpl
 {
 public:
     Pimpl (const String& pipePath, bool createPipe)
-       : pipeInName  (pipePath + "_in"),
-         pipeOutName (pipePath + "_out"),
-         pipeIn (-1), pipeOut (-1),
-         createdPipe (createPipe),
-         stopReadOperation (false)
+        : pipeInName  (pipePath + "_in"),
+          pipeOutName (pipePath + "_out"),
+          pipeIn (-1), pipeOut (-1),
+          createdPipe (createPipe),
+          stopReadOperation (false)
     {
         signal (SIGPIPE, signalHandler);
         juce_siginterrupt (SIGPIPE, 1);
@@ -78,8 +78,8 @@ public:
 
                 const int maxWaitingTime = 30;
                 waitForInput (pipeIn, timeoutEnd == 0 ? maxWaitingTime
-                                                      : jmin (maxWaitingTime,
-                                                              (int) (timeoutEnd - Time::getMillisecondCounter())));
+                              : jmin (maxWaitingTime,
+                                      (int) (timeoutEnd - Time::getMillisecondCounter())));
                 continue;
             }
 
@@ -122,7 +122,7 @@ public:
     bool createFifos() const
     {
         return (mkfifo (pipeInName .toUTF8(), 0666) == 0 || errno == EEXIST)
-            && (mkfifo (pipeOutName.toUTF8(), 0666) == 0 || errno == EEXIST);
+               && (mkfifo (pipeOutName.toUTF8(), 0666) == 0 || errno == EEXIST);
     }
 
     const String pipeInName, pipeOutName;
@@ -190,17 +190,17 @@ void NamedPipe::close()
 
 bool NamedPipe::openInternal (const String& pipeName, const bool createPipe)
 {
-   #if JUCE_IOS
+#if JUCE_IOS
     pimpl = new Pimpl (File::getSpecialLocation (File::tempDirectory)
-                         .getChildFile (File::createLegalFileName (pipeName)).getFullPathName(), createPipe);
-   #else
+                       .getChildFile (File::createLegalFileName (pipeName)).getFullPathName(), createPipe);
+#else
     String file (pipeName);
 
     if (! File::isAbsolutePath (file))
         file = "/tmp/" + File::createLegalFileName (file);
 
     pimpl = new Pimpl (file, createPipe);
-   #endif
+#endif
 
     if (createPipe && ! pimpl->createFifos())
     {

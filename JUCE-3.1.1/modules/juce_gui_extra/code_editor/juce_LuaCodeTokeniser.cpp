@@ -27,40 +27,51 @@ struct LuaTokeniserFunctions
     static bool isReservedKeyword (String::CharPointerType token, const int tokenLength) noexcept
     {
         static const char* const keywords2Char[] =
-            { "if", "or", "in", "do", nullptr };
+        { "if", "or", "in", "do", nullptr };
 
         static const char* const keywords3Char[] =
-            { "and", "end", "for", "nil", "not", nullptr };
+        { "and", "end", "for", "nil", "not", nullptr };
 
         static const char* const keywords4Char[] =
-            { "then", "true", "else", nullptr };
+        { "then", "true", "else", nullptr };
 
         static const char* const keywords5Char[] =
-            {  "false", "local", "until", "while", "break", nullptr };
+        {  "false", "local", "until", "while", "break", nullptr };
 
         static const char* const keywords6Char[] =
-            { "repeat", "return", "elseif", nullptr};
+        { "repeat", "return", "elseif", nullptr};
 
         static const char* const keywordsOther[] =
-            { "function", "@interface", "@end", "@synthesize", "@dynamic", "@public",
-              "@private", "@property", "@protected", "@class", nullptr };
+        {   "function", "@interface", "@end", "@synthesize", "@dynamic", "@public",
+            "@private", "@property", "@protected", "@class", nullptr
+        };
 
         const char* const* k;
 
         switch (tokenLength)
         {
-            case 2:   k = keywords2Char; break;
-            case 3:   k = keywords3Char; break;
-            case 4:   k = keywords4Char; break;
-            case 5:   k = keywords5Char; break;
-            case 6:   k = keywords6Char; break;
+        case 2:
+            k = keywords2Char;
+            break;
+        case 3:
+            k = keywords3Char;
+            break;
+        case 4:
+            k = keywords4Char;
+            break;
+        case 5:
+            k = keywords5Char;
+            break;
+        case 6:
+            k = keywords6Char;
+            break;
 
-            default:
-                if (tokenLength < 2 || tokenLength > 16)
-                    return false;
+        default:
+            if (tokenLength < 2 || tokenLength > 16)
+                return false;
 
-                k = keywordsOther;
-                break;
+            k = keywordsOther;
+            break;
         }
 
         for (int i = 0; k[i] != 0; ++i)
@@ -110,8 +121,16 @@ struct LuaTokeniserFunctions
         case 0:
             break;
 
-        case '0':   case '1':   case '2':   case '3':   case '4':
-        case '5':   case '6':   case '7':   case '8':   case '9':
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
         case '.':
         {
             int result = CppTokeniserFunctions::parseNumber (source);
@@ -133,9 +152,12 @@ struct LuaTokeniserFunctions
             source.skip();
             return LuaTokeniser::tokenType_punctuation;
 
-        case '(':   case ')':
-        case '{':   case '}':
-        case '[':   case ']':
+        case '(':
+        case ')':
+        case '{':
+        case '}':
+        case '[':
+        case ']':
             source.skip();
             return LuaTokeniser::tokenType_bracket;
 
@@ -169,8 +191,10 @@ struct LuaTokeniserFunctions
             return result;
         }
 
-        case '*':   case '%':
-        case '=':   case '!':
+        case '*':
+        case '%':
+        case '=':
+        case '!':
             source.skip();
             CppTokeniserFunctions::skipIfNextCharMatches (source, '=');
             return LuaTokeniser::tokenType_operator;
@@ -180,8 +204,11 @@ struct LuaTokeniserFunctions
             source.skip();
             return LuaTokeniser::tokenType_operator;
 
-        case '<':   case '>':
-        case '|':   case '&':   case '^':
+        case '<':
+        case '>':
+        case '|':
+        case '&':
+        case '^':
             source.skip();
             CppTokeniserFunctions::skipIfNextCharMatches (source, firstChar);
             CppTokeniserFunctions::skipIfNextCharMatches (source, '=');

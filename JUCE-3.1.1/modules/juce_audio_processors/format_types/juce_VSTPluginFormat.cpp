@@ -26,7 +26,7 @@
 
 //==============================================================================
 #if JUCE_MAC && JUCE_SUPPORT_CARBON
- #include "../../juce_gui_extra/native/juce_mac_CarbonViewWrapperComponent.h"
+#include "../../juce_gui_extra/native/juce_mac_CarbonViewWrapperComponent.h"
 #endif
 
 //==============================================================================
@@ -34,10 +34,10 @@
 #define VST_FORCE_DEPRECATED 0
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4996)
+#pragma warning (push)
+#pragma warning (disable: 4996)
 #elif ! JUCE_MINGW
- #define __cdecl
+#define __cdecl
 #endif
 
 /*  Obviously you're going to need the Steinberg vstsdk2.4 folder in
@@ -49,172 +49,172 @@
 #include "pluginterfaces/vst2.x/aeffectx.h"
 
 #if JUCE_MSVC
- #pragma warning (pop)
- #pragma warning (disable: 4355) // ("this" used in initialiser list warning)
+#pragma warning (pop)
+#pragma warning (disable: 4355) // ("this" used in initialiser list warning)
 #endif
 
 //==============================================================================
 #include "juce_VSTMidiEventList.h"
 
 #if JUCE_MINGW
- #ifndef WM_APPCOMMAND
-  #define WM_APPCOMMAND 0x0319
- #endif
+#ifndef WM_APPCOMMAND
+#define WM_APPCOMMAND 0x0319
+#endif
 
- extern "C" void _fpreset();
- extern "C" void _clearfp();
+extern "C" void _fpreset();
+extern "C" void _clearfp();
 #elif ! JUCE_WINDOWS
- static void _fpreset() {}
- static void _clearfp() {}
+static void _fpreset() {}
+static void _clearfp() {}
 #endif
 
 #ifndef JUCE_VST_WRAPPER_LOAD_CUSTOM_MAIN
- #define JUCE_VST_WRAPPER_LOAD_CUSTOM_MAIN
+#define JUCE_VST_WRAPPER_LOAD_CUSTOM_MAIN
 #endif
 
 #ifndef JUCE_VST_WRAPPER_INVOKE_MAIN
- #define JUCE_VST_WRAPPER_INVOKE_MAIN  effect = module->moduleMain (&audioMaster);
+#define JUCE_VST_WRAPPER_INVOKE_MAIN  effect = module->moduleMain (&audioMaster);
 #endif
 
 //==============================================================================
 namespace
 {
-    const int fxbVersionNum = 1;
+const int fxbVersionNum = 1;
 
-    struct fxProgram
-    {
-        VstInt32 chunkMagic;    // 'CcnK'
-        VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
-        VstInt32 fxMagic;       // 'FxCk'
-        VstInt32 version;
-        VstInt32 fxID;          // fx unique id
-        VstInt32 fxVersion;
-        VstInt32 numParams;
-        char prgName[28];
-        float params[1];        // variable no. of parameters
-    };
+struct fxProgram
+{
+    VstInt32 chunkMagic;    // 'CcnK'
+    VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
+    VstInt32 fxMagic;       // 'FxCk'
+    VstInt32 version;
+    VstInt32 fxID;          // fx unique id
+    VstInt32 fxVersion;
+    VstInt32 numParams;
+    char prgName[28];
+    float params[1];        // variable no. of parameters
+};
 
-    struct fxSet
-    {
-        VstInt32 chunkMagic;    // 'CcnK'
-        VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
-        VstInt32 fxMagic;       // 'FxBk'
-        VstInt32 version;
-        VstInt32 fxID;          // fx unique id
-        VstInt32 fxVersion;
-        VstInt32 numPrograms;
-        char future[128];
-        fxProgram programs[1];  // variable no. of programs
-    };
+struct fxSet
+{
+    VstInt32 chunkMagic;    // 'CcnK'
+    VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
+    VstInt32 fxMagic;       // 'FxBk'
+    VstInt32 version;
+    VstInt32 fxID;          // fx unique id
+    VstInt32 fxVersion;
+    VstInt32 numPrograms;
+    char future[128];
+    fxProgram programs[1];  // variable no. of programs
+};
 
-    struct fxChunkSet
-    {
-        VstInt32 chunkMagic;    // 'CcnK'
-        VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
-        VstInt32 fxMagic;       // 'FxCh', 'FPCh', or 'FBCh'
-        VstInt32 version;
-        VstInt32 fxID;          // fx unique id
-        VstInt32 fxVersion;
-        VstInt32 numPrograms;
-        char future[128];
-        VstInt32 chunkSize;
-        char chunk[8];          // variable
-    };
+struct fxChunkSet
+{
+    VstInt32 chunkMagic;    // 'CcnK'
+    VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
+    VstInt32 fxMagic;       // 'FxCh', 'FPCh', or 'FBCh'
+    VstInt32 version;
+    VstInt32 fxID;          // fx unique id
+    VstInt32 fxVersion;
+    VstInt32 numPrograms;
+    char future[128];
+    VstInt32 chunkSize;
+    char chunk[8];          // variable
+};
 
-    struct fxProgramSet
-    {
-        VstInt32 chunkMagic;    // 'CcnK'
-        VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
-        VstInt32 fxMagic;       // 'FxCh', 'FPCh', or 'FBCh'
-        VstInt32 version;
-        VstInt32 fxID;          // fx unique id
-        VstInt32 fxVersion;
-        VstInt32 numPrograms;
-        char name[28];
-        VstInt32 chunkSize;
-        char chunk[8];          // variable
-    };
+struct fxProgramSet
+{
+    VstInt32 chunkMagic;    // 'CcnK'
+    VstInt32 byteSize;      // of this chunk, excl. magic + byteSize
+    VstInt32 fxMagic;       // 'FxCh', 'FPCh', or 'FBCh'
+    VstInt32 version;
+    VstInt32 fxID;          // fx unique id
+    VstInt32 fxVersion;
+    VstInt32 numPrograms;
+    char name[28];
+    VstInt32 chunkSize;
+    char chunk[8];          // variable
+};
 
-    // Compares a magic value in either endianness.
-    static bool compareMagic (VstInt32 magic, const char* name) noexcept
-    {
-        return magic == (VstInt32) ByteOrder::littleEndianInt (name)
-            || magic == (VstInt32) ByteOrder::bigEndianInt (name);
-    }
+// Compares a magic value in either endianness.
+static bool compareMagic (VstInt32 magic, const char* name) noexcept
+{
+    return magic == (VstInt32) ByteOrder::littleEndianInt (name)
+    || magic == (VstInt32) ByteOrder::bigEndianInt (name);
+}
 
-    static VstInt32 fxbName (const char* name) noexcept   { return (VstInt32) ByteOrder::littleEndianInt (name); }
-    static VstInt32 fxbSwap (const VstInt32 x) noexcept   { return (VstInt32) ByteOrder::swapIfLittleEndian ((uint32) x); }
+static VstInt32 fxbName (const char* name) noexcept   { return (VstInt32) ByteOrder::littleEndianInt (name); }
+static VstInt32 fxbSwap (const VstInt32 x) noexcept   { return (VstInt32) ByteOrder::swapIfLittleEndian ((uint32) x); }
 
-    static float fxbSwapFloat (const float x) noexcept
-    {
-       #ifdef JUCE_LITTLE_ENDIAN
-        union { uint32 asInt; float asFloat; } n;
-        n.asFloat = x;
-        n.asInt = ByteOrder::swap (n.asInt);
-        return n.asFloat;
-       #else
-        return x;
-       #endif
-    }
+static float fxbSwapFloat (const float x) noexcept
+{
+#ifdef JUCE_LITTLE_ENDIAN
+    union { uint32 asInt; float asFloat; } n;
+    n.asFloat = x;
+    n.asInt = ByteOrder::swap (n.asInt);
+    return n.asFloat;
+#else
+    return x;
+#endif
+}
 }
 
 //==============================================================================
 namespace
 {
-    static double getVSTHostTimeNanoseconds() noexcept
+static double getVSTHostTimeNanoseconds() noexcept
+{
+#if JUCE_WINDOWS
+    return timeGetTime() * 1000000.0;
+#elif JUCE_LINUX
+    timeval micro;
+    gettimeofday (&micro, 0);
+    return micro.tv_usec * 1000.0;
+#elif JUCE_MAC
+    UnsignedWide micro;
+    Microseconds (&micro);
+    return micro.lo * 1000.0;
+#endif
+}
+
+static int shellUIDToCreate = 0;
+static int insideVSTCallback = 0;
+
+struct IdleCallRecursionPreventer
+{
+    IdleCallRecursionPreventer()  : isMessageThread (MessageManager::getInstance()->isThisTheMessageThread())
     {
-       #if JUCE_WINDOWS
-        return timeGetTime() * 1000000.0;
-       #elif JUCE_LINUX
-        timeval micro;
-        gettimeofday (&micro, 0);
-        return micro.tv_usec * 1000.0;
-       #elif JUCE_MAC
-        UnsignedWide micro;
-        Microseconds (&micro);
-        return micro.lo * 1000.0;
-       #endif
+        if (isMessageThread)
+            ++insideVSTCallback;
     }
 
-    static int shellUIDToCreate = 0;
-    static int insideVSTCallback = 0;
-
-    struct IdleCallRecursionPreventer
+    ~IdleCallRecursionPreventer()
     {
-        IdleCallRecursionPreventer()  : isMessageThread (MessageManager::getInstance()->isThisTheMessageThread())
-        {
-            if (isMessageThread)
-                ++insideVSTCallback;
-        }
-
-        ~IdleCallRecursionPreventer()
-        {
-            if (isMessageThread)
-                --insideVSTCallback;
-        }
-
-        const bool isMessageThread;
-        JUCE_DECLARE_NON_COPYABLE (IdleCallRecursionPreventer)
-    };
-
-   #if JUCE_MAC
-    static bool makeFSRefFromPath (FSRef* destFSRef, const String& path)
-    {
-        return FSPathMakeRef (reinterpret_cast<const UInt8*> (path.toRawUTF8()), destFSRef, 0) == noErr;
+        if (isMessageThread)
+            --insideVSTCallback;
     }
-   #endif
 
-   #if JUCE_MAC && JUCE_PPC
-    static void* newCFMFromMachO (void* const machofp) noexcept
-    {
-        void* result = (void*) new char[8];
+    const bool isMessageThread;
+    JUCE_DECLARE_NON_COPYABLE (IdleCallRecursionPreventer)
+};
 
-        ((void**) result)[0] = machofp;
-        ((void**) result)[1] = result;
+#if JUCE_MAC
+static bool makeFSRefFromPath (FSRef* destFSRef, const String& path)
+{
+    return FSPathMakeRef (reinterpret_cast<const UInt8*> (path.toRawUTF8()), destFSRef, 0) == noErr;
+}
+#endif
 
-        return result;
-    }
-   #endif
+#if JUCE_MAC && JUCE_PPC
+static void* newCFMFromMachO (void* const machofp) noexcept
+{
+    void* result = (void*) new char[8];
+
+    ((void**) result)[0] = machofp;
+    ((void**) result)[1] = result;
+
+    return result;
+}
+#endif
 }
 
 //==============================================================================
@@ -224,13 +224,13 @@ static VstIntPtr VSTCALLBACK audioMaster (AEffect* effect, VstInt32 opcode, VstI
 //==============================================================================
 // Change this to disable logging of various VST activities
 #ifndef VST_LOGGING
- #define VST_LOGGING 1
+#define VST_LOGGING 1
 #endif
 
 #if VST_LOGGING
- #define JUCE_VST_LOG(a) Logger::writeToLog(a);
+#define JUCE_VST_LOG(a) Logger::writeToLog(a);
 #else
- #define JUCE_VST_LOG(a)
+#define JUCE_VST_LOG(a)
 #endif
 
 //==============================================================================
@@ -241,94 +241,94 @@ extern XContext windowHandleXContext;
 
 namespace
 {
-    static bool xErrorTriggered = false;
+static bool xErrorTriggered = false;
 
-    static int temporaryErrorHandler (Display*, XErrorEvent*)
+static int temporaryErrorHandler (Display*, XErrorEvent*)
+{
+    xErrorTriggered = true;
+    return 0;
+}
+
+typedef void (*EventProcPtr) (XEvent* ev);
+
+static EventProcPtr getPropertyFromXWindow (Window handle, Atom atom)
+{
+    XErrorHandler oldErrorHandler = XSetErrorHandler (temporaryErrorHandler);
+    xErrorTriggered = false;
+
+    int userSize;
+    unsigned long bytes, userCount;
+    unsigned char* data;
+    Atom userType;
+
+    XGetWindowProperty (display, handle, atom, 0, 1, false, AnyPropertyType,
+                        &userType,  &userSize, &userCount, &bytes, &data);
+
+    XSetErrorHandler (oldErrorHandler);
+
+    return (userCount == 1 && ! xErrorTriggered) ? *reinterpret_cast<EventProcPtr*> (data) : nullptr;
+}
+
+Window getChildWindow (Window windowToCheck)
+{
+    Window rootWindow, parentWindow;
+    Window* childWindows;
+    unsigned int numChildren = 0;
+
+    XQueryTree (display, windowToCheck, &rootWindow, &parentWindow, &childWindows, &numChildren);
+
+    if (numChildren > 0)
+        return childWindows [0];
+
+    return 0;
+}
+
+static void translateJuceToXButtonModifiers (const MouseEvent& e, XEvent& ev) noexcept
+{
+    if (e.mods.isLeftButtonDown())
     {
-        xErrorTriggered = true;
-        return 0;
+        ev.xbutton.button = Button1;
+        ev.xbutton.state |= Button1Mask;
     }
-
-    typedef void (*EventProcPtr) (XEvent* ev);
-
-    static EventProcPtr getPropertyFromXWindow (Window handle, Atom atom)
+    else if (e.mods.isRightButtonDown())
     {
-        XErrorHandler oldErrorHandler = XSetErrorHandler (temporaryErrorHandler);
-        xErrorTriggered = false;
-
-        int userSize;
-        unsigned long bytes, userCount;
-        unsigned char* data;
-        Atom userType;
-
-        XGetWindowProperty (display, handle, atom, 0, 1, false, AnyPropertyType,
-                            &userType,  &userSize, &userCount, &bytes, &data);
-
-        XSetErrorHandler (oldErrorHandler);
-
-        return (userCount == 1 && ! xErrorTriggered) ? *reinterpret_cast<EventProcPtr*> (data) : nullptr;
+        ev.xbutton.button = Button3;
+        ev.xbutton.state |= Button3Mask;
     }
-
-    Window getChildWindow (Window windowToCheck)
+    else if (e.mods.isMiddleButtonDown())
     {
-        Window rootWindow, parentWindow;
-        Window* childWindows;
-        unsigned int numChildren = 0;
-
-        XQueryTree (display, windowToCheck, &rootWindow, &parentWindow, &childWindows, &numChildren);
-
-        if (numChildren > 0)
-            return childWindows [0];
-
-        return 0;
+        ev.xbutton.button = Button2;
+        ev.xbutton.state |= Button2Mask;
     }
+}
 
-    static void translateJuceToXButtonModifiers (const MouseEvent& e, XEvent& ev) noexcept
+static void translateJuceToXMotionModifiers (const MouseEvent& e, XEvent& ev) noexcept
+{
+    if (e.mods.isLeftButtonDown())          ev.xmotion.state |= Button1Mask;
+    else if (e.mods.isRightButtonDown())    ev.xmotion.state |= Button3Mask;
+    else if (e.mods.isMiddleButtonDown())   ev.xmotion.state |= Button2Mask;
+}
+
+static void translateJuceToXCrossingModifiers (const MouseEvent& e, XEvent& ev) noexcept
+{
+    if (e.mods.isLeftButtonDown())          ev.xcrossing.state |= Button1Mask;
+    else if (e.mods.isRightButtonDown())    ev.xcrossing.state |= Button3Mask;
+    else if (e.mods.isMiddleButtonDown())   ev.xcrossing.state |= Button2Mask;
+}
+
+static void translateJuceToXMouseWheelModifiers (const MouseEvent& e, const float increment, XEvent& ev) noexcept
+{
+    if (increment < 0)
     {
-        if (e.mods.isLeftButtonDown())
-        {
-            ev.xbutton.button = Button1;
-            ev.xbutton.state |= Button1Mask;
-        }
-        else if (e.mods.isRightButtonDown())
-        {
-            ev.xbutton.button = Button3;
-            ev.xbutton.state |= Button3Mask;
-        }
-        else if (e.mods.isMiddleButtonDown())
-        {
-            ev.xbutton.button = Button2;
-            ev.xbutton.state |= Button2Mask;
-        }
+        ev.xbutton.button = Button5;
+        ev.xbutton.state |= Button5Mask;
     }
-
-    static void translateJuceToXMotionModifiers (const MouseEvent& e, XEvent& ev) noexcept
+    else if (increment > 0)
     {
-        if (e.mods.isLeftButtonDown())          ev.xmotion.state |= Button1Mask;
-        else if (e.mods.isRightButtonDown())    ev.xmotion.state |= Button3Mask;
-        else if (e.mods.isMiddleButtonDown())   ev.xmotion.state |= Button2Mask;
+        ev.xbutton.button = Button4;
+        ev.xbutton.state |= Button4Mask;
     }
-
-    static void translateJuceToXCrossingModifiers (const MouseEvent& e, XEvent& ev) noexcept
-    {
-        if (e.mods.isLeftButtonDown())          ev.xcrossing.state |= Button1Mask;
-        else if (e.mods.isRightButtonDown())    ev.xcrossing.state |= Button3Mask;
-        else if (e.mods.isMiddleButtonDown())   ev.xcrossing.state |= Button2Mask;
-    }
-
-    static void translateJuceToXMouseWheelModifiers (const MouseEvent& e, const float increment, XEvent& ev) noexcept
-    {
-        if (increment < 0)
-        {
-            ev.xbutton.button = Button5;
-            ev.xbutton.state |= Button5Mask;
-        }
-        else if (increment > 0)
-        {
-            ev.xbutton.button = Button4;
-            ev.xbutton.state |= Button4Mask;
-        }
-    }
+}
 }
 
 #endif
@@ -382,22 +382,22 @@ public:
     //==============================================================================
     ModuleHandle (const File& f)
         : file (f), moduleMain (nullptr), customMain (nullptr)
-         #if JUCE_MAC
-          #if JUCE_PPC
-           , fragId (0)
-          #endif
-           , resHandle (0), bundleRef (0), resFileId (0)
-         #endif
+#if JUCE_MAC
+#if JUCE_PPC
+        , fragId (0)
+#endif
+        , resHandle (0), bundleRef (0), resFileId (0)
+#endif
     {
         getActiveModules().add (this);
 
-       #if JUCE_WINDOWS || JUCE_LINUX
+#if JUCE_WINDOWS || JUCE_LINUX
         fullParentDirectoryPathName = f.getParentDirectory().getFullPathName();
-       #elif JUCE_MAC
+#elif JUCE_MAC
         FSRef ref;
         makeFSRefFromPath (&ref, f.getParentDirectory().getFullPathName());
         FSGetCatalogInfo (&ref, kFSCatInfoNone, 0, 0, &parentDirFSSpec, 0);
-       #endif
+#endif
     }
 
     ~ModuleHandle()
@@ -428,10 +428,10 @@ public:
         {
             vstXml = XmlDocument::parse (file.withFileExtension ("vstxml"));
 
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             if (vstXml == nullptr)
                 vstXml = XmlDocument::parse (getDLLResource (file, "VSTXML", 1));
-           #endif
+#endif
         }
 
         return moduleMain != nullptr;
@@ -449,7 +449,7 @@ public:
         eff->dispatcher (eff, effClose, 0, 0, 0, 0);
     }
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     static String getDLLResource (const File& dllFile, const String& type, int resID)
     {
         DynamicLibrary dll (dllFile.getFullPathName());
@@ -469,11 +469,11 @@ public:
 
         return String::empty;
     }
-   #endif
+#endif
 #else
-   #if JUCE_PPC
+#if JUCE_PPC
     CFragConnectionID fragId;
-   #endif
+#endif
     Handle resHandle;
     CFBundleRef bundleRef;
     FSSpec parentDirFSSpec;
@@ -488,7 +488,7 @@ public:
             const char* const utf8 = file.getFullPathName().toRawUTF8();
 
             if (CFURLRef url = CFURLCreateFromFileSystemRepresentation (0, (const UInt8*) utf8,
-                                                                        strlen (utf8), file.isDirectory()))
+                               strlen (utf8), file.isDirectory()))
             {
                 bundleRef = CFBundleCreate (kCFAllocatorDefault, url);
                 CFRelease (url);
@@ -526,8 +526,8 @@ public:
 
                             Array<File> vstXmlFiles;
                             file.getChildFile ("Contents")
-                                .getChildFile ("Resources")
-                                .findChildFiles (vstXmlFiles, File::findFiles, false, "*.vstxml");
+                            .getChildFile ("Resources")
+                            .findChildFiles (vstXmlFiles, File::findFiles, false, "*.vstxml");
 
                             if (vstXmlFiles.size() > 0)
                                 vstXml = XmlDocument::parse (vstXmlFiles.getReference(0));
@@ -543,7 +543,7 @@ public:
                 }
             }
         }
-       #if JUCE_PPC
+#if JUCE_PPC
         else
         {
             FSRef fn;
@@ -596,14 +596,14 @@ public:
                 }
             }
         }
-       #endif
+#endif
 
         return ok;
     }
 
     void close()
     {
-       #if JUCE_PPC
+#if JUCE_PPC
         if (fragId != 0)
         {
             if (moduleMain != nullptr)
@@ -616,22 +616,22 @@ public:
                 CloseResFile (resFileId);
         }
         else
-       #endif
-        if (bundleRef != 0)
-        {
-            CFBundleCloseBundleResourceMap (bundleRef, resFileId);
+#endif
+            if (bundleRef != 0)
+            {
+                CFBundleCloseBundleResourceMap (bundleRef, resFileId);
 
-            if (CFGetRetainCount (bundleRef) == 1)
-                CFBundleUnloadExecutable (bundleRef);
+                if (CFGetRetainCount (bundleRef) == 1)
+                    CFBundleUnloadExecutable (bundleRef);
 
-            if (CFGetRetainCount (bundleRef) > 0)
-                CFRelease (bundleRef);
-        }
+                if (CFGetRetainCount (bundleRef) > 0)
+                    CFRelease (bundleRef);
+            }
     }
 
     void closeEffect (AEffect* eff)
     {
-       #if JUCE_PPC
+#if JUCE_PPC
         if (fragId != 0)
         {
             Array<void*> thingsToDelete;
@@ -647,13 +647,13 @@ public:
                 disposeMachOFromCFM (thingsToDelete[i]);
         }
         else
-       #endif
+#endif
         {
             eff->dispatcher (eff, effClose, 0, 0, 0, 0);
         }
     }
 
-   #if JUCE_PPC
+#if JUCE_PPC
     static void* newMachOFromCFM (void* cfmfp)
     {
         if (cfmfp == 0)
@@ -688,7 +688,7 @@ public:
             eff->processReplacing = (AEffectProcessProc)      newMachOFromCFM ((void*) eff->processReplacing);
         }
     }
-   #endif
+#endif
 
 #endif
 
@@ -702,8 +702,8 @@ static const int defaultVSTBlockSizeValue = 512;
 //==============================================================================
 //==============================================================================
 class VSTPluginInstance     : public AudioPluginInstance,
-                              private Timer,
-                              private AsyncUpdater
+    private Timer,
+    private AsyncUpdater
 {
 public:
     VSTPluginInstance (const ModuleHandle::Ptr& mh)
@@ -723,11 +723,11 @@ public:
 
             JUCE_VST_LOG ("Creating VST instance: " + name);
 
-          #if JUCE_MAC
+#if JUCE_MAC
             if (module->resFileId != 0)
                 UseResFile (module->resFileId);
 
-           #if JUCE_PPC
+#if JUCE_PPC
             if (module->fragId != 0)
             {
                 static void* audioMasterCoerced = nullptr;
@@ -737,17 +737,17 @@ public:
                 effect = module->moduleMain ((audioMasterCallback) audioMasterCoerced);
             }
             else
-           #endif
-          #endif
+#endif
+#endif
             {
                 JUCE_VST_WRAPPER_INVOKE_MAIN
             }
 
             if (effect != nullptr && effect->magic == kEffectMagic)
             {
-               #if JUCE_PPC
+#if JUCE_PPC
                 module->coerceAEffectFunctionCalls (effect);
-               #endif
+#endif
 
                 jassert (effect->resvd2 == 0);
                 jassert (effect->object != 0);
@@ -769,10 +769,10 @@ public:
 
         if (effect != nullptr && effect->magic == kEffectMagic)
         {
-           #if JUCE_MAC
+#if JUCE_MAC
             if (module->resFileId != 0)
                 UseResFile (module->resFileId);
-           #endif
+#endif
 
             // Must delete any editors before deleting the plugin instance!
             jassert (getActiveEditor() == 0);
@@ -823,13 +823,13 @@ public:
         if (initialised || effect == nullptr)
             return;
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         // On Windows it's highly advisable to create your plugins using the message thread,
         // because many plugins need a chance to create HWNDs that will get their
         // messages delivered by the main message thread, and that's not possible from
         // a background thread.
         jassert (MessageManager::getInstance()->isThisTheMessageThread());
-       #endif
+#endif
 
         JUCE_VST_LOG ("Initialising VST: " + module->pluginName + " (" + getVersion() + ")");
         initialised = true;
@@ -863,15 +863,19 @@ public:
 
         wantsMidiMessages = dispatch (effCanDo, 0, 0, (void*) "receiveVstMidiEvent", 0) > 0;
 
-       #if JUCE_MAC && JUCE_SUPPORT_CARBON
+#if JUCE_MAC && JUCE_SUPPORT_CARBON
         usesCocoaNSView = (dispatch (effCanDo, 0, 0, (void*) "hasCockosViewAsConfig", 0) & 0xffff0000) == 0xbeef0000;
-       #endif
+#endif
 
         setLatencySamples (effect->initialDelay);
     }
 
-    void* getPlatformSpecificData() override    { return effect; }
-    const String getName() const override       { return name; }
+    void* getPlatformSpecificData() override    {
+        return effect;
+    }
+    const String getName() const override       {
+        return name;
+    }
 
     int getUID() const
     {
@@ -902,10 +906,16 @@ public:
         return samples / sampleRate;
     }
 
-    bool acceptsMidi() const override    { return wantsMidiMessages; }
-    bool producesMidi() const override   { return dispatch (effCanDo, 0, 0, (void*) "sendVstMidiEvent", 0) > 0; }
+    bool acceptsMidi() const override    {
+        return wantsMidiMessages;
+    }
+    bool producesMidi() const override   {
+        return dispatch (effCanDo, 0, 0, (void*) "sendVstMidiEvent", 0) > 0;
+    }
 
-    VstPlugCategory getVstCategory() const noexcept     { return (VstPlugCategory) dispatch (effGetPlugCategory, 0, 0, 0, 0); }
+    VstPlugCategory getVstCategory() const noexcept     {
+        return (VstPlugCategory) dispatch (effGetPlugCategory, 0, 0, 0, 0);
+    }
 
     //==============================================================================
     void prepareToPlay (double rate, int samplesPerBlockExpected) override
@@ -924,7 +934,7 @@ public:
         if (initialised)
         {
             wantsMidiMessages = wantsMidiMessages
-                                    || (dispatch (effCanDo, 0, 0, (void*) "receiveVstMidiEvent", 0) > 0);
+                                || (dispatch (effCanDo, 0, 0, (void*) "receiveVstMidiEvent", 0) > 0);
 
             if (wantsMidiMessages)
                 midiEventsToSend.ensureSize (256);
@@ -1008,13 +1018,26 @@ public:
 
                 switch (position.frameRate)
                 {
-                    case AudioPlayHead::fps24:       setHostTimeFrameRate (0, 24.0,  position.timeInSeconds); break;
-                    case AudioPlayHead::fps25:       setHostTimeFrameRate (1, 25.0,  position.timeInSeconds); break;
-                    case AudioPlayHead::fps2997:     setHostTimeFrameRate (2, 29.97, position.timeInSeconds); break;
-                    case AudioPlayHead::fps30:       setHostTimeFrameRate (3, 30.0,  position.timeInSeconds); break;
-                    case AudioPlayHead::fps2997drop: setHostTimeFrameRate (4, 29.97, position.timeInSeconds); break;
-                    case AudioPlayHead::fps30drop:   setHostTimeFrameRate (5, 29.97, position.timeInSeconds); break;
-                    default: break;
+                case AudioPlayHead::fps24:
+                    setHostTimeFrameRate (0, 24.0,  position.timeInSeconds);
+                    break;
+                case AudioPlayHead::fps25:
+                    setHostTimeFrameRate (1, 25.0,  position.timeInSeconds);
+                    break;
+                case AudioPlayHead::fps2997:
+                    setHostTimeFrameRate (2, 29.97, position.timeInSeconds);
+                    break;
+                case AudioPlayHead::fps30:
+                    setHostTimeFrameRate (3, 30.0,  position.timeInSeconds);
+                    break;
+                case AudioPlayHead::fps2997drop:
+                    setHostTimeFrameRate (4, 29.97, position.timeInSeconds);
+                    break;
+                case AudioPlayHead::fps30drop:
+                    setHostTimeFrameRate (5, 29.97, position.timeInSeconds);
+                    break;
+                default:
+                    break;
                 }
 
                 if (position.isLooping)
@@ -1083,7 +1106,9 @@ public:
     }
 
     //==============================================================================
-    bool hasEditor() const override                  { return effect != nullptr && (effect->flags & effFlagsHasEditor) != 0; }
+    bool hasEditor() const override                  {
+        return effect != nullptr && (effect->flags & effFlagsHasEditor) != 0;
+    }
     AudioProcessorEditor* createEditor() override;
 
     //==============================================================================
@@ -1141,7 +1166,9 @@ public:
     }
 
     //==============================================================================
-    int getNumParameters()      { return effect != nullptr ? effect->numParams : 0; }
+    int getNumParameters()      {
+        return effect != nullptr ? effect->numParams : 0;
+    }
 
     float getParameter (int index) override
     {
@@ -1165,9 +1192,15 @@ public:
         }
     }
 
-    const String getParameterName (int index) override       { return getTextForOpcode (index, effGetParamName); }
-    const String getParameterText (int index) override       { return getTextForOpcode (index, effGetParamDisplay); }
-    String getParameterLabel (int index) const override      { return getTextForOpcode (index, effGetParamLabel); }
+    const String getParameterName (int index) override       {
+        return getTextForOpcode (index, effGetParamName);
+    }
+    const String getParameterText (int index) override       {
+        return getTextForOpcode (index, effGetParamDisplay);
+    }
+    String getParameterLabel (int index) const override      {
+        return getTextForOpcode (index, effGetParamLabel);
+    }
 
     bool isParameterAutomatable (int index) const override
     {
@@ -1181,10 +1214,14 @@ public:
     }
 
     //==============================================================================
-    int getNumPrograms() override          { return effect != nullptr ? jmax (0, effect->numPrograms) : 0; }
+    int getNumPrograms() override          {
+        return effect != nullptr ? jmax (0, effect->numPrograms) : 0;
+    }
 
     // NB: some plugs return negative numbers from this function.
-    int getCurrentProgram() override       { return (int) dispatch (effGetProgram, 0, 0, 0, 0); }
+    int getCurrentProgram() override       {
+        return (int) dispatch (effGetProgram, 0, 0, 0, 0);
+    }
 
     void setCurrentProgram (int newIndex) override
     {
@@ -1225,11 +1262,19 @@ public:
     }
 
     //==============================================================================
-    void getStateInformation (MemoryBlock& mb) override                  { saveToFXBFile (mb, true); }
-    void getCurrentProgramStateInformation (MemoryBlock& mb) override    { saveToFXBFile (mb, false); }
+    void getStateInformation (MemoryBlock& mb) override                  {
+        saveToFXBFile (mb, true);
+    }
+    void getCurrentProgramStateInformation (MemoryBlock& mb) override    {
+        saveToFXBFile (mb, false);
+    }
 
-    void setStateInformation (const void* data, int size) override               { loadFromFXBFile (data, size); }
-    void setCurrentProgramStateInformation (const void* data, int size) override { loadFromFXBFile (data, size); }
+    void setStateInformation (const void* data, int size) override               {
+        loadFromFXBFile (data, size);
+    }
+    void setCurrentProgramStateInformation (const void* data, int size) override {
+        loadFromFXBFile (data, size);
+    }
 
     //==============================================================================
     void timerCallback() override
@@ -1248,95 +1293,111 @@ public:
     {
         switch (opcode)
         {
-            case audioMasterAutomate:           sendParamChangeMessageToListeners (index, opt); break;
-            case audioMasterProcessEvents:      handleMidiFromPlugin ((const VstEvents*) ptr); break;
+        case audioMasterAutomate:
+            sendParamChangeMessageToListeners (index, opt);
+            break;
+        case audioMasterProcessEvents:
+            handleMidiFromPlugin ((const VstEvents*) ptr);
+            break;
 
-           #if JUCE_MSVC
-            #pragma warning (push)
-            #pragma warning (disable: 4311)
-           #endif
-            case audioMasterGetTime:            return (VstIntPtr) &vstHostTime;
-           #if JUCE_MSVC
-            #pragma warning (pop)
-           #endif
+#if JUCE_MSVC
+#pragma warning (push)
+#pragma warning (disable: 4311)
+#endif
+        case audioMasterGetTime:
+            return (VstIntPtr) &vstHostTime;
+#if JUCE_MSVC
+#pragma warning (pop)
+#endif
 
-            case audioMasterIdle:
-                if (insideVSTCallback == 0 && MessageManager::getInstance()->isThisTheMessageThread())
-                {
-                    const IdleCallRecursionPreventer icrp;
+        case audioMasterIdle:
+            if (insideVSTCallback == 0 && MessageManager::getInstance()->isThisTheMessageThread())
+            {
+                const IdleCallRecursionPreventer icrp;
 
-                   #if JUCE_MAC
-                    if (getActiveEditor() != nullptr)
-                        dispatch (effEditIdle, 0, 0, 0, 0);
-                   #endif
+#if JUCE_MAC
+                if (getActiveEditor() != nullptr)
+                    dispatch (effEditIdle, 0, 0, 0, 0);
+#endif
 
-                    Timer::callPendingTimersSynchronously();
+                Timer::callPendingTimersSynchronously();
 
-                    handleUpdateNowIfNeeded();
+                handleUpdateNowIfNeeded();
 
-                    for (int i = ComponentPeer::getNumPeers(); --i >= 0;)
-                        if (ComponentPeer* p = ComponentPeer::getPeer(i))
-                            p->performAnyPendingRepaintsNow();
-                }
-                break;
+                for (int i = ComponentPeer::getNumPeers(); --i >= 0;)
+                    if (ComponentPeer* p = ComponentPeer::getPeer(i))
+                        p->performAnyPendingRepaintsNow();
+            }
+            break;
 
-            case audioMasterSizeWindow:
-                if (AudioProcessorEditor* ed = getActiveEditor())
-                    ed->setSize (index, (int) value);
+        case audioMasterSizeWindow:
+            if (AudioProcessorEditor* ed = getActiveEditor())
+                ed->setSize (index, (int) value);
 
-                return 1;
+            return 1;
 
-            case audioMasterUpdateDisplay:      triggerAsyncUpdate(); break;
-            case audioMasterIOChanged:          setLatencySamples (effect->initialDelay); break;
-            case audioMasterNeedIdle:           startTimer (50); break;
+        case audioMasterUpdateDisplay:
+            triggerAsyncUpdate();
+            break;
+        case audioMasterIOChanged:
+            setLatencySamples (effect->initialDelay);
+            break;
+        case audioMasterNeedIdle:
+            startTimer (50);
+            break;
 
-            case audioMasterGetSampleRate:      return (VstIntPtr) (getSampleRate() > 0 ? getSampleRate() : defaultVSTSampleRateValue);
-            case audioMasterGetBlockSize:       return (VstIntPtr) (getBlockSize() > 0  ? getBlockSize()  : defaultVSTBlockSizeValue);
-            case audioMasterWantMidi:           wantsMidiMessages = true; break;
-            case audioMasterGetDirectory:       return getVstDirectory();
+        case audioMasterGetSampleRate:
+            return (VstIntPtr) (getSampleRate() > 0 ? getSampleRate() : defaultVSTSampleRateValue);
+        case audioMasterGetBlockSize:
+            return (VstIntPtr) (getBlockSize() > 0  ? getBlockSize()  : defaultVSTBlockSizeValue);
+        case audioMasterWantMidi:
+            wantsMidiMessages = true;
+            break;
+        case audioMasterGetDirectory:
+            return getVstDirectory();
 
-            case audioMasterTempoAt:
-                if (extraFunctions != nullptr)
-                    return (VstIntPtr) extraFunctions->getTempoAt ((int64) value);
+        case audioMasterTempoAt:
+            if (extraFunctions != nullptr)
+                return (VstIntPtr) extraFunctions->getTempoAt ((int64) value);
 
-                break;
+            break;
 
-            case audioMasterGetAutomationState:
-                if (extraFunctions != nullptr)
-                    return (VstIntPtr) extraFunctions->getAutomationState();
+        case audioMasterGetAutomationState:
+            if (extraFunctions != nullptr)
+                return (VstIntPtr) extraFunctions->getAutomationState();
 
-                break;
+            break;
 
-            case audioMasterPinConnected:
-                return isValidChannel (index, value == 0) ? 0 : 1; // (yes, 0 = true)
+        case audioMasterPinConnected:
+            return isValidChannel (index, value == 0) ? 0 : 1; // (yes, 0 = true)
 
-            case audioMasterGetCurrentProcessLevel:
-                return isNonRealtime() ? 4 : 0;
+        case audioMasterGetCurrentProcessLevel:
+            return isNonRealtime() ? 4 : 0;
 
             // none of these are handled (yet)..
-            case audioMasterBeginEdit:
-            case audioMasterEndEdit:
-            case audioMasterSetTime:
-            case audioMasterGetParameterQuantization:
-            case audioMasterGetInputLatency:
-            case audioMasterGetOutputLatency:
-            case audioMasterGetPreviousPlug:
-            case audioMasterGetNextPlug:
-            case audioMasterWillReplaceOrAccumulate:
-            case audioMasterOfflineStart:
-            case audioMasterOfflineRead:
-            case audioMasterOfflineWrite:
-            case audioMasterOfflineGetCurrentPass:
-            case audioMasterOfflineGetCurrentMetaPass:
-            case audioMasterVendorSpecific:
-            case audioMasterSetIcon:
-            case audioMasterGetLanguage:
-            case audioMasterOpenWindow:
-            case audioMasterCloseWindow:
-                break;
+        case audioMasterBeginEdit:
+        case audioMasterEndEdit:
+        case audioMasterSetTime:
+        case audioMasterGetParameterQuantization:
+        case audioMasterGetInputLatency:
+        case audioMasterGetOutputLatency:
+        case audioMasterGetPreviousPlug:
+        case audioMasterGetNextPlug:
+        case audioMasterWillReplaceOrAccumulate:
+        case audioMasterOfflineStart:
+        case audioMasterOfflineRead:
+        case audioMasterOfflineWrite:
+        case audioMasterOfflineGetCurrentPass:
+        case audioMasterOfflineGetCurrentMetaPass:
+        case audioMasterVendorSpecific:
+        case audioMasterSetIcon:
+        case audioMasterGetLanguage:
+        case audioMasterOpenWindow:
+        case audioMasterCloseWindow:
+            break;
 
-            default:
-                return handleGeneralCallback (opcode, index, value, ptr, opt);
+        default:
+            return handleGeneralCallback (opcode, index, value, ptr, opt);
         }
 
         return 0;
@@ -1347,49 +1408,58 @@ public:
     {
         switch (opcode)
         {
-            case audioMasterCanDo:
-            {
-                static const char* canDos[] = { "supplyIdle",
-                                                "sendVstEvents",
-                                                "sendVstMidiEvent",
-                                                "sendVstTimeInfo",
-                                                "receiveVstEvents",
-                                                "receiveVstMidiEvent",
-                                                "supportShell",
-                                                "shellCategory" };
+        case audioMasterCanDo:
+        {
+            static const char* canDos[] = { "supplyIdle",
+                                            "sendVstEvents",
+                                            "sendVstMidiEvent",
+                                            "sendVstTimeInfo",
+                                            "receiveVstEvents",
+                                            "receiveVstMidiEvent",
+                                            "supportShell",
+                                            "shellCategory"
+                                          };
 
-                for (int i = 0; i < numElementsInArray (canDos); ++i)
-                    if (strcmp (canDos[i], (const char*) ptr) == 0)
-                        return 1;
+            for (int i = 0; i < numElementsInArray (canDos); ++i)
+                if (strcmp (canDos[i], (const char*) ptr) == 0)
+                    return 1;
 
-                return 0;
-            }
+            return 0;
+        }
 
-            case audioMasterVersion:                        return 2400;
-            case audioMasterCurrentId:                      return shellUIDToCreate;
-            case audioMasterGetNumAutomatableParameters:    return 0;
-            case audioMasterGetAutomationState:             return 1;
-            case audioMasterGetVendorVersion:               return 0x0101;
+        case audioMasterVersion:
+            return 2400;
+        case audioMasterCurrentId:
+            return shellUIDToCreate;
+        case audioMasterGetNumAutomatableParameters:
+            return 0;
+        case audioMasterGetAutomationState:
+            return 1;
+        case audioMasterGetVendorVersion:
+            return 0x0101;
 
-            case audioMasterGetVendorString:
-            case audioMasterGetProductString:
-            {
-                String hostName ("Juce VST Host");
+        case audioMasterGetVendorString:
+        case audioMasterGetProductString:
+        {
+            String hostName ("Juce VST Host");
 
-                if (JUCEApplicationBase* app = JUCEApplicationBase::getInstance())
-                    hostName = app->getApplicationName();
+            if (JUCEApplicationBase* app = JUCEApplicationBase::getInstance())
+                hostName = app->getApplicationName();
 
-                hostName.copyToUTF8 ((char*) ptr, (size_t) jmin (kVstMaxVendorStrLen, kVstMaxProductStrLen) - 1);
-                break;
-            }
+            hostName.copyToUTF8 ((char*) ptr, (size_t) jmin (kVstMaxVendorStrLen, kVstMaxProductStrLen) - 1);
+            break;
+        }
 
-            case audioMasterGetSampleRate:          return (VstIntPtr) defaultVSTSampleRateValue;
-            case audioMasterGetBlockSize:           return (VstIntPtr) defaultVSTBlockSizeValue;
-            case audioMasterSetOutputSampleRate:    return 0;
+        case audioMasterGetSampleRate:
+            return (VstIntPtr) defaultVSTSampleRateValue;
+        case audioMasterGetBlockSize:
+            return (VstIntPtr) defaultVSTBlockSizeValue;
+        case audioMasterSetOutputSampleRate:
+            return 0;
 
-            default:
-                DBG ("*** Unhandled VST Callback: " + String ((int) opcode));
-                break;
+        default:
+            DBG ("*** Unhandled VST Callback: " + String ((int) opcode));
+            break;
         }
 
         return 0;
@@ -1407,23 +1477,23 @@ public:
 
             try
             {
-               #if JUCE_MAC
+#if JUCE_MAC
                 const ResFileRefNum oldResFile = CurResFile();
 
                 if (module->resFileId != 0)
                     UseResFile (module->resFileId);
-               #endif
+#endif
 
                 result = effect->dispatcher (effect, opcode, index, value, ptr, opt);
 
-               #if JUCE_MAC
+#if JUCE_MAC
                 const ResFileRefNum newResFile = CurResFile();
                 if (newResFile != oldResFile)  // avoid confusing the parent app's resource file with the plug-in's
                 {
                     module->resFileId = newResFile;
                     UseResFile (oldResFile);
                 }
-               #endif
+#endif
             }
             catch (...)
             {}
@@ -1614,7 +1684,9 @@ public:
         return true;
     }
 
-    bool usesChunks() const noexcept        { return effect != nullptr && (effect->flags & effFlagsProgramChunks) != 0; }
+    bool usesChunks() const noexcept        {
+        return effect != nullptr && (effect->flags & effFlagsProgramChunks) != 0;
+    }
 
     bool getChunkData (MemoryBlock& mb, bool isPreset, int maxSizeMB) const
     {
@@ -1678,7 +1750,7 @@ private:
     bool restoreProgramSettings (const fxProgram* const prog)
     {
         if (compareMagic (prog->chunkMagic, "CcnK")
-             && compareMagic (prog->fxMagic, "FxCk"))
+                && compareMagic (prog->fxMagic, "FxCk"))
         {
             changeProgramName (getCurrentProgram(), prog->prgName);
 
@@ -1804,15 +1876,17 @@ private:
 
     VstIntPtr getVstDirectory() const
     {
-       #if JUCE_MAC
+#if JUCE_MAC
         return (VstIntPtr) (void*) &module->parentDirFSSpec;
-       #else
+#else
         return (VstIntPtr) (pointer_sized_uint) module->fullParentDirectoryPathName.toRawUTF8();
-       #endif
+#endif
     }
 
     //==============================================================================
-    int getVersionNumber() const noexcept   { return effect != nullptr ? effect->version : 0; }
+    int getVersionNumber() const noexcept   {
+        return effect != nullptr ? effect->version : 0;
+    }
 
     String getVersion() const
     {
@@ -1860,16 +1934,26 @@ private:
     {
         switch (getVstCategory())
         {
-            case kPlugCategEffect:       return "Effect";
-            case kPlugCategSynth:        return "Synth";
-            case kPlugCategAnalysis:     return "Analysis";
-            case kPlugCategMastering:    return "Mastering";
-            case kPlugCategSpacializer:  return "Spacial";
-            case kPlugCategRoomFx:       return "Reverb";
-            case kPlugSurroundFx:        return "Surround";
-            case kPlugCategRestoration:  return "Restoration";
-            case kPlugCategGenerator:    return "Tone generation";
-            default:                     break;
+        case kPlugCategEffect:
+            return "Effect";
+        case kPlugCategSynth:
+            return "Synth";
+        case kPlugCategAnalysis:
+            return "Analysis";
+        case kPlugCategMastering:
+            return "Mastering";
+        case kPlugCategSpacializer:
+            return "Spacial";
+        case kPlugCategRoomFx:
+            return "Reverb";
+        case kPlugSurroundFx:
+            return "Surround";
+        case kPlugCategRestoration:
+            return "Restoration";
+        case kPlugCategGenerator:
+            return "Tone generation";
+        default:
+            break;
         }
 
         return nullptr;
@@ -1890,17 +1974,17 @@ static Array<VSTPluginWindow*> activeVSTWindows;
 
 //==============================================================================
 class VSTPluginWindow   : public AudioProcessorEditor,
-                         #if ! JUCE_MAC
-                          public ComponentMovementWatcher,
-                         #endif
-                          public Timer
+#if ! JUCE_MAC
+    public ComponentMovementWatcher,
+#endif
+    public Timer
 {
 public:
     VSTPluginWindow (VSTPluginInstance& plug)
         : AudioProcessorEditor (&plug),
-         #if ! JUCE_MAC
+#if ! JUCE_MAC
           ComponentMovementWatcher (this),
-         #endif
+#endif
           plugin (plug),
           isOpen (false),
           recursiveResize (false),
@@ -1908,22 +1992,22 @@ public:
           pluginRefusesToResize (false),
           alreadyInside (false)
     {
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         pluginHWND = 0;
         sizeCheckCount = 0;
 
-       #elif JUCE_LINUX
+#elif JUCE_LINUX
         pluginWindow = None;
         pluginProc = None;
 
-       #elif JUCE_MAC
-        #if JUCE_SUPPORT_CARBON
+#elif JUCE_MAC
+#if JUCE_SUPPORT_CARBON
         if (! plug.usesCocoaNSView)
             addAndMakeVisible (carbonWrapper = new CarbonWrapperComponent (*this));
         else
-        #endif
+#endif
             addAndMakeVisible (cocoaWrapper = new AutoResizingNSViewComponentWithParent());
-       #endif
+#endif
 
         activeVSTWindows.add (this);
 
@@ -1936,19 +2020,19 @@ public:
     {
         closePluginWindow();
 
-       #if JUCE_MAC
-        #if JUCE_SUPPORT_CARBON
+#if JUCE_MAC
+#if JUCE_SUPPORT_CARBON
         carbonWrapper = nullptr;
-        #endif
+#endif
         cocoaWrapper = nullptr;
-       #endif
+#endif
 
         activeVSTWindows.removeFirstMatchingValue (this);
         plugin.editorBeingDeleted (this);
     }
 
     //==============================================================================
-   #if ! JUCE_MAC
+#if ! JUCE_MAC
     void componentMovedOrResized (bool /*wasMoved*/, bool /*wasResized*/) override
     {
         if (recursiveResize)
@@ -1962,17 +2046,17 @@ public:
 
             recursiveResize = true;
 
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             if (pluginHWND != 0)
                 MoveWindow (pluginHWND, pos.getX(), pos.getY(), getWidth(), getHeight(), TRUE);
-           #elif JUCE_LINUX
+#elif JUCE_LINUX
             if (pluginWindow != 0)
             {
                 XResizeWindow (display, pluginWindow, getWidth(), getHeight());
                 XMoveWindow (display, pluginWindow, pos.getX(), pos.getY());
                 XMapRaised (display, pluginWindow);
             }
-           #endif
+#endif
 
             recursiveResize = false;
         }
@@ -1993,9 +2077,9 @@ public:
         closePluginWindow();
         openPluginWindow();
     }
-   #endif
+#endif
 
-   #if JUCE_MAC
+#if JUCE_MAC
     void visibilityChanged() override
     {
         if (cocoaWrapper != nullptr)
@@ -2018,24 +2102,28 @@ public:
                 setSize (w, h);
         }
     }
-   #endif
+#endif
 
     //==============================================================================
-    bool keyStateChanged (bool) override                 { return pluginWantsKeys; }
-    bool keyPressed (const juce::KeyPress&) override     { return pluginWantsKeys; }
+    bool keyStateChanged (bool) override                 {
+        return pluginWantsKeys;
+    }
+    bool keyPressed (const juce::KeyPress&) override     {
+        return pluginWantsKeys;
+    }
 
     //==============================================================================
-   #if JUCE_MAC
+#if JUCE_MAC
     void paint (Graphics& g) override
     {
         g.fillAll (Colours::black);
     }
-   #else
+#else
     void paint (Graphics& g) override
     {
         if (isOpen)
         {
-           #if JUCE_LINUX
+#if JUCE_LINUX
             if (pluginWindow != 0)
             {
                 const Rectangle<int> clip (g.getClipBounds());
@@ -2051,27 +2139,27 @@ public:
 
                 sendEventToChild (ev);
             }
-           #endif
+#endif
         }
         else
         {
             g.fillAll (Colours::black);
         }
     }
-   #endif
+#endif
 
     //==============================================================================
     void timerCallback() override
     {
         if (isShowing())
         {
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             if (--sizeCheckCount <= 0)
             {
                 sizeCheckCount = 10;
                 checkPluginWindowSize();
             }
-           #endif
+#endif
 
             static bool reentrant = false;
 
@@ -2089,7 +2177,7 @@ public:
     {
         (void) e;
 
-       #if JUCE_LINUX
+#if JUCE_LINUX
         if (pluginWindow == 0)
             return;
 
@@ -2101,9 +2189,9 @@ public:
         translateJuceToXButtonModifiers (e, ev);
         sendEventToChild (ev);
 
-       #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
         toFront (true);
-       #endif
+#endif
     }
 
     void broughtToFront() override
@@ -2111,9 +2199,9 @@ public:
         activeVSTWindows.removeFirstMatchingValue (this);
         activeVSTWindows.add (this);
 
-       #if JUCE_MAC
+#if JUCE_MAC
         dispatch (effEditTop, 0, 0, 0, 0);
-       #endif
+#endif
     }
 
     //==============================================================================
@@ -2122,21 +2210,21 @@ private:
     bool isOpen, recursiveResize;
     bool pluginWantsKeys, pluginRefusesToResize, alreadyInside;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     HWND pluginHWND;
     void* originalWndProc;
     int sizeCheckCount;
-   #elif JUCE_LINUX
+#elif JUCE_LINUX
     Window pluginWindow;
     EventProcPtr pluginProc;
-   #endif
+#endif
 
     // This is a workaround for old Mackie plugins that crash if their
     // window is deleted more than once.
     bool shouldAvoidDeletingWindow() const
     {
         return plugin.getPluginDescription()
-            .manufacturerName.containsIgnoreCase ("Loud Technologies");
+               .manufacturerName.containsIgnoreCase ("Loud Technologies");
     }
 
     // This is an old workaround for some plugins that need a repaint when their
@@ -2210,7 +2298,7 @@ private:
         // Install keyboard hooks
         pluginWantsKeys = (dispatch (effKeysRequired, 0, 0, 0, 0) == 0);
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         originalWndProc = 0;
         pluginHWND = GetWindow ((HWND) getWindowHandle(), GW_CHILD);
 
@@ -2221,8 +2309,8 @@ private:
             return;
         }
 
-        #pragma warning (push)
-        #pragma warning (disable: 4244)
+#pragma warning (push)
+#pragma warning (disable: 4244)
 
         if (! pluginWantsKeys)
         {
@@ -2230,7 +2318,7 @@ private:
             SetWindowLongPtr (pluginHWND, GWLP_WNDPROC, (LONG_PTR) vstHookWndProc);
         }
 
-        #pragma warning (pop)
+#pragma warning (pop)
 
         RECT r;
         GetWindowRect (pluginHWND, &r);
@@ -2243,7 +2331,7 @@ private:
             const int rh = rect->bottom - rect->top;
 
             if ((rw > 50 && rh > 50 && rw < 2000 && rh < 2000 && rw != w && rh != h)
-                || ((w == 0 && rw > 0) || (h == 0 && rh > 0)))
+                    || ((w == 0 && rw > 0) || (h == 0 && rh > 0)))
             {
                 // very dodgy logic to decide which size is right.
                 if (abs (rw - w) > 350 || abs (rh - h) > 350)
@@ -2265,12 +2353,12 @@ private:
             }
         }
 
-       #elif JUCE_LINUX
+#elif JUCE_LINUX
         pluginWindow = getChildWindow ((Window) getWindowHandle());
 
         if (pluginWindow != 0)
             pluginProc = (EventProcPtr) getPropertyFromXWindow (pluginWindow,
-                                                                XInternAtom (display, "_XEventProc", False));
+                         XInternAtom (display, "_XEventProc", False));
 
         int w = 250, h = 150;
 
@@ -2288,7 +2376,7 @@ private:
 
         if (pluginWindow != 0)
             XMapRaised (display, pluginWindow);
-       #endif
+#endif
 
         // double-check it's not too tiny
         w = jmax (w, 32);
@@ -2296,9 +2384,9 @@ private:
 
         setSize (w, h);
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         checkPluginWindowSize();
-       #endif
+#endif
 
         startTimer (18 + juce::Random::getSystemRandom().nextInt (5));
         repaint();
@@ -2315,19 +2403,19 @@ private:
             dispatch (effEditClose, 0, 0, 0, 0);
             stopTimer();
 
-           #if JUCE_WINDOWS
-            #pragma warning (push)
-            #pragma warning (disable: 4244)
+#if JUCE_WINDOWS
+#pragma warning (push)
+#pragma warning (disable: 4244)
             if (originalWndProc != 0 && pluginHWND != 0 && IsWindow (pluginHWND))
                 SetWindowLongPtr (pluginHWND, GWLP_WNDPROC, (LONG_PTR) originalWndProc);
-            #pragma warning (pop)
+#pragma warning (pop)
 
             originalWndProc = 0;
             pluginHWND = 0;
-           #elif JUCE_LINUX
+#elif JUCE_LINUX
             pluginWindow = 0;
             pluginProc = 0;
-           #endif
+#endif
         }
     }
 
@@ -2347,8 +2435,8 @@ private:
         const int h = r.bottom - r.top;
 
         if (isShowing() && w > 0 && h > 0
-             && (w != getWidth() || h != getHeight())
-             && ! pluginRefusesToResize)
+                && (w != getWidth() || h != getHeight())
+                && ! pluginRefusesToResize)
         {
             setSize (w, h);
             sizeCheckCount = 0;
@@ -2365,11 +2453,11 @@ private:
             if (w != nullptr && w->pluginHWND == hW)
             {
                 if (message == WM_CHAR
-                    || message == WM_KEYDOWN
-                    || message == WM_SYSKEYDOWN
-                    || message == WM_KEYUP
-                    || message == WM_SYSKEYUP
-                    || message == WM_APPCOMMAND)
+                        || message == WM_KEYDOWN
+                        || message == WM_SYSKEYDOWN
+                        || message == WM_KEYUP
+                        || message == WM_SYSKEYUP
+                        || message == WM_APPCOMMAND)
                 {
                     SendMessage ((HWND) w->getTopLevelComponent()->getWindowHandle(),
                                  message, wParam, lParam);
@@ -2502,7 +2590,7 @@ private:
 
     //==============================================================================
 #if JUCE_MAC
-   #if JUCE_SUPPORT_CARBON
+#if JUCE_SUPPORT_CARBON
     class CarbonWrapperComponent   : public CarbonViewWrapperComponent
     {
     public:
@@ -2582,16 +2670,16 @@ private:
 
     friend class CarbonWrapperComponent;
     ScopedPointer<CarbonWrapperComponent> carbonWrapper;
-   #endif
+#endif
 
     ScopedPointer<AutoResizingNSViewComponentWithParent> cocoaWrapper;
 
     void resized() override
     {
-       #if JUCE_SUPPORT_CARBON
+#if JUCE_SUPPORT_CARBON
         if (carbonWrapper != nullptr)
             carbonWrapper->setSize (getWidth(), getHeight());
-       #endif
+#endif
 
         if (cocoaWrapper != nullptr)
             cocoaWrapper->setSize (getWidth(), getHeight());
@@ -2605,7 +2693,7 @@ private:
 AudioProcessorEditor* VSTPluginInstance::createEditor()
 {
     return hasEditor() ? new VSTPluginWindow (*this)
-                       : nullptr;
+           : nullptr;
 }
 
 //==============================================================================
@@ -2629,10 +2717,10 @@ static VSTPluginInstance* createAndUpdateDesc (VSTPluginFormat& format, PluginDe
     {
         if (VSTPluginInstance* instance = dynamic_cast<VSTPluginInstance*> (p))
         {
-           #if JUCE_MAC
+#if JUCE_MAC
             if (instance->module->resFileId != 0)
                 UseResFile (instance->module->resFileId);
-           #endif
+#endif
 
             instance->fillInPluginDescription (desc);
             return instance;
@@ -2645,7 +2733,7 @@ static VSTPluginInstance* createAndUpdateDesc (VSTPluginFormat& format, PluginDe
 }
 
 void VSTPluginFormat::findAllTypesForFile (OwnedArray<PluginDescription>& results,
-                                           const String& fileOrIdentifier)
+        const String& fileOrIdentifier)
 {
     if (! fileMightContainThisPluginType (fileOrIdentifier))
         return;
@@ -2698,7 +2786,7 @@ void VSTPluginFormat::findAllTypesForFile (OwnedArray<PluginDescription>& result
 }
 
 AudioPluginInstance* VSTPluginFormat::createInstanceFromDescription (const PluginDescription& desc,
-                                                                     double sampleRate, int blockSize)
+        double sampleRate, int blockSize)
 {
     ScopedPointer<VSTPluginInstance> result;
 
@@ -2736,11 +2824,11 @@ bool VSTPluginFormat::fileMightContainThisPluginType (const String& fileOrIdenti
 {
     const File f (File::createFileWithoutCheckingPath (fileOrIdentifier));
 
-  #if JUCE_MAC
+#if JUCE_MAC
     if (f.isDirectory() && f.hasFileExtension (".vst"))
         return true;
 
-   #if JUCE_PPC
+#if JUCE_PPC
     FSRef fileRef;
     if (makeFSRefFromPath (&fileRef, f.getFullPathName()))
     {
@@ -2755,14 +2843,14 @@ bool VSTPluginFormat::fileMightContainThisPluginType (const String& fileOrIdenti
                 return true;
         }
     }
-   #endif
+#endif
 
     return false;
-  #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
     return f.existsAsFile() && f.hasFileExtension (".dll");
-  #elif JUCE_LINUX
+#elif JUCE_LINUX
     return f.existsAsFile() && f.hasFileExtension (".so");
-  #endif
+#endif
 }
 
 String VSTPluginFormat::getNameOfPluginFromIdentifier (const String& fileOrIdentifier)
@@ -2814,13 +2902,13 @@ void VSTPluginFormat::recursiveFileSearch (StringArray& results, const File& dir
 
 FileSearchPath VSTPluginFormat::getDefaultLocationsToSearch()
 {
-   #if JUCE_MAC
+#if JUCE_MAC
     return FileSearchPath ("~/Library/Audio/Plug-Ins/VST;/Library/Audio/Plug-Ins/VST");
-   #elif JUCE_LINUX
+#elif JUCE_LINUX
     return FileSearchPath (SystemStats::getEnvironmentVariable ("VST_PATH",
-                                                                "/usr/lib/vst;/usr/local/lib/vst;~/.vst")
-                             .replace (":", ";"));
-   #elif JUCE_WINDOWS
+                           "/usr/lib/vst;/usr/local/lib/vst;~/.vst")
+                           .replace (":", ";"));
+#elif JUCE_WINDOWS
     const String programFiles (File::getSpecialLocation (File::globalApplicationsDirectory).getFullPathName());
 
     FileSearchPath paths;
@@ -2831,7 +2919,7 @@ FileSearchPath VSTPluginFormat::getDefaultLocationsToSearch()
     paths.add (WindowsRegistry::getValue ("HKLM\\Software\\VST\\VSTPluginsPath",
                                           programFiles + "\\VstPlugins"));
     return paths;
-   #endif
+#endif
 }
 
 const XmlElement* VSTPluginFormat::getVSTXML (AudioPluginInstance* plugin)

@@ -188,7 +188,7 @@ void ScrollBar::handleAsyncUpdate()
 void ScrollBar::updateThumbPosition()
 {
     int newThumbSize = roundToInt (totalRange.getLength() > 0 ? (visibleRange.getLength() * thumbAreaSize) / totalRange.getLength()
-                                                              : thumbAreaSize);
+                                   : thumbAreaSize);
 
     LookAndFeel& lf = getLookAndFeel();
 
@@ -202,7 +202,7 @@ void ScrollBar::updateThumbPosition()
 
     if (totalRange.getLength() > visibleRange.getLength())
         newThumbStart += roundToInt (((visibleRange.getStart() - totalRange.getStart()) * (thumbAreaSize - newThumbSize))
-                                         / (totalRange.getLength() - visibleRange.getLength()));
+                                     / (totalRange.getLength() - visibleRange.getLength()));
 
     setVisible ((! autohides) || (totalRange.getLength() > visibleRange.getLength() && visibleRange.getLength() > 0.0));
 
@@ -256,7 +256,7 @@ void ScrollBar::paint (Graphics& g)
         LookAndFeel& lf = getLookAndFeel();
 
         const int thumb = (thumbAreaSize > lf.getMinimumScrollbarThumbSize (*this))
-                             ? thumbSize : 0;
+                          ? thumbSize : 0;
 
         if (vertical)
             lf.drawScrollbar (g, *this, 0, thumbAreaStart, getWidth(), thumbAreaSize,
@@ -349,7 +349,7 @@ void ScrollBar::mouseDown (const MouseEvent& e)
     else
     {
         isDraggingThumb = (thumbAreaSize > getLookAndFeel().getMinimumScrollbarThumbSize (*this))
-                            && (thumbAreaSize > thumbSize);
+                          && (thumbAreaSize > thumbSize);
     }
 }
 
@@ -362,8 +362,8 @@ void ScrollBar::mouseDrag (const MouseEvent& e)
         const int deltaPixels = mousePos - dragStartMousePos;
 
         setCurrentRangeStart (dragStartRange
-                                + deltaPixels * (totalRange.getLength() - visibleRange.getLength())
-                                    / (thumbAreaSize - thumbSize));
+                              + deltaPixels * (totalRange.getLength() - visibleRange.getLength())
+                              / (thumbAreaSize - thumbSize));
     }
 
     lastMousePos = mousePos;

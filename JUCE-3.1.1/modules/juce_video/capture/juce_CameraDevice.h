@@ -65,7 +65,9 @@ public:
 
     //==============================================================================
     /** Returns the name of this device */
-    const String& getName() const noexcept          { return name; }
+    const String& getName() const noexcept          {
+        return name;
+    }
 
     /** Creates a component that can be used to display a preview of the
         video from this camera.
@@ -153,8 +155,8 @@ private:
 };
 
 #ifndef DOXYGEN
- /** This typedef is just for compatibility with VC6 - newer code should use the CameraDevice::Listener class directly. */
- typedef CameraDevice::Listener CameraImageListener;
+/** This typedef is just for compatibility with VC6 - newer code should use the CameraDevice::Listener class directly. */
+typedef CameraDevice::Listener CameraImageListener;
 #endif
 
 #endif

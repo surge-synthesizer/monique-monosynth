@@ -106,7 +106,7 @@ public:
         @see AudioFormatReader
     */
     virtual AudioFormatReader* createReaderFor (InputStream* sourceStream,
-                                                bool deleteStreamIfOpeningFails) = 0;
+            bool deleteStreamIfOpeningFails) = 0;
 
     /** Attempts to create a MemoryMappedAudioFormatReader, if possible for this format.
         If the format does not support this, the method will return nullptr;
@@ -146,11 +146,11 @@ public:
         @see AudioFormatWriter
     */
     virtual AudioFormatWriter* createWriterFor (OutputStream* streamToWriteTo,
-                                                double sampleRateToUse,
-                                                unsigned int numberOfChannels,
-                                                int bitsPerSample,
-                                                const StringPairArray& metadataValues,
-                                                int qualityOptionIndex) = 0;
+            double sampleRateToUse,
+            unsigned int numberOfChannels,
+            int bitsPerSample,
+            const StringPairArray& metadataValues,
+            int qualityOptionIndex) = 0;
 
 protected:
     /** Creates an AudioFormat object.

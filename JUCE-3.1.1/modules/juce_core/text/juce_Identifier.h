@@ -74,34 +74,54 @@ public:
     ~Identifier() noexcept;
 
     /** Compares two identifiers. This is a very fast operation. */
-    inline bool operator== (Identifier other) const noexcept            { return name.getCharPointer() == other.name.getCharPointer(); }
+    inline bool operator== (Identifier other) const noexcept            {
+        return name.getCharPointer() == other.name.getCharPointer();
+    }
 
     /** Compares two identifiers. This is a very fast operation. */
-    inline bool operator!= (Identifier other) const noexcept            { return name.getCharPointer() != other.name.getCharPointer(); }
+    inline bool operator!= (Identifier other) const noexcept            {
+        return name.getCharPointer() != other.name.getCharPointer();
+    }
 
     /** Compares the identifier with a string. */
-    inline bool operator== (StringRef other) const noexcept             { return name == other; }
+    inline bool operator== (StringRef other) const noexcept             {
+        return name == other;
+    }
 
     /** Compares the identifier with a string. */
-    inline bool operator!= (StringRef other) const noexcept             { return name != other; }
+    inline bool operator!= (StringRef other) const noexcept             {
+        return name != other;
+    }
 
     /** Returns this identifier as a string. */
-    const String& toString() const noexcept                             { return name; }
+    const String& toString() const noexcept                             {
+        return name;
+    }
 
     /** Returns this identifier's raw string pointer. */
-    operator String::CharPointerType() const noexcept                   { return name.getCharPointer(); }
+    operator String::CharPointerType() const noexcept                   {
+        return name.getCharPointer();
+    }
 
     /** Returns this identifier's raw string pointer. */
-    String::CharPointerType getCharPointer() const noexcept             { return name.getCharPointer(); }
+    String::CharPointerType getCharPointer() const noexcept             {
+        return name.getCharPointer();
+    }
 
     /** Returns this identifier as a StringRef. */
-    operator StringRef() const noexcept                                 { return name; }
+    operator StringRef() const noexcept                                 {
+        return name;
+    }
 
     /** Returns true if this Identifier is not null */
-    bool isValid() const noexcept                                       { return name.isNotEmpty(); }
+    bool isValid() const noexcept                                       {
+        return name.isNotEmpty();
+    }
 
     /** Returns true if this Identifier is null */
-    bool isNull() const noexcept                                        { return name.isEmpty(); }
+    bool isNull() const noexcept                                        {
+        return name.isEmpty();
+    }
 
     /** A null identifier. */
     static Identifier null;

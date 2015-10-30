@@ -23,15 +23,18 @@
 */
 
 ResizableBorderComponent::Zone::Zone() noexcept
-    : zone (0)
+:
+zone (0)
 {}
 
 ResizableBorderComponent::Zone::Zone (const int zoneFlags) noexcept
-    : zone (zoneFlags)
+:
+zone (zoneFlags)
 {}
 
 ResizableBorderComponent::Zone::Zone (const ResizableBorderComponent::Zone& other) noexcept
-    : zone (other.zone)
+:
+zone (other.zone)
 {}
 
 ResizableBorderComponent::Zone& ResizableBorderComponent::Zone::operator= (const ResizableBorderComponent::Zone& other) noexcept
@@ -40,17 +43,21 @@ ResizableBorderComponent::Zone& ResizableBorderComponent::Zone::operator= (const
     return *this;
 }
 
-bool ResizableBorderComponent::Zone::operator== (const ResizableBorderComponent::Zone& other) const noexcept      { return zone == other.zone; }
-bool ResizableBorderComponent::Zone::operator!= (const ResizableBorderComponent::Zone& other) const noexcept      { return zone != other.zone; }
+bool ResizableBorderComponent::Zone::operator== (const ResizableBorderComponent::Zone& other) const noexcept      {
+    return zone == other.zone;
+}
+bool ResizableBorderComponent::Zone::operator!= (const ResizableBorderComponent::Zone& other) const noexcept      {
+    return zone != other.zone;
+}
 
 ResizableBorderComponent::Zone ResizableBorderComponent::Zone::fromPositionOnBorder (const Rectangle<int>& totalSize,
-                                                                                     const BorderSize<int>& border,
-                                                                                     Point<int> position)
+        const BorderSize<int>& border,
+        Point<int> position)
 {
     int z = 0;
 
     if (totalSize.contains (position)
-         && ! border.subtractedFrom (totalSize).contains (position))
+            && ! border.subtractedFrom (totalSize).contains (position))
     {
         const int minW = jmax (totalSize.getWidth() / 10, jmin (10, totalSize.getWidth() / 3));
         if (position.x < jmax (border.getLeft(), minW) && border.getLeft() > 0)
@@ -74,15 +81,32 @@ MouseCursor ResizableBorderComponent::Zone::getMouseCursor() const noexcept
 
     switch (zone)
     {
-        case (left | top):      mc = MouseCursor::TopLeftCornerResizeCursor; break;
-        case top:               mc = MouseCursor::TopEdgeResizeCursor; break;
-        case (right | top):     mc = MouseCursor::TopRightCornerResizeCursor; break;
-        case left:              mc = MouseCursor::LeftEdgeResizeCursor; break;
-        case right:             mc = MouseCursor::RightEdgeResizeCursor; break;
-        case (left | bottom):   mc = MouseCursor::BottomLeftCornerResizeCursor; break;
-        case bottom:            mc = MouseCursor::BottomEdgeResizeCursor; break;
-        case (right | bottom):  mc = MouseCursor::BottomRightCornerResizeCursor; break;
-        default:                break;
+    case (left | top):
+        mc = MouseCursor::TopLeftCornerResizeCursor;
+        break;
+    case top:
+        mc = MouseCursor::TopEdgeResizeCursor;
+        break;
+    case (right | top):
+        mc = MouseCursor::TopRightCornerResizeCursor;
+        break;
+    case left:
+        mc = MouseCursor::LeftEdgeResizeCursor;
+        break;
+    case right:
+        mc = MouseCursor::RightEdgeResizeCursor;
+        break;
+    case (left | bottom):
+        mc = MouseCursor::BottomLeftCornerResizeCursor;
+        break;
+    case bottom:
+        mc = MouseCursor::BottomEdgeResizeCursor;
+        break;
+    case (right | bottom):
+        mc = MouseCursor::BottomRightCornerResizeCursor;
+        break;
+    default:
+        break;
     }
 
     return mc;
@@ -90,11 +114,11 @@ MouseCursor ResizableBorderComponent::Zone::getMouseCursor() const noexcept
 
 //==============================================================================
 ResizableBorderComponent::ResizableBorderComponent (Component* const componentToResize,
-                                                    ComponentBoundsConstrainer* const constrainer_)
-   : component (componentToResize),
-     constrainer (constrainer_),
-     borderSize (5),
-     mouseZone (0)
+        ComponentBoundsConstrainer* const constrainer_)
+    : component (componentToResize),
+      constrainer (constrainer_),
+      borderSize (5),
+      mouseZone (0)
 {
 }
 
@@ -170,9 +194,9 @@ void ResizableBorderComponent::mouseUp (const MouseEvent&)
 bool ResizableBorderComponent::hitTest (int x, int y)
 {
     return x < borderSize.getLeft()
-            || x >= getWidth() - borderSize.getRight()
-            || y < borderSize.getTop()
-            || y >= getHeight() - borderSize.getBottom();
+           || x >= getWidth() - borderSize.getRight()
+           || y < borderSize.getTop()
+           || y >= getHeight() - borderSize.getBottom();
 }
 
 void ResizableBorderComponent::setBorderThickness (const BorderSize<int>& newBorderSize)

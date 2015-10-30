@@ -94,72 +94,73 @@ int XmlTokeniser::readNextToken (CodeDocument::Iterator& source)
 
     switch (firstChar)
     {
-        case 0:  break;
+    case 0:
+        break;
 
-        case '"':
-        case '\'':
-            CppTokeniserFunctions::skipQuotedString (source);
-            return tokenType_string;
+    case '"':
+    case '\'':
+        CppTokeniserFunctions::skipQuotedString (source);
+        return tokenType_string;
 
-        case '<':
+    case '<':
+    {
+        source.skip();
+        source.skipWhitespace();
+        const juce_wchar nextChar = source.peekNextChar();
+
+        if (nextChar == '?')
         {
             source.skip();
-            source.skipWhitespace();
-            const juce_wchar nextChar = source.peekNextChar();
+            skipToEndOfXmlDTD (source);
+            return tokenType_preprocessor;
+        }
 
-            if (nextChar == '?')
-            {
-                source.skip();
-                skipToEndOfXmlDTD (source);
-                return tokenType_preprocessor;
-            }
+        if (nextChar == '!')
+        {
+            source.skip();
 
-            if (nextChar == '!')
+            if (source.peekNextChar() == '-')
             {
                 source.skip();
 
                 if (source.peekNextChar() == '-')
                 {
-                    source.skip();
-
-                    if (source.peekNextChar() == '-')
-                    {
-                        skipToEndOfXmlComment (source);
-                        return tokenType_comment;
-                    }
+                    skipToEndOfXmlComment (source);
+                    return tokenType_comment;
                 }
             }
-
-            CppTokeniserFunctions::skipIfNextCharMatches (source, '/');
-            CppTokeniserFunctions::parseIdentifier (source);
-            source.skipWhitespace();
-            CppTokeniserFunctions::skipIfNextCharMatches (source, '/');
-            source.skipWhitespace();
-            CppTokeniserFunctions::skipIfNextCharMatches (source, '>');
-            return tokenType_keyword;
         }
 
-        case '>':
-            source.skip();
-            return tokenType_keyword;
+        CppTokeniserFunctions::skipIfNextCharMatches (source, '/');
+        CppTokeniserFunctions::parseIdentifier (source);
+        source.skipWhitespace();
+        CppTokeniserFunctions::skipIfNextCharMatches (source, '/');
+        source.skipWhitespace();
+        CppTokeniserFunctions::skipIfNextCharMatches (source, '>');
+        return tokenType_keyword;
+    }
 
-        case '/':
-            source.skip();
-            source.skipWhitespace();
-            CppTokeniserFunctions::skipIfNextCharMatches (source, '>');
-            return tokenType_keyword;
+    case '>':
+        source.skip();
+        return tokenType_keyword;
 
-        case '=':
-        case ':':
-            source.skip();
-            return tokenType_operator;
+    case '/':
+        source.skip();
+        source.skipWhitespace();
+        CppTokeniserFunctions::skipIfNextCharMatches (source, '>');
+        return tokenType_keyword;
 
-        default:
-            if (CppTokeniserFunctions::isIdentifierStart (firstChar))
-                CppTokeniserFunctions::parseIdentifier (source);
+    case '=':
+    case ':':
+        source.skip();
+        return tokenType_operator;
 
-            source.skip();
-            break;
+    default:
+        if (CppTokeniserFunctions::isIdentifierStart (firstChar))
+            CppTokeniserFunctions::parseIdentifier (source);
+
+        source.skip();
+        break;
     };
 
     return tokenType_identifier;

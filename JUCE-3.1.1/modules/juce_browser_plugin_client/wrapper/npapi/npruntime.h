@@ -282,18 +282,18 @@ typedef bool (*NPInvokeFunctionPtr)(NPObject *npobj, NPIdentifier name,
                                     const NPVariant *args, uint32_t argCount,
                                     NPVariant *result);
 typedef bool (*NPInvokeDefaultFunctionPtr)(NPObject *npobj,
-                                           const NPVariant *args,
-                                           uint32_t argCount,
-                                           NPVariant *result);
+        const NPVariant *args,
+        uint32_t argCount,
+        NPVariant *result);
 typedef bool (*NPHasPropertyFunctionPtr)(NPObject *npobj, NPIdentifier name);
 typedef bool (*NPGetPropertyFunctionPtr)(NPObject *npobj, NPIdentifier name,
-                                         NPVariant *result);
+        NPVariant *result);
 typedef bool (*NPSetPropertyFunctionPtr)(NPObject *npobj, NPIdentifier name,
-                                         const NPVariant *value);
+        const NPVariant *value);
 typedef bool (*NPRemovePropertyFunctionPtr)(NPObject *npobj,
-                                            NPIdentifier name);
+        NPIdentifier name);
 typedef bool (*NPEnumerationFunctionPtr)(NPObject *npobj, NPIdentifier **value,
-                                         uint32_t *count);
+        uint32_t *count);
 typedef bool (*NPConstructFunctionPtr)(NPObject *npobj,
                                        const NPVariant *args,
                                        uint32_t argCount,

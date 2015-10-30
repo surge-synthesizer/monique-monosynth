@@ -168,7 +168,7 @@ private:
     static VstEvent* allocateVSTEvent()
     {
         VstEvent* const e = (VstEvent*) std::calloc (1, sizeof (VstMidiEvent) > sizeof (VstMidiSysexEvent) ? sizeof (VstMidiEvent)
-                                                                                                           : sizeof (VstMidiSysexEvent));
+                            : sizeof (VstMidiSysexEvent));
         e->type = kVstMidiType;
         e->byteSize = sizeof (VstMidiEvent);
         return e;

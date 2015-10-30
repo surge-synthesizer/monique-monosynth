@@ -22,7 +22,8 @@
   ==============================================================================
 */
 
-Box2DRenderer::Box2DRenderer() noexcept   : graphics (nullptr)
+Box2DRenderer::Box2DRenderer() noexcept   :
+graphics (nullptr)
 {
     SetFlags (e_shapeBit);
 }
@@ -34,8 +35,8 @@ void Box2DRenderer::render (Graphics& g, b2World& world,
     graphics = &g;
 
     g.addTransform (AffineTransform::fromTargetPoints (left,  top,    target.getX(),     target.getY(),
-                                                       right, top,    target.getRight(), target.getY(),
-                                                       left,  bottom, target.getX(),     target.getBottom()));
+                    right, top,    target.getRight(), target.getY(),
+                    left,  bottom, target.getX(),     target.getBottom()));
 
     world.SetDebugDraw (this);
     world.DrawDebugData();

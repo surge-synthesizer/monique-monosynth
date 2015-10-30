@@ -48,8 +48,8 @@
 */
 
 #if WINDOWS_VERSION
- #undef _UNICODE
- #undef UNICODE
+#undef _UNICODE
+#undef UNICODE
 #endif
 
 #include <CEffectGroup.cpp>

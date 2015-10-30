@@ -101,7 +101,9 @@ public:
 
     //==============================================================================
     /** Returns true if this job is currently running its runJob() method. */
-    bool isRunning() const noexcept                     { return isActive; }
+    bool isRunning() const noexcept                     {
+        return isActive;
+    }
 
     /** Returns true if something is trying to interrupt this job and make it stop.
 
@@ -110,7 +112,9 @@ public:
 
         @see signalJobShouldExit()
     */
-    bool shouldExit() const noexcept                    { return shouldStop; }
+    bool shouldExit() const noexcept                    {
+        return shouldStop;
+    }
 
     /** Calling this will cause the shouldExit() method to return true, and the job
         should (if it's been implemented correctly) stop as soon as possible.

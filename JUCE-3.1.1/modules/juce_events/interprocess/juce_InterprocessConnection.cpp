@@ -26,7 +26,9 @@ struct InterprocessConnection::ConnectionThread  : public Thread
 {
     ConnectionThread (InterprocessConnection& c)  : Thread ("JUCE IPC"), owner (c) {}
 
-    void run() override     { owner.runThread(); }
+    void run() override     {
+        owner.runThread();
+    }
 
 private:
     InterprocessConnection& owner;
@@ -36,7 +38,7 @@ private:
 
 //==============================================================================
 InterprocessConnection::InterprocessConnection (const bool callbacksOnMessageThread,
-                                                const uint32 magicMessageHeaderNumber)
+        const uint32 magicMessageHeaderNumber)
     : callbackConnectionState (false),
       useMessageThread (callbacksOnMessageThread),
       magicMessageHeader (magicMessageHeaderNumber),
@@ -55,8 +57,8 @@ InterprocessConnection::~InterprocessConnection()
 
 //==============================================================================
 bool InterprocessConnection::connectToSocket (const String& hostName,
-                                              const int portNumber,
-                                              const int timeOutMillisecs)
+        const int portNumber,
+        const int timeOutMillisecs)
 {
     disconnect();
 
@@ -135,8 +137,8 @@ bool InterprocessConnection::isConnected() const
     const ScopedLock sl (pipeAndSocketLock);
 
     return ((socket != nullptr && socket->isConnected())
-              || (pipe != nullptr && pipe->isOpen()))
-            && thread->isThreadRunning();
+            || (pipe != nullptr && pipe->isOpen()))
+           && thread->isThreadRunning();
 }
 
 String InterprocessConnection::getConnectedHostName() const
@@ -158,7 +160,8 @@ String InterprocessConnection::getConnectedHostName() const
 bool InterprocessConnection::sendMessage (const MemoryBlock& message)
 {
     uint32 messageHeader[2] = { ByteOrder::swapIfBigEndian (magicMessageHeader),
-                                ByteOrder::swapIfBigEndian ((uint32) message.getSize()) };
+                                ByteOrder::swapIfBigEndian ((uint32) message.getSize())
+                              };
 
     MemoryBlock messageData (sizeof (messageHeader) + message.getSize());
     messageData.copyFrom (messageHeader, 0, sizeof (messageHeader));
@@ -201,7 +204,8 @@ void InterprocessConnection::initialiseWithPipe (NamedPipe* newPipe)
 struct ConnectionStateMessage  : public MessageManager::MessageBase
 {
     ConnectionStateMessage (InterprocessConnection* ipc, bool connected) noexcept
-        : owner (ipc), connectionMade (connected)
+:
+    owner (ipc), connectionMade (connected)
     {}
 
     void messageCallback() override
@@ -278,10 +282,10 @@ bool InterprocessConnection::readNextMessageInt()
 {
     uint32 messageHeader[2];
     const int bytes = socket != nullptr ? socket->read (messageHeader, sizeof (messageHeader), true)
-                                        : pipe  ->read (messageHeader, sizeof (messageHeader), -1);
+                      : pipe  ->read (messageHeader, sizeof (messageHeader), -1);
 
     if (bytes == sizeof (messageHeader)
-         && ByteOrder::swapIfBigEndian (messageHeader[0]) == magicMessageHeader)
+            && ByteOrder::swapIfBigEndian (messageHeader[0]) == magicMessageHeader)
     {
         int bytesInMessage = (int) ByteOrder::swapIfBigEndian (messageHeader[1]);
 
@@ -299,7 +303,7 @@ bool InterprocessConnection::readNextMessageInt()
                 void* const data = addBytesToPointer (messageData.getData(), bytesRead);
 
                 const int bytesIn = socket != nullptr ? socket->read (data, numThisTime, true)
-                                                      : pipe  ->read (data, numThisTime, -1);
+                                    : pipe  ->read (data, numThisTime, -1);
 
                 if (bytesIn <= 0)
                     break;

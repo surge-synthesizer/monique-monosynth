@@ -40,7 +40,7 @@
     @see ThreadWithProgressWindow
 */
 class JUCE_API  AlertWindow  : public TopLevelWindow,
-                               private ButtonListener  // (can't use Button::Listener due to idiotic VC2005 bug)
+    private ButtonListener  // (can't use Button::Listener due to idiotic VC2005 bug)
 {
 public:
     //==============================================================================
@@ -79,7 +79,9 @@ public:
     //==============================================================================
     /** Returns the type of alert icon that was specified when the window
         was created. */
-    AlertIconType getAlertType() const noexcept             { return alertIconType; }
+    AlertIconType getAlertType() const noexcept             {
+        return alertIconType;
+    }
 
     //==============================================================================
     /** Changes the dialog box's message.
@@ -229,7 +231,7 @@ public:
     //==============================================================================
     // easy-to-use message box functions:
 
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     /** Shows a dialog box that just has a message and a single button to get rid of it.
 
         The box is shown modally, and the method will block until the user has clicked the
@@ -246,11 +248,11 @@ public:
                             and feel, this might be used for positioning of the alert window.
     */
     static void JUCE_CALLTYPE showMessageBox (AlertIconType iconType,
-                                              const String& title,
-                                              const String& message,
-                                              const String& buttonText = String::empty,
-                                              Component* associatedComponent = nullptr);
-   #endif
+            const String& title,
+            const String& message,
+            const String& buttonText = String::empty,
+            Component* associatedComponent = nullptr);
+#endif
 
     /** Shows a dialog box that just has a message and a single button to get rid of it.
 
@@ -274,11 +276,11 @@ public:
                             before it gets called.
     */
     static void JUCE_CALLTYPE showMessageBoxAsync (AlertIconType iconType,
-                                                   const String& title,
-                                                   const String& message,
-                                                   const String& buttonText = String::empty,
-                                                   Component* associatedComponent = nullptr,
-                                                   ModalComponentManager::Callback* callback = nullptr);
+            const String& title,
+            const String& message,
+            const String& buttonText = String::empty,
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
 
     /** Shows a dialog box with two buttons.
 
@@ -316,19 +318,19 @@ public:
                  later by the callback.
     */
     static bool JUCE_CALLTYPE showOkCancelBox (AlertIconType iconType,
-                                               const String& title,
-                                               const String& message,
-                                            #if JUCE_MODAL_LOOPS_PERMITTED
-                                               const String& button1Text = String::empty,
-                                               const String& button2Text = String::empty,
-                                               Component* associatedComponent = nullptr,
-                                               ModalComponentManager::Callback* callback = nullptr);
-                                            #else
-                                               const String& button1Text,
-                                               const String& button2Text,
-                                               Component* associatedComponent,
-                                               ModalComponentManager::Callback* callback);
-                                            #endif
+            const String& title,
+            const String& message,
+#if JUCE_MODAL_LOOPS_PERMITTED
+            const String& button1Text = String::empty,
+            const String& button2Text = String::empty,
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
+#else
+            const String& button1Text,
+            const String& button2Text,
+            Component* associatedComponent,
+            ModalComponentManager::Callback* callback);
+#endif
 
     /** Shows a dialog box with three buttons.
 
@@ -370,21 +372,21 @@ public:
                  - 2 if the middle button was pressed (normally used for 'no')
     */
     static int JUCE_CALLTYPE showYesNoCancelBox (AlertIconType iconType,
-                                                 const String& title,
-                                                 const String& message,
-                                               #if JUCE_MODAL_LOOPS_PERMITTED
-                                                 const String& button1Text = String::empty,
-                                                 const String& button2Text = String::empty,
-                                                 const String& button3Text = String::empty,
-                                                 Component* associatedComponent = nullptr,
-                                                 ModalComponentManager::Callback* callback = nullptr);
-                                               #else
-                                                 const String& button1Text,
-                                                 const String& button2Text,
-                                                 const String& button3Text,
-                                                 Component* associatedComponent,
-                                                 ModalComponentManager::Callback* callback);
-                                               #endif
+            const String& title,
+            const String& message,
+#if JUCE_MODAL_LOOPS_PERMITTED
+            const String& button1Text = String::empty,
+            const String& button2Text = String::empty,
+            const String& button3Text = String::empty,
+            Component* associatedComponent = nullptr,
+            ModalComponentManager::Callback* callback = nullptr);
+#else
+            const String& button1Text,
+            const String& button2Text,
+            const String& button3Text,
+            Component* associatedComponent,
+            ModalComponentManager::Callback* callback);
+#endif
 
     //==============================================================================
     /** Shows an operating-system native dialog box.
@@ -395,11 +397,11 @@ public:
                             it'll show a box with just an ok button
         @returns true if the ok button was pressed, false if they pressed cancel.
     */
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     static bool JUCE_CALLTYPE showNativeDialogBox (const String& title,
-                                                   const String& bodyText,
-                                                   bool isOkCancel);
-   #endif
+            const String& bodyText,
+            bool isOkCancel);
+#endif
 
 
     //==============================================================================
@@ -426,12 +428,12 @@ public:
         virtual ~LookAndFeelMethods() {}
 
         virtual AlertWindow* createAlertWindow (const String& title, const String& message,
-                                                const String& button1,
-                                                const String& button2,
-                                                const String& button3,
-                                                AlertWindow::AlertIconType iconType,
-                                                int numButtons,
-                                                Component* associatedComponent) = 0;
+        const String& button1,
+        const String& button2,
+        const String& button3,
+        AlertWindow::AlertIconType iconType,
+        int numButtons,
+        Component* associatedComponent) = 0;
 
         virtual void drawAlertBox (Graphics&, AlertWindow&, const Rectangle<int>& textArea, TextLayout&) = 0;
 

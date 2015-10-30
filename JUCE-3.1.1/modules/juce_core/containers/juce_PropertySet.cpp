@@ -75,7 +75,7 @@ String PropertySet::getValue (StringRef keyName, const String& defaultValue) con
         return properties.getAllValues() [index];
 
     return fallbackProperties != nullptr ? fallbackProperties->getValue (keyName, defaultValue)
-                                         : defaultValue;
+           : defaultValue;
 }
 
 int PropertySet::getIntValue (StringRef keyName, const int defaultValue) const noexcept
@@ -87,7 +87,7 @@ int PropertySet::getIntValue (StringRef keyName, const int defaultValue) const n
         return properties.getAllValues() [index].getIntValue();
 
     return fallbackProperties != nullptr ? fallbackProperties->getIntValue (keyName, defaultValue)
-                                         : defaultValue;
+           : defaultValue;
 }
 
 double PropertySet::getDoubleValue (StringRef keyName, const double defaultValue) const noexcept
@@ -99,7 +99,7 @@ double PropertySet::getDoubleValue (StringRef keyName, const double defaultValue
         return properties.getAllValues()[index].getDoubleValue();
 
     return fallbackProperties != nullptr ? fallbackProperties->getDoubleValue (keyName, defaultValue)
-                                         : defaultValue;
+           : defaultValue;
 }
 
 bool PropertySet::getBoolValue (StringRef keyName, const bool defaultValue) const noexcept
@@ -111,7 +111,7 @@ bool PropertySet::getBoolValue (StringRef keyName, const bool defaultValue) cons
         return properties.getAllValues() [index].getIntValue() != 0;
 
     return fallbackProperties != nullptr ? fallbackProperties->getBoolValue (keyName, defaultValue)
-                                         : defaultValue;
+           : defaultValue;
 }
 
 XmlElement* PropertySet::getXmlValue (StringRef keyName) const
@@ -156,7 +156,7 @@ void PropertySet::removeValue (StringRef keyName)
 void PropertySet::setValue (const String& keyName, const XmlElement* const xml)
 {
     setValue (keyName, xml == nullptr ? var()
-                                      : var (xml->createDocument ("", true)));
+              : var (xml->createDocument ("", true)));
 }
 
 bool PropertySet::containsKey (StringRef keyName) const noexcept
@@ -203,7 +203,7 @@ void PropertySet::restoreFromXml (const XmlElement& xml)
     forEachXmlChildElementWithTagName (xml, e, "VALUE")
     {
         if (e->hasAttribute ("name")
-             && e->hasAttribute ("val"))
+                && e->hasAttribute ("val"))
         {
             properties.set (e->getStringAttribute ("name"),
                             e->getStringAttribute ("val"));

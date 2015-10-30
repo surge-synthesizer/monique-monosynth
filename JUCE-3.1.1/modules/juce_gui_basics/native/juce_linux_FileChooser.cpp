@@ -24,22 +24,22 @@
 
 static bool exeIsAvailable (const char* const executable)
 {
-     ChildProcess child;
-     const bool ok = child.start ("which " + String (executable))
-                       && child.readAllProcessOutput().trim().isNotEmpty();
+    ChildProcess child;
+    const bool ok = child.start ("which " + String (executable))
+                    && child.readAllProcessOutput().trim().isNotEmpty();
 
-     child.waitForProcessToFinish (60 * 1000);
-     return ok;
+    child.waitForProcessToFinish (60 * 1000);
+    return ok;
 }
 
 bool FileChooser::isPlatformDialogAvailable()
 {
-   #if JUCE_DISABLE_NATIVE_FILECHOOSERS
+#if JUCE_DISABLE_NATIVE_FILECHOOSERS
     return false;
-   #else
+#else
     static bool canUseNativeBox = exeIsAvailable ("zenity") || exeIsAvailable ("kdialog");
     return canUseNativeBox;
-   #endif
+#endif
 }
 
 static uint64 getTopWindowID() noexcept
@@ -53,7 +53,7 @@ static uint64 getTopWindowID() noexcept
 static bool isKdeFullSession()
 {
     return SystemStats::getEnvironmentVariable ("KDE_FULL_SESSION", String())
-             .equalsIgnoreCase ("true");
+           .equalsIgnoreCase ("true");
 }
 
 static void addKDialogArgs (StringArray& args, String& separator,

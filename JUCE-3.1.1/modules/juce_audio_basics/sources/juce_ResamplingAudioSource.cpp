@@ -23,8 +23,8 @@
 */
 
 ResamplingAudioSource::ResamplingAudioSource (AudioSource* const inputSource,
-                                              const bool deleteInputWhenDeleted,
-                                              const int numChannels_)
+        const bool deleteInputWhenDeleted,
+        const int numChannels_)
     : input (inputSource, deleteInputWhenDeleted),
       ratio (1.0),
       lastRatio (1.0),
@@ -147,7 +147,7 @@ void ResamplingAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& inf
 
         for (int channel = 0; channel < channelsToProcess; ++channel)
             *destBuffers[channel]++ = srcBuffers[channel][bufferPos]
-                                        + alpha * (srcBuffers[channel][nextPos] - srcBuffers[channel][bufferPos]);
+                                      + alpha * (srcBuffers[channel][nextPos] - srcBuffers[channel][bufferPos]);
 
         subSampleOffset += localRatio;
 
@@ -197,7 +197,7 @@ void ResamplingAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& inf
 void ResamplingAudioSource::createLowPass (const double frequencyRatio)
 {
     const double proportionalRate = (frequencyRatio > 1.0) ? 0.5 / frequencyRatio
-                                                           : 0.5 * frequencyRatio;
+                                    : 0.5 * frequencyRatio;
 
     const double n = 1.0 / std::tan (double_Pi * jmax (0.001, proportionalRate));
     const double nSquared = n * n;
@@ -247,10 +247,10 @@ void ResamplingAudioSource::applyFilter (float* samples, int num, FilterState& f
                      - coefficients[4] * fs.y1
                      - coefficients[5] * fs.y2;
 
-       #if JUCE_INTEL
+#if JUCE_INTEL
         if (! (out < -1.0e-8 || out > 1.0e-8))
             out = 0;
-       #endif
+#endif
 
         fs.x2 = fs.x1;
         fs.x1 = in;

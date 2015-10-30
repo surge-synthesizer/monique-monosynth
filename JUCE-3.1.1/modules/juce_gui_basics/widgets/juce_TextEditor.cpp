@@ -31,8 +31,12 @@ struct TextAtom
     int numChars;
 
     //==============================================================================
-    bool isWhitespace() const noexcept       { return CharacterFunctions::isWhitespace (atomText[0]); }
-    bool isNewLine() const noexcept          { return atomText[0] == '\r' || atomText[0] == '\n'; }
+    bool isWhitespace() const noexcept       {
+        return CharacterFunctions::isWhitespace (atomText[0]);
+    }
+    bool isNewLine() const noexcept          {
+        return atomText[0] == '\r' || atomText[0] == '\n';
+    }
 
     String getText (const juce_wchar passwordCharacter) const
     {
@@ -280,19 +284,19 @@ public:
     Iterator (const OwnedArray<UniformTextSection>& sectionList,
               const float wrapWidth,
               const juce_wchar passwordChar)
-      : indexInText (0),
-        lineY (0),
-        lineHeight (0),
-        maxDescent (0),
-        atomX (0),
-        atomRight (0),
-        atom (0),
-        currentSection (nullptr),
-        sections (sectionList),
-        sectionIndex (0),
-        atomIndex (0),
-        wordWrapWidth (wrapWidth),
-        passwordCharacter (passwordChar)
+        : indexInText (0),
+          lineY (0),
+          lineHeight (0),
+          maxDescent (0),
+          atomX (0),
+          atomRight (0),
+          atom (0),
+          currentSection (nullptr),
+          sections (sectionList),
+          sectionIndex (0),
+          atomIndex (0),
+          wordWrapWidth (wrapWidth),
+          passwordCharacter (passwordChar)
     {
         jassert (wordWrapWidth > 0);
 
@@ -306,20 +310,20 @@ public:
     }
 
     Iterator (const Iterator& other)
-      : indexInText (other.indexInText),
-        lineY (other.lineY),
-        lineHeight (other.lineHeight),
-        maxDescent (other.maxDescent),
-        atomX (other.atomX),
-        atomRight (other.atomRight),
-        atom (other.atom),
-        currentSection (other.currentSection),
-        sections (other.sections),
-        sectionIndex (other.sectionIndex),
-        atomIndex (other.atomIndex),
-        wordWrapWidth (other.wordWrapWidth),
-        passwordCharacter (other.passwordCharacter),
-        tempAtom (other.tempAtom)
+        : indexInText (other.indexInText),
+          lineY (other.lineY),
+          lineHeight (other.lineHeight),
+          maxDescent (other.maxDescent),
+          atomX (other.atomX),
+          atomRight (other.atomRight),
+          atom (other.atom),
+          currentSection (other.currentSection),
+          sections (other.sections),
+          sectionIndex (other.sectionIndex),
+          atomIndex (other.atomIndex),
+          wordWrapWidth (other.wordWrapWidth),
+          passwordCharacter (other.passwordCharacter),
+          tempAtom (other.tempAtom)
     {
     }
 
@@ -800,8 +804,8 @@ private:
 
 //==============================================================================
 class TextEditor::TextHolderComponent  : public Component,
-                                         public Timer,
-                                         public ValueListener
+    public Timer,
+    public ValueListener
 {
 public:
     TextHolderComponent (TextEditor& ed)  : owner (ed)
@@ -856,7 +860,7 @@ public:
     void visibleAreaChanged (const Rectangle<int>&) override
     {
         if (! rentrant) // it's rare, but possible to get into a feedback loop as the viewport's scrollbars
-                        // appear and disappear, causing the wrap width to change.
+            // appear and disappear, causing the wrap width to change.
         {
             const float wordWrapWidth = owner.getWordWrapWidth();
 
@@ -882,18 +886,18 @@ private:
 //==============================================================================
 namespace TextEditorDefs
 {
-    const int textChangeMessageId = 0x10003001;
-    const int returnKeyMessageId  = 0x10003002;
-    const int escapeKeyMessageId  = 0x10003003;
-    const int focusLossMessageId  = 0x10003004;
+const int textChangeMessageId = 0x10003001;
+const int returnKeyMessageId  = 0x10003002;
+const int escapeKeyMessageId  = 0x10003003;
+const int focusLossMessageId  = 0x10003004;
 
-    const int maxActionsPerTransaction = 100;
+const int maxActionsPerTransaction = 100;
 
-    static int getCharacterCategory (const juce_wchar character)
-    {
-        return CharacterFunctions::isLetterOrDigit (character)
-                    ? 2 : (CharacterFunctions::isWhitespace (character) ? 0 : 1);
-    }
+static int getCharacterCategory (const juce_wchar character)
+{
+    return CharacterFunctions::isLetterOrDigit (character)
+           ? 2 : (CharacterFunctions::isWhitespace (character) ? 0 : 1);
+}
 }
 
 //==============================================================================
@@ -962,7 +966,7 @@ bool TextEditor::undoOrRedo (const bool shouldUndo)
         newTransaction();
 
         if (shouldUndo ? undoManager.undo()
-                       : undoManager.redo())
+                : undoManager.redo())
         {
             scrollToMakeSureCursorIsVisible();
             repaint();
@@ -974,15 +978,19 @@ bool TextEditor::undoOrRedo (const bool shouldUndo)
     return false;
 }
 
-bool TextEditor::undo()     { return undoOrRedo (true); }
-bool TextEditor::redo()     { return undoOrRedo (false); }
+bool TextEditor::undo()     {
+    return undoOrRedo (true);
+}
+bool TextEditor::redo()     {
+    return undoOrRedo (false);
+}
 
 //==============================================================================
 void TextEditor::setMultiLine (const bool shouldBeMultiLine,
                                const bool shouldWordWrap)
 {
     if (multiline != shouldBeMultiLine
-         || wordWrap != (shouldWordWrap && shouldBeMultiLine))
+            || wordWrap != (shouldWordWrap && shouldBeMultiLine))
     {
         multiline = shouldBeMultiLine;
         wordWrap = shouldWordWrap && shouldBeMultiLine;
@@ -1237,11 +1245,19 @@ void TextEditor::textChanged()
     }
 }
 
-void TextEditor::returnPressed()    { postCommandMessage (TextEditorDefs::returnKeyMessageId); }
-void TextEditor::escapePressed()    { postCommandMessage (TextEditorDefs::escapeKeyMessageId); }
+void TextEditor::returnPressed()    {
+    postCommandMessage (TextEditorDefs::returnKeyMessageId);
+}
+void TextEditor::escapePressed()    {
+    postCommandMessage (TextEditorDefs::escapeKeyMessageId);
+}
 
-void TextEditor::addListener (TextEditorListener* const l)      { listeners.add (l); }
-void TextEditor::removeListener (TextEditorListener* const l)   { listeners.remove (l); }
+void TextEditor::addListener (TextEditorListener* const l)      {
+    listeners.add (l);
+}
+void TextEditor::removeListener (TextEditorListener* const l)   {
+    listeners.remove (l);
+}
 
 //==============================================================================
 void TextEditor::timerCallbackInt()
@@ -1320,7 +1336,7 @@ void TextEditor::moveCaretToEnd()
 }
 
 void TextEditor::scrollEditorToPositionCaret (const int desiredCaretX,
-                                              const int desiredCaretY)
+        const int desiredCaretY)
 
 {
     updateCaretPosition();
@@ -1369,7 +1385,7 @@ enum { rightEdgeSpace = 2 };
 float TextEditor::getWordWrapWidth() const
 {
     return wordWrap ? (float) (viewport->getMaximumVisibleWidth() - (leftIndent + rightEdgeSpace + 1))
-                    : std::numeric_limits<float>::max();
+           : std::numeric_limits<float>::max();
 }
 
 void TextEditor::updateTextHolderSize()
@@ -1387,14 +1403,18 @@ void TextEditor::updateTextHolderSize()
 
         const int w = leftIndent + roundToInt (maxWidth);
         const int h = topIndent + roundToInt (jmax (i.lineY + i.lineHeight,
-                                                    currentFont.getHeight()));
+                                              currentFont.getHeight()));
 
         textHolder->setSize (w + rightEdgeSpace, h + 1); // (allows a bit of space for the cursor to be at the right-hand-edge)
     }
 }
 
-int TextEditor::getTextWidth() const    { return textHolder->getWidth(); }
-int TextEditor::getTextHeight() const   { return textHolder->getHeight(); }
+int TextEditor::getTextWidth() const    {
+    return textHolder->getWidth();
+}
+int TextEditor::getTextHeight() const   {
+    return textHolder->getHeight();
+}
 
 void TextEditor::setIndents (const int newLeftIndent, const int newTopIndent)
 {
@@ -1587,7 +1607,7 @@ void TextEditor::drawContent (Graphics& g)
             while (i2.next() && i2.lineY < clip.getBottom())
             {
                 if (i2.lineY + i2.lineHeight >= clip.getY()
-                     && selection.intersects (Range<int> (i2.indexInText, i2.indexInText + i2.atom->numChars)))
+                        && selection.intersects (Range<int> (i2.indexInText, i2.indexInText + i2.atom->numChars)))
                 {
                     i2.addSelection (selectionArea, selection);
                 }
@@ -1626,7 +1646,7 @@ void TextEditor::drawContent (Graphics& g)
             while (i2.next() && i2.lineY < clip.getBottom())
             {
                 if (i2.lineY + i2.lineHeight >= clip.getY()
-                     && underlinedSection.intersects (Range<int> (i2.indexInText, i2.indexInText + i2.atom->numChars)))
+                        && underlinedSection.intersects (Range<int> (i2.indexInText, i2.indexInText + i2.atom->numChars)))
                 {
                     i2.drawUnderline (g, underlinedSection, findColour (textColourId));
                 }
@@ -1643,8 +1663,8 @@ void TextEditor::paint (Graphics& g)
 void TextEditor::paintOverChildren (Graphics& g)
 {
     if (textToShowWhenEmpty.isNotEmpty()
-         && (! hasKeyboardFocus (false))
-         && getTotalNumChars() == 0)
+            && (! hasKeyboardFocus (false))
+            && getTotalNumChars() == 0)
     {
         g.setColour (colourForTextWhenEmpty);
         g.setFont (getFont());
@@ -1689,14 +1709,29 @@ void TextEditor::performPopupMenuAction (const int menuItemID)
 {
     switch (menuItemID)
     {
-        case StandardApplicationCommandIDs::cut:        cutToClipboard(); break;
-        case StandardApplicationCommandIDs::copy:       copyToClipboard(); break;
-        case StandardApplicationCommandIDs::paste:      pasteFromClipboard(); break;
-        case StandardApplicationCommandIDs::del:        cut(); break;
-        case StandardApplicationCommandIDs::selectAll:  selectAll(); break;
-        case StandardApplicationCommandIDs::undo:       undo(); break;
-        case StandardApplicationCommandIDs::redo:       redo(); break;
-        default: break;
+    case StandardApplicationCommandIDs::cut:
+        cutToClipboard();
+        break;
+    case StandardApplicationCommandIDs::copy:
+        copyToClipboard();
+        break;
+    case StandardApplicationCommandIDs::paste:
+        pasteFromClipboard();
+        break;
+    case StandardApplicationCommandIDs::del:
+        cut();
+        break;
+    case StandardApplicationCommandIDs::selectAll:
+        selectAll();
+        break;
+    case StandardApplicationCommandIDs::undo:
+        undo();
+        break;
+    case StandardApplicationCommandIDs::redo:
+        redo();
+        break;
+    default:
+        break;
     }
 }
 
@@ -1709,7 +1744,7 @@ static void textEditorMenuCallback (int menuResult, TextEditor* editor)
 //==============================================================================
 void TextEditor::mouseDown (const MouseEvent& e)
 {
-  return;
+    return;
     beginDragAutoRepeat (100);
     newTransaction();
 
@@ -2010,7 +2045,7 @@ bool TextEditor::keyPressed (const KeyPress& key)
             return consumeEscAndReturnKeys;
         }
         else if (key.getTextCharacter() >= ' '
-                  || (tabKeyUsed && (key.getTextCharacter() == '\t')))
+                 || (tabKeyUsed && (key.getTextCharacter() == '\t')))
         {
             insertTextAtCaret (String::charToString (key.getTextCharacter()));
 
@@ -2030,14 +2065,14 @@ bool TextEditor::keyStateChanged (const bool isKeyDown)
     if (! isKeyDown)
         return false;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     if (KeyPress (KeyPress::F4Key, ModifierKeys::altModifier, 0).isCurrentlyDown())
         return false;  // We need to explicitly allow alt-F4 to pass through on Windows
-   #endif
+#endif
 
     if ((! consumeEscAndReturnKeys)
-         && (KeyPress (KeyPress::escapeKey).isCurrentlyDown()
-          || KeyPress (KeyPress::returnKey).isCurrentlyDown()))
+            && (KeyPress (KeyPress::escapeKey).isCurrentlyDown()
+                || KeyPress (KeyPress::returnKey).isCurrentlyDown()))
         return false;
 
     // (overridden to avoid forwarding key events to the parent)
@@ -2166,7 +2201,7 @@ void TextEditor::insert (const String& text,
         else
         {
             repaintText (Range<int> (insertIndex, getTotalNumChars())); // must do this before and after changing the data, in case
-                                                                        // a line gets moved due to word wrap
+            // a line gets moved due to word wrap
 
             int index = 0;
             int nextIndex = 0;
@@ -2510,7 +2545,7 @@ void TextEditor::coalesceSimilarSections()
         UniformTextSection* const s2 = sections.getUnchecked (i + 1);
 
         if (s1->font == s2->font
-             && s1->colour == s2->colour)
+                && s1->colour == s2->colour)
         {
             s1->append (*s2, passwordCharacter);
             sections.remove (i + 1);

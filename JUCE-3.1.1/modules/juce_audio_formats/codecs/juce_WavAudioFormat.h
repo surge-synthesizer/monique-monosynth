@@ -103,11 +103,11 @@ public:
         fills out the time and date in the right format.
     */
     static StringPairArray createBWAVMetadata (const String& description,
-                                               const String& originator,
-                                               const String& originatorRef,
-                                               const Time dateAndTime,
-                                               const int64 timeReferenceSamples,
-                                               const String& codingHistory);
+            const String& originator,
+            const String& originatorRef,
+            const Time dateAndTime,
+            const int64 timeReferenceSamples,
+            const String& codingHistory);
 
     //==============================================================================
     /** Metadata property name used when reading a WAV file with an acid chunk. */

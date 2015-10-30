@@ -458,8 +458,8 @@ JUCE_JNI_CALLBACK (JUCE_ANDROID_ACTIVITY_CLASSNAME, midiInputCallback, void, (JN
         {
             input = ports.getUnchecked(i);
             callback = reinterpret_cast< MidiInputCallback* >( input->internal );
-	    if( callback )
-	      callback->handleIncomingMidiMessage( input, MidiMessage(byte1, byte2, byte3, 0.0) );
+            if( callback )
+                callback->handleIncomingMidiMessage( input, MidiMessage(byte1, byte2, byte3, 0.0) );
         }
     }
 }

@@ -38,7 +38,7 @@ class AudioThumbnailCache;
     @see AudioThumbnail, AudioThumbnailCache
 */
 class JUCE_API  AudioThumbnailBase    : public ChangeBroadcaster,
-                                        public AudioFormatWriter::ThreadedWriter::IncomingDataReceiver
+    public AudioFormatWriter::ThreadedWriter::IncomingDataReceiver
 {
 public:
     //==============================================================================

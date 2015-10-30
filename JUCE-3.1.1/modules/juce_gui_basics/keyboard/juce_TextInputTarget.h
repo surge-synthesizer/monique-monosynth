@@ -87,7 +87,9 @@ public:
     /** Returns the target's preference for the type of keyboard that would be most appropriate.
         This may be ignored, depending on the capabilities of the OS.
     */
-    virtual VirtualKeyboardType getKeyboardType()       { return textKeyboard; }
+    virtual VirtualKeyboardType getKeyboardType()       {
+        return textKeyboard;
+    }
 };
 
 

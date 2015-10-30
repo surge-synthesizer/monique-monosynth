@@ -54,10 +54,13 @@ public:
 
 
     //==============================================================================
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This method's signature has changed to take a ChangeBroadcaster parameter - please update your code!
-    private: virtual int changeListenerCallback (void*) { return 0; }
-   #endif
+private:
+    virtual int changeListenerCallback (void*) {
+        return 0;
+    }
+#endif
 };
 
 

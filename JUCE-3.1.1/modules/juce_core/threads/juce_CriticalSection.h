@@ -106,18 +106,18 @@ public:
 
 private:
     //==============================================================================
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     // To avoid including windows.h in the public JUCE headers, we'll just allocate
     // a block of memory here that's big enough to be used internally as a windows
     // CRITICAL_SECTION structure.
-    #if JUCE_64BIT
-     uint8 lock[44];
-    #else
-     uint8 lock[24];
-    #endif
-   #else
+#if JUCE_64BIT
+    uint8 lock[44];
+#else
+    uint8 lock[24];
+#endif
+#else
     mutable pthread_mutex_t lock;
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE (CriticalSection)
 };
@@ -140,7 +140,9 @@ public:
     inline ~DummyCriticalSection() noexcept     {}
 
     inline void enter() const noexcept          {}
-    inline bool tryEnter() const noexcept       { return true; }
+    inline bool tryEnter() const noexcept       {
+        return true;
+    }
     inline void exit() const noexcept           {}
 
     //==============================================================================

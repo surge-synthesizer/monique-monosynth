@@ -26,9 +26,9 @@ Image juce_createIconForFile (const File&);
 
 //==============================================================================
 class FileListTreeItem   : public TreeViewItem,
-                           private TimeSliceClient,
-                           private AsyncUpdater,
-                           private ChangeListener
+    private TimeSliceClient,
+    private AsyncUpdater,
+    private ChangeListener
 {
 public:
     FileListTreeItem (FileTreeComponent& treeComp,
@@ -46,7 +46,7 @@ public:
         DirectoryContentsList::FileInfo fileInfo;
 
         if (parentContents != nullptr
-             && parentContents->getFileInfo (indexInContents, fileInfo))
+                && parentContents->getFileInfo (indexInContents, fileInfo))
         {
             fileSize = File::descriptionOfSizeInBytes (fileInfo.fileSize);
             modTime = fileInfo.modificationTime.formatted ("%d %b '%y %H:%M");
@@ -66,11 +66,19 @@ public:
     }
 
     //==============================================================================
-    bool mightContainSubItems() override                 { return isDirectory; }
-    String getUniqueName() const override                { return file.getFullPathName(); }
-    int getItemHeight() const override                   { return owner.getItemHeight(); }
+    bool mightContainSubItems() override                 {
+        return isDirectory;
+    }
+    String getUniqueName() const override                {
+        return file.getFullPathName();
+    }
+    int getItemHeight() const override                   {
+        return owner.getItemHeight();
+    }
 
-    var getDragSourceDescription() override              { return owner.getDragAndDropDescription(); }
+    var getDragSourceDescription() override              {
+        return owner.getDragAndDropDescription();
+    }
 
     void itemOpennessChanged (bool isNowOpen) override
     {
@@ -181,10 +189,10 @@ public:
         }
 
         owner.getLookAndFeel().drawFileBrowserRow (g, width, height,
-                                                   file.getFileName(),
-                                                   &icon, fileSize, modTime,
-                                                   isDirectory, isSelected(),
-                                                   indexInContentsList, owner);
+                file.getFileName(),
+                &icon, fileSize, modTime,
+                isDirectory, isSelected(),
+                indexInContentsList, owner);
     }
 
     void itemClicked (const MouseEvent& e) override

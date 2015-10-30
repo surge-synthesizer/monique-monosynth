@@ -42,16 +42,21 @@ public:
     /** Creates an unopened DynamicLibrary object.
         Call open() to actually open one.
     */
-    DynamicLibrary() noexcept : handle (nullptr) {}
+DynamicLibrary() noexcept :
+    handle (nullptr) {}
 
     /**
     */
-    DynamicLibrary (const String& name) : handle (nullptr) { open (name); }
+    DynamicLibrary (const String& name) : handle (nullptr) {
+        open (name);
+    }
 
     /** Destructor.
         If a library is currently open, it will be closed when this object is destroyed.
     */
-    ~DynamicLibrary()   { close(); }
+    ~DynamicLibrary()   {
+        close();
+    }
 
     /** Opens a DLL.
         The name and the method by which it gets found is of course platform-specific, and
@@ -73,7 +78,9 @@ public:
     /** Returns the platform-specific native library handle.
         You'll need to cast this to whatever is appropriate for the OS that's in use.
     */
-    void* getNativeHandle() const noexcept     { return handle; }
+    void* getNativeHandle() const noexcept     {
+        return handle;
+    }
 
 private:
     void* handle;

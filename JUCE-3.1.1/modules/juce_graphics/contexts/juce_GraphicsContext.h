@@ -713,7 +713,9 @@ public:
     Graphics (LowLevelGraphicsContext&) noexcept;
 
     /** @internal */
-    LowLevelGraphicsContext& getInternalContext() const noexcept    { return context; }
+    LowLevelGraphicsContext& getInternalContext() const noexcept    {
+        return context;
+    }
 
 private:
     //==============================================================================

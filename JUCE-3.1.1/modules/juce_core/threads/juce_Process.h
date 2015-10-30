@@ -107,11 +107,11 @@ public:
 
     /** Tries to launch the OS's default email application to let the user create a message. */
     static bool JUCE_CALLTYPE openEmailWithAttachments (const String& targetEmailAddress,
-                                                        const String& emailSubject,
-                                                        const String& bodyText,
-                                                        const StringArray& filesToAttach);
+            const String& emailSubject,
+            const String& bodyText,
+            const StringArray& filesToAttach);
 
-   #if JUCE_WINDOWS || DOXYGEN
+#if JUCE_WINDOWS || DOXYGEN
     //==============================================================================
     /** WINDOWS ONLY - This returns the HINSTANCE of the current module.
 
@@ -136,13 +136,13 @@ public:
         @see getCurrentModuleInstanceHandle()
     */
     static void JUCE_CALLTYPE setCurrentModuleInstanceHandle (void* newHandle) noexcept;
-   #endif
+#endif
 
-   #if JUCE_MAC || DOXYGEN
+#if JUCE_MAC || DOXYGEN
     //==============================================================================
     /** OSX ONLY - Shows or hides the OSX dock icon for this app. */
     static void setDockIconVisible (bool isVisible);
-   #endif
+#endif
 
 private:
     Process();

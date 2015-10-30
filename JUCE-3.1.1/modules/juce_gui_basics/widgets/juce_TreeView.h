@@ -127,10 +127,14 @@ public:
 
     //==============================================================================
     /** Returns the TreeView to which this item belongs. */
-    TreeView* getOwnerView() const noexcept             { return ownerView; }
+    TreeView* getOwnerView() const noexcept             {
+        return ownerView;
+    }
 
     /** Returns the item within which this item is contained. */
-    TreeViewItem* getParentItem() const noexcept        { return parentItem; }
+    TreeViewItem* getParentItem() const noexcept        {
+        return parentItem;
+    }
 
     //==============================================================================
     /** True if this item is currently open in the treeview. */
@@ -252,7 +256,9 @@ public:
         Each item can be a different width, but if they change width, you should call
         treeHasChanged() to update the tree.
     */
-    virtual int getItemWidth() const                                { return -1; }
+    virtual int getItemWidth() const                                {
+        return -1;
+    }
 
     /** Must return the height required by this item.
 
@@ -260,12 +266,16 @@ public:
         can be different heights, but if they change height, you should call
         treeHasChanged() to update the tree.
     */
-    virtual int getItemHeight() const                               { return 20; }
+    virtual int getItemHeight() const                               {
+        return 20;
+    }
 
     /** You can override this method to return false if you don't want to allow the
         user to select this item.
     */
-    virtual bool canBeSelected() const                              { return true; }
+    virtual bool canBeSelected() const                              {
+        return true;
+    }
 
     /** Creates a component that will be used to represent this item.
 
@@ -291,7 +301,9 @@ public:
         component you like. It's most useful if you're doing things like drag-and-drop
         of items, or want to use a Label component to edit item names, etc.
     */
-    virtual Component* createItemComponent()                        { return nullptr; }
+    virtual Component* createItemComponent()                        {
+        return nullptr;
+    }
 
     //==============================================================================
     /** Draws the item's contents.
@@ -569,11 +581,13 @@ private:
     void removeAllSubItemsFromList();
     bool areLinesDrawn() const;
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // The parameters for these methods have changed - please update your code!
     virtual void isInterestedInDragSource (const String&, Component*) {}
-    virtual int itemDropped (const String&, Component*, int) { return 0; }
-   #endif
+    virtual int itemDropped (const String&, Component*, int) {
+        return 0;
+    }
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TreeViewItem)
 };
@@ -587,9 +601,9 @@ private:
 
 */
 class JUCE_API  TreeView  : public Component,
-                            public SettableTooltipClient,
-                            public FileDragAndDropTarget,
-                            public DragAndDropTarget
+    public SettableTooltipClient,
+    public FileDragAndDropTarget,
+    public DragAndDropTarget
 {
 public:
     //==============================================================================
@@ -624,7 +638,9 @@ public:
 
         This will be the last object passed to setRootItem(), or nullptr if none has been set.
     */
-    TreeViewItem* getRootItem() const noexcept                      { return rootItem; }
+    TreeViewItem* getRootItem() const noexcept                      {
+        return rootItem;
+    }
 
     /** This will remove and delete the current root item.
         It's a convenient way of deleting the item and calling setRootItem (nullptr).
@@ -643,7 +659,9 @@ public:
 
         @see setRootItemVisible
     */
-    bool isRootItemVisible() const noexcept                         { return rootItemVisible; }
+    bool isRootItemVisible() const noexcept                         {
+        return rootItemVisible;
+    }
 
     /** Sets whether items are open or closed by default.
 
@@ -658,7 +676,9 @@ public:
 
         @see setDefaultOpenness
     */
-    bool areItemsOpenByDefault() const noexcept                     { return defaultOpenness; }
+    bool areItemsOpenByDefault() const noexcept                     {
+        return defaultOpenness;
+    }
 
     /** This sets a flag to indicate that the tree can be used for multi-selection.
 
@@ -676,7 +696,9 @@ public:
 
         @see setMultiSelectEnabled
     */
-    bool isMultiSelectEnabled() const noexcept                      { return multiSelectEnabled; }
+    bool isMultiSelectEnabled() const noexcept                      {
+        return multiSelectEnabled;
+    }
 
     /** Sets a flag to indicate whether to hide the open/close buttons.
 
@@ -688,7 +710,9 @@ public:
 
         @see setOpenCloseButtonsVisible
     */
-    bool areOpenCloseButtonsVisible() const noexcept                { return openCloseButtonsVisible; }
+    bool areOpenCloseButtonsVisible() const noexcept                {
+        return openCloseButtonsVisible;
+    }
 
     //==============================================================================
     /** Deselects any items that are currently selected. */
@@ -880,10 +904,12 @@ private:
     void moveIntoSelectedItem();
     void moveByPages (int numPages);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // this method has been deprecated - see the new version..
-    virtual int paintOpenCloseButton (Graphics&, int, int, bool) { return 0; }
-   #endif
+    virtual int paintOpenCloseButton (Graphics&, int, int, bool) {
+        return 0;
+    }
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TreeView)
 };

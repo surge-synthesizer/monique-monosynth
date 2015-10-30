@@ -50,23 +50,26 @@ public:
 
     /** Creates a copy of another line. */
     Line (const Line& other) noexcept
-        : start (other.start),
+:
+    start (other.start),
           end (other.end)
     {
     }
 
     /** Creates a line based on the coordinates of its start and end points. */
     Line (ValueType startX, ValueType startY, ValueType endX, ValueType endY) noexcept
-        : start (startX, startY),
-          end (endX, endY)
+:
+    start (startX, startY),
+    end (endX, endY)
     {
     }
 
     /** Creates a line from its start and end points. */
     Line (const Point<ValueType> startPoint,
           const Point<ValueType> endPoint) noexcept
-        : start (startPoint),
-          end (endPoint)
+:
+    start (startPoint),
+    end (endPoint)
     {
     }
 
@@ -83,22 +86,34 @@ public:
 
     //==============================================================================
     /** Returns the x coordinate of the line's start point. */
-    inline ValueType getStartX() const noexcept                             { return start.x; }
+    inline ValueType getStartX() const noexcept                             {
+        return start.x;
+    }
 
     /** Returns the y coordinate of the line's start point. */
-    inline ValueType getStartY() const noexcept                             { return start.y; }
+    inline ValueType getStartY() const noexcept                             {
+        return start.y;
+    }
 
     /** Returns the x coordinate of the line's end point. */
-    inline ValueType getEndX() const noexcept                               { return end.x; }
+    inline ValueType getEndX() const noexcept                               {
+        return end.x;
+    }
 
     /** Returns the y coordinate of the line's end point. */
-    inline ValueType getEndY() const noexcept                               { return end.y; }
+    inline ValueType getEndY() const noexcept                               {
+        return end.y;
+    }
 
     /** Returns the line's start point. */
-    inline Point<ValueType> getStart() const noexcept                       { return start; }
+    inline Point<ValueType> getStart() const noexcept                       {
+        return start;
+    }
 
     /** Returns the line's end point. */
-    inline Point<ValueType> getEnd() const noexcept                         { return end; }
+    inline Point<ValueType> getEnd() const noexcept                         {
+        return end;
+    }
 
     /** Changes this line's start point */
     void setStart (ValueType newStartX, ValueType newStartY) noexcept       { start.setXY (newStartX, newStartY); }
@@ -113,7 +128,9 @@ public:
     void setEnd (const Point<ValueType> newEnd) noexcept                    { end = newEnd; }
 
     /** Returns a line that is the same as this one, but with the start and end reversed, */
-    const Line reversed() const noexcept                                    { return Line (end, start); }
+    const Line reversed() const noexcept                                    {
+        return Line (end, start);
+    }
 
     /** Applies an affine transform to the line's start and end points. */
     void applyTransform (const AffineTransform& transform) noexcept
@@ -124,33 +141,49 @@ public:
 
     //==============================================================================
     /** Returns the length of the line. */
-    ValueType getLength() const noexcept                                    { return start.getDistanceFrom (end); }
+    ValueType getLength() const noexcept                                    {
+        return start.getDistanceFrom (end);
+    }
 
     /** Returns true if the line's start and end x coordinates are the same. */
-    bool isVertical() const noexcept                                        { return start.x == end.x; }
+    bool isVertical() const noexcept                                        {
+        return start.x == end.x;
+    }
 
     /** Returns true if the line's start and end y coordinates are the same. */
-    bool isHorizontal() const noexcept                                      { return start.y == end.y; }
+    bool isHorizontal() const noexcept                                      {
+        return start.y == end.y;
+    }
 
     /** Returns the line's angle.
 
         This value is the number of radians clockwise from the 12 o'clock direction,
         where the line's start point is considered to be at the centre.
     */
-    typename Point<ValueType>::FloatType getAngle() const noexcept          { return start.getAngleToPoint (end); }
+    typename Point<ValueType>::FloatType getAngle() const noexcept          {
+        return start.getAngleToPoint (end);
+    }
 
     /** Casts this line to float coordinates. */
-    Line<float> toFloat() const noexcept                                    { return Line<float> (start.toFloat(), end.toFloat()); }
+    Line<float> toFloat() const noexcept                                    {
+        return Line<float> (start.toFloat(), end.toFloat());
+    }
 
     /** Casts this line to double coordinates. */
-    Line<double> toDouble() const noexcept                                  { return Line<double> (start.toDouble(), end.toDouble()); }
+    Line<double> toDouble() const noexcept                                  {
+        return Line<double> (start.toDouble(), end.toDouble());
+    }
 
     //==============================================================================
     /** Compares two lines. */
-    bool operator== (const Line& other) const noexcept                      { return start == other.start && end == other.end; }
+    bool operator== (const Line& other) const noexcept                      {
+        return start == other.start && end == other.end;
+    }
 
     /** Compares two lines. */
-    bool operator!= (const Line& other) const noexcept                      { return start != other.start || end != other.end; }
+    bool operator!= (const Line& other) const noexcept                      {
+        return start != other.start || end != other.end;
+    }
 
     //==============================================================================
     /** Finds the intersection between two lines.
@@ -263,7 +296,7 @@ public:
         if (length > 0)
         {
             const double prop = ((targetPoint.x - start.x) * delta.x
-                               + (targetPoint.y - start.y) * delta.y) / length;
+                                 + (targetPoint.y - start.y) * delta.y) / length;
 
             if (prop >= 0 && prop <= 1.0)
             {
@@ -301,9 +334,9 @@ public:
         const double length = delta.x * delta.x + delta.y * delta.y;
 
         return length <= 0 ? 0
-                           : jlimit (ValueType(), static_cast <ValueType> (1),
-                                     static_cast <ValueType> ((((point.x - start.x) * delta.x
-                                                              + (point.y - start.y) * delta.y) / length)));
+               : jlimit (ValueType(), static_cast <ValueType> (1),
+                         static_cast <ValueType> ((((point.x - start.x) * delta.x
+                                 + (point.y - start.y) * delta.y) / length)));
     }
 
     /** Finds the point on this line which is nearest to a given point.
@@ -323,8 +356,8 @@ public:
     bool isPointAbove (const Point<ValueType> point) const noexcept
     {
         return start.x != end.x
-                && point.y < ((end.y - start.y)
-                                    * (point.x - start.x)) / (end.x - start.x) + start.y;
+               && point.y < ((end.y - start.y)
+                             * (point.x - start.x)) / (end.x - start.x) + start.y;
     }
 
     //==============================================================================

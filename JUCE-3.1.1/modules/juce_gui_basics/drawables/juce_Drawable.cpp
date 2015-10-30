@@ -49,9 +49,9 @@ void Drawable::nonConstDraw (Graphics& g, float opacity, const AffineTransform& 
     Graphics::ScopedSaveState ss (g);
 
     g.addTransform (AffineTransform::translation ((float) -(originRelativeToComponent.x),
-                                                  (float) -(originRelativeToComponent.y))
-                        .followedBy (getTransform())
-                        .followedBy (transform));
+                    (float) -(originRelativeToComponent.y))
+                    .followedBy (getTransform())
+                    .followedBy (transform));
 
     if (! g.isClipEmpty())
     {

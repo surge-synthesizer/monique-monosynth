@@ -33,83 +33,83 @@
 #define P_NOISECURVES 3
 
 #define NOISE_COMPAND_LEVELS 40
-typedef struct vorbis_info_psy{
-  int   blockflag;
+typedef struct vorbis_info_psy {
+    int   blockflag;
 
-  float ath_adjatt;
-  float ath_maxatt;
+    float ath_adjatt;
+    float ath_maxatt;
 
-  float tone_masteratt[P_NOISECURVES];
-  float tone_centerboost;
-  float tone_decay;
-  float tone_abs_limit;
-  float toneatt[P_BANDS];
+    float tone_masteratt[P_NOISECURVES];
+    float tone_centerboost;
+    float tone_decay;
+    float tone_abs_limit;
+    float toneatt[P_BANDS];
 
-  int noisemaskp;
-  float noisemaxsupp;
-  float noisewindowlo;
-  float noisewindowhi;
-  int   noisewindowlomin;
-  int   noisewindowhimin;
-  int   noisewindowfixed;
-  float noiseoff[P_NOISECURVES][P_BANDS];
-  float noisecompand[NOISE_COMPAND_LEVELS];
+    int noisemaskp;
+    float noisemaxsupp;
+    float noisewindowlo;
+    float noisewindowhi;
+    int   noisewindowlomin;
+    int   noisewindowhimin;
+    int   noisewindowfixed;
+    float noiseoff[P_NOISECURVES][P_BANDS];
+    float noisecompand[NOISE_COMPAND_LEVELS];
 
-  float max_curve_dB;
+    float max_curve_dB;
 
-  int normal_p;
-  int normal_start;
-  int normal_partition;
-  double normal_thresh;
+    int normal_p;
+    int normal_start;
+    int normal_partition;
+    double normal_thresh;
 } vorbis_info_psy;
 
-typedef struct{
-  int   eighth_octave_lines;
+typedef struct {
+    int   eighth_octave_lines;
 
-  /* for block long/short tuning; encode only */
-  float preecho_thresh[VE_BANDS];
-  float postecho_thresh[VE_BANDS];
-  float stretch_penalty;
-  float preecho_minenergy;
+    /* for block long/short tuning; encode only */
+    float preecho_thresh[VE_BANDS];
+    float postecho_thresh[VE_BANDS];
+    float stretch_penalty;
+    float preecho_minenergy;
 
-  float ampmax_att_per_sec;
+    float ampmax_att_per_sec;
 
-  /* channel coupling config */
-  int   coupling_pkHz[PACKETBLOBS];
-  int   coupling_pointlimit[2][PACKETBLOBS];
-  int   coupling_prepointamp[PACKETBLOBS];
-  int   coupling_postpointamp[PACKETBLOBS];
-  int   sliding_lowpass[2][PACKETBLOBS];
+    /* channel coupling config */
+    int   coupling_pkHz[PACKETBLOBS];
+    int   coupling_pointlimit[2][PACKETBLOBS];
+    int   coupling_prepointamp[PACKETBLOBS];
+    int   coupling_postpointamp[PACKETBLOBS];
+    int   sliding_lowpass[2][PACKETBLOBS];
 
 } vorbis_info_psy_global;
 
 typedef struct {
-  float ampmax;
-  int   channels;
+    float ampmax;
+    int   channels;
 
-  vorbis_info_psy_global *gi;
-  int   coupling_pointlimit[2][P_NOISECURVES];
+    vorbis_info_psy_global *gi;
+    int   coupling_pointlimit[2][P_NOISECURVES];
 } vorbis_look_psy_global;
 
 
 typedef struct {
-  int n;
-  struct vorbis_info_psy *vi;
+    int n;
+    struct vorbis_info_psy *vi;
 
-  float ***tonecurves;
-  float **noiseoffset;
+    float ***tonecurves;
+    float **noiseoffset;
 
-  float *ath;
-  long  *octave;             /* in n.ocshift format */
-  long  *bark;
+    float *ath;
+    long  *octave;             /* in n.ocshift format */
+    long  *bark;
 
-  long  firstoc;
-  long  shiftoc;
-  int   eighth_octave_lines; /* power of two, please */
-  int   total_octave_lines;
-  long  rate; /* cache it */
+    long  firstoc;
+    long  shiftoc;
+    int   eighth_octave_lines; /* power of two, please */
+    int   total_octave_lines;
+    long  rate; /* cache it */
 
-  float m_val; /* Masking compensation value */
+    float m_val; /* Masking compensation value */
 
 } vorbis_look_psy;
 
@@ -142,13 +142,13 @@ extern void _vp_offset_and_mix(vorbis_look_psy *p,
 extern float _vp_ampmax_decay(float amp,vorbis_dsp_state *vd);
 
 extern void _vp_couple_quantize_normalize(int blobno,
-                                          vorbis_info_psy_global *g,
-                                          vorbis_look_psy *p,
-                                          vorbis_info_mapping0 *vi,
-                                          float **mdct,
-                                          int   **iwork,
-                                          int    *nonzero,
-                                          int     sliding_lowpass,
-                                          int     ch);
+        vorbis_info_psy_global *g,
+        vorbis_look_psy *p,
+        vorbis_info_mapping0 *vi,
+        float **mdct,
+        int   **iwork,
+        int    *nonzero,
+        int     sliding_lowpass,
+        int     ch);
 
 #endif

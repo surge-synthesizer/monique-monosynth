@@ -33,50 +33,50 @@
 
 */
 
-typedef struct static_codebook{
-  long   dim;            /* codebook dimensions (elements per vector) */
-  long   entries;        /* codebook entries */
-  long  *lengthlist;     /* codeword lengths in bits */
+typedef struct static_codebook {
+    long   dim;            /* codebook dimensions (elements per vector) */
+    long   entries;        /* codebook entries */
+    long  *lengthlist;     /* codeword lengths in bits */
 
-  /* mapping ***************************************************************/
-  int    maptype;        /* 0=none
+    /* mapping ***************************************************************/
+    int    maptype;        /* 0=none
                             1=implicitly populated values from map column
                             2=listed arbitrary values */
 
-  /* The below does a linear, single monotonic sequence mapping. */
-  long     q_min;       /* packed 32 bit float; quant value 0 maps to minval */
-  long     q_delta;     /* packed 32 bit float; val 1 - val 0 == delta */
-  int      q_quant;     /* bits: 0 < quant <= 16 */
-  int      q_sequencep; /* bitflag */
+    /* The below does a linear, single monotonic sequence mapping. */
+    long     q_min;       /* packed 32 bit float; quant value 0 maps to minval */
+    long     q_delta;     /* packed 32 bit float; val 1 - val 0 == delta */
+    int      q_quant;     /* bits: 0 < quant <= 16 */
+    int      q_sequencep; /* bitflag */
 
-  long     *quantlist;  /* map == 1: (int)(entries^(1/dim)) element column map
+    long     *quantlist;  /* map == 1: (int)(entries^(1/dim)) element column map
                            map == 2: list of dim*entries quantized entry vals
                         */
-  int allocedp;
+    int allocedp;
 } static_codebook;
 
-typedef struct codebook{
-  long dim;           /* codebook dimensions (elements per vector) */
-  long entries;       /* codebook entries */
-  long used_entries;  /* populated codebook entries */
-  const static_codebook *c;
+typedef struct codebook {
+    long dim;           /* codebook dimensions (elements per vector) */
+    long entries;       /* codebook entries */
+    long used_entries;  /* populated codebook entries */
+    const static_codebook *c;
 
-  /* for encode, the below are entry-ordered, fully populated */
-  /* for decode, the below are ordered by bitreversed codeword and only
-     used entries are populated */
-  float        *valuelist;  /* list of dim*entries actual entry values */
-  ogg_uint32_t *codelist;   /* list of bitstream codewords for each entry */
+    /* for encode, the below are entry-ordered, fully populated */
+    /* for decode, the below are ordered by bitreversed codeword and only
+       used entries are populated */
+    float        *valuelist;  /* list of dim*entries actual entry values */
+    ogg_uint32_t *codelist;   /* list of bitstream codewords for each entry */
 
-  int          *dec_index;  /* only used if sparseness collapsed */
-  char         *dec_codelengths;
-  ogg_uint32_t *dec_firsttable;
-  int           dec_firsttablen;
-  int           dec_maxlength;
+    int          *dec_index;  /* only used if sparseness collapsed */
+    char         *dec_codelengths;
+    ogg_uint32_t *dec_firsttable;
+    int           dec_firsttablen;
+    int           dec_maxlength;
 
-  /* The current encoder uses only centered, integer-only lattice books. */
-  int           quantvals;
-  int           minval;
-  int           delta;
+    /* The current encoder uses only centered, integer-only lattice books. */
+    int           quantvals;
+    int           minval;
+    int           delta;
 } codebook;
 
 extern void vorbis_staticbook_destroy(static_codebook *b);
@@ -112,7 +112,7 @@ extern long vorbis_book_decodev_add(codebook *book, float *a,
                                     oggpack_buffer *b,int n);
 extern long vorbis_book_decodevv_add(codebook *book, float **a,
                                      long off,int ch,
-                                    oggpack_buffer *b,int n);
+                                     oggpack_buffer *b,int n);
 
 
 

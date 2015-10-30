@@ -23,11 +23,11 @@
 */
 
 class ChoicePropertyComponent::RemapperValueSource    : public Value::ValueSource,
-                                                        private ValueListener
+    private ValueListener
 {
 public:
     RemapperValueSource (const Value& source, const Array<var>& map)
-       : sourceValue (source), mappings (map)
+        : sourceValue (source), mappings (map)
     {
         sourceValue.addListener (this);
     }
@@ -72,9 +72,9 @@ ChoicePropertyComponent::ChoicePropertyComponent (const String& name)
 }
 
 ChoicePropertyComponent::ChoicePropertyComponent (const Value& valueToControl,
-                                                  const String& name,
-                                                  const StringArray& choiceList,
-                                                  const Array<var>& correspondingValues)
+        const String& name,
+        const StringArray& choiceList,
+        const Array<var>& correspondingValues)
     : PropertyComponent (name),
       choices (choiceList),
       isCustomClass (false)
@@ -86,7 +86,7 @@ ChoicePropertyComponent::ChoicePropertyComponent (const Value& valueToControl,
     createComboBox();
 
     comboBox.getSelectedIdAsValue().referTo (Value (new RemapperValueSource (valueToControl,
-                                                                             correspondingValues)));
+            correspondingValues)));
 }
 
 ChoicePropertyComponent::~ChoicePropertyComponent()

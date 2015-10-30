@@ -36,13 +36,13 @@ public:
         setTriggeredOnMouseDown (keyNum >= 0);
 
         setTooltip (keyIndex < 0 ? TRANS("Adds a new key-mapping")
-                                 : TRANS("Click to change this key-mapping"));
+                    : TRANS("Click to change this key-mapping"));
     }
 
     void paintButton (Graphics& g, bool /*isOver*/, bool /*isDown*/) override
     {
         getLookAndFeel().drawKeymapChangeButton (g, getWidth(), getHeight(), *this,
-                                                 keyNum >= 0 ? getName() : String::empty);
+                keyNum >= 0 ? getName() : String::empty);
     }
 
     static void menuCallback (int result, ChangeKeyButton* button)
@@ -51,9 +51,14 @@ public:
         {
             switch (result)
             {
-                case 1: button->assignNewKey(); break;
-                case 2: button->owner.getMappings().removeKeyPress (button->commandID, button->keyNum); break;
-                default: break;
+            case 1:
+                button->assignNewKey();
+                break;
+            case 2:
+                button->owner.getMappings().removeKeyPress (button->commandID, button->keyNum);
+                break;
+            default:
+                break;
             }
         }
     }
@@ -93,7 +98,7 @@ public:
             : AlertWindow (TRANS("New key-mapping"),
                            TRANS("Please press a key combination now..."),
                            AlertWindow::NoIcon),
-              owner (kec)
+            owner (kec)
         {
             addButton (TRANS("OK"), 1);
             addButton (TRANS("Cancel"), 0);
@@ -116,7 +121,7 @@ public:
             if (previousCommand != 0)
                 message << "\n\n("
                         << TRANS("Currently assigned to \"CMDN\"")
-                            .replace ("CMDN", TRANS (owner.getCommandManager().getNameOfCommand (previousCommand)))
+                        .replace ("CMDN", TRANS (owner.getCommandManager().getNameOfCommand (previousCommand)))
                         << ')';
 
             setMessage (message);
@@ -162,14 +167,14 @@ public:
                 AlertWindow::showOkCancelBox (AlertWindow::WarningIcon,
                                               TRANS("Change key-mapping"),
                                               TRANS("This key is already assigned to the command \"CMDN\"")
-                                                  .replace ("CMDN", owner.getCommandManager().getNameOfCommand (previousCommand))
-                                                + "\n\n"
-                                                + TRANS("Do you want to re-assign it to this new command instead?"),
+                                              .replace ("CMDN", owner.getCommandManager().getNameOfCommand (previousCommand))
+                                              + "\n\n"
+                                              + TRANS("Do you want to re-assign it to this new command instead?"),
                                               TRANS("Re-assign"),
                                               TRANS("Cancel"),
                                               this,
                                               ModalCallbackFunction::forComponent (assignNewKeyCallback,
-                                                                                   this, KeyPress (newKey)));
+                                                      this, KeyPress (newKey)));
             }
         }
     }
@@ -271,10 +276,18 @@ public:
         : owner (kec), commandID (command)
     {}
 
-    String getUniqueName() const override         { return String ((int) commandID) + "_id"; }
-    bool mightContainSubItems() override          { return false; }
-    int getItemHeight() const override            { return 20; }
-    Component* createItemComponent() override     { return new ItemComponent (owner, commandID); }
+    String getUniqueName() const override         {
+        return String ((int) commandID) + "_id";
+    }
+    bool mightContainSubItems() override          {
+        return false;
+    }
+    int getItemHeight() const override            {
+        return 20;
+    }
+    Component* createItemComponent() override     {
+        return new ItemComponent (owner, commandID);
+    }
 
 private:
     KeyMappingEditorComponent& owner;
@@ -292,9 +305,15 @@ public:
         : owner (kec), categoryName (name)
     {}
 
-    String getUniqueName() const override       { return categoryName + "_cat"; }
-    bool mightContainSubItems() override        { return true; }
-    int getItemHeight() const override          { return 22; }
+    String getUniqueName() const override       {
+        return categoryName + "_cat";
+    }
+    bool mightContainSubItems() override        {
+        return true;
+    }
+    int getItemHeight() const override          {
+        return 22;
+    }
 
     void paintItem (Graphics& g, int width, int height) override
     {
@@ -332,8 +351,8 @@ private:
 
 //==============================================================================
 class KeyMappingEditorComponent::TopLevelItem   : public TreeViewItem,
-                                                  public ButtonListener,
-                                                  private ChangeListener
+    public ButtonListener,
+    private ChangeListener
 {
 public:
     TopLevelItem (KeyMappingEditorComponent& kec)   : owner (kec)
@@ -347,8 +366,12 @@ public:
         owner.getMappings().removeChangeListener (this);
     }
 
-    bool mightContainSubItems()             { return true; }
-    String getUniqueName() const            { return "keys"; }
+    bool mightContainSubItems()             {
+        return true;
+    }
+    String getUniqueName() const            {
+        return "keys";
+    }
 
     void changeListenerCallback (ChangeBroadcaster*) override
     {
@@ -395,7 +418,7 @@ private:
 
 //==============================================================================
 KeyMappingEditorComponent::KeyMappingEditorComponent (KeyPressMappingSet& mappingManager,
-                                                      const bool showResetToDefaultButton)
+        const bool showResetToDefaultButton)
     : mappings (mappingManager),
       resetButton (TRANS ("reset to defaults"))
 {
@@ -422,7 +445,7 @@ KeyMappingEditorComponent::~KeyMappingEditorComponent()
 
 //==============================================================================
 void KeyMappingEditorComponent::setColours (Colour mainBackground,
-                                            Colour textColour)
+        Colour textColour)
 {
     setColour (backgroundColourId, mainBackground);
     setColour (textColourId, textColour);

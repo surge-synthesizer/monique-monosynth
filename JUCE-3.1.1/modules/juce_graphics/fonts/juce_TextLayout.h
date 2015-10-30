@@ -45,10 +45,10 @@ public:
     TextLayout();
     TextLayout (const TextLayout&);
     TextLayout& operator= (const TextLayout&);
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     TextLayout (TextLayout&& other) noexcept;
     TextLayout& operator= (TextLayout&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~TextLayout();
@@ -144,13 +144,17 @@ public:
 
     //==============================================================================
     /** Returns the maximum width of the content. */
-    float getWidth() const noexcept     { return width; }
+    float getWidth() const noexcept     {
+        return width;
+    }
 
     /** Returns the maximum height of the content. */
     float getHeight() const noexcept;
 
     /** Returns the number of lines in the layout. */
-    int getNumLines() const noexcept    { return lines.size(); }
+    int getNumLines() const noexcept    {
+        return lines.size();
+    }
 
     /** Returns one of the lines. */
     Line& getLine (int index) const;

@@ -69,7 +69,8 @@ RelativeCoordinate& RelativeCoordinate::operator= (const RelativeCoordinate& oth
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 RelativeCoordinate::RelativeCoordinate (RelativeCoordinate&& other) noexcept
-    : term (static_cast <Expression&&> (other.term))
+:
+term (static_cast <Expression&&> (other.term))
 {
 }
 

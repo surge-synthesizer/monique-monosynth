@@ -23,12 +23,12 @@
 */
 
 #if defined (JUCE_AUDIO_PROCESSORS_H_INCLUDED) && ! JUCE_AMALGAMATED_INCLUDE
- /* When you add this cpp file to your project, you mustn't include it in a file where you've
-    already included any other headers - just put it inside a file on its own, possibly with your config
-    flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
-    header files that the compiler may be using.
- */
- #error "Incorrect use of JUCE cpp file"
+/* When you add this cpp file to your project, you mustn't include it in a file where you've
+   already included any other headers - just put it inside a file on its own, possibly with your config
+   flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
+   header files that the compiler may be using.
+*/
+#error "Incorrect use of JUCE cpp file"
 #endif
 
 // Your project must contain an AppConfig.h file with your project-specific settings in it,
@@ -41,26 +41,26 @@
 
 //==============================================================================
 #if JUCE_MAC
- #if JUCE_SUPPORT_CARBON \
+#if JUCE_SUPPORT_CARBON \
       && ((JUCE_PLUGINHOST_VST || JUCE_PLUGINHOST_AU) \
            || ! (defined (MAC_OS_X_VERSION_10_6) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_6))
-  #define Point CarbonDummyPointName // (workaround to avoid definition of "Point" by old Carbon headers)
-  #define Component CarbonDummyCompName
-  #include <Carbon/Carbon.h>
-  #undef Point
-  #undef Component
- #endif
+#define Point CarbonDummyPointName // (workaround to avoid definition of "Point" by old Carbon headers)
+#define Component CarbonDummyCompName
+#include <Carbon/Carbon.h>
+#undef Point
+#undef Component
+#endif
 #endif
 
 #if JUCE_PLUGINHOST_VST && JUCE_LINUX
- #include <X11/Xlib.h>
- #include <X11/Xutil.h>
- #undef KeyPress
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#undef KeyPress
 #endif
 
 #if ! JUCE_WINDOWS && ! JUCE_MAC
- #undef JUCE_PLUGINHOST_VST3
- #define JUCE_PLUGINHOST_VST3 0
+#undef JUCE_PLUGINHOST_VST3
+#define JUCE_PLUGINHOST_VST3 0
 #endif
 
 //==============================================================================
@@ -80,7 +80,7 @@ static inline bool arrayContainsPlugin (const OwnedArray<PluginDescription>& lis
 #if JUCE_MAC
 //==============================================================================
 struct AutoResizingNSViewComponent  : public NSViewComponent,
-                                      private AsyncUpdater
+    private AsyncUpdater
 {
     AutoResizingNSViewComponent() : recursive (false) {}
 
@@ -98,14 +98,16 @@ struct AutoResizingNSViewComponent  : public NSViewComponent,
         }
     }
 
-    void handleAsyncUpdate() override               { resizeToFitView(); }
+    void handleAsyncUpdate() override               {
+        resizeToFitView();
+    }
 
     bool recursive;
 };
 
 //==============================================================================
 struct AutoResizingNSViewComponentWithParent  : public AutoResizingNSViewComponent,
-                                                private Timer
+    private Timer
 {
     AutoResizingNSViewComponentWithParent()
     {
@@ -137,7 +139,7 @@ struct AutoResizingNSViewComponentWithParent  : public AutoResizingNSViewCompone
 #endif
 
 #if JUCE_CLANG
- #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
 #include "format/juce_AudioPluginFormat.cpp"

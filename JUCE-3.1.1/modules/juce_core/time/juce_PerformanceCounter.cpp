@@ -50,7 +50,8 @@ PerformanceCounter::~PerformanceCounter()
 }
 
 PerformanceCounter::Statistics::Statistics() noexcept
-    : averageSeconds(), maximumSeconds(), minimumSeconds(), totalSeconds(), numRuns()
+:
+averageSeconds(), maximumSeconds(), minimumSeconds(), totalSeconds(), numRuns()
 {
 }
 
@@ -80,7 +81,7 @@ void PerformanceCounter::Statistics::addResult (double elapsed) noexcept
 static String timeToString (double secs)
 {
     return String ((int64) (secs * (secs < 0.01 ? 1000000.0 : 1000.0) + 0.5))
-                    + (secs < 0.01 ? " microsecs" : " millisecs");
+           + (secs < 0.01 ? " microsecs" : " millisecs");
 }
 
 String PerformanceCounter::Statistics::toString() const

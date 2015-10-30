@@ -1,16 +1,80 @@
+LFO BRAUCH:
+- viereck
+- phase offset
+- speed
+
+
+MORPH TODO:
+arp tune and velocity
+sustain or not?
+do not smooth the original parameters : buggy on smoothmanager zero
+min und max modulation
+copy past mfo 
+does not always repaint all colours
+
+MORPH NOTES:
+env and lfo not modulated by an automated morph
+also not the modulation amounts: this reduces the cpu useage 
+
+
+TODO
+lfo wie mfo
+
+add a default theme to the binary and load it if nothing is available
+option die aktuelle modulation auf dem slider anzuzeigen
+option: open popups on mouse over?
+
+4 sekunden max times.
+
+nicht frei skallierbar
+
+show waves on sliders everytime
+layer erstellen, namen für die einzelnen objekte
+verschiedene hintergrundfarben der editoren und die topleiste je nach offen editor färben
+
+färbe die morph slider nach ihren gruppen
+slider und labels sind nicht opaque
+output meter filter 1 bis 3
+hide mac osx audio devices
+
+farben pro layer für buttons, fonts, button font, 
 
 
 
 
+viereck lfo für morphgroups
 
-external clock show is brocken
-swync arp on start does not work
+option toggle buttons on absolutely left or right!
 
+presets: folder für arp, fx, filter und osc morphs. (also um die einfach zu klassivizieren.
+reverb: juce hat ein stereo reverb
 
+knacken von BASS DRUM AUF BASS DRUM 2
 
 TIM:
 steps sind nicht automatisierbar
 
+DONE:
+add: amp env shape
+changed: ui style
+moved: morph section to the left
+swapped: arp morph and fx morph
+fix: sustain input was buggy
+fix: repaint for sliders was not correct
+changed: add tab buttons for fx/eq
+remove: save dialog
+changed: morph editor comes not with just one button to update the left and the right toggether
+move: morph motor time to the morph editor
+fix: refresh the morph editor on program change
+change: envelope sliders are always dragging in velocity based mode. that means a slow mouse movement changes the slider just a very little bit
+removed: range for envelopes
+removed: chorus env
+add: lfo buttons to increase the lfo speed in whole steps (and sync the lfo in this cases)
+fix: fx bypass wasnt correct
+add: pan for effects
+improved: show also the center value if the mouse is over the top or bottom button
+changed: lfos can be run in finer ganulations and added buttons to set it to note duration speeds 
+fix: setup slider sensitivity wasnt updated
 
 UI
 ****************************************************************************

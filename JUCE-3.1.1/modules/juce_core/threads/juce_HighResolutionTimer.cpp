@@ -26,19 +26,37 @@
   ==============================================================================
 */
 
-HighResolutionTimer::HighResolutionTimer()                    { pimpl = new Pimpl (*this); }
-HighResolutionTimer::~HighResolutionTimer()                   { stopTimer(); }
+HighResolutionTimer::HighResolutionTimer()                    {
+    pimpl = new Pimpl (*this);
+}
+HighResolutionTimer::~HighResolutionTimer()                   {
+    stopTimer();
+}
 
-void HighResolutionTimer::startTimer (int periodMs)           { pimpl->start (jmax (1, periodMs)); }
+void HighResolutionTimer::startTimer (int periodMs)           {
+    pimpl->start (jmax (1, periodMs));
+}
 #ifndef JUCE_WINDOWS
-void HighResolutionTimer::startTimerMicro (int periodMicro )  { pimpl->startMicro(periodMicro); }
+void HighResolutionTimer::startTimerMicro (int periodMicro )  {
+    pimpl->startMicro(periodMicro);
+}
 #endif
-void HighResolutionTimer::stopTimer()                         { pimpl->stop(); }
+void HighResolutionTimer::stopTimer()                         {
+    pimpl->stop();
+}
 
 #ifndef JUCE_WINDOWS
-bool HighResolutionTimer::isTimerRunning() const noexcept     { return pimpl->periodMicro != 0; }
-int HighResolutionTimer::getTimerInterval() const noexcept    { return pimpl->periodMicro*1000; }
+bool HighResolutionTimer::isTimerRunning() const noexcept     {
+    return pimpl->periodMicro != 0;
+}
+int HighResolutionTimer::getTimerInterval() const noexcept    {
+    return pimpl->periodMicro*1000;
+}
 #else
-bool HighResolutionTimer::isTimerRunning() const noexcept     { return pimpl->periodMs != 0; }
-int HighResolutionTimer::getTimerInterval() const noexcept    { return pimpl->periodMs; }
+bool HighResolutionTimer::isTimerRunning() const noexcept     {
+    return pimpl->periodMs != 0;
+}
+int HighResolutionTimer::getTimerInterval() const noexcept    {
+    return pimpl->periodMs;
+}
 #endif

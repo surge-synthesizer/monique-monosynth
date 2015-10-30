@@ -25,14 +25,14 @@
 #endif
 #ifdef NO_ERRNO_H
 #   ifdef _WIN32_WCE
-      /* The Microsoft C Run-Time Library for Windows CE doesn't have
-       * errno.  We define it as a global variable to simplify porting.
-       * Its value is always 0 and should not be used.  We rename it to
-       * avoid conflict with other libraries that use the same workaround.
-       */
+/* The Microsoft C Run-Time Library for Windows CE doesn't have
+ * errno.  We define it as a global variable to simplify porting.
+ * Its value is always 0 and should not be used.  We rename it to
+ * avoid conflict with other libraries that use the same workaround.
+ */
 #     define errno z_errno
 #   endif
-    extern int errno;
+extern int errno;
 #else
 #  ifndef _WIN32_WCE
 #    include <errno.h>
@@ -59,7 +59,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
   return (strm->msg = (char*)ERR_MSG(err), (err))
 /* To be used only when the state is known to be valid */
 
-        /* common constants */
+/* common constants */
 
 #ifndef DEF_WBITS
 #  define DEF_WBITS MAX_WBITS
@@ -84,15 +84,15 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 
 #define PRESET_DICT 0x20 /* preset dictionary flag in zlib header */
 
-        /* target dependencies */
+/* target dependencies */
 
 #if defined(MSDOS) || (defined(WINDOWS) && !defined(WIN32))
 #  define OS_CODE  0x00
 #  if defined(__TURBOC__) || defined(__BORLANDC__)
 #    if(__STDC__ == 1) && (defined(__LARGE__) || defined(__COMPACT__))
-       /* Allow compilation with ANSI keywords only enabled */
-       void _Cdecl farfree( void *block );
-       void *_Cdecl farmalloc( unsigned long nbytes );
+/* Allow compilation with ANSI keywords only enabled */
+void _Cdecl farfree( void *block );
+void *_Cdecl farmalloc( unsigned long nbytes );
 #    else
 #      include <alloc.h>
 #    endif
@@ -118,7 +118,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #ifdef OS2
 #  define OS_CODE  0x06
 #  ifdef M_I86
-     #include <malloc.h>
+#include <malloc.h>
 #  endif
 #endif
 
@@ -155,7 +155,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  if defined(_WIN32_WCE)
 #    define fdopen(fd,mode) NULL /* No fdopen() */
 #    ifndef _PTRDIFF_T_DEFINED
-       typedef int ptrdiff_t;
+typedef int ptrdiff_t;
 #      define _PTRDIFF_T_DEFINED
 #    endif
 #  else
@@ -163,7 +163,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  endif
 #endif
 
-        /* common defaults */
+/* common defaults */
 
 #ifndef OS_CODE
 #  define OS_CODE  0x03  /* assume Unix */
@@ -173,7 +173,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  define F_OPEN(name, mode) fopen((name), (mode))
 #endif
 
-         /* functions */
+/* functions */
 
 #if defined(STDC99) || (defined(__TURBOC__) && __TURBOC__ >= 0x550)
 #  ifndef HAVE_VSNPRINTF
@@ -187,15 +187,15 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 #ifndef HAVE_VSNPRINTF
 #  ifdef MSDOS
-     /* vsnprintf may exist on some MS-DOS compilers (DJGPP?),
-        but for now we just assume it doesn't. */
+/* vsnprintf may exist on some MS-DOS compilers (DJGPP?),
+   but for now we just assume it doesn't. */
 #    define NO_vsnprintf
 #  endif
 #  ifdef __TURBOC__
 #    define NO_vsnprintf
 #  endif
 #  ifdef WIN32
-     /* In Win32, vsnprintf is available as the "non-ANSI" _vsnprintf. */
+/* In Win32, vsnprintf is available as the "non-ANSI" _vsnprintf. */
 #    if !defined(vsnprintf) && !defined(NO_vsnprintf)
 #      define vsnprintf _vsnprintf
 #    endif
@@ -212,10 +212,10 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  define NO_MEMCPY
 #endif
 #if defined(SMALL_MEDIUM) && !defined(_MSC_VER) && !defined(__SC__)
- /* Use our own functions for small and medium model with MSC <= 5.0.
-  * You may have to use the same strategy for Borland C (untested).
-  * The __SC__ check is for Symantec.
-  */
+/* Use our own functions for small and medium model with MSC <= 5.0.
+ * You may have to use the same strategy for Borland C (untested).
+ * The __SC__ check is for Symantec.
+ */
 #  define NO_MEMCPY
 #endif
 #if defined(STDC) && !defined(HAVE_MEMCPY) && !defined(NO_MEMCPY)
@@ -232,16 +232,16 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    define zmemzero(dest, len) memset(dest, 0, len)
 #  endif
 #else
-   extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
-   extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
-   extern void zmemzero OF((Bytef* dest, uInt len));
+extern void zmemcpy  OF((Bytef* dest, const Bytef* source, uInt len));
+extern int  zmemcmp  OF((const Bytef* s1, const Bytef* s2, uInt len));
+extern void zmemzero OF((Bytef* dest, uInt len));
 #endif
 
 /* Diagnostic functions */
 #if 0
 #  include <stdio.h>
-   extern int z_verbose;
-   extern void z_error    OF((const char *m));
+extern int z_verbose;
+extern void z_error    OF((const char *m));
 #  define Assert(cond,msg) {if(!(cond)) z_error(msg);}
 #  define Trace(x) {if (z_verbose>=0) fprintf x ;}
 #  define Tracev(x) {if (z_verbose>0) fprintf x ;}

@@ -76,7 +76,9 @@ public:
     void resizeToFit (double targetSize);
 
     /** Returns the number of items that have been added. */
-    int getNumItems() const noexcept                        { return items.size(); }
+    int getNumItems() const noexcept                        {
+        return items.size();
+    }
 
     /** Returns the size of one of the items. */
     double getItemSize (int index) const noexcept;

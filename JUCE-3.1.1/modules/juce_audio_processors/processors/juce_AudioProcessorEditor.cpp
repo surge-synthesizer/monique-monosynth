@@ -22,11 +22,13 @@
   ==============================================================================
 */
 
-AudioProcessorEditor::AudioProcessorEditor (AudioProcessor& p) noexcept  : processor (p)
+AudioProcessorEditor::AudioProcessorEditor (AudioProcessor& p) noexcept  :
+processor (p)
 {
 }
 
-AudioProcessorEditor::AudioProcessorEditor (AudioProcessor* p) noexcept  : processor (*p)
+AudioProcessorEditor::AudioProcessorEditor (AudioProcessor* p) noexcept  :
+processor (*p)
 {
     // the filter must be valid..
     jassert (p != nullptr);
@@ -40,4 +42,6 @@ AudioProcessorEditor::~AudioProcessorEditor()
 }
 
 void AudioProcessorEditor::setControlHighlight (ParameterControlHighlightInfo) {}
-int AudioProcessorEditor::getControlParameterIndex (Component&)  { return -1; }
+int AudioProcessorEditor::getControlParameterIndex (Component&)  {
+    return -1;
+}

@@ -28,8 +28,8 @@
 
 namespace
 {
-    inline size_t bitToIndex (const int bit) noexcept   { return (size_t) (bit >> 5); }
-    inline uint32 bitToMask  (const int bit) noexcept   { return (uint32) 1 << (bit & 31); }
+inline size_t bitToIndex (const int bit) noexcept   { return (size_t) (bit >> 5); }
+inline uint32 bitToMask  (const int bit) noexcept   { return (uint32) 1 << (bit & 31); }
 }
 
 //==============================================================================
@@ -87,10 +87,11 @@ BigInteger::BigInteger (const BigInteger& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 BigInteger::BigInteger (BigInteger&& other) noexcept
-    : values (static_cast <HeapBlock <uint32>&&> (other.values)),
-      numValues (other.numValues),
-      highestBit (other.highestBit),
-      negative (other.negative)
+:
+values (static_cast <HeapBlock <uint32>&&> (other.values)),
+       numValues (other.numValues),
+       highestBit (other.highestBit),
+       negative (other.negative)
 {
 }
 
@@ -148,7 +149,7 @@ void BigInteger::ensureSize (const size_t numVals)
 bool BigInteger::operator[] (const int bit) const noexcept
 {
     return bit <= highestBit && bit >= 0
-             && ((values [bitToIndex (bit)] & bitToMask (bit)) != 0);
+           && ((values [bitToIndex (bit)] & bitToMask (bit)) != 0);
 }
 
 int BigInteger::toInteger() const noexcept
@@ -308,27 +309,27 @@ void BigInteger::negate() noexcept
 }
 
 #if JUCE_USE_MSVC_INTRINSICS && ! defined (__INTEL_COMPILER)
- #pragma intrinsic (_BitScanReverse)
+#pragma intrinsic (_BitScanReverse)
 #endif
 
 inline static int highestBitInInt (uint32 n) noexcept
 {
     jassert (n != 0); // (the built-in functions may not work for n = 0)
 
-  #if JUCE_GCC
+#if JUCE_GCC
     return 31 - __builtin_clz (n);
-  #elif JUCE_USE_MSVC_INTRINSICS
+#elif JUCE_USE_MSVC_INTRINSICS
     unsigned long highest;
     _BitScanReverse (&highest, n);
     return (int) highest;
-  #else
+#else
     n |= (n >> 1);
     n |= (n >> 2);
     n |= (n >> 4);
     n |= (n >> 8);
     n |= (n >> 16);
     return countBitsInInt32 (n >> 1);
-  #endif
+#endif
 }
 
 int BigInteger::countNumberOfSetBits() const noexcept
@@ -622,24 +623,76 @@ BigInteger& BigInteger::operator%= (const BigInteger& divisor)
     return *this;
 }
 
-BigInteger& BigInteger::operator++()      { return operator+= (1); }
-BigInteger& BigInteger::operator--()      { return operator-= (1); }
-BigInteger  BigInteger::operator++ (int)  { const BigInteger old (*this); operator+= (1); return old; }
-BigInteger  BigInteger::operator-- (int)  { const BigInteger old (*this); operator-= (1); return old; }
+BigInteger& BigInteger::operator++()      {
+    return operator+= (1);
+}
+BigInteger& BigInteger::operator--()      {
+    return operator-= (1);
+}
+BigInteger  BigInteger::operator++ (int)  {
+    const BigInteger old (*this);
+    operator+= (1);
+    return old;
+}
+BigInteger  BigInteger::operator-- (int)  {
+    const BigInteger old (*this);
+    operator-= (1);
+    return old;
+}
 
-BigInteger  BigInteger::operator-() const                            { BigInteger b (*this); b.negate(); return b; }
-BigInteger  BigInteger::operator+   (const BigInteger& other) const  { BigInteger b (*this); return b += other; }
-BigInteger  BigInteger::operator-   (const BigInteger& other) const  { BigInteger b (*this); return b -= other; }
-BigInteger  BigInteger::operator*   (const BigInteger& other) const  { BigInteger b (*this); return b *= other; }
-BigInteger  BigInteger::operator/   (const BigInteger& other) const  { BigInteger b (*this); return b /= other; }
-BigInteger  BigInteger::operator|   (const BigInteger& other) const  { BigInteger b (*this); return b |= other; }
-BigInteger  BigInteger::operator&   (const BigInteger& other) const  { BigInteger b (*this); return b &= other; }
-BigInteger  BigInteger::operator^   (const BigInteger& other) const  { BigInteger b (*this); return b ^= other; }
-BigInteger  BigInteger::operator%   (const BigInteger& other) const  { BigInteger b (*this); return b %= other; }
-BigInteger  BigInteger::operator<<  (const int numBits) const        { BigInteger b (*this); return b <<= numBits; }
-BigInteger  BigInteger::operator>>  (const int numBits) const        { BigInteger b (*this); return b >>= numBits; }
-BigInteger& BigInteger::operator<<= (const int numBits)              { shiftBits (numBits, 0);  return *this; }
-BigInteger& BigInteger::operator>>= (const int numBits)              { shiftBits (-numBits, 0); return *this; }
+BigInteger  BigInteger::operator-() const                            {
+    BigInteger b (*this);
+    b.negate();
+    return b;
+}
+BigInteger  BigInteger::operator+   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b += other;
+}
+BigInteger  BigInteger::operator-   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b -= other;
+}
+BigInteger  BigInteger::operator*   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b *= other;
+}
+BigInteger  BigInteger::operator/   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b /= other;
+}
+BigInteger  BigInteger::operator|   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b |= other;
+}
+BigInteger  BigInteger::operator&   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b &= other;
+}
+BigInteger  BigInteger::operator^   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b ^= other;
+}
+BigInteger  BigInteger::operator%   (const BigInteger& other) const  {
+    BigInteger b (*this);
+    return b %= other;
+}
+BigInteger  BigInteger::operator<<  (const int numBits) const        {
+    BigInteger b (*this);
+    return b <<= numBits;
+}
+BigInteger  BigInteger::operator>>  (const int numBits) const        {
+    BigInteger b (*this);
+    return b >>= numBits;
+}
+BigInteger& BigInteger::operator<<= (const int numBits)              {
+    shiftBits (numBits, 0);
+    return *this;
+}
+BigInteger& BigInteger::operator>>= (const int numBits)              {
+    shiftBits (-numBits, 0);
+    return *this;
+}
 
 //==============================================================================
 int BigInteger::compare (const BigInteger& other) const noexcept
@@ -672,12 +725,24 @@ int BigInteger::compareAbsolute (const BigInteger& other) const noexcept
     return 0;
 }
 
-bool BigInteger::operator== (const BigInteger& other) const noexcept    { return compare (other) == 0; }
-bool BigInteger::operator!= (const BigInteger& other) const noexcept    { return compare (other) != 0; }
-bool BigInteger::operator<  (const BigInteger& other) const noexcept    { return compare (other) < 0; }
-bool BigInteger::operator<= (const BigInteger& other) const noexcept    { return compare (other) <= 0; }
-bool BigInteger::operator>  (const BigInteger& other) const noexcept    { return compare (other) > 0; }
-bool BigInteger::operator>= (const BigInteger& other) const noexcept    { return compare (other) >= 0; }
+bool BigInteger::operator== (const BigInteger& other) const noexcept    {
+    return compare (other) == 0;
+}
+bool BigInteger::operator!= (const BigInteger& other) const noexcept    {
+    return compare (other) != 0;
+}
+bool BigInteger::operator<  (const BigInteger& other) const noexcept    {
+    return compare (other) < 0;
+}
+bool BigInteger::operator<= (const BigInteger& other) const noexcept    {
+    return compare (other) <= 0;
+}
+bool BigInteger::operator>  (const BigInteger& other) const noexcept    {
+    return compare (other) > 0;
+}
+bool BigInteger::operator>= (const BigInteger& other) const noexcept    {
+    return compare (other) >= 0;
+}
 
 //==============================================================================
 void BigInteger::shiftLeft (int bits, const int startBit)

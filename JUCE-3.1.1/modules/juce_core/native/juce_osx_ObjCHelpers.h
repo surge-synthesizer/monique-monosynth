@@ -35,45 +35,49 @@
 */
 namespace
 {
-    //==============================================================================
-    static inline String nsStringToJuce (NSString* s)
-    {
-        return CharPointer_UTF8 ([s UTF8String]);
-    }
+//==============================================================================
+static inline String nsStringToJuce (NSString* s)
+{
+    return CharPointer_UTF8 ([s UTF8String]);
+}
 
-    static inline NSString* juceStringToNS (const String& s)
-    {
-        return [NSString stringWithUTF8String: s.toUTF8()];
-    }
+static inline NSString* juceStringToNS (const String& s)
+{
+return [NSString stringWithUTF8String: s.toUTF8()];
+}
 
-    static inline NSString* nsStringLiteral (const char* const s) noexcept
-    {
-        return [NSString stringWithUTF8String: s];
-    }
+static inline NSString* nsStringLiteral (const char* const s) noexcept
+{
+return [NSString stringWithUTF8String: s];
+}
 
-    static inline NSString* nsEmptyString() noexcept
-    {
-        return [NSString string];
-    }
+static inline NSString* nsEmptyString() noexcept
+{
+    return [NSString string];
+}
 
-   #if JUCE_MAC
-    template <typename RectangleType>
-    static NSRect makeNSRect (const RectangleType& r) noexcept
-    {
-        return NSMakeRect (static_cast <CGFloat> (r.getX()),
-                           static_cast <CGFloat> (r.getY()),
-                           static_cast <CGFloat> (r.getWidth()),
-                           static_cast <CGFloat> (r.getHeight()));
-    }
-   #endif
+#if JUCE_MAC
+template <typename RectangleType>
+static NSRect makeNSRect (const RectangleType& r) noexcept
+{
+    return NSMakeRect (static_cast <CGFloat> (r.getX()),
+    static_cast <CGFloat> (r.getY()),
+    static_cast <CGFloat> (r.getWidth()),
+    static_cast <CGFloat> (r.getHeight()));
+}
+#endif
 }
 
 //==============================================================================
 template <typename ObjectType>
 struct NSObjectRetainer
 {
-    inline NSObjectRetainer (ObjectType* o) : object (o)  { [object retain]; }
-    inline ~NSObjectRetainer()                            { [object release]; }
+    inline NSObjectRetainer (ObjectType* o) : object (o)  {
+        [object retain];
+    }
+    inline ~NSObjectRetainer()                            {
+        [object release];
+    }
 
     ObjectType* object;
 };
@@ -106,14 +110,16 @@ struct ObjCClass
     void addIvar (const char* name)
     {
         BOOL b = class_addIvar (cls, name, sizeof (Type), (uint8_t) rint (log2 (sizeof (Type))), @encode (Type));
-        jassert (b); (void) b;
+        jassert (b);
+        (void) b;
     }
 
     template <typename FunctionType>
     void addMethod (SEL selector, FunctionType callbackFn, const char* signature)
     {
         BOOL b = class_addMethod (cls, selector, (IMP) callbackFn, signature);
-        jassert (b); (void) b;
+        jassert (b);
+        (void) b;
     }
 
     template <typename FunctionType>
@@ -137,7 +143,8 @@ struct ObjCClass
     void addProtocol (Protocol* protocol)
     {
         BOOL b = class_addProtocol (cls, protocol);
-        jassert (b); (void) b;
+        jassert (b);
+        (void) b;
     }
 
     static id sendSuperclassMessage (id self, SEL selector)

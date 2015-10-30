@@ -57,10 +57,10 @@ void ApplicationCommandManager::registerCommand (const ApplicationCommandInfo& n
         // This assertion is here because I've found it useful catching some mistakes, but it may also cause
         // false alarms if you're deliberately updating some flags for a command.
         jassert (newCommand.shortName == getCommandForID (newCommand.commandID)->shortName
-                  && newCommand.categoryName == getCommandForID (newCommand.commandID)->categoryName
-                  && newCommand.defaultKeypresses == getCommandForID (newCommand.commandID)->defaultKeypresses
-                  && (newCommand.flags & (ApplicationCommandInfo::wantsKeyUpDownCallbacks | ApplicationCommandInfo::hiddenFromKeyEditor | ApplicationCommandInfo::readOnlyInKeyEditor))
-                       == (getCommandForID (newCommand.commandID)->flags & (ApplicationCommandInfo::wantsKeyUpDownCallbacks | ApplicationCommandInfo::hiddenFromKeyEditor | ApplicationCommandInfo::readOnlyInKeyEditor)));
+                 && newCommand.categoryName == getCommandForID (newCommand.commandID)->categoryName
+                 && newCommand.defaultKeypresses == getCommandForID (newCommand.commandID)->defaultKeypresses
+                 && (newCommand.flags & (ApplicationCommandInfo::wantsKeyUpDownCallbacks | ApplicationCommandInfo::hiddenFromKeyEditor | ApplicationCommandInfo::readOnlyInKeyEditor))
+                 == (getCommandForID (newCommand.commandID)->flags & (ApplicationCommandInfo::wantsKeyUpDownCallbacks | ApplicationCommandInfo::hiddenFromKeyEditor | ApplicationCommandInfo::readOnlyInKeyEditor)));
 
         *command = newCommand;
     }
@@ -142,7 +142,7 @@ String ApplicationCommandManager::getDescriptionOfCommand (const CommandID comma
 {
     if (const ApplicationCommandInfo* const ci = getCommandForID (commandID))
         return ci->description.isNotEmpty() ? ci->description
-                                            : ci->shortName;
+               : ci->shortName;
 
     return String();
 }
@@ -203,7 +203,7 @@ bool ApplicationCommandManager::invoke (const ApplicationCommandTarget::Invocati
 ApplicationCommandTarget* ApplicationCommandManager::getFirstCommandTarget (const CommandID)
 {
     return firstTarget != nullptr ? firstTarget
-                                  : findDefaultComponentTarget();
+           : findDefaultComponentTarget();
 }
 
 void ApplicationCommandManager::setFirstCommandTarget (ApplicationCommandTarget* const newTarget) noexcept
@@ -212,7 +212,7 @@ void ApplicationCommandManager::setFirstCommandTarget (ApplicationCommandTarget*
 }
 
 ApplicationCommandTarget* ApplicationCommandManager::getTargetForCommand (const CommandID commandID,
-                                                                          ApplicationCommandInfo& upToDateInfo)
+        ApplicationCommandInfo& upToDateInfo)
 {
     ApplicationCommandTarget* target = getFirstCommandTarget (commandID);
 

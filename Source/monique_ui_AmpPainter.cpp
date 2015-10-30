@@ -43,6 +43,8 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     master_osc_values = new EndlessSwitchBuffer( synth_data_->runtime_notifyer );
     //[/Constructor_pre]
 
+    addAndMakeVisible (drawing_area = new Component());
+
     addAndMakeVisible (sl_show_range = new Slider (String::empty));
     sl_show_range->setTooltip (TRANS("Define the drawed time (max = 1 second)."));
     sl_show_range->setRange (0.001, 1, 0.001);
@@ -113,8 +115,6 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     out_env->setButtonText (TRANS("AMP ENV"));
     out_env->addListener (this);
 
-    addAndMakeVisible (drawing_area = new Component());
-
 
     //[UserPreSize]
     osc_values.add( new EndlessBuffer( synth_data_->runtime_notifyer ) );
@@ -139,16 +139,17 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     buffers.add( values_env );
     buffers.add( eq_values );
 
-    refresh_buttons();
-
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
-        getChildComponent(i)->setOpaque(true);
+        Component*child = getChildComponent(i);
+        child->setOpaque(true);
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::OSZI_THEME );
     }
     drawing_area->setOpaque(false);
     sl_show_range->setOpaque(false);
     setOpaque(true);
 
+    refresh_buttons();
 
     /*
     //[/UserPreSize]
@@ -168,6 +169,7 @@ Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    drawing_area = nullptr;
     sl_show_range = nullptr;
     osc_1 = nullptr;
     osc_2 = nullptr;
@@ -181,7 +183,6 @@ Monique_Ui_AmpPainter::~Monique_Ui_AmpPainter()
     f_env_2 = nullptr;
     f_env_3 = nullptr;
     out_env = nullptr;
-    drawing_area = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -200,7 +201,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
         ComponentColours& colours( look_and_feel->colours );
 
-        g.fillAll (colours.bg);
+        g.fillAll (colours.get_theme(COLOUR_THEMES::BG_THEME).area_colour);
 
         // TODO MAKE INTS!
         const int samples_to_paint = sl_show_range->getValue()* synth_data->runtime_notifyer->get_sample_rate()*0.5;
@@ -214,16 +215,32 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         const int current_size = master_osc_values->get_size();
         const int current_position = master_osc_values->get_new_reader_start_position(samples_to_paint);
         {
-            Colour colour = Colour(0xff222222 );
-            g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
-            //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
-            g.fillRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3);
+            /*
+                Colour colour = Colour(0xff222222 );
+                g.setGradientFill (ColourGradient (colour.darker (0.3f), 0.0f, 0.0f, Colour (0xff050505), 0.0f, height, false));
+                //g.setGradientFill (ColourGradient (color_1, 0.0f, 0.0f, color_1.darker (0.3f), 0.0f, height, false));
+                g.fillRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3);
 
-            g.setColour (colour.darker (0.6f));
-            g.drawRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3, 1);
+                g.setColour (colour.darker (0.6f));
+                g.drawRoundedRectangle (paint_start_offset_x, paint_start_offset_y, width, height, 3, 1);
 
-            g.setColour (colours.label_text_colour.withAlpha(0.3f));
-            g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
+                g.setColour (colours.label_text_colour.withAlpha(0.3f));
+                g.fillRect (paint_start_offset_x, int(paint_start_offset_y+height/2), width, 1 );
+            */
+        }
+        {
+
+#include "mono_ui_includeHacks_BEGIN.h"
+
+
+            g.setColour (Colour (0xffffff11));
+            g.fillRoundedRectangle (10.0f, 2.0f, 1440.0f, 198.0f, 10.000f);
+
+            g.setColour (Colour (0xff050505));
+            g.fillRoundedRectangle (110.0f, 20.0f, 1245.0f, 130.0f, 10.000f);
+
+
+#include "mono_ui_includeHacks_END.h"
         }
 
         struct Monique_Ui_AmpPainter
@@ -247,8 +264,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 int num_samples_
             ) noexcept
             {
-                const Colour col_fill(col_.withAlpha(0.1f));
-                const Colour norm_col(col_.withAlpha(0.2f + jmax(0.0f,jmin(0.8f,0.8f*scale_))));
+                const Colour col_fill(col_.withAlpha(0.2f));
+                const Colour norm_col(col_.withAlpha(0.4f + jmax(0.0f,jmin(0.6f,0.8f*scale_) )));
 
                 int last_x = -9999;
                 int x_counter = 1;
@@ -256,16 +273,17 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 for( int sid = 0 ; sid < num_samples_ ; ++sid )
                 {
 
+
                     if( ++pos_counter >= buffer_size_ )
                     {
                         pos_counter = 0;
                     }
 
                     float y = source_buffer_.get(pos_counter);
-		    MONO_SNAP_TO_ZERO( y );
+                    MONO_SNAP_TO_ZERO( y );
 
                     float x_float = scale_*sid+x_offset_;
-		    MONO_SNAP_TO_ZERO( x_float );
+                    MONO_SNAP_TO_ZERO( x_float );
                     const int x = x_float;
                     bool paint_line = false;
                     if( last_x != x )
@@ -279,6 +297,16 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                         x_counter = 1;
                     }
 
+
+                    float compression_multi = 1;
+                    if( sid < num_samples_*0.02 )
+                    {
+                        compression_multi = 1.0f/(num_samples_)*(sid/0.02);
+                    }
+                    else if( sid > num_samples_*0.98 )
+                    {
+                        compression_multi = 1.0f/(num_samples_*0.02)*(num_samples_-sid);
+                    }
                     if( y >= 0 )
                     {
                         if( y > 1 )
@@ -286,7 +314,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                             y = 1;
                         }
 
-                        const float h_float = y*height_*0.5f;
+                        const float h_float = y*height_*0.5f * compression_multi;
                         int h = h_float;
                         if( paint_line  )
                         {
@@ -306,7 +334,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                             y = -1;
                         }
 
-                        const float h_float = y*height_*-0.5f;
+                        const float h_float = y*height_*-0.5f * compression_multi;
                         int h = h_float;
                         if( paint_line )
                         {
@@ -333,7 +361,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         // MASTER OSC'S
         if( show_osc[0] )
         {
-            Colour col = Colours::lightblue;
+            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).value_slider_track_colour;
             Monique_Ui_AmpPainter::exec
             (
                 g,
@@ -362,9 +390,9 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             {
                 Colour col;
                 if( osc_id == 0 )
-                    col = Colours::blueviolet;
+                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).value_2_slider_track_colour;
                 else
-                    col = Colours::violet;
+                    col = look_and_feel->colours.get_theme( COLOUR_THEMES::OSC_THEME  ).mod_slider_track_colour;
 
                 Monique_Ui_AmpPainter::exec
                 (
@@ -390,7 +418,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         // EQ
         if( show_eq )
         {
-            Colour col = Colours::green;
+            Colour col = look_and_feel->colours.get_theme( COLOUR_THEMES::FX_THEME  ).value_slider_track_colour;
 
             Monique_Ui_AmpPainter::exec
             (
@@ -418,11 +446,11 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
         {
             Colour col;
             if( filter_id == 0 )
-                col = Colours::red;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).value_slider_track_colour;
             else if( filter_id == 1 )
-                col = Colours::orangered;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).value_2_slider_track_colour;
             else
-                col = Colours::orange;
+                col = look_and_feel->colours.get_theme( COLOUR_THEMES::FILTER_THEME  ).mod_slider_track_colour;
 
             EndlessBuffer& values = *filter_values[filter_id];
             if( show_flt[filter_id] )
@@ -490,7 +518,7 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                colours.slider_track_colour,
+                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).value_slider_track_colour,
                 true,
                 *values,
 
@@ -514,12 +542,39 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                 line_center,
                 height,
 
-                colours.slider_track_colour.darker(),
+                look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME  ).value_2_slider_track_colour,
                 false,
                 *values_env,
 
                 samples_to_paint
             );
+        }
+
+
+        {
+
+#include "mono_ui_includeHacks_BEGIN.h"
+
+            g.setGradientFill (ColourGradient (Colour (0xff050505),
+                                               119.0f, 80.0f,
+                                               Colour (0x00ff0000),
+                                               140.0f, 80.0f,
+                                               false));
+            g.fillRoundedRectangle (119.0f, 20.0f, 20.0f, 130.0f, 1.000f);
+
+            g.setGradientFill (ColourGradient (Colour (0xff050505),
+                                               1345.0f, 80.0f,
+                                               Colour (0x00ff0000),
+                                               1325.0f, 80.0f,
+                                               false));
+            g.fillRoundedRectangle (1325.0f, 20.0f, 20.0f, 128.0f, 1.000f);
+
+#include "mono_ui_includeHacks_END.h"
+            g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::OSZI_THEME ).area_colour);
+            g.fillPath (internalPath2);
+
+            g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::OSZI_THEME ).area_colour);
+            g.fillPath (internalPath1);
         }
 
         is_currently_painting = false;
@@ -529,6 +584,32 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
+
+    g.setColour (Colour (0xffffff11));
+    g.fillRoundedRectangle (10.0f, 0.0f, 1440.0f, 198.0f, 10.000f);
+
+    g.setColour (Colour (0xff050505));
+    g.fillRoundedRectangle (110.0f, 20.0f, 1245.0f, 130.0f, 10.000f);
+
+    g.setColour (Colour (0xffffff11));
+    g.fillPath (internalPath1);
+
+    g.setColour (Colours::yellow);
+    g.fillPath (internalPath2);
+
+    g.setGradientFill (ColourGradient (Colour (0xff050505),
+                                       119.0f, 80.0f,
+                                       Colour (0x00ff0000),
+                                       140.0f, 80.0f,
+                                       false));
+    g.fillRoundedRectangle (119.0f, 20.0f, 20.0f, 130.0f, 1.000f);
+
+    g.setGradientFill (ColourGradient (Colour (0xff050505),
+                                       1345.0f, 80.0f,
+                                       Colour (0x00ff0000),
+                                       1325.0f, 80.0f,
+                                       false));
+    g.fillRoundedRectangle (1325.0f, 20.0f, 20.0f, 128.0f, 1.000f);
 
     //[UserPaint] Add your own custom painting code here..
     */
@@ -541,20 +622,32 @@ void Monique_Ui_AmpPainter::resized()
 #include "mono_ui_includeHacks_BEGIN.h"
     //[/UserPreResize]
 
-    sl_show_range->setBounds (215, 150, 1240, 20);
-    osc_1->setBounds (30, 10, 60, 20);
-    osc_2->setBounds (30, 35, 60, 20);
+    drawing_area->setBounds (120, 20, 1225, 130);
+    sl_show_range->setBounds (110, 150, 1250, 20);
+    osc_1->setBounds (30, 20, 60, 20);
+    osc_2->setBounds (30, 40, 60, 20);
     osc_3->setBounds (30, 60, 60, 20);
-    eq->setBounds (100, 10, 60, 20);
-    out->setBounds (100, 35, 60, 20);
-    f_1->setBounds (30, 95, 60, 20);
-    f_2->setBounds (30, 120, 60, 20);
-    f_3->setBounds (30, 145, 60, 20);
-    f_env_1->setBounds (100, 95, 60, 20);
-    f_env_2->setBounds (100, 120, 60, 20);
-    f_env_3->setBounds (100, 145, 60, 20);
-    out_env->setBounds (100, 60, 60, 20);
-    drawing_area->setBounds (215, 10, 1240, 135);
+    eq->setBounds (30, 90, 60, 20);
+    out->setBounds (30, 110, 60, 20);
+    f_1->setBounds (1375, 20, 60, 20);
+    f_2->setBounds (1375, 40, 60, 20);
+    f_3->setBounds (1375, 60, 60, 20);
+    f_env_1->setBounds (1375, 90, 60, 20);
+    f_env_2->setBounds (1375, 110, 60, 20);
+    f_env_3->setBounds (1375, 130, 60, 20);
+    out_env->setBounds (30, 130, 60, 20);
+    internalPath1.clear();
+    internalPath1.startNewSubPath (110.0f, 75.0f);
+    internalPath1.lineTo (120.0f, 85.0f);
+    internalPath1.lineTo (110.0f, 95.0f);
+    internalPath1.closeSubPath();
+
+    internalPath2.clear();
+    internalPath2.startNewSubPath (1355.0f, 75.0f);
+    internalPath2.lineTo (1345.0f, 85.0f);
+    internalPath2.lineTo (1355.0f, 95.0f);
+    internalPath2.closeSubPath();
+
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -674,27 +767,28 @@ void Monique_Ui_AmpPainter::timerCallback()
 void Monique_Ui_AmpPainter::refresh_buttons()
 {
     ComponentColours& colours = look_and_feel->colours;
-    Colour button_on = colours.button_on_colour;
-    Colour button_off = colours.button_off_colour;
+    Colour button_on = colours.get_theme( COLOUR_THEMES::OSZI_THEME  ).button_on_colour;
+    Colour button_off = colours.get_theme( COLOUR_THEMES::OSZI_THEME  ).button_off_colour;
 
     sl_show_range->setValue(synth_data->osci_show_range, dontSendNotification );
 
-    osc_1->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_1 ? Colours::lightblue : button_off );
-    osc_2->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_2 ? Colours::blueviolet : button_off );
-    osc_3->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_3 ? Colours::violet : button_off );
 
-    eq->setColour( TextButton::buttonColourId, synth_data->osci_show_eq ? Colours::green : button_off );
+    osc_1->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).value_slider_track_colour : button_off );
+    osc_2->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).value_2_slider_track_colour : button_off );
+    osc_3->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).mod_slider_track_colour : button_off );
 
-    f_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_1 ? Colours::red : button_off );
-    f_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_2 ? Colours::orangered : button_off );
-    f_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_3 ? Colours::orange : button_off );
+    eq->setColour( TextButton::buttonColourId, synth_data->osci_show_eq ? look_and_feel->colours.get_theme(COLOUR_THEMES::FX_THEME).value_slider_track_colour : button_off );
 
-    f_env_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_1 ? Colours::red : button_off );
-    f_env_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_2 ? Colours::orangered : button_off );
-    f_env_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_3 ? Colours::orange : button_off );
+    f_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_slider_track_colour : button_off );
+    f_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_2_slider_track_colour : button_off );
+    f_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).mod_slider_track_colour : button_off );
 
-    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? look_and_feel->colours.slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? look_and_feel->colours.slider_track_colour.darker() : button_off );
+    f_env_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_slider_track_colour : button_off );
+    f_env_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_2_slider_track_colour : button_off );
+    f_env_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).mod_slider_track_colour : button_off );
+
+    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).value_slider_track_colour : button_off );
+    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).value_2_slider_track_colour : button_off );
 }
 
 //==============================================================================
@@ -799,62 +893,200 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_AmpPainter" componentName=""
                  parentClasses="public Component, public Timer" constructorParams="MoniqueSynthData* synth_data_, UiLookAndFeel*look_and_feel_"
                  variableInitialisers="synth_data(synth_data_), look_and_feel(look_and_feel_),&#10;original_w(1465), original_h(180)"
-                 snapPixels="5" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="180">
-  <BACKGROUND backgroundColour="ff050505"/>
+  <BACKGROUND backgroundColour="ff050505">
+    <ROUNDRECT pos="10 0 1440 198" cornerSize="10" fill="solid: ffffff11" hasStroke="0"/>
+    <ROUNDRECT pos="110 20 1245 130" cornerSize="10" fill="solid: ff050505"
+               hasStroke="0"/>
+    <PATH pos="0 0 100 100" fill="solid: ffffff11" hasStroke="0" nonZeroWinding="1">s 110 75 l 120 85 l 110 95 x</PATH>
+    <PATH pos="0 0 100 100" fill="solid: ffffff00" hasStroke="0" nonZeroWinding="1">s 1355 75 l 1345 85 l 1355 95 x</PATH>
+    <ROUNDRECT pos="119 20 20 130" cornerSize="1" fill="linear: 119 80, 140 80, 0=ff050505, 1=ff0000"
+               hasStroke="0"/>
+    <ROUNDRECT pos="1325 20 20 128" cornerSize="1" fill="linear: 1345 80, 1325 80, 0=ff050505, 1=ff0000"
+               hasStroke="0"/>
+  </BACKGROUND>
+  <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
+                    explicitFocusOrder="0" pos="120 20 1225 130" class="Component"
+                    params=""/>
   <SLIDER name="" id="6770eaa357af0c63" memberName="sl_show_range" virtualName=""
-          explicitFocusOrder="0" pos="215 150 1240 20" tooltip="Define the drawed time (max = 1 second)."
+          explicitFocusOrder="0" pos="110 150 1250 20" tooltip="Define the drawed time (max = 1 second)."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           min="0.0010000000000000000208" max="1" int="0.0010000000000000000208"
           style="LinearHorizontal" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="new button" id="f50c5e2947daf2d9" memberName="osc_1" virtualName=""
-              explicitFocusOrder="0" pos="30 10 60 20" tooltip="Turns visualisation for OSC 1 on or off."
+              explicitFocusOrder="0" pos="30 20 60 20" tooltip="Turns visualisation for OSC 1 on or off."
               buttonText="OSC1" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="430b47338d775167" memberName="osc_2" virtualName=""
-              explicitFocusOrder="0" pos="30 35 60 20" tooltip="Turns visualisation for OSC 2 on or off."
+              explicitFocusOrder="0" pos="30 40 60 20" tooltip="Turns visualisation for OSC 2 on or off."
               buttonText="OSC2" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="2c8665efd6c0c37d" memberName="osc_3" virtualName=""
               explicitFocusOrder="0" pos="30 60 60 20" tooltip="Turns visualisation for OSC 3 on or off."
               buttonText="OSC3" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="80760cb7f2a9d968" memberName="eq" virtualName=""
-              explicitFocusOrder="0" pos="100 10 60 20" tooltip="Turns visualisation for the EQ BANK output on or off."
+              explicitFocusOrder="0" pos="30 90 60 20" tooltip="Turns visualisation for the EQ BANK output on or off."
               buttonText="EQ OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="13f5cd2a936d7f93" memberName="out" virtualName=""
-              explicitFocusOrder="0" pos="100 35 60 20" tooltip="Turns visualisation for the FINAL/MAIN output on or off."
+              explicitFocusOrder="0" pos="30 110 60 20" tooltip="Turns visualisation for the FINAL/MAIN output on or off."
               buttonText="MAIN OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="b51569f32393a334" memberName="f_1" virtualName=""
-              explicitFocusOrder="0" pos="30 95 60 20" tooltip="Turns visualisation for FILTER 1 OUTPUT on or off."
+              explicitFocusOrder="0" pos="1375 20 60 20" tooltip="Turns visualisation for FILTER 1 OUTPUT on or off."
               buttonText="F1 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="773e5360237ed15c" memberName="f_2" virtualName=""
-              explicitFocusOrder="0" pos="30 120 60 20" tooltip="Turns visualisation for FILTER 2 OUTPUT on or off."
+              explicitFocusOrder="0" pos="1375 40 60 20" tooltip="Turns visualisation for FILTER 2 OUTPUT on or off."
               buttonText="F2 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="60cf3f432ebdbf40" memberName="f_3" virtualName=""
-              explicitFocusOrder="0" pos="30 145 60 20" tooltip="Turns visualisation for FILTER 3 OUTPUT on or off."
+              explicitFocusOrder="0" pos="1375 60 60 20" tooltip="Turns visualisation for FILTER 3 OUTPUT on or off."
               buttonText="F3 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
-              virtualName="" explicitFocusOrder="0" pos="100 95 60 20" tooltip="Turns visualisation for the FILTER 1 MOD MIX on or off."
+              virtualName="" explicitFocusOrder="0" pos="1375 90 60 20" tooltip="Turns visualisation for the FILTER 1 MOD MIX on or off."
               buttonText="F1 - MOD MIX" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="68fc0bbd2cf58e73" memberName="f_env_2"
-              virtualName="" explicitFocusOrder="0" pos="100 120 60 20" tooltip="Turns visualisation for the FILTER 2 MOD MIX on or off."
+              virtualName="" explicitFocusOrder="0" pos="1375 110 60 20" tooltip="Turns visualisation for the FILTER 2 MOD MIX on or off."
               buttonText="F2 - MOD MIX" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="1d48bab8b4aaf7c9" memberName="f_env_3"
-              virtualName="" explicitFocusOrder="0" pos="100 145 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
+              virtualName="" explicitFocusOrder="0" pos="1375 130 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
               buttonText="F3 - MOD MIX" connectedEdges="0" needsCallback="1"
               radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
-              explicitFocusOrder="0" pos="100 60 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
+              explicitFocusOrder="0" pos="30 130 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
               buttonText="AMP ENV" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="87835d83e09366f2" memberName="drawing_area" virtualName=""
-                    explicitFocusOrder="0" pos="215 10 1240 135" class="Component"
-                    params=""/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
 */
 #endif
+
+//==============================================================================
+// Binary resources - be careful not to edit any of these sections!
+
+// JUCER_RESOURCE: bg_editors_svg, 7021, "../Files/STYLE/Monique-Hintergrund-1/bg_editors.svg"
+static const unsigned char resource_Monique_Ui_AmpPainter_bg_editors_svg[] = { 60,63,120,109,108,32,118,101,114,115,105,111,110,61,34,49,46,48,34,32,101,110,99,111,100,105,110,103,61,34,85,84,70,45,56,
+        34,32,115,116,97,110,100,97,108,111,110,101,61,34,110,111,34,63,62,10,60,115,118,103,10,32,32,32,120,109,108,110,115,58,100,99,61,34,104,116,116,112,58,47,47,112,117,114,108,46,111,114,103,47,100,99,47,
+        101,108,101,109,101,110,116,115,47,49,46,49,47,34,10,32,32,32,120,109,108,110,115,58,99,99,61,34,104,116,116,112,58,47,47,99,114,101,97,116,105,118,101,99,111,109,109,111,110,115,46,111,114,103,47,110,
+        115,35,34,10,32,32,32,120,109,108,110,115,58,114,100,102,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,49,57,57,57,47,48,50,47,50,50,45,114,100,102,45,115,121,110,116,97,120,45,
+        110,115,35,34,10,32,32,32,120,109,108,110,115,58,115,118,103,61,34,104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,10,32,32,32,120,109,108,110,115,61,34,
+        104,116,116,112,58,47,47,119,119,119,46,119,51,46,111,114,103,47,50,48,48,48,47,115,118,103,34,10,32,32,32,120,109,108,110,115,58,120,108,105,110,107,61,34,104,116,116,112,58,47,47,119,119,119,46,119,
+        51,46,111,114,103,47,49,57,57,57,47,120,108,105,110,107,34,10,32,32,32,120,109,108,110,115,58,115,111,100,105,112,111,100,105,61,34,104,116,116,112,58,47,47,115,111,100,105,112,111,100,105,46,115,111,
+        117,114,99,101,102,111,114,103,101,46,110,101,116,47,68,84,68,47,115,111,100,105,112,111,100,105,45,48,46,100,116,100,34,10,32,32,32,120,109,108,110,115,58,105,110,107,115,99,97,112,101,61,34,104,116,
+        116,112,58,47,47,119,119,119,46,105,110,107,115,99,97,112,101,46,111,114,103,47,110,97,109,101,115,112,97,99,101,115,47,105,110,107,115,99,97,112,101,34,10,32,32,32,119,105,100,116,104,61,34,49,48,48,
+        37,34,10,32,32,32,104,101,105,103,104,116,61,34,49,48,48,37,34,10,32,32,32,118,105,101,119,66,111,120,61,34,48,32,48,32,49,50,55,52,32,56,52,48,34,10,32,32,32,118,101,114,115,105,111,110,61,34,49,46,49,
+        34,10,32,32,32,120,109,108,58,115,112,97,99,101,61,34,112,114,101,115,101,114,118,101,34,10,32,32,32,115,116,121,108,101,61,34,102,105,108,108,45,114,117,108,101,58,101,118,101,110,111,100,100,59,99,108,
+        105,112,45,114,117,108,101,58,101,118,101,110,111,100,100,59,115,116,114,111,107,101,45,108,105,110,101,99,97,112,58,114,111,117,110,100,59,115,116,114,111,107,101,45,108,105,110,101,106,111,105,110,58,
+        114,111,117,110,100,59,115,116,114,111,107,101,45,109,105,116,101,114,108,105,109,105,116,58,49,46,52,49,52,50,49,59,34,10,32,32,32,105,100,61,34,115,118,103,50,34,10,32,32,32,105,110,107,115,99,97,112,
+        101,58,118,101,114,115,105,111,110,61,34,48,46,52,56,46,52,32,114,57,57,51,57,34,10,32,32,32,115,111,100,105,112,111,100,105,58,100,111,99,110,97,109,101,61,34,48,49,72,105,110,116,101,114,103,114,117,
+        110,100,45,65,108,108,101,115,46,115,118,103,34,62,60,109,101,116,97,100,97,116,97,10,32,32,32,32,32,105,100,61,34,109,101,116,97,100,97,116,97,50,56,53,34,62,60,114,100,102,58,82,68,70,62,60,99,99,58,
+        87,111,114,107,10,32,32,32,32,32,32,32,32,32,114,100,102,58,97,98,111,117,116,61,34,34,62,60,100,99,58,102,111,114,109,97,116,62,105,109,97,103,101,47,115,118,103,43,120,109,108,60,47,100,99,58,102,111,
+        114,109,97,116,62,60,100,99,58,116,121,112,101,10,32,32,32,32,32,32,32,32,32,32,32,114,100,102,58,114,101,115,111,117,114,99,101,61,34,104,116,116,112,58,47,47,112,117,114,108,46,111,114,103,47,100,99,
+        47,100,99,109,105,116,121,112,101,47,83,116,105,108,108,73,109,97,103,101,34,32,47,62,60,100,99,58,116,105,116,108,101,62,60,47,100,99,58,116,105,116,108,101,62,60,47,99,99,58,87,111,114,107,62,60,47,
+        114,100,102,58,82,68,70,62,60,47,109,101,116,97,100,97,116,97,62,60,115,111,100,105,112,111,100,105,58,110,97,109,101,100,118,105,101,119,10,32,32,32,32,32,112,97,103,101,99,111,108,111,114,61,34,35,102,
+        102,102,102,102,102,34,10,32,32,32,32,32,98,111,114,100,101,114,99,111,108,111,114,61,34,35,54,54,54,54,54,54,34,10,32,32,32,32,32,98,111,114,100,101,114,111,112,97,99,105,116,121,61,34,49,34,10,32,32,
+        32,32,32,111,98,106,101,99,116,116,111,108,101,114,97,110,99,101,61,34,49,48,34,10,32,32,32,32,32,103,114,105,100,116,111,108,101,114,97,110,99,101,61,34,49,48,34,10,32,32,32,32,32,103,117,105,100,101,
+        116,111,108,101,114,97,110,99,101,61,34,49,48,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,112,97,103,101,111,112,97,99,105,116,121,61,34,48,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,
+        58,112,97,103,101,115,104,97,100,111,119,61,34,50,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,119,105,110,100,111,119,45,119,105,100,116,104,61,34,49,57,50,48,34,10,32,32,32,32,32,105,110,107,
+        115,99,97,112,101,58,119,105,110,100,111,119,45,104,101,105,103,104,116,61,34,49,48,54,48,34,10,32,32,32,32,32,105,100,61,34,110,97,109,101,100,118,105,101,119,50,56,51,34,10,32,32,32,32,32,115,104,111,
+        119,103,114,105,100,61,34,102,97,108,115,101,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,122,111,111,109,61,34,49,46,49,50,51,56,48,57,53,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,
+        99,120,61,34,54,50,56,46,49,48,55,56,49,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,99,121,61,34,51,53,52,46,53,56,54,54,57,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,119,105,110,
+        100,111,119,45,120,61,34,45,51,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,119,105,110,100,111,119,45,121,61,34,45,51,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,119,105,110,100,111,
+        119,45,109,97,120,105,109,105,122,101,100,61,34,49,34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,99,117,114,114,101,110,116,45,108,97,121,101,114,61,34,115,118,103,50,34,32,47,62,60,103,10,32,
+        32,32,32,32,116,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,48,46,57,53,48,53,56,53,44,48,44,48,44,48,46,57,53,48,53,56,53,44,51,50,46,57,53,51,56,44,48,46,54,54,57,41,34,10,32,32,32,
+        32,32,105,100,61,34,103,49,49,54,34,32,47,62,60,103,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,108,97,98,101,108,61,34,76,97,121,101,114,34,10,32,32,32,32,32,105,100,61,34,108,97,121,101,114,49,
+        34,10,32,32,32,32,32,105,110,107,115,99,97,112,101,58,103,114,111,117,112,109,111,100,101,61,34,108,97,121,101,114,34,10,32,32,32,32,32,116,114,97,110,115,102,111,114,109,61,34,116,114,97,110,115,108,
+        97,116,101,40,48,44,49,49,41,34,32,47,62,60,103,10,32,32,32,32,32,105,100,61,34,103,49,52,57,34,10,32,32,32,32,32,116,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,56,46,53,50,50,56,55,
+        44,48,44,48,44,49,46,48,48,53,53,49,44,45,49,49,46,49,54,56,54,44,54,54,49,46,57,52,57,41,34,62,60,112,97,116,104,10,32,32,32,32,32,32,32,105,110,107,115,99,97,112,101,58,99,111,110,110,101,99,116,111,
+        114,45,99,117,114,118,97,116,117,114,101,61,34,48,34,10,32,32,32,32,32,32,32,105,100,61,34,112,97,116,104,49,53,49,34,10,32,32,32,32,32,32,32,115,116,121,108,101,61,34,102,105,108,108,58,35,97,49,97,97,
+        98,50,34,10,32,32,32,32,32,32,32,100,61,34,109,32,49,52,55,46,50,48,54,44,52,51,46,51,48,49,32,99,32,48,44,45,56,46,49,54,50,32,45,48,46,55,56,49,44,45,49,52,46,55,56,56,32,45,49,46,55,52,52,44,45,49,
+        52,46,55,56,56,32,108,32,45,49,52,48,46,55,49,55,44,48,32,67,32,51,46,55,56,50,44,50,56,46,53,49,51,32,51,44,51,53,46,49,51,57,32,51,44,52,51,46,51,48,49,32,108,32,48,44,49,49,49,46,52,53,55,32,99,32,
+        48,44,56,46,49,54,50,32,48,46,55,56,50,44,49,52,46,55,56,56,32,49,46,55,52,53,44,49,52,46,55,56,56,32,108,32,49,52,48,46,55,49,55,44,48,32,99,32,48,46,57,54,51,44,48,32,49,46,55,52,52,44,45,54,46,54,50,
+        54,32,49,46,55,52,52,44,45,49,52,46,55,56,56,32,108,32,48,44,45,49,49,49,46,52,53,55,32,122,34,32,47,62,60,47,103,62,60,100,101,102,115,10,32,32,32,32,32,105,100,61,34,100,101,102,115,50,50,55,34,62,60,
+        108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,49,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,
+        48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,
+        101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,
+        57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,
+        34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,
+        111,112,50,51,48,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,55,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,
+        108,111,114,58,114,103,98,40,55,48,44,54,57,44,54,53,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,51,50,34,32,47,62,60,115,
+        116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,51,57,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,57,56,
+        44,57,56,44,57,56,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,48,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,51,52,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,
+        32,32,111,102,102,115,101,116,61,34,56,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,57,53,44,57,53,44,57,53,41,59,115,116,111,
+        112,45,111,112,97,99,105,116,121,58,48,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,51,54,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,
+        57,54,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,
+        121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,51,56,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,10,32,32,32,
+        32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,
+        32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,52,48,34,32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,
+        32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,50,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,
+        32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,
+        105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,62,60,115,
+        116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,
+        44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,52,51,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,
+        32,32,32,32,111,102,102,115,101,116,61,34,49,55,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,55,48,44,54,57,44,54,53,41,59,115,116,
+        111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,52,53,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,
+        61,34,51,57,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,57,56,44,57,56,44,57,56,41,59,115,116,111,112,45,111,112,97,99,105,116,
+        121,58,48,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,52,55,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,55,54,37,34,10,32,32,32,32,
+        32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,57,53,44,57,53,44,57,53,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,48,34,10,32,32,32,32,32,32,
+        32,32,32,105,100,61,34,115,116,111,112,50,52,57,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,57,54,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,
+        61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,
+        116,111,112,50,53,49,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,
+        99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,53,51,34,
+        32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,51,34,10,32,
+        32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,97,
+        100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,
+        116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,
+        116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,
+        105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,53,54,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,55,37,34,10,32,32,
+        32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,55,48,44,54,57,44,54,53,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,
+        32,32,32,32,32,105,100,61,34,115,116,111,112,50,53,56,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,51,57,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,
+        101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,57,56,44,57,56,44,57,56,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,48,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,
+        111,112,50,54,48,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,56,49,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,
+        108,111,114,58,114,103,98,40,57,53,44,57,53,44,57,53,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,48,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,54,50,34,32,47,62,60,115,
+        116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,57,54,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,
+        48,44,49,55,55,44,49,56,55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,54,52,34,32,47,62,60,115,116,111,112,10,32,32,32,32,
+        32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,
+        55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,54,54,34,32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,
+        62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,52,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,
+        61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,
+        97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,52,49,46,54,48,55,49,44,48,44,48,44,51,52,46,57,
+        48,53,51,44,53,55,46,49,52,56,54,44,54,55,51,46,49,54,54,41,34,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,
+        101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,49,54,44,49,49,57,44,49,50,50,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,
+        115,116,111,112,50,54,57,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,
+        45,99,111,108,111,114,58,114,103,98,40,49,54,49,44,49,55,48,44,49,55,56,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,55,49,
+        34,32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,53,34,10,
+        32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,
+        97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,
+        97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,
+        101,116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,51,51,44,49,51,51,44,49,51,51,41,59,115,116,111,112,45,111,112,
+        97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,55,52,34,32,47,62,60,115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,
+        10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,50,53,49,44,55,56,44,56,49,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,
+        32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,55,54,34,32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,
+        32,32,32,32,32,32,105,100,61,34,95,76,105,110,101,97,114,54,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,
+        32,32,32,32,32,121,50,61,34,48,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,
+        97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,49,48,51,49,46,48,51,44,48,44,48,44,52,49,54,46,48,49,56,44,50,50,52,46,54,55,50,44,51,49,50,46,51,41,34,62,60,
+        115,116,111,112,10,32,32,32,32,32,32,32,32,32,111,102,102,115,101,116,61,34,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,51,
+        51,44,49,51,51,44,49,51,51,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,55,57,34,32,47,62,60,115,116,111,112,10,32,32,32,32,
+        32,32,32,32,32,111,102,102,115,101,116,61,34,49,48,48,37,34,10,32,32,32,32,32,32,32,32,32,115,116,121,108,101,61,34,115,116,111,112,45,99,111,108,111,114,58,114,103,98,40,49,54,48,44,49,55,55,44,49,56,
+        55,41,59,115,116,111,112,45,111,112,97,99,105,116,121,58,49,34,10,32,32,32,32,32,32,32,32,32,105,100,61,34,115,116,111,112,50,56,49,34,32,47,62,60,47,108,105,110,101,97,114,71,114,97,100,105,101,110,116,
+        62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,110,107,115,99,97,112,101,58,99,111,108,108,101,99,116,61,34,97,108,119,97,121,115,34,10,32,32,32,32,32,32,32,120,
+        108,105,110,107,58,104,114,101,102,61,34,35,95,76,105,110,101,97,114,49,34,10,32,32,32,32,32,32,32,105,100,61,34,108,105,110,101,97,114,71,114,97,100,105,101,110,116,51,51,52,56,34,10,32,32,32,32,32,32,
+        32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,
+        61,34,109,97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,
+        32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,32,47,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,
+        32,105,110,107,115,99,97,112,101,58,99,111,108,108,101,99,116,61,34,97,108,119,97,121,115,34,10,32,32,32,32,32,32,32,120,108,105,110,107,58,104,114,101,102,61,34,35,95,76,105,110,101,97,114,50,34,10,32,
+        32,32,32,32,32,32,105,100,61,34,108,105,110,101,97,114,71,114,97,100,105,101,110,116,51,51,53,48,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,
+        97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,
+        48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,10,32,32,32,32,32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,
+        32,32,32,32,32,121,50,61,34,48,34,32,47,62,60,108,105,110,101,97,114,71,114,97,100,105,101,110,116,10,32,32,32,32,32,32,32,105,110,107,115,99,97,112,101,58,99,111,108,108,101,99,116,61,34,97,108,119,97,
+        121,115,34,10,32,32,32,32,32,32,32,120,108,105,110,107,58,104,114,101,102,61,34,35,95,76,105,110,101,97,114,51,34,10,32,32,32,32,32,32,32,105,100,61,34,108,105,110,101,97,114,71,114,97,100,105,101,110,
+        116,51,51,53,50,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,110,116,85,110,105,116,115,61,34,117,115,101,114,83,112,97,99,101,79,110,85,115,101,34,10,32,32,32,32,32,32,32,103,114,97,100,105,101,
+        110,116,84,114,97,110,115,102,111,114,109,61,34,109,97,116,114,105,120,40,54,49,46,56,48,54,57,44,48,44,48,44,50,55,46,55,48,53,57,44,49,51,55,46,49,54,52,44,54,52,46,48,53,53,53,41,34,10,32,32,32,32,
+        32,32,32,120,49,61,34,48,34,10,32,32,32,32,32,32,32,121,49,61,34,48,34,10,32,32,32,32,32,32,32,120,50,61,34,49,34,10,32,32,32,32,32,32,32,121,50,61,34,48,34,32,47,62,60,47,100,101,102,115,62,60,47,115,
+        118,103,62,0,0
+                                                                             };
+
+const char* Monique_Ui_AmpPainter::bg_editors_svg = (const char*) resource_Monique_Ui_AmpPainter_bg_editors_svg;
+const int Monique_Ui_AmpPainter::bg_editors_svgSize = 7021;
 
 
 //[EndFile] You can add extra defines here...

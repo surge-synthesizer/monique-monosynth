@@ -113,7 +113,9 @@ public:
     void setButtonStyle (ButtonStyle newStyle);
 
     /** Returns the current style. */
-    ButtonStyle getStyle() const noexcept       { return style; }
+    ButtonStyle getStyle() const noexcept       {
+        return style;
+    }
 
     //==============================================================================
     /** Gives the button an optional amount of space around the edge of the drawable.
@@ -177,7 +179,7 @@ private:
     //==============================================================================
     ButtonStyle style;
     ScopedPointer<Drawable> normalImage, overImage, downImage, disabledImage,
-                            normalImageOn, overImageOn, downImageOn, disabledImageOn;
+                  normalImageOn, overImageOn, downImageOn, disabledImageOn;
     Drawable* currentImage;
     int edgeIndent;
 

@@ -42,7 +42,7 @@
     @see TracktionMarketplaceStatus
 */
 class JUCE_API  TracktionMarketplaceUnlockForm  : public Component,
-                                                  private ButtonListener
+    private ButtonListener
 {
 public:
     /** Creates an unlock form that will work with the given status object.

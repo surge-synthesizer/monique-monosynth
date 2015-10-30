@@ -27,7 +27,8 @@
 */
 
 MemoryBlock::MemoryBlock() noexcept
-    : size (0)
+:
+size (0)
 {
 }
 
@@ -88,8 +89,9 @@ MemoryBlock& MemoryBlock::operator= (const MemoryBlock& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 MemoryBlock::MemoryBlock (MemoryBlock&& other) noexcept
-    : data (static_cast<HeapBlock<char>&&> (other.data)),
-      size (other.size)
+:
+data (static_cast<HeapBlock<char>&&> (other.data)),
+     size (other.size)
 {
 }
 
@@ -116,7 +118,7 @@ bool MemoryBlock::operator!= (const MemoryBlock& other) const noexcept
 bool MemoryBlock::matches (const void* dataToCompare, size_t dataSize) const noexcept
 {
     return size == dataSize
-            && memcmp (data, dataToCompare, size) == 0;
+           && memcmp (data, dataToCompare, size) == 0;
 }
 
 //==============================================================================
@@ -340,9 +342,18 @@ void MemoryBlock::loadFromHexString (StringRef hex)
             {
                 const juce_wchar c = t.getAndAdvance();
 
-                if (c >= '0' && c <= '9')    { byte |= c - '0';        break; }
-                if (c >= 'a' && c <= 'z')    { byte |= c - ('a' - 10); break; }
-                if (c >= 'A' && c <= 'Z')    { byte |= c - ('A' - 10); break; }
+                if (c >= '0' && c <= '9')    {
+                    byte |= c - '0';
+                    break;
+                }
+                if (c >= 'a' && c <= 'z')    {
+                    byte |= c - ('a' - 10);
+                    break;
+                }
+                if (c >= 'A' && c <= 'Z')    {
+                    byte |= c - ('A' - 10);
+                    break;
+                }
 
                 if (c == 0)
                 {

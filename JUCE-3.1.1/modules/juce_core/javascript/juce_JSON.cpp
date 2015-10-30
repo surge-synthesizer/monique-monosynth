@@ -35,9 +35,13 @@ public:
 
         switch (t.getAndAdvance())
         {
-            case 0:      result = var(); return Result::ok();
-            case '{':    return parseObject (t, result);
-            case '[':    return parseArray  (t, result);
+        case 0:
+            result = var();
+            return Result::ok();
+        case '{':
+            return parseObject (t, result);
+        case '[':
+            return parseArray  (t, result);
         }
 
         return createFail ("Expected '{' or '['", &t);
@@ -60,33 +64,46 @@ public:
 
                 switch (c)
                 {
-                    case '"':
-                    case '\'':
-                    case '\\':
-                    case '/':  break;
+                case '"':
+                case '\'':
+                case '\\':
+                case '/':
+                    break;
 
-                    case 'a':  c = '\a'; break;
-                    case 'b':  c = '\b'; break;
-                    case 'f':  c = '\f'; break;
-                    case 'n':  c = '\n'; break;
-                    case 'r':  c = '\r'; break;
-                    case 't':  c = '\t'; break;
+                case 'a':
+                    c = '\a';
+                    break;
+                case 'b':
+                    c = '\b';
+                    break;
+                case 'f':
+                    c = '\f';
+                    break;
+                case 'n':
+                    c = '\n';
+                    break;
+                case 'r':
+                    c = '\r';
+                    break;
+                case 't':
+                    c = '\t';
+                    break;
 
-                    case 'u':
+                case 'u':
+                {
+                    c = 0;
+
+                    for (int i = 4; --i >= 0;)
                     {
-                        c = 0;
+                        const int digitValue = CharacterFunctions::getHexDigitValue (t.getAndAdvance());
+                        if (digitValue < 0)
+                            return createFail ("Syntax error in unicode escape sequence");
 
-                        for (int i = 4; --i >= 0;)
-                        {
-                            const int digitValue = CharacterFunctions::getHexDigitValue (t.getAndAdvance());
-                            if (digitValue < 0)
-                                return createFail ("Syntax error in unicode escape sequence");
-
-                            c = (juce_wchar) ((c << 4) + digitValue);
-                        }
-
-                        break;
+                        c = (juce_wchar) ((c << 4) + digitValue);
                     }
+
+                    break;
+                }
                 }
             }
 
@@ -107,53 +124,69 @@ public:
 
         switch (t2.getAndAdvance())
         {
-            case '{':    t = t2; return parseObject (t, result);
-            case '[':    t = t2; return parseArray  (t, result);
-            case '"':    t = t2; return parseString ('"',  t, result);
-            case '\'':   t = t2; return parseString ('\'', t, result);
+        case '{':
+            t = t2;
+            return parseObject (t, result);
+        case '[':
+            t = t2;
+            return parseArray  (t, result);
+        case '"':
+            t = t2;
+            return parseString ('"',  t, result);
+        case '\'':
+            t = t2;
+            return parseString ('\'', t, result);
 
-            case '-':
-                t2 = t2.findEndOfWhitespace();
-                if (! CharacterFunctions::isDigit (*t2))
-                    break;
+        case '-':
+            t2 = t2.findEndOfWhitespace();
+            if (! CharacterFunctions::isDigit (*t2))
+                break;
 
+            t = t2;
+            return parseNumber (t, result, true);
+
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return parseNumber (t, result, false);
+
+        case 't':   // "true"
+            if (t2.getAndAdvance() == 'r' && t2.getAndAdvance() == 'u' && t2.getAndAdvance() == 'e')
+            {
                 t = t2;
-                return parseNumber (t, result, true);
+                result = var (true);
+                return Result::ok();
+            }
+            break;
 
-            case '0': case '1': case '2': case '3': case '4':
-            case '5': case '6': case '7': case '8': case '9':
-                return parseNumber (t, result, false);
+        case 'f':   // "false"
+            if (t2.getAndAdvance() == 'a' && t2.getAndAdvance() == 'l'
+                    && t2.getAndAdvance() == 's' && t2.getAndAdvance() == 'e')
+            {
+                t = t2;
+                result = var (false);
+                return Result::ok();
+            }
+            break;
 
-            case 't':   // "true"
-                if (t2.getAndAdvance() == 'r' && t2.getAndAdvance() == 'u' && t2.getAndAdvance() == 'e')
-                {
-                    t = t2;
-                    result = var (true);
-                    return Result::ok();
-                }
-                break;
+        case 'n':   // "null"
+            if (t2.getAndAdvance() == 'u' && t2.getAndAdvance() == 'l' && t2.getAndAdvance() == 'l')
+            {
+                t = t2;
+                result = var();
+                return Result::ok();
+            }
+            break;
 
-            case 'f':   // "false"
-                if (t2.getAndAdvance() == 'a' && t2.getAndAdvance() == 'l'
-                      && t2.getAndAdvance() == 's' && t2.getAndAdvance() == 'e')
-                {
-                    t = t2;
-                    result = var (false);
-                    return Result::ok();
-                }
-                break;
-
-            case 'n':   // "null"
-                if (t2.getAndAdvance() == 'u' && t2.getAndAdvance() == 'l' && t2.getAndAdvance() == 'l')
-                {
-                    t = t2;
-                    result = var();
-                    return Result::ok();
-                }
-                break;
-
-            default:
-                break;
+        default:
+            break;
         }
 
         return createFail ("Syntax error", &t);
@@ -197,7 +230,7 @@ private:
             }
 
             if (CharacterFunctions::isWhitespace (c)
-                 || c == ',' || c == '}' || c == ']' || c == 0)
+                    || c == ',' || c == '}' || c == ']' || c == 0)
             {
                 t = previousChar;
                 break;
@@ -382,40 +415,57 @@ public:
 
             switch (c)
             {
-                case 0:  return;
+            case 0:
+                return;
 
-                case '\"':  out << "\\\""; break;
-                case '\\':  out << "\\\\"; break;
-                case '\a':  out << "\\a";  break;
-                case '\b':  out << "\\b";  break;
-                case '\f':  out << "\\f";  break;
-                case '\t':  out << "\\t";  break;
-                case '\r':  out << "\\r";  break;
-                case '\n':  out << "\\n";  break;
+            case '\"':
+                out << "\\\"";
+                break;
+            case '\\':
+                out << "\\\\";
+                break;
+            case '\a':
+                out << "\\a";
+                break;
+            case '\b':
+                out << "\\b";
+                break;
+            case '\f':
+                out << "\\f";
+                break;
+            case '\t':
+                out << "\\t";
+                break;
+            case '\r':
+                out << "\\r";
+                break;
+            case '\n':
+                out << "\\n";
+                break;
 
-                default:
-                    if (c >= 32 && c < 127)
+            default:
+                if (c >= 32 && c < 127)
+                {
+                    out << (char) c;
+                }
+                else
+                {
+                    if (CharPointer_UTF16::getBytesRequiredFor (c) > 2)
                     {
-                        out << (char) c;
+                        CharPointer_UTF16::CharType chars[2];
+                        CharPointer_UTF16 utf16 (chars);
+                        utf16.write (c);
+
+                        for (int i = 0; i < 2; ++i)
+                            writeEscapedChar (out, (unsigned short) chars[i]);
                     }
                     else
                     {
-                        if (CharPointer_UTF16::getBytesRequiredFor (c) > 2)
-                        {
-                            CharPointer_UTF16::CharType chars[2];
-                            CharPointer_UTF16 utf16 (chars);
-                            utf16.write (c);
-
-                            for (int i = 0; i < 2; ++i)
-                                writeEscapedChar (out, (unsigned short) chars[i]);
-                        }
-                        else
-                        {
-                            writeEscapedChar (out, (unsigned short) c);
-                        }
+                        writeEscapedChar (out, (unsigned short) c);
                     }
+                }
 
-                    break;
+                break;
             }
         }
     }
@@ -575,35 +625,41 @@ public:
     {
         switch (r.nextInt (depth > 3 ? 6 : 8))
         {
-            case 0:     return var();
-            case 1:     return r.nextInt();
-            case 2:     return r.nextInt64();
-            case 3:     return r.nextBool();
-            case 4:     return r.nextDouble();
-            case 5:     return createRandomWideCharString (r);
+        case 0:
+            return var();
+        case 1:
+            return r.nextInt();
+        case 2:
+            return r.nextInt64();
+        case 3:
+            return r.nextBool();
+        case 4:
+            return r.nextDouble();
+        case 5:
+            return createRandomWideCharString (r);
 
-            case 6:
-            {
-                var v (createRandomVar (r, depth + 1));
+        case 6:
+        {
+            var v (createRandomVar (r, depth + 1));
 
-                for (int i = 1 + r.nextInt (30); --i >= 0;)
-                    v.append (createRandomVar (r, depth + 1));
+            for (int i = 1 + r.nextInt (30); --i >= 0;)
+                v.append (createRandomVar (r, depth + 1));
 
-                return v;
-            }
+            return v;
+        }
 
-            case 7:
-            {
-                DynamicObject* o = new DynamicObject();
+        case 7:
+        {
+            DynamicObject* o = new DynamicObject();
 
-                for (int i = r.nextInt (30); --i >= 0;)
-                    o->setProperty (createRandomIdentifier (r), createRandomVar (r, depth + 1));
+            for (int i = r.nextInt (30); --i >= 0;)
+                o->setProperty (createRandomIdentifier (r), createRandomVar (r, depth + 1));
 
-                return o;
-            }
+            return o;
+        }
 
-            default:
-                return var();
+        default:
+            return var();
         }
     }
 

@@ -37,9 +37,9 @@ static int insideLADSPACallback = 0;
 #define JUCE_LADSPA_LOGGING 1
 
 #if JUCE_LADSPA_LOGGING
- #define JUCE_LADSPA_LOG(x) Logger::writeToLog (x);
+#define JUCE_LADSPA_LOG(x) Logger::writeToLog (x);
 #else
- #define JUCE_LADSPA_LOG(x)
+#define JUCE_LADSPA_LOG(x)
 #endif
 
 //==============================================================================
@@ -245,14 +245,26 @@ public:
         return module->file.hashCode();
     }
 
-    String getVersion() const                 { return LADSPA_VERSION; }
-    String getCategory() const                { return "Effect"; }
+    String getVersion() const                 {
+        return LADSPA_VERSION;
+    }
+    String getCategory() const                {
+        return "Effect";
+    }
 
-    bool acceptsMidi() const                  { return false; }
-    bool producesMidi() const                 { return false; }
+    bool acceptsMidi() const                  {
+        return false;
+    }
+    bool producesMidi() const                 {
+        return false;
+    }
 
-    bool silenceInProducesSilenceOut() const  { return plugin == nullptr; } // ..any way to get a proper answer for these?
-    double getTailLengthSeconds() const       { return 0.0; }
+    bool silenceInProducesSilenceOut() const  {
+        return plugin == nullptr;    // ..any way to get a proper answer for these?
+    }
+    double getTailLengthSeconds() const       {
+        return 0.0;
+    }
 
     //==============================================================================
     void prepareToPlay (double newSampleRate, int samplesPerBlockExpected)
@@ -330,8 +342,12 @@ public:
             buffer.clear (i, 0, numSamples);
     }
 
-    bool isInputChannelStereoPair (int index) const    { return isPositiveAndBelow (index, getNumInputChannels()); }
-    bool isOutputChannelStereoPair (int index) const   { return isPositiveAndBelow (index, getNumInputChannels()); }
+    bool isInputChannelStereoPair (int index) const    {
+        return isPositiveAndBelow (index, getNumInputChannels());
+    }
+    bool isOutputChannelStereoPair (int index) const   {
+        return isPositiveAndBelow (index, getNumInputChannels());
+    }
 
     const String getInputChannelName (const int index) const
     {
@@ -350,12 +366,14 @@ public:
     }
 
     //==============================================================================
-    int getNumParameters()                              { return handle != nullptr ? parameters.size() : 0; }
+    int getNumParameters()                              {
+        return handle != nullptr ? parameters.size() : 0;
+    }
 
     bool isParameterAutomatable (int index) const
     {
         return plugin != nullptr
-                 && (plugin->PortDescriptors [parameters[index]] & LADSPA_PORT_INPUT) != 0;
+               && (plugin->PortDescriptors [parameters[index]] & LADSPA_PORT_INPUT) != 0;
     }
 
     float getParameter (int index)
@@ -411,8 +429,12 @@ public:
     }
 
     //==============================================================================
-    int getNumPrograms()                                { return 0; }
-    int getCurrentProgram()                             { return 0; }
+    int getNumPrograms()                                {
+        return 0;
+    }
+    int getCurrentProgram()                             {
+        return 0;
+    }
 
     void setCurrentProgram (int newIndex)
     {
@@ -489,8 +511,10 @@ private:
 
     struct ParameterValue
     {
-        inline ParameterValue() noexcept                   : scaled (0), unscaled (0) {}
-        inline ParameterValue (float s, float u) noexcept  : scaled (s), unscaled (u) {}
+inline ParameterValue() noexcept                   :
+        scaled (0), unscaled (0) {}
+inline ParameterValue (float s, float u) noexcept  :
+        scaled (s), unscaled (u) {}
 
         float scaled, unscaled;
     };
@@ -572,7 +596,7 @@ LADSPAPluginFormat::LADSPAPluginFormat() {}
 LADSPAPluginFormat::~LADSPAPluginFormat() {}
 
 void LADSPAPluginFormat::findAllTypesForFile (OwnedArray <PluginDescription>& results,
-                                              const String& fileOrIdentifier)
+        const String& fileOrIdentifier)
 {
     if (! fileMightContainThisPluginType (fileOrIdentifier))
         return;
@@ -611,7 +635,7 @@ void LADSPAPluginFormat::findAllTypesForFile (OwnedArray <PluginDescription>& re
 }
 
 AudioPluginInstance* LADSPAPluginFormat::createInstanceFromDescription (const PluginDescription& desc,
-                                                                        double sampleRate, int blockSize)
+        double sampleRate, int blockSize)
 {
     ScopedPointer<LADSPAPluginInstance> result;
 
@@ -696,8 +720,8 @@ void LADSPAPluginFormat::recursiveFileSearch (StringArray& results, const File& 
 FileSearchPath LADSPAPluginFormat::getDefaultLocationsToSearch()
 {
     return FileSearchPath (SystemStats::getEnvironmentVariable ("LADSPA_PATH",
-                                                                "/usr/lib/ladspa;/usr/local/lib/ladspa;~/.ladspa")
-                             .replace (":", ";"));
+                           "/usr/lib/ladspa;/usr/local/lib/ladspa;~/.ladspa")
+                           .replace (":", ";"));
 }
 
 #endif

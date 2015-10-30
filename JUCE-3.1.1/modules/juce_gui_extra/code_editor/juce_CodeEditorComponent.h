@@ -36,8 +36,8 @@ class CodeTokeniser;
     files.
 */
 class JUCE_API  CodeEditorComponent   : public Component,
-                                        public ApplicationCommandTarget,
-                                        public TextInputTarget
+    public ApplicationCommandTarget,
+    public TextInputTarget
 {
 public:
     //==============================================================================
@@ -57,7 +57,9 @@ public:
 
     //==============================================================================
     /** Returns the code document that this component is editing. */
-    CodeDocument& getDocument() const noexcept          { return document; }
+    CodeDocument& getDocument() const noexcept          {
+        return document;
+    }
 
     /** Loads the given content into the document.
         This will completely reset the CodeDocument object, clear its undo history,
@@ -67,27 +69,39 @@ public:
 
     //==============================================================================
     /** Returns the standard character width. */
-    float getCharWidth() const noexcept                         { return charWidth; }
+    float getCharWidth() const noexcept                         {
+        return charWidth;
+    }
 
     /** Returns the height of a line of text, in pixels. */
-    int getLineHeight() const noexcept                          { return lineHeight; }
+    int getLineHeight() const noexcept                          {
+        return lineHeight;
+    }
 
     /** Returns the number of whole lines visible on the screen,
         This doesn't include a cut-off line that might be visible at the bottom if the
         component's height isn't an exact multiple of the line-height.
     */
-    int getNumLinesOnScreen() const noexcept                    { return linesOnScreen; }
+    int getNumLinesOnScreen() const noexcept                    {
+        return linesOnScreen;
+    }
 
     /** Returns the index of the first line that's visible at the top of the editor. */
-    int getFirstLineOnScreen() const noexcept                   { return firstLineOnScreen; }
+    int getFirstLineOnScreen() const noexcept                   {
+        return firstLineOnScreen;
+    }
 
     /** Returns the number of whole columns visible on the screen.
         This doesn't include any cut-off columns at the right-hand edge.
     */
-    int getNumColumnsOnScreen() const noexcept                  { return columnsOnScreen; }
+    int getNumColumnsOnScreen() const noexcept                  {
+        return columnsOnScreen;
+    }
 
     /** Returns the current caret position. */
-    CodeDocument::Position getCaretPos() const                  { return caretPos; }
+    CodeDocument::Position getCaretPos() const                  {
+        return caretPos;
+    }
 
     /** Returns the position of the caret, relative to the editor's origin. */
     Rectangle<int> getCaretRectangle() override;
@@ -110,10 +124,14 @@ public:
     CodeDocument::Position getPositionAt (int x, int y);
 
     /** Returns the start of the selection as a position. */
-    CodeDocument::Position getSelectionStart() const            { return selectionStart; }
+    CodeDocument::Position getSelectionStart() const            {
+        return selectionStart;
+    }
 
     /** Returns the end of the selection as a position. */
-    CodeDocument::Position getSelectionEnd() const              { return selectionEnd; }
+    CodeDocument::Position getSelectionEnd() const              {
+        return selectionEnd;
+    }
 
     /** Enables or disables the line-number display in the gutter. */
     void setLineNumbersShown (bool shouldBeShown);
@@ -192,12 +210,16 @@ public:
     /** Returns the current number of spaces per tab.
         @see setTabSize
     */
-    int getTabSize() const noexcept                     { return spacesPerTab; }
+    int getTabSize() const noexcept                     {
+        return spacesPerTab;
+    }
 
     /** Returns true if the tab key will insert spaces instead of actual tab characters.
         @see setTabSize
     */
-    bool areSpacesInsertedForTabs() const               { return useSpacesForTabs; }
+    bool areSpacesInsertedForTabs() const               {
+        return useSpacesForTabs;
+    }
 
     /** Returns a string containing spaces or tab characters to generate the given number of spaces. */
     String getTabString (int numSpaces) const;
@@ -208,13 +230,17 @@ public:
     void setFont (const Font& newFont);
 
     /** Returns the font that the editor is using. */
-    const Font& getFont() const noexcept                { return font; }
+    const Font& getFont() const noexcept                {
+        return font;
+    }
 
     /** Makes the editor read-only. */
     void setReadOnly (bool shouldBeReadOnly) noexcept;
 
     /** Returns true if the editor is set to be read-only. */
-    bool isReadOnly() const noexcept                    { return readOnly; }
+    bool isReadOnly() const noexcept                    {
+        return readOnly;
+    }
 
     //==============================================================================
     struct JUCE_API  ColourScheme
@@ -238,7 +264,9 @@ public:
     void setColourScheme (const ColourScheme& scheme);
 
     /** Returns the current syntax highlighting colour scheme. */
-    const ColourScheme& getColourScheme() const noexcept    { return colourScheme; }
+    const ColourScheme& getColourScheme() const noexcept    {
+        return colourScheme;
+    }
 
     /** Returns one the syntax highlighting colour for the given token.
         The token type values are dependent on the tokeniser being used.
@@ -268,7 +296,9 @@ public:
     void setScrollbarThickness (int thickness);
 
     /** Returns the thickness of the scrollbars. */
-    int getScrollbarThickness() const noexcept          { return scrollbarThickness; }
+    int getScrollbarThickness() const noexcept          {
+        return scrollbarThickness;
+    }
 
     //==============================================================================
     /** Called when the return key is pressed - this can be overridden for custom behaviour. */

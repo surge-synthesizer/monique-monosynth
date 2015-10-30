@@ -108,10 +108,10 @@ MultiDocumentPanel::~MultiDocumentPanel()
 //==============================================================================
 namespace MultiDocHelpers
 {
-    static bool shouldDeleteComp (Component* const c)
-    {
-        return c->getProperties() ["mdiDocumentDelete_"];
-    }
+static bool shouldDeleteComp (Component* const c)
+{
+    return c->getProperties() ["mdiDocumentDelete_"];
+}
 }
 
 bool MultiDocumentPanel::closeAllDocuments (const bool checkItsOkToCloseFirst)
@@ -189,7 +189,7 @@ bool MultiDocumentPanel::addDocument (Component* const component,
         }
         else
         {
-           addWindow (component);
+            addWindow (component);
         }
     }
     else

@@ -23,10 +23,11 @@
 */
 
 MessageManager::MessageManager() noexcept
-  : quitMessagePosted (false),
-    quitMessageReceived (false),
-    messageThreadId (Thread::getCurrentThreadId()),
-    threadWithLock (0)
+:
+quitMessagePosted (false),
+                  quitMessageReceived (false),
+                  messageThreadId (Thread::getCurrentThreadId()),
+                  threadWithLock (0)
 {
     if (JUCEApplicationBase::isStandaloneApp())
         Thread::setCurrentThreadName ("Juce Message Thread");
@@ -133,11 +134,15 @@ void MessageManager::stopDispatchLoop()
 //==============================================================================
 struct AsyncFunction  : private MessageManager::MessageBase
 {
-    AsyncFunction (std::function<void(void)> f)  : fn (f)  { post(); }
+    AsyncFunction (std::function<void(void)> f)  : fn (f)  {
+        post();
+    }
 
 private:
     std::function<void(void)> fn;
-    void messageCallback() override    { fn(); }
+    void messageCallback() override    {
+        fn();
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AsyncFunction)
 };
@@ -295,7 +300,7 @@ bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob
         while (! mm->lockingLock.tryEnter())
         {
             if ((threadToCheck != nullptr && threadToCheck->threadShouldExit())
-                  || (job != nullptr && job->shouldExit()))
+                    || (job != nullptr && job->shouldExit()))
                 return false;
 
             Thread::yield();
@@ -313,7 +318,7 @@ bool MessageManagerLock::attemptLock (Thread* const threadToCheck, ThreadPoolJob
     while (! blockingMessage->lockedEvent.wait (20))
     {
         if ((threadToCheck != nullptr && threadToCheck->threadShouldExit())
-              || (job != nullptr && job->shouldExit()))
+                || (job != nullptr && job->shouldExit()))
         {
             blockingMessage->releaseEvent.signal();
             blockingMessage = nullptr;
@@ -369,5 +374,9 @@ JUCE_API void JUCE_CALLTYPE shutdownJuce_GUI()
 
 static int numScopedInitInstances = 0;
 
-ScopedJuceInitialiser_GUI::ScopedJuceInitialiser_GUI()  { if (numScopedInitInstances++ == 0) initialiseJuce_GUI(); }
-ScopedJuceInitialiser_GUI::~ScopedJuceInitialiser_GUI() { if (--numScopedInitInstances == 0) shutdownJuce_GUI(); }
+ScopedJuceInitialiser_GUI::ScopedJuceInitialiser_GUI()  {
+    if (numScopedInitInstances++ == 0) initialiseJuce_GUI();
+}
+ScopedJuceInitialiser_GUI::~ScopedJuceInitialiser_GUI() {
+    if (--numScopedInitInstances == 0) shutdownJuce_GUI();
+}

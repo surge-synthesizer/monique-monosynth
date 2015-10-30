@@ -52,8 +52,8 @@ public:
         or ChangeBroadcaster which you can respond to on the message thread.
     */
     virtual void audioProcessorParameterChanged (AudioProcessor* processor,
-                                                 int parameterIndex,
-                                                 float newValue) = 0;
+            int parameterIndex,
+            float newValue) = 0;
 
     /** Called to indicate that something else in the plugin has changed, like its
         program, number of parameters, etc.
@@ -83,7 +83,7 @@ public:
         @see audioProcessorParameterChangeGestureEnd
     */
     virtual void audioProcessorParameterChangeGestureBegin (AudioProcessor* processor,
-                                                            int parameterIndex);
+            int parameterIndex);
 
     /** Indicates that a parameter change gesture has finished.
 
@@ -100,7 +100,7 @@ public:
         @see audioProcessorParameterChangeGestureBegin
     */
     virtual void audioProcessorParameterChangeGestureEnd (AudioProcessor* processor,
-                                                          int parameterIndex);
+            int parameterIndex);
 };
 
 #endif   // JUCE_AUDIOPROCESSORLISTENER_H_INCLUDED

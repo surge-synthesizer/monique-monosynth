@@ -23,7 +23,7 @@
 */
 
 IIRFilterAudioSource::IIRFilterAudioSource (AudioSource* const inputSource,
-                                            const bool deleteInputWhenDeleted)
+        const bool deleteInputWhenDeleted)
     : input (inputSource, deleteInputWhenDeleted)
 {
     jassert (inputSource != nullptr);
@@ -72,6 +72,6 @@ void IIRFilterAudioSource::getNextAudioBlock (const AudioSourceChannelInfo& buff
 
     for (int i = 0; i < numChannels; ++i)
         iirFilters.getUnchecked(i)
-            ->processSamples (bufferToFill.buffer->getWritePointer (i, bufferToFill.startSample),
-                              bufferToFill.numSamples);
+        ->processSamples (bufferToFill.buffer->getWritePointer (i, bufferToFill.startSample),
+                          bufferToFill.numSamples);
 }

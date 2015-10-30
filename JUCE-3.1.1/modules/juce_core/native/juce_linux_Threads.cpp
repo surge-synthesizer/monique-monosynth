@@ -42,11 +42,19 @@ JUCE_API void JUCE_CALLTYPE Process::setPriority (const ProcessPriority prior)
 
     switch (prior)
     {
-        case LowPriority:
-        case NormalPriority:    param.sched_priority = 0; break;
-        case HighPriority:      param.sched_priority = minp + (maxp - minp) / 4; break;
-        case RealtimePriority:  param.sched_priority = minp + (3 * (maxp - minp) / 4); break;
-        default:                jassertfalse; break;
+    case LowPriority:
+    case NormalPriority:
+        param.sched_priority = 0;
+        break;
+    case HighPriority:
+        param.sched_priority = minp + (maxp - minp) / 4;
+        break;
+    case RealtimePriority:
+        param.sched_priority = minp + (3 * (maxp - minp) / 4);
+        break;
+    default:
+        jassertfalse;
+        break;
     }
 
     pthread_setschedparam (pthread_self(), policy, &param);
@@ -54,9 +62,9 @@ JUCE_API void JUCE_CALLTYPE Process::setPriority (const ProcessPriority prior)
 
 JUCE_API bool JUCE_CALLTYPE juce_isRunningUnderDebugger()
 {
-   #if JUCE_BSD
+#if JUCE_BSD
     return false;
-   #else
+#else
     static char testResult = 0;
 
     if (testResult == 0)
@@ -71,7 +79,7 @@ JUCE_API bool JUCE_CALLTYPE juce_isRunningUnderDebugger()
     }
 
     return testResult < 0;
-   #endif
+#endif
 }
 
 JUCE_API bool JUCE_CALLTYPE Process::isRunningUnderDebugger()
@@ -86,5 +94,9 @@ static bool swapUserAndEffectiveUser()
     return result1 == 0 && result2 == 0;
 }
 
-JUCE_API void JUCE_CALLTYPE Process::raisePrivilege()  { if (geteuid() != 0 && getuid() == 0) swapUserAndEffectiveUser(); }
-JUCE_API void JUCE_CALLTYPE Process::lowerPrivilege()  { if (geteuid() == 0 && getuid() != 0) swapUserAndEffectiveUser(); }
+JUCE_API void JUCE_CALLTYPE Process::raisePrivilege()  {
+    if (geteuid() != 0 && getuid() == 0) swapUserAndEffectiveUser();
+}
+JUCE_API void JUCE_CALLTYPE Process::lowerPrivilege()  {
+    if (geteuid() == 0 && getuid() != 0) swapUserAndEffectiveUser();
+}

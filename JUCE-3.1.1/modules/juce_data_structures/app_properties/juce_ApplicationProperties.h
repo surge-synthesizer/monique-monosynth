@@ -69,7 +69,9 @@ public:
     /** Returns the current storage parameters.
         @see setStorageParameters
     */
-    const PropertiesFile::Options& getStorageParameters() const noexcept        { return options; }
+    const PropertiesFile::Options& getStorageParameters() const noexcept        {
+        return options;
+    }
 
     //==============================================================================
     /** Returns the user settings file.

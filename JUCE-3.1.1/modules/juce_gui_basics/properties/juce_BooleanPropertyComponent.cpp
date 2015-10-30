@@ -23,8 +23,8 @@
 */
 
 BooleanPropertyComponent::BooleanPropertyComponent (const String& name,
-                                                    const String& buttonTextWhenTrue,
-                                                    const String& buttonTextWhenFalse)
+        const String& buttonTextWhenTrue,
+        const String& buttonTextWhenFalse)
     : PropertyComponent (name),
       onText (buttonTextWhenTrue),
       offText (buttonTextWhenFalse)
@@ -35,8 +35,8 @@ BooleanPropertyComponent::BooleanPropertyComponent (const String& name,
 }
 
 BooleanPropertyComponent::BooleanPropertyComponent (const Value& valueToControl,
-                                                    const String& name,
-                                                    const String& buttonText)
+        const String& name,
+        const String& buttonText)
     : PropertyComponent (name),
       onText (buttonText),
       offText (buttonText)

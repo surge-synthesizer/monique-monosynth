@@ -28,68 +28,68 @@ namespace FlacNamespace
 {
 #if JUCE_INCLUDE_FLAC_CODE || ! defined (JUCE_INCLUDE_FLAC_CODE)
 
- #undef VERSION
- #define VERSION "1.2.1"
+#undef VERSION
+#define VERSION "1.2.1"
 
- #define FLAC__NO_DLL 1
+#define FLAC__NO_DLL 1
 
- #if JUCE_MSVC
-  #pragma warning (disable: 4267 4127 4244 4996 4100 4701 4702 4013 4133 4206 4312 4505 4365 4005 4334 181 111)
- #endif
-
- #if JUCE_MAC
-  #define FLAC__SYS_DARWIN 1
- #endif
-
- #ifndef SIZE_MAX
-  #define SIZE_MAX 0xffffffff
- #endif
-
- #if JUCE_CLANG
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wconversion"
-  #pragma clang diagnostic ignored "-Wshadow"
-  #pragma clang diagnostic ignored "-Wdeprecated-register"
- #endif
-
- #if JUCE_INTEL
-  #if JUCE_32BIT
-   #define FLAC__CPU_IA32 1
-  #endif
-  #if JUCE_64BIT
-   #define FLAC__CPU_X86_64 1
-  #endif
-  #define FLAC__HAS_X86INTRIN 1
- #endif
-
- #undef __STDC_LIMIT_MACROS
- #define __STDC_LIMIT_MACROS 1
- #define flac_max jmax
- #define flac_min jmin
- #include "flac/all.h"
- #include "flac/libFLAC/bitmath.c"
- #include "flac/libFLAC/bitreader.c"
- #include "flac/libFLAC/bitwriter.c"
- #include "flac/libFLAC/cpu.c"
- #include "flac/libFLAC/crc.c"
- #include "flac/libFLAC/fixed.c"
- #include "flac/libFLAC/float.c"
- #include "flac/libFLAC/format.c"
- #include "flac/libFLAC/lpc_flac.c"
- #include "flac/libFLAC/md5.c"
- #include "flac/libFLAC/memory.c"
- #include "flac/libFLAC/stream_decoder.c"
- #include "flac/libFLAC/stream_encoder.c"
- #include "flac/libFLAC/stream_encoder_framing.c"
- #include "flac/libFLAC/window_flac.c"
- #undef VERSION
-#else
- #include <FLAC/all.h>
+#if JUCE_MSVC
+#pragma warning (disable: 4267 4127 4244 4996 4100 4701 4702 4013 4133 4206 4312 4505 4365 4005 4334 181 111)
 #endif
 
- #if JUCE_CLANG
-  #pragma clang diagnostic pop
- #endif
+#if JUCE_MAC
+#define FLAC__SYS_DARWIN 1
+#endif
+
+#ifndef SIZE_MAX
+#define SIZE_MAX 0xffffffff
+#endif
+
+#if JUCE_CLANG
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
+
+#if JUCE_INTEL
+#if JUCE_32BIT
+#define FLAC__CPU_IA32 1
+#endif
+#if JUCE_64BIT
+#define FLAC__CPU_X86_64 1
+#endif
+#define FLAC__HAS_X86INTRIN 1
+#endif
+
+#undef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS 1
+#define flac_max jmax
+#define flac_min jmin
+#include "flac/all.h"
+#include "flac/libFLAC/bitmath.c"
+#include "flac/libFLAC/bitreader.c"
+#include "flac/libFLAC/bitwriter.c"
+#include "flac/libFLAC/cpu.c"
+#include "flac/libFLAC/crc.c"
+#include "flac/libFLAC/fixed.c"
+#include "flac/libFLAC/float.c"
+#include "flac/libFLAC/format.c"
+#include "flac/libFLAC/lpc_flac.c"
+#include "flac/libFLAC/md5.c"
+#include "flac/libFLAC/memory.c"
+#include "flac/libFLAC/stream_decoder.c"
+#include "flac/libFLAC/stream_encoder.c"
+#include "flac/libFLAC/stream_encoder_framing.c"
+#include "flac/libFLAC/window_flac.c"
+#undef VERSION
+#else
+#include <FLAC/all.h>
+#endif
+
+#if JUCE_CLANG
+#pragma clang diagnostic pop
+#endif
 }
 
 #undef max
@@ -166,7 +166,7 @@ public:
         while (numSamples > 0)
         {
             if (startSampleInFile >= reservoirStart
-                 && startSampleInFile < reservoirStart + samplesInReservoir)
+                    && startSampleInFile < reservoirStart + samplesInReservoir)
             {
                 const int num = (int) jmin ((int64) numSamples,
                                             reservoirStart + samplesInReservoir - startSampleInFile);
@@ -190,7 +190,7 @@ public:
                     samplesInReservoir = 0;
                 }
                 else if (startSampleInFile < reservoirStart
-                          || startSampleInFile > reservoirStart + jmax (samplesInReservoir, 511))
+                         || startSampleInFile > reservoirStart + jmax (samplesInReservoir, 511))
                 {
                     // had some problems with flac crashing if the read pos is aligned more
                     // accurately than this. Probably fixed in newer versions of the library, though.
@@ -289,9 +289,9 @@ public:
     }
 
     static FlacNamespace::FLAC__StreamDecoderWriteStatus writeCallback_ (const FlacNamespace::FLAC__StreamDecoder*,
-                                                                         const FlacNamespace::FLAC__Frame* frame,
-                                                                         const FlacNamespace::FLAC__int32* const buffer[],
-                                                                         void* client_data)
+            const FlacNamespace::FLAC__Frame* frame,
+            const FlacNamespace::FLAC__int32* const buffer[],
+            void* client_data)
     {
         using namespace FlacNamespace;
         static_cast<FlacReader*> (client_data)->useSamples (buffer, (int) frame->header.blocksize);
@@ -356,7 +356,7 @@ public:
         else
         {
             output = nullptr; // to stop the base class deleting this, as it needs to be returned
-                              // to the caller of createWriter()
+            // to the caller of createWriter()
         }
 
         FlacNamespace::FLAC__stream_encoder_delete (encoder);
@@ -445,16 +445,16 @@ public:
 
     //==============================================================================
     static FlacNamespace::FLAC__StreamEncoderWriteStatus encodeWriteCallback (const FlacNamespace::FLAC__StreamEncoder*,
-                                                                              const FlacNamespace::FLAC__byte buffer[],
-                                                                              size_t bytes,
-                                                                              unsigned int /*samples*/,
-                                                                              unsigned int /*current_frame*/,
-                                                                              void* client_data)
+            const FlacNamespace::FLAC__byte buffer[],
+            size_t bytes,
+            unsigned int /*samples*/,
+            unsigned int /*current_frame*/,
+            void* client_data)
     {
         using namespace FlacNamespace;
         return static_cast<FlacWriter*> (client_data)->writeData (buffer, (int) bytes)
-                ? FLAC__STREAM_ENCODER_WRITE_STATUS_OK
-                : FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR;
+               ? FLAC__STREAM_ENCODER_WRITE_STATUS_OK
+               : FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR;
     }
 
     static FlacNamespace::FLAC__StreamEncoderSeekStatus encodeSeekCallback (const FlacNamespace::FLAC__StreamEncoder*, FlacNamespace::FLAC__uint64, void*)
@@ -500,7 +500,8 @@ FlacAudioFormat::~FlacAudioFormat()
 Array<int> FlacAudioFormat::getPossibleSampleRates()
 {
     const int rates[] = { 8000, 11025, 12000, 16000, 22050, 32000, 44100, 48000,
-                          88200, 96000, 176400, 192000, 352800, 384000 };
+                          88200, 96000, 176400, 192000, 352800, 384000
+                        };
 
     return Array<int> (rates, numElementsInArray (rates));
 }
@@ -512,9 +513,15 @@ Array<int> FlacAudioFormat::getPossibleBitDepths()
     return Array<int> (depths, numElementsInArray (depths));
 }
 
-bool FlacAudioFormat::canDoStereo()     { return true; }
-bool FlacAudioFormat::canDoMono()       { return true; }
-bool FlacAudioFormat::isCompressed()    { return true; }
+bool FlacAudioFormat::canDoStereo()     {
+    return true;
+}
+bool FlacAudioFormat::canDoMono()       {
+    return true;
+}
+bool FlacAudioFormat::isCompressed()    {
+    return true;
+}
 
 AudioFormatReader* FlacAudioFormat::createReaderFor (InputStream* in, const bool deleteStreamIfOpeningFails)
 {
@@ -530,16 +537,16 @@ AudioFormatReader* FlacAudioFormat::createReaderFor (InputStream* in, const bool
 }
 
 AudioFormatWriter* FlacAudioFormat::createWriterFor (OutputStream* out,
-                                                     double sampleRate,
-                                                     unsigned int numberOfChannels,
-                                                     int bitsPerSample,
-                                                     const StringPairArray& /*metadataValues*/,
-                                                     int qualityOptionIndex)
+        double sampleRate,
+        unsigned int numberOfChannels,
+        int bitsPerSample,
+        const StringPairArray& /*metadataValues*/,
+        int qualityOptionIndex)
 {
     if (getPossibleBitDepths().contains (bitsPerSample))
     {
         ScopedPointer<FlacWriter> w (new FlacWriter (out, sampleRate, numberOfChannels,
-                                                     (uint32) bitsPerSample, qualityOptionIndex));
+                                     (uint32) bitsPerSample, qualityOptionIndex));
         if (w->ok)
             return w.release();
     }

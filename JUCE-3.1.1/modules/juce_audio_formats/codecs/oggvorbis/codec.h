@@ -25,97 +25,97 @@ extern "C"
 
 #include "ogg.h"
 
-typedef struct vorbis_info{
-  int version;
-  int channels;
-  long rate;
+typedef struct vorbis_info {
+    int version;
+    int channels;
+    long rate;
 
-  /* The below bitrate declarations are *hints*.
-     Combinations of the three values carry the following implications:
+    /* The below bitrate declarations are *hints*.
+       Combinations of the three values carry the following implications:
 
-     all three set to the same value:
-       implies a fixed rate bitstream
-     only nominal set:
-       implies a VBR stream that averages the nominal bitrate.  No hard
-       upper/lower limit
-     upper and or lower set:
-       implies a VBR bitstream that obeys the bitrate limits. nominal
-       may also be set to give a nominal rate.
-     none set:
-       the coder does not care to speculate.
-  */
+       all three set to the same value:
+         implies a fixed rate bitstream
+       only nominal set:
+         implies a VBR stream that averages the nominal bitrate.  No hard
+         upper/lower limit
+       upper and or lower set:
+         implies a VBR bitstream that obeys the bitrate limits. nominal
+         may also be set to give a nominal rate.
+       none set:
+         the coder does not care to speculate.
+    */
 
-  long bitrate_upper;
-  long bitrate_nominal;
-  long bitrate_lower;
-  long bitrate_window;
+    long bitrate_upper;
+    long bitrate_nominal;
+    long bitrate_lower;
+    long bitrate_window;
 
-  void *codec_setup;
+    void *codec_setup;
 } vorbis_info;
 
 /* vorbis_dsp_state buffers the current vorbis audio
    analysis/synthesis state.  The DSP state belongs to a specific
    logical bitstream ****************************************************/
-typedef struct vorbis_dsp_state{
-  int analysisp;
-  vorbis_info *vi;
+typedef struct vorbis_dsp_state {
+    int analysisp;
+    vorbis_info *vi;
 
-  float **pcm;
-  float **pcmret;
-  int      pcm_storage;
-  int      pcm_current;
-  int      pcm_returned;
+    float **pcm;
+    float **pcmret;
+    int      pcm_storage;
+    int      pcm_current;
+    int      pcm_returned;
 
-  int  preextrapolate;
-  int  eofflag;
+    int  preextrapolate;
+    int  eofflag;
 
-  long lW;
-  long W;
-  long nW;
-  long centerW;
+    long lW;
+    long W;
+    long nW;
+    long centerW;
 
-  ogg_int64_t granulepos;
-  ogg_int64_t sequence;
+    ogg_int64_t granulepos;
+    ogg_int64_t sequence;
 
-  ogg_int64_t glue_bits;
-  ogg_int64_t time_bits;
-  ogg_int64_t floor_bits;
-  ogg_int64_t res_bits;
+    ogg_int64_t glue_bits;
+    ogg_int64_t time_bits;
+    ogg_int64_t floor_bits;
+    ogg_int64_t res_bits;
 
-  void       *backend_state;
+    void       *backend_state;
 } vorbis_dsp_state;
 
-typedef struct vorbis_block{
-  /* necessary stream state for linking to the framing abstraction */
-  float  **pcm;       /* this is a pointer into local storage */
-  oggpack_buffer opb;
+typedef struct vorbis_block {
+    /* necessary stream state for linking to the framing abstraction */
+    float  **pcm;       /* this is a pointer into local storage */
+    oggpack_buffer opb;
 
-  long  lW;
-  long  W;
-  long  nW;
-  int   pcmend;
-  int   mode;
+    long  lW;
+    long  W;
+    long  nW;
+    int   pcmend;
+    int   mode;
 
-  int         eofflag;
-  ogg_int64_t granulepos;
-  ogg_int64_t sequence;
-  vorbis_dsp_state *vd; /* For read-only access of configuration */
+    int         eofflag;
+    ogg_int64_t granulepos;
+    ogg_int64_t sequence;
+    vorbis_dsp_state *vd; /* For read-only access of configuration */
 
-  /* local storage to avoid remallocing; it's up to the mapping to
-     structure it */
-  void               *localstore;
-  long                localtop;
-  long                localalloc;
-  long                totaluse;
-  struct alloc_chain *reap;
+    /* local storage to avoid remallocing; it's up to the mapping to
+       structure it */
+    void               *localstore;
+    long                localtop;
+    long                localalloc;
+    long                totaluse;
+    struct alloc_chain *reap;
 
-  /* bitmetrics for the frame */
-  long glue_bits;
-  long time_bits;
-  long floor_bits;
-  long res_bits;
+    /* bitmetrics for the frame */
+    long glue_bits;
+    long time_bits;
+    long floor_bits;
+    long res_bits;
 
-  void *internal;
+    void *internal;
 
 } vorbis_block;
 
@@ -124,9 +124,9 @@ the analysis/synthesis stream; it belongs to a specific logical
 bitstream, but is independent from other vorbis_blocks belonging to
 that logical bitstream. *************************************************/
 
-struct alloc_chain{
-  void *ptr;
-  struct alloc_chain *next;
+struct alloc_chain {
+    void *ptr;
+    struct alloc_chain *next;
 };
 
 /* vorbis_info contains all the setup information specific to the
@@ -137,13 +137,13 @@ struct alloc_chain{
 
 /* the comments are not part of vorbis_info so that vorbis_info can be
    static storage */
-typedef struct vorbis_comment{
-  /* unlimited user comment fields.  libvorbis writes 'libvorbis'
-     whatever vendor is set to in encode */
-  char **user_comments;
-  int   *comment_lengths;
-  int    comments;
-  char  *vendor;
+typedef struct vorbis_comment {
+    /* unlimited user comment fields.  libvorbis writes 'libvorbis'
+       whatever vendor is set to in encode */
+    char **user_comments;
+    int   *comment_lengths;
+    int    comments;
+    char  *vendor;
 
 } vorbis_comment;
 
@@ -186,10 +186,10 @@ extern const char *vorbis_version_string(void);
 extern int      vorbis_analysis_init(vorbis_dsp_state *v,vorbis_info *vi);
 extern int      vorbis_commentheader_out(vorbis_comment *vc, ogg_packet *op);
 extern int      vorbis_analysis_headerout(vorbis_dsp_state *v,
-                                          vorbis_comment *vc,
-                                          ogg_packet *op,
-                                          ogg_packet *op_comm,
-                                          ogg_packet *op_code);
+        vorbis_comment *vc,
+        ogg_packet *op,
+        ogg_packet *op_comm,
+        ogg_packet *op_code);
 extern float  **vorbis_analysis_buffer(vorbis_dsp_state *v,int vals);
 extern int      vorbis_analysis_wrote(vorbis_dsp_state *v,int vals);
 extern int      vorbis_analysis_blockout(vorbis_dsp_state *v,vorbis_block *vb);
@@ -197,12 +197,12 @@ extern int      vorbis_analysis(vorbis_block *vb,ogg_packet *op);
 
 extern int      vorbis_bitrate_addblock(vorbis_block *vb);
 extern int      vorbis_bitrate_flushpacket(vorbis_dsp_state *vd,
-                                           ogg_packet *op);
+        ogg_packet *op);
 
 /* Vorbis PRIMITIVES: synthesis layer *******************************/
 extern int      vorbis_synthesis_idheader(ogg_packet *op);
 extern int      vorbis_synthesis_headerin(vorbis_info *vi,vorbis_comment *vc,
-                                          ogg_packet *op);
+        ogg_packet *op);
 
 extern int      vorbis_synthesis_init(vorbis_dsp_state *v,vorbis_info *vi);
 extern int      vorbis_synthesis_restart(vorbis_dsp_state *v);

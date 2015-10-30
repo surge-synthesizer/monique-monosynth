@@ -114,7 +114,9 @@ public:
         /** Returns the position as the number of characters from the start of the document.
             @see setPosition, getLineNumber, getIndexInLine
         */
-        int getPosition() const noexcept            { return characterPos; }
+        int getPosition() const noexcept            {
+            return characterPos;
+        }
 
         /** Moves the position to a new line and index within the line.
 
@@ -130,7 +132,9 @@ public:
         /** Returns the line number of this position.
             The first line in the document is numbered zero, not one!
         */
-        int getLineNumber() const noexcept          { return line; }
+        int getLineNumber() const noexcept          {
+            return line;
+        }
 
         /** Returns the number of characters from the start of the line.
 
@@ -138,7 +142,9 @@ public:
             If the line contains any tab characters, the relationship of the index to its
             visual position depends on the number of spaces per tab being used!
         */
-        int getIndexInLine() const noexcept         { return indexInLine; }
+        int getIndexInLine() const noexcept         {
+            return indexInLine;
+        }
 
         /** Allows the position to be automatically updated when the document changes.
 
@@ -196,7 +202,9 @@ public:
     int getNumCharacters() const noexcept;
 
     /** Returns the number of lines in the document. */
-    int getNumLines() const noexcept                    { return lines.size(); }
+    int getNumLines() const noexcept                    {
+        return lines.size();
+    }
 
     /** Returns the number of characters in the longest line of the document. */
     int getMaximumLineLength() noexcept;
@@ -251,7 +259,9 @@ public:
         This will be either "\n", "\r\n", or (rarely) "\r".
         @see setNewLineCharacters
     */
-    String getNewLineCharacters() const noexcept          { return newLineChars; }
+    String getNewLineCharacters() const noexcept          {
+        return newLineChars;
+    }
 
     /** Sets the new-line characters that the document should use.
         The string must be either "\n", "\r\n", or (rarely) "\r".
@@ -371,7 +381,9 @@ public:
         void skip() noexcept;
 
         /** Returns the position as the number of characters from the start of the document. */
-        int getPosition() const noexcept        { return position; }
+        int getPosition() const noexcept        {
+            return position;
+        }
 
         /** Skips over any whitespace characters until the next character is non-whitespace. */
         void skipWhitespace() noexcept;
@@ -380,7 +392,9 @@ public:
         void skipToEndOfLine() noexcept;
 
         /** Returns the line number of the next character. */
-        int getLine() const noexcept            { return line; }
+        int getLine() const noexcept            {
+            return line;
+        }
 
         /** Returns true if the iterator has reached the end of the document. */
         bool isEOF() const noexcept;

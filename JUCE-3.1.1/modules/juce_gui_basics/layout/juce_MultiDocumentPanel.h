@@ -81,7 +81,7 @@ private:
     components directly, as these are managed internally.
 */
 class JUCE_API  MultiDocumentPanel  : public Component,
-                                      private ComponentListener
+    private ComponentListener
 {
 public:
     //==============================================================================
@@ -224,7 +224,9 @@ public:
     void setLayoutMode (LayoutMode newLayoutMode);
 
     /** Returns the current layout mode. */
-    LayoutMode getLayoutMode() const noexcept                           { return mode; }
+    LayoutMode getLayoutMode() const noexcept                           {
+        return mode;
+    }
 
     /** Sets the background colour for the whole panel.
 
@@ -237,10 +239,14 @@ public:
 
         @see setBackgroundColour
     */
-    Colour getBackgroundColour() const noexcept                         { return backgroundColour; }
+    Colour getBackgroundColour() const noexcept                         {
+        return backgroundColour;
+    }
 
     /** If the panel is being used in tabbed mode, this returns the TabbedComponent that's involved. */
-    TabbedComponent* getCurrentTabbedComponent() const noexcept         { return tabComponent; }
+    TabbedComponent* getCurrentTabbedComponent() const noexcept         {
+        return tabComponent;
+    }
 
     //==============================================================================
     /** A subclass must override this to say whether its currently ok for a document

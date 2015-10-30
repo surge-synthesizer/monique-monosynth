@@ -52,9 +52,9 @@ public:
     /** Creates a copy of another string. */
     String (const String& other) noexcept;
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     String (String&& other) noexcept;
-   #endif
+#endif
 
     /** Creates a string from a zero-terminated ascii text string.
 
@@ -163,15 +163,15 @@ public:
         It doesn't matter too much which format you pick, because the toUTF8(), toUTF16() and
         toUTF32() methods let you access the string's content in any of the other formats.
     */
-   #if (JUCE_STRING_UTF_TYPE == 32)
+#if (JUCE_STRING_UTF_TYPE == 32)
     typedef CharPointer_UTF32 CharPointerType;
-   #elif (JUCE_STRING_UTF_TYPE == 16)
+#elif (JUCE_STRING_UTF_TYPE == 16)
     typedef CharPointer_UTF16 CharPointerType;
-   #elif (DOXYGEN || JUCE_STRING_UTF_TYPE == 8)
+#elif (DOXYGEN || JUCE_STRING_UTF_TYPE == 8)
     typedef CharPointer_UTF8  CharPointerType;
-   #else
-    #error "You must set the value of JUCE_STRING_UTF_TYPE to be either 8, 16, or 32!"
-   #endif
+#else
+#error "You must set the value of JUCE_STRING_UTF_TYPE to be either 8, 16, or 32!"
+#endif
 
     //==============================================================================
     /** Generates a probably-unique 32-bit hashcode from this string. */
@@ -192,9 +192,9 @@ public:
     /** Replaces this string's contents with another string. */
     String& operator= (const String& other) noexcept;
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     String& operator= (String&& other) noexcept;
-   #endif
+#endif
 
     /** Appends another string at the end of this one. */
     String& operator+= (const String& stringToAppend);
@@ -210,10 +210,10 @@ public:
     String& operator+= (char characterToAppend);
     /** Appends a character at the end of this string. */
     String& operator+= (wchar_t characterToAppend);
-   #if ! JUCE_NATIVE_WCHAR_IS_UTF32
+#if ! JUCE_NATIVE_WCHAR_IS_UTF32
     /** Appends a character at the end of this string. */
     String& operator+= (juce_wchar characterToAppend);
-   #endif
+#endif
 
     /** Appends a string to the end of this one.
 
@@ -252,7 +252,7 @@ public:
 
             preallocateBytes (byteOffsetOfNull + extraBytesNeeded);
             CharPointerType (addBytesToPointer (text.getAddress(), (int) byteOffsetOfNull))
-                .writeWithCharLimit (startOfTextToAppend, (int) numChars);
+            .writeWithCharLimit (startOfTextToAppend, (int) numChars);
         }
     }
 
@@ -280,7 +280,7 @@ public:
 
                 preallocateBytes (byteOffsetOfNull + extraBytesNeeded);
                 CharPointerType (addBytesToPointer (text.getAddress(), (int) byteOffsetOfNull))
-                    .writeWithCharLimit (textToAppend, (int) numChars);
+                .writeWithCharLimit (textToAppend, (int) numChars);
             }
         }
     }
@@ -299,13 +299,17 @@ public:
         Note that there's also an isNotEmpty() method to help write readable code.
         @see containsNonWhitespaceChars()
     */
-    inline bool isEmpty() const noexcept                    { return text[0] == 0; }
+    inline bool isEmpty() const noexcept                    {
+        return text[0] == 0;
+    }
 
     /** Returns true if the string contains at least one character.
         Note that there's also an isEmpty() method to help write readable code.
         @see containsNonWhitespaceChars()
     */
-    inline bool isNotEmpty() const noexcept                 { return text[0] != 0; }
+    inline bool isNotEmpty() const noexcept                 {
+        return text[0] != 0;
+    }
 
     /** Resets this string to be empty. */
     void clear() noexcept;
@@ -1048,7 +1052,9 @@ public:
         that is returned must not be stored anywhere, as it can be deleted whenever the
         string changes.
     */
-    inline CharPointerType getCharPointer() const noexcept      { return text; }
+    inline CharPointerType getCharPointer() const noexcept      {
+        return text;
+    }
 
     /** Returns a pointer to a UTF-8 version of this string.
 
@@ -1203,7 +1209,7 @@ public:
     void swapWith (String& other) noexcept;
 
     //==============================================================================
-   #if JUCE_MAC || JUCE_IOS || DOXYGEN
+#if JUCE_MAC || JUCE_IOS || DOXYGEN
     /** OSX ONLY - Creates a String from an OSX CFString. */
     static String fromCFString (CFStringRef cfString);
 
@@ -1216,7 +1222,7 @@ public:
     /** OSX ONLY - Returns a copy of this string in which any decomposed unicode characters have
         been converted to their precomposed equivalents. */
     String convertToPrecomposedUnicode() const;
-   #endif
+#endif
 
     /** Returns the number of String objects which are currently sharing the same internal
         data as this one.
@@ -1241,7 +1247,9 @@ private:
     // This private cast operator should prevent strings being accidentally cast
     // to bools (this is possible because the compiler can add an implicit cast
     // via a const char*)
-    operator bool() const noexcept  { return false; }
+    operator bool() const noexcept  {
+        return false;
+    }
 };
 
 //==============================================================================

@@ -21,33 +21,33 @@ class Phonemes : public Stk
 {
 public:
 
-  Phonemes( void );
+    Phonemes( void );
 
-  ~Phonemes( void );
+    ~Phonemes( void );
 
-  //! Returns the phoneme name for the given index (0-31).
-  static const char *name( unsigned int index );
+    //! Returns the phoneme name for the given index (0-31).
+    static const char *name( unsigned int index );
 
-  //! Returns the voiced component gain for the given phoneme index (0-31).
-  static StkFloat voiceGain( unsigned int index );
+    //! Returns the voiced component gain for the given phoneme index (0-31).
+    static StkFloat voiceGain( unsigned int index );
 
-  //! Returns the unvoiced component gain for the given phoneme index (0-31).
-  static StkFloat noiseGain( unsigned int index );
+    //! Returns the unvoiced component gain for the given phoneme index (0-31).
+    static StkFloat noiseGain( unsigned int index );
 
-  //! Returns the formant frequency for the given phoneme index (0-31) and partial (0-3).
-  static StkFloat formantFrequency( unsigned int index, unsigned int partial );
+    //! Returns the formant frequency for the given phoneme index (0-31) and partial (0-3).
+    static StkFloat formantFrequency( unsigned int index, unsigned int partial );
 
-  //! Returns the formant radius for the given phoneme index (0-31) and partial (0-3).
-  static StkFloat formantRadius( unsigned int index, unsigned int partial );
+    //! Returns the formant radius for the given phoneme index (0-31) and partial (0-3).
+    static StkFloat formantRadius( unsigned int index, unsigned int partial );
 
-  //! Returns the formant gain for the given phoneme index (0-31) and partial (0-3).
-  static StkFloat formantGain( unsigned int index, unsigned int partial );
+    //! Returns the formant gain for the given phoneme index (0-31) and partial (0-3).
+    static StkFloat formantGain( unsigned int index, unsigned int partial );
 
 private:
 
-  static const char phonemeNames[][4];
-  static const StkFloat phonemeGains[][2];
-  static const StkFloat phonemeParameters[][4][3];
+    static const char phonemeNames[][4];
+    static const StkFloat phonemeGains[][2];
+    static const StkFloat phonemeParameters[][4][3];
 };
 
 } // stk namespace

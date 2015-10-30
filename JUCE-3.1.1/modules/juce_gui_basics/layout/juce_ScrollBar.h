@@ -47,8 +47,8 @@
     @see ScrollBar::Listener
 */
 class JUCE_API  ScrollBar  : public Component,
-                             public AsyncUpdater,
-                             private Timer
+    public AsyncUpdater,
+    private Timer
 {
 public:
     //==============================================================================
@@ -62,7 +62,9 @@ public:
 
     //==============================================================================
     /** Returns true if the scrollbar is vertical, false if it's horizontal. */
-    bool isVertical() const noexcept                                { return vertical; }
+    bool isVertical() const noexcept                                {
+        return vertical;
+    }
 
     /** Changes the scrollbar's direction.
 
@@ -112,19 +114,25 @@ public:
     /** Returns the current limits on the thumb position.
         @see setRangeLimits
     */
-    Range<double> getRangeLimit() const noexcept                    { return totalRange; }
+    Range<double> getRangeLimit() const noexcept                    {
+        return totalRange;
+    }
 
     /** Returns the lower value that the thumb can be set to.
 
         This is the value set by setRangeLimits().
     */
-    double getMinimumRangeLimit() const noexcept                    { return totalRange.getStart(); }
+    double getMinimumRangeLimit() const noexcept                    {
+        return totalRange.getStart();
+    }
 
     /** Returns the upper value that the thumb can be set to.
 
         This is the value set by setRangeLimits().
     */
-    double getMaximumRangeLimit() const noexcept                    { return totalRange.getEnd(); }
+    double getMaximumRangeLimit() const noexcept                    {
+        return totalRange.getEnd();
+    }
 
     //==============================================================================
     /** Changes the position of the scrollbar's 'thumb'.
@@ -180,17 +188,23 @@ public:
     /** Returns the current thumb range.
         @see getCurrentRange, setCurrentRange
     */
-    Range<double> getCurrentRange() const noexcept                  { return visibleRange; }
+    Range<double> getCurrentRange() const noexcept                  {
+        return visibleRange;
+    }
 
     /** Returns the position of the top of the thumb.
         @see getCurrentRange, setCurrentRangeStart
     */
-    double getCurrentRangeStart() const noexcept                    { return visibleRange.getStart(); }
+    double getCurrentRangeStart() const noexcept                    {
+        return visibleRange.getStart();
+    }
 
     /** Returns the current size of the thumb.
         @see getCurrentRange, setCurrentRange
     */
-    double getCurrentRangeSize() const noexcept                     { return visibleRange.getLength(); }
+    double getCurrentRangeSize() const noexcept                     {
+        return visibleRange.getLength();
+    }
 
     //==============================================================================
     /** Sets the amount by which the up and down buttons will move the bar.

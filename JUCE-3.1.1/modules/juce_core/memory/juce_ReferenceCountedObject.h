@@ -98,7 +98,9 @@ public:
     }
 
     /** Returns the object's current reference count. */
-    int getReferenceCount() const noexcept       { return refCount.get(); }
+    int getReferenceCount() const noexcept       {
+        return refCount.get();
+    }
 
 
 protected:
@@ -177,7 +179,9 @@ public:
     }
 
     /** Returns the object's current reference count. */
-    int getReferenceCount() const noexcept       { return refCount; }
+    int getReferenceCount() const noexcept       {
+        return refCount;
+    }
 
 
 protected:
@@ -233,7 +237,8 @@ public:
     //==============================================================================
     /** Creates a pointer to a null object. */
     ReferenceCountedObjectPtr() noexcept
-        : referencedObject (nullptr)
+:
+    referencedObject (nullptr)
     {
     }
 
@@ -241,7 +246,8 @@ public:
         This will increment the object's reference-count.
     */
     ReferenceCountedObjectPtr (ReferencedType* refCountedObject) noexcept
-        : referencedObject (refCountedObject)
+:
+    referencedObject (refCountedObject)
     {
         incIfNotNull (refCountedObject);
     }
@@ -250,7 +256,8 @@ public:
         This will increment the object's reference-count.
     */
     ReferenceCountedObjectPtr (const ReferenceCountedObjectPtr& other) noexcept
-        : referencedObject (other.referencedObject)
+:
+    referencedObject (other.referencedObject)
     {
         incIfNotNull (referencedObject);
     }
@@ -260,7 +267,8 @@ public:
     */
     template <class Convertible>
     ReferenceCountedObjectPtr (const ReferenceCountedObjectPtr<Convertible>& other) noexcept
-        : referencedObject (static_cast <ReferencedType*> (other.get()))
+:
+    referencedObject (static_cast <ReferencedType*> (other.get()))
     {
         incIfNotNull (referencedObject);
     }
@@ -302,10 +310,11 @@ public:
         return *this;
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     /** Takes-over the object from another pointer. */
     ReferenceCountedObjectPtr (ReferenceCountedObjectPtr&& other) noexcept
-        : referencedObject (other.referencedObject)
+:
+    referencedObject (other.referencedObject)
     {
         other.referencedObject = nullptr;
     }
@@ -316,7 +325,7 @@ public:
         std::swap (referencedObject, other.referencedObject);
         return *this;
     }
-   #endif
+#endif
 
     /** Destructor.
         This will decrement the object's reference-count, which will cause the
@@ -331,17 +340,23 @@ public:
     /** Returns the object that this pointer references.
         The pointer returned may be null, of course.
     */
-    operator ReferencedType*() const noexcept       { return referencedObject; }
+    operator ReferencedType*() const noexcept       {
+        return referencedObject;
+    }
 
     /** Returns the object that this pointer references.
         The pointer returned may be null, of course.
     */
-    ReferencedType* get() const noexcept            { return referencedObject; }
+    ReferencedType* get() const noexcept            {
+        return referencedObject;
+    }
 
     /** Returns the object that this pointer references.
         The pointer returned may be null, of course.
     */
-    ReferencedType* getObject() const noexcept      { return referencedObject; }
+    ReferencedType* getObject() const noexcept      {
+        return referencedObject;
+    }
 
     // the -> operator is called on the referenced object
     ReferencedType* operator->() const noexcept

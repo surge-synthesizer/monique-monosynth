@@ -72,33 +72,33 @@ struct JUCE_API  ExtraLookAndFeelBaseClasses
     @see LookAndFeel_V1, LookAndFeel_V2, LookAndFeel_V3
 */
 class JUCE_API  LookAndFeel   : public ScrollBar::LookAndFeelMethods,
-                                public Button::LookAndFeelMethods,
-                                public ImageButton::LookAndFeelMethods,
-                                public TextEditor::LookAndFeelMethods,
-                                public FileBrowserComponent::LookAndFeelMethods,
-                                public TreeView::LookAndFeelMethods,
-                                public BubbleComponent::LookAndFeelMethods,
-                                public AlertWindow::LookAndFeelMethods,
-                                public PopupMenu::LookAndFeelMethods,
-                                public ComboBox::LookAndFeelMethods,
-                                public Label::LookAndFeelMethods,
-                                public Slider::LookAndFeelMethods,
-                                public ResizableWindow::LookAndFeelMethods,
-                                public DocumentWindow::LookAndFeelMethods,
-                                public TooltipWindow::LookAndFeelMethods,
-                                public TabbedButtonBar::LookAndFeelMethods,
-                                public PropertyComponent::LookAndFeelMethods,
-                                public FilenameComponent::LookAndFeelMethods,
-                                public GroupComponent::LookAndFeelMethods,
-                                public TableHeaderComponent::LookAndFeelMethods,
-                                public CallOutBox::LookAndFeelMethods,
-                                public Toolbar::LookAndFeelMethods,
-                                public ConcertinaPanel::LookAndFeelMethods,
-                                public ProgressBar::LookAndFeelMethods,
-                                public StretchableLayoutResizerBar::LookAndFeelMethods,
-                                public ExtraLookAndFeelBaseClasses::KeyMappingEditorComponentMethods,
-                                public ExtraLookAndFeelBaseClasses::AudioDeviceSelectorComponentMethods,
-                                public ExtraLookAndFeelBaseClasses::LassoComponentMethods
+    public Button::LookAndFeelMethods,
+    public ImageButton::LookAndFeelMethods,
+    public TextEditor::LookAndFeelMethods,
+    public FileBrowserComponent::LookAndFeelMethods,
+    public TreeView::LookAndFeelMethods,
+    public BubbleComponent::LookAndFeelMethods,
+    public AlertWindow::LookAndFeelMethods,
+    public PopupMenu::LookAndFeelMethods,
+    public ComboBox::LookAndFeelMethods,
+    public Label::LookAndFeelMethods,
+    public Slider::LookAndFeelMethods,
+    public ResizableWindow::LookAndFeelMethods,
+    public DocumentWindow::LookAndFeelMethods,
+    public TooltipWindow::LookAndFeelMethods,
+    public TabbedButtonBar::LookAndFeelMethods,
+    public PropertyComponent::LookAndFeelMethods,
+    public FilenameComponent::LookAndFeelMethods,
+    public GroupComponent::LookAndFeelMethods,
+    public TableHeaderComponent::LookAndFeelMethods,
+    public CallOutBox::LookAndFeelMethods,
+    public Toolbar::LookAndFeelMethods,
+    public ConcertinaPanel::LookAndFeelMethods,
+    public ProgressBar::LookAndFeelMethods,
+    public StretchableLayoutResizerBar::LookAndFeelMethods,
+    public ExtraLookAndFeelBaseClasses::KeyMappingEditorComponentMethods,
+    public ExtraLookAndFeelBaseClasses::AudioDeviceSelectorComponentMethods,
+    public ExtraLookAndFeelBaseClasses::LassoComponentMethods
 {
 public:
     //==============================================================================
@@ -181,8 +181,8 @@ public:
     //==============================================================================
     /** Creates a new graphics context object. */
     virtual LowLevelGraphicsContext* createGraphicsContext (const Image& imageToRenderOn,
-                                                            const Point<int>& origin,
-                                                            const RectangleList<int>& initialClip);
+            const Point<int>& origin,
+            const RectangleList<int>& initialClip);
 
     void setUsingNativeAlertWindows (bool shouldUseNativeAlerts);
     bool isUsingNativeAlertWindows();
@@ -218,8 +218,12 @@ private:
         int colourID;
         Colour colour;
 
-        bool operator<  (const ColourSetting& other) const noexcept  { return colourID <  other.colourID; }
-        bool operator== (const ColourSetting& other) const noexcept  { return colourID == other.colourID; }
+        bool operator<  (const ColourSetting& other) const noexcept  {
+            return colourID <  other.colourID;
+        }
+        bool operator== (const ColourSetting& other) const noexcept  {
+            return colourID == other.colourID;
+        }
     };
 
     SortedSet<ColourSetting> colours;

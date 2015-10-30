@@ -17,16 +17,16 @@ namespace stk {
 
 Noise :: Noise( unsigned int seed )
 {
-  // Seed the random number generator
-  this->setSeed( seed );
+    // Seed the random number generator
+    this->setSeed( seed );
 }
 
 void Noise :: setSeed( unsigned int seed )
 {
-  if ( seed == 0 )
-    srand( (unsigned int) time( NULL ) );
-  else
-    srand( seed );
+    if ( seed == 0 )
+        srand( (unsigned int) time( NULL ) );
+    else
+        srand( seed );
 }
 
 } // stk namespace

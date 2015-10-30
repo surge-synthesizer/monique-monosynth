@@ -24,68 +24,68 @@
 
 namespace ComponentBuilderHelpers
 {
-    static String getStateId (const ValueTree& state)
+static String getStateId (const ValueTree& state)
+{
+    return state [ComponentBuilder::idProperty].toString();
+}
+
+static Component* removeComponentWithID (OwnedArray<Component>& components, const String& compId)
+{
+    jassert (compId.isNotEmpty());
+
+    for (int i = components.size(); --i >= 0;)
     {
-        return state [ComponentBuilder::idProperty].toString();
+        Component* const c = components.getUnchecked (i);
+
+        if (c->getComponentID() == compId)
+            return components.removeAndReturn (i);
     }
 
-    static Component* removeComponentWithID (OwnedArray<Component>& components, const String& compId)
-    {
-        jassert (compId.isNotEmpty());
+    return nullptr;
+}
 
-        for (int i = components.size(); --i >= 0;)
+static Component* findComponentWithID (Component& c, const String& compId)
+{
+    jassert (compId.isNotEmpty());
+    if (c.getComponentID() == compId)
+        return &c;
+
+    for (int i = c.getNumChildComponents(); --i >= 0;)
+        if (Component* const child = findComponentWithID (*c.getChildComponent (i), compId))
+            return child;
+
+    return nullptr;
+}
+
+static Component* createNewComponent (ComponentBuilder::TypeHandler& type,
+                                      const ValueTree& state, Component* parent)
+{
+    Component* const c = type.addNewComponentFromState (state, parent);
+    jassert (c != nullptr && c->getParentComponent() == parent);
+    c->setComponentID (getStateId (state));
+    return c;
+}
+
+static void updateComponent (ComponentBuilder& builder, const ValueTree& state)
+{
+    if (Component* topLevelComp = builder.getManagedComponent())
+    {
+        ComponentBuilder::TypeHandler* const type = builder.getHandlerForState (state);
+        const String uid (getStateId (state));
+
+        if (type == nullptr || uid.isEmpty())
         {
-            Component* const c = components.getUnchecked (i);
-
-            if (c->getComponentID() == compId)
-                return components.removeAndReturn (i);
+            // ..handle the case where a child of the actual state node has changed.
+            if (state.getParent().isValid())
+                updateComponent (builder, state.getParent());
         }
-
-        return nullptr;
-    }
-
-    static Component* findComponentWithID (Component& c, const String& compId)
-    {
-        jassert (compId.isNotEmpty());
-        if (c.getComponentID() == compId)
-            return &c;
-
-        for (int i = c.getNumChildComponents(); --i >= 0;)
-            if (Component* const child = findComponentWithID (*c.getChildComponent (i), compId))
-                return child;
-
-        return nullptr;
-    }
-
-    static Component* createNewComponent (ComponentBuilder::TypeHandler& type,
-                                          const ValueTree& state, Component* parent)
-    {
-        Component* const c = type.addNewComponentFromState (state, parent);
-        jassert (c != nullptr && c->getParentComponent() == parent);
-        c->setComponentID (getStateId (state));
-        return c;
-    }
-
-    static void updateComponent (ComponentBuilder& builder, const ValueTree& state)
-    {
-        if (Component* topLevelComp = builder.getManagedComponent())
+        else
         {
-            ComponentBuilder::TypeHandler* const type = builder.getHandlerForState (state);
-            const String uid (getStateId (state));
-
-            if (type == nullptr || uid.isEmpty())
-            {
-                // ..handle the case where a child of the actual state node has changed.
-                if (state.getParent().isValid())
-                    updateComponent (builder, state.getParent());
-            }
-            else
-            {
-                if (Component* const changedComp = findComponentWithID (*topLevelComp, uid))
-                    type->updateComponentFromState (changedComp, state);
-            }
+            if (Component* const changedComp = findComponentWithID (*topLevelComp, uid))
+                type->updateComponentFromState (changedComp, state);
         }
     }
+}
 }
 
 //=============================================================================
@@ -106,11 +106,11 @@ ComponentBuilder::~ComponentBuilder()
 {
     state.removeListener (this);
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     // Don't delete the managed component!! The builder owns that component, and will delete
     // it automatically when it gets deleted.
     jassert (componentRef.get() == static_cast <Component*> (component));
-   #endif
+#endif
 }
 
 Component* ComponentBuilder::getManagedComponent()
@@ -119,9 +119,9 @@ Component* ComponentBuilder::getManagedComponent()
     {
         component = createComponent();
 
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         componentRef = component;
-       #endif
+#endif
     }
 
     return component;
@@ -217,7 +217,7 @@ void ComponentBuilder::valueTreeParentChanged (ValueTree& tree)
 
 //==============================================================================
 ComponentBuilder::TypeHandler::TypeHandler (const Identifier& valueTreeType)
-   : type (valueTreeType), builder (nullptr)
+    : type (valueTreeType), builder (nullptr)
 {
 }
 

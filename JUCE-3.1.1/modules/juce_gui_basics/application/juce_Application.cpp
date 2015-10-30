@@ -31,13 +31,17 @@ JUCEApplication* JUCE_CALLTYPE JUCEApplication::getInstance() noexcept
     return dynamic_cast <JUCEApplication*> (JUCEApplicationBase::getInstance());
 }
 
-bool JUCEApplication::moreThanOneInstanceAllowed()  { return true; }
+bool JUCEApplication::moreThanOneInstanceAllowed()  {
+    return true;
+}
 void JUCEApplication::anotherInstanceStarted (const String&) {}
 
 void JUCEApplication::suspended() {}
 void JUCEApplication::resumed() {}
 
-void JUCEApplication::systemRequestedQuit()         { quit(); }
+void JUCEApplication::systemRequestedQuit()         {
+    quit();
+}
 
 void JUCEApplication::unhandledException (const std::exception*, const String&, int)
 {
@@ -80,16 +84,16 @@ bool JUCEApplication::perform (const InvocationInfo& info)
 
 //==============================================================================
 #if JUCE_MAC
- extern void juce_initialiseMacMainMenu();
+extern void juce_initialiseMacMainMenu();
 #endif
 
 bool JUCEApplication::initialiseApp()
 {
     if (JUCEApplicationBase::initialiseApp())
     {
-       #if JUCE_MAC
+#if JUCE_MAC
         juce_initialiseMacMainMenu(); // (needs to get the app's name)
-       #endif
+#endif
 
         return true;
     }

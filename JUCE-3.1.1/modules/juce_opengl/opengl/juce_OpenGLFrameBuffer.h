@@ -76,7 +76,9 @@ public:
 
     //==============================================================================
     /** Returns true if a valid buffer has been allocated. */
-    bool isValid() const noexcept                       { return pimpl != nullptr; }
+    bool isValid() const noexcept                       {
+        return pimpl != nullptr;
+    }
 
     /** Returns the width of the buffer. */
     int getWidth() const noexcept;

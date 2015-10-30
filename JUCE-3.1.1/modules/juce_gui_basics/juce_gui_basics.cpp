@@ -23,12 +23,12 @@
 */
 
 #if defined (JUCE_GUI_BASICS_H_INCLUDED) && ! JUCE_AMALGAMATED_INCLUDE
- /* When you add this cpp file to your project, you mustn't include it in a file where you've
-    already included any other headers - just put it inside a file on its own, possibly with your config
-    flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
-    header files that the compiler may be using.
- */
- #error "Incorrect use of JUCE cpp file"
+/* When you add this cpp file to your project, you mustn't include it in a file where you've
+   already included any other headers - just put it inside a file on its own, possibly with your config
+   flags preceding it, but don't include anything else. That also includes avoiding any automatic prefix
+   header files that the compiler may be using.
+*/
+#error "Incorrect use of JUCE cpp file"
 #endif
 
 // Your project must contain an AppConfig.h file with your project-specific settings in it,
@@ -41,94 +41,94 @@
 #include "juce_gui_basics.h"
 
 #if JUCE_MODULE_AVAILABLE_juce_opengl
- #include "../juce_opengl/juce_opengl.h"
+#include "../juce_opengl/juce_opengl.h"
 #endif
 
 //==============================================================================
 #if JUCE_MAC
- #import <WebKit/WebKit.h>
- #import <IOKit/pwr_mgt/IOPMLib.h>
+#import <WebKit/WebKit.h>
+#import <IOKit/pwr_mgt/IOPMLib.h>
 
- #if JUCE_SUPPORT_CARBON && ! (defined (MAC_OS_X_VERSION_10_6) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_6)
-  #define Point CarbonDummyPointName
-  #define Component CarbonDummyCompName
-  #import <Carbon/Carbon.h> // still needed for SetSystemUIMode()
-  #undef Point
-  #undef Component
- #endif
+#if JUCE_SUPPORT_CARBON && ! (defined (MAC_OS_X_VERSION_10_6) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_6)
+#define Point CarbonDummyPointName
+#define Component CarbonDummyCompName
+#import <Carbon/Carbon.h> // still needed for SetSystemUIMode()
+#undef Point
+#undef Component
+#endif
 
 //==============================================================================
 #elif JUCE_WINDOWS
- #include <windowsx.h>
- #include <vfw.h>
- #include <commdlg.h>
+#include <windowsx.h>
+#include <vfw.h>
+#include <commdlg.h>
 
- #if JUCE_WEB_BROWSER
-  #include <exdisp.h>
-  #include <exdispid.h>
- #endif
+#if JUCE_WEB_BROWSER
+#include <exdisp.h>
+#include <exdispid.h>
+#endif
 
- #if JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
-  #pragma comment(lib, "vfw32.lib")
-  #pragma comment(lib, "imm32.lib")
- #endif
+#if JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+#pragma comment(lib, "vfw32.lib")
+#pragma comment(lib, "imm32.lib")
+#endif
 
- #if JUCE_OPENGL
-  #if JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
-   #pragma comment(lib, "OpenGL32.Lib")
-   #pragma comment(lib, "GlU32.Lib")
-  #endif
- #endif
+#if JUCE_OPENGL
+#if JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+#pragma comment(lib, "OpenGL32.Lib")
+#pragma comment(lib, "GlU32.Lib")
+#endif
+#endif
 
- #if JUCE_QUICKTIME && JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
-  #pragma comment (lib, "QTMLClient.lib")
- #endif
+#if JUCE_QUICKTIME && JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+#pragma comment (lib, "QTMLClient.lib")
+#endif
 
- #if JUCE_DIRECT2D && JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
-  #pragma comment (lib, "Dwrite.lib")
-  #pragma comment (lib, "D2d1.lib")
- #endif
+#if JUCE_DIRECT2D && JUCE_MSVC && ! JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
+#pragma comment (lib, "Dwrite.lib")
+#pragma comment (lib, "D2d1.lib")
+#endif
 
- #if JUCE_MINGW
-  #include <imm.h>
- #endif
+#if JUCE_MINGW
+#include <imm.h>
+#endif
 
 //==============================================================================
 #elif JUCE_LINUX
- #include <X11/Xlib.h>
- #include <X11/Xatom.h>
- #include <X11/Xresource.h>
- #include <X11/Xutil.h>
- #include <X11/Xmd.h>
- #include <X11/keysym.h>
- #include <X11/XKBlib.h>
- #include <X11/cursorfont.h>
- #include <unistd.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xresource.h>
+#include <X11/Xutil.h>
+#include <X11/Xmd.h>
+#include <X11/keysym.h>
+#include <X11/XKBlib.h>
+#include <X11/cursorfont.h>
+#include <unistd.h>
 
- #if JUCE_USE_XINERAMA
-  /* If you're trying to use Xinerama, you'll need to install the "libxinerama-dev" package..  */
-  #include <X11/extensions/Xinerama.h>
- #endif
+#if JUCE_USE_XINERAMA
+/* If you're trying to use Xinerama, you'll need to install the "libxinerama-dev" package..  */
+#include <X11/extensions/Xinerama.h>
+#endif
 
- #if JUCE_USE_XSHM
-  #include <X11/extensions/XShm.h>
-  #include <sys/shm.h>
-  #include <sys/ipc.h>
- #endif
+#if JUCE_USE_XSHM
+#include <X11/extensions/XShm.h>
+#include <sys/shm.h>
+#include <sys/ipc.h>
+#endif
 
- #if JUCE_USE_XRENDER
-  // If you're missing these headers, try installing the libxrender-dev and libxcomposite-dev
-  #include <X11/extensions/Xrender.h>
-  #include <X11/extensions/Xcomposite.h>
- #endif
+#if JUCE_USE_XRENDER
+// If you're missing these headers, try installing the libxrender-dev and libxcomposite-dev
+#include <X11/extensions/Xrender.h>
+#include <X11/extensions/Xcomposite.h>
+#endif
 
- #if JUCE_USE_XCURSOR
-  // If you're missing this header, try installing the libxcursor-dev package
-  #include <X11/Xcursor/Xcursor.h>
- #endif
+#if JUCE_USE_XCURSOR
+// If you're missing this header, try installing the libxcursor-dev package
+#include <X11/Xcursor/Xcursor.h>
+#endif
 
- #undef SIZEOF
- #undef KeyPress
+#undef SIZEOF
+#undef KeyPress
 #endif
 
 //==============================================================================
@@ -255,42 +255,42 @@ extern bool juce_areThereAnyAlwaysOnTopWindows();
 #include "misc/juce_DropShadower.cpp"
 
 #if JUCE_IOS || JUCE_WINDOWS
- #include "native/juce_MultiTouchMapper.h"
+#include "native/juce_MultiTouchMapper.h"
 #endif
 
 #if JUCE_MAC || JUCE_IOS
- #include "../juce_core/native/juce_osx_ObjCHelpers.h"
- #include "../juce_graphics/native/juce_mac_CoreGraphicsHelpers.h"
- #include "../juce_graphics/native/juce_mac_CoreGraphicsContext.h"
+#include "../juce_core/native/juce_osx_ObjCHelpers.h"
+#include "../juce_graphics/native/juce_mac_CoreGraphicsHelpers.h"
+#include "../juce_graphics/native/juce_mac_CoreGraphicsContext.h"
 
- #if JUCE_IOS
-  #include "native/juce_ios_UIViewComponentPeer.mm"
-  #include "native/juce_ios_Windowing.mm"
- #else
-  #include "native/juce_mac_NSViewComponentPeer.mm"
-  #include "native/juce_mac_Windowing.mm"
-  #include "native/juce_mac_MainMenu.mm"
- #endif
+#if JUCE_IOS
+#include "native/juce_ios_UIViewComponentPeer.mm"
+#include "native/juce_ios_Windowing.mm"
+#else
+#include "native/juce_mac_NSViewComponentPeer.mm"
+#include "native/juce_mac_Windowing.mm"
+#include "native/juce_mac_MainMenu.mm"
+#endif
 
- #include "native/juce_mac_MouseCursor.mm"
- #include "native/juce_mac_FileChooser.mm"
+#include "native/juce_mac_MouseCursor.mm"
+#include "native/juce_mac_FileChooser.mm"
 
 #elif JUCE_WINDOWS
- #include "../juce_core/native/juce_win32_ComSmartPtr.h"
- #include "../juce_events/native/juce_win32_HiddenMessageWindow.h"
- #include "native/juce_win32_Windowing.cpp"
- #include "native/juce_win32_DragAndDrop.cpp"
- #include "native/juce_win32_FileChooser.cpp"
+#include "../juce_core/native/juce_win32_ComSmartPtr.h"
+#include "../juce_events/native/juce_win32_HiddenMessageWindow.h"
+#include "native/juce_win32_Windowing.cpp"
+#include "native/juce_win32_DragAndDrop.cpp"
+#include "native/juce_win32_FileChooser.cpp"
 
 #elif JUCE_LINUX
- #include "native/juce_linux_Clipboard.cpp"
- #include "native/juce_linux_Windowing.cpp"
- #include "native/juce_linux_FileChooser.cpp"
+#include "native/juce_linux_Clipboard.cpp"
+#include "native/juce_linux_Windowing.cpp"
+#include "native/juce_linux_FileChooser.cpp"
 
 #elif JUCE_ANDROID
- #include "../juce_core/native/juce_android_JNIHelpers.h"
- #include "native/juce_android_Windowing.cpp"
- #include "native/juce_android_FileChooser.cpp"
+#include "../juce_core/native/juce_android_JNIHelpers.h"
+#include "native/juce_android_Windowing.cpp"
+#include "native/juce_android_FileChooser.cpp"
 
 #endif
 

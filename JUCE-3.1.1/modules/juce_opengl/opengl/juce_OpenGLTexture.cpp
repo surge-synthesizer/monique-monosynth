@@ -24,11 +24,11 @@
 
 static int getAllowedTextureSize (int x)
 {
-   #if JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES
+#if JUCE_OPENGL_ALLOW_NON_POWER_OF_TWO_TEXTURES
     return x;
-   #else
+#else
     return nextPowerOfTwo (x);
-   #endif
+#endif
 }
 
 OpenGLTexture::OpenGLTexture()
@@ -111,12 +111,12 @@ struct Flipper
 
             for (int x = 0; x < w; ++x)
             {
-               #if JUCE_ANDROID
+#if JUCE_ANDROID
                 PixelType s (src[x]);
                 dst[x].setARGB (s.getAlpha(), s.getBlue(), s.getGreen(), s.getRed());
-               #else
+#else
                 dst[x].set (src[x]);
-               #endif
+#endif
             }
 
 
@@ -135,10 +135,17 @@ void OpenGLTexture::loadImage (const Image& image)
 
     switch (srcData.pixelFormat)
     {
-        case Image::ARGB:           Flipper<PixelARGB> ::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH); break;
-        case Image::RGB:            Flipper<PixelRGB>  ::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH); break;
-        case Image::SingleChannel:  Flipper<PixelAlpha>::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH); break;
-        default: break;
+    case Image::ARGB:
+        Flipper<PixelARGB> ::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH);
+        break;
+    case Image::RGB:
+        Flipper<PixelRGB>  ::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH);
+        break;
+    case Image::SingleChannel:
+        Flipper<PixelAlpha>::flip (dataCopy, srcData.data, srcData.lineStride, imageW, imageH);
+        break;
+    default:
+        break;
     }
 
     create (imageW, imageH, dataCopy, JUCE_RGBA_FORMAT, true);

@@ -66,7 +66,7 @@ void MidiMessageCollector::addMessageToQueue (const MidiMessage& message)
 }
 
 void MidiMessageCollector::removeNextBlockOfMessages (MidiBuffer& destBuffer,
-                                                      const int numSamples)
+        const int numSamples)
 {
     // you need to call reset() to set the correct sample rate before using this object
     jassert (sampleRate != 44100.0001);
@@ -110,7 +110,7 @@ void MidiMessageCollector::removeNextBlockOfMessages (MidiBuffer& destBuffer,
                 samplePosition = ((samplePosition - startSample) * scale) >> 10;
 
                 destBuffer.addEvent (midiData, numBytes, jlimit (0, numSamples - 1, samplePosition));
-		//destBuffer.addEvent (midiData, numBytes, 0);
+                //destBuffer.addEvent (midiData, numBytes, 0);
             }
         }
         else
@@ -122,7 +122,7 @@ void MidiMessageCollector::removeNextBlockOfMessages (MidiBuffer& destBuffer,
             while (iter.getNextEvent (midiData, numBytes, samplePosition))
             {
                 destBuffer.addEvent (midiData, numBytes, jlimit (0, numSamples - 1, samplePosition + startSample));
-	        //destBuffer.addEvent (midiData, numBytes, 0);
+                //destBuffer.addEvent (midiData, numBytes, 0);
             }
         }
 

@@ -93,10 +93,10 @@ public:
     /** Copies this menu from another one. */
     PopupMenu& operator= (const PopupMenu& other);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     PopupMenu (PopupMenu&& other) noexcept;
     PopupMenu& operator= (PopupMenu&& other) noexcept;
-   #endif
+#endif
 
     //==============================================================================
     /** Resets the menu, removing all its items. */
@@ -304,7 +304,7 @@ public:
     };
 
     //==============================================================================
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     /** Displays the menu and waits for the user to pick something.
 
         This will display the menu modally, and return the ID of the item that the
@@ -381,7 +381,7 @@ public:
     /** Displays and runs the menu modally, with a set of options.
     */
     int showMenu (const Options& options);
-   #endif
+#endif
 
     /** Runs the menu asynchronously, with a user-provided callback that will receive the result. */
     void showMenuAsync (const Options& options,
@@ -486,7 +486,7 @@ public:
         @see PopupMenu::addCustomItem
     */
     class JUCE_API  CustomComponent  : public Component,
-                                       public SingleThreadedReferenceCountedObject
+        public SingleThreadedReferenceCountedObject
     {
     public:
         /** Creates a custom item.
@@ -517,10 +517,14 @@ public:
             You can call this method in your paint() method to find out whether
             to draw a highlight.
         */
-        bool isItemHighlighted() const noexcept                 { return isHighlighted; }
+        bool isItemHighlighted() const noexcept                 {
+            return isHighlighted;
+        }
 
         /** @internal */
-        bool isTriggeredAutomatically() const noexcept          { return triggeredAutomatically; }
+        bool isTriggeredAutomatically() const noexcept          {
+            return triggeredAutomatically;
+        }
         /** @internal */
         void setHighlighted (bool shouldBeHighlighted);
 
@@ -563,7 +567,7 @@ public:
                                         const Colour* textColour) = 0;
 
         virtual void drawPopupMenuSectionHeader (Graphics&, const Rectangle<int>& area,
-                                                 const String& sectionName) = 0;
+                const String& sectionName) = 0;
 
         /** Returns the size and style of font to use in popup menus. */
         virtual Font getPopupMenuFont() = 0;
@@ -613,10 +617,12 @@ private:
     Component* createWindow (const Options&, ApplicationCommandManager**) const;
     int showWithOptionalCallback (const Options&, ModalComponentManager::Callback*, bool);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // These methods have new implementations now - see its new definition
-    int drawPopupMenuItem (Graphics&, int, int, bool, bool, bool, bool, bool, const String&, const String&, Image*, const Colour*) { return 0; }
-   #endif
+    int drawPopupMenuItem (Graphics&, int, int, bool, bool, bool, bool, bool, const String&, const String&, Image*, const Colour*) {
+        return 0;
+    }
+#endif
 
     JUCE_LEAK_DETECTOR (PopupMenu)
 };

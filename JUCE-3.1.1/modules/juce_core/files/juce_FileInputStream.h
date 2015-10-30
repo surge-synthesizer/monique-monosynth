@@ -53,23 +53,31 @@ public:
 
     //==============================================================================
     /** Returns the file that this stream is reading from. */
-    const File& getFile() const noexcept                { return file; }
+    const File& getFile() const noexcept                {
+        return file;
+    }
 
     /** Returns the status of the file stream.
         The result will be ok if the file opened successfully. If an error occurs while
         opening or reading from the file, this will contain an error message.
     */
-    const Result& getStatus() const noexcept            { return status; }
+    const Result& getStatus() const noexcept            {
+        return status;
+    }
 
     /** Returns true if the stream couldn't be opened for some reason.
         @see getResult()
     */
-    bool failedToOpen() const noexcept                  { return status.failed(); }
+    bool failedToOpen() const noexcept                  {
+        return status.failed();
+    }
 
     /** Returns true if the stream opened without problems.
         @see getResult()
     */
-    bool openedOk() const noexcept                      { return status.wasOk(); }
+    bool openedOk() const noexcept                      {
+        return status.wasOk();
+    }
 
 
     //==============================================================================

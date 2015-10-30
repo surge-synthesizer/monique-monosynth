@@ -89,30 +89,44 @@ public:
     WeakReference (ObjectType* const object)  : holder (getRef (object)) {}
 
     /** Creates a copy of another WeakReference. */
-    WeakReference (const WeakReference& other) noexcept         : holder (other.holder) {}
+WeakReference (const WeakReference& other) noexcept         :
+    holder (other.holder) {}
 
     /** Copies another pointer to this one. */
-    WeakReference& operator= (const WeakReference& other)       { holder = other.holder; return *this; }
+    WeakReference& operator= (const WeakReference& other)       {
+        holder = other.holder;
+        return *this;
+    }
 
     /** Copies another pointer to this one. */
-    WeakReference& operator= (ObjectType* const newObject)      { holder = getRef (newObject); return *this; }
+    WeakReference& operator= (ObjectType* const newObject)      {
+        holder = getRef (newObject);
+        return *this;
+    }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
-    WeakReference (WeakReference&& other) noexcept              : holder (static_cast <SharedRef&&> (other.holder)) {}
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+WeakReference (WeakReference&& other) noexcept              :
+    holder (static_cast <SharedRef&&> (other.holder)) {}
     WeakReference& operator= (WeakReference&& other) noexcept   { holder = static_cast <SharedRef&&> (other.holder); return *this; }
-   #endif
+#endif
 
     /** Returns the object that this pointer refers to, or null if the object no longer exists. */
-    ObjectType* get() const noexcept                            { return holder != nullptr ? holder->get() : nullptr; }
+    ObjectType* get() const noexcept                            {
+        return holder != nullptr ? holder->get() : nullptr;
+    }
 
     /** Returns the object that this pointer refers to, or null if the object no longer exists. */
-    operator ObjectType*() const noexcept                       { return get(); }
+    operator ObjectType*() const noexcept                       {
+        return get();
+    }
 
     /** Returns the object that this pointer refers to, or null if the object no longer exists. */
     ObjectType* operator->() noexcept                           { return get(); }
 
     /** Returns the object that this pointer refers to, or null if the object no longer exists. */
-    const ObjectType* operator->() const noexcept               { return get(); }
+    const ObjectType* operator->() const noexcept               {
+        return get();
+    }
 
     /** This returns true if this reference has been pointing at an object, but that object has
         since been deleted.
@@ -121,10 +135,16 @@ public:
         operator=() to make this refer to a different object will reset this flag to match the status
         of the reference from which you're copying.
     */
-    bool wasObjectDeleted() const noexcept                      { return holder != nullptr && holder->get() == nullptr; }
+    bool wasObjectDeleted() const noexcept                      {
+        return holder != nullptr && holder->get() == nullptr;
+    }
 
-    bool operator== (ObjectType* const object) const noexcept   { return get() == object; }
-    bool operator!= (ObjectType* const object) const noexcept   { return get() != object; }
+    bool operator== (ObjectType* const object) const noexcept   {
+        return get() == object;
+    }
+    bool operator!= (ObjectType* const object) const noexcept   {
+        return get() != object;
+    }
 
     //==============================================================================
     /** This class is used internally by the WeakReference class - don't use it directly
@@ -134,9 +154,12 @@ public:
     class SharedPointer   : public ReferenceCountingType
     {
     public:
-        explicit SharedPointer (ObjectType* const obj) noexcept : owner (obj) {}
+    explicit SharedPointer (ObjectType* const obj) noexcept :
+        owner (obj) {}
 
-        inline ObjectType* get() const noexcept     { return owner; }
+        inline ObjectType* get() const noexcept     {
+            return owner;
+        }
         void clearPointer() noexcept                { owner = nullptr; }
 
     private:

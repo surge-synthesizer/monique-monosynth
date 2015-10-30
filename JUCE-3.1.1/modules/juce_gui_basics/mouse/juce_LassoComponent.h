@@ -208,7 +208,9 @@ public:
     }
 
     /** @internal */
-    bool hitTest (int, int) override        { return false; }
+    bool hitTest (int, int) override        {
+        return false;
+    }
 
 private:
     //==============================================================================

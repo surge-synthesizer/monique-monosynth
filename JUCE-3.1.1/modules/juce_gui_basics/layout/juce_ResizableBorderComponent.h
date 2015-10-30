@@ -124,15 +124,25 @@ public:
         MouseCursor getMouseCursor() const noexcept;
 
         /** Returns true if dragging this zone will move the enire object without resizing it. */
-        bool isDraggingWholeObject() const noexcept     { return zone == centre; }
+        bool isDraggingWholeObject() const noexcept     {
+            return zone == centre;
+        }
         /** Returns true if dragging this zone will move the object's left edge. */
-        bool isDraggingLeftEdge() const noexcept        { return (zone & left) != 0; }
+        bool isDraggingLeftEdge() const noexcept        {
+            return (zone & left) != 0;
+        }
         /** Returns true if dragging this zone will move the object's right edge. */
-        bool isDraggingRightEdge() const noexcept       { return (zone & right) != 0; }
+        bool isDraggingRightEdge() const noexcept       {
+            return (zone & right) != 0;
+        }
         /** Returns true if dragging this zone will move the object's top edge. */
-        bool isDraggingTopEdge() const noexcept         { return (zone & top) != 0; }
+        bool isDraggingTopEdge() const noexcept         {
+            return (zone & top) != 0;
+        }
         /** Returns true if dragging this zone will move the object's bottom edge. */
-        bool isDraggingBottomEdge() const noexcept      { return (zone & bottom) != 0; }
+        bool isDraggingBottomEdge() const noexcept      {
+            return (zone & bottom) != 0;
+        }
 
         /** Resizes this rectangle by the given amount, moving just the edges that this zone
             applies to.
@@ -153,7 +163,9 @@ public:
         }
 
         /** Returns the raw flags for this zone. */
-        int getZoneFlags() const noexcept               { return zone; }
+        int getZoneFlags() const noexcept               {
+            return zone;
+        }
 
     private:
         //==============================================================================
@@ -161,7 +173,9 @@ public:
     };
 
     /** Returns the zone in which the mouse was last seen. */
-    Zone getCurrentZone() const noexcept                 { return mouseZone; }
+    Zone getCurrentZone() const noexcept                 {
+        return mouseZone;
+    }
 
 protected:
     /** @internal */

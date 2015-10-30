@@ -25,43 +25,45 @@
 #if JUCE_USE_DIRECTWRITE
 namespace
 {
-    static String getLocalisedName (IDWriteLocalizedStrings* names)
-    {
-        jassert (names != nullptr);
+static String getLocalisedName (IDWriteLocalizedStrings* names)
+{
+    jassert (names != nullptr);
 
-        uint32 index = 0;
-        BOOL exists = false;
-        HRESULT hr = names->FindLocaleName (L"en-us", &index, &exists);
-        if (! exists)
-            index = 0;
+    uint32 index = 0;
+    BOOL exists = false;
+    HRESULT hr = names->FindLocaleName (L"en-us", &index, &exists);
+    if (! exists)
+        index = 0;
 
-        uint32 length = 0;
-        hr = names->GetStringLength (index, &length);
+    uint32 length = 0;
+    hr = names->GetStringLength (index, &length);
 
-        HeapBlock<wchar_t> name (length + 1);
-        hr = names->GetString (index, name, length + 1);
+    HeapBlock<wchar_t> name (length + 1);
+    hr = names->GetString (index, name, length + 1);
 
-        return static_cast <const wchar_t*> (name);
-    }
+    return static_cast <const wchar_t*> (name);
+}
 
-    static String getFontFamilyName (IDWriteFontFamily* family)
-    {
-        jassert (family != nullptr);
-        ComSmartPtr<IDWriteLocalizedStrings> familyNames;
-        HRESULT hr = family->GetFamilyNames (familyNames.resetAndGetPointerAddress());
-        jassert (SUCCEEDED (hr)); (void) hr;
-        return getLocalisedName (familyNames);
-    }
+static String getFontFamilyName (IDWriteFontFamily* family)
+{
+    jassert (family != nullptr);
+    ComSmartPtr<IDWriteLocalizedStrings> familyNames;
+    HRESULT hr = family->GetFamilyNames (familyNames.resetAndGetPointerAddress());
+    jassert (SUCCEEDED (hr));
+    (void) hr;
+    return getLocalisedName (familyNames);
+}
 
-    static String getFontFaceName (IDWriteFont* font)
-    {
-        jassert (font != nullptr);
-        ComSmartPtr<IDWriteLocalizedStrings> faceNames;
-        HRESULT hr = font->GetFaceNames (faceNames.resetAndGetPointerAddress());
-        jassert (SUCCEEDED (hr)); (void) hr;
+static String getFontFaceName (IDWriteFont* font)
+{
+    jassert (font != nullptr);
+    ComSmartPtr<IDWriteLocalizedStrings> faceNames;
+    HRESULT hr = font->GetFaceNames (faceNames.resetAndGetPointerAddress());
+    jassert (SUCCEEDED (hr));
+    (void) hr;
 
-        return getLocalisedName (faceNames);
-    }
+    return getLocalisedName (faceNames);
+}
 }
 
 class Direct2DFactories
@@ -186,11 +188,19 @@ public:
         }
     }
 
-    bool loadedOk() const noexcept          { return dwFontFace != nullptr; }
+    bool loadedOk() const noexcept          {
+        return dwFontFace != nullptr;
+    }
 
-    float getAscent() const                 { return ascent; }
-    float getDescent() const                { return 1.0f - ascent; }
-    float getHeightToPointsFactor() const   { return heightToPointsFactor; }
+    float getAscent() const                 {
+        return ascent;
+    }
+    float getDescent() const                {
+        return 1.0f - ascent;
+    }
+    float getHeightToPointsFactor() const   {
+        return heightToPointsFactor;
+    }
 
     float getStringWidth (const String& text)
     {
@@ -246,7 +256,9 @@ public:
         return true;
     }
 
-    IDWriteFontFace* getIDWriteFontFace() const noexcept    { return dwFontFace; }
+    IDWriteFontFace* getIDWriteFontFace() const noexcept    {
+        return dwFontFace;
+    }
 
 private:
     SharedResourcePointer<Direct2DFactories> factories;
@@ -293,7 +305,9 @@ private:
         }
 
         void __stdcall SetSegmentFlags (D2D1_PATH_SEGMENT) {}
-        JUCE_COMRESULT Close()  { return S_OK; }
+        JUCE_COMRESULT Close()  {
+            return S_OK;
+        }
 
         Path path;
 

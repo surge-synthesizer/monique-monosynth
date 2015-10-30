@@ -44,7 +44,7 @@ public:
                                 const Type minusInfinityDb = (Type) defaultMinusInfinitydB)
     {
         return decibels > minusInfinityDb ? std::pow ((Type) 10.0, decibels * (Type) 0.05)
-                                          : Type();
+               : Type();
     }
 
     /** Converts a gain level into a dBFS value.
@@ -58,7 +58,7 @@ public:
                                 const Type minusInfinityDb = (Type) defaultMinusInfinitydB)
     {
         return gain > Type() ? jmax (minusInfinityDb, (Type) std::log10 (gain) * (Type) 20.0)
-                             : minusInfinityDb;
+               : minusInfinityDb;
     }
 
     //==============================================================================

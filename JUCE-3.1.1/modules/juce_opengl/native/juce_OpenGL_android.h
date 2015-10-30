@@ -25,7 +25,7 @@
 #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
  METHOD (layout,        "layout",        "(IIII)V") \
  METHOD (requestRender, "requestRender", "()V") \
-
+ 
 DECLARE_JNI_CLASS (OpenGLView, JUCE_ANDROID_ACTIVITY_CLASSPATH "$OpenGLView");
 #undef JNI_CLASS_MEMBERS
 
@@ -50,7 +50,7 @@ public:
         }
 
         updateWindowPosition (component.getTopLevelComponent()
-                                ->getLocalArea (&component, component.getLocalBounds()));
+                              ->getLocalArea (&component, component.getLocalBounds()));
     }
 
     ~NativeContext()
@@ -67,17 +67,31 @@ public:
     void initialiseOnRenderThread (OpenGLContext&) {}
     void shutdownOnRenderThread() {}
 
-    bool makeActive() const noexcept            { return isInsideGLCallback; }
-    bool isActive() const noexcept              { return isInsideGLCallback; }
+    bool makeActive() const noexcept            {
+        return isInsideGLCallback;
+    }
+    bool isActive() const noexcept              {
+        return isInsideGLCallback;
+    }
     static void deactivateCurrentContext()      {}
 
     void swapBuffers() const noexcept           {}
-    bool setSwapInterval (const int)            { return false; }
-    int getSwapInterval() const                 { return 0; }
+    bool setSwapInterval (const int)            {
+        return false;
+    }
+    int getSwapInterval() const                 {
+        return 0;
+    }
 
-    bool createdOk() const noexcept             { return getRawContext() != nullptr; }
-    void* getRawContext() const noexcept        { return glView.get(); }
-    GLuint getFrameBufferID() const noexcept    { return 0; }
+    bool createdOk() const noexcept             {
+        return getRawContext() != nullptr;
+    }
+    void* getRawContext() const noexcept        {
+        return glView.get();
+    }
+    GLuint getFrameBufferID() const noexcept    {
+        return 0;
+    }
 
     void updateWindowPosition (const Rectangle<int>& bounds)
     {
@@ -131,7 +145,9 @@ public:
         return nullptr;
     }
 
-    struct Locker { Locker (NativeContext&) {} };
+    struct Locker {
+        Locker (NativeContext&) {}
+    };
 
     Component& component;
 

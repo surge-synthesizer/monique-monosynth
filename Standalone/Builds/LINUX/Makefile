@@ -60,6 +60,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_GlobalSettings_508d5f86.o \
   $(OBJDIR)/monique_ui_LookAndFeel_cf505528.o \
   $(OBJDIR)/monique_ui_MainWindow_f360d1a9.o \
+  $(OBJDIR)/monique_ui_MFOPopup_52b4b36.o \
   $(OBJDIR)/monique_ui_MIDIIO_8b303507.o \
   $(OBJDIR)/monique_ui_MidiLearnPopup_9b8abe9.o \
   $(OBJDIR)/monique_ui_ModulationSlider_ba7639dd.o \
@@ -69,6 +70,7 @@ OBJECTS := \
   $(OBJDIR)/monique_ui_SegmentedMeter_4465f9b7.o \
   $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o \
   $(OBJDIR)/BinaryData_ce4232d4.o \
+  $(OBJDIR)/BinaryData2_fa243da8.o \
   $(OBJDIR)/juce_audio_basics_49d7f937.o \
   $(OBJDIR)/juce_audio_devices_b969dc35.o \
   $(OBJDIR)/juce_audio_formats_e7eb25d5.o \
@@ -153,6 +155,11 @@ $(OBJDIR)/monique_ui_MainWindow_f360d1a9.o: ../../../Source/monique_ui_MainWindo
 	@echo "Compiling monique_ui_MainWindow.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/monique_ui_MFOPopup_52b4b36.o: ../../../Source/monique_ui_MFOPopup.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling monique_ui_MFOPopup.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/monique_ui_MIDIIO_8b303507.o: ../../../Source/monique_ui_MIDIIO.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling monique_ui_MIDIIO.cpp"
@@ -196,6 +203,11 @@ $(OBJDIR)/mono_AudioDeviceManager_ed9e7cad.o: ../../../Source/mono_AudioDeviceMa
 $(OBJDIR)/BinaryData_ce4232d4.o: ../../JuceLibraryCode/BinaryData.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling BinaryData.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/BinaryData2_fa243da8.o: ../../JuceLibraryCode/BinaryData2.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling BinaryData2.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_basics_49d7f937.o: ../../../JUCE-3.1.1/modules/juce_audio_basics/juce_audio_basics.cpp

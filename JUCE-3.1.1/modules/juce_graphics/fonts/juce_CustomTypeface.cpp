@@ -26,7 +26,8 @@ class CustomTypeface::GlyphInfo
 {
 public:
     GlyphInfo (const juce_wchar c, const Path& p, const float w) noexcept
-        : character (c), path (p), width (w)
+:
+    character (c), path (p), width (w)
     {
     }
 
@@ -67,34 +68,34 @@ private:
 //==============================================================================
 namespace CustomTypefaceHelpers
 {
-    static juce_wchar readChar (InputStream& in)
+static juce_wchar readChar (InputStream& in)
+{
+    uint32 n = (uint32) (uint16) in.readShort();
+
+    if (n >= 0xd800 && n <= 0xdfff)
     {
-        uint32 n = (uint32) (uint16) in.readShort();
+        const uint32 nextWord = (uint32) (uint16) in.readShort();
+        jassert (nextWord >= 0xdc00); // illegal unicode character!
 
-        if (n >= 0xd800 && n <= 0xdfff)
-        {
-            const uint32 nextWord = (uint32) (uint16) in.readShort();
-            jassert (nextWord >= 0xdc00); // illegal unicode character!
-
-            n = 0x10000 + (((n - 0xd800) << 10) | (nextWord - 0xdc00));
-        }
-
-        return (juce_wchar) n;
+        n = 0x10000 + (((n - 0xd800) << 10) | (nextWord - 0xdc00));
     }
 
-    static void writeChar (OutputStream& out, juce_wchar charToWrite)
+    return (juce_wchar) n;
+}
+
+static void writeChar (OutputStream& out, juce_wchar charToWrite)
+{
+    if (charToWrite >= 0x10000)
     {
-        if (charToWrite >= 0x10000)
-        {
-            charToWrite -= 0x10000;
-            out.writeShort ((short) (uint16) (0xd800 + (charToWrite >> 10)));
-            out.writeShort ((short) (uint16) (0xdc00 + (charToWrite & 0x3ff)));
-        }
-        else
-        {
-            out.writeShort ((short) (uint16) charToWrite);
-        }
+        charToWrite -= 0x10000;
+        out.writeShort ((short) (uint16) (0xd800 + (charToWrite >> 10)));
+        out.writeShort ((short) (uint16) (0xdc00 + (charToWrite & 0x3ff)));
     }
+    else
+    {
+        out.writeShort ((short) (uint16) charToWrite);
+    }
+}
 }
 
 //==============================================================================
@@ -159,7 +160,7 @@ void CustomTypeface::clear()
 }
 
 void CustomTypeface::setCharacteristics (const String& newName, const float newAscent, const bool isBold,
-                                         const bool isItalic, const juce_wchar newDefaultCharacter) noexcept
+        const bool isItalic, const juce_wchar newDefaultCharacter) noexcept
 {
     name = newName;
     defaultCharacter = newDefaultCharacter;
@@ -168,7 +169,7 @@ void CustomTypeface::setCharacteristics (const String& newName, const float newA
 }
 
 void CustomTypeface::setCharacteristics (const String& newName, const String& newStyle, const float newAscent,
-                                         const juce_wchar newDefaultCharacter) noexcept
+        const juce_wchar newDefaultCharacter) noexcept
 {
     name = newName;
     style = newStyle;
@@ -300,9 +301,15 @@ bool CustomTypeface::writeToStream (OutputStream& outputStream)
 }
 
 //==============================================================================
-float CustomTypeface::getAscent() const                 { return ascent; }
-float CustomTypeface::getDescent() const                { return 1.0f - ascent; }
-float CustomTypeface::getHeightToPointsFactor() const   { return ascent; }
+float CustomTypeface::getAscent() const                 {
+    return ascent;
+}
+float CustomTypeface::getDescent() const                {
+    return 1.0f - ascent;
+}
+float CustomTypeface::getHeightToPointsFactor() const   {
+    return ascent;
+}
 
 float CustomTypeface::getStringWidth (const String& text)
 {
@@ -391,7 +398,7 @@ EdgeTable* CustomTypeface::getEdgeTableForGlyph (int glyphNumber, const AffineTr
     {
         if (! glyph->path.isEmpty())
             return new EdgeTable (glyph->path.getBoundsTransformed (transform)
-                                             .getSmallestIntegerContainer().expanded (1, 0),
+                                  .getSmallestIntegerContainer().expanded (1, 0),
                                   glyph->path, transform);
     }
     else

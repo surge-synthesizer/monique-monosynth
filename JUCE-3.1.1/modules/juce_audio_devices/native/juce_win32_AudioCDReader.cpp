@@ -27,10 +27,10 @@ namespace CDReaderHelpers
 
 #define FILE_ANY_ACCESS 0
 #ifndef FILE_READ_ACCESS
- #define FILE_READ_ACCESS 1
+#define FILE_READ_ACCESS 1
 #endif
 #ifndef FILE_WRITE_ACCESS
- #define FILE_WRITE_ACCESS 2
+#define FILE_WRITE_ACCESS 2
 #endif
 
 #define METHOD_BUFFERED 0
@@ -372,10 +372,10 @@ DWORD performScsiPassThroughCommand (SRB_ExecSCSICmd* const srb, const char driv
     s.spt.CdbLength = srb->SRB_CDBLen;
 
     s.spt.DataIn = (BYTE) ((srb->SRB_Flags & SRB_DIR_IN)
-                            ? SCSI_IOCTL_DATA_IN
-                            : ((srb->SRB_Flags & SRB_DIR_OUT)
-                                ? SCSI_IOCTL_DATA_OUT
-                                : SCSI_IOCTL_DATA_UNSPECIFIED));
+                           ? SCSI_IOCTL_DATA_IN
+                           : ((srb->SRB_Flags & SRB_DIR_OUT)
+                              ? SCSI_IOCTL_DATA_OUT
+                              : SCSI_IOCTL_DATA_UNSPECIFIED));
 
     s.spt.DataTransferLength = srb->SRB_BufLen;
     s.spt.TimeOutValue = 5;
@@ -690,9 +690,9 @@ bool CDController::readAudio (CDReadBuffer& rb, CDReadBuffer* overlapBuffer)
         const bool doJitter = canDoJitter && ! overlapBuffer->isZero();
 
         if (doJitter
-             && overlapBuffer->startFrame > 0
-             && overlapBuffer->numFrames > 0
-             && overlapBuffer->dataLength > 0)
+                && overlapBuffer->startFrame > 0
+                && overlapBuffer->numFrames > 0
+                && overlapBuffer->dataLength > 0)
         {
             const int numFrames = rb.numFrames;
 
@@ -701,7 +701,7 @@ bool CDController::readAudio (CDReadBuffer& rb, CDReadBuffer* overlapBuffer)
                 rb.startFrame -= framesOverlap;
 
                 if (framesToCheck < framesOverlap
-                     && numFrames + framesOverlap <= rb.bufferSize / 2352)
+                        && numFrames + framesOverlap <= rb.bufferSize / 2352)
                     rb.numFrames += framesOverlap;
             }
             else
@@ -829,7 +829,7 @@ bool CDDeviceHandle::readAudio (CDReadBuffer& buffer, CDReadBuffer* overlapBuffe
 {
     if (controller == 0)
     {
-           testController (READTYPE_ATAPI2,    new ControllerType1(), buffer)
+        testController (READTYPE_ATAPI2,    new ControllerType1(), buffer)
         || testController (READTYPE_ATAPI1,    new ControllerType1(), buffer)
         || testController (READTYPE_READ10_2,  new ControllerType2(), buffer)
         || testController (READTYPE_READ10,    new ControllerType2(), buffer)
@@ -949,7 +949,7 @@ struct CDDeviceWrapper
 int getAddressOfTrack (const TOCTRACK& t) noexcept
 {
     return (((DWORD) t.addr[0]) << 24) + (((DWORD) t.addr[1]) << 16)
-            + (((DWORD) t.addr[2]) << 8) + ((DWORD) t.addr[3]);
+    + (((DWORD) t.addr[2]) << 8) + ((DWORD) t.addr[3]);
 }
 
 const int samplesPerFrame = 44100 / 75;
@@ -1045,7 +1045,7 @@ bool AudioCDReader::readSamples (int** destSamples, int numDestChannels, int sta
         const int bufferEndSample = bufferStartSample + samplesInBuffer;
 
         if (startSampleInFile >= bufferStartSample
-             && startSampleInFile < bufferEndSample)
+                && startSampleInFile < bufferEndSample)
         {
             const int toDo = (int) jmin ((int64) numSamples, bufferEndSample - startSampleInFile);
 

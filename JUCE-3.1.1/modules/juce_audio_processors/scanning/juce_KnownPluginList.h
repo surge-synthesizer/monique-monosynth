@@ -52,17 +52,25 @@ public:
     /** Returns the number of types currently in the list.
         @see getType
     */
-    int getNumTypes() const noexcept                                { return types.size(); }
+    int getNumTypes() const noexcept                                {
+        return types.size();
+    }
 
     /** Returns one of the types.
         @see getNumTypes
     */
-    PluginDescription* getType (int index) const noexcept           { return types [index]; }
+    PluginDescription* getType (int index) const noexcept           {
+        return types [index];
+    }
 
     /** Type iteration. */
-    PluginDescription** begin() const noexcept                      { return types.begin(); }
+    PluginDescription** begin() const noexcept                      {
+        return types.begin();
+    }
     /** Type iteration. */
-    PluginDescription** end() const noexcept                        { return types.end(); }
+    PluginDescription** end() const noexcept                        {
+        return types.end();
+    }
 
     /** Looks for a type in the list which comes from this file. */
     PluginDescription* getTypeForFile (const String& fileOrIdentifier) const;

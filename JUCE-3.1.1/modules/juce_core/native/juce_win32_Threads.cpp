@@ -62,29 +62,40 @@ __int64 juce_InterlockedCompareExchange64 (volatile __int64* value, __int64 newV
 CriticalSection::CriticalSection() noexcept
 {
     // (just to check the MS haven't changed this structure and broken things...)
-   #if JUCE_VC7_OR_EARLIER
+#if JUCE_VC7_OR_EARLIER
     static_jassert (sizeof (CRITICAL_SECTION) <= 24);
-   #else
+#else
     static_jassert (sizeof (CRITICAL_SECTION) <= sizeof (lock));
-   #endif
+#endif
 
     InitializeCriticalSection ((CRITICAL_SECTION*) lock);
 }
 
 CriticalSection::~CriticalSection() noexcept        { DeleteCriticalSection ((CRITICAL_SECTION*) lock); }
-void CriticalSection::enter() const noexcept        { EnterCriticalSection ((CRITICAL_SECTION*) lock); }
-bool CriticalSection::tryEnter() const noexcept     { return TryEnterCriticalSection ((CRITICAL_SECTION*) lock) != FALSE; }
-void CriticalSection::exit() const noexcept         { LeaveCriticalSection ((CRITICAL_SECTION*) lock); }
+void CriticalSection::enter() const noexcept        {
+    EnterCriticalSection ((CRITICAL_SECTION*) lock);
+}
+bool CriticalSection::tryEnter() const noexcept     {
+    return TryEnterCriticalSection ((CRITICAL_SECTION*) lock) != FALSE;
+}
+void CriticalSection::exit() const noexcept         {
+    LeaveCriticalSection ((CRITICAL_SECTION*) lock);
+}
 
 
 //==============================================================================
 WaitableEvent::WaitableEvent (const bool manualReset) noexcept
-    : handle (CreateEvent (0, manualReset ? TRUE : FALSE, FALSE, 0)) {}
+:
+handle (CreateEvent (0, manualReset ? TRUE : FALSE, FALSE, 0)) {}
 
 WaitableEvent::~WaitableEvent() noexcept        { CloseHandle (handle); }
 
-void WaitableEvent::signal() const noexcept     { SetEvent (handle); }
-void WaitableEvent::reset() const noexcept      { ResetEvent (handle); }
+void WaitableEvent::signal() const noexcept     {
+    SetEvent (handle);
+}
+void WaitableEvent::reset() const noexcept      {
+    ResetEvent (handle);
+}
 
 bool WaitableEvent::wait (const int timeOutMs) const noexcept
 {
@@ -124,16 +135,16 @@ void Thread::killThread()
 {
     if (threadHandle != 0)
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         OutputDebugStringA ("** Warning - Forced thread termination **\n");
-       #endif
+#endif
         TerminateThread (threadHandle, 0);
     }
 }
 
 void JUCE_CALLTYPE Thread::setCurrentThreadName (const String& name)
 {
-   #if JUCE_DEBUG && JUCE_MSVC
+#if JUCE_DEBUG && JUCE_MSVC
     struct
     {
         DWORD dwType;
@@ -153,9 +164,9 @@ void JUCE_CALLTYPE Thread::setCurrentThreadName (const String& name)
     }
     __except (EXCEPTION_CONTINUE_EXECUTION)
     {}
-   #else
+#else
     (void) name;
-   #endif
+#endif
 }
 
 Thread::ThreadID JUCE_CALLTYPE Thread::getCurrentThreadId()
@@ -189,12 +200,13 @@ void JUCE_CALLTYPE Thread::setCurrentThreadAffinityMask (const uint32 affinityMa
 struct SleepEvent
 {
     SleepEvent() noexcept
-        : handle (CreateEvent (nullptr, FALSE, FALSE,
-                              #if JUCE_DEBUG
-                               _T("JUCE Sleep Event")))
-                              #else
-                               nullptr))
-                              #endif
+:
+    handle (CreateEvent (nullptr, FALSE, FALSE,
+#if JUCE_DEBUG
+                         _T("JUCE Sleep Event")))
+#else
+                         nullptr))
+#endif
     {}
 
     ~SleepEvent() noexcept
@@ -239,11 +251,21 @@ void juce_repeatLastProcessPriority()
 
         switch (lastProcessPriority)
         {
-            case Process::LowPriority:          p = IDLE_PRIORITY_CLASS; break;
-            case Process::NormalPriority:       p = NORMAL_PRIORITY_CLASS; break;
-            case Process::HighPriority:         p = HIGH_PRIORITY_CLASS; break;
-            case Process::RealtimePriority:     p = REALTIME_PRIORITY_CLASS; break;
-            default:                            jassertfalse; return; // bad priority value
+        case Process::LowPriority:
+            p = IDLE_PRIORITY_CLASS;
+            break;
+        case Process::NormalPriority:
+            p = NORMAL_PRIORITY_CLASS;
+            break;
+        case Process::HighPriority:
+            p = HIGH_PRIORITY_CLASS;
+            break;
+        case Process::RealtimePriority:
+            p = REALTIME_PRIORITY_CLASS;
+            break;
+        default:
+            jassertfalse;
+            return; // bad priority value
         }
 
         SetPriorityClass (GetCurrentProcess(), p);
@@ -296,9 +318,9 @@ void JUCE_CALLTYPE Process::lowerPrivilege()
 
 void JUCE_CALLTYPE Process::terminate()
 {
-   #if JUCE_MSVC && JUCE_CHECK_MEMORY_LEAKS
+#if JUCE_MSVC && JUCE_CHECK_MEMORY_LEAKS
     _CrtDumpMemoryLeaks();
-   #endif
+#endif
 
     // bullet in the head in case there's a problem shutting down..
     ExitProcess (1);
@@ -340,7 +362,7 @@ void DynamicLibrary::close()
 void* DynamicLibrary::getFunction (const String& functionName) noexcept
 {
     return handle != nullptr ? (void*) GetProcAddress ((HMODULE) handle, functionName.toUTF8()) // (void* cast is required for mingw)
-                             : nullptr;
+    : nullptr;
 }
 
 
@@ -370,14 +392,14 @@ public:
 
             switch (WaitForSingleObject (handle, timeOutMillisecs < 0 ? INFINITE : timeOutMillisecs))
             {
-                case WAIT_OBJECT_0:
-                case WAIT_ABANDONED:
-                    break;
+            case WAIT_OBJECT_0:
+            case WAIT_ABANDONED:
+                break;
 
-                case WAIT_TIMEOUT:
-                default:
-                    close();
-                    break;
+            case WAIT_TIMEOUT:
+            default:
+                close();
+                break;
             }
         }
     }
@@ -452,7 +474,7 @@ public:
         securityAtts.bInheritHandle = TRUE;
 
         if (CreatePipe (&readPipe, &writePipe, &securityAtts, 0)
-             && SetHandleInformation (readPipe, HANDLE_FLAG_INHERIT, 0))
+                && SetHandleInformation (readPipe, HANDLE_FLAG_INHERIT, 0))
         {
             STARTUPINFOW startupInfo = { 0 };
             startupInfo.cb = sizeof (startupInfo);
@@ -575,7 +597,8 @@ bool ChildProcess::start (const StringArray& args, int streamFlags)
 //==============================================================================
 struct HighResolutionTimer::Pimpl
 {
-    Pimpl (HighResolutionTimer& t) noexcept  : owner (t), periodMs (0)
+Pimpl (HighResolutionTimer& t) noexcept  :
+    owner (t), periodMs (0)
     {
     }
 

@@ -23,8 +23,8 @@
 */
 
 class ProcessorParameterPropertyComp   : public PropertyComponent,
-                                         private AudioProcessorListener,
-                                         private Timer
+    private AudioProcessorListener,
+    private Timer
 {
 public:
     ProcessorParameterPropertyComp (const String& name, AudioProcessor& p, int paramIndex)

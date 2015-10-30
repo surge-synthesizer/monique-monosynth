@@ -109,21 +109,25 @@ public:
     /** Copies this message from another one. */
     MidiMessage& operator= (const MidiMessage& other);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     MidiMessage (MidiMessage&&) noexcept;
     MidiMessage& operator= (MidiMessage&&) noexcept;
-   #endif
+#endif
 
     //==============================================================================
     /** Returns a pointer to the raw midi data.
         @see getRawDataSize
     */
-    const uint8* getRawData() const noexcept            { return allocatedData != nullptr ? allocatedData.getData() : preallocatedData.asBytes; }
+    const uint8* getRawData() const noexcept            {
+        return allocatedData != nullptr ? allocatedData.getData() : preallocatedData.asBytes;
+    }
 
     /** Returns the number of bytes of data in the message.
         @see getRawData
     */
-    int getRawDataSize() const noexcept                 { return size; }
+    int getRawDataSize() const noexcept                 {
+        return size;
+    }
 
     //==============================================================================
     /** Returns the timestamp associated with this message.
@@ -142,7 +146,9 @@ public:
 
         @see setTimeStamp, addToTimeStamp
     */
-    double getTimeStamp() const noexcept                { return timeStamp; }
+    double getTimeStamp() const noexcept                {
+        return timeStamp;
+    }
 
     /** Changes the message's associated timestamp.
         The units for the timestamp will be application-specific - see the notes for getTimeStamp().
@@ -796,9 +802,9 @@ public:
         @see isMidiMachineControlGoto
     */
     static MidiMessage midiMachineControlGoto (int hours,
-                                               int minutes,
-                                               int seconds,
-                                               int frames);
+            int minutes,
+            int seconds,
+            int frames);
 
     //==============================================================================
     /** Creates a master-volume change message.
@@ -888,17 +894,17 @@ private:
     HeapBlock<uint8> allocatedData;
     int size;
 
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     union
     {
         uint8 asBytes[4];
         uint32 asInt32;
     } preallocatedData;
-   #endif
+#endif
 
     inline uint8* getData() noexcept   { return allocatedData != nullptr ? allocatedData.getData() : preallocatedData.asBytes; }
     uint8* allocateSpace (int);
-    
+
     JUCE_LEAK_DETECTOR (MidiMessage)
 };
 

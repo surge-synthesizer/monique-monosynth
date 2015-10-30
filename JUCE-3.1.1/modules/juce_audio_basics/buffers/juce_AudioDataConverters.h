@@ -65,7 +65,7 @@ public:
     class NonConst; /**< Used as a template parameter for AudioData::Pointer. Indicates that the pointer can be used for non-const data. */
     class Const;    /**< Used as a template parameter for AudioData::Pointer. Indicates that the samples can only be used for const data.. */
 
-  #ifndef DOXYGEN
+#ifndef DOXYGEN
     //==============================================================================
     class BigEndian
     {
@@ -89,26 +89,35 @@ public:
         enum { isBigEndian = 0 };
     };
 
-    #if JUCE_BIG_ENDIAN
-     class NativeEndian   : public BigEndian  {};
-    #else
-     class NativeEndian   : public LittleEndian  {};
-    #endif
+#if JUCE_BIG_ENDIAN
+    class NativeEndian   : public BigEndian  {};
+#else
+    class NativeEndian   : public LittleEndian  {};
+#endif
 
     //==============================================================================
     class Int8
     {
     public:
-        inline Int8 (void* d) noexcept  : data (static_cast <int8*> (d))  {}
+    inline Int8 (void* d) noexcept  :
+        data (static_cast <int8*> (d))  {}
 
         inline void advance() noexcept                          { ++data; }
         inline void skip (int numSamples) noexcept              { data += numSamples; }
-        inline float getAsFloatLE() const noexcept              { return (float) (*data * (1.0 / (1.0 + maxValue))); }
-        inline float getAsFloatBE() const noexcept              { return getAsFloatLE(); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) (*data * (1.0 / (1.0 + maxValue)));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return getAsFloatLE();
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = (int8) jlimit ((int) -maxValue, (int) maxValue, roundToInt (newValue * (1.0 + maxValue))); }
         inline void setAsFloatBE (float newValue) noexcept      { setAsFloatLE (newValue); }
-        inline int32 getAsInt32LE() const noexcept              { return (int) (*data << 24); }
-        inline int32 getAsInt32BE() const noexcept              { return getAsInt32LE(); }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int) (*data << 24);
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return getAsInt32LE();
+        }
         inline void setAsInt32LE (int newValue) noexcept        { *data = (int8) (newValue >> 24); }
         inline void setAsInt32BE (int newValue) noexcept        { setAsInt32LE (newValue); }
         inline void clear() noexcept                            { *data = 0; }
@@ -124,16 +133,25 @@ public:
     class UInt8
     {
     public:
-        inline UInt8 (void* d) noexcept  : data (static_cast <uint8*> (d))  {}
+    inline UInt8 (void* d) noexcept  :
+        data (static_cast <uint8*> (d))  {}
 
         inline void advance() noexcept                          { ++data; }
         inline void skip (int numSamples) noexcept              { data += numSamples; }
-        inline float getAsFloatLE() const noexcept              { return (float) ((*data - 128) * (1.0 / (1.0 + maxValue))); }
-        inline float getAsFloatBE() const noexcept              { return getAsFloatLE(); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) ((*data - 128) * (1.0 / (1.0 + maxValue)));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return getAsFloatLE();
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = (uint8) jlimit (0, 255, 128 + roundToInt (newValue * (1.0 + maxValue))); }
         inline void setAsFloatBE (float newValue) noexcept      { setAsFloatLE (newValue); }
-        inline int32 getAsInt32LE() const noexcept              { return (int) ((*data - 128) << 24); }
-        inline int32 getAsInt32BE() const noexcept              { return getAsInt32LE(); }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int) ((*data - 128) << 24);
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return getAsInt32LE();
+        }
         inline void setAsInt32LE (int newValue) noexcept        { *data = (uint8) (128 + (newValue >> 24)); }
         inline void setAsInt32BE (int newValue) noexcept        { setAsInt32LE (newValue); }
         inline void clear() noexcept                            { *data = 128; }
@@ -149,16 +167,25 @@ public:
     class Int16
     {
     public:
-        inline Int16 (void* d) noexcept  : data (static_cast <uint16*> (d))  {}
+    inline Int16 (void* d) noexcept  :
+        data (static_cast <uint16*> (d))  {}
 
         inline void advance() noexcept                          { ++data; }
         inline void skip (int numSamples) noexcept              { data += numSamples; }
-        inline float getAsFloatLE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int16) ByteOrder::swapIfBigEndian (*data)); }
-        inline float getAsFloatBE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int16) ByteOrder::swapIfLittleEndian (*data)); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int16) ByteOrder::swapIfBigEndian (*data));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int16) ByteOrder::swapIfLittleEndian (*data));
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = ByteOrder::swapIfBigEndian ((uint16) jlimit ((int) -maxValue, (int) maxValue, roundToInt (newValue * (1.0 + maxValue)))); }
         inline void setAsFloatBE (float newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint16) jlimit ((int) -maxValue, (int) maxValue, roundToInt (newValue * (1.0 + maxValue)))); }
-        inline int32 getAsInt32LE() const noexcept              { return (int32) (ByteOrder::swapIfBigEndian ((uint16) *data) << 16); }
-        inline int32 getAsInt32BE() const noexcept              { return (int32) (ByteOrder::swapIfLittleEndian ((uint16) *data) << 16); }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int32) (ByteOrder::swapIfBigEndian ((uint16) *data) << 16);
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return (int32) (ByteOrder::swapIfLittleEndian ((uint16) *data) << 16);
+        }
         inline void setAsInt32LE (int32 newValue) noexcept      { *data = ByteOrder::swapIfBigEndian ((uint16) (newValue >> 16)); }
         inline void setAsInt32BE (int32 newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint16) (newValue >> 16)); }
         inline void clear() noexcept                            { *data = 0; }
@@ -174,16 +201,25 @@ public:
     class Int24
     {
     public:
-        inline Int24 (void* d) noexcept  : data (static_cast <char*> (d))  {}
+    inline Int24 (void* d) noexcept  :
+        data (static_cast <char*> (d))  {}
 
         inline void advance() noexcept                          { data += 3; }
         inline void skip (int numSamples) noexcept              { data += 3 * numSamples; }
-        inline float getAsFloatLE() const noexcept              { return (float) (ByteOrder::littleEndian24Bit (data) * (1.0 / (1.0 + maxValue))); }
-        inline float getAsFloatBE() const noexcept              { return (float) (ByteOrder::bigEndian24Bit (data) * (1.0 / (1.0 + maxValue))); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) (ByteOrder::littleEndian24Bit (data) * (1.0 / (1.0 + maxValue)));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return (float) (ByteOrder::bigEndian24Bit (data) * (1.0 / (1.0 + maxValue)));
+        }
         inline void setAsFloatLE (float newValue) noexcept      { ByteOrder::littleEndian24BitToChars (jlimit ((int) -maxValue, (int) maxValue, roundToInt (newValue * (1.0 + maxValue))), data); }
         inline void setAsFloatBE (float newValue) noexcept      { ByteOrder::bigEndian24BitToChars (jlimit ((int) -maxValue, (int) maxValue, roundToInt (newValue * (1.0 + maxValue))), data); }
-        inline int32 getAsInt32LE() const noexcept              { return (int32) ByteOrder::littleEndian24Bit (data) << 8; }
-        inline int32 getAsInt32BE() const noexcept              { return (int32) ByteOrder::bigEndian24Bit (data) << 8; }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int32) ByteOrder::littleEndian24Bit (data) << 8;
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return (int32) ByteOrder::bigEndian24Bit (data) << 8;
+        }
         inline void setAsInt32LE (int32 newValue) noexcept      { ByteOrder::littleEndian24BitToChars (newValue >> 8, data); }
         inline void setAsInt32BE (int32 newValue) noexcept      { ByteOrder::bigEndian24BitToChars (newValue >> 8, data); }
         inline void clear() noexcept                            { data[0] = 0; data[1] = 0; data[2] = 0; }
@@ -199,16 +235,25 @@ public:
     class Int32
     {
     public:
-        inline Int32 (void* d) noexcept  : data (static_cast <uint32*> (d))  {}
+    inline Int32 (void* d) noexcept  :
+        data (static_cast <uint32*> (d))  {}
 
         inline void advance() noexcept                          { ++data; }
         inline void skip (int numSamples) noexcept              { data += numSamples; }
-        inline float getAsFloatLE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfBigEndian (*data)); }
-        inline float getAsFloatBE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfLittleEndian (*data)); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfBigEndian (*data));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfLittleEndian (*data));
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = ByteOrder::swapIfBigEndian    ((uint32) (maxValue * jlimit (-1.0, 1.0, (double) newValue))); }
         inline void setAsFloatBE (float newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint32) (maxValue * jlimit (-1.0, 1.0, (double) newValue))); }
-        inline int32 getAsInt32LE() const noexcept              { return (int32) ByteOrder::swapIfBigEndian    (*data); }
-        inline int32 getAsInt32BE() const noexcept              { return (int32) ByteOrder::swapIfLittleEndian (*data); }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int32) ByteOrder::swapIfBigEndian    (*data);
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return (int32) ByteOrder::swapIfLittleEndian (*data);
+        }
         inline void setAsInt32LE (int32 newValue) noexcept      { *data = ByteOrder::swapIfBigEndian    ((uint32) newValue); }
         inline void setAsInt32BE (int32 newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint32) newValue); }
         inline void clear() noexcept                            { *data = 0; }
@@ -225,14 +270,23 @@ public:
     class Int24in32  : public Int32
     {
     public:
-        inline Int24in32 (void* d) noexcept  : Int32 (d)  {}
+    inline Int24in32 (void* d) noexcept  :
+        Int32 (d)  {}
 
-        inline float getAsFloatLE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfBigEndian (*data)); }
-        inline float getAsFloatBE() const noexcept              { return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfLittleEndian (*data)); }
+        inline float getAsFloatLE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfBigEndian (*data));
+        }
+        inline float getAsFloatBE() const noexcept              {
+            return (float) ((1.0 / (1.0 + maxValue)) * (int32) ByteOrder::swapIfLittleEndian (*data));
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = ByteOrder::swapIfBigEndian    ((uint32) (maxValue * jlimit (-1.0, 1.0, (double) newValue))); }
         inline void setAsFloatBE (float newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint32) (maxValue * jlimit (-1.0, 1.0, (double) newValue))); }
-        inline int32 getAsInt32LE() const noexcept              { return (int32) ByteOrder::swapIfBigEndian    (*data) << 8; }
-        inline int32 getAsInt32BE() const noexcept              { return (int32) ByteOrder::swapIfLittleEndian (*data) << 8; }
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int32) ByteOrder::swapIfBigEndian    (*data) << 8;
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return (int32) ByteOrder::swapIfLittleEndian (*data) << 8;
+        }
         inline void setAsInt32LE (int32 newValue) noexcept      { *data = ByteOrder::swapIfBigEndian    ((uint32) newValue >> 8); }
         inline void setAsInt32BE (int32 newValue) noexcept      { *data = ByteOrder::swapIfLittleEndian ((uint32) newValue >> 8); }
         template <class SourceType> inline void copyFromLE (SourceType& source) noexcept    { setAsInt32LE (source.getAsInt32()); }
@@ -245,23 +299,46 @@ public:
     class Float32
     {
     public:
-        inline Float32 (void* d) noexcept  : data (static_cast <float*> (d))  {}
+    inline Float32 (void* d) noexcept  :
+        data (static_cast <float*> (d))  {}
 
         inline void advance() noexcept                          { ++data; }
         inline void skip (int numSamples) noexcept              { data += numSamples; }
-       #if JUCE_BIG_ENDIAN
-        inline float getAsFloatBE() const noexcept              { return *data; }
+#if JUCE_BIG_ENDIAN
+        inline float getAsFloatBE() const noexcept              {
+            return *data;
+        }
         inline void setAsFloatBE (float newValue) noexcept      { *data = newValue; }
-        inline float getAsFloatLE() const noexcept              { union { uint32 asInt; float asFloat; } n; n.asInt = ByteOrder::swap (*(uint32*) data); return n.asFloat; }
+        inline float getAsFloatLE() const noexcept              {
+            union {
+                uint32 asInt;
+                float asFloat;
+            } n;
+            n.asInt = ByteOrder::swap (*(uint32*) data);
+            return n.asFloat;
+        }
         inline void setAsFloatLE (float newValue) noexcept      { union { uint32 asInt; float asFloat; } n; n.asFloat = newValue; *(uint32*) data = ByteOrder::swap (n.asInt); }
-       #else
-        inline float getAsFloatLE() const noexcept              { return *data; }
+#else
+        inline float getAsFloatLE() const noexcept              {
+            return *data;
+        }
         inline void setAsFloatLE (float newValue) noexcept      { *data = newValue; }
-        inline float getAsFloatBE() const noexcept              { union { uint32 asInt; float asFloat; } n; n.asInt = ByteOrder::swap (*(uint32*) data); return n.asFloat; }
+        inline float getAsFloatBE() const noexcept              {
+            union {
+                uint32 asInt;
+                float asFloat;
+            } n;
+            n.asInt = ByteOrder::swap (*(uint32*) data);
+            return n.asFloat;
+        }
         inline void setAsFloatBE (float newValue) noexcept      { union { uint32 asInt; float asFloat; } n; n.asFloat = newValue; *(uint32*) data = ByteOrder::swap (n.asInt); }
-       #endif
-        inline int32 getAsInt32LE() const noexcept              { return (int32) roundToInt (jlimit (-1.0, 1.0, (double) getAsFloatLE()) * (double) maxValue); }
-        inline int32 getAsInt32BE() const noexcept              { return (int32) roundToInt (jlimit (-1.0, 1.0, (double) getAsFloatBE()) * (double) maxValue); }
+#endif
+        inline int32 getAsInt32LE() const noexcept              {
+            return (int32) roundToInt (jlimit (-1.0, 1.0, (double) getAsFloatLE()) * (double) maxValue);
+        }
+        inline int32 getAsInt32BE() const noexcept              {
+            return (int32) roundToInt (jlimit (-1.0, 1.0, (double) getAsFloatBE()) * (double) maxValue);
+        }
         inline void setAsInt32LE (int32 newValue) noexcept      { setAsFloatLE ((float) (newValue * (1.0 / (1.0 + maxValue)))); }
         inline void setAsInt32BE (int32 newValue) noexcept      { setAsFloatBE ((float) (newValue * (1.0 / (1.0 + maxValue)))); }
         inline void clear() noexcept                            { *data = 0; }
@@ -293,14 +370,23 @@ public:
     class Interleaved
     {
     public:
-        inline Interleaved() noexcept : numInterleavedChannels (1) {}
-        inline Interleaved (const Interleaved& other) noexcept : numInterleavedChannels (other.numInterleavedChannels) {}
-        inline Interleaved (const int numInterleavedChans) noexcept : numInterleavedChannels (numInterleavedChans) {}
+    inline Interleaved() noexcept :
+        numInterleavedChannels (1) {}
+    inline Interleaved (const Interleaved& other) noexcept :
+        numInterleavedChannels (other.numInterleavedChannels) {}
+    inline Interleaved (const int numInterleavedChans) noexcept :
+        numInterleavedChannels (numInterleavedChans) {}
         inline void copyFrom (const Interleaved& other) noexcept { numInterleavedChannels = other.numInterleavedChannels; }
         template <class SampleFormatType> inline void advanceData (SampleFormatType& s) noexcept                    { s.skip (numInterleavedChannels); }
         template <class SampleFormatType> inline void advanceDataBy (SampleFormatType& s, int numSamples) noexcept  { s.skip (numInterleavedChannels * numSamples); }
-        template <class SampleFormatType> inline void clear (SampleFormatType& s, int numSamples) noexcept          { while (--numSamples >= 0) { s.clear(); s.skip (numInterleavedChannels); } }
-        template <class SampleFormatType> inline int getNumBytesBetweenSamples (const SampleFormatType&) const noexcept { return numInterleavedChannels * SampleFormatType::bytesPerSample; }
+        template <class SampleFormatType> inline void clear (SampleFormatType& s, int numSamples) noexcept          { while (--numSamples >= 0) {
+        s.clear();
+            s.skip (numInterleavedChannels);
+        }
+                                                                                                                    }
+        template <class SampleFormatType> inline int getNumBytesBetweenSamples (const SampleFormatType&) const noexcept {
+            return numInterleavedChannels * SampleFormatType::bytesPerSample;
+        }
         int numInterleavedChannels;
         enum { isInterleavedType = 1 };
     };
@@ -321,7 +407,7 @@ public:
         static inline void* toVoidPtr (VoidType* v) noexcept { return const_cast <void*> (v); }
         enum { isConst = 1 };
     };
-  #endif
+#endif
 
     //==============================================================================
     /**
@@ -349,9 +435,9 @@ public:
         @see AudioData::Converter
     */
     template <typename SampleFormat,
-              typename Endianness,
-              typename InterleavingType,
-              typename Constness>
+             typename Endianness,
+             typename InterleavingType,
+             typename Constness>
     class Pointer  : private InterleavingType  // (inherited for EBCO)
     {
     public:
@@ -361,7 +447,8 @@ public:
             for interleaved formats, use the constructor that also takes a number of channels.
         */
         Pointer (typename Constness::VoidType* sourceData) noexcept
-            : data (Constness::toVoidPtr (sourceData))
+    :
+        data (Constness::toVoidPtr (sourceData))
         {
             // If you're using interleaved data, call the other constructor! If you're using non-interleaved data,
             // you should pass NonInterleaved as the template parameter for the interleaving type!
@@ -372,13 +459,15 @@ public:
             For non-interleaved data, use the other constructor.
         */
         Pointer (typename Constness::VoidType* sourceData, int numInterleaved) noexcept
-            : InterleavingType (numInterleaved), data (Constness::toVoidPtr (sourceData))
+    :
+        InterleavingType (numInterleaved), data (Constness::toVoidPtr (sourceData))
         {
         }
 
         /** Creates a copy of another pointer. */
         Pointer (const Pointer& other) noexcept
-            : InterleavingType (other), data (other.data)
+    :
+        InterleavingType (other), data (other.data)
         {
         }
 
@@ -394,7 +483,9 @@ public:
             The value will be in the range -1.0 to 1.0 for integer formats. For floating point
             formats, the value could be outside that range, although -1 to 1 is the standard range.
         */
-        inline float getAsFloat() const noexcept                { return Endianness::getAsFloat (data); }
+        inline float getAsFloat() const noexcept                {
+            return Endianness::getAsFloat (data);
+        }
 
         /** Sets the value of the first sample as a floating point value.
 
@@ -415,7 +506,9 @@ public:
             by 8 bits when returned here). If the source data is floating point, values beyond -1.0 to 1.0 will
             be clipped so that -1.0 maps onto -0x7fffffff and 1.0 maps to 0x7fffffff.
         */
-        inline int32 getAsInt32() const noexcept                { return Endianness::getAsInt32 (data); }
+        inline int32 getAsInt32() const noexcept                {
+            return Endianness::getAsInt32 (data);
+        }
 
         /** Sets the value of the first sample as a 32-bit integer.
             This will be mapped to the range of the format that is being written - see getAsInt32().
@@ -545,10 +638,14 @@ public:
         static int getBytesPerSample() noexcept                 { return (int) SampleFormat::bytesPerSample; }
 
         /** Returns the number of interleaved channels in the format. */
-        int getNumInterleavedChannels() const noexcept          { return (int) this->numInterleavedChannels; }
+        int getNumInterleavedChannels() const noexcept          {
+            return (int) this->numInterleavedChannels;
+        }
 
         /** Returns the number of bytes between the start address of each sample. */
-        int getNumBytesBetweenSamples() const noexcept          { return InterleavingType::getNumBytesBetweenSamples (data); }
+        int getNumBytesBetweenSamples() const noexcept          {
+            return InterleavingType::getNumBytesBetweenSamples (data);
+        }
 
         /** Returns the accuracy of this format when represented as a 32-bit integer.
             This is the smallest number above 0 that can be represented in the sample format, converted to
@@ -558,7 +655,9 @@ public:
         static int get32BitResolution() noexcept                { return (int) SampleFormat::resolution; }
 
         /** Returns a pointer to the underlying data. */
-        const void* getRawData() const noexcept                 { return data.data; }
+        const void* getRawData() const noexcept                 {
+            return data.data;
+        }
 
     private:
         //==============================================================================

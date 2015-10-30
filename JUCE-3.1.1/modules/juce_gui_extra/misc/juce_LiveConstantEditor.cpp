@@ -29,7 +29,7 @@ namespace LiveConstantEditor
 
 //==============================================================================
 class AllComponentRepainter  : private Timer,
-                               private DeletedAtShutdown
+    private DeletedAtShutdown
 {
 public:
     AllComponentRepainter() {}
@@ -87,8 +87,12 @@ double parseDouble (const String& s)
     return s.retainCharacters ("0123456789.eE-").getDoubleValue();
 }
 
-String intToString (int   v, bool preferHex)    { return preferHex ? "0x" + String::toHexString (v) : String (v); }
-String intToString (int64 v, bool preferHex)    { return preferHex ? "0x" + String::toHexString (v) : String (v); }
+String intToString (int   v, bool preferHex)    {
+    return preferHex ? "0x" + String::toHexString (v) : String (v);
+}
+String intToString (int64 v, bool preferHex)    {
+    return preferHex ? "0x" + String::toHexString (v) : String (v);
+}
 
 //==============================================================================
 LiveValueBase::LiveValueBase (const char* file, int line)
@@ -279,7 +283,7 @@ public:
 
 //==============================================================================
 class ValueList::EditorWindow  : public DocumentWindow,
-                                 private DeletedAtShutdown
+    private DeletedAtShutdown
 {
 public:
     EditorWindow (ValueList& list)
@@ -372,7 +376,7 @@ CodeDocument& ValueList::getDocument (const File& file)
 
 //==============================================================================
 struct ColourEditorComp  : public Component,
-                           private ChangeListener
+    private ChangeListener
 {
     ColourEditorComp (LivePropertyEditorBase& e)  : editor (e)
     {
@@ -421,7 +425,7 @@ Component* createColourEditor (LivePropertyEditorBase& editor)
 
 //==============================================================================
 class SliderComp   : public Component,
-                     private Slider::Listener
+    private Slider::Listener
 {
 public:
     SliderComp (LivePropertyEditorBase& e, bool useFloat)
@@ -436,7 +440,7 @@ public:
     void updateRange()
     {
         double v = isFloat ? parseDouble (editor.value.getStringValue (false))
-                           : (double) parseInt (editor.value.getStringValue (false));
+                   : (double) parseInt (editor.value.getStringValue (false));
 
         double range = isFloat ? 10 : 100;
 
@@ -452,12 +456,14 @@ private:
     void sliderValueChanged (Slider*)
     {
         editor.applyNewValue (isFloat ? getAsString ((double) slider.getValue(), editor.wasHex)
-                                      : getAsString ((int64)  slider.getValue(), editor.wasHex));
+                              : getAsString ((int64)  slider.getValue(), editor.wasHex));
 
     }
 
     void sliderDragStarted (Slider*)  {}
-    void sliderDragEnded (Slider*)    { updateRange(); }
+    void sliderDragEnded (Slider*)    {
+        updateRange();
+    }
 
     void resized()
     {
@@ -466,8 +472,12 @@ private:
 };
 
 
-Component* createIntegerSlider (LivePropertyEditorBase& editor) { return new SliderComp (editor, false); }
-Component* createFloatSlider   (LivePropertyEditorBase& editor) { return new SliderComp (editor, true);  }
+Component* createIntegerSlider (LivePropertyEditorBase& editor) {
+    return new SliderComp (editor, false);
+}
+Component* createFloatSlider   (LivePropertyEditorBase& editor) {
+    return new SliderComp (editor, true);
+}
 
 }
 

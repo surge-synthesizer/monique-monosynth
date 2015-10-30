@@ -23,9 +23,9 @@
 */
 
 ResizableCornerComponent::ResizableCornerComponent (Component* const componentToResize,
-                                                    ComponentBoundsConstrainer* const constrainer_)
-   : component (componentToResize),
-     constrainer (constrainer_)
+        ComponentBoundsConstrainer* const constrainer_)
+    : component (componentToResize),
+      constrainer (constrainer_)
 {
     setRepaintsOnMouseActivity (true);
     setMouseCursor (MouseCursor::BottomRightCornerResizeCursor);
@@ -39,9 +39,9 @@ ResizableCornerComponent::~ResizableCornerComponent()
 void ResizableCornerComponent::paint (Graphics& g)
 {
     getLookAndFeel()
-        .drawCornerResizer (g, getWidth(), getHeight(),
-                            isMouseOverOrDragging(),
-                            isMouseButtonDown());
+    .drawCornerResizer (g, getWidth(), getHeight(),
+                        isMouseOverOrDragging(),
+                        isMouseButtonDown());
 }
 
 void ResizableCornerComponent::mouseDown (const MouseEvent&)
@@ -67,7 +67,7 @@ void ResizableCornerComponent::mouseDrag (const MouseEvent& e)
     }
 
     Rectangle<int> r (originalBounds.withSize (originalBounds.getWidth() + e.getDistanceFromDragStartX(),
-                                               originalBounds.getHeight() + e.getDistanceFromDragStartY()));
+                      originalBounds.getHeight() + e.getDistanceFromDragStartY()));
 
     if (constrainer != nullptr)
     {

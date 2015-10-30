@@ -98,7 +98,7 @@ int InputStream::readCompressedInt()
     if (numBytes > 4)
     {
         jassertfalse;    // trying to read corrupt data - this method must only be used
-                       // to read data that was written by OutputStream::writeCompressedInt()
+        // to read data that was written by OutputStream::writeCompressedInt()
         return 0;
     }
 
@@ -112,7 +112,10 @@ int InputStream::readCompressedInt()
 
 int64 InputStream::readInt64()
 {
-    union { uint8 asBytes[8]; uint64 asInt64; } n;
+    union {
+        uint8 asBytes[8];
+        uint64 asInt64;
+    } n;
 
     if (read (n.asBytes, 8) == 8)
         return (int64) ByteOrder::swapIfBigEndian (n.asInt64);
@@ -122,7 +125,10 @@ int64 InputStream::readInt64()
 
 int64 InputStream::readInt64BigEndian()
 {
-    union { uint8 asBytes[8]; uint64 asInt64; } n;
+    union {
+        uint8 asBytes[8];
+        uint64 asInt64;
+    } n;
 
     if (read (n.asBytes, 8) == 8)
         return (int64) ByteOrder::swapIfLittleEndian (n.asInt64);
@@ -134,28 +140,40 @@ float InputStream::readFloat()
 {
     // the union below relies on these types being the same size...
     static_jassert (sizeof (int32) == sizeof (float));
-    union { int32 asInt; float asFloat; } n;
+    union {
+        int32 asInt;
+        float asFloat;
+    } n;
     n.asInt = (int32) readInt();
     return n.asFloat;
 }
 
 float InputStream::readFloatBigEndian()
 {
-    union { int32 asInt; float asFloat; } n;
+    union {
+        int32 asInt;
+        float asFloat;
+    } n;
     n.asInt = (int32) readIntBigEndian();
     return n.asFloat;
 }
 
 double InputStream::readDouble()
 {
-    union { int64 asInt; double asDouble; } n;
+    union {
+        int64 asInt;
+        double asDouble;
+    } n;
     n.asInt = readInt64();
     return n.asDouble;
 }
 
 double InputStream::readDoubleBigEndian()
 {
-    union { int64 asInt; double asDouble; } n;
+    union {
+        int64 asInt;
+        double asDouble;
+    } n;
     n.asInt = readInt64BigEndian();
     return n.asDouble;
 }

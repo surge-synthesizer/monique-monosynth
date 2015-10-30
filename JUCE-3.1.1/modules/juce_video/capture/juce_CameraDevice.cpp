@@ -23,7 +23,7 @@
 */
 
 CameraDevice::CameraDevice (const String& nm, int index, int minWidth, int minHeight, int maxWidth, int maxHeight)
-   : name (nm), pimpl (new Pimpl (name, index, minWidth, minHeight, maxWidth, maxHeight))
+    : name (nm), pimpl (new Pimpl (name, index, minWidth, minHeight, maxWidth, maxHeight))
 {
 }
 
@@ -80,7 +80,7 @@ CameraDevice* CameraDevice::openDevice (int index,
                                         int maxWidth, int maxHeight)
 {
     ScopedPointer<CameraDevice> d (new CameraDevice (getAvailableDevices() [index], index,
-                                                     minWidth, minHeight, maxWidth, maxHeight));
+                                   minWidth, minHeight, maxWidth, maxHeight));
 
     if (d->pimpl->openedOk())
         return d.release();

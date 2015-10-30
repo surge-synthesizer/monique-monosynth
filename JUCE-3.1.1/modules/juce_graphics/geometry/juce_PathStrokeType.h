@@ -168,19 +168,25 @@ public:
 
     //==============================================================================
     /** Returns the stroke thickness. */
-    float getStrokeThickness() const noexcept                   { return thickness; }
+    float getStrokeThickness() const noexcept                   {
+        return thickness;
+    }
 
     /** Sets the stroke thickness. */
     void setStrokeThickness (float newThickness) noexcept       { thickness = newThickness; }
 
     /** Returns the joint style. */
-    JointStyle getJointStyle() const noexcept                   { return jointStyle; }
+    JointStyle getJointStyle() const noexcept                   {
+        return jointStyle;
+    }
 
     /** Sets the joint style. */
     void setJointStyle (JointStyle newStyle) noexcept           { jointStyle = newStyle; }
 
     /** Returns the end-cap style. */
-    EndCapStyle getEndStyle() const noexcept                    { return endStyle; }
+    EndCapStyle getEndStyle() const noexcept                    {
+        return endStyle;
+    }
 
     /** Sets the end-cap style. */
     void setEndStyle (EndCapStyle newStyle) noexcept            { endStyle = newStyle; }

@@ -75,10 +75,10 @@ public:
     /** Copies this path from another one. */
     Path& operator= (const Path&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     Path (Path&&) noexcept;
     Path& operator= (Path&&) noexcept;
-   #endif
+#endif
 
     bool operator== (const Path&) const noexcept;
     bool operator!= (const Path&) const noexcept;
@@ -631,8 +631,8 @@ public:
 
     */
     AffineTransform getTransformToScaleToFit (float x, float y, float width, float height,
-                                              bool preserveProportions,
-                                              Justification justificationType = Justification::centred) const;
+            bool preserveProportions,
+            Justification justificationType = Justification::centred) const;
 
     /** Returns a transform that can be used to rescale the path to fit into a given space.
 
@@ -649,8 +649,8 @@ public:
 
     */
     AffineTransform getTransformToScaleToFit (const Rectangle<float>& area,
-                                              bool preserveProportions,
-                                              Justification justificationType = Justification::centred) const;
+            bool preserveProportions,
+            Justification justificationType = Justification::centred) const;
 
     /** Creates a version of this path where all sharp corners have been replaced by curves.
 
@@ -683,7 +683,9 @@ public:
 
         @see setUsingNonZeroWinding
     */
-    bool isUsingNonZeroWinding() const                  { return useNonZeroWinding; }
+    bool isUsingNonZeroWinding() const                  {
+        return useNonZeroWinding;
+    }
 
 
     //==============================================================================

@@ -97,12 +97,16 @@ public:
     /** Returns the midi note that this voice is currently playing.
         Returns a value less than 0 if no note is playing.
     */
-    int getCurrentlyPlayingNote() const noexcept                        { return currentlyPlayingNote; }
+    int getCurrentlyPlayingNote() const noexcept                        {
+        return currentlyPlayingNote;
+    }
 
     /** Returns the sound that this voice is currently playing.
         Returns nullptr if it's not playing.
     */
-    SynthesiserSound::Ptr getCurrentlyPlayingSound() const noexcept     { return currentlyPlayingSound; }
+    SynthesiserSound::Ptr getCurrentlyPlayingSound() const noexcept     {
+        return currentlyPlayingSound;
+    }
 
     /** Must return true if this voice object is capable of playing the given sound.
 
@@ -164,7 +168,7 @@ public:
     /** Called to let the voice know that the channel pressure has changed.
         This will be called during the rendering callback, so must be fast and thread-safe.
     */
-   virtual void channelPressureChanged (int newChannelPressureValue);
+    virtual void channelPressureChanged (int newChannelPressureValue);
 
     //==============================================================================
     /** Renders the next block of data for this voice.
@@ -206,19 +210,27 @@ public:
     /** Returns the current target sample rate at which rendering is being done.
         Subclasses may need to know this so that they can pitch things correctly.
     */
-    double getSampleRate() const noexcept                       { return currentSampleRate; }
+    double getSampleRate() const noexcept                       {
+        return currentSampleRate;
+    }
 
     /** Returns true if the key that triggered this voice is still held down.
         Note that the voice may still be playing after the key was released (e.g because the
         sostenuto pedal is down).
     */
-    bool isKeyDown() const noexcept                             { return keyIsDown; }
+    bool isKeyDown() const noexcept                             {
+        return keyIsDown;
+    }
 
     /** Returns true if the sustain pedal is currently active for this voice. */
-    bool isSustainPedalDown() const noexcept                    { return sustainPedalDown; }
+    bool isSustainPedalDown() const noexcept                    {
+        return sustainPedalDown;
+    }
 
     /** Returns true if the sostenuto pedal is currently active for this voice. */
-    bool isSostenutoPedalDown() const noexcept                  { return sostenutoPedalDown; }
+    bool isSostenutoPedalDown() const noexcept                  {
+        return sostenutoPedalDown;
+    }
 
     /** Returns true if a voice is sounding in its release phase **/
     bool isPlayingButReleased() const noexcept
@@ -255,10 +267,12 @@ private:
     SynthesiserSound::Ptr currentlyPlayingSound;
     bool keyIsDown, sustainPedalDown, sostenutoPedalDown;
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // Note the new parameters for this method.
-    virtual int stopNote (bool) { return 0; }
-   #endif
+    virtual int stopNote (bool) {
+        return 0;
+    }
+#endif
 
     JUCE_LEAK_DETECTOR (SynthesiserVoice)
 };
@@ -305,7 +319,9 @@ public:
     void clearVoices();
 
     /** Returns the number of voices that have been added. */
-    int getNumVoices() const noexcept                               { return voices.size(); }
+    int getNumVoices() const noexcept                               {
+        return voices.size();
+    }
 
     /** Returns one of the voices that have been added. */
     SynthesiserVoice* getVoice (int index) const;
@@ -328,10 +344,14 @@ public:
     void clearSounds();
 
     /** Returns the number of sounds that have been added to the synth. */
-    int getNumSounds() const noexcept                               { return sounds.size(); }
+    int getNumSounds() const noexcept                               {
+        return sounds.size();
+    }
 
     /** Returns one of the sounds. */
-    SynthesiserSound* getSound (int index) const noexcept           { return sounds [index]; }
+    SynthesiserSound* getSound (int index) const noexcept           {
+        return sounds [index];
+    }
 
     /** Adds a new sound to the synthesiser.
 
@@ -355,7 +375,9 @@ public:
     /** Returns true if note-stealing is enabled.
         @see setNoteStealingEnabled
     */
-    bool isNoteStealingEnabled() const noexcept                     { return shouldStealNotes; }
+    bool isNoteStealingEnabled() const noexcept                     {
+        return shouldStealNotes;
+    }
 
     //==============================================================================
     /** Triggers a note-on event.
@@ -512,7 +534,9 @@ public:
     /** Returns the current target sample rate at which rendering is being done.
         Subclasses may need to know this so that they can pitch things correctly.
     */
-    double getSampleRate() const noexcept                       { return sampleRate; }
+    double getSampleRate() const noexcept                       {
+        return sampleRate;
+    }
 
     /** Sets a minimum limit on the size to which audio sub-blocks will be divided when rendering.
 
@@ -557,9 +581,9 @@ protected:
         method, or (preferably) override findVoiceToSteal().
     */
     virtual SynthesiserVoice* findFreeVoice (SynthesiserSound* soundToPlay,
-                                             int midiChannel,
-                                             int midiNoteNumber,
-                                             bool stealIfNoneAvailable) const;
+            int midiChannel,
+            int midiNoteNumber,
+            bool stealIfNoneAvailable) const;
 
     /** Chooses a voice that is most suitable for being re-used.
         The default method will attempt to find the oldest voice that isn't the
@@ -567,8 +591,8 @@ protected:
         you can override this method and do something more cunning instead.
     */
     virtual SynthesiserVoice* findVoiceToSteal (SynthesiserSound* soundToPlay,
-                                                int midiChannel,
-                                                int midiNoteNumber) const;
+            int midiChannel,
+            int midiNoteNumber) const;
 
     /** Starts a specified voice playing a particular sound.
 
@@ -594,13 +618,21 @@ private:
 
     void stopVoice (SynthesiserVoice*, float velocity, bool allowTailOff);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // Note the new parameters for these methods.
-    virtual int findFreeVoice (const bool) const { return 0; }
-    virtual int noteOff (int, int, int) { return 0; }
-    virtual int findFreeVoice (SynthesiserSound*, const bool) { return 0; }
-    virtual int findVoiceToSteal (SynthesiserSound*) const { return 0; }
-   #endif
+    virtual int findFreeVoice (const bool) const {
+        return 0;
+    }
+    virtual int noteOff (int, int, int) {
+        return 0;
+    }
+    virtual int findFreeVoice (SynthesiserSound*, const bool) {
+        return 0;
+    }
+    virtual int findVoiceToSteal (SynthesiserSound*) const {
+        return 0;
+    }
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Synthesiser)
 };

@@ -39,9 +39,9 @@
     @see DirectoryContentsList, FileTreeComponent
 */
 class JUCE_API  FileListComponent  : public ListBox,
-                                     public DirectoryContentsDisplayComponent,
-                                     private ListBoxModel,
-                                     private ChangeListener
+    public DirectoryContentsDisplayComponent,
+    private ListBoxModel,
+    private ChangeListener
 {
 public:
     //==============================================================================

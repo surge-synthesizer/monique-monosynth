@@ -32,7 +32,7 @@
 
 namespace juce
 {
-  #include "utils/juce_Box2DRenderer.h"
+#include "utils/juce_Box2DRenderer.h"
 }
 
 #endif   // JUCE_BOX2D_H_INCLUDED

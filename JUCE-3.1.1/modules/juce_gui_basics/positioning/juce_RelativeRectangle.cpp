@@ -24,43 +24,45 @@
 
 namespace RelativeRectangleHelpers
 {
-    inline void skipComma (String::CharPointerType& s)
+inline void skipComma (String::CharPointerType& s)
+{
+    s = s.findEndOfWhitespace();
+
+    if (*s == ',')
+        ++s;
+}
+
+static bool dependsOnSymbolsOtherThanThis (const Expression& e)
+{
+    if (e.getType() == Expression::operatorType && e.getSymbolOrFunction() == ".")
+        return true;
+
+    if (e.getType() == Expression::symbolType)
     {
-        s = s.findEndOfWhitespace();
-
-        if (*s == ',')
-            ++s;
-    }
-
-    static bool dependsOnSymbolsOtherThanThis (const Expression& e)
-    {
-        if (e.getType() == Expression::operatorType && e.getSymbolOrFunction() == ".")
-            return true;
-
-        if (e.getType() == Expression::symbolType)
+        switch (RelativeCoordinate::StandardStrings::getTypeOf (e.getSymbolOrFunction()))
         {
-            switch (RelativeCoordinate::StandardStrings::getTypeOf (e.getSymbolOrFunction()))
-            {
-                case RelativeCoordinate::StandardStrings::x:
-                case RelativeCoordinate::StandardStrings::y:
-                case RelativeCoordinate::StandardStrings::left:
-                case RelativeCoordinate::StandardStrings::right:
-                case RelativeCoordinate::StandardStrings::top:
-                case RelativeCoordinate::StandardStrings::bottom:   return false;
-                default: break;
-            }
-
-            return true;
-        }
-        else
-        {
-            for (int i = e.getNumInputs(); --i >= 0;)
-                if (dependsOnSymbolsOtherThanThis (e.getInput(i)))
-                    return true;
+        case RelativeCoordinate::StandardStrings::x:
+        case RelativeCoordinate::StandardStrings::y:
+        case RelativeCoordinate::StandardStrings::left:
+        case RelativeCoordinate::StandardStrings::right:
+        case RelativeCoordinate::StandardStrings::top:
+        case RelativeCoordinate::StandardStrings::bottom:
+            return false;
+        default:
+            break;
         }
 
-        return false;
+        return true;
     }
+    else
+    {
+        for (int i = e.getNumInputs(); --i >= 0;)
+            if (dependsOnSymbolsOtherThanThis (e.getInput(i)))
+                return true;
+    }
+
+    return false;
+}
 }
 
 //==============================================================================
@@ -115,13 +117,18 @@ public:
     {
         switch (RelativeCoordinate::StandardStrings::getTypeOf (symbol))
         {
-            case RelativeCoordinate::StandardStrings::x:
-            case RelativeCoordinate::StandardStrings::left:     return rect.left.getExpression();
-            case RelativeCoordinate::StandardStrings::y:
-            case RelativeCoordinate::StandardStrings::top:      return rect.top.getExpression();
-            case RelativeCoordinate::StandardStrings::right:    return rect.right.getExpression();
-            case RelativeCoordinate::StandardStrings::bottom:   return rect.bottom.getExpression();
-            default: break;
+        case RelativeCoordinate::StandardStrings::x:
+        case RelativeCoordinate::StandardStrings::left:
+            return rect.left.getExpression();
+        case RelativeCoordinate::StandardStrings::y:
+        case RelativeCoordinate::StandardStrings::top:
+            return rect.top.getExpression();
+        case RelativeCoordinate::StandardStrings::right:
+            return rect.right.getExpression();
+        case RelativeCoordinate::StandardStrings::bottom:
+            return rect.bottom.getExpression();
+        default:
+            break;
         }
 
         return Expression::Scope::getSymbolValue (symbol);
@@ -164,9 +171,9 @@ bool RelativeRectangle::isDynamic() const
     using namespace RelativeRectangleHelpers;
 
     return dependsOnSymbolsOtherThanThis (left.getExpression())
-            || dependsOnSymbolsOtherThanThis (right.getExpression())
-            || dependsOnSymbolsOtherThanThis (top.getExpression())
-            || dependsOnSymbolsOtherThanThis (bottom.getExpression());
+           || dependsOnSymbolsOtherThanThis (right.getExpression())
+           || dependsOnSymbolsOtherThanThis (top.getExpression())
+           || dependsOnSymbolsOtherThanThis (bottom.getExpression());
 }
 
 String RelativeRectangle::toString() const

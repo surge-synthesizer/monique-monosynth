@@ -115,8 +115,8 @@ public:
                                     this is a nullptr, the call-out will be added to the desktop.
     */
     static CallOutBox& launchAsynchronously (Component* contentComponent,
-                                             const Rectangle<int>& areaToPointTo,
-                                             Component* parentComponent);
+            const Rectangle<int>& areaToPointTo,
+            Component* parentComponent);
 
     /** Posts a message which will dismiss the callout box asynchronously.
         NB: it's safe to call this method from any thread.

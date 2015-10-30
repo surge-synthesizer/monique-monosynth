@@ -24,7 +24,8 @@
 
 } // (juce namespace)
 
-@interface JuceGLView   : UIView
+@interface JuceGLView   :
+UIView
 {
 }
 + (Class) layerClass;
@@ -63,7 +64,7 @@ public:
             lastWidth  = bounds.getWidth();
             lastHeight = bounds.getHeight();
 
-            view = [[JuceGLView alloc] initWithFrame: convertToCGRect (bounds)];
+view = [[JuceGLView alloc] initWithFrame: convertToCGRect (bounds)];
             view.opaque = YES;
             view.hidden = NO;
             view.backgroundColor = [UIColor blackColor];
@@ -73,9 +74,9 @@ public:
             glLayer.contentsScale = Desktop::getInstance().getDisplays().getMainDisplay().scale;
             glLayer.opaque = true;
 
-            [((UIView*) peer->getNativeHandle()) addSubview: view];
+[((UIView*) peer->getNativeHandle()) addSubview: view];
 
-           #if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+#if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
             if (version == OpenGLContext::openGL3_2 && [[UIDevice currentDevice].systemVersion floatValue] >= 7.0)
             {
                 if (! createContext (kEAGLRenderingAPIOpenGLES3, contextToShare))
@@ -85,7 +86,7 @@ public:
                 }
             }
             else
-           #endif
+#endif
             {
                 createContext (kEAGLRenderingAPIOpenGLES2, contextToShare);
             }
@@ -94,7 +95,7 @@ public:
 
             // I'd prefer to put this stuff in the initialiseOnRenderThread() call, but doing
             // so causes myserious timing-related failures.
-            [EAGLContext setCurrentContext: context];
+[EAGLContext setCurrentContext: context];
             createGLBuffers();
             deactivateCurrentContext();
         }
@@ -116,17 +117,23 @@ public:
         deactivateCurrentContext();
     }
 
-    bool createdOk() const noexcept             { return getRawContext() != nullptr; }
-    void* getRawContext() const noexcept        { return context; }
-    GLuint getFrameBufferID() const noexcept    { return useMSAA ? msaaBufferHandle : frameBufferHandle; }
+    bool createdOk() const noexcept             {
+        return getRawContext() != nullptr;
+    }
+    void* getRawContext() const noexcept        {
+        return context;
+    }
+    GLuint getFrameBufferID() const noexcept    {
+        return useMSAA ? msaaBufferHandle : frameBufferHandle;
+    }
 
     bool makeActive() const noexcept
     {
-        if (! [EAGLContext setCurrentContext: context])
+if (! [EAGLContext setCurrentContext: context])
             return false;
 
         glBindFramebuffer (GL_FRAMEBUFFER, useMSAA ? msaaBufferHandle
-                                                   : frameBufferHandle);
+                           : frameBufferHandle);
         return true;
     }
 
@@ -137,7 +144,7 @@ public:
 
     static void deactivateCurrentContext()
     {
-        [EAGLContext setCurrentContext: nil];
+[EAGLContext setCurrentContext: nil];
     }
 
     void swapBuffers()
@@ -147,15 +154,15 @@ public:
             glBindFramebuffer (GL_DRAW_FRAMEBUFFER, frameBufferHandle);
             glBindFramebuffer (GL_READ_FRAMEBUFFER, msaaBufferHandle);
 
-           #if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+#if defined (__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
             glBlitFramebuffer (0, 0, lastWidth, lastHeight, 0, 0, lastWidth, lastHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-           #else
+#else
             glResolveMultisampleFramebufferAPPLE();
-           #endif
+#endif
         }
 
         glBindRenderbuffer (GL_RENDERBUFFER, colorBufferHandle);
-        [context presentRenderbuffer: GL_RENDERBUFFER];
+[context presentRenderbuffer: GL_RENDERBUFFER];
 
         if (needToRebuildBuffers)
         {
@@ -185,9 +192,13 @@ public:
         return false;
     }
 
-    int getSwapInterval() const noexcept    { return swapFrames; }
+    int getSwapInterval() const noexcept    {
+        return swapFrames;
+    }
 
-    struct Locker { Locker (NativeContext&) {} };
+    struct Locker {
+        Locker (NativeContext&) {}
+    };
 
 private:
     JuceGLView* view;
@@ -207,8 +218,8 @@ private:
         context = [EAGLContext alloc];
 
         context = contextToShare != nullptr
-                    ? [context initWithAPI: type  sharegroup: [(EAGLContext*) contextToShare sharegroup]]
-                    : [context initWithAPI: type];
+          ? [context initWithAPI: type  sharegroup: [(EAGLContext*) contextToShare sharegroup]]
+          : [context initWithAPI: type];
 
         return context != nil;
     }
@@ -230,8 +241,9 @@ private:
 
         glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorBufferHandle);
 
-        bool ok = [context renderbufferStorage: GL_RENDERBUFFER fromDrawable: glLayer];
-        jassert (ok); (void) ok;
+bool ok = [context renderbufferStorage: GL_RENDERBUFFER fromDrawable: glLayer];
+        jassert (ok);
+        (void) ok;
 
         GLint width, height;
         glGetRenderbufferParameteriv (GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
@@ -270,7 +282,7 @@ private:
     void freeGLBuffers()
     {
         JUCE_CHECK_OPENGL_ERROR
-        [context renderbufferStorage: GL_RENDERBUFFER fromDrawable: nil];
+[context renderbufferStorage: GL_RENDERBUFFER fromDrawable: nil];
 
         deleteFrameBuffer (frameBufferHandle);
         deleteFrameBuffer (msaaBufferHandle);
@@ -281,8 +293,14 @@ private:
         JUCE_CHECK_OPENGL_ERROR
     }
 
-    static void deleteFrameBuffer  (GLuint& i)   { if (i != 0) glDeleteFramebuffers  (1, &i); i = 0; }
-    static void deleteRenderBuffer (GLuint& i)   { if (i != 0) glDeleteRenderbuffers (1, &i); i = 0; }
+    static void deleteFrameBuffer  (GLuint& i)   {
+        if (i != 0) glDeleteFramebuffers  (1, &i);
+        i = 0;
+    }
+    static void deleteRenderBuffer (GLuint& i)   {
+        if (i != 0) glDeleteRenderbuffers (1, &i);
+        i = 0;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NativeContext)
 };

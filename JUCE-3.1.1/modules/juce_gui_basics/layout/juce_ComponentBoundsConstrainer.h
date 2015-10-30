@@ -53,25 +53,33 @@ public:
     void setMinimumWidth (int minimumWidth) noexcept;
 
     /** Returns the current minimum width. */
-    int getMinimumWidth() const noexcept                        { return minW; }
+    int getMinimumWidth() const noexcept                        {
+        return minW;
+    }
 
     /** Imposes a maximum width limit. */
     void setMaximumWidth (int maximumWidth) noexcept;
 
     /** Returns the current maximum width. */
-    int getMaximumWidth() const noexcept                        { return maxW; }
+    int getMaximumWidth() const noexcept                        {
+        return maxW;
+    }
 
     /** Imposes a minimum height limit. */
     void setMinimumHeight (int minimumHeight) noexcept;
 
     /** Returns the current minimum height. */
-    int getMinimumHeight() const noexcept                       { return minH; }
+    int getMinimumHeight() const noexcept                       {
+        return minH;
+    }
 
     /** Imposes a maximum height limit. */
     void setMaximumHeight (int maximumHeight) noexcept;
 
     /** Returns the current maximum height. */
-    int getMaximumHeight() const noexcept                       { return maxH; }
+    int getMaximumHeight() const noexcept                       {
+        return maxH;
+    }
 
     /** Imposes a minimum width and height limit. */
     void setMinimumSize (int minimumWidth,
@@ -111,13 +119,21 @@ public:
 
 
     /** Returns the minimum distance the bounds can be off-screen. @see setMinimumOnscreenAmounts */
-    int getMinimumWhenOffTheTop() const noexcept        { return minOffTop; }
+    int getMinimumWhenOffTheTop() const noexcept        {
+        return minOffTop;
+    }
     /** Returns the minimum distance the bounds can be off-screen. @see setMinimumOnscreenAmounts */
-    int getMinimumWhenOffTheLeft() const noexcept       { return minOffLeft; }
+    int getMinimumWhenOffTheLeft() const noexcept       {
+        return minOffLeft;
+    }
     /** Returns the minimum distance the bounds can be off-screen. @see setMinimumOnscreenAmounts */
-    int getMinimumWhenOffTheBottom() const noexcept     { return minOffBottom; }
+    int getMinimumWhenOffTheBottom() const noexcept     {
+        return minOffBottom;
+    }
     /** Returns the minimum distance the bounds can be off-screen. @see setMinimumOnscreenAmounts */
-    int getMinimumWhenOffTheRight() const noexcept      { return minOffRight; }
+    int getMinimumWhenOffTheRight() const noexcept      {
+        return minOffRight;
+    }
 
     //==============================================================================
     /** Specifies a width-to-height ratio that the resizer should always maintain.

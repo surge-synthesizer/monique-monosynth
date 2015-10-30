@@ -70,7 +70,9 @@ void TableHeaderComponent::setPopupMenuActive (const bool hasMenu)
     menuActive = hasMenu;
 }
 
-bool TableHeaderComponent::isPopupMenuActive() const                    { return menuActive; }
+bool TableHeaderComponent::isPopupMenuActive() const                    {
+    return menuActive;
+}
 
 
 //==============================================================================
@@ -188,7 +190,7 @@ void TableHeaderComponent::setColumnWidth (const int columnId, const int newWidt
         const int numColumns = getNumColumns (true);
 
         ci->lastDeliberateWidth = ci->width
-            = jlimit (ci->minimumWidth, ci->maximumWidth, newWidth);
+                                  = jlimit (ci->minimumWidth, ci->maximumWidth, newWidth);
 
         if (stretchToFit)
         {
@@ -314,7 +316,7 @@ bool TableHeaderComponent::isStretchToFitActive() const
 void TableHeaderComponent::resizeAllColumnsToFit (int targetTotalWidth)
 {
     if (stretchToFit && getWidth() > 0
-         && columnIdBeingResized == 0 && columnIdBeingDragged == 0)
+            && columnIdBeingResized == 0 && columnIdBeingDragged == 0)
     {
         lastDeliberateWidth = targetTotalWidth;
         resizeColumnsToFit (0, targetTotalWidth);
@@ -526,9 +528,9 @@ void TableHeaderComponent::paint (Graphics& g)
         if (ci->isVisible())
         {
             if (x + ci->width > clip.getX()
-                 && (ci->id != columnIdBeingDragged
-                      || dragOverlayComp == nullptr
-                      || ! dragOverlayComp->isVisible()))
+                    && (ci->id != columnIdBeingDragged
+                        || dragOverlayComp == nullptr
+                        || ! dragOverlayComp->isVisible()))
             {
                 Graphics::ScopedSaveState ss (g);
 
@@ -589,8 +591,8 @@ void TableHeaderComponent::mouseDown (const MouseEvent& e)
 void TableHeaderComponent::mouseDrag (const MouseEvent& e)
 {
     if (columnIdBeingResized == 0
-         && columnIdBeingDragged == 0
-         && ! (e.mouseWasClicked() || e.mods.isPopupMenu()))
+            && columnIdBeingDragged == 0
+            && ! (e.mouseWasClicked() || e.mods.isPopupMenu()))
     {
         dragOverlayComp = nullptr;
 
@@ -660,7 +662,7 @@ void TableHeaderComponent::mouseDrag (const MouseEvent& e)
                             const int rightOfCurrent = getColumnPosition (newIndex).getRight();
 
                             if (abs (dragOverlayComp->getX() - leftOfPrevious)
-                                < abs (dragOverlayComp->getRight() - rightOfCurrent))
+                                    < abs (dragOverlayComp->getRight() - rightOfCurrent))
                             {
                                 --newIndex;
                             }
@@ -679,7 +681,7 @@ void TableHeaderComponent::mouseDrag (const MouseEvent& e)
                             const int rightOfNext = getColumnPosition (newIndex + 1).getRight();
 
                             if (abs (dragOverlayComp->getX() - leftOfCurrent)
-                                > abs (dragOverlayComp->getRight() - rightOfNext))
+                                    > abs (dragOverlayComp->getRight() - rightOfNext))
                             {
                                 ++newIndex;
                             }
@@ -875,7 +877,7 @@ int TableHeaderComponent::getResizeDraggerAt (const int mouseX) const
             if (ci->isVisible())
             {
                 if (abs (mouseX - (x + ci->width)) <= draggableDistance
-                     && (ci->propertyFlags & resizable) != 0)
+                        && (ci->propertyFlags & resizable) != 0)
                     return ci->id;
 
                 x += ci->width;
@@ -898,7 +900,7 @@ void TableHeaderComponent::setColumnUnderMouse (const int newCol)
 void TableHeaderComponent::updateColumnUnderMouse (const MouseEvent& e)
 {
     setColumnUnderMouse (reallyContains (e.getPosition(), true) && getResizeDraggerAt (e.x) == 0
-                            ? getColumnIdAtX (e.x) : 0);
+                         ? getColumnIdAtX (e.x) : 0);
 }
 
 static void tableHeaderMenuCallback (int result, TableHeaderComponent* tableHeader, int columnIdClicked)

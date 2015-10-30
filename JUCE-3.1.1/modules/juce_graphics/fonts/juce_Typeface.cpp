@@ -36,7 +36,7 @@ struct FontStyleHelpers
     static const char* getStyleName (const int styleFlags) noexcept
     {
         return getStyleName ((styleFlags & Font::bold) != 0,
-                             (styleFlags & Font::italic) != 0);
+        (styleFlags & Font::italic) != 0);
     }
 
     static bool isBold (const String& style) noexcept
@@ -47,14 +47,14 @@ struct FontStyleHelpers
     static bool isItalic (const String& style) noexcept
     {
         return style.containsWholeWordIgnoreCase ("Italic")
-            || style.containsWholeWordIgnoreCase ("Oblique");
+        || style.containsWholeWordIgnoreCase ("Oblique");
     }
 
     static bool isPlaceholderFamilyName (const String& family)
     {
         return family == Font::getDefaultSansSerifFontName()
-            || family == Font::getDefaultSerifFontName()
-            || family == Font::getDefaultMonospacedFontName();
+               || family == Font::getDefaultSerifFontName()
+               || family == Font::getDefaultMonospacedFontName();
     }
 
     struct ConcreteFamilyNames
@@ -96,13 +96,14 @@ struct FontStyleHelpers
         const String& family = font.getTypefaceName();
 
         return isPlaceholderFamilyName (family) ? getConcreteFamilyNameFromPlaceholder (family)
-                                                : family;
+               : family;
     }
 };
 
 //==============================================================================
 Typeface::Typeface (const String& faceName, const String& styleName) noexcept
-    : name (faceName), style (styleName)
+:
+name (faceName), style (styleName)
 {
 }
 
@@ -162,15 +163,27 @@ struct Typeface::HintingParams
         {
             switch (i.elementType)
             {
-                case Path::Iterator::startNewSubPath:  result.startNewSubPath (i.x1, cachedScale.apply (i.y1)); break;
-                case Path::Iterator::lineTo:           result.lineTo (i.x1, cachedScale.apply (i.y1)); break;
-                case Path::Iterator::quadraticTo:      result.quadraticTo (i.x1, cachedScale.apply (i.y1),
-                                                                           i.x2, cachedScale.apply (i.y2)); break;
-                case Path::Iterator::cubicTo:          result.cubicTo (i.x1, cachedScale.apply (i.y1),
-                                                                       i.x2, cachedScale.apply (i.y2),
-                                                                       i.x3, cachedScale.apply (i.y3)); break;
-                case Path::Iterator::closePath:        result.closeSubPath(); break;
-                default:                               jassertfalse; break;
+            case Path::Iterator::startNewSubPath:
+                result.startNewSubPath (i.x1, cachedScale.apply (i.y1));
+                break;
+            case Path::Iterator::lineTo:
+                result.lineTo (i.x1, cachedScale.apply (i.y1));
+                break;
+            case Path::Iterator::quadraticTo:
+                result.quadraticTo (i.x1, cachedScale.apply (i.y1),
+                                    i.x2, cachedScale.apply (i.y2));
+                break;
+            case Path::Iterator::cubicTo:
+                result.cubicTo (i.x1, cachedScale.apply (i.y1),
+                                i.x2, cachedScale.apply (i.y2),
+                                i.x3, cachedScale.apply (i.y3));
+                break;
+            case Path::Iterator::closePath:
+                result.closeSubPath();
+                break;
+            default:
+                jassertfalse;
+                break;
             }
         }
 
@@ -180,14 +193,16 @@ struct Typeface::HintingParams
 private:
     struct Scaling
     {
-        Scaling() noexcept : middle(), upperScale(), upperOffset(), lowerScale(), lowerOffset() {}
+Scaling() noexcept :
+        middle(), upperScale(), upperOffset(), lowerScale(), lowerOffset() {}
 
-        Scaling (float t, float m, float b, float fontSize) noexcept  : middle (m)
+Scaling (float t, float m, float b, float fontSize) noexcept  :
+        middle (m)
         {
             const float newT = std::floor (fontSize * t + 0.5f) / fontSize;
             const float newB = std::floor (fontSize * b + 0.5f) / fontSize;
             const float newM = std::floor (fontSize * m + 0.3f) / fontSize; // this is slightly biased so that lower-case letters
-                                                                            // are more likely to become taller than shorter.
+            // are more likely to become taller than shorter.
             upperScale  = jlimit (0.9f, 1.1f, (newM - newT) / (m - t));
             lowerScale  = jlimit (0.9f, 1.1f, (newB - newM) / (b - m));
 
@@ -198,7 +213,7 @@ private:
         float apply (float y) const noexcept
         {
             return y < middle ? (y * upperScale + upperOffset)
-                              : (y * lowerScale + lowerOffset);
+                   : (y * lowerScale + lowerOffset);
         }
 
         float middle, upperScale, upperOffset, lowerScale, lowerOffset;

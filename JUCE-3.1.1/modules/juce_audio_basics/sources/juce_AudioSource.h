@@ -40,9 +40,10 @@ struct JUCE_API  AudioSourceChannelInfo
     /** Creates an AudioSourceChannelInfo. */
     AudioSourceChannelInfo (AudioSampleBuffer* bufferToUse,
                             int startSampleOffset, int numSamplesToUse) noexcept
-        : buffer (bufferToUse),
-          startSample (startSampleOffset),
-          numSamples (numSamplesToUse)
+:
+    buffer (bufferToUse),
+           startSample (startSampleOffset),
+           numSamples (numSamplesToUse)
     {
     }
 
@@ -51,9 +52,10 @@ struct JUCE_API  AudioSourceChannelInfo
         AudioSourceChannelInfo is still using it.
     */
     explicit AudioSourceChannelInfo (AudioSampleBuffer& bufferToUse) noexcept
-        : buffer (&bufferToUse),
-          startSample (0),
-          numSamples (bufferToUse.getNumSamples())
+:
+    buffer (&bufferToUse),
+    startSample (0),
+    numSamples (bufferToUse.getNumSamples())
     {
     }
 

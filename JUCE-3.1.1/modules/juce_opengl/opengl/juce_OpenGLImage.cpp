@@ -44,7 +44,9 @@ public:
         return createOpenGLGraphicsContext (context, frameBuffer);
     }
 
-    ImageType* createType() const override     { return new OpenGLImageType(); }
+    ImageType* createType() const override     {
+        return new OpenGLImageType();
+    }
 
     ImagePixelData* clone() override
     {
@@ -69,10 +71,18 @@ public:
 
         switch (mode)
         {
-            case Image::BitmapData::writeOnly:  DataReleaser<Dummy,  Writer>::initialise (frameBuffer, bitmapData, x, y); break;
-            case Image::BitmapData::readOnly:   DataReleaser<Reader, Dummy> ::initialise (frameBuffer, bitmapData, x, y); break;
-            case Image::BitmapData::readWrite:  DataReleaser<Reader, Writer>::initialise (frameBuffer, bitmapData, x, y); break;
-            default:                            jassertfalse; break;
+        case Image::BitmapData::writeOnly:
+            DataReleaser<Dummy,  Writer>::initialise (frameBuffer, bitmapData, x, y);
+            break;
+        case Image::BitmapData::readOnly:
+            DataReleaser<Reader, Dummy> ::initialise (frameBuffer, bitmapData, x, y);
+            break;
+        case Image::BitmapData::readWrite:
+            DataReleaser<Reader, Writer>::initialise (frameBuffer, bitmapData, x, y);
+            break;
+        default:
+            jassertfalse;
+            break;
         }
 
         if (mode != Image::BitmapData::readOnly)
@@ -121,7 +131,8 @@ private:
     struct Writer
     {
         Writer (OpenGLFrameBuffer& fb, int x, int y, int w, int h) noexcept
-            : frameBuffer (fb), area (x, y, w, h)
+:
+        frameBuffer (fb), area (x, y, w, h)
         {}
 
         void write (const PixelARGB* const data) const noexcept

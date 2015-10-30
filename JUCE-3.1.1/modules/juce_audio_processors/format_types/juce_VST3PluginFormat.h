@@ -40,7 +40,9 @@ public:
 
     //==============================================================================
     /** @internal */
-    String getName() const override { return "VST3"; }
+    String getName() const override {
+        return "VST3";
+    }
     /** @internal */
     void findAllTypesForFile (OwnedArray<PluginDescription>& results, const String& fileOrIdentifier) override;
     /** @internal */
@@ -58,7 +60,9 @@ public:
     /** @internal */
     FileSearchPath getDefaultLocationsToSearch() override;
     /** @internal */
-    bool canScanForPlugins() const override { return true; }
+    bool canScanForPlugins() const override {
+        return true;
+    }
 
 private:
     //==============================================================================

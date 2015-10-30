@@ -26,9 +26,9 @@ class WebBrowserComponent::Pimpl   : public ActiveXControlComponent
 {
 public:
     Pimpl()
-      : browser (nullptr),
-        connectionPoint (nullptr),
-        adviseCookie (0)
+        : browser (nullptr),
+          connectionPoint (nullptr),
+          adviseCookie (0)
     {
     }
 
@@ -130,16 +130,22 @@ private:
 
     //==============================================================================
     class EventHandler  : public ComBaseClassHelper<IDispatch>,
-                          public ComponentMovementWatcher
+        public ComponentMovementWatcher
     {
     public:
         EventHandler (WebBrowserComponent& w)  : ComponentMovementWatcher (&w), owner (w)
         {
         }
 
-        JUCE_COMRESULT GetTypeInfoCount (UINT*)                                  { return E_NOTIMPL; }
-        JUCE_COMRESULT GetTypeInfo (UINT, LCID, ITypeInfo**)                     { return E_NOTIMPL; }
-        JUCE_COMRESULT GetIDsOfNames (REFIID, LPOLESTR*, UINT, LCID, DISPID*)    { return E_NOTIMPL; }
+        JUCE_COMRESULT GetTypeInfoCount (UINT*)                                  {
+            return E_NOTIMPL;
+        }
+        JUCE_COMRESULT GetTypeInfo (UINT, LCID, ITypeInfo**)                     {
+            return E_NOTIMPL;
+        }
+        JUCE_COMRESULT GetIDsOfNames (REFIID, LPOLESTR*, UINT, LCID, DISPID*)    {
+            return E_NOTIMPL;
+        }
 
         JUCE_COMRESULT Invoke (DISPID dispIdMember, REFIID /*riid*/, LCID /*lcid*/, WORD /*wFlags*/, DISPPARAMS* pDispParams,
                                VARIANT* /*pVarResult*/, EXCEPINFO* /*pExcepInfo*/, UINT* /*puArgErr*/)
@@ -148,7 +154,7 @@ private:
             {
                 *pDispParams->rgvarg->pboolVal
                     = owner.pageAboutToLoad (getStringFromVariant (pDispParams->rgvarg[5].pvarVal)) ? VARIANT_FALSE
-                                                                                                    : VARIANT_TRUE;
+                      : VARIANT_TRUE;
                 return S_OK;
             }
             else if (dispIdMember == DISPID_NEWWINDOW3)
@@ -179,7 +185,9 @@ private:
 
         void componentMovedOrResized (bool, bool) override   {}
         void componentPeerChanged() override                 {}
-        void componentVisibilityChanged() override           { owner.visibilityChanged(); }
+        void componentVisibilityChanged() override           {
+            owner.visibilityChanged();
+        }
 
     private:
         WebBrowserComponent& owner;
@@ -187,7 +195,7 @@ private:
         static String getStringFromVariant (VARIANT* v)
         {
             return (v->vt & VT_BYREF) != 0 ? *v->pbstrVal
-                                           : v->bstrVal;
+                   : v->bstrVal;
         }
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EventHandler)

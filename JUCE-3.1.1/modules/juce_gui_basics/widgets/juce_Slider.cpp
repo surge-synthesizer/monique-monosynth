@@ -784,8 +784,9 @@ public:
                                     ? e.position.x - mouseDragStartPos.x
                                     : mouseDragStartPos.y - e.position.y;
 
-            newPos = owner.valueToProportionOfLength (valueOnMouseDown)
-                     + mouseDiff * (1.0 / pixelsForFullDragExtent);
+
+
+            newPos = owner.valueToProportionOfLength (valueOnMouseDown) + mouseDiff * (1.0 / pixelsForFullDragExtent);
 
             if (style == IncDecButtons)
             {
@@ -925,7 +926,7 @@ public:
                     mouseDragStartPos = e.position;
                 }
 
-                if (isAbsoluteDragMode (e.mods) || (maximum - minimum) / sliderRegionSize < interval)
+                if (style != LinearVertical && isAbsoluteDragMode (e.mods) || (maximum - minimum) / sliderRegionSize < interval)
                 {
                     dragMode = absoluteDrag;
                     handleAbsoluteDrag (e);

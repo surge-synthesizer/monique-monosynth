@@ -51,8 +51,12 @@ Uuid& Uuid::operator= (const Uuid& other) noexcept
     return *this;
 }
 
-bool Uuid::operator== (const Uuid& other) const noexcept    { return memcmp (uuid, other.uuid, sizeof (uuid)) == 0; }
-bool Uuid::operator!= (const Uuid& other) const noexcept    { return ! operator== (other); }
+bool Uuid::operator== (const Uuid& other) const noexcept    {
+    return memcmp (uuid, other.uuid, sizeof (uuid)) == 0;
+}
+bool Uuid::operator!= (const Uuid& other) const noexcept    {
+    return ! operator== (other);
+}
 
 Uuid Uuid::null() noexcept
 {
@@ -81,10 +85,10 @@ String Uuid::toString() const
 String Uuid::toDashedString() const
 {
     return getHexRegion (0, 4)
-            + "-" + getHexRegion (4, 2)
-            + "-" + getHexRegion (6, 2)
-            + "-" + getHexRegion (8, 2)
-            + "-" + getHexRegion (10, 6);
+           + "-" + getHexRegion (4, 2)
+           + "-" + getHexRegion (6, 2)
+           + "-" + getHexRegion (8, 2)
+           + "-" + getHexRegion (10, 6);
 }
 
 Uuid::Uuid (const String& uuidString)

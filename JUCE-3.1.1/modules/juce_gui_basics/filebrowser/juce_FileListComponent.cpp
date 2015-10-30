@@ -87,8 +87,8 @@ void FileListComponent::changeListenerCallback (ChangeBroadcaster*)
 
 //==============================================================================
 class FileListComponent::ItemComponent  : public Component,
-                                          private TimeSliceClient,
-                                          private AsyncUpdater
+    private TimeSliceClient,
+    private AsyncUpdater
 {
 public:
     ItemComponent (FileListComponent& fc, TimeSliceThread& t)
@@ -147,8 +147,8 @@ public:
         }
 
         if (newFile != file
-             || fileSize != newFileSize
-             || modTime != newModTime)
+                || fileSize != newFileSize
+                || modTime != newModTime)
         {
             file = newFile;
             fileSize = newFileSize;

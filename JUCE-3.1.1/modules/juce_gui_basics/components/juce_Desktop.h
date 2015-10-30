@@ -50,8 +50,8 @@ public:
 
 */
 class JUCE_API  Desktop  : private DeletedAtShutdown,
-                           private Timer,
-                           private AsyncUpdater
+    private Timer,
+    private AsyncUpdater
 {
 public:
     //==============================================================================
@@ -169,7 +169,9 @@ public:
         This is the component that was last set by setKioskModeComponent(). If none
         has been set, this returns nullptr.
     */
-    Component* getKioskModeComponent() const noexcept               { return kioskModeComponent; }
+    Component* getKioskModeComponent() const noexcept               {
+        return kioskModeComponent;
+    }
 
     //==============================================================================
     /** Returns the number of components that are currently active as top-level
@@ -362,10 +364,10 @@ public:
         /** The list of displays. */
         Array<Display> displays;
 
-       #ifndef DOXYGEN
+#ifndef DOXYGEN
         /** @internal */
         void refresh();
-       #endif
+#endif
 
     private:
         friend class Desktop;
@@ -377,7 +379,9 @@ public:
         void findDisplays (float masterScale);
     };
 
-    const Displays& getDisplays() const noexcept        { return *displays; }
+    const Displays& getDisplays() const noexcept        {
+        return *displays;
+    }
 
     //==============================================================================
     /** Sets a global scale factor to be used for all desktop windows.
@@ -388,7 +392,9 @@ public:
     /** Returns the current global scale factor, as set by setGlobalScaleFactor().
         @see setGlobalScaleFactor
     */
-    float getGlobalScaleFactor() const noexcept         { return masterScaleFactor; }
+    float getGlobalScaleFactor() const noexcept         {
+        return masterScaleFactor;
+    }
 
     //==============================================================================
     /** True if the OS supports semitransparent windows */

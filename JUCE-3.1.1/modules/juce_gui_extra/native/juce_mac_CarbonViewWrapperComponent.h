@@ -34,8 +34,8 @@
     in the audio plugin hosting code.
 */
 class CarbonViewWrapperComponent  : public Component,
-                                    public ComponentMovementWatcher,
-                                    public Timer
+    public ComponentMovementWatcher,
+    public Timer
 {
 public:
     CarbonViewWrapperComponent()
@@ -83,25 +83,25 @@ public:
 
             CreateNewWindow (kDocumentWindowClass,
                              (WindowAttributes) (kWindowStandardHandlerAttribute | kWindowCompositingAttribute
-                                                  | kWindowNoShadowAttribute | kWindowNoTitleBarAttribute),
+                                                 | kWindowNoShadowAttribute | kWindowNoTitleBarAttribute),
                              &r, &wrapperWindow);
 
             jassert (wrapperWindow != 0);
             if (wrapperWindow == 0)
                 return;
 
-            carbonWindow = [[NSWindow alloc] initWithWindowRef: wrapperWindow];
+carbonWindow = [[NSWindow alloc] initWithWindowRef: wrapperWindow];
 
-            [getOwnerWindow() addChildWindow: carbonWindow
-                                     ordered: NSWindowAbove];
+[getOwnerWindow() addChildWindow: carbonWindow
+ ordered: NSWindowAbove];
 
             embeddedView = attachView (wrapperWindow, HIViewGetRoot (wrapperWindow));
 
             // Check for the plugin creating its own floating window, and if there is one,
             // we need to reparent it to make it visible..
             if (NSWindow* floatingChildWindow = [[carbonWindow childWindows] objectAtIndex: 0])
-                [getOwnerWindow() addChildWindow: floatingChildWindow
-                                         ordered: NSWindowAbove];
+[getOwnerWindow() addChildWindow: floatingChildWindow
+ ordered: NSWindowAbove];
 
             EventTypeSpec windowEventTypes[] =
             {
@@ -140,7 +140,7 @@ public:
 
             if ([[ownerWindow childWindows] count] > 0)
             {
-                [ownerWindow removeChildWindow: carbonWindow];
+[ownerWindow removeChildWindow: carbonWindow];
                 [carbonWindow close];
             }
 
@@ -286,25 +286,25 @@ public:
     {
         switch (GetEventKind (event))
         {
-            case kEventWindowHandleDeactivate:
-                ActivateWindow (wrapperWindow, TRUE);
-                return noErr;
+        case kEventWindowHandleDeactivate:
+            ActivateWindow (wrapperWindow, TRUE);
+            return noErr;
 
-            case kEventWindowGetClickActivation:
-            {
-                getTopLevelComponent()->toFront (false);
-                [carbonWindow makeKeyAndOrderFront: nil];
+        case kEventWindowGetClickActivation:
+        {
+            getTopLevelComponent()->toFront (false);
+[carbonWindow makeKeyAndOrderFront: nil];
 
-                ClickActivationResult howToHandleClick = kActivateAndHandleClick;
+            ClickActivationResult howToHandleClick = kActivateAndHandleClick;
 
-                SetEventParameter (event, kEventParamClickActivation, typeClickActivationResult,
-                                   sizeof (ClickActivationResult), &howToHandleClick);
+            SetEventParameter (event, kEventParamClickActivation, typeClickActivationResult,
+                               sizeof (ClickActivationResult), &howToHandleClick);
 
-                if (embeddedView != 0)
-                    HIViewSetNeedsDisplay (embeddedView, true);
+            if (embeddedView != 0)
+                HIViewSetNeedsDisplay (embeddedView, true);
 
-                return noErr;
-            }
+            return noErr;
+        }
         }
 
         return eventNotHandledErr;
@@ -326,7 +326,9 @@ protected:
 
     EventHandlerRef eventHandlerRef;
 
-    NSWindow* getOwnerWindow() const    { return [((NSView*) getWindowHandle()) window]; }
+    NSWindow* getOwnerWindow() const    {
+        return [((NSView*) getWindowHandle()) window];
+    }
 };
 
 #endif   // JUCE_MAC_CARBONVIEWWRAPPERCOMPONENT_H_INCLUDED

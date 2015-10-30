@@ -469,7 +469,7 @@ void Graphics::fillRoundedRectangle (float x, float y, float width, float height
     }
     else
     {
-	fillRoundedRectangle (coordsToRectangle (x, y, width, height), cornerSize);
+        fillRoundedRectangle (coordsToRectangle (x, y, width, height), cornerSize);
     }
 }
 

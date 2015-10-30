@@ -143,7 +143,7 @@ void FileSearchPathListComponent::deleteKeyPressed (int row)
 
 void FileSearchPathListComponent::returnKeyPressed (int row)
 {
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     FileChooser chooser (TRANS("Change folder..."), path [row], "*");
 
     if (chooser.browseForDirectory())
@@ -152,7 +152,7 @@ void FileSearchPathListComponent::returnKeyPressed (int row)
         path.add (chooser.getResult(), row);
         changed();
     }
-   #endif
+#endif
 }
 
 void FileSearchPathListComponent::listBoxItemDoubleClicked (int row, const MouseEvent&)
@@ -226,14 +226,14 @@ void FileSearchPathListComponent::buttonClicked (Button* button)
         if (start == File::nonexistent)
             start = File::getCurrentWorkingDirectory();
 
-       #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
         FileChooser chooser (TRANS("Add a folder..."), start, "*");
 
         if (chooser.browseForDirectory())
             path.add (chooser.getResult(), currentRow);
-       #else
+#else
         jassertfalse; // needs rewriting to deal with non-modal environments
-       #endif
+#endif
     }
     else if (button == &changeButton)
     {

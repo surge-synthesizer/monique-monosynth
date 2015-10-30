@@ -232,23 +232,23 @@ public:
         virtual ~LookAndFeelMethods() {}
 
         virtual void drawDocumentWindowTitleBar (DocumentWindow&,
-                                                 Graphics&, int w, int h,
-                                                 int titleSpaceX, int titleSpaceW,
-                                                 const Image* icon,
-                                                 bool drawTitleTextOnLeft) = 0;
+                Graphics&, int w, int h,
+                int titleSpaceX, int titleSpaceW,
+                const Image* icon,
+                bool drawTitleTextOnLeft) = 0;
 
         virtual Button* createDocumentWindowButton (int buttonType) = 0;
 
         virtual void positionDocumentWindowButtons (DocumentWindow&,
-                                                    int titleBarX, int titleBarY, int titleBarW, int titleBarH,
-                                                    Button* minimiseButton,
-                                                    Button* maximiseButton,
-                                                    Button* closeButton,
-                                                    bool positionTitleBarButtonsOnLeft) = 0;
+                int titleBarX, int titleBarY, int titleBarW, int titleBarH,
+                Button* minimiseButton,
+                Button* maximiseButton,
+                Button* closeButton,
+                bool positionTitleBarButtonsOnLeft) = 0;
     };
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     /** @internal */
     void paint (Graphics&) override;
     /** @internal */
@@ -271,7 +271,7 @@ public:
     void parentHierarchyChanged() override;
     /** @internal */
     Rectangle<int> getTitleBarArea();
-   #endif
+#endif
 
 private:
     //==============================================================================

@@ -79,10 +79,10 @@ public:
     */
     void* getNativeHandle() const;
 
-   #if JUCE_LINUX
+#if JUCE_LINUX
     /** @internal */
     void paint (Graphics&) override;
-   #endif
+#endif
 
 private:
     //==============================================================================

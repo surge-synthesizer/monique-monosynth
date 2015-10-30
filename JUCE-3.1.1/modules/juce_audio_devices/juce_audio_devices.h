@@ -39,46 +39,46 @@
     info about this.
 */
 #ifndef JUCE_ASIO
- #define JUCE_ASIO 0
+#define JUCE_ASIO 0
 #endif
 
 /** Config: JUCE_WASAPI
     Enables WASAPI audio devices (Windows Vista and above).
 */
 #ifndef JUCE_WASAPI
- #define JUCE_WASAPI 1
+#define JUCE_WASAPI 1
 #endif
 
 /** Config: JUCE_DIRECTSOUND
     Enables DirectSound audio (MS Windows only).
 */
 #ifndef JUCE_DIRECTSOUND
- #define JUCE_DIRECTSOUND 1
+#define JUCE_DIRECTSOUND 1
 #endif
 
 /** Config: JUCE_ALSA
     Enables ALSA audio devices (Linux only).
 */
 #ifndef JUCE_ALSA
- #define JUCE_ALSA 1
+#define JUCE_ALSA 1
 #endif
 
 /** Config: JUCE_JACK
     Enables JACK audio devices (Linux only).
 */
 #ifndef JUCE_JACK
- #define JUCE_JACK 0
+#define JUCE_JACK 0
 #endif
 
 /** Config: JUCE_USE_ANDROID_OPENSLES
     Enables OpenSLES devices (Android only).
 */
 #ifndef JUCE_USE_ANDROID_OPENSLES
- #if JUCE_ANDROID_API_VERSION > 8
-  #define JUCE_USE_ANDROID_OPENSLES 1
- #else
-  #define JUCE_USE_ANDROID_OPENSLES 0
- #endif
+#if JUCE_ANDROID_API_VERSION > 8
+#define JUCE_USE_ANDROID_OPENSLES 1
+#else
+#define JUCE_USE_ANDROID_OPENSLES 0
+#endif
 #endif
 
 //=============================================================================
@@ -86,14 +86,14 @@
     Enables the AudioCDReader class (on supported platforms).
 */
 #ifndef JUCE_USE_CDREADER
- #define JUCE_USE_CDREADER 0
+#define JUCE_USE_CDREADER 0
 #endif
 
 /** Config: JUCE_USE_CDBURNER
     Enables the AudioCDBurner class (on supported platforms).
 */
 #ifndef JUCE_USE_CDBURNER
- #define JUCE_USE_CDBURNER 0
+#define JUCE_USE_CDBURNER 0
 #endif
 
 //=============================================================================

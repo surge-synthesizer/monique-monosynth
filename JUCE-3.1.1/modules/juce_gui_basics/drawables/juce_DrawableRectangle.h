@@ -49,10 +49,14 @@ public:
     void setRectangle (const RelativeParallelogram& newBounds);
 
     /** Returns the rectangle's bounds. */
-    const RelativeParallelogram& getRectangle() const noexcept          { return bounds; }
+    const RelativeParallelogram& getRectangle() const noexcept          {
+        return bounds;
+    }
 
     /** Returns the corner size to be used. */
-    const RelativePoint& getCornerSize() const noexcept                 { return cornerSize; }
+    const RelativePoint& getCornerSize() const noexcept                 {
+        return cornerSize;
+    }
 
     /** Sets a new corner size for the rectangle */
     void setCornerSize (const RelativePoint& newSize);

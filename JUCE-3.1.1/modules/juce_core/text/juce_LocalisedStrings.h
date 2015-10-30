@@ -157,7 +157,9 @@ public:
         language: german
         @endcode
     */
-    String getLanguageName() const                        { return languageName; }
+    String getLanguageName() const                        {
+        return languageName;
+    }
 
     /** Returns the list of suitable country codes listed in the translation file.
 
@@ -168,10 +170,14 @@ public:
 
         The country codes are supposed to be 2-character ISO complient codes.
     */
-    const StringArray& getCountryCodes() const            { return countryCodes; }
+    const StringArray& getCountryCodes() const            {
+        return countryCodes;
+    }
 
     /** Provides access to the actual list of mappings. */
-    const StringPairArray& getMappings() const            { return translations; }
+    const StringPairArray& getMappings() const            {
+        return translations;
+    }
 
     //==============================================================================
     /** Adds and merges another set of translations into this set.
@@ -205,13 +211,13 @@ private:
 
 //==============================================================================
 #ifndef TRANS
- /** Uses the LocalisedStrings class to translate the given string literal.
-     This macro is provided for backwards-compatibility, and just calls the translate()
-     function. In new code, it's recommended that you just call translate() directly
-     instead, and avoid using macros.
-     @see translate(), LocalisedStrings
- */
- #define TRANS(stringLiteral) String(stringLiteral) /*juce::translate (stringLiteral)*/
+/** Uses the LocalisedStrings class to translate the given string literal.
+    This macro is provided for backwards-compatibility, and just calls the translate()
+    function. In new code, it's recommended that you just call translate() directly
+    instead, and avoid using macros.
+    @see translate(), LocalisedStrings
+*/
+#define TRANS(stringLiteral) String(stringLiteral) /*juce::translate (stringLiteral)*/
 #endif
 
 /** A dummy version of the TRANS macro, used to indicate a string literal that should be

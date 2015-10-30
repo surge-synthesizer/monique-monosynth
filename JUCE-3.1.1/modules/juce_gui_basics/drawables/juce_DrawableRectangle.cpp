@@ -103,8 +103,8 @@ void DrawableRectangle::recalculateCoordinates (Expression::Scope* scope)
         newPath.addRectangle (0, 0, w, h);
 
     newPath.applyTransform (AffineTransform::fromTargetPoints (0, 0, points[0].x, points[0].y,
-                                                               w, 0, points[1].x, points[1].y,
-                                                               0, h, points[2].x, points[2].y));
+                            w, 0, points[1].x, points[1].y,
+                            0, h, points[2].x, points[2].y));
 
     if (path != newPath)
     {

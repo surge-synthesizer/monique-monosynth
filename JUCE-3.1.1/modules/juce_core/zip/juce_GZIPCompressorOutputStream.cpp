@@ -91,24 +91,24 @@ private:
             stream.avail_out = (z_uInt) sizeof (buffer);
 
             const int result = isFirstDeflate ? deflateParams (&stream, compLevel, strategy)
-                                              : deflate (&stream, flushMode);
+                               : deflate (&stream, flushMode);
             isFirstDeflate = false;
 
             switch (result)
             {
-                case Z_STREAM_END:
-                    finished = true;
-                    // Deliberate fall-through..
-                case Z_OK:
-                {
-                    data += dataSize - stream.avail_in;
-                    dataSize = stream.avail_in;
-                    const ssize_t bytesDone = (ssize_t) sizeof (buffer) - (ssize_t) stream.avail_out;
-                    return bytesDone <= 0 || out.write (buffer, (size_t) bytesDone);
-                }
+            case Z_STREAM_END:
+                finished = true;
+                // Deliberate fall-through..
+            case Z_OK:
+            {
+                data += dataSize - stream.avail_in;
+                dataSize = stream.avail_in;
+                const ssize_t bytesDone = (ssize_t) sizeof (buffer) - (ssize_t) stream.avail_out;
+                return bytesDone <= 0 || out.write (buffer, (size_t) bytesDone);
+            }
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
 
@@ -120,9 +120,9 @@ private:
 
 //==============================================================================
 GZIPCompressorOutputStream::GZIPCompressorOutputStream (OutputStream* const out,
-                                                        const int compressionLevel,
-                                                        const bool deleteDestStream,
-                                                        const int windowBits)
+        const int compressionLevel,
+        const bool deleteDestStream,
+        const int windowBits)
     : destStream (out, deleteDestStream),
       helper (new GZIPCompressorHelper (compressionLevel, windowBits))
 {

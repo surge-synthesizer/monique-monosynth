@@ -28,7 +28,7 @@
 
 //==============================================================================
 #if JUCE_MSVC
- #pragma pack (push, 1)
+#pragma pack (push, 1)
 #endif
 
 class PixelRGB;
@@ -63,7 +63,8 @@ public:
     /** Creates a pixel from a 32-bit argb value.
     */
     PixelARGB (const uint32 argbValue) noexcept
-        : argb (argbValue)
+:
+    argb (argbValue)
     {
     }
 
@@ -75,29 +76,47 @@ public:
         components.a = a;
     }
 
-    forcedinline uint32 getARGB() const noexcept                { return argb; }
-    forcedinline uint32 getUnpremultipliedARGB() const noexcept { PixelARGB p (argb); p.unpremultiply(); return p.getARGB(); }
+    forcedinline uint32 getARGB() const noexcept                {
+        return argb;
+    }
+    forcedinline uint32 getUnpremultipliedARGB() const noexcept {
+        PixelARGB p (argb);
+        p.unpremultiply();
+        return p.getARGB();
+    }
 
-    forcedinline uint32 getRB() const noexcept      { return 0x00ff00ff & argb; }
-    forcedinline uint32 getAG() const noexcept      { return 0x00ff00ff & (argb >> 8); }
+    forcedinline uint32 getRB() const noexcept      {
+        return 0x00ff00ff & argb;
+    }
+    forcedinline uint32 getAG() const noexcept      {
+        return 0x00ff00ff & (argb >> 8);
+    }
 
-    forcedinline uint8 getAlpha() const noexcept    { return components.a; }
-    forcedinline uint8 getRed() const noexcept      { return components.r; }
-    forcedinline uint8 getGreen() const noexcept    { return components.g; }
-    forcedinline uint8 getBlue() const noexcept     { return components.b; }
+    forcedinline uint8 getAlpha() const noexcept    {
+        return components.a;
+    }
+    forcedinline uint8 getRed() const noexcept      {
+        return components.r;
+    }
+    forcedinline uint8 getGreen() const noexcept    {
+        return components.g;
+    }
+    forcedinline uint8 getBlue() const noexcept     {
+        return components.b;
+    }
 
-   #if JUCE_GCC && ! JUCE_CLANG
+#if JUCE_GCC && ! JUCE_CLANG
     // NB these are here as a workaround because GCC refuses to bind to packed values.
     forcedinline uint8& getAlpha() noexcept         { return comps [indexA]; }
     forcedinline uint8& getRed() noexcept           { return comps [indexR]; }
     forcedinline uint8& getGreen() noexcept         { return comps [indexG]; }
     forcedinline uint8& getBlue() noexcept          { return comps [indexB]; }
-   #else
+#else
     forcedinline uint8& getAlpha() noexcept         { return components.a; }
     forcedinline uint8& getRed() noexcept           { return components.r; }
     forcedinline uint8& getGreen() noexcept         { return components.g; }
     forcedinline uint8& getBlue() noexcept          { return components.b; }
-   #endif
+#endif
 
     /** Blends another pixel onto this one.
 
@@ -134,7 +153,7 @@ public:
         ag += maskPixelComponents (getAG() * alpha);
 
         uint32 rb = maskPixelComponents (extraAlpha * src.getRB())
-                     + maskPixelComponents (getRB() * alpha);
+        + maskPixelComponents (getRB() * alpha);
 
         argb = clampPixelComponents(rb) + (clampPixelComponents (ag) << 8);
     }
@@ -180,7 +199,7 @@ public:
         ++multiplier;
 
         argb = ((((uint32) multiplier) * getAG()) & 0xff00ff00)
-                | (((((uint32) multiplier) * getRB()) >> 8) & 0x00ff00ff);
+        | (((((uint32) multiplier) * getRB()) >> 8) & 0x00ff00ff);
     }
 
     forcedinline void multiplyAlpha (const float multiplier) noexcept
@@ -248,55 +267,55 @@ public:
             const int newUnpremultipliedLevel = (0xff * ((int) components.r + (int) components.g + (int) components.b) / (3 * components.a));
 
             components.r = components.g = components.b
-                = (uint8) ((newUnpremultipliedLevel * components.a + 0x7f) >> 8);
+            = (uint8) ((newUnpremultipliedLevel * components.a + 0x7f) >> 8);
         }
         else
         {
             components.r = components.g = components.b
-                = (uint8) (((int) components.r + (int) components.g + (int) components.b) / 3);
+            = (uint8) (((int) components.r + (int) components.g + (int) components.b) / 3);
         }
     }
 
     /** Returns a uint32 which when written to memory, will be in the order r, g, b, a. */
     inline uint32 getInRGBAMemoryOrder() const noexcept
     {
-       #if JUCE_BIG_ENDIAN
+#if JUCE_BIG_ENDIAN
         return (((uint32) components.r) << 24) | (((uint32) components.g) << 16) | (((uint32) components.b) << 8) | components.a;
-       #else
+#else
         return (((uint32) components.a) << 24) | (((uint32) components.b) << 16) | (((uint32) components.g) << 8) | components.r;
-       #endif
+#endif
     }
 
     //==============================================================================
     /** The indexes of the different components in the byte layout of this type of colour. */
-   #if JUCE_BIG_ENDIAN
+#if JUCE_BIG_ENDIAN
     enum { indexA = 0, indexR = 1, indexG = 2, indexB = 3 };
-   #else
+#else
     enum { indexA = 3, indexR = 2, indexG = 1, indexB = 0 };
-   #endif
+#endif
 
 private:
     //==============================================================================
     struct Components
     {
-       #if JUCE_BIG_ENDIAN
+#if JUCE_BIG_ENDIAN
         uint8 a, r, g, b;
-       #else
+#else
         uint8 b, g, r, a;
-       #endif
+#endif
     } JUCE_PACKED;
 
     union
     {
         uint32 argb;
         Components components;
-       #if JUCE_GCC
+#if JUCE_GCC
         uint8 comps[4];
-       #endif
+#endif
     };
 }
 #ifndef DOXYGEN
- JUCE_PACKED
+JUCE_PACKED
 #endif
 ;
 
@@ -327,16 +346,32 @@ public:
         b = (uint8) (argb);
     }
 
-    forcedinline uint32 getARGB() const noexcept                { return 0xff000000 | b | (((uint32) g) << 8) | (((uint32) r) << 16); }
-    forcedinline uint32 getUnpremultipliedARGB() const noexcept { return getARGB(); }
+    forcedinline uint32 getARGB() const noexcept                {
+        return 0xff000000 | b | (((uint32) g) << 8) | (((uint32) r) << 16);
+    }
+    forcedinline uint32 getUnpremultipliedARGB() const noexcept {
+        return getARGB();
+    }
 
-    forcedinline uint32 getRB() const noexcept      { return b | (uint32) (r << 16); }
-    forcedinline uint32 getAG() const noexcept      { return (uint32) (0xff0000 | g); }
+    forcedinline uint32 getRB() const noexcept      {
+        return b | (uint32) (r << 16);
+    }
+    forcedinline uint32 getAG() const noexcept      {
+        return (uint32) (0xff0000 | g);
+    }
 
-    forcedinline uint8 getAlpha() const noexcept    { return 0xff; }
-    forcedinline uint8 getRed() const noexcept      { return r; }
-    forcedinline uint8 getGreen() const noexcept    { return g; }
-    forcedinline uint8 getBlue() const noexcept     { return b; }
+    forcedinline uint8 getAlpha() const noexcept    {
+        return 0xff;
+    }
+    forcedinline uint8 getRed() const noexcept      {
+        return r;
+    }
+    forcedinline uint8 getGreen() const noexcept    {
+        return g;
+    }
+    forcedinline uint8 getBlue() const noexcept     {
+        return b;
+    }
 
     forcedinline uint8& getRed() noexcept           { return r; }
     forcedinline uint8& getGreen() noexcept         { return g; }
@@ -378,7 +413,7 @@ public:
         ag += g * alpha >> 8;
 
         uint32 rb = clampPixelComponents (maskPixelComponents (extraAlpha * src.getRB())
-                                           + maskPixelComponents (getRB() * alpha));
+        + maskPixelComponents (getRB() * alpha));
 
         b = (uint8) rb;
         g = (uint8) clampPixelComponents (ag);
@@ -446,23 +481,23 @@ public:
 
     //==============================================================================
     /** The indexes of the different components in the byte layout of this type of colour. */
-   #if JUCE_MAC
+#if JUCE_MAC
     enum { indexR = 0, indexG = 1, indexB = 2 };
-   #else
+#else
     enum { indexR = 2, indexG = 1, indexB = 0 };
-   #endif
+#endif
 
 private:
     //==============================================================================
-   #if JUCE_MAC
+#if JUCE_MAC
     uint8 r, g, b;
-   #else
+#else
     uint8 b, g, r;
-   #endif
+#endif
 
 }
 #ifndef DOXYGEN
- JUCE_PACKED
+JUCE_PACKED
 #endif
 ;
 
@@ -495,18 +530,34 @@ public:
         a = (uint8) (argb >> 24);
     }
 
-    forcedinline uint32 getARGB() const noexcept                { return (((uint32) a) << 24) | (((uint32) a) << 16) | (((uint32) a) << 8) | a; }
-    forcedinline uint32 getUnpremultipliedARGB() const noexcept { return (((uint32) a) << 24) | 0xffffff; }
+    forcedinline uint32 getARGB() const noexcept                {
+        return (((uint32) a) << 24) | (((uint32) a) << 16) | (((uint32) a) << 8) | a;
+    }
+    forcedinline uint32 getUnpremultipliedARGB() const noexcept {
+        return (((uint32) a) << 24) | 0xffffff;
+    }
 
-    forcedinline uint32 getRB() const noexcept      { return (((uint32) a) << 16) | a; }
-    forcedinline uint32 getAG() const noexcept      { return (((uint32) a) << 16) | a; }
+    forcedinline uint32 getRB() const noexcept      {
+        return (((uint32) a) << 16) | a;
+    }
+    forcedinline uint32 getAG() const noexcept      {
+        return (((uint32) a) << 16) | a;
+    }
 
-    forcedinline uint8 getAlpha() const noexcept    { return a; }
+    forcedinline uint8 getAlpha() const noexcept    {
+        return a;
+    }
     forcedinline uint8& getAlpha() noexcept         { return a; }
 
-    forcedinline uint8 getRed() const noexcept      { return 0; }
-    forcedinline uint8 getGreen() const noexcept    { return 0; }
-    forcedinline uint8 getBlue() const noexcept     { return 0; }
+    forcedinline uint8 getRed() const noexcept      {
+        return 0;
+    }
+    forcedinline uint8 getGreen() const noexcept    {
+        return 0;
+    }
+    forcedinline uint8 getBlue() const noexcept     {
+        return 0;
+    }
 
     /** Blends another pixel onto this one.
 
@@ -593,12 +644,12 @@ private:
     uint8 a;
 }
 #ifndef DOXYGEN
- JUCE_PACKED
+JUCE_PACKED
 #endif
 ;
 
 #if JUCE_MSVC
- #pragma pack (pop)
+#pragma pack (pop)
 #endif
 
 #endif   // JUCE_PIXELFORMATS_H_INCLUDED

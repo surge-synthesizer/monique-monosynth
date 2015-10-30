@@ -25,7 +25,8 @@
 class ComponentAnimator::AnimationTask
 {
 public:
-    AnimationTask (Component* c) noexcept  : component (c) {}
+AnimationTask (Component* c) noexcept  :
+    component (c) {}
 
     void reset (const Rectangle<int>& finalBounds,
                 float finalAlpha,
@@ -64,7 +65,7 @@ public:
     bool useTimeslice (const int elapsed)
     {
         if (Component* const c = proxy != nullptr ? static_cast<Component*> (proxy)
-                                                  : static_cast<Component*> (component))
+                                 : static_cast<Component*> (component))
         {
             msElapsed += elapsed;
             double newProgress = msElapsed / (double) msTotal;
@@ -148,7 +149,7 @@ public:
                 jassertfalse; // seem to be trying to animate a component that's not visible..
 
             const float scale = (float) Desktop::getInstance().getDisplays()
-                                            .getDisplayContaining (getScreenBounds().getCentre()).scale;
+                                .getDisplayContaining (getScreenBounds().getCentre()).scale;
 
             image = c.createComponentSnapshot (c.getLocalBounds(), false, scale);
 
@@ -160,7 +161,7 @@ public:
         {
             g.setOpacity (1.0f);
             g.drawImageTransformed (image, AffineTransform::scale (getWidth()  / (float) image.getWidth(),
-                                                                   getHeight() / (float) image.getHeight()), false);
+                                    getHeight() / (float) image.getHeight()), false);
         }
 
     private:
@@ -184,8 +185,8 @@ private:
     double timeToDistance (const double time) const noexcept
     {
         return (time < 0.5) ? time * (startSpeed + time * (midSpeed - startSpeed))
-                            : 0.5 * (startSpeed + 0.5 * (midSpeed - startSpeed))
-                                + (time - 0.5) * (midSpeed + (time - 0.5) * (endSpeed - midSpeed));
+               : 0.5 * (startSpeed + 0.5 * (midSpeed - startSpeed))
+               + (time - 0.5) * (midSpeed + (time - 0.5) * (endSpeed - midSpeed));
     }
 };
 
@@ -204,12 +205,12 @@ ComponentAnimator::AnimationTask* ComponentAnimator::findTaskFor (Component* con
 }
 
 void ComponentAnimator::animateComponent (Component* const component,
-                                          const Rectangle<int>& finalBounds,
-                                          const float finalAlpha,
-                                          const int millisecondsToSpendMoving,
-                                          const bool useProxyComponent,
-                                          const double startSpeed,
-                                          const double endSpeed)
+        const Rectangle<int>& finalBounds,
+        const float finalAlpha,
+        const int millisecondsToSpendMoving,
+        const bool useProxyComponent,
+        const double startSpeed,
+        const double endSpeed)
 {
     // the speeds must be 0 or greater!
     jassert (startSpeed >= 0 && endSpeed >= 0);
@@ -271,7 +272,7 @@ void ComponentAnimator::cancelAllAnimations (const bool moveComponentsToTheirFin
 }
 
 void ComponentAnimator::cancelAnimation (Component* const component,
-                                         const bool moveComponentToItsFinalPosition)
+        const bool moveComponentToItsFinalPosition)
 {
     if (AnimationTask* const at = findTaskFor (component))
     {

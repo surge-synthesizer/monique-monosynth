@@ -29,7 +29,8 @@
 Result::Result() noexcept {}
 
 Result::Result (const String& message) noexcept
-    : errorMessage (message)
+:
+errorMessage (message)
 {
 }
 
@@ -46,7 +47,8 @@ Result& Result::operator= (const Result& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 Result::Result (Result&& other) noexcept
-    : errorMessage (static_cast <String&&> (other.errorMessage))
+:
+errorMessage (static_cast <String&&> (other.errorMessage))
 {
 }
 
@@ -77,7 +79,15 @@ const String& Result::getErrorMessage() const noexcept
     return errorMessage;
 }
 
-bool Result::wasOk() const noexcept         { return errorMessage.isEmpty(); }
-Result::operator bool() const noexcept      { return errorMessage.isEmpty(); }
-bool Result::failed() const noexcept        { return errorMessage.isNotEmpty(); }
-bool Result::operator!() const noexcept     { return errorMessage.isNotEmpty(); }
+bool Result::wasOk() const noexcept         {
+    return errorMessage.isEmpty();
+}
+Result::operator bool() const noexcept      {
+    return errorMessage.isEmpty();
+}
+bool Result::failed() const noexcept        {
+    return errorMessage.isNotEmpty();
+}
+bool Result::operator!() const noexcept     {
+    return errorMessage.isNotEmpty();
+}

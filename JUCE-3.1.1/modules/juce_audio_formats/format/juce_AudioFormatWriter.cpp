@@ -27,12 +27,12 @@ AudioFormatWriter::AudioFormatWriter (OutputStream* const out,
                                       const double rate,
                                       const unsigned int numChannels_,
                                       const unsigned int bitsPerSample_)
-  : sampleRate (rate),
-    numChannels (numChannels_),
-    bitsPerSample (bitsPerSample_),
-    usesFloatingPointData (false),
-    output (out),
-    formatName (formatName_)
+    : sampleRate (rate),
+      numChannels (numChannels_),
+      bitsPerSample (bitsPerSample_),
+      usesFloatingPointData (false),
+      output (out),
+      formatName (formatName_)
 {
 }
 
@@ -59,8 +59,8 @@ static void convertFloatsToInts (int* dest, const float* src, int numSamples) no
 }
 
 bool AudioFormatWriter::writeFromAudioReader (AudioFormatReader& reader,
-                                              int64 startSample,
-                                              int64 numSamplesToRead)
+        int64 startSample,
+        int64 numSamplesToRead)
 {
     const int bufferSize = 16384;
     AudioSampleBuffer tempBuffer ((int) numChannels, bufferSize);

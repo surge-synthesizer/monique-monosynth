@@ -94,27 +94,35 @@ public:
         A null keypress can be created by the default constructor, in case it's
         needed.
     */
-    bool isValid() const noexcept                               { return keyCode != 0; }
+    bool isValid() const noexcept                               {
+        return keyCode != 0;
+    }
 
     /** Returns the key code itself.
 
         This will either be one of the special constants defined in this class,
         or an 8-bit character code.
     */
-    int getKeyCode() const noexcept                             { return keyCode; }
+    int getKeyCode() const noexcept                             {
+        return keyCode;
+    }
 
     /** Returns the key modifiers.
 
         @see ModifierKeys
     */
-    ModifierKeys getModifiers() const noexcept                  { return mods; }
+    ModifierKeys getModifiers() const noexcept                  {
+        return mods;
+    }
 
     /** Returns the character that is associated with this keypress.
 
         This is the character that you'd expect to see printed if you press this
         keypress in a text editor or similar component.
     */
-    juce_wchar getTextCharacter() const noexcept                { return textCharacter; }
+    juce_wchar getTextCharacter() const noexcept                {
+        return textCharacter;
+    }
 
     /** Checks whether the KeyPress's key is the same as the one provided, without checking
         the modifiers.
@@ -124,7 +132,9 @@ public:
 
         @see getKeyCode
     */
-    bool isKeyCode (int keyCodeToCompare) const noexcept        { return keyCode == keyCodeToCompare; }
+    bool isKeyCode (int keyCodeToCompare) const noexcept        {
+        return keyCode == keyCodeToCompare;
+    }
 
     //==============================================================================
     /** Converts a textual key description to a KeyPress.

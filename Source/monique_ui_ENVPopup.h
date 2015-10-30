@@ -67,6 +67,7 @@ public:
     const float original_h;
 
 private:
+  bool is_repainting;
     const bool left;
     Array< float > curve;
     Monique_Ui_Mainwindow*const parent;

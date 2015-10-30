@@ -30,7 +30,7 @@
 #define JUCE_ANDROID_JNIHELPERS_H_INCLUDED
 
 #if ! (defined (JUCE_ANDROID_ACTIVITY_CLASSNAME) && defined (JUCE_ANDROID_ACTIVITY_CLASSPATH))
- #error "The JUCE_ANDROID_ACTIVITY_CLASSNAME and JUCE_ANDROID_ACTIVITY_CLASSPATH macros must be set!"
+#error "The JUCE_ANDROID_ACTIVITY_CLASSNAME and JUCE_ANDROID_ACTIVITY_CLASSPATH macros must be set!"
 #endif
 
 //==============================================================================
@@ -40,10 +40,13 @@ extern JNIEnv* getEnv() noexcept;
 class GlobalRef
 {
 public:
-    inline GlobalRef() noexcept                 : obj (0) {}
+inline GlobalRef() noexcept                 :
+    obj (0) {}
     inline explicit GlobalRef (jobject o)       : obj (retain (o)) {}
     inline GlobalRef (const GlobalRef& other)   : obj (retain (other.obj)) {}
-    ~GlobalRef()                                { clear(); }
+    ~GlobalRef()                                {
+        clear();
+    }
 
     inline void clear()
     {
@@ -63,11 +66,15 @@ public:
     }
 
     //==============================================================================
-    inline operator jobject() const noexcept    { return obj; }
-    inline jobject get() const noexcept         { return obj; }
+    inline operator jobject() const noexcept    {
+        return obj;
+    }
+    inline jobject get() const noexcept         {
+        return obj;
+    }
 
     //==============================================================================
-    #define DECLARE_CALL_TYPE_METHOD(returnType, typeName) \
+#define DECLARE_CALL_TYPE_METHOD(returnType, typeName) \
         returnType call##typeName##Method (jmethodID methodID, ... ) const \
         { \
             va_list args; \
@@ -86,7 +93,7 @@ public:
     DECLARE_CALL_TYPE_METHOD (jlong, Long)
     DECLARE_CALL_TYPE_METHOD (jfloat, Float)
     DECLARE_CALL_TYPE_METHOD (jdouble, Double)
-    #undef DECLARE_CALL_TYPE_METHOD
+#undef DECLARE_CALL_TYPE_METHOD
 
     void callVoidMethod (jmethodID methodID, ... ) const
     {
@@ -111,9 +118,13 @@ template <typename JavaType>
 class LocalRef
 {
 public:
-    explicit inline LocalRef (JavaType o) noexcept      : obj (o) {}
-    inline LocalRef (const LocalRef& other) noexcept    : obj (retain (other.obj)) {}
-    ~LocalRef()                                         { clear(); }
+explicit inline LocalRef (JavaType o) noexcept      :
+    obj (o) {}
+inline LocalRef (const LocalRef& other) noexcept    :
+    obj (retain (other.obj)) {}
+    ~LocalRef()                                         {
+        clear();
+    }
 
     void clear()
     {
@@ -129,8 +140,12 @@ public:
         return *this;
     }
 
-    inline operator JavaType() const noexcept   { return obj; }
-    inline JavaType get() const noexcept        { return obj; }
+    inline operator JavaType() const noexcept   {
+        return obj;
+    }
+    inline JavaType get() const noexcept        {
+        return obj;
+    }
 
 private:
     JavaType obj;
@@ -144,31 +159,31 @@ private:
 //==============================================================================
 namespace
 {
-    String juceString (JNIEnv* env, jstring s)
-    {
-        const char* const utf8 = env->GetStringUTFChars (s, nullptr);
-        CharPointer_UTF8 utf8CP (utf8);
-        const String result (utf8CP);
-        env->ReleaseStringUTFChars (s, utf8);
-        return result;
-    }
+String juceString (JNIEnv* env, jstring s)
+{
+    const char* const utf8 = env->GetStringUTFChars (s, nullptr);
+    CharPointer_UTF8 utf8CP (utf8);
+    const String result (utf8CP);
+    env->ReleaseStringUTFChars (s, utf8);
+    return result;
+}
 
-    String juceString (jstring s)
-    {
-        return juceString (getEnv(), s);
-    }
+String juceString (jstring s)
+{
+    return juceString (getEnv(), s);
+}
 
-    LocalRef<jstring> javaString (const String& s)
-    {
-        return LocalRef<jstring> (getEnv()->NewStringUTF (s.toUTF8()));
-    }
+LocalRef<jstring> javaString (const String& s)
+{
+    return LocalRef<jstring> (getEnv()->NewStringUTF (s.toUTF8()));
+}
 
-    LocalRef<jstring> javaStringFromChar (const juce_wchar c)
-    {
-        char utf8[8] = { 0 };
-        CharPointer_UTF8 (utf8).write (c);
-        return LocalRef<jstring> (getEnv()->NewStringUTF (utf8));
-    }
+LocalRef<jstring> javaStringFromChar (const juce_wchar c)
+{
+    char utf8[8] = { 0 };
+    CharPointer_UTF8 (utf8).write (c);
+    return LocalRef<jstring> (getEnv()->NewStringUTF (utf8));
+}
 }
 
 //==============================================================================
@@ -178,7 +193,9 @@ public:
     explicit JNIClassBase (const char* classPath);
     virtual ~JNIClassBase();
 
-    inline operator jclass() const noexcept { return classRef; }
+    inline operator jclass() const noexcept {
+        return classRef;
+    }
 
     static void initialiseAllClasses (JNIEnv*);
     static void releaseAllClasses (JNIEnv*);
@@ -252,7 +269,8 @@ class ThreadLocalJNIEnvHolder
 {
 public:
     ThreadLocalJNIEnvHolder() noexcept
-        : jvm (nullptr)
+:
+    jvm (nullptr)
     {
         zeromem (threads, sizeof (threads));
         zeromem (envs, sizeof (envs));
@@ -364,8 +382,12 @@ extern ThreadLocalJNIEnvHolder threadLocalJNIEnvHolder;
 
 struct AndroidThreadScope
 {
-    AndroidThreadScope()   { threadLocalJNIEnvHolder.attach(); }
-    ~AndroidThreadScope()  { threadLocalJNIEnvHolder.detach(); }
+    AndroidThreadScope()   {
+        threadLocalJNIEnvHolder.attach();
+    }
+    ~AndroidThreadScope()  {
+        threadLocalJNIEnvHolder.detach();
+    }
 };
 
 //==============================================================================
@@ -402,7 +424,7 @@ DECLARE_JNI_CLASS (JuceAppActivity, JUCE_ANDROID_ACTIVITY_CLASSPATH);
  METHOD (setTextScaleX, "setTextScaleX",    "(F)V") \
  METHOD (getTextPath,   "getTextPath",      "(Ljava/lang/String;IIFFLandroid/graphics/Path;)V") \
  METHOD (setShader,     "setShader",        "(Landroid/graphics/Shader;)Landroid/graphics/Shader;") \
-
+ 
 DECLARE_JNI_CLASS (Paint, "android/graphics/Paint");
 #undef JNI_CLASS_MEMBERS
 
@@ -410,7 +432,7 @@ DECLARE_JNI_CLASS (Paint, "android/graphics/Paint");
 #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
  METHOD (constructor,   "<init>",    "()V") \
  METHOD (setValues,     "setValues", "([F)V") \
-
+ 
 DECLARE_JNI_CLASS (Matrix, "android/graphics/Matrix");
 #undef JNI_CLASS_MEMBERS
 
@@ -421,7 +443,7 @@ DECLARE_JNI_CLASS (Matrix, "android/graphics/Matrix");
  FIELD (right,          "right",    "I") \
  FIELD (top,            "top",      "I") \
  FIELD (bottom,         "bottom",   "I") \
-
+ 
 DECLARE_JNI_CLASS (RectClass, "android/graphics/Rect");
 #undef JNI_CLASS_MEMBERS
 

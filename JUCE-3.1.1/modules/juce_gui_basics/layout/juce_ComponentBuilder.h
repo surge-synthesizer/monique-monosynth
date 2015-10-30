@@ -229,9 +229,9 @@ private:
     OwnedArray<TypeHandler> types;
     ScopedPointer<Component> component;
     ImageProvider* imageProvider;
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     WeakReference<Component> componentRef;
-   #endif
+#endif
 
     void valueTreePropertyChanged (ValueTree&, const Identifier&) override;
     void valueTreeChildAdded (ValueTree&, ValueTree&) override;

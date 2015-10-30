@@ -74,53 +74,53 @@ String LocalisedStrings::translate (const String& text, const String& resultIfNo
 
 namespace
 {
-   #if JUCE_CHECK_MEMORY_LEAKS
-    // By using this object to force a LocalisedStrings object to be created
-    // before the currentMappings object, we can force the static order-of-destruction to
-    // delete the currentMappings object first, which avoids a bogus leak warning.
-    // (Oddly, just creating a LocalisedStrings on the stack doesn't work in gcc, it
-    // has to be created with 'new' for this to work..)
-    struct LeakAvoidanceTrick
+#if JUCE_CHECK_MEMORY_LEAKS
+// By using this object to force a LocalisedStrings object to be created
+// before the currentMappings object, we can force the static order-of-destruction to
+// delete the currentMappings object first, which avoids a bogus leak warning.
+// (Oddly, just creating a LocalisedStrings on the stack doesn't work in gcc, it
+// has to be created with 'new' for this to work..)
+struct LeakAvoidanceTrick
+{
+    LeakAvoidanceTrick()
     {
-        LeakAvoidanceTrick()
-        {
-            const ScopedPointer<LocalisedStrings> dummy (new LocalisedStrings (String(), false));
-        }
-    };
+        const ScopedPointer<LocalisedStrings> dummy (new LocalisedStrings (String(), false));
+    }
+};
 
-    LeakAvoidanceTrick leakAvoidanceTrick;
-   #endif
+LeakAvoidanceTrick leakAvoidanceTrick;
+#endif
 
-    SpinLock currentMappingsLock;
-    ScopedPointer<LocalisedStrings> currentMappings;
+SpinLock currentMappingsLock;
+ScopedPointer<LocalisedStrings> currentMappings;
 
-    static int findCloseQuote (const String& text, int startPos)
+static int findCloseQuote (const String& text, int startPos)
+{
+    juce_wchar lastChar = 0;
+    String::CharPointerType t (text.getCharPointer() + startPos);
+
+    for (;;)
     {
-        juce_wchar lastChar = 0;
-        String::CharPointerType t (text.getCharPointer() + startPos);
+        const juce_wchar c = t.getAndAdvance();
 
-        for (;;)
-        {
-            const juce_wchar c = t.getAndAdvance();
+        if (c == 0 || (c == '"' && lastChar != '\\'))
+            break;
 
-            if (c == 0 || (c == '"' && lastChar != '\\'))
-                break;
-
-            lastChar = c;
-            ++startPos;
-        }
-
-        return startPos;
+        lastChar = c;
+        ++startPos;
     }
 
-    static String unescapeString (const String& s)
-    {
-        return s.replace ("\\\"", "\"")
-                .replace ("\\\'", "\'")
-                .replace ("\\t", "\t")
-                .replace ("\\r", "\r")
-                .replace ("\\n", "\n");
-    }
+    return startPos;
+}
+
+static String unescapeString (const String& s)
+{
+    return s.replace ("\\\"", "\"")
+           .replace ("\\\'", "\'")
+           .replace ("\\t", "\t")
+           .replace ("\\r", "\r")
+           .replace ("\\n", "\n");
+}
 }
 
 void LocalisedStrings::loadFromText (const String& fileContents, bool ignoreCase)
@@ -191,12 +191,22 @@ LocalisedStrings* LocalisedStrings::getCurrentMappings()
     return currentMappings;
 }
 
-String LocalisedStrings::translateWithCurrentMappings (const String& text)  { return juce::translate (text); }
-String LocalisedStrings::translateWithCurrentMappings (const char* text)    { return juce::translate (text); }
+String LocalisedStrings::translateWithCurrentMappings (const String& text)  {
+    return juce::translate (text);
+}
+String LocalisedStrings::translateWithCurrentMappings (const char* text)    {
+    return juce::translate (text);
+}
 
-JUCE_API String translate (const String& text)       { return juce::translate (text, text); }
-JUCE_API String translate (const char* text)         { return juce::translate (String (text)); }
-JUCE_API String translate (CharPointer_UTF8 text)    { return juce::translate (String (text)); }
+JUCE_API String translate (const String& text)       {
+    return juce::translate (text, text);
+}
+JUCE_API String translate (const char* text)         {
+    return juce::translate (String (text));
+}
+JUCE_API String translate (CharPointer_UTF8 text)    {
+    return juce::translate (String (text));
+}
 
 JUCE_API String translate (const String& text, const String& resultIfNotFound)
 {

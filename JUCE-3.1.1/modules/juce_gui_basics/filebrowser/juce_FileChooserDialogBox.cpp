@@ -107,7 +107,7 @@ FileChooserDialogBox::FileChooserDialogBox (const String& name,
     content->chooserComponent.addListener (this);
 
     FileChooserDialogBox::selectionChanged();
-    
+
     setAlwaysOnTop(true);
 }
 

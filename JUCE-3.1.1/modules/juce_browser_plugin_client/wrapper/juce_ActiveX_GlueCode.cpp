@@ -176,18 +176,36 @@ public:
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)    { AddRef(); *result = (IUnknown*)  this; return S_OK; }
-        if (id == IID_IDispatch)   { AddRef(); *result = (IDispatch*) this; return S_OK; }
+        if (id == IID_IUnknown)    {
+            AddRef();
+            *result = (IUnknown*)  this;
+            return S_OK;
+        }
+        if (id == IID_IDispatch)   {
+            AddRef();
+            *result = (IDispatch*) this;
+            return S_OK;
+        }
 
         *result = 0;
         return E_NOINTERFACE;
     }
 
-    ULONG __stdcall AddRef()    { return ++refCount; }
-    ULONG __stdcall Release()   { const int r = --refCount; if (r == 0) delete this; return r; }
+    ULONG __stdcall AddRef()    {
+        return ++refCount;
+    }
+    ULONG __stdcall Release()   {
+        const int r = --refCount;
+        if (r == 0) delete this;
+        return r;
+    }
 
-    HRESULT __stdcall GetTypeInfoCount (UINT*)                  { return E_NOTIMPL; }
-    HRESULT __stdcall GetTypeInfo (UINT, LCID, ITypeInfo**)     { return E_NOTIMPL; }
+    HRESULT __stdcall GetTypeInfoCount (UINT*)                  {
+        return E_NOTIMPL;
+    }
+    HRESULT __stdcall GetTypeInfo (UINT, LCID, ITypeInfo**)     {
+        return E_NOTIMPL;
+    }
 
     HRESULT __stdcall GetIDsOfNames (REFIID riid, LPOLESTR* rgszNames, UINT cNames,
                                      LCID lcid, DISPID* rgDispId)
@@ -402,24 +420,41 @@ var variantTojuceVar (const VARIANT& v)
     {
         switch (v.vt & ~VT_BYREF)
         {
-            case VT_VOID:
-            case VT_EMPTY:      return var();
-            case VT_I1:         return var ((int) v.cVal);
-            case VT_I2:         return var ((int) v.iVal);
-            case VT_I4:         return var ((int) v.lVal);
-            case VT_I8:         return var (String (v.llVal));
-            case VT_UI1:        return var ((int) v.bVal);
-            case VT_UI2:        return var ((int) v.uiVal);
-            case VT_UI4:        return var ((int) v.ulVal);
-            case VT_UI8:        return var (String (v.ullVal));
-            case VT_INT:        return var ((int) v.intVal);
-            case VT_UINT:       return var ((int) v.uintVal);
-            case VT_R4:         return var ((double) v.fltVal);
-            case VT_R8:         return var ((double) v.dblVal);
-            case VT_BSTR:       return var (String (v.bstrVal));
-            case VT_BOOL:       return var (v.boolVal ? true : false);
-            case VT_DISPATCH:   return var (new DynamicObjectWrappingIDispatch (v.pdispVal));
-            default:            break;
+        case VT_VOID:
+        case VT_EMPTY:
+            return var();
+        case VT_I1:
+            return var ((int) v.cVal);
+        case VT_I2:
+            return var ((int) v.iVal);
+        case VT_I4:
+            return var ((int) v.lVal);
+        case VT_I8:
+            return var (String (v.llVal));
+        case VT_UI1:
+            return var ((int) v.bVal);
+        case VT_UI2:
+            return var ((int) v.uiVal);
+        case VT_UI4:
+            return var ((int) v.ulVal);
+        case VT_UI8:
+            return var (String (v.ullVal));
+        case VT_INT:
+            return var ((int) v.intVal);
+        case VT_UINT:
+            return var ((int) v.uintVal);
+        case VT_R4:
+            return var ((double) v.fltVal);
+        case VT_R8:
+            return var ((double) v.dblVal);
+        case VT_BSTR:
+            return var (String (v.bstrVal));
+        case VT_BOOL:
+            return var (v.boolVal ? true : false);
+        case VT_DISPATCH:
+            return var (new DynamicObjectWrappingIDispatch (v.pdispVal));
+        default:
+            break;
         }
     }
 
@@ -461,7 +496,9 @@ public:
             child->setBounds (getLocalBounds());
     }
 
-    var getObject()   { return child->getJavascriptObject(); }
+    var getObject()   {
+        return child->getJavascriptObject();
+    }
 
     void setWindow (IOleInPlaceSite* site)
     {
@@ -576,10 +613,10 @@ static String getExeVersion (const String& exeFileName, const String& fieldName)
 static int numActivePlugins = 0;
 
 class JuceActiveXObject     : public IUnknown,
-                              public IDispatch,
-                              public IObjectWithSite,
-                              public IObjectSafety,
-                              public IOleInPlaceObject
+    public IDispatch,
+    public IObjectWithSite,
+    public IObjectSafety,
+    public IOleInPlaceObject
 {
 public:
     JuceActiveXObject()
@@ -596,22 +633,56 @@ public:
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)            { AddRef(); *result = (IUnknown*) this; return S_OK; }
-        if (id == IID_IDispatch)           { AddRef(); *result = (IDispatch*) this; return S_OK; }
-        if (id == IID_IObjectWithSite)     { AddRef(); *result = (IObjectWithSite*) this; return S_OK; }
-        if (id == IID_IObjectSafety)       { AddRef(); *result = (IObjectSafety*) this; return S_OK; }
-        if (id == IID_IOleInPlaceObject)   { AddRef(); *result = (IOleInPlaceObject*) this; return S_OK; }
-        if (id == IID_IOleWindow)          { AddRef(); *result = (IOleWindow*) (IOleInPlaceObject*) this; return S_OK; }
+        if (id == IID_IUnknown)            {
+            AddRef();
+            *result = (IUnknown*) this;
+            return S_OK;
+        }
+        if (id == IID_IDispatch)           {
+            AddRef();
+            *result = (IDispatch*) this;
+            return S_OK;
+        }
+        if (id == IID_IObjectWithSite)     {
+            AddRef();
+            *result = (IObjectWithSite*) this;
+            return S_OK;
+        }
+        if (id == IID_IObjectSafety)       {
+            AddRef();
+            *result = (IObjectSafety*) this;
+            return S_OK;
+        }
+        if (id == IID_IOleInPlaceObject)   {
+            AddRef();
+            *result = (IOleInPlaceObject*) this;
+            return S_OK;
+        }
+        if (id == IID_IOleWindow)          {
+            AddRef();
+            *result = (IOleWindow*) (IOleInPlaceObject*) this;
+            return S_OK;
+        }
 
         *result = 0;
         return E_NOINTERFACE;
     }
 
-    ULONG __stdcall AddRef()    { return ++refCount; }
-    ULONG __stdcall Release()   { const int r = --refCount; if (r == 0) delete this; return r; }
+    ULONG __stdcall AddRef()    {
+        return ++refCount;
+    }
+    ULONG __stdcall Release()   {
+        const int r = --refCount;
+        if (r == 0) delete this;
+        return r;
+    }
 
-    HRESULT __stdcall GetTypeInfoCount (UINT* pctinfo)                              { return E_NOTIMPL; }
-    HRESULT __stdcall GetTypeInfo (UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo)     { return E_NOTIMPL; }
+    HRESULT __stdcall GetTypeInfoCount (UINT* pctinfo)                              {
+        return E_NOTIMPL;
+    }
+    HRESULT __stdcall GetTypeInfo (UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo)     {
+        return E_NOTIMPL;
+    }
 
     HRESULT __stdcall GetIDsOfNames (REFIID riid, LPOLESTR* rgszNames, UINT cNames,
                                      LCID lcid, DISPID* rgDispId)
@@ -723,10 +794,18 @@ public:
     }
 
     //==============================================================================
-    HRESULT __stdcall ContextSensitiveHelp (BOOL fEnterMode)    { return E_NOTIMPL; }
-    HRESULT __stdcall InPlaceDeactivate()                       { return E_NOTIMPL; }
-    HRESULT __stdcall UIDeactivate()                            { return E_NOTIMPL; }
-    HRESULT __stdcall ReactivateAndUndo()                       { return E_NOTIMPL; }
+    HRESULT __stdcall ContextSensitiveHelp (BOOL fEnterMode)    {
+        return E_NOTIMPL;
+    }
+    HRESULT __stdcall InPlaceDeactivate()                       {
+        return E_NOTIMPL;
+    }
+    HRESULT __stdcall UIDeactivate()                            {
+        return E_NOTIMPL;
+    }
+    HRESULT __stdcall ReactivateAndUndo()                       {
+        return E_NOTIMPL;
+    }
 
     //==============================================================================
     HRESULT __stdcall GetInterfaceSafetyOptions (REFIID riid, DWORD *pdwSupportedOptions, DWORD *pdwEnabledOptions)
@@ -735,7 +814,9 @@ public:
         return S_OK;
     }
 
-    HRESULT __stdcall SetInterfaceSafetyOptions (REFIID, DWORD, DWORD)      { return S_OK; }
+    HRESULT __stdcall SetInterfaceSafetyOptions (REFIID, DWORD, DWORD)      {
+        return S_OK;
+    }
 
 private:
     IUnknown* site;
@@ -748,22 +829,36 @@ private:
 
 //==============================================================================
 class JuceActiveXObjectFactory     : public IUnknown,
-                                     public IClassFactory
+    public IClassFactory
 {
 public:
     JuceActiveXObjectFactory()  : refCount (0)   {}
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)        { AddRef(); *result = (IUnknown*) this; return S_OK; }
-        if (id == IID_IClassFactory)   { AddRef(); *result = (IClassFactory*) this; return S_OK; }
+        if (id == IID_IUnknown)        {
+            AddRef();
+            *result = (IUnknown*) this;
+            return S_OK;
+        }
+        if (id == IID_IClassFactory)   {
+            AddRef();
+            *result = (IClassFactory*) this;
+            return S_OK;
+        }
 
         *result = nullptr;
         return E_NOINTERFACE;
     }
 
-    ULONG __stdcall AddRef()    { return ++refCount; }
-    ULONG __stdcall Release()   { const int r = --refCount; if (r == 0) delete this; return r; }
+    ULONG __stdcall AddRef()    {
+        return ++refCount;
+    }
+    ULONG __stdcall Release()   {
+        const int r = --refCount;
+        if (r == 0) delete this;
+        return r;
+    }
 
     HRESULT __stdcall CreateInstance (IUnknown* pUnkOuter, REFIID riid, void** ppvObject)
     {
@@ -776,7 +871,9 @@ public:
         return ax->QueryInterface (riid, ppvObject);
     }
 
-    HRESULT __stdcall LockServer (BOOL /*fLock*/)    { return S_OK; }
+    HRESULT __stdcall LockServer (BOOL /*fLock*/)    {
+        return S_OK;
+    }
 
 private:
     int refCount;
@@ -796,7 +893,7 @@ String getActiveXBrowserURL (const BrowserPluginComponent* comp)
 //==============================================================================
 extern "C" BOOL WINAPI DllMain (HANDLE instance, DWORD reason, LPVOID)
 {
-    #pragma EXPORTED_FUNCTION
+#pragma EXPORTED_FUNCTION
 
     switch (reason)
     {
@@ -844,7 +941,7 @@ static String CLSIDToJuceString (REFCLSID clsid)
 
 STDAPI DllGetClassObject (REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 {
-    #pragma EXPORTED_FUNCTION
+#pragma EXPORTED_FUNCTION
 
     *ppv = nullptr;
 
@@ -862,7 +959,7 @@ STDAPI DllGetClassObject (REFCLSID rclsid, REFIID riid, LPVOID* ppv)
 
 STDAPI DllCanUnloadNow()
 {
-    #pragma EXPORTED_FUNCTION
+#pragma EXPORTED_FUNCTION
     return S_OK;
 }
 
@@ -934,13 +1031,13 @@ static HRESULT doRegistration (const bool unregister)
 
 STDAPI DllRegisterServer()
 {
-    #pragma EXPORTED_FUNCTION
+#pragma EXPORTED_FUNCTION
     return doRegistration (false);
 }
 
 STDAPI DllUnregisterServer()
 {
-    #pragma EXPORTED_FUNCTION
+#pragma EXPORTED_FUNCTION
     return doRegistration (true);
 }
 

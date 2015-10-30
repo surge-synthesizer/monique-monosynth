@@ -76,7 +76,9 @@ public:
     void clipToEdgeTable (const EdgeTable&);
     void clipLineToMask (int x, int y, const uint8* mask, int maskStride, int numPixels);
     bool isEmpty() noexcept;
-    const Rectangle<int>& getMaximumBounds() const noexcept      { return bounds; }
+    const Rectangle<int>& getMaximumBounds() const noexcept      {
+        return bounds;
+    }
     void translate (float dx, int dy) noexcept;
 
     /** Scales all the alpha-levels in the table by the given multiplier. */
@@ -195,7 +197,9 @@ private:
     {
         int x, level;
 
-        bool operator< (const LineItem& other) const noexcept   { return x < other.x; }
+        bool operator< (const LineItem& other) const noexcept   {
+            return x < other.x;
+        }
     };
 
     HeapBlock<int> table;

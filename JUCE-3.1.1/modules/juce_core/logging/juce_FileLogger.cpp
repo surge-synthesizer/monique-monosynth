@@ -104,31 +104,31 @@ void FileLogger::trimFileSize (const File& file, int64 maxFileSizeBytes)
 //==============================================================================
 File FileLogger::getSystemLogFileFolder()
 {
-   #if JUCE_MAC
+#if JUCE_MAC
     return File ("~/Library/Logs");
-   #else
+#else
     return File::getSpecialLocation (File::userApplicationDataDirectory);
-   #endif
+#endif
 }
 
 FileLogger* FileLogger::createDefaultAppLogger (const String& logFileSubDirectoryName,
-                                                const String& logFileName,
-                                                const String& welcomeMessage,
-                                                const int64 maxInitialFileSizeBytes)
+        const String& logFileName,
+        const String& welcomeMessage,
+        const int64 maxInitialFileSizeBytes)
 {
     return new FileLogger (getSystemLogFileFolder().getChildFile (logFileSubDirectoryName)
-                                                   .getChildFile (logFileName),
+                           .getChildFile (logFileName),
                            welcomeMessage, maxInitialFileSizeBytes);
 }
 
 FileLogger* FileLogger::createDateStampedLogger (const String& logFileSubDirectoryName,
-                                                 const String& logFileNameRoot,
-                                                 const String& logFileNameSuffix,
-                                                 const String& welcomeMessage)
+        const String& logFileNameRoot,
+        const String& logFileNameSuffix,
+        const String& welcomeMessage)
 {
     return new FileLogger (getSystemLogFileFolder().getChildFile (logFileSubDirectoryName)
-                                                   .getChildFile (logFileNameRoot + Time::getCurrentTime().formatted ("%Y-%m-%d_%H-%M-%S"))
-                                                   .withFileExtension (logFileNameSuffix)
-                                                   .getNonexistentSibling(),
+                           .getChildFile (logFileNameRoot + Time::getCurrentTime().formatted ("%Y-%m-%d_%H-%M-%S"))
+                           .withFileExtension (logFileNameSuffix)
+                           .getNonexistentSibling(),
                            welcomeMessage, 0);
 }

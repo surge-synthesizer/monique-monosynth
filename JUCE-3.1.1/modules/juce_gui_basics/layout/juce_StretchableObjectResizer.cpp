@@ -44,7 +44,7 @@ void StretchableObjectResizer::addItem (const double size,
 double StretchableObjectResizer::getItemSize (const int index) const noexcept
 {
     return isPositiveAndBelow (index, items.size()) ? items.getReference (index).size
-                                                    : 0.0;
+           : 0.0;
 }
 
 void StretchableObjectResizer::resizeToFit (const double targetSize)

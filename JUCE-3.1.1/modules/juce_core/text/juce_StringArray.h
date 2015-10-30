@@ -46,9 +46,9 @@ public:
     /** Creates a copy of another string array */
     StringArray (const StringArray&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     StringArray (StringArray&&) noexcept;
-   #endif
+#endif
 
     /** Creates an array containing a single string. */
     explicit StringArray (const String& firstValue);
@@ -86,9 +86,9 @@ public:
     */
     StringArray (const wchar_t* const* strings, int numberOfStrings);
 
-   #if JUCE_COMPILER_SUPPORTS_INITIALIZER_LISTS
+#if JUCE_COMPILER_SUPPORTS_INITIALIZER_LISTS
     StringArray (const std::initializer_list<const char*>& strings);
-   #endif
+#endif
 
     /** Destructor. */
     ~StringArray();
@@ -96,9 +96,9 @@ public:
     /** Copies the contents of another string array into this one */
     StringArray& operator= (const StringArray&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     StringArray& operator= (StringArray&&) noexcept;
-   #endif
+#endif
 
     /** Swaps the contents of this and another StringArray. */
     void swapWith (StringArray&) noexcept;
@@ -118,7 +118,9 @@ public:
 
     //==============================================================================
     /** Returns the number of strings in the array */
-    inline int size() const noexcept                                    { return strings.size(); };
+    inline int size() const noexcept                                    {
+        return strings.size();
+    };
 
     /** Returns one of the strings from the array.
 
@@ -138,12 +140,16 @@ public:
     /** Returns a pointer to the first String in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline String* begin() const noexcept       { return strings.begin(); }
+    inline String* begin() const noexcept       {
+        return strings.begin();
+    }
 
     /** Returns a pointer to the String which follows the last element in the array.
         This method is provided for compatibility with standard C++ iteration mechanisms.
     */
-    inline String* end() const noexcept         { return strings.end(); }
+    inline String* end() const noexcept         {
+        return strings.end();
+    }
 
     /** Searches for a string in the array.
 
@@ -172,10 +178,10 @@ public:
     /** Appends a string at the end of the array. */
     void add (const String& stringToAdd);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     /** Appends a string at the end of the array. */
     void add (String&& stringToAdd);
-   #endif
+#endif
 
     /** Inserts a string into the array.
 

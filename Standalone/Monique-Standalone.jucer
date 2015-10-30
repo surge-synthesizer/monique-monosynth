@@ -57,6 +57,10 @@
               file="../Source/monique_ui_MainWindow.cpp"/>
         <FILE id="Fz4Xvp" name="monique_ui_MainWindow.h" compile="0" resource="0"
               file="../Source/monique_ui_MainWindow.h"/>
+        <FILE id="T5OQiF" name="monique_ui_MFOPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MFOPopup.cpp"/>
+        <FILE id="VDzpaF" name="monique_ui_MFOPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_MFOPopup.h"/>
         <FILE id="oZrMWF" name="monique_ui_MIDIIO.cpp" compile="1" resource="0"
               file="../Source/monique_ui_MIDIIO.cpp"/>
         <FILE id="zLSzVA" name="monique_ui_MIDIIO.h" compile="0" resource="0"
@@ -91,6 +95,8 @@
               file="../Source/mono_ui_includeHacks_BEGIN.h"/>
         <FILE id="QV1MI3" name="mono_ui_includeHacks_END.h" compile="0" resource="0"
               file="../Source/mono_ui_includeHacks_END.h"/>
+        <FILE id="bkxTDF" name="svg_manipulator.h" compile="0" resource="0"
+              file="../Source/svg_manipulator.h"/>
       </GROUP>
       <FILE id="HbIAwO" name="mono_AudioDeviceManager.cpp" compile="1" resource="0"
             file="../Source/mono_AudioDeviceManager.cpp"/>
@@ -101,8 +107,29 @@
       <FILE id="Ky2RVE" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../Files/FACTORTY DEFAULT.mlprog"/>
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
-        <FILE id="z08yEt" name="SourceCodePro-Medium.otf" compile="0" resource="1"
-              file="../Fonts/source-code-pro/SourceCodePro-Medium.otf"/>
+        <FILE id="lioIoM" name="Segoe" compile="0" resource="1" file="../Fonts/Segoe"/>
+        <FILE id="uJbr0O" name="Tahoma.ttf" compile="0" resource="1" file="../Fonts/Tahoma.ttf"/>
+        <FILE id="Vs5noZ" name="Dosis-Regular.otf" compile="0" resource="1"
+              file="../Fonts/dosis/Dosis-Regular.otf"/>
+        <FILE id="jUQEvE" name="Dosis-SemiBold.otf" compile="0" resource="1"
+              file="../Fonts/dosis/Dosis-SemiBold.otf"/>
+        <FILE id="ZTQaIH" name="Lovelo Black.otf" compile="0" resource="1"
+              file="../Fonts/lovelo/Lovelo Black.otf"/>
+        <FILE id="DA2QGZ" name="Dense-Regular.otf" compile="0" resource="1"
+              file="../Fonts/Dense-Regular.otf"/>
+        <FILE id="gSE0RW" name="Montserrat-Regular.ttf" compile="0" resource="1"
+              file="../Fonts/Montserrat-Regular/montserrat/Montserrat-Regular.ttf"/>
+        <FILE id="mv9T7m" name="Lato-Black.ttf" compile="0" resource="1" file="../Fonts/lato/Lato-Black.ttf"/>
+        <FILE id="VKbNAd" name="Lato-Medium.ttf" compile="0" resource="1" file="../Fonts/lato/Lato-Medium.ttf"/>
+        <FILE id="Y5tCxm" name="Lato-Regular.ttf" compile="0" resource="1"
+              file="../Fonts/lato/Lato-Regular.ttf"/>
+        <FILE id="kYGTuD" name="Lato-Semibold.ttf" compile="0" resource="1"
+              file="../Fonts/lato/Lato-Semibold.ttf"/>
+        <FILE id="jxxFOV" name="wensleydale_gothic_nbp.ttf" compile="0" resource="1"
+              file="../Fonts/wensleydale-gothic-nbp/wensleydale_gothic_nbp.ttf"/>
+        <FILE id="kTsNsH" name="whitrabt.ttf" compile="0" resource="1" file="../Fonts/white-rabbit/whitrabt.ttf"/>
+        <FILE id="KUgxEo" name="SourceCodePro-Medium.otf" compile="0" resource="1"
+              file="../Fonts/SourceCodePro-Medium.otf"/>
         <FILE id="RbX7Cw" name="FjallaOne-Regular.otf" compile="0" resource="1"
               file="../Fonts/FjallaOne-Regular.otf"/>
       </GROUP>

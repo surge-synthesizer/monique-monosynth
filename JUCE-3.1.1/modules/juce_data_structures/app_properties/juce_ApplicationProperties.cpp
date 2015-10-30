@@ -92,7 +92,7 @@ PropertiesFile* ApplicationProperties::getCommonSettings (const bool returnUserP
 bool ApplicationProperties::saveIfNeeded()
 {
     return (userProps == nullptr || userProps->saveIfNeeded())
-         && (commonProps == nullptr || commonProps->saveIfNeeded());
+           && (commonProps == nullptr || commonProps->saveIfNeeded());
 }
 
 void ApplicationProperties::closeFiles()

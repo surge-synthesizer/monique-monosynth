@@ -40,8 +40,8 @@
 
 */
 class JUCE_API  Viewport  : public Component,
-                            private ComponentListener,
-                            private ScrollBar::Listener
+    private ComponentListener,
+    private ScrollBar::Listener
 {
 public:
     //==============================================================================
@@ -78,7 +78,9 @@ public:
 
         @see setViewedComponent
     */
-    Component* getViewedComponent() const noexcept                  { return contentComp; }
+    Component* getViewedComponent() const noexcept                  {
+        return contentComp;
+    }
 
     //==============================================================================
     /** Changes the position of the viewed component.
@@ -132,34 +134,46 @@ public:
     bool autoScroll (int mouseX, int mouseY, int distanceFromEdge, int maximumSpeed);
 
     /** Returns the position within the child component of the top-left of its visible area. */
-    Point<int> getViewPosition() const noexcept             { return lastVisibleArea.getPosition(); }
+    Point<int> getViewPosition() const noexcept             {
+        return lastVisibleArea.getPosition();
+    }
 
     /** Returns the visible area of the child component, relative to its top-left */
-    Rectangle<int> getViewArea() const noexcept             { return lastVisibleArea; }
+    Rectangle<int> getViewArea() const noexcept             {
+        return lastVisibleArea;
+    }
 
     /** Returns the position within the child component of the top-left of its visible area.
         @see getViewWidth, setViewPosition
     */
-    int getViewPositionX() const noexcept                   { return lastVisibleArea.getX(); }
+    int getViewPositionX() const noexcept                   {
+        return lastVisibleArea.getX();
+    }
 
     /** Returns the position within the child component of the top-left of its visible area.
         @see getViewHeight, setViewPosition
     */
-    int getViewPositionY() const noexcept                   { return lastVisibleArea.getY(); }
+    int getViewPositionY() const noexcept                   {
+        return lastVisibleArea.getY();
+    }
 
     /** Returns the width of the visible area of the child component.
 
         This may be less than the width of this Viewport if there's a vertical scrollbar
         or if the child component is itself smaller.
     */
-    int getViewWidth() const noexcept                       { return lastVisibleArea.getWidth(); }
+    int getViewWidth() const noexcept                       {
+        return lastVisibleArea.getWidth();
+    }
 
     /** Returns the height of the visible area of the child component.
 
         This may be less than the height of this Viewport if there's a horizontal scrollbar
         or if the child component is itself smaller.
     */
-    int getViewHeight() const noexcept                      { return lastVisibleArea.getHeight(); }
+    int getViewHeight() const noexcept                      {
+        return lastVisibleArea.getHeight();
+    }
 
     /** Returns the width available within this component for the contents.
 
@@ -204,12 +218,16 @@ public:
     /** True if the vertical scrollbar is enabled.
         @see setScrollBarsShown
     */
-    bool isVerticalScrollBarShown() const noexcept              { return showVScrollbar; }
+    bool isVerticalScrollBarShown() const noexcept              {
+        return showVScrollbar;
+    }
 
     /** True if the horizontal scrollbar is enabled.
         @see setScrollBarsShown
     */
-    bool isHorizontalScrollBarShown() const noexcept            { return showHScrollbar; }
+    bool isHorizontalScrollBarShown() const noexcept            {
+        return showHScrollbar;
+    }
 
     /** Changes the width of the scrollbars.
 
@@ -275,10 +293,12 @@ private:
     void updateVisibleArea();
     void deleteContentComp();
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // If you get an error here, it's because this method's parameters have changed! See the new definition above..
-    virtual int visibleAreaChanged (int, int, int, int) { return 0; }
-   #endif
+    virtual int visibleAreaChanged (int, int, int, int) {
+        return 0;
+    }
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Viewport)
 };

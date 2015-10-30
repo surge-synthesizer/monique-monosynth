@@ -26,8 +26,10 @@
   ==============================================================================
 */
 
-RelativeTime::RelativeTime (const double secs) noexcept           : numSeconds (secs) {}
-RelativeTime::RelativeTime (const RelativeTime& other) noexcept   : numSeconds (other.numSeconds) {}
+RelativeTime::RelativeTime (const double secs) noexcept           :
+numSeconds (secs) {}
+RelativeTime::RelativeTime (const RelativeTime& other) noexcept   :
+numSeconds (other.numSeconds) {}
 RelativeTime::~RelativeTime() noexcept {}
 
 //==============================================================================
@@ -40,11 +42,21 @@ RelativeTime RelativeTime::days (const double numberOfDays) noexcept        { re
 RelativeTime RelativeTime::weeks (const double numberOfWeeks) noexcept      { return RelativeTime (numberOfWeeks * (60.0 * 60.0 * 24.0 * 7.0)); }
 
 //==============================================================================
-int64 RelativeTime::inMilliseconds() const noexcept { return (int64) (numSeconds * 1000.0); }
-double RelativeTime::inMinutes() const noexcept     { return numSeconds / 60.0; }
-double RelativeTime::inHours() const noexcept       { return numSeconds / (60.0 * 60.0); }
-double RelativeTime::inDays() const noexcept        { return numSeconds / (60.0 * 60.0 * 24.0); }
-double RelativeTime::inWeeks() const noexcept       { return numSeconds / (60.0 * 60.0 * 24.0 * 7.0); }
+int64 RelativeTime::inMilliseconds() const noexcept {
+    return (int64) (numSeconds * 1000.0);
+}
+double RelativeTime::inMinutes() const noexcept     {
+    return numSeconds / 60.0;
+}
+double RelativeTime::inHours() const noexcept       {
+    return numSeconds / (60.0 * 60.0);
+}
+double RelativeTime::inDays() const noexcept        {
+    return numSeconds / (60.0 * 60.0 * 24.0);
+}
+double RelativeTime::inWeeks() const noexcept       {
+    return numSeconds / (60.0 * 60.0 * 24.0 * 7.0);
+}
 
 //==============================================================================
 RelativeTime& RelativeTime::operator= (const RelativeTime& other) noexcept      { numSeconds = other.numSeconds; return *this; }
@@ -68,7 +80,7 @@ bool operator<= (RelativeTime t1, RelativeTime t2) noexcept       { return t1.in
 static void translateTimeField (String& result, int n, const char* singular, const char* plural)
 {
     result << TRANS (n == 1 ? singular : plural)
-                .replace (n == 1 ? "1" : "2", String (n))
+           .replace (n == 1 ? "1" : "2", String (n))
            << ' ';
 }
 

@@ -29,153 +29,153 @@
 */
 namespace TTFNameExtractor
 {
-    struct OffsetTable
+struct OffsetTable
+{
+    uint32 version;
+    uint16 numTables, searchRange, entrySelector, rangeShift;
+};
+
+struct TableDirectory
+{
+    char tag[4];
+    uint32 checkSum, offset, length;
+};
+
+struct NamingTable
+{
+    uint16 formatSelector;
+    uint16 numberOfNameRecords;
+    uint16 offsetStartOfStringStorage;
+};
+
+struct NameRecord
+{
+    uint16 platformID, encodingID, languageID;
+    uint16 nameID, stringLength, offsetFromStorageArea;
+};
+
+static String parseNameRecord (MemoryInputStream& input, const NameRecord& nameRecord,
+                               const int64 directoryOffset, const int64 offsetOfStringStorage)
+{
+    String result;
+    const int64 oldPos = input.getPosition();
+    input.setPosition (directoryOffset + offsetOfStringStorage + ByteOrder::swapIfLittleEndian (nameRecord.offsetFromStorageArea));
+    const int stringLength = (int) ByteOrder::swapIfLittleEndian (nameRecord.stringLength);
+    const int platformID = ByteOrder::swapIfLittleEndian (nameRecord.platformID);
+
+    if (platformID == 0 || platformID == 3)
     {
-        uint32 version;
-        uint16 numTables, searchRange, entrySelector, rangeShift;
-    };
+        const int numChars = stringLength / 2 + 1;
+        HeapBlock<uint16> buffer;
+        buffer.calloc (numChars + 1);
+        input.read (buffer, stringLength);
 
-    struct TableDirectory
+        for (int i = 0; i < numChars; ++i)
+            buffer[i] = ByteOrder::swapIfLittleEndian (buffer[i]);
+
+        static_jassert (sizeof (CharPointer_UTF16::CharType) == sizeof (uint16));
+        result = CharPointer_UTF16 ((CharPointer_UTF16::CharType*) buffer.getData());
+    }
+    else
     {
-        char tag[4];
-        uint32 checkSum, offset, length;
-    };
-
-    struct NamingTable
-    {
-        uint16 formatSelector;
-        uint16 numberOfNameRecords;
-        uint16 offsetStartOfStringStorage;
-    };
-
-    struct NameRecord
-    {
-        uint16 platformID, encodingID, languageID;
-        uint16 nameID, stringLength, offsetFromStorageArea;
-    };
-
-    static String parseNameRecord (MemoryInputStream& input, const NameRecord& nameRecord,
-                                   const int64 directoryOffset, const int64 offsetOfStringStorage)
-    {
-        String result;
-        const int64 oldPos = input.getPosition();
-        input.setPosition (directoryOffset + offsetOfStringStorage + ByteOrder::swapIfLittleEndian (nameRecord.offsetFromStorageArea));
-        const int stringLength = (int) ByteOrder::swapIfLittleEndian (nameRecord.stringLength);
-        const int platformID = ByteOrder::swapIfLittleEndian (nameRecord.platformID);
-
-        if (platformID == 0 || platformID == 3)
-        {
-            const int numChars = stringLength / 2 + 1;
-            HeapBlock<uint16> buffer;
-            buffer.calloc (numChars + 1);
-            input.read (buffer, stringLength);
-
-            for (int i = 0; i < numChars; ++i)
-                buffer[i] = ByteOrder::swapIfLittleEndian (buffer[i]);
-
-            static_jassert (sizeof (CharPointer_UTF16::CharType) == sizeof (uint16));
-            result = CharPointer_UTF16 ((CharPointer_UTF16::CharType*) buffer.getData());
-        }
-        else
-        {
-            HeapBlock<char> buffer;
-            buffer.calloc (stringLength + 1);
-            input.read (buffer, stringLength);
-            result = CharPointer_UTF8 (buffer.getData());
-        }
-
-        input.setPosition (oldPos);
-        return result;
+        HeapBlock<char> buffer;
+        buffer.calloc (stringLength + 1);
+        input.read (buffer, stringLength);
+        result = CharPointer_UTF8 (buffer.getData());
     }
 
-    static String parseNameTable (MemoryInputStream& input, int64 directoryOffset)
+    input.setPosition (oldPos);
+    return result;
+}
+
+static String parseNameTable (MemoryInputStream& input, int64 directoryOffset)
+{
+    input.setPosition (directoryOffset);
+
+    NamingTable namingTable = { 0 };
+    input.read (&namingTable, sizeof (namingTable));
+
+    for (int i = 0; i < (int) ByteOrder::swapIfLittleEndian (namingTable.numberOfNameRecords); ++i)
     {
-        input.setPosition (directoryOffset);
+        NameRecord nameRecord = { 0 };
+        input.read (&nameRecord, sizeof (nameRecord));
 
-        NamingTable namingTable = { 0 };
-        input.read (&namingTable, sizeof (namingTable));
-
-        for (int i = 0; i < (int) ByteOrder::swapIfLittleEndian (namingTable.numberOfNameRecords); ++i)
+        if (ByteOrder::swapIfLittleEndian (nameRecord.nameID) == 4)
         {
-            NameRecord nameRecord = { 0 };
-            input.read (&nameRecord, sizeof (nameRecord));
+            const String result (parseNameRecord (input, nameRecord, directoryOffset,
+                                                  ByteOrder::swapIfLittleEndian (namingTable.offsetStartOfStringStorage)));
 
-            if (ByteOrder::swapIfLittleEndian (nameRecord.nameID) == 4)
-            {
-                const String result (parseNameRecord (input, nameRecord, directoryOffset,
-                                                      ByteOrder::swapIfLittleEndian (namingTable.offsetStartOfStringStorage)));
-
-                if (result.isNotEmpty())
-                    return result;
-            }
+            if (result.isNotEmpty())
+                return result;
         }
-
-        return String();
     }
 
-    static String getTypefaceNameFromFile (MemoryInputStream& input)
+    return String();
+}
+
+static String getTypefaceNameFromFile (MemoryInputStream& input)
+{
+    OffsetTable offsetTable = { 0 };
+    input.read (&offsetTable, sizeof (offsetTable));
+
+    for (int i = 0; i < (int) ByteOrder::swapIfLittleEndian (offsetTable.numTables); ++i)
     {
-        OffsetTable offsetTable = { 0 };
-        input.read (&offsetTable, sizeof (offsetTable));
+        TableDirectory tableDirectory;
+        zerostruct (tableDirectory);
+        input.read (&tableDirectory, sizeof (tableDirectory));
 
-        for (int i = 0; i < (int) ByteOrder::swapIfLittleEndian (offsetTable.numTables); ++i)
-        {
-            TableDirectory tableDirectory;
-            zerostruct (tableDirectory);
-            input.read (&tableDirectory, sizeof (tableDirectory));
-
-            if (String (tableDirectory.tag, sizeof (tableDirectory.tag)).equalsIgnoreCase ("name"))
-                return parseNameTable (input, ByteOrder::swapIfLittleEndian (tableDirectory.offset));
-        }
-
-        return String();
+        if (String (tableDirectory.tag, sizeof (tableDirectory.tag)).equalsIgnoreCase ("name"))
+            return parseNameTable (input, ByteOrder::swapIfLittleEndian (tableDirectory.offset));
     }
+
+    return String();
+}
 }
 
 namespace FontEnumerators
 {
-    static int CALLBACK fontEnum2 (ENUMLOGFONTEXW* lpelfe, NEWTEXTMETRICEXW*, int type, LPARAM lParam)
+static int CALLBACK fontEnum2 (ENUMLOGFONTEXW* lpelfe, NEWTEXTMETRICEXW*, int type, LPARAM lParam)
+{
+    if (lpelfe != nullptr && (type & RASTER_FONTTYPE) == 0)
     {
-        if (lpelfe != nullptr && (type & RASTER_FONTTYPE) == 0)
-        {
-            const String fontName (lpelfe->elfLogFont.lfFaceName);
-            ((StringArray*) lParam)->addIfNotAlreadyThere (fontName.removeCharacters ("@"));
-        }
-
-        return 1;
+        const String fontName (lpelfe->elfLogFont.lfFaceName);
+        ((StringArray*) lParam)->addIfNotAlreadyThere (fontName.removeCharacters ("@"));
     }
 
-    static int CALLBACK fontEnum1 (ENUMLOGFONTEXW* lpelfe, NEWTEXTMETRICEXW*, int type, LPARAM lParam)
+    return 1;
+}
+
+static int CALLBACK fontEnum1 (ENUMLOGFONTEXW* lpelfe, NEWTEXTMETRICEXW*, int type, LPARAM lParam)
+{
+    if (lpelfe != nullptr && (type & RASTER_FONTTYPE) == 0)
     {
-        if (lpelfe != nullptr && (type & RASTER_FONTTYPE) == 0)
-        {
-            LOGFONTW lf = { 0 };
-            lf.lfWeight = FW_DONTCARE;
-            lf.lfOutPrecision = OUT_OUTLINE_PRECIS;
-            lf.lfQuality = DEFAULT_QUALITY;
-            lf.lfCharSet = DEFAULT_CHARSET;
-            lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
-            lf.lfPitchAndFamily = FF_DONTCARE;
+        LOGFONTW lf = { 0 };
+        lf.lfWeight = FW_DONTCARE;
+        lf.lfOutPrecision = OUT_OUTLINE_PRECIS;
+        lf.lfQuality = DEFAULT_QUALITY;
+        lf.lfCharSet = DEFAULT_CHARSET;
+        lf.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+        lf.lfPitchAndFamily = FF_DONTCARE;
 
-            const String fontName (lpelfe->elfLogFont.lfFaceName);
-            fontName.copyToUTF16 (lf.lfFaceName, sizeof (lf.lfFaceName));
+        const String fontName (lpelfe->elfLogFont.lfFaceName);
+        fontName.copyToUTF16 (lf.lfFaceName, sizeof (lf.lfFaceName));
 
-            HDC dc = CreateCompatibleDC (0);
-            EnumFontFamiliesEx (dc, &lf,
-                                (FONTENUMPROCW) &fontEnum2,
-                                lParam, 0);
-            DeleteDC (dc);
-        }
-
-        return 1;
+        HDC dc = CreateCompatibleDC (0);
+        EnumFontFamiliesEx (dc, &lf,
+                            (FONTENUMPROCW) &fontEnum2,
+                            lParam, 0);
+        DeleteDC (dc);
     }
+
+    return 1;
+}
 }
 
 StringArray Font::findAllTypefaceNames()
 {
     StringArray results;
 
-   #if JUCE_USE_DIRECTWRITE
+#if JUCE_USE_DIRECTWRITE
     SharedResourcePointer<Direct2DFactories> factories;
 
     if (factories->systemFonts != nullptr)
@@ -193,7 +193,7 @@ StringArray Font::findAllTypefaceNames()
         }
     }
     else
-   #endif
+#endif
     {
         HDC dc = CreateCompatibleDC (0);
 
@@ -225,7 +225,7 @@ StringArray Font::findAllTypefaceStyles (const String& family)
 
     StringArray results;
 
-   #if JUCE_USE_DIRECTWRITE
+#if JUCE_USE_DIRECTWRITE
     SharedResourcePointer<Direct2DFactories> factories;
 
     if (factories->systemFonts != nullptr)
@@ -256,7 +256,7 @@ StringArray Font::findAllTypefaceStyles (const String& family)
         }
     }
     else
-   #endif
+#endif
     {
         results.add ("Regular");
         results.add ("Italic");
@@ -351,9 +351,15 @@ public:
             RemoveFontMemResourceEx (memoryFont);
     }
 
-    float getAscent() const                 { return ascent; }
-    float getDescent() const                { return 1.0f - ascent; }
-    float getHeightToPointsFactor() const   { return heightToPointsFactor; }
+    float getAscent() const                 {
+        return ascent;
+    }
+    float getDescent() const                {
+        return 1.0f - ascent;
+    }
+    float getHeightToPointsFactor() const   {
+        return heightToPointsFactor;
+    }
 
     float getStringWidth (const String& text)
     {
@@ -406,7 +412,7 @@ public:
         GLYPHMETRICS gm;
         // (although GetGlyphOutline returns a DWORD, it may be -1 on failure, so treat it as signed int..)
         const int bufSize = (int) GetGlyphOutline (dc, (UINT) glyphNumber, GGO_NATIVE | GGO_GLYPH_INDEX,
-                                                   &gm, 0, 0, &identityMatrix);
+                            &gm, 0, 0, &identityMatrix);
 
         if (bufSize > 0)
         {
@@ -489,7 +495,7 @@ private:
         bool operator< (const KerningPair& other) const noexcept
         {
             return glyph1 < other.glyph1
-                    || (glyph1 == other.glyph1 && glyph2 < other.glyph2);
+                   || (glyph1 == other.glyph1 && glyph2 < other.glyph2);
         }
     };
 
@@ -573,7 +579,7 @@ private:
         WORD index = 0;
 
         if (GetGlyphIndices (dc, charToTest, 1, &index, GGI_MARK_NONEXISTING_GLYPHS) == GDI_ERROR
-              || index == 0xffff)
+                || index == 0xffff)
             return -1;
 
         return index;
@@ -618,7 +624,7 @@ const MAT2 WindowsTypeface::identityMatrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0
 
 Typeface::Ptr Typeface::createSystemTypefaceFor (const Font& font)
 {
-   #if JUCE_USE_DIRECTWRITE
+#if JUCE_USE_DIRECTWRITE
     SharedResourcePointer<Direct2DFactories> factories;
 
     if (factories->systemFonts != nullptr)
@@ -628,7 +634,7 @@ Typeface::Ptr Typeface::createSystemTypefaceFor (const Font& font)
         if (wtf->loadedOk())
             return wtf.release();
     }
-   #endif
+#endif
 
     return new WindowsTypeface (font);
 }

@@ -93,18 +93,18 @@ public:
     {
         beginTest ("Child Processes");
 
-      #if JUCE_WINDOWS || JUCE_MAC || JUCE_LINUX
+#if JUCE_WINDOWS || JUCE_MAC || JUCE_LINUX
         ChildProcess p;
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         expect (p.start ("tasklist"));
-       #else
+#else
         expect (p.start ("ls /"));
-       #endif
+#endif
 
         //String output (p.readAllProcessOutput());
         //expect (output.isNotEmpty());
-      #endif
+#endif
     }
 };
 

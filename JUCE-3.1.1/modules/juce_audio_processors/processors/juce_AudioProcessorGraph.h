@@ -41,7 +41,7 @@
     AudioProcessorPlayer object.
 */
 class JUCE_API  AudioProcessorGraph   : public AudioProcessor,
-                                        private AsyncUpdater
+    private AsyncUpdater
 {
 public:
     //==============================================================================
@@ -68,7 +68,9 @@ public:
         const uint32 nodeId;
 
         /** The actual processor object that this node represents. */
-        AudioProcessor* getProcessor() const noexcept           { return processor; }
+        AudioProcessor* getProcessor() const noexcept           {
+            return processor;
+        }
 
         /** A set of user-definable properties that are associated with this node.
 
@@ -151,13 +153,17 @@ public:
     void clear();
 
     /** Returns the number of nodes in the graph. */
-    int getNumNodes() const                                         { return nodes.size(); }
+    int getNumNodes() const                                         {
+        return nodes.size();
+    }
 
     /** Returns a pointer to one of the nodes in the graph.
         This will return nullptr if the index is out of range.
         @see getNodeForId
     */
-    Node* getNode (const int index) const                           { return nodes [index]; }
+    Node* getNode (const int index) const                           {
+        return nodes [index];
+    }
 
     /** Searches the graph for a node with the given ID number and returns it.
         If no such node was found, this returns nullptr.
@@ -186,10 +192,14 @@ public:
 
     //==============================================================================
     /** Returns the number of connections in the graph. */
-    int getNumConnections() const                                       { return connections.size(); }
+    int getNumConnections() const                                       {
+        return connections.size();
+    }
 
     /** Returns a pointer to one of the connections in the graph. */
-    const Connection* getConnection (int index) const                   { return connections [index]; }
+    const Connection* getConnection (int index) const                   {
+        return connections [index];
+    }
 
     /** Searches for a connection between some specified channels.
         If no such connection is found, this returns nullptr.
@@ -289,11 +299,15 @@ public:
 
         //==============================================================================
         /** Returns the mode of this processor. */
-        IODeviceType getType() const                                { return type; }
+        IODeviceType getType() const                                {
+            return type;
+        }
 
         /** Returns the parent graph to which this processor belongs, or nullptr if it
             hasn't yet been added to one. */
-        AudioProcessorGraph* getParentGraph() const                 { return graph; }
+        AudioProcessorGraph* getParentGraph() const                 {
+            return graph;
+        }
 
         /** True if this is an audio or midi input. */
         bool isInput() const;
@@ -368,19 +382,37 @@ public:
     bool acceptsMidi() const;
     bool producesMidi() const;
 
-    bool hasEditor() const                          { return false; }
-    AudioProcessorEditor* createEditor()            { return nullptr; }
+    bool hasEditor() const                          {
+        return false;
+    }
+    AudioProcessorEditor* createEditor()            {
+        return nullptr;
+    }
 
-    int getNumParameters()                          { return 0; }
-    const String getParameterName (int)             { return String(); }
-    float getParameter (int)                        { return 0; }
-    const String getParameterText (int)             { return String(); }
+    int getNumParameters()                          {
+        return 0;
+    }
+    const String getParameterName (int)             {
+        return String();
+    }
+    float getParameter (int)                        {
+        return 0;
+    }
+    const String getParameterText (int)             {
+        return String();
+    }
     void setParameter (int, float)                  { }
 
-    int getNumPrograms()                            { return 0; }
-    int getCurrentProgram()                         { return 0; }
+    int getNumPrograms()                            {
+        return 0;
+    }
+    int getCurrentProgram()                         {
+        return 0;
+    }
     void setCurrentProgram (int)                    { }
-    const String getProgramName (int)               { return String(); }
+    const String getProgramName (int)               {
+        return String();
+    }
     void changeProgramName (int, const String&)     { }
 
     void getStateInformation (juce::MemoryBlock&);

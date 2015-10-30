@@ -108,7 +108,9 @@ public:
     void setSeed (int64 newSeed) noexcept;
 
     /** Returns the RNG's current seed. */
-    int64 getSeed() const noexcept                      { return seed; }
+    int64 getSeed() const noexcept                      {
+        return seed;
+    }
 
     /** Merges this object's seed with another value.
         This sets the seed to be a value created by combining the current seed and this

@@ -246,10 +246,10 @@ void AudioFormatReader::readMaxLevels (int64 startSampleInFile, int64 numSamples
 }
 
 int64 AudioFormatReader::searchForLevel (int64 startSample,
-                                         int64 numSamplesToSearch,
-                                         const double magnitudeRangeMinimum,
-                                         const double magnitudeRangeMaximum,
-                                         const int minimumConsecutiveSamples)
+        int64 numSamplesToSearch,
+        const double magnitudeRangeMinimum,
+        const double magnitudeRangeMaximum,
+        const int minimumConsecutiveSamples)
 {
     if (numSamplesToSearch == 0)
         return -1;
@@ -299,7 +299,7 @@ int64 AudioFormatReader::searchForLevel (int64 startSample,
                 const float sample1 = std::abs (((float*) tempBuffer[0]) [index]);
 
                 if (sample1 >= magnitudeRangeMinimum
-                     && sample1 <= magnitudeRangeMaximum)
+                        && sample1 <= magnitudeRangeMaximum)
                 {
                     matches = true;
                 }
@@ -308,7 +308,7 @@ int64 AudioFormatReader::searchForLevel (int64 startSample,
                     const float sample2 = std::abs (((float*) tempBuffer[1]) [index]);
 
                     matches = (sample2 >= magnitudeRangeMinimum
-                                 && sample2 <= magnitudeRangeMaximum);
+                               && sample2 <= magnitudeRangeMaximum);
                 }
             }
             else
@@ -316,7 +316,7 @@ int64 AudioFormatReader::searchForLevel (int64 startSample,
                 const int sample1 = abs (tempBuffer[0] [index]);
 
                 if (sample1 >= intMagnitudeRangeMinimum
-                     && sample1 <= intMagnitudeRangeMaximum)
+                        && sample1 <= intMagnitudeRangeMaximum)
                 {
                     matches = true;
                 }
@@ -325,7 +325,7 @@ int64 AudioFormatReader::searchForLevel (int64 startSample,
                     const int sample2 = abs (tempBuffer[1][index]);
 
                     matches = (sample2 >= intMagnitudeRangeMinimum
-                                 && sample2 <= intMagnitudeRangeMaximum);
+                               && sample2 <= intMagnitudeRangeMaximum);
                 }
             }
 
@@ -363,7 +363,7 @@ int64 AudioFormatReader::searchForLevel (int64 startSample,
 
 //==============================================================================
 MemoryMappedAudioFormatReader::MemoryMappedAudioFormatReader (const File& f, const AudioFormatReader& reader,
-                                                              int64 start, int64 length, int frameSize)
+        int64 start, int64 length, int frameSize)
     : AudioFormatReader (nullptr, reader.getFormatName()), file (f),
       dataChunkStart (start), dataLength (length), bytesPerFrame (frameSize)
 {

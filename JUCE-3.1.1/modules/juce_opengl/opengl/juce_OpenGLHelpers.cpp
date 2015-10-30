@@ -29,14 +29,14 @@ void OpenGLHelpers::resetErrorState()
 
 void* OpenGLHelpers::getExtensionFunction (const char* functionName)
 {
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     return (void*) wglGetProcAddress (functionName);
-   #elif JUCE_LINUX
+#elif JUCE_LINUX
     return (void*) glXGetProcAddress ((const GLubyte*) functionName);
-   #else
+#else
     static void* handle = dlopen (nullptr, RTLD_LAZY);
     return dlsym (handle, functionName);
-   #endif
+#endif
 }
 
 bool OpenGLHelpers::isExtensionSupported (const char* const extensionName)
@@ -79,25 +79,25 @@ void OpenGLHelpers::enableScissorTest (const Rectangle<int>& clip)
 
 String OpenGLHelpers::translateVertexShaderToV3 (const String& code)
 {
-   #if JUCE_OPENGL3
+#if JUCE_OPENGL3
     if (OpenGLShaderProgram::getLanguageVersion() > 1.2)
         return JUCE_GLSL_VERSION "\n" + code.replace ("attribute", "in")
-                                            .replace ("varying", "out");
-   #endif
+               .replace ("varying", "out");
+#endif
 
     return code;
 }
 
 String OpenGLHelpers::translateFragmentShaderToV3 (const String& code)
 {
-   #if JUCE_OPENGL3
+#if JUCE_OPENGL3
     if (OpenGLShaderProgram::getLanguageVersion() > 1.2)
         return JUCE_GLSL_VERSION "\n"
                "out vec4 fragColor;\n"
-                + code.replace ("varying", "in")
-                      .replace ("texture2D", "texture")
-                      .replace ("gl_FragColor", "fragColor");
-   #endif
+               + code.replace ("varying", "in")
+               .replace ("texture2D", "texture")
+               .replace ("gl_FragColor", "fragColor");
+#endif
 
     return code;
 }

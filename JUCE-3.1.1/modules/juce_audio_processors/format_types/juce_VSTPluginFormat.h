@@ -75,17 +75,19 @@ public:
     static void setExtraFunctions (AudioPluginInstance* plugin, ExtraFunctions* functions);
 
     //==============================================================================
-   #if JUCE_64BIT
+#if JUCE_64BIT
     typedef int64 VstIntPtr;
-   #else
+#else
     typedef int32 VstIntPtr;
-   #endif
+#endif
 
     /** This simply calls directly to the VST's AEffect::dispatcher() function. */
     static VstIntPtr JUCE_CALLTYPE dispatcher (AudioPluginInstance*, int32, int32, VstIntPtr, void*, float);
 
     //==============================================================================
-    String getName() const override                { return "VST"; }
+    String getName() const override                {
+        return "VST";
+    }
     void findAllTypesForFile (OwnedArray<PluginDescription>&, const String& fileOrIdentifier) override;
     AudioPluginInstance* createInstanceFromDescription (const PluginDescription&, double, int) override;
     bool fileMightContainThisPluginType (const String& fileOrIdentifier) override;
@@ -94,7 +96,9 @@ public:
     StringArray searchPathsForPlugins (const FileSearchPath&, bool recursive) override;
     bool doesPluginStillExist (const PluginDescription&) override;
     FileSearchPath getDefaultLocationsToSearch() override;
-    bool canScanForPlugins() const override        { return true; }
+    bool canScanForPlugins() const override        {
+        return true;
+    }
 
     /** Can be overridden to receive a callback when each member of a shell plugin is about to be
         tested during a call to findAllTypesForFile().

@@ -65,19 +65,19 @@
     ListenerList::DummyBailOutChecker, which is a dummy checker that always returns false.
 */
 template <class ListenerClass,
-          class ArrayType = Array<ListenerClass*> >
+         class ArrayType = Array<ListenerClass*> >
 class ListenerList
 {
     // Horrible macros required to support VC7..
-    #ifndef DOXYGEN
-     #if JUCE_VC8_OR_EARLIER
-       #define LL_TEMPLATE(a)   typename P##a, typename Q##a
-       #define LL_PARAM(a)      Q##a& param##a
-     #else
-       #define LL_TEMPLATE(a)   typename P##a
-       #define LL_PARAM(a)      PARAMETER_TYPE(P##a) param##a
-     #endif
-    #endif
+#ifndef DOXYGEN
+#if JUCE_VC8_OR_EARLIER
+#define LL_TEMPLATE(a)   typename P##a, typename Q##a
+#define LL_PARAM(a)      Q##a& param##a
+#else
+#define LL_TEMPLATE(a)   typename P##a
+#define LL_PARAM(a)      PARAMETER_TYPE(P##a) param##a
+#endif
+#endif
 
 public:
     //==============================================================================
@@ -291,7 +291,9 @@ public:
     class DummyBailOutChecker
     {
     public:
-        inline bool shouldBailOut() const noexcept     { return false; }
+        inline bool shouldBailOut() const noexcept     {
+            return false;
+        }
     };
 
     //==============================================================================
@@ -302,7 +304,8 @@ public:
     public:
         //==============================================================================
         Iterator (const ListType& listToIterate) noexcept
-            : list (listToIterate), index (listToIterate.size())
+    :
+        list (listToIterate), index (listToIterate.size())
         {}
 
         ~Iterator() noexcept {}
@@ -343,7 +346,9 @@ public:
     typedef ListenerList<ListenerClass, ArrayType> ThisType;
     typedef ListenerClass ListenerType;
 
-    const ArrayType& getListeners() const noexcept          { return listeners; }
+    const ArrayType& getListeners() const noexcept          {
+        return listeners;
+    }
 
 private:
     //==============================================================================
@@ -351,8 +356,8 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE (ListenerList)
 
-    #undef LL_TEMPLATE
-    #undef LL_PARAM
+#undef LL_TEMPLATE
+#undef LL_PARAM
 };
 
 

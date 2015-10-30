@@ -20,7 +20,7 @@
 
 extern float *_vorbis_window_get(int n);
 extern void _vorbis_apply_window(float *d,int *winno,long *blocksizes,
-                          int lW,int W,int nW);
+                                 int lW,int W,int nW);
 
 
 #endif

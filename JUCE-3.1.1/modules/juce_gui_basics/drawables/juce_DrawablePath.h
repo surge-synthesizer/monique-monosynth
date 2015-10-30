@@ -89,7 +89,9 @@ public:
             explicit Element (const ValueTree& state);
             ~Element();
 
-            const Identifier getType() const noexcept   { return state.getType(); }
+            const Identifier getType() const noexcept   {
+                return state.getType();
+            }
             int getNumControlPoints() const noexcept;
 
             RelativePoint getControlPoint (int index) const;
@@ -113,7 +115,7 @@ public:
             float findProportionAlongLine (Point<float> targetPoint, Expression::Scope*) const;
 
             static const Identifier mode, startSubPathElement, closeSubPathElement,
-                                    lineToElement, quadraticToElement, cubicToElement;
+                   lineToElement, quadraticToElement, cubicToElement;
             static const char* cornerMode;
             static const char* roundedMode;
             static const char* symmetricMode;

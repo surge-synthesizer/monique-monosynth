@@ -28,20 +28,26 @@
 
 IPAddress::IPAddress() noexcept
 {
-    address[0] = 0;  address[1] = 0;
-    address[2] = 0;  address[3] = 0;
+    address[0] = 0;
+    address[1] = 0;
+    address[2] = 0;
+    address[3] = 0;
 }
 
 IPAddress::IPAddress (const uint8 bytes[4]) noexcept
 {
-    address[0] = bytes[0];  address[1] = bytes[1];
-    address[2] = bytes[2];  address[3] = bytes[3];
+    address[0] = bytes[0];
+    address[1] = bytes[1];
+    address[2] = bytes[2];
+    address[3] = bytes[3];
 }
 
 IPAddress::IPAddress (uint8 a0, uint8 a1, uint8 a2, uint8 a3) noexcept
 {
-    address[0] = a0;  address[1] = a1;
-    address[2] = a2;  address[3] = a3;
+    address[0] = a0;
+    address[1] = a1;
+    address[2] = a2;
+    address[3] = a3;
 }
 
 IPAddress::IPAddress (uint32 n) noexcept
@@ -78,9 +84,9 @@ IPAddress IPAddress::local() noexcept         { return IPAddress (127, 0, 0, 1);
 bool IPAddress::operator== (const IPAddress& other) const noexcept
 {
     return address[0] == other.address[0]
-        && address[1] == other.address[1]
-        && address[2] == other.address[2]
-        && address[3] == other.address[3];
+           && address[1] == other.address[1]
+           && address[2] == other.address[2]
+           && address[3] == other.address[3];
 }
 
 bool IPAddress::operator!= (const IPAddress& other) const noexcept
@@ -116,7 +122,7 @@ static void findIPAddresses (int sock, Array<IPAddress>& result)
 
     } while (bufferSize < cfg.ifc_len + 2 * (int) (IFNAMSIZ + sizeof (struct sockaddr_in6)));
 
-   #if JUCE_MAC || JUCE_IOS
+#if JUCE_MAC || JUCE_IOS
     while (cfg.ifc_len >= (int) (IFNAMSIZ + sizeof (struct sockaddr_in)))
     {
         if (cfg.ifc_req->ifr_addr.sa_family == AF_INET) // Skip non-internet addresses
@@ -125,7 +131,7 @@ static void findIPAddresses (int sock, Array<IPAddress>& result)
         cfg.ifc_len -= IFNAMSIZ + cfg.ifc_req->ifr_addr.sa_len;
         cfg.ifc_buf += IFNAMSIZ + cfg.ifc_req->ifr_addr.sa_len;
     }
-   #else
+#else
     for (size_t i = 0; i < cfg.ifc_len / sizeof (struct ifreq); ++i)
     {
         const ifreq& item = cfg.ifc_req[i];
@@ -133,7 +139,7 @@ static void findIPAddresses (int sock, Array<IPAddress>& result)
         if (item.ifr_addr.sa_family == AF_INET)
             addAddress ((const sockaddr_in*) &item.ifr_addr, result);
     }
-   #endif
+#endif
 }
 
 void IPAddress::findAllAddresses (Array<IPAddress>& result)

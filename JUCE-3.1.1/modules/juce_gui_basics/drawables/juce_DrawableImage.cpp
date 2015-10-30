@@ -107,8 +107,8 @@ void DrawableImage::recalculateCoordinates (Expression::Scope* scope)
         const Point<float> bl (resolved[0] + (resolved[2] - resolved[0]) / (float) image.getHeight());
 
         AffineTransform t (AffineTransform::fromTargetPoints (resolved[0].x, resolved[0].y,
-                                                              tr.x, tr.y,
-                                                              bl.x, bl.y));
+                           tr.x, tr.y,
+                           bl.x, bl.y));
 
         if (t.isSingularity())
             t = AffineTransform::identity;
@@ -255,7 +255,7 @@ void DrawableImage::refreshFromValueTree (const ValueTree& tree, ComponentBuilde
     const RelativeParallelogram newBounds (controller.getBoundingBox());
 
     if (bounds != newBounds || newOpacity != opacity
-         || overlayColour != newOverlayColour || image != newImage)
+            || overlayColour != newOverlayColour || image != newImage)
     {
         repaint();
         opacity = newOpacity;

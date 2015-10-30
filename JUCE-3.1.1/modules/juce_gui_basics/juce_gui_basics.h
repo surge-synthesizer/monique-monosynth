@@ -35,14 +35,14 @@
     components are being drawn.
 */
 #ifndef JUCE_ENABLE_REPAINT_DEBUGGING
- #define JUCE_ENABLE_REPAINT_DEBUGGING 0
+#define JUCE_ENABLE_REPAINT_DEBUGGING 0
 #endif
 
 /** JUCE_USE_XINERAMA: Enables Xinerama multi-monitor support (Linux only).
     Unless you specifically want to disable this, it's best to leave this option turned on.
 */
 #ifndef JUCE_USE_XINERAMA
- #define JUCE_USE_XINERAMA 1
+#define JUCE_USE_XINERAMA 1
 #endif
 
 /** Config: JUCE_USE_XSHM
@@ -50,14 +50,14 @@
     unless you have a good reason to disable it.
 */
 #ifndef JUCE_USE_XSHM
- #define JUCE_USE_XSHM 1
+#define JUCE_USE_XSHM 1
 #endif
 
 /** Config: JUCE_USE_XRENDER
     Enables XRender to allow semi-transparent windowing on Linux.
 */
 #ifndef JUCE_USE_XRENDER
- #define JUCE_USE_XRENDER 0
+#define JUCE_USE_XRENDER 0
 #endif
 
 /** Config: JUCE_USE_XCURSOR
@@ -65,7 +65,7 @@
     a good reason to disable it.
 */
 #ifndef JUCE_USE_XCURSOR
- #define JUCE_USE_XCURSOR 1
+#define JUCE_USE_XCURSOR 1
 #endif
 
 //=============================================================================

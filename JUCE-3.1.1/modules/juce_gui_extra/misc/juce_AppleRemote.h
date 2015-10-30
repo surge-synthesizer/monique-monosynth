@@ -94,7 +94,9 @@ public:
 
     /** Returns the ID number of the remote, if it has sent one.
     */
-    int getRemoteId() const                     { return remoteId; }
+    int getRemoteId() const                     {
+        return remoteId;
+    }
 
     //==============================================================================
     /** @internal */

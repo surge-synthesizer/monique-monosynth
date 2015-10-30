@@ -98,7 +98,7 @@ public:
         delete this component and return a new one.
     */
     virtual Component* refreshComponentForCell (int rowNumber, int columnId, bool isRowSelected,
-                                                Component* existingComponentToUpdate);
+            Component* existingComponentToUpdate);
 
     //==============================================================================
     /** This callback is made when the user clicks on one of the cells in the table.
@@ -183,10 +183,10 @@ public:
     virtual var getDragSourceDescription (const SparseSet<int>& currentlySelectedRows);
 
 private:
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // This method's signature has changed to take a MouseEvent parameter - please update your code!
     JUCE_DEPRECATED_WITH_BODY (virtual int backgroundClicked(), { return 0; })
-   #endif
+#endif
 };
 
 
@@ -201,8 +201,8 @@ private:
     @see TableListBoxModel, TableHeaderComponent
 */
 class JUCE_API  TableListBox   : public ListBox,
-                                 private ListBoxModel,
-                                 private TableHeaderComponent::Listener
+    private ListBoxModel,
+    private TableHeaderComponent::Listener
 {
 public:
     //==============================================================================
@@ -227,11 +227,15 @@ public:
     void setModel (TableListBoxModel* newModel);
 
     /** Returns the model currently in use. */
-    TableListBoxModel* getModel() const noexcept                    { return model; }
+    TableListBoxModel* getModel() const noexcept                    {
+        return model;
+    }
 
     //==============================================================================
     /** Returns the header component being used in this table. */
-    TableHeaderComponent& getHeader() const noexcept                { return *header; }
+    TableHeaderComponent& getHeader() const noexcept                {
+        return *header;
+    }
 
     /** Sets the header component to use for the table.
         The table will take ownership of the component that you pass in, and will delete it
@@ -271,7 +275,9 @@ public:
     /** True if the auto-size options should be shown on the menu.
         @see setAutoSizeMenuOptionShown
     */
-    bool isAutoSizeMenuOptionShown() const noexcept                 { return autoSizeOptionsShown; }
+    bool isAutoSizeMenuOptionShown() const noexcept                 {
+        return autoSizeOptionsShown;
+    }
 
     /** Returns the position of one of the cells in the table.
 

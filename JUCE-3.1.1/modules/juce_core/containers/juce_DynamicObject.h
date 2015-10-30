@@ -126,10 +126,10 @@ private:
     //==============================================================================
     NamedValueSet properties;
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // These methods have been deprecated - use var::invoke instead
     virtual void invokeMethod (const Identifier&, const var*, int) {}
-   #endif
+#endif
 
     JUCE_LEAK_DETECTOR (DynamicObject)
 };

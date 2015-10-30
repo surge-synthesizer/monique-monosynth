@@ -104,6 +104,7 @@ public:
     mono_AudioSampleBuffer<SUM_EQ_BANDS> band_out_buffers;
 
     mono_AudioSampleBuffer<SUM_FILTERS> lfo_amplitudes;
+    mono_AudioSampleBuffer<SUM_MORPHER_GROUPS> mfo_amplitudes;
     mono_AudioSampleBuffer<SUM_FILTERS*2> filter_output_samples_l_r;
     mono_AudioSampleBuffer<2> filter_stereo_output_samples;
 
@@ -289,6 +290,7 @@ private:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MorphGroup;
 class SmoothedParameter;
 class SmoothManager : public RuntimeListener, DeletedAtShutdown
 {
@@ -304,6 +306,7 @@ class SmoothManager : public RuntimeListener, DeletedAtShutdown
 
 public:
     void smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept;
+    void automated_morph( const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept;
     void reset() noexcept;
 
 public:
@@ -316,13 +319,14 @@ public:
 class ENV;
 class SmoothedParameter : public RuntimeListener
 {
+    friend class SmoothManager;
+
     SmoothManager*const smooth_manager;
 
     mono_AudioSampleBuffer<1> values;
     mono_AudioSampleBuffer<1> values_modulated;
 
     Parameter*const param_to_smooth;
-
     float const max_value;
     float const min_value;
 
@@ -400,12 +404,235 @@ struct LFOData
     Parameter speed;
 
     //==========================================================================
-    COLD LFOData( int id_ ) noexcept;
+    COLD LFOData( SmoothManager*smooth_manager_, int id_ ) noexcept;
     COLD ~LFOData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
+static bool is_integer( float value_ ) noexcept
+{
+    return value_ == int(value_);
+}
 
+static float get_lfo_speed_multi( float speed_ ) noexcept
+{
+    float factor = 1;
+    if( speed_ <= 6 )
+    {
+        if( speed_ <= 0 )
+        {
+            factor =  16.0f; //return "16/1";
+        }
+        else if( speed_ <= 1 )
+        {
+            factor = 12.0f + 4.0f*(1.0f-speed_); //return "12/1";
+        }
+        else if( speed_ <= 2 )
+        {
+            factor = 8.0f + 4.0f*(1.0f-(speed_-1));
+        }
+        else if( speed_ <= 3 )
+        {
+            factor = 4.0f + 4.0f*(1.0f-(speed_-2));
+        }
+        else if( speed_ <= 4 )
+        {
+            factor = 3 + (1.0f-(speed_-3));
+        }
+        else if( speed_ <= 5 )
+        {
+            factor = 2 + (1.0f-(speed_-4));
+        }
+        else if( speed_ <= 6 )
+        {
+            factor = 1 + (1.0f-(speed_-5));
+        }
+    }
+    else if( speed_ < 17 )
+    {
+        factor = 0;
+        if( speed_ <= 7 )
+        {
+            factor = 3.0f/4;
+            factor += (1.0f-factor)*(1.0f-(speed_-6));
+        }
+        else if( speed_ <= 8 )
+        {
+            factor = 1.0f/2;
+            factor += (3.0f/4-factor)*(1.0f-(speed_-7));
+        }
+        else if( speed_ <= 9 )
+        {
+            factor = 1.0f/3;
+            factor += (1.0f/2-factor)*(1.0f-(speed_-8));
+        }
+        else if( speed_ <= 10 )
+        {
+            factor = 1.0f/4;
+            factor += (1.0f/3-factor)*(1.0f-(speed_-9));
+        }
+        else if( speed_ <= 11 )
+        {
+            factor = 1.0f/8;
+            factor += (1.0f/4-factor)*(1.0f-(speed_-10));
+        }
+        else if( speed_ <= 12 )
+        {
+            factor = 1.0f/12;
+            factor += (1.0f/8-factor)*(1.0f-(speed_-11));
+        }
+        else if( speed_ <= 13 )
+        {
+            factor = 1.0f/16;
+            factor += (1.0f/12-factor)*(1.0f-(speed_-12));
+        }
+        else if( speed_ <= 14 )
+        {
+            factor = 1.0f/24;
+            factor += (1.0f/16-factor)*(1.0f-(speed_-13));
+        }
+        else if( speed_ <= 15 )
+        {
+            factor = 1.0f/32;
+            factor += (1.0f/24-factor)*(1.0f-(speed_-14));
+        }
+        else if( speed_ <= 16 )
+        {
+            factor = 1.0f/64;
+            factor += (1.0f/32-factor)*(1.0f-(speed_-15));
+        }
+        else
+        {
+            factor = 1.0f/128;
+            factor += (1.0f/64-factor)*(1.0f-(speed_-15));
+        }
+    }
+
+    return factor;
+}
+static float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+{
+    const float bars_per_sec = info_->bpm/4/60;
+    const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed_ );
+    return cycles_per_sec;
+}
+static String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+{
+    if( speed_ <= 6 )
+    {
+        if( speed_ <= 0 )
+        {
+            return "16/1";
+        }
+        else if( speed_ == 1 )
+        {
+            return "12/1";
+        }
+        else if( speed_ == 2 )
+        {
+            return "8/1";
+        }
+        else if( speed_ == 3 )
+        {
+            return "4/1";
+        }
+        else if( speed_ == 4 )
+        {
+            return "3/1";
+        }
+        else if( speed_ == 5 )
+        {
+            return "2/1";
+        }
+        else if( speed_ == 6 )
+        {
+            return "1/1";
+        }
+
+        return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
+    }
+    else if( speed_ <= 17 )
+    {
+        if( speed_ == 7 )
+        {
+            return "3/4";
+        }
+        else if( speed_ == 8 )
+        {
+            return "1/2";
+        }
+        else if( speed_ == 9 )
+        {
+            return "1/3";
+        }
+        else if( speed_ == 10 )
+        {
+            return "1/4";
+        }
+        else if( speed_ == 11 )
+        {
+            return "1/8";
+        }
+        else if( speed_ == 12 )
+        {
+            return "1/12";
+        }
+        else if( speed_ == 13 )
+        {
+            return "1/16";
+        }
+        else if( speed_ == 14 )
+        {
+            return "1/24";
+        }
+        else if( speed_ == 15 )
+        {
+            return "1/32";
+        }
+        else if( speed_ == 16 )
+        {
+            return "1/64";
+        }
+        else if( speed_ == 17 )
+        {
+            return "1/128";
+        }
+
+        return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
+    }
+    else
+    {
+        return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
+    }
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+struct MFOData
+{
+    Parameter speed;
+
+    Parameter wave;
+    SmoothedParameter wave_smoother;
+
+    Parameter phase_shift;
+    SmoothedParameter phase_shift_smoother;
+
+    //==========================================================================
+    COLD MFOData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
+    COLD ~MFOData() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MFOData)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -462,6 +689,7 @@ struct OSCData
 //==============================================================================
 //==============================================================================
 #define MIN_ENV_TIMES 1 // 15
+#define MAX_ENV_TIMES 5000-MIN_ENV_TIMES // 15
 struct ENVData
 {
     const int id;
@@ -477,6 +705,7 @@ struct ENVData
     IntParameter max_release_time;
 
     Parameter shape;
+    SmoothedParameter shape_smoother;
 
     //==========================================================================
     COLD ENVData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
@@ -487,16 +716,13 @@ struct ENVData
 static inline void copy( ENVData* dest_, const ENVData* src_, bool include_max_times_ ) noexcept
 {
     dest_->attack = src_->attack;
+    dest_->max_attack_time = src_->max_attack_time;
     dest_->decay = src_->decay;
+    dest_->max_decay_time = src_->max_decay_time;
     dest_->sustain = src_->sustain;
-    if( include_max_times_ )
-    {
-        dest_->max_attack_time = src_->max_attack_time;
-        dest_->max_decay_time = src_->max_decay_time;
-        dest_->max_release_time = src_->max_release_time;
-    }
     dest_->sustain_time = src_->sustain_time;
     dest_->release = src_->release;
+    dest_->max_release_time = src_->max_release_time;
 
     dest_->shape = src_->shape;
 }
@@ -554,6 +780,7 @@ struct ArpSequencerData
     ArrayOfBoolParameters step;
     ArrayOfIntParameters tune;
     ArrayOfParameters velocity;
+    OwnedArray<SmoothedParameter> velocity_smoothers;
 
     IntParameter shuffle;
     BoolParameter connect;
@@ -867,11 +1094,17 @@ public:
 struct ReverbData
 {
     Parameter room;
+    SmoothedParameter room_smoother;
     Parameter dry_wet_mix;
+    SmoothedParameter dry_wet_mix_smoother;
     Parameter width;
+    SmoothedParameter width_smoother;
+
+    Parameter pan;
+    SmoothedParameter pan_smoother;
 
     //==========================================================================
-    COLD ReverbData( int id_ ) noexcept;
+    COLD ReverbData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
     COLD ~ReverbData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ReverbData )
@@ -884,9 +1117,9 @@ struct ChorusData
 {
     Parameter modulation;
     SmoothedParameter modulation_smoother;
-    BoolParameter hold_modulation;
 
-    ENVData*const env_data;
+    Parameter pan;
+    SmoothedParameter pan_smoother;
 
 public:
     //==========================================================================
@@ -905,21 +1138,80 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class MorphGroup : public Timer, ParameterListener
+{
+    MorphGroup* left_morph_source;
+    MorphGroup* right_morph_source;
+
+    friend class MoniqueSynthData;
+    Array< Parameter* > params;
+    float last_power_of_right;
+    Array< BoolParameter* > switch_bool_params;
+    bool current_switch;
+    Array< IntParameter* > switch_int_params;
+
+public:
+    //==========================================================================
+    inline void morph( float morph_amount_ ) noexcept;
+    inline void morph_switchs( bool left_right_ ) noexcept;
+
+    // return true if the morph was successful
+    inline bool morph( const Parameter* original_param_,  float* value_target_buffer_, float* mod_target_buffer_, const float* morph_amount_, int num_samples_ ) noexcept;
+
+private:
+    //==========================================================================
+    Array< float > sync_param_deltas;
+    Array< float > sync_modulation_deltas;
+    void run_sync_morph() noexcept;
+    int current_callbacks;
+    void timerCallback() override;
+
+private:
+    //==========================================================================
+    // WILL ONLY BE CALLED IN THE MASTER MORPH GROUP, COZ THE SUB GROUBS DOES NOT LISTEN THE PARAMS
+    // UPDATES THE LEFT AND RIGHT SOURCES
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
+
+public:
+    //==========================================================================
+    // INIT
+    COLD MorphGroup() noexcept;
+    COLD ~MorphGroup() noexcept;
+
+    COLD void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
+    COLD void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
+    COLD void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
+
+    COLD void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
+                           float current_morph_amount_, bool current_switch_state_ ) noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
+};
+
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
 #ifdef IS_STANDALONE
 #define THREAD_LIMIT 4
 #else
 #define THREAD_LIMIT 0
 #endif
 
-class MorphGroup;
 class MoniqueSynthesiserVoice;
-
 struct MoniqueSynthData : ParameterListener
 {
     UiLookAndFeel*const ui_look_and_feel; // WILL BE NULL FOR MORPH DATA
     MoniqueAudioProcessor*const audio_processor; // WILL BE NULL FOR MORPH DATA
 
-    SmoothManager*const smooth_manager;
+    SmoothManager*const smooth_manager; // TODO is nowhere deleted
     RuntimeNotifyer*const runtime_notifyer;
     RuntimeInfo*const runtime_info;
     DataBuffer*const data_buffer;
@@ -935,8 +1227,11 @@ struct MoniqueSynthData : ParameterListener
     Parameter volume;
     SmoothedParameter volume_smoother;
     Parameter glide;
+    SmoothedParameter glide_smoother;
     Parameter delay;
     SmoothedParameter delay_smoother;
+    Parameter delay_pan;
+    SmoothedParameter delay_pan_smoother;
     Parameter effect_bypass;
     SmoothedParameter effect_bypass_smoother;
     Parameter shape;
@@ -993,6 +1288,7 @@ struct MoniqueSynthData : ParameterListener
     ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;
+    OwnedArray< MFOData > mfo_datas;
     OwnedArray< OSCData > osc_datas;
     ScopedPointer<FMOscData> fm_osc_data;
     OwnedArray< FilterData > filter_datas;
@@ -1034,7 +1330,9 @@ private:
                            MoniqueAudioProcessor*const audio_processor_,
                            RuntimeNotifyer*const runtime_notifyer_,
                            RuntimeInfo*const info_,
-                           DataBuffer*data_buffer_ ) noexcept;
+                           DataBuffer*data_buffer_,
+                           SmoothManager*smooth_manager = nullptr /* NOTE: the master data owns the manager, but the morph groups will be smoothed*/
+                         ) noexcept;
     COLD ~MoniqueSynthData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( MoniqueSynthData )
@@ -1045,12 +1343,15 @@ public:
     // ==============================================================================
     // MORPH
     ArrayOfParameters morhp_states;
+    ArrayOfBoolParameters is_morph_modulated;
+    ArrayOfParameters morhp_automation_power;
     ArrayOfBoolParameters morhp_switch_states;
     Parameter linear_morhp_state;
     IntParameter morph_motor_time;
 
-private:
+public:
     ScopedPointer<MorphGroup> morph_group_1, morph_group_2, morph_group_3, morph_group_4;
+private:
     OwnedArray< MoniqueSynthData > left_morph_sources;
     OwnedArray< MoniqueSynthData > right_morph_sources;
     StringArray left_morph_source_names;
@@ -1076,7 +1377,7 @@ private:
 
 public:
     // COPY THE CURRENT STATE TO THE SOURCES
-    void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept;
+    void set_morph_source_data_from_current( int morpher_id_, bool left_or_right_, bool run_sync_morph_ ) noexcept;
     void refresh_morph_programms() noexcept;
     bool try_to_load_programm_to_left_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
     bool try_to_load_programm_to_right_side( int morpher_id_, int bank_id_, int index_ ) noexcept;
@@ -1159,6 +1460,7 @@ public:
 public:
     // ==============================================================================
     void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
+    void get_full_mfo( MFOData&mfo_data_,Array< float >& curve ) noexcept;
 };
 
 //==============================================================================

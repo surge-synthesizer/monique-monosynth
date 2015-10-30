@@ -41,7 +41,7 @@
     @see TableListBox, TableHeaderComponent::Listener
 */
 class JUCE_API  TableHeaderComponent   : public Component,
-                                         private AsyncUpdater
+    private AsyncUpdater
 {
 public:
     //==============================================================================
@@ -327,7 +327,7 @@ public:
             column. When they finish dragging, it is called again with 0 as the ID.
         */
         virtual void tableColumnDraggingChanged (TableHeaderComponent* tableHeader,
-                                                 int columnIdNowBeingDragged);
+                int columnIdNowBeingDragged);
     };
 
     /** Adds a listener to be informed about things that happen to the header. */

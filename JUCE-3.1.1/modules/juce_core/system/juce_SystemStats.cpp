@@ -41,24 +41,24 @@ String SystemStats::getJUCEVersion()
     static_jassert (sizeof (uint64) == 8);
 
     return "JUCE v" JUCE_STRINGIFY(JUCE_MAJOR_VERSION)
-                "." JUCE_STRINGIFY(JUCE_MINOR_VERSION)
-                "." JUCE_STRINGIFY(JUCE_BUILDNUMBER);
+           "." JUCE_STRINGIFY(JUCE_MINOR_VERSION)
+           "." JUCE_STRINGIFY(JUCE_BUILDNUMBER);
 }
 
 #if JUCE_ANDROID && ! defined (JUCE_DISABLE_JUCE_VERSION_PRINTING)
- #define JUCE_DISABLE_JUCE_VERSION_PRINTING 1
+#define JUCE_DISABLE_JUCE_VERSION_PRINTING 1
 #endif
 
 #if JUCE_DEBUG && ! JUCE_DISABLE_JUCE_VERSION_PRINTING
- struct JuceVersionPrinter
- {
-     JuceVersionPrinter()
-     {
-         DBG (SystemStats::getJUCEVersion());
-     }
- };
+struct JuceVersionPrinter
+{
+    JuceVersionPrinter()
+    {
+        DBG (SystemStats::getJUCEVersion());
+    }
+};
 
- static JuceVersionPrinter juceVersionPrinter;
+static JuceVersionPrinter juceVersionPrinter;
 #endif
 
 
@@ -66,8 +66,9 @@ String SystemStats::getJUCEVersion()
 struct CPUInformation
 {
     CPUInformation() noexcept
-        : numCpus (0), hasMMX (false), hasSSE (false),
-          hasSSE2 (false), hasSSE3 (false), has3DNow (false)
+:
+    numCpus (0), hasMMX (false), hasSSE (false),
+            hasSSE2 (false), hasSSE3 (false), has3DNow (false)
     {
         initialise();
     }
@@ -97,10 +98,10 @@ String SystemStats::getStackBacktrace()
 {
     String result;
 
-   #if JUCE_ANDROID || JUCE_MINGW
+#if JUCE_ANDROID || JUCE_MINGW
     jassertfalse; // sorry, not implemented yet!
 
-   #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
     HANDLE process = GetCurrentProcess();
     SymInitialize (process, nullptr, TRUE);
 
@@ -131,7 +132,7 @@ String SystemStats::getStackBacktrace()
         }
     }
 
-   #else
+#else
     void* stack[128];
     int frames = backtrace (stack, numElementsInArray (stack));
     char** frameStrings = backtrace_symbols (stack, frames);
@@ -140,7 +141,7 @@ String SystemStats::getStackBacktrace()
         result << frameStrings[i] << newLine;
 
     ::free (frameStrings);
-   #endif
+#endif
 
     return result;
 }
@@ -169,9 +170,9 @@ void SystemStats::setApplicationCrashHandler (CrashHandlerFunction handler)
     jassert (handler != nullptr); // This must be a valid function.
     globalCrashHandler = handler;
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     SetUnhandledExceptionFilter (handleCrash);
-   #else
+#else
     const int signals[] = { SIGFPE, SIGILL, SIGSEGV, SIGBUS, SIGABRT, SIGSYS };
 
     for (int i = 0; i < numElementsInArray (signals); ++i)
@@ -179,5 +180,5 @@ void SystemStats::setApplicationCrashHandler (CrashHandlerFunction handler)
         ::signal (signals[i], handleCrash);
         juce_siginterrupt (signals[i], 1);
     }
-   #endif
+#endif
 }

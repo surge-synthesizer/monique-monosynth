@@ -90,12 +90,13 @@ private:
 };
 
 DialogWindow::LaunchOptions::LaunchOptions() noexcept
-    : dialogBackgroundColour (Colours::lightgrey),
-      componentToCentreAround (nullptr),
-      escapeKeyTriggersCloseButton (true),
-      useNativeTitleBar (true),
-      resizable (true),
-      useBottomRightCornerResizer (false)
+:
+dialogBackgroundColour (Colours::lightgrey),
+                       componentToCentreAround (nullptr),
+                       escapeKeyTriggersCloseButton (true),
+                       useNativeTitleBar (true),
+                       resizable (true),
+                       useBottomRightCornerResizer (false)
 {
 }
 

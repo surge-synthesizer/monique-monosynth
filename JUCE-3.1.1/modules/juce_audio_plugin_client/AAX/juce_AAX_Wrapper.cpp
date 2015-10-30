@@ -31,18 +31,18 @@
 #if JucePlugin_Build_AAX && (JUCE_INCLUDED_AAX_IN_MM || defined (_WIN32) || defined (_WIN64))
 
 #ifdef _MSC_VER
- #include <windows.h>
+#include <windows.h>
 #else
- #include <Cocoa/Cocoa.h>
+#include <Cocoa/Cocoa.h>
 #endif
 
 #include "../utility/juce_IncludeModuleHeaders.h"
 #undef Component
 
 #ifdef __clang__
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
- #pragma clang diagnostic ignored "-Wsign-conversion"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+#pragma clang diagnostic ignored "-Wsign-conversion"
 #endif
 
 #include "AAX_Exports.cpp"
@@ -64,29 +64,29 @@
 #include "AAX_Enums.h"
 
 #ifdef __clang__
- #pragma clang diagnostic pop
+#pragma clang diagnostic pop
 #endif
 
 #if JUCE_WINDOWS
- #ifndef JucePlugin_AAXLibs_path
-  #error "You need to define the JucePlugin_AAXLibs_path macro. (This is best done via the introjucer)"
- #endif
+#ifndef JucePlugin_AAXLibs_path
+#error "You need to define the JucePlugin_AAXLibs_path macro. (This is best done via the introjucer)"
+#endif
 
- #if JUCE_64BIT
-  #define JUCE_AAX_LIB "AAXLibrary_x64"
- #else
-  #define JUCE_AAX_LIB "AAXLibrary"
- #endif
+#if JUCE_64BIT
+#define JUCE_AAX_LIB "AAXLibrary_x64"
+#else
+#define JUCE_AAX_LIB "AAXLibrary"
+#endif
 
- #if JUCE_DEBUG
-  #define JUCE_AAX_LIB_PATH   "\\Debug\\"
-  #define JUCE_AAX_LIB_SUFFIX "_D"
- #else
-  #define JUCE_AAX_LIB_PATH   "\\Release\\"
-  #define JUCE_AAX_LIB_SUFFIX ""
- #endif
+#if JUCE_DEBUG
+#define JUCE_AAX_LIB_PATH   "\\Debug\\"
+#define JUCE_AAX_LIB_SUFFIX "_D"
+#else
+#define JUCE_AAX_LIB_PATH   "\\Release\\"
+#define JUCE_AAX_LIB_SUFFIX ""
+#endif
 
- #pragma comment(lib, JucePlugin_AAXLibs_path JUCE_AAX_LIB_PATH JUCE_AAX_LIB JUCE_AAX_LIB_SUFFIX ".lib")
+#pragma comment(lib, JucePlugin_AAXLibs_path JUCE_AAX_LIB_PATH JUCE_AAX_LIB JUCE_AAX_LIB_SUFFIX ".lib")
 #endif
 
 using juce::Component;
@@ -98,7 +98,8 @@ struct AAXClasses
 {
     static void check (AAX_Result result)
     {
-        jassert (result == AAX_SUCCESS); (void) result;
+        jassert (result == AAX_SUCCESS);
+        (void) result;
     }
 
     static int getParamIndexFromID (AAX_CParamID paramID) noexcept
@@ -115,16 +116,27 @@ struct AAXClasses
     {
         switch (numChans)
         {
-            case 0:   return AAX_eStemFormat_None;
-            case 1:   return AAX_eStemFormat_Mono;
-            case 2:   return AAX_eStemFormat_Stereo;
-            case 3:   return AAX_eStemFormat_LCR;
-            case 4:   return AAX_eStemFormat_Quad;
-            case 5:   return AAX_eStemFormat_5_0;
-            case 6:   return AAX_eStemFormat_5_1;
-            case 7:   return AAX_eStemFormat_7_0_DTS;
-            case 8:   return AAX_eStemFormat_7_1_DTS;
-            default:  jassertfalse; break;
+        case 0:
+            return AAX_eStemFormat_None;
+        case 1:
+            return AAX_eStemFormat_Mono;
+        case 2:
+            return AAX_eStemFormat_Stereo;
+        case 3:
+            return AAX_eStemFormat_LCR;
+        case 4:
+            return AAX_eStemFormat_Quad;
+        case 5:
+            return AAX_eStemFormat_5_0;
+        case 6:
+            return AAX_eStemFormat_5_1;
+        case 7:
+            return AAX_eStemFormat_7_0_DTS;
+        case 8:
+            return AAX_eStemFormat_7_1_DTS;
+        default:
+            jassertfalse;
+            break;
         }
 
         return AAX_eStemFormat_None;
@@ -134,21 +146,32 @@ struct AAXClasses
     {
         switch (format)
         {
-            case AAX_eStemFormat_None:      return 0;
-            case AAX_eStemFormat_Mono:      return 1;
-            case AAX_eStemFormat_Stereo:    return 2;
-            case AAX_eStemFormat_LCR:       return 3;
-            case AAX_eStemFormat_LCRS:
-            case AAX_eStemFormat_Quad:      return 4;
-            case AAX_eStemFormat_5_0:       return 5;
-            case AAX_eStemFormat_5_1:
-            case AAX_eStemFormat_6_0:       return 6;
-            case AAX_eStemFormat_6_1:
-            case AAX_eStemFormat_7_0_SDDS:
-            case AAX_eStemFormat_7_0_DTS:   return 7;
-            case AAX_eStemFormat_7_1_SDDS:
-            case AAX_eStemFormat_7_1_DTS:   return 8;
-            default:                        jassertfalse; break;
+        case AAX_eStemFormat_None:
+            return 0;
+        case AAX_eStemFormat_Mono:
+            return 1;
+        case AAX_eStemFormat_Stereo:
+            return 2;
+        case AAX_eStemFormat_LCR:
+            return 3;
+        case AAX_eStemFormat_LCRS:
+        case AAX_eStemFormat_Quad:
+            return 4;
+        case AAX_eStemFormat_5_0:
+            return 5;
+        case AAX_eStemFormat_5_1:
+        case AAX_eStemFormat_6_0:
+            return 6;
+        case AAX_eStemFormat_6_1:
+        case AAX_eStemFormat_7_0_SDDS:
+        case AAX_eStemFormat_7_0_DTS:
+            return 7;
+        case AAX_eStemFormat_7_1_SDDS:
+        case AAX_eStemFormat_7_1_DTS:
+            return 8;
+        default:
+            jassertfalse;
+            break;
         }
 
         return 0;
@@ -158,20 +181,34 @@ struct AAXClasses
     {
         switch (format)
         {
-            case AAX_eStemFormat_Mono:      return "M";
-            case AAX_eStemFormat_Stereo:    return "L R";
-            case AAX_eStemFormat_LCR:       return "L C R";
-            case AAX_eStemFormat_LCRS:      return "L C R S";
-            case AAX_eStemFormat_Quad:      return "L R Ls Rs";
-            case AAX_eStemFormat_5_0:       return "L C R Ls Rs";
-            case AAX_eStemFormat_5_1:       return "L C R Ls Rs LFE";
-            case AAX_eStemFormat_6_0:       return "L C R Ls Cs Rs";
-            case AAX_eStemFormat_6_1:       return "L C R Ls Cs Rs LFE";
-            case AAX_eStemFormat_7_0_SDDS:  return "L Lc C Rc R Ls Rs";
-            case AAX_eStemFormat_7_1_SDDS:  return "L Lc C Rc R Ls Rs LFE";
-            case AAX_eStemFormat_7_0_DTS:   return "L C R Lss Rss Lsr Rsr";
-            case AAX_eStemFormat_7_1_DTS:   return "L C R Lss Rss Lsr Rsr LFE";
-            default:                        break;
+        case AAX_eStemFormat_Mono:
+            return "M";
+        case AAX_eStemFormat_Stereo:
+            return "L R";
+        case AAX_eStemFormat_LCR:
+            return "L C R";
+        case AAX_eStemFormat_LCRS:
+            return "L C R S";
+        case AAX_eStemFormat_Quad:
+            return "L R Ls Rs";
+        case AAX_eStemFormat_5_0:
+            return "L C R Ls Rs";
+        case AAX_eStemFormat_5_1:
+            return "L C R Ls Rs LFE";
+        case AAX_eStemFormat_6_0:
+            return "L C R Ls Cs Rs";
+        case AAX_eStemFormat_6_1:
+            return "L C R Ls Cs Rs LFE";
+        case AAX_eStemFormat_7_0_SDDS:
+            return "L Lc C Rc R Ls Rs";
+        case AAX_eStemFormat_7_1_SDDS:
+            return "L Lc C Rc R Ls Rs LFE";
+        case AAX_eStemFormat_7_0_DTS:
+            return "L C R Lss Rss Lsr Rsr";
+        case AAX_eStemFormat_7_1_DTS:
+            return "L C R Lss Rss Lsr Rsr LFE";
+        default:
+            break;
         }
 
         return nullptr;
@@ -181,11 +218,17 @@ struct AAXClasses
     {
         switch (colour)
         {
-            case AAX_eHighlightColor_Red:       return Colours::red;
-            case AAX_eHighlightColor_Blue:      return Colours::blue;
-            case AAX_eHighlightColor_Green:     return Colours::green;
-            case AAX_eHighlightColor_Yellow:    return Colours::yellow;
-            default:                            jassertfalse; break;
+        case AAX_eHighlightColor_Red:
+            return Colours::red;
+        case AAX_eHighlightColor_Blue:
+            return Colours::blue;
+        case AAX_eHighlightColor_Green:
+            return Colours::green;
+        case AAX_eHighlightColor_Yellow:
+            return Colours::yellow;
+        default:
+            jassertfalse;
+            break;
         }
 
         return Colours::black;
@@ -211,13 +254,13 @@ struct AAXClasses
         int32_t* bufferSize;
         int32_t* bypass;
 
-       #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
         AAX_IMIDINode* midiNodeIn;
-       #endif
+#endif
 
-       #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
         AAX_IMIDINode* midiNodeOut;
-       #endif
+#endif
 
         PluginInstanceInfo* pluginInstance;
         int32_t* isPrepared;
@@ -232,40 +275,44 @@ struct AAXClasses
             bufferSize      = AAX_FIELD_INDEX (JUCEAlgorithmContext, bufferSize),
             bypass          = AAX_FIELD_INDEX (JUCEAlgorithmContext, bypass),
 
-           #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
             midiNodeIn      = AAX_FIELD_INDEX (JUCEAlgorithmContext, midiNodeIn),
-           #endif
+#endif
 
-           #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
             midiNodeOut     = AAX_FIELD_INDEX (JUCEAlgorithmContext, midiNodeOut),
-           #endif
+#endif
 
             pluginInstance  = AAX_FIELD_INDEX (JUCEAlgorithmContext, pluginInstance),
             preparedFlag    = AAX_FIELD_INDEX (JUCEAlgorithmContext, isPrepared)
         };
     };
 
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     static AAX_IMIDINode* getMidiNodeIn (const JUCEAlgorithmContext& c) noexcept   { return c.midiNodeIn; }
-   #else
+#else
     static AAX_IMIDINode* getMidiNodeIn (const JUCEAlgorithmContext&) noexcept     { return nullptr; }
-   #endif
+#endif
 
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     AAX_IMIDINode* midiNodeOut;
     static AAX_IMIDINode* getMidiNodeOut (const JUCEAlgorithmContext& c) noexcept  { return c.midiNodeOut; }
-   #else
+#else
     static AAX_IMIDINode* getMidiNodeOut (const JUCEAlgorithmContext&) noexcept    { return nullptr; }
-   #endif
+#endif
 
     //==============================================================================
     class JuceAAX_GUI   : public AAX_CEffectGUI
     {
     public:
         JuceAAX_GUI() {}
-        ~JuceAAX_GUI()  { DeleteViewContainer(); }
+        ~JuceAAX_GUI()  {
+            DeleteViewContainer();
+        }
 
-        static AAX_IEffectGUI* AAX_CALLBACK Create()   { return new JuceAAX_GUI(); }
+        static AAX_IEffectGUI* AAX_CALLBACK Create()   {
+            return new JuceAAX_GUI();
+        }
 
         void CreateViewContents() override
         {
@@ -284,11 +331,11 @@ struct AAXClasses
 
             if (void* nativeViewToAttachTo = GetViewContainerPtr())
             {
-               #if JUCE_MAC
+#if JUCE_MAC
                 if (GetViewContainerType() == AAX_eViewContainer_Type_NSView)
-               #else
+#else
                 if (GetViewContainerType() == AAX_eViewContainer_Type_HWND)
-               #endif
+#endif
                 {
                     component->setVisible (true);
                     component->addToDesktop (0, nativeViewToAttachTo);
@@ -390,9 +437,15 @@ struct AAXClasses
                 }
             }
 
-            void mouseDown (const MouseEvent& e) override  { callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseDown); }
-            void mouseUp   (const MouseEvent& e) override  { callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseUp); }
-            void mouseDrag (const MouseEvent& e) override  { callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseDrag); }
+            void mouseDown (const MouseEvent& e) override  {
+                callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseDown);
+            }
+            void mouseUp   (const MouseEvent& e) override  {
+                callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseUp);
+            }
+            void mouseDrag (const MouseEvent& e) override  {
+                callMouseMethod (e, &AAX_IViewContainer::HandleParameterMouseDrag);
+            }
 
             void childBoundsChanged (Component*) override
             {
@@ -421,8 +474,8 @@ struct AAXClasses
 
     //==============================================================================
     class JuceAAX_Processor   : public AAX_CEffectParameters,
-                                public juce::AudioPlayHead,
-                                public AudioProcessorListener
+        public juce::AudioPlayHead,
+        public AudioProcessorListener
     {
     public:
         JuceAAX_Processor()  : sampleRate (0), lastBufferSize (1024)
@@ -434,7 +487,9 @@ struct AAXClasses
             AAX_CEffectParameters::GetNumberOfChunks (&juceChunkIndex);
         }
 
-        static AAX_CEffectParameters* AAX_CALLBACK Create()   { return new JuceAAX_Processor(); }
+        static AAX_CEffectParameters* AAX_CALLBACK Create()   {
+            return new JuceAAX_Processor();
+        }
 
         AAX_Result EffectInit() override
         {
@@ -502,31 +557,31 @@ struct AAXClasses
         {
             switch (fieldIndex)
             {
-                case JUCEAlgorithmIDs::pluginInstance:
-                {
-                    const size_t numObjects = dataSize / sizeof (PluginInstanceInfo);
-                    PluginInstanceInfo* const objects = static_cast<PluginInstanceInfo*> (data);
+            case JUCEAlgorithmIDs::pluginInstance:
+            {
+                const size_t numObjects = dataSize / sizeof (PluginInstanceInfo);
+                PluginInstanceInfo* const objects = static_cast<PluginInstanceInfo*> (data);
 
-                    jassert (numObjects == 1); // not sure how to handle more than one..
+                jassert (numObjects == 1); // not sure how to handle more than one..
 
-                    for (size_t i = 0; i < numObjects; ++i)
-                        new (objects + i) PluginInstanceInfo (const_cast<JuceAAX_Processor&> (*this));
+                for (size_t i = 0; i < numObjects; ++i)
+                    new (objects + i) PluginInstanceInfo (const_cast<JuceAAX_Processor&> (*this));
 
-                    break;
-                }
+                break;
+            }
 
-                case JUCEAlgorithmIDs::preparedFlag:
-                {
-                    const_cast<JuceAAX_Processor*>(this)->preparePlugin();
+            case JUCEAlgorithmIDs::preparedFlag:
+            {
+                const_cast<JuceAAX_Processor*>(this)->preparePlugin();
 
-                    const size_t numObjects = dataSize / sizeof (uint32_t);
-                    uint32_t* const objects = static_cast<uint32_t*> (data);
+                const size_t numObjects = dataSize / sizeof (uint32_t);
+                uint32_t* const objects = static_cast<uint32_t*> (data);
 
-                    for (size_t i = 0; i < numObjects; ++i)
-                        new (objects + i) uint32_t (1);
+                for (size_t i = 0; i < numObjects; ++i)
+                    new (objects + i) uint32_t (1);
 
-                    break;
-                }
+                break;
+            }
             }
 
             return AAX_SUCCESS;
@@ -546,7 +601,7 @@ struct AAXClasses
         {
             if (isBypassParam (paramID))
                 result->Set (value == 0 ? "Off"
-                                        : (maxLen >= 8 ? "Bypassed" : "Byp"));
+                             : (maxLen >= 8 ? "Bypassed" : "Byp"));
             else
                 result->Set (pluginInstance->getParameterText (getParamIndexFromID (paramID), maxLen).toRawUTF8());
 
@@ -603,8 +658,8 @@ struct AAXClasses
         {
             if (isBypassParam (paramID))
                 result->Set (maxLen >= 13 ? "Master Bypass"
-                                          : (maxLen >= 8 ? "Mast Byp"
-                                                         : (maxLen >= 6 ? "MstByp" : "MByp")));
+                             : (maxLen >= 8 ? "Mast Byp"
+                                : (maxLen >= 6 ? "MstByp" : "MByp")));
             else
                 result->Set (pluginInstance->getParameterName (getParamIndexFromID (paramID), maxLen).toRawUTF8());
 
@@ -633,7 +688,9 @@ struct AAXClasses
             return AAX_SUCCESS;
         }
 
-        AudioProcessor& getPluginInstance() const noexcept   { return *pluginInstance; }
+        AudioProcessor& getPluginInstance() const noexcept   {
+            return *pluginInstance;
+        }
 
         bool getCurrentPosition (juce::AudioPlayHead::CurrentPositionInfo& info) override
         {
@@ -653,7 +710,7 @@ struct AAXClasses
                 info.isPlaying = false;
 
             if (info.isPlaying
-                 || transport.GetTimelineSelectionStartPosition (&info.timeInSamples) != AAX_SUCCESS)
+                    || transport.GetTimelineSelectionStartPosition (&info.timeInSamples) != AAX_SUCCESS)
                 check (transport.GetCurrentNativeSampleLocation (&info.timeInSamples));
 
             info.timeInSeconds = info.timeInSamples / sampleRate;
@@ -680,15 +737,37 @@ struct AAXClasses
 
                 switch (frameRate)
                 {
-                    case AAX_eFrameRate_Undeclared:    break;
-                    case AAX_eFrameRate_24Frame:       info.frameRate = AudioPlayHead::fps24;       break;
-                    case AAX_eFrameRate_25Frame:       info.frameRate = AudioPlayHead::fps25;       framesPerSec = 25.0; break;
-                    case AAX_eFrameRate_2997NonDrop:   info.frameRate = AudioPlayHead::fps2997;     framesPerSec = 29.97002997; break;
-                    case AAX_eFrameRate_2997DropFrame: info.frameRate = AudioPlayHead::fps2997drop; framesPerSec = 29.97002997; break;
-                    case AAX_eFrameRate_30NonDrop:     info.frameRate = AudioPlayHead::fps30;       framesPerSec = 30.0; break;
-                    case AAX_eFrameRate_30DropFrame:   info.frameRate = AudioPlayHead::fps30drop;   framesPerSec = 30.0; break;
-                    case AAX_eFrameRate_23976:         info.frameRate = AudioPlayHead::fps24;       framesPerSec = 23.976; break;
-                    default:                           break;
+                case AAX_eFrameRate_Undeclared:
+                    break;
+                case AAX_eFrameRate_24Frame:
+                    info.frameRate = AudioPlayHead::fps24;
+                    break;
+                case AAX_eFrameRate_25Frame:
+                    info.frameRate = AudioPlayHead::fps25;
+                    framesPerSec = 25.0;
+                    break;
+                case AAX_eFrameRate_2997NonDrop:
+                    info.frameRate = AudioPlayHead::fps2997;
+                    framesPerSec = 29.97002997;
+                    break;
+                case AAX_eFrameRate_2997DropFrame:
+                    info.frameRate = AudioPlayHead::fps2997drop;
+                    framesPerSec = 29.97002997;
+                    break;
+                case AAX_eFrameRate_30NonDrop:
+                    info.frameRate = AudioPlayHead::fps30;
+                    framesPerSec = 30.0;
+                    break;
+                case AAX_eFrameRate_30DropFrame:
+                    info.frameRate = AudioPlayHead::fps30drop;
+                    framesPerSec = 30.0;
+                    break;
+                case AAX_eFrameRate_23976:
+                    info.frameRate = AudioPlayHead::fps24;
+                    framesPerSec = 23.976;
+                    break;
+                default:
+                    break;
                 }
 
                 info.editOriginTime = offset / framesPerSec;
@@ -774,7 +853,7 @@ struct AAXClasses
             (void) midiNodeIn;
             (void) midiNodesOut;
 
-           #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
             {
                 AAX_CMidiStream* const midiStream = midiNodeIn->GetNodeBuffer();
                 const uint32_t numMidiEvents = midiStream->mBufferSize;
@@ -784,13 +863,13 @@ struct AAXClasses
                     // (This 8-byte alignment is a workaround to a bug in the AAX SDK. Hopefully can be
                     // removed in future when the packet structure size is fixed)
                     const AAX_CMidiPacket& m = *addBytesToPointer (midiStream->mBuffer,
-                                                                   i * ((sizeof (AAX_CMidiPacket) + 7) & ~(size_t) 7));
+                                               i * ((sizeof (AAX_CMidiPacket) + 7) & ~(size_t) 7));
                     jassert ((int) m.mTimestamp < bufferSize);
                     midiBuffer.addEvent (m.mData, (int) m.mLength,
                                          jlimit (0, (int) bufferSize - 1, (int) m.mTimestamp));
                 }
             }
-           #endif
+#endif
 
             {
                 if (lastBufferSize != bufferSize)
@@ -810,7 +889,7 @@ struct AAXClasses
                     pluginInstance->processBlock (buffer, midiBuffer);
             }
 
-           #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
             {
                 const juce::uint8* midiEventData;
                 int midiEventSize, midiEventPosition;
@@ -833,19 +912,19 @@ struct AAXClasses
                     }
                 }
             }
-           #else
+#else
             (void) midiNodesOut;
-           #endif
+#endif
         }
 
         void addBypassParameter()
         {
             AAX_IParameter* masterBypass = new AAX_CParameter<bool> (cDefaultMasterBypassID,
-                                                                     AAX_CString ("Master Bypass"),
-                                                                     false,
-                                                                     AAX_CBinaryTaperDelegate<bool>(),
-                                                                     AAX_CBinaryDisplayDelegate<bool> ("bypass", "on"),
-                                                                     true);
+                    AAX_CString ("Master Bypass"),
+                    false,
+                    AAX_CBinaryTaperDelegate<bool>(),
+                    AAX_CBinaryDisplayDelegate<bool> ("bypass", "on"),
+                    true);
             masterBypass->SetNumberOfSteps (2);
             masterBypass->SetType (AAX_eParameterType_Discrete);
             mParameterManager.AddParameter (masterBypass);
@@ -872,13 +951,13 @@ struct AAXClasses
                 const int parameterNumSteps = audioProcessor.getParameterNumSteps (parameterIndex);
                 parameter->SetNumberOfSteps ((uint32_t) parameterNumSteps);
                 parameter->SetType (parameterNumSteps > 1000 ? AAX_eParameterType_Continuous
-                                                             : AAX_eParameterType_Discrete);
+                                    : AAX_eParameterType_Discrete);
 
                 parameter->SetOrientation (audioProcessor.isParameterOrientationInverted (parameterIndex)
-                                            ? (AAX_eParameterOrientation_RightMinLeftMax | AAX_eParameterOrientation_TopMinBottomMax
-                                                | AAX_eParameterOrientation_RotarySingleDotMode | AAX_eParameterOrientation_RotaryRightMinLeftMax)
-                                            : (AAX_eParameterOrientation_LeftMinRightMax | AAX_eParameterOrientation_BottomMinTopMax
-                                                | AAX_eParameterOrientation_RotarySingleDotMode | AAX_eParameterOrientation_RotaryLeftMinRightMax));
+                                           ? (AAX_eParameterOrientation_RightMinLeftMax | AAX_eParameterOrientation_TopMinBottomMax
+                                              | AAX_eParameterOrientation_RotarySingleDotMode | AAX_eParameterOrientation_RotaryRightMinLeftMax)
+                                           : (AAX_eParameterOrientation_LeftMinRightMax | AAX_eParameterOrientation_BottomMinTopMax
+                                              | AAX_eParameterOrientation_RotarySingleDotMode | AAX_eParameterOrientation_RotaryLeftMinRightMax));
 
                 mParameterManager.AddParameter (parameter);
             }
@@ -924,7 +1003,8 @@ struct AAXClasses
     //==============================================================================
     struct IndexAsParamID
     {
-        inline explicit IndexAsParamID (int i) noexcept : index (i) {}
+    inline explicit IndexAsParamID (int i) noexcept :
+        index (i) {}
 
         operator AAX_CParamID() noexcept
         {
@@ -953,7 +1033,7 @@ struct AAXClasses
 
     //==============================================================================
     static void AAX_CALLBACK algorithmProcessCallback (JUCEAlgorithmContext* const instancesBegin[],
-                                                       const void* const instancesEnd)
+            const void* const instancesEnd)
     {
         for (JUCEAlgorithmContext* const* iter = instancesBegin; iter < instancesEnd; ++iter)
         {
@@ -974,15 +1054,15 @@ struct AAXClasses
         check (desc.AddAudioBufferLength (JUCEAlgorithmIDs::bufferSize));
         check (desc.AddDataInPort (JUCEAlgorithmIDs::bypass, sizeof (int32_t)));
 
-       #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
         check (desc.AddMIDINode (JUCEAlgorithmIDs::midiNodeIn, AAX_eMIDINodeType_LocalInput,
                                  JucePlugin_Name, 0xffff));
-       #endif
+#endif
 
-       #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
         check (desc.AddMIDINode (JUCEAlgorithmIDs::midiNodeOut, AAX_eMIDINodeType_LocalOutput,
                                  JucePlugin_Name " Out", 0xffff));
-       #endif
+#endif
 
         check (desc.AddPrivateData (JUCEAlgorithmIDs::pluginInstance, sizeof (PluginInstanceInfo)));
 
@@ -993,11 +1073,11 @@ struct AAXClasses
         properties->AddProperty (AAX_eProperty_ManufacturerID,      JucePlugin_AAXManufacturerCode);
         properties->AddProperty (AAX_eProperty_ProductID,           JucePlugin_AAXProductId);
 
-       #if JucePlugin_AAXDisableBypass
+#if JucePlugin_AAXDisableBypass
         properties->AddProperty (AAX_eProperty_CanBypass,           false);
-       #else
+#else
         properties->AddProperty (AAX_eProperty_CanBypass,           true);
-       #endif
+#endif
 
         properties->AddProperty (AAX_eProperty_InputStemFormat,     getFormatForChans (numInputs));
         properties->AddProperty (AAX_eProperty_OutputStemFormat,    getFormatForChans (numOutputs));
@@ -1006,15 +1086,15 @@ struct AAXClasses
         // the host knows that the RTAS/AAX plugins are equivalent.
         properties->AddProperty (AAX_eProperty_PlugInID_Native,     'jcaa' + channelConfigIndex);
 
-       #if ! JucePlugin_AAXDisableAudioSuite
+#if ! JucePlugin_AAXDisableAudioSuite
         properties->AddProperty (AAX_eProperty_PlugInID_AudioSuite, 'jyaa' + channelConfigIndex);
-       #endif
+#endif
 
-       #if JucePlugin_AAXDisableMultiMono
+#if JucePlugin_AAXDisableMultiMono
         properties->AddProperty (AAX_eProperty_Constraint_MultiMonoSupport, false);
-       #else
+#else
         properties->AddProperty (AAX_eProperty_Constraint_MultiMonoSupport, true);
-       #endif
+#endif
 
         check (desc.AddProcessProc_Native (algorithmProcessCallback, properties));
     }
@@ -1025,11 +1105,11 @@ struct AAXClasses
         descriptor.AddName (JucePlugin_Name);
         descriptor.AddCategory (JucePlugin_AAXCategory);
 
-       #ifdef JucePlugin_AAXPageTableFile
+#ifdef JucePlugin_AAXPageTableFile
         // optional page table setting - define this macro in your AppConfig.h if you
         // want to set this value - see Avid documentation for details about its format.
         descriptor.AddResourceInfo (AAX_eResourceType_PageTable, JucePlugin_AAXPageTableFile);
-       #endif
+#endif
 
         check (descriptor.AddProcPtr ((void*) JuceAAX_GUI::Create,        kAAX_ProcPtrID_Create_EffectGUI));
         check (descriptor.AddProcPtr ((void*) JuceAAX_Processor::Create,  kAAX_ProcPtrID_Create_EffectParameters));

@@ -133,8 +133,12 @@ public final class JuceAppActivity   extends Activity
 
     private final class MessageCallback  implements Runnable
     {
-        public MessageCallback (long value_)        { value = value_; }
-        public final void run()                     { deliverMessage (value); }
+        public MessageCallback (long value_)        {
+            value = value_;
+        }
+        public final void run()                     {
+            deliverMessage (value);
+        }
 
         private long value;
     }
@@ -196,8 +200,8 @@ public final class JuceAppActivity   extends Activity
 
                 if (v instanceof ComponentPeerView)
                     ((ComponentPeerView) v).onResume();
-             }
-         }
+            }
+        }
 
         private final int getDPI()
         {
@@ -232,16 +236,16 @@ public final class JuceAppActivity   extends Activity
     {
         AlertDialog.Builder builder = new AlertDialog.Builder (this);
         builder.setTitle (title)
-               .setMessage (message)
-               .setCancelable (true)
-               .setPositiveButton ("OK", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 0);
-                        }
-                    });
+        .setMessage (message)
+        .setCancelable (true)
+        .setPositiveButton ("OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 0);
+            }
+        });
 
         builder.create().show();
     }
@@ -250,24 +254,24 @@ public final class JuceAppActivity   extends Activity
     {
         AlertDialog.Builder builder = new AlertDialog.Builder (this);
         builder.setTitle (title)
-               .setMessage (message)
-               .setCancelable (true)
-               .setPositiveButton ("OK", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 1);
-                        }
-                    })
-               .setNegativeButton ("Cancel", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 0);
-                        }
-                    });
+        .setMessage (message)
+        .setCancelable (true)
+        .setPositiveButton ("OK", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 1);
+            }
+        })
+        .setNegativeButton ("Cancel", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 0);
+            }
+        });
 
         builder.create().show();
     }
@@ -276,32 +280,32 @@ public final class JuceAppActivity   extends Activity
     {
         AlertDialog.Builder builder = new AlertDialog.Builder (this);
         builder.setTitle (title)
-               .setMessage (message)
-               .setCancelable (true)
-               .setPositiveButton ("Yes", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 1);
-                        }
-                    })
-               .setNegativeButton ("No", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 2);
-                        }
-                    })
-               .setNeutralButton ("Cancel", new DialogInterface.OnClickListener()
-                    {
-                        public void onClick (DialogInterface dialog, int id)
-                        {
-                            dialog.cancel();
-                            JuceAppActivity.this.alertDismissed (callback, 0);
-                        }
-                    });
+        .setMessage (message)
+        .setCancelable (true)
+        .setPositiveButton ("Yes", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 1);
+            }
+        })
+        .setNegativeButton ("No", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 2);
+            }
+        })
+        .setNeutralButton ("Cancel", new DialogInterface.OnClickListener()
+        {
+            public void onClick (DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+                JuceAppActivity.this.alertDismissed (callback, 0);
+            }
+        });
 
         builder.create().show();
     }
@@ -310,7 +314,7 @@ public final class JuceAppActivity   extends Activity
 
     //==============================================================================
     public final class ComponentPeerView extends ViewGroup
-                                         implements View.OnFocusChangeListener
+        implements View.OnFocusChangeListener
     {
         public ComponentPeerView (Context context, boolean opaque_, long host)
         {
@@ -356,40 +360,40 @@ public final class JuceAppActivity   extends Activity
 
             switch (action & MotionEvent.ACTION_MASK)
             {
-                case MotionEvent.ACTION_DOWN:
-                    handleMouseDown (host, event.getPointerId(0), event.getX(), event.getY(), time);
-                    return true;
+            case MotionEvent.ACTION_DOWN:
+                handleMouseDown (host, event.getPointerId(0), event.getX(), event.getY(), time);
+                return true;
 
-                case MotionEvent.ACTION_CANCEL:
-                case MotionEvent.ACTION_UP:
-                    handleMouseUp (host, event.getPointerId(0), event.getX(), event.getY(), time);
-                    return true;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                handleMouseUp (host, event.getPointerId(0), event.getX(), event.getY(), time);
+                return true;
 
-                case MotionEvent.ACTION_MOVE:
-                {
-                    int n = event.getPointerCount();
-                    for (int i = 0; i < n; ++i)
-                        handleMouseDrag (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
+            case MotionEvent.ACTION_MOVE:
+            {
+                int n = event.getPointerCount();
+                for (int i = 0; i < n; ++i)
+                    handleMouseDrag (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
 
-                    return true;
-                }
+                return true;
+            }
 
-                case MotionEvent.ACTION_POINTER_UP:
-                {
-                    int i = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    handleMouseUp (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
-                    return true;
-                }
+            case MotionEvent.ACTION_POINTER_UP:
+            {
+                int i = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                handleMouseUp (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
+                return true;
+            }
 
-                case MotionEvent.ACTION_POINTER_DOWN:
-                {
-                    int i = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                    handleMouseDown (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
-                    return true;
-                }
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                int i = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                handleMouseDown (host, event.getPointerId(i), event.getX(i), event.getY(i), time);
+                return true;
+            }
 
-                default:
-                    break;
+            default:
+                break;
             }
 
             return false;
@@ -422,11 +426,12 @@ public final class JuceAppActivity   extends Activity
         {
             switch (keyCode)
             {
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    return super.onKeyDown (keyCode, event);
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return super.onKeyDown (keyCode, event);
 
-                default: break;
+            default:
+                break;
             }
 
             handleKeyDown (host, keyCode, event.getUnicodeChar());
@@ -483,8 +488,12 @@ public final class JuceAppActivity   extends Activity
 
         public void setViewName (String newName)    {}
 
-        public boolean isVisible()                  { return getVisibility() == VISIBLE; }
-        public void setVisible (boolean b)          { setVisibility (b ? VISIBLE : INVISIBLE); }
+        public boolean isVisible()                  {
+            return getVisibility() == VISIBLE;
+        }
+        public void setVisible (boolean b)          {
+            setVisibility (b ? VISIBLE : INVISIBLE);
+        }
 
         public boolean containsPoint (int x, int y)
         {
@@ -523,7 +532,7 @@ public final class JuceAppActivity   extends Activity
 
     //==============================================================================
     public final class OpenGLView   extends GLSurfaceView
-                                    implements GLSurfaceView.Renderer
+        implements GLSurfaceView.Renderer
     {
         OpenGLView (Context context)
         {
@@ -621,7 +630,7 @@ public final class JuceAppActivity   extends Activity
             for (java.util.Map.Entry<String, java.util.List<String>> entry : connection.getHeaderFields().entrySet())
                 if (entry.getKey() != null && entry.getValue() != null)
                     responseHeaders.append (entry.getKey() + ": "
-                                             + android.text.TextUtils.join (",", entry.getValue()) + "\n");
+                                            + android.text.TextUtils.join (",", entry.getValue()) + "\n");
         }
 
         public final void release()
@@ -653,10 +662,18 @@ public final class JuceAppActivity   extends Activity
             return num;
         }
 
-        public final long getPosition()                 { return position; }
-        public final long getTotalLength()              { return -1; }
-        public final boolean isExhausted()              { return false; }
-        public final boolean setPosition (long newPos)  { return false; }
+        public final long getPosition()                 {
+            return position;
+        }
+        public final long getTotalLength()              {
+            return -1;
+        }
+        public final boolean isExhausted()              {
+            return false;
+        }
+        public final boolean setPosition (long newPos)  {
+            return false;
+        }
 
         private HttpURLConnection connection;
         private InputStream inputStream;
@@ -664,14 +681,14 @@ public final class JuceAppActivity   extends Activity
     }
 
     public static final HTTPStream createHTTPStream (String address,
-                                                     boolean isPost, byte[] postData, String headers,
-                                                     int timeOutMs, int[] statusCode,
-                                                     StringBuffer responseHeaders)
+            boolean isPost, byte[] postData, String headers,
+            int timeOutMs, int[] statusCode,
+            StringBuffer responseHeaders)
     {
         try
         {
             HttpURLConnection connection = (HttpURLConnection) (new URL(address)
-                    .openConnection());
+                                           .openConnection());
             if (connection != null)
             {
                 try
@@ -710,7 +727,7 @@ public final class JuceAppActivity   extends Activity
         java.util.Locale locale = java.util.Locale.getDefault();
 
         return isRegion ? locale.getDisplayCountry  (java.util.Locale.US)
-                        : locale.getDisplayLanguage (java.util.Locale.US);
+               : locale.getDisplayLanguage (java.util.Locale.US);
     }
 
     //==============================================================================

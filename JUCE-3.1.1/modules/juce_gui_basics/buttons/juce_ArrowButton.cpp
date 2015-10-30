@@ -23,7 +23,7 @@
 */
 
 ArrowButton::ArrowButton (const String& name, float arrowDirectionInRadians, Colour arrowColour)
-   : Button (name), colour (arrowColour)
+    : Button (name), colour (arrowColour)
 {
     path.addTriangle (0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.5f);
     path.applyTransform (AffineTransform::rotation (float_Pi * 2.0f * arrowDirectionInRadians, 0.5f, 0.5f));

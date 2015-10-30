@@ -23,16 +23,16 @@
 */
 
 FileBrowserComponent::FileBrowserComponent (int flags_,
-                                            const File& initialFileOrDirectory,
-                                            const FileFilter* fileFilter_,
-                                            FilePreviewComponent* previewComp_)
-   : FileFilter (String::empty),
-     fileFilter (fileFilter_),
-     flags (flags_),
-     previewComp (previewComp_),
-     currentPathBox ("path"),
-     fileLabel ("f", TRANS ("file:")),
-     thread ("Juce FileBrowser")
+        const File& initialFileOrDirectory,
+        const FileFilter* fileFilter_,
+        FilePreviewComponent* previewComp_)
+    : FileFilter (String::empty),
+      fileFilter (fileFilter_),
+      flags (flags_),
+      previewComp (previewComp_),
+      currentPathBox ("path"),
+      fileLabel ("f", TRANS ("file:")),
+      thread ("Juce FileBrowser")
 {
     // You need to specify one or other of the open/save flags..
     jassert ((flags & (saveMode | openMode)) != 0);
@@ -178,7 +178,7 @@ void FileBrowserComponent::deselectAllFiles()
 bool FileBrowserComponent::isFileSuitable (const File& file) const
 {
     return (flags & canSelectFiles) != 0
-            && (fileFilter == nullptr || fileFilter->isFileSuitable (file));
+           && (fileFilter == nullptr || fileFilter->isFileSuitable (file));
 }
 
 bool FileBrowserComponent::isDirectorySuitable (const File&) const
@@ -190,10 +190,10 @@ bool FileBrowserComponent::isFileOrDirSuitable (const File& f) const
 {
     if (f.isDirectory())
         return (flags & canSelectDirectories) != 0
-                && (fileFilter == nullptr || fileFilter->isDirectorySuitable (f));
+               && (fileFilter == nullptr || fileFilter->isDirectorySuitable (f));
 
     return (flags & canSelectFiles) != 0 && f.exists()
-            && (fileFilter == nullptr || fileFilter->isFileSuitable (f));
+           && (fileFilter == nullptr || fileFilter->isFileSuitable (f));
 }
 
 //==============================================================================
@@ -247,7 +247,7 @@ void FileBrowserComponent::setRoot (const File& newRootDirectory)
     currentPathBox.setText (currentRootName, dontSendNotification);
 
     goUpButton->setEnabled (currentRoot.getParentDirectory().isDirectory()
-                             && currentRoot.getParentDirectory() != currentRoot);
+                            && currentRoot.getParentDirectory() != currentRoot);
 
     if (callListeners)
     {
@@ -303,8 +303,8 @@ void FileBrowserComponent::setFileFilter (const FileFilter* const newFileFilter)
 String FileBrowserComponent::getActionVerb() const
 {
     return isSaveMode() ? ((flags & canSelectDirectories) != 0 ? TRANS("Choose")
-                                                               : TRANS("Save"))
-                        : TRANS("Open");
+                           : TRANS("Save"))
+               : TRANS("Open");
 }
 
 void FileBrowserComponent::setFilenameBoxLabel (const String& name)
@@ -326,8 +326,8 @@ DirectoryContentsDisplayComponent* FileBrowserComponent::getDisplayComponent() c
 void FileBrowserComponent::resized()
 {
     getLookAndFeel()
-        .layoutFileBrowserComponent (*this, fileListComponent, previewComp,
-                                     &currentPathBox, &filenameBox, goUpButton);
+    .layoutFileBrowserComponent (*this, fileListComponent, previewComp,
+                                 &currentPathBox, &filenameBox, goUpButton);
 }
 
 //==============================================================================
@@ -400,15 +400,15 @@ bool FileBrowserComponent::keyPressed (const KeyPress& key)
 {
     (void) key;
 
-   #if JUCE_LINUX || JUCE_WINDOWS
+#if JUCE_LINUX || JUCE_WINDOWS
     if (key.getModifiers().isCommandDown()
-         && (key.getKeyCode() == 'H' || key.getKeyCode() == 'h'))
+            && (key.getKeyCode() == 'H' || key.getKeyCode() == 'h'))
     {
         fileList->setIgnoresHiddenFiles (! fileList->ignoresHiddenFiles());
         fileList->refresh();
         return true;
     }
-   #endif
+#endif
 
     return false;
 }
@@ -499,7 +499,7 @@ void FileBrowserComponent::comboBoxChanged (ComboBox*)
 
 void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray& rootPaths)
 {
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     Array<File> roots;
     File::findFileSystemRoots (roots);
     rootPaths.clear();
@@ -540,7 +540,7 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
     rootPaths.add (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName());
     rootNames.add (TRANS("Desktop"));
 
-   #elif JUCE_MAC
+#elif JUCE_MAC
     rootPaths.add (File::getSpecialLocation (File::userHomeDirectory).getFullPathName());
     rootNames.add (TRANS("Home folder"));
     rootPaths.add (File::getSpecialLocation (File::userDocumentsDirectory).getFullPathName());
@@ -570,14 +570,14 @@ void FileBrowserComponent::getDefaultRoots (StringArray& rootNames, StringArray&
         }
     }
 
-   #else
+#else
     rootPaths.add ("/");
     rootNames.add ("/");
     rootPaths.add (File::getSpecialLocation (File::userHomeDirectory).getFullPathName());
     rootNames.add (TRANS("Home folder"));
     rootPaths.add (File::getSpecialLocation (File::userDesktopDirectory).getFullPathName());
     rootNames.add (TRANS("Desktop"));
-   #endif
+#endif
 }
 
 void FileBrowserComponent::getRoots (StringArray& rootNames, StringArray& rootPaths)

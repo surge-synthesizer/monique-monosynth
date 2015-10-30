@@ -64,7 +64,7 @@ public:
     {
         ComponentScope scope (owner);
         if (isMainFill ? owner.mainFill.recalculateCoords (&scope)
-                       : owner.strokeFill.recalculateCoords (&scope))
+                : owner.strokeFill.recalculateCoords (&scope))
             owner.repaint();
     }
 
@@ -204,7 +204,7 @@ bool DrawableShape::hitTest (int x, int y)
     const float globalY = (float) (y - originRelativeToComponent.y);
 
     return path.contains (globalX, globalY)
-            || (isStrokeVisible() && strokePath.contains (globalX, globalY));
+           || (isStrokeVisible() && strokePath.contains (globalX, globalY));
 }
 
 //==============================================================================
@@ -223,7 +223,7 @@ DrawableShape::RelativeFillType::RelativeFillType (const FillType& fill_)
         gradientPoint2 = g.point2.transformedBy (fill.transform);
         gradientPoint3 = Point<float> (g.point1.x + g.point2.y - g.point1.y,
                                        g.point1.y + g.point1.x - g.point2.x)
-                            .transformedBy (fill.transform);
+                         .transformedBy (fill.transform);
         fill.transform = AffineTransform::identity;
     }
 }
@@ -248,10 +248,10 @@ DrawableShape::RelativeFillType& DrawableShape::RelativeFillType::operator= (con
 bool DrawableShape::RelativeFillType::operator== (const RelativeFillType& other) const
 {
     return fill == other.fill
-        && ((! fill.isGradient())
-             || (gradientPoint1 == other.gradientPoint1
-                 && gradientPoint2 == other.gradientPoint2
-                 && gradientPoint3 == other.gradientPoint3));
+           && ((! fill.isGradient())
+               || (gradientPoint1 == other.gradientPoint1
+                   && gradientPoint2 == other.gradientPoint2
+                   && gradientPoint3 == other.gradientPoint3));
 }
 
 bool DrawableShape::RelativeFillType::operator!= (const RelativeFillType& other) const
@@ -347,7 +347,7 @@ bool DrawableShape::RelativeFillType::readFrom (const ValueTree& v, ComponentBui
     {
         const String colourString (v [FillAndStrokeState::colour].toString());
         fill.setColour (colourString.isEmpty() ? Colours::black
-                                               : Colour::fromString (colourString));
+                        : Colour::fromString (colourString));
         return true;
     }
     else if (newType == "gradient")
@@ -424,7 +424,7 @@ ValueTree DrawableShape::FillAndStrokeState::getFillState (const Identifier& fil
 }
 
 void DrawableShape::FillAndStrokeState::setFill (const Identifier& fillOrStrokeType, const RelativeFillType& newFill,
-                                                 ComponentBuilder::ImageProvider* imageProvider, UndoManager* undoManager)
+        ComponentBuilder::ImageProvider* imageProvider, UndoManager* undoManager)
 {
     ValueTree v (state.getOrCreateChildWithName (fillOrStrokeType, undoManager));
     newFill.writeTo (v, imageProvider, undoManager);
@@ -437,20 +437,20 @@ PathStrokeType DrawableShape::FillAndStrokeState::getStrokeType() const
 
     return PathStrokeType (state [strokeWidth],
                            jointStyleString == "curved" ? PathStrokeType::curved
-                                                        : (jointStyleString == "bevel" ? PathStrokeType::beveled
-                                                                                       : PathStrokeType::mitered),
+                           : (jointStyleString == "bevel" ? PathStrokeType::beveled
+                              : PathStrokeType::mitered),
                            capStyleString == "square" ? PathStrokeType::square
-                                                      : (capStyleString == "round" ? PathStrokeType::rounded
-                                                                                   : PathStrokeType::butt));
+                           : (capStyleString == "round" ? PathStrokeType::rounded
+                              : PathStrokeType::butt));
 }
 
 void DrawableShape::FillAndStrokeState::setStrokeType (const PathStrokeType& newStrokeType, UndoManager* undoManager)
 {
     state.setProperty (strokeWidth, (double) newStrokeType.getStrokeThickness(), undoManager);
     state.setProperty (jointStyle, newStrokeType.getJointStyle() == PathStrokeType::mitered
-                                     ? "miter" : (newStrokeType.getJointStyle() == PathStrokeType::curved ? "curved" : "bevel"), undoManager);
+                       ? "miter" : (newStrokeType.getJointStyle() == PathStrokeType::curved ? "curved" : "bevel"), undoManager);
     state.setProperty (capStyle, newStrokeType.getEndStyle() == PathStrokeType::butt
-                                     ? "butt" : (newStrokeType.getEndStyle() == PathStrokeType::square ? "square" : "round"), undoManager);
+                       ? "butt" : (newStrokeType.getEndStyle() == PathStrokeType::square ? "square" : "round"), undoManager);
 }
 
 static bool replaceColourInFill (DrawableShape::RelativeFillType& fill, Colour original, Colour replacement)

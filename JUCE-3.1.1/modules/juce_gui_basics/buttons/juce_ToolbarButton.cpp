@@ -24,10 +24,10 @@
 
 ToolbarButton::ToolbarButton (const int iid, const String& buttonText,
                               Drawable* const normalIm, Drawable* const toggledOnIm)
-   : ToolbarItemComponent (iid, buttonText, true),
-     normalImage (normalIm),
-     toggledOnImage (toggledOnIm),
-     currentImage (nullptr)
+    : ToolbarItemComponent (iid, buttonText, true),
+      normalImage (normalIm),
+      toggledOnImage (toggledOnIm),
+      currentImage (nullptr)
 {
     jassert (normalImage != nullptr);
 }

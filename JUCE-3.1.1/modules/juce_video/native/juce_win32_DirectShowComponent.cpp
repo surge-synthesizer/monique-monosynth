@@ -24,149 +24,149 @@
 
 namespace DirectShowHelpers
 {
-    bool checkDShowAvailability()
+bool checkDShowAvailability()
+{
+    ComSmartPtr <IGraphBuilder> graph;
+    return SUCCEEDED (graph.CoCreateInstance (CLSID_FilterGraph));
+}
+
+//======================================================================
+class VideoRenderer
+{
+public:
+    VideoRenderer() {}
+    virtual ~VideoRenderer() {}
+
+    virtual HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
+                            ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd) = 0;
+
+    virtual void setVideoWindow (HWND hwnd) = 0;
+    virtual void setVideoPosition (HWND hwnd, long videoWidth, long videoHeight) = 0;
+    virtual void repaintVideo (HWND hwnd, HDC hdc) = 0;
+    virtual void displayModeChanged() = 0;
+    virtual HRESULT getVideoSize (long& videoWidth, long& videoHeight) = 0;
+};
+
+//======================================================================
+class VMR7  : public VideoRenderer
+{
+public:
+    VMR7() {}
+
+    HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
+                    ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd)
     {
-        ComSmartPtr <IGraphBuilder> graph;
-        return SUCCEEDED (graph.CoCreateInstance (CLSID_FilterGraph));
+        ComSmartPtr <IVMRFilterConfig> filterConfig;
+
+        HRESULT hr = baseFilter.CoCreateInstance (CLSID_VideoMixingRenderer);
+
+        if (SUCCEEDED (hr))   hr = graphBuilder->AddFilter (baseFilter, L"VMR-7");
+        if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (filterConfig);
+        if (SUCCEEDED (hr))   hr = filterConfig->SetRenderingMode (VMRMode_Windowless);
+        if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (windowlessControl);
+        if (SUCCEEDED (hr))   hr = windowlessControl->SetVideoClippingWindow (hwnd);
+        if (SUCCEEDED (hr))   hr = windowlessControl->SetAspectRatioMode (VMR_ARMODE_LETTER_BOX);
+
+        return hr;
     }
 
-    //======================================================================
-    class VideoRenderer
+    void setVideoWindow (HWND hwnd)
     {
-    public:
-        VideoRenderer() {}
-        virtual ~VideoRenderer() {}
+        windowlessControl->SetVideoClippingWindow (hwnd);
+    }
 
-        virtual HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
-                                ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd) = 0;
-
-        virtual void setVideoWindow (HWND hwnd) = 0;
-        virtual void setVideoPosition (HWND hwnd, long videoWidth, long videoHeight) = 0;
-        virtual void repaintVideo (HWND hwnd, HDC hdc) = 0;
-        virtual void displayModeChanged() = 0;
-        virtual HRESULT getVideoSize (long& videoWidth, long& videoHeight) = 0;
-    };
-
-    //======================================================================
-    class VMR7  : public VideoRenderer
+    void setVideoPosition (HWND hwnd, long videoWidth, long videoHeight)
     {
-    public:
-        VMR7() {}
+        RECT src, dest;
 
-        HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
-                        ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd)
-        {
-            ComSmartPtr <IVMRFilterConfig> filterConfig;
+        SetRect (&src, 0, 0, videoWidth, videoHeight);
+        GetClientRect (hwnd, &dest);
 
-            HRESULT hr = baseFilter.CoCreateInstance (CLSID_VideoMixingRenderer);
+        windowlessControl->SetVideoPosition (&src, &dest);
+    }
 
-            if (SUCCEEDED (hr))   hr = graphBuilder->AddFilter (baseFilter, L"VMR-7");
-            if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (filterConfig);
-            if (SUCCEEDED (hr))   hr = filterConfig->SetRenderingMode (VMRMode_Windowless);
-            if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (windowlessControl);
-            if (SUCCEEDED (hr))   hr = windowlessControl->SetVideoClippingWindow (hwnd);
-            if (SUCCEEDED (hr))   hr = windowlessControl->SetAspectRatioMode (VMR_ARMODE_LETTER_BOX);
+    void repaintVideo (HWND hwnd, HDC hdc)
+    {
+        windowlessControl->RepaintVideo (hwnd, hdc);
+    }
 
-            return hr;
-        }
+    void displayModeChanged()
+    {
+        windowlessControl->DisplayModeChanged();
+    }
 
-        void setVideoWindow (HWND hwnd)
-        {
-            windowlessControl->SetVideoClippingWindow (hwnd);
-        }
+    HRESULT getVideoSize (long& videoWidth, long& videoHeight)
+    {
+        return windowlessControl->GetNativeVideoSize (&videoWidth, &videoHeight, nullptr, nullptr);
+    }
 
-        void setVideoPosition (HWND hwnd, long videoWidth, long videoHeight)
-        {
-            RECT src, dest;
+private:
+    ComSmartPtr <IVMRWindowlessControl> windowlessControl;
 
-            SetRect (&src, 0, 0, videoWidth, videoHeight);
-            GetClientRect (hwnd, &dest);
-
-            windowlessControl->SetVideoPosition (&src, &dest);
-        }
-
-        void repaintVideo (HWND hwnd, HDC hdc)
-        {
-            windowlessControl->RepaintVideo (hwnd, hdc);
-        }
-
-        void displayModeChanged()
-        {
-            windowlessControl->DisplayModeChanged();
-        }
-
-        HRESULT getVideoSize (long& videoWidth, long& videoHeight)
-        {
-            return windowlessControl->GetNativeVideoSize (&videoWidth, &videoHeight, nullptr, nullptr);
-        }
-
-    private:
-        ComSmartPtr <IVMRWindowlessControl> windowlessControl;
-
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VMR7)
-    };
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VMR7)
+};
 
 
-    //======================================================================
+//======================================================================
 #if JUCE_MEDIAFOUNDATION
-    class EVR : public VideoRenderer
+class EVR : public VideoRenderer
+{
+public:
+    EVR() {}
+
+    HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
+                    ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd)
     {
-    public:
-        EVR() {}
+        ComSmartPtr <IMFGetService> getService;
 
-        HRESULT create (ComSmartPtr <IGraphBuilder>& graphBuilder,
-                        ComSmartPtr <IBaseFilter>& baseFilter, HWND hwnd)
-        {
-            ComSmartPtr <IMFGetService> getService;
+        HRESULT hr = baseFilter.CoCreateInstance (CLSID_EnhancedVideoRenderer);
 
-            HRESULT hr = baseFilter.CoCreateInstance (CLSID_EnhancedVideoRenderer);
+        if (SUCCEEDED (hr))   hr = graphBuilder->AddFilter (baseFilter, L"EVR");
+        if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (getService);
+        if (SUCCEEDED (hr))   hr = getService->GetService (MR_VIDEO_RENDER_SERVICE, IID_IMFVideoDisplayControl,
+                                       (LPVOID*) videoDisplayControl.resetAndGetPointerAddress());
+        if (SUCCEEDED (hr))   hr = videoDisplayControl->SetVideoWindow (hwnd);
+        if (SUCCEEDED (hr))   hr = videoDisplayControl->SetAspectRatioMode (MFVideoARMode_PreservePicture);
 
-            if (SUCCEEDED (hr))   hr = graphBuilder->AddFilter (baseFilter, L"EVR");
-            if (SUCCEEDED (hr))   hr = baseFilter.QueryInterface (getService);
-            if (SUCCEEDED (hr))   hr = getService->GetService (MR_VIDEO_RENDER_SERVICE, IID_IMFVideoDisplayControl,
-                                                               (LPVOID*) videoDisplayControl.resetAndGetPointerAddress());
-            if (SUCCEEDED (hr))   hr = videoDisplayControl->SetVideoWindow (hwnd);
-            if (SUCCEEDED (hr))   hr = videoDisplayControl->SetAspectRatioMode (MFVideoARMode_PreservePicture);
+        return hr;
+    }
 
-            return hr;
-        }
+    void setVideoWindow (HWND hwnd)
+    {
+        videoDisplayControl->SetVideoWindow (hwnd);
+    }
 
-        void setVideoWindow (HWND hwnd)
-        {
-            videoDisplayControl->SetVideoWindow (hwnd);
-        }
+    void setVideoPosition (HWND hwnd, long /*videoWidth*/, long /*videoHeight*/)
+    {
+        const MFVideoNormalizedRect src = { 0.0f, 0.0f, 1.0f, 1.0f };
 
-        void setVideoPosition (HWND hwnd, long /*videoWidth*/, long /*videoHeight*/)
-        {
-            const MFVideoNormalizedRect src = { 0.0f, 0.0f, 1.0f, 1.0f };
+        RECT dest;
+        GetClientRect (hwnd, &dest);
 
-            RECT dest;
-            GetClientRect (hwnd, &dest);
+        videoDisplayControl->SetVideoPosition (&src, &dest);
+    }
 
-            videoDisplayControl->SetVideoPosition (&src, &dest);
-        }
+    void repaintVideo (HWND /*hwnd*/, HDC /*hdc*/)
+    {
+        videoDisplayControl->RepaintVideo();
+    }
 
-        void repaintVideo (HWND /*hwnd*/, HDC /*hdc*/)
-        {
-            videoDisplayControl->RepaintVideo();
-        }
+    void displayModeChanged() {}
 
-        void displayModeChanged() {}
+    HRESULT getVideoSize (long& videoWidth, long& videoHeight)
+    {
+        SIZE sz;
+        HRESULT hr = videoDisplayControl->GetNativeVideoSize (&sz, nullptr);
+        videoWidth  = sz.cx;
+        videoHeight = sz.cy;
+        return hr;
+    }
 
-        HRESULT getVideoSize (long& videoWidth, long& videoHeight)
-        {
-            SIZE sz;
-            HRESULT hr = videoDisplayControl->GetNativeVideoSize (&sz, nullptr);
-            videoWidth  = sz.cx;
-            videoHeight = sz.cy;
-            return hr;
-        }
+private:
+    ComSmartPtr <IMFVideoDisplayControl> videoDisplayControl;
 
-    private:
-        ComSmartPtr <IMFVideoDisplayControl> videoDisplayControl;
-
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EVR)
-    };
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EVR)
+};
 #endif
 }
 
@@ -193,10 +193,10 @@ public:
         {
             type = dshowVMR7;
 
-           #if JUCE_MEDIAFOUNDATION
+#if JUCE_MEDIAFOUNDATION
             if (SystemStats::getOperatingSystemType() >= SystemStats::WinVista)
                 type = dshowEVR;
-           #endif
+#endif
         }
     }
 
@@ -307,11 +307,11 @@ public:
         // video renderer interface
         if (SUCCEEDED (hr))
         {
-           #if JUCE_MEDIAFOUNDATION
+#if JUCE_MEDIAFOUNDATION
             if (type == dshowEVR)
                 videoRenderer = new DirectShowHelpers::EVR();
             else
-           #endif
+#endif
                 videoRenderer = new DirectShowHelpers::VMR7();
 
             hr = videoRenderer->create (graphBuilder, baseFilter, hwnd);
@@ -452,13 +452,27 @@ public:
     }
 
     //======================================================================
-    bool isInitialised() const noexcept  { return state != uninitializedState; }
-    bool isRunning() const noexcept      { return state == runningState; }
-    bool isPaused() const noexcept       { return state == pausedState; }
-    bool isStopped() const noexcept      { return state == stoppedState; }
-    bool containsVideo() const noexcept  { return hasVideo; }
-    int getVideoWidth() const noexcept   { return (int) videoWidth; }
-    int getVideoHeight() const noexcept  { return (int) videoHeight; }
+    bool isInitialised() const noexcept  {
+        return state != uninitializedState;
+    }
+    bool isRunning() const noexcept      {
+        return state == runningState;
+    }
+    bool isPaused() const noexcept       {
+        return state == pausedState;
+    }
+    bool isStopped() const noexcept      {
+        return state == stoppedState;
+    }
+    bool containsVideo() const noexcept  {
+        return hasVideo;
+    }
+    int getVideoWidth() const noexcept   {
+        return (int) videoWidth;
+    }
+    int getVideoHeight() const noexcept  {
+        return (int) videoHeight;
+    }
 
     //======================================================================
     double getDuration() const
@@ -476,9 +490,15 @@ public:
     }
 
     //======================================================================
-    void setSpeed (const float newSpeed)        { mediaPosition->put_Rate (newSpeed); }
-    void setPosition (const double seconds)     { mediaPosition->put_CurrentPosition (seconds); }
-    void setVolume (const float newVolume)      { basicAudio->put_Volume (convertToDShowVolume (newVolume)); }
+    void setSpeed (const float newSpeed)        {
+        mediaPosition->put_Rate (newSpeed);
+    }
+    void setPosition (const double seconds)     {
+        mediaPosition->put_CurrentPosition (seconds);
+    }
+    void setVolume (const float newVolume)      {
+        basicAudio->put_Volume (convertToDShowVolume (newVolume));
+    }
 
     // in DirectShow, full volume is 0, silence is -10000
     static long convertToDShowVolume (const float vol) noexcept
@@ -527,8 +547,12 @@ private:
     class NativeWindowClass   : private DeletedAtShutdown
     {
     public:
-        bool isRegistered() const noexcept              { return atom != 0; }
-        LPCTSTR getWindowClassName() const noexcept     { return (LPCTSTR) MAKELONG (atom, 0); }
+        bool isRegistered() const noexcept              {
+            return atom != 0;
+        }
+        LPCTSTR getWindowClassName() const noexcept     {
+            return (LPCTSTR) MAKELONG (atom, 0);
+        }
 
         juce_DeclareSingleton_SingleThreaded_Minimal (NativeWindowClass)
 
@@ -569,11 +593,18 @@ private:
             {
                 switch (msg)
                 {
-                    case WM_NCHITTEST:          return HTTRANSPARENT;
-                    case WM_ERASEBKGND:         return 1;
-                    case WM_DISPLAYCHANGE:      c->displayResolutionChanged(); break;
-                    case graphEventID:          c->graphEventProc(); return 0;
-                    default:                    break;
+                case WM_NCHITTEST:
+                    return HTTRANSPARENT;
+                case WM_ERASEBKGND:
+                    return 1;
+                case WM_DISPLAYCHANGE:
+                    c->displayResolutionChanged();
+                    break;
+                case graphEventID:
+                    c->graphEventProc();
+                    return 0;
+                default:
+                    break;
                 }
             }
 
@@ -622,8 +653,12 @@ private:
             }
         }
 
-        HWND getHandle() const noexcept   { return hwnd; }
-        HDC getContext() const noexcept   { return hdc; }
+        HWND getHandle() const noexcept   {
+            return hwnd;
+        }
+        HDC getContext() const noexcept   {
+            return hdc;
+        }
 
         void setWindowPosition (const Rectangle<int>& newBounds)
         {
@@ -847,11 +882,21 @@ void DirectShowComponent::closeMovie()
 }
 
 //======================================================================
-File DirectShowComponent::getCurrentMoviePath() const           { return videoPath; }
-bool DirectShowComponent::isMovieOpen() const                   { return videoLoaded; }
-double DirectShowComponent::getMovieDuration() const            { return videoLoaded ? context->getDuration() : 0.0; }
-void DirectShowComponent::setLooping (const bool shouldLoop)    { looping = shouldLoop; }
-bool DirectShowComponent::isLooping() const                     { return looping; }
+File DirectShowComponent::getCurrentMoviePath() const           {
+    return videoPath;
+}
+bool DirectShowComponent::isMovieOpen() const                   {
+    return videoLoaded;
+}
+double DirectShowComponent::getMovieDuration() const            {
+    return videoLoaded ? context->getDuration() : 0.0;
+}
+void DirectShowComponent::setLooping (const bool shouldLoop)    {
+    looping = shouldLoop;
+}
+bool DirectShowComponent::isLooping() const                     {
+    return looping;
+}
 
 void DirectShowComponent::getMovieNormalSize (int &width, int &height) const
 {
@@ -861,7 +906,7 @@ void DirectShowComponent::getMovieNormalSize (int &width, int &height) const
 
 //======================================================================
 void DirectShowComponent::setBoundsWithCorrectAspectRatio (const Rectangle<int>& spaceToFitWithin,
-                                                           RectanglePlacement placement)
+        RectanglePlacement placement)
 {
     int normalWidth, normalHeight;
     getMovieNormalSize (normalWidth, normalHeight);

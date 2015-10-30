@@ -167,24 +167,48 @@ Point<int> Desktop::getLastMouseDownPosition()
     return getInstance().getMainMouseSource().getLastMouseDownPosition().roundToInt();
 }
 
-int Desktop::getMouseButtonClickCounter() const noexcept    { return mouseClickCounter; }
-int Desktop::getMouseWheelMoveCounter() const noexcept      { return mouseWheelCounter; }
+int Desktop::getMouseButtonClickCounter() const noexcept    {
+    return mouseClickCounter;
+}
+int Desktop::getMouseWheelMoveCounter() const noexcept      {
+    return mouseWheelCounter;
+}
 
 void Desktop::incrementMouseClickCounter() noexcept         { ++mouseClickCounter; }
 void Desktop::incrementMouseWheelCounter() noexcept         { ++mouseWheelCounter; }
 
-const Array<MouseInputSource>& Desktop::getMouseSources() const noexcept        { return mouseSources->sourceArray; }
-int Desktop::getNumMouseSources() const noexcept                                { return mouseSources->sources.size(); }
-int Desktop::getNumDraggingMouseSources() const noexcept                        { return mouseSources->getNumDraggingMouseSources(); }
-MouseInputSource* Desktop::getMouseSource (int index) const noexcept            { return mouseSources->getMouseSource (index); }
-MouseInputSource* Desktop::getDraggingMouseSource (int index) const noexcept    { return mouseSources->getDraggingMouseSource (index); }
-MouseInputSource Desktop::getMainMouseSource() const noexcept                   { return MouseInputSource (mouseSources->sources.getUnchecked(0)); }
-void Desktop::beginDragAutoRepeat (int interval)                                { mouseSources->beginDragAutoRepeat (interval); }
+const Array<MouseInputSource>& Desktop::getMouseSources() const noexcept        {
+    return mouseSources->sourceArray;
+}
+int Desktop::getNumMouseSources() const noexcept                                {
+    return mouseSources->sources.size();
+}
+int Desktop::getNumDraggingMouseSources() const noexcept                        {
+    return mouseSources->getNumDraggingMouseSources();
+}
+MouseInputSource* Desktop::getMouseSource (int index) const noexcept            {
+    return mouseSources->getMouseSource (index);
+}
+MouseInputSource* Desktop::getDraggingMouseSource (int index) const noexcept    {
+    return mouseSources->getDraggingMouseSource (index);
+}
+MouseInputSource Desktop::getMainMouseSource() const noexcept                   {
+    return MouseInputSource (mouseSources->sources.getUnchecked(0));
+}
+void Desktop::beginDragAutoRepeat (int interval)                                {
+    mouseSources->beginDragAutoRepeat (interval);
+}
 
 //==============================================================================
-void Desktop::addFocusChangeListener    (FocusChangeListener* const listener)   { focusListeners.add (listener); }
-void Desktop::removeFocusChangeListener (FocusChangeListener* const listener)   { focusListeners.remove (listener); }
-void Desktop::triggerFocusCallback()                                            { triggerAsyncUpdate(); }
+void Desktop::addFocusChangeListener    (FocusChangeListener* const listener)   {
+    focusListeners.add (listener);
+}
+void Desktop::removeFocusChangeListener (FocusChangeListener* const listener)   {
+    focusListeners.remove (listener);
+}
+void Desktop::triggerFocusCallback()                                            {
+    triggerAsyncUpdate();
+}
 
 void Desktop::handleAsyncUpdate()
 {
@@ -258,7 +282,9 @@ void Desktop::sendMouseMove()
 
 
 //==============================================================================
-Desktop::Displays::Displays (Desktop& desktop)   { init (desktop); }
+Desktop::Displays::Displays (Desktop& desktop)   {
+    init (desktop);
+}
 Desktop::Displays::~Displays()  {}
 
 const Desktop::Displays::Display& Desktop::Displays::getMainDisplay() const noexcept
@@ -319,9 +345,9 @@ bool operator== (const Desktop::Displays::Display& d1, const Desktop::Displays::
 bool operator== (const Desktop::Displays::Display& d1, const Desktop::Displays::Display& d2) noexcept
 {
     return d1.userArea == d2.userArea
-        && d1.totalArea == d2.totalArea
-        && d1.scale == d2.scale
-        && d1.isMain == d2.isMain;
+    && d1.totalArea == d2.totalArea
+    && d1.scale == d2.scale
+    && d1.isMain == d2.isMain;
 }
 
 bool operator!= (const Desktop::Displays::Display& d1, const Desktop::Displays::Display& d2) noexcept;
@@ -398,7 +424,7 @@ bool Desktop::isOrientationEnabled (const DisplayOrientation orientation) const 
 {
     // Make sure you only pass one valid flag in here...
     jassert (orientation == upright || orientation == upsideDown
-              || orientation == rotatedClockwise || orientation == rotatedAntiClockwise);
+             || orientation == rotatedClockwise || orientation == rotatedAntiClockwise);
 
     return (allowedOrientations & orientation) != 0;
 }

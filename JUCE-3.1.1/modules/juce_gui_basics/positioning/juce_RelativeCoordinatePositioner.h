@@ -31,8 +31,8 @@
     Base class for Component::Positioners that are based upon relative coordinates.
 */
 class JUCE_API  RelativeCoordinatePositionerBase  : public Component::Positioner,
-                                                    public ComponentListener,
-                                                    public MarkerList::Listener
+    public ComponentListener,
+    public MarkerList::Listener
 {
 public:
     RelativeCoordinatePositionerBase (Component& component);

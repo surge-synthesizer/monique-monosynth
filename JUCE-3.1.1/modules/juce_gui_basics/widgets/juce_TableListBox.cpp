@@ -23,10 +23,11 @@
 */
 
 class TableListBox::RowComp   : public Component,
-                                public TooltipClient
+    public TooltipClient
 {
 public:
-    RowComp (TableListBox& tlb) noexcept  : owner (tlb), row (-1), isSelected (false)
+RowComp (TableListBox& tlb) noexcept  :
+    owner (tlb), row (-1), isSelected (false)
     {
     }
 
@@ -115,7 +116,7 @@ public:
     {
         if (Component* const c = columnComponents.getUnchecked (index))
             c->setBounds (owner.getHeader().getColumnPosition (index)
-                            .withY (0).withHeight (getHeight()));
+                          .withY (0).withHeight (getHeight()));
     }
 
     void mouseDown (const MouseEvent& e) override
@@ -232,9 +233,15 @@ public:
     {
         switch (menuReturnId)
         {
-            case autoSizeColumnId:      owner.autoSizeColumn (columnIdClicked); break;
-            case autoSizeAllId:         owner.autoSizeAllColumns(); break;
-            default:                    TableHeaderComponent::reactToMenuItem (menuReturnId, columnIdClicked); break;
+        case autoSizeColumnId:
+            owner.autoSizeColumn (columnIdClicked);
+            break;
+        case autoSizeAllId:
+            owner.autoSizeAllColumns();
+            break;
+        default:
+            TableHeaderComponent::reactToMenuItem (menuReturnId, columnIdClicked);
+            break;
         }
     }
 
@@ -318,7 +325,7 @@ void TableListBox::setAutoSizeMenuOptionShown (const bool shouldBeShown) noexcep
 }
 
 Rectangle<int> TableListBox::getCellPosition (const int columnId, const int rowNumber,
-                                              const bool relativeToComponentTopLeft) const
+        const bool relativeToComponentTopLeft) const
 {
     Rectangle<int> headerCell (header->getColumnPosition (header->getIndexOfColumnId (columnId, true)));
 
@@ -326,8 +333,8 @@ Rectangle<int> TableListBox::getCellPosition (const int columnId, const int rowN
         headerCell.translate (header->getX(), 0);
 
     return getRowPosition (rowNumber, relativeToComponentTopLeft)
-            .withX (headerCell.getX())
-            .withWidth (headerCell.getWidth());
+           .withX (headerCell.getX())
+           .withWidth (headerCell.getWidth());
 }
 
 Component* TableListBox::getCellComponent (int columnId, int rowNumber) const
@@ -454,14 +461,20 @@ void TableListBoxModel::cellClicked (int, int, const MouseEvent&)       {}
 void TableListBoxModel::cellDoubleClicked (int, int, const MouseEvent&) {}
 void TableListBoxModel::backgroundClicked (const MouseEvent&)           {}
 void TableListBoxModel::sortOrderChanged (int, const bool)              {}
-int TableListBoxModel::getColumnAutoSizeWidth (int)                     { return 0; }
+int TableListBoxModel::getColumnAutoSizeWidth (int)                     {
+    return 0;
+}
 void TableListBoxModel::selectedRowsChanged (int)                       {}
 void TableListBoxModel::deleteKeyPressed (int)                          {}
 void TableListBoxModel::returnKeyPressed (int)                          {}
 void TableListBoxModel::listWasScrolled()                               {}
 
-String TableListBoxModel::getCellTooltip (int /*rowNumber*/, int /*columnId*/)    { return String(); }
-var TableListBoxModel::getDragSourceDescription (const SparseSet<int>&)           { return var(); }
+String TableListBoxModel::getCellTooltip (int /*rowNumber*/, int /*columnId*/)    {
+    return String();
+}
+var TableListBoxModel::getDragSourceDescription (const SparseSet<int>&)           {
+    return var();
+}
 
 Component* TableListBoxModel::refreshComponentForCell (int, int, bool, Component* existingComponentToUpdate)
 {

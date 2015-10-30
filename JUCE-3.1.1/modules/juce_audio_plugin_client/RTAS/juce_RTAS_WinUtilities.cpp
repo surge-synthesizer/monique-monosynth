@@ -91,44 +91,44 @@ void JUCE_CALLTYPE resizeHostWindow (void* hostWindow,
 
 namespace
 {
-    HWND findMDIParentOf (HWND w)
+HWND findMDIParentOf (HWND w)
+{
+    const int frameThickness = GetSystemMetrics (SM_CYFIXEDFRAME);
+
+    while (w != 0)
     {
-        const int frameThickness = GetSystemMetrics (SM_CYFIXEDFRAME);
+        HWND parent = GetParent (w);
 
-        while (w != 0)
+        if (parent == 0)
+            break;
+
+        TCHAR windowType [32] = { 0 };
+        GetClassName (parent, windowType, 31);
+
+        if (String (windowType).equalsIgnoreCase ("MDIClient"))
         {
-            HWND parent = GetParent (w);
-
-            if (parent == 0)
-                break;
-
-            TCHAR windowType [32] = { 0 };
-            GetClassName (parent, windowType, 31);
-
-            if (String (windowType).equalsIgnoreCase ("MDIClient"))
-            {
-                w = parent;
-                break;
-            }
-
-            RECT windowPos, parentPos;
-            GetWindowRect (w, &windowPos);
-            GetWindowRect (parent, &parentPos);
-
-            int dw = (parentPos.right - parentPos.left) - (windowPos.right - windowPos.left);
-            int dh = (parentPos.bottom - parentPos.top) - (windowPos.bottom - windowPos.top);
-
-            if (dw > 100 || dh > 100)
-                break;
-
             w = parent;
-
-            if (dw == 2 * frameThickness)
-                break;
+            break;
         }
 
-        return w;
+        RECT windowPos, parentPos;
+        GetWindowRect (w, &windowPos);
+        GetWindowRect (parent, &parentPos);
+
+        int dw = (parentPos.right - parentPos.left) - (windowPos.right - windowPos.left);
+        int dh = (parentPos.bottom - parentPos.top) - (windowPos.bottom - windowPos.top);
+
+        if (dw > 100 || dh > 100)
+            break;
+
+        w = parent;
+
+        if (dw == 2 * frameThickness)
+            break;
     }
+
+    return w;
+}
 }
 
 void JUCE_CALLTYPE passFocusToHostWindow (void* hostWindow)

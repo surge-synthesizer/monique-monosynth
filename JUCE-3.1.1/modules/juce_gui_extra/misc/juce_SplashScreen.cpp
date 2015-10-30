@@ -78,6 +78,6 @@ void SplashScreen::paint (Graphics& g)
 void SplashScreen::timerCallback()
 {
     if (Time::getCurrentTime() > creationTime + minimumVisibleTime
-         || Desktop::getInstance().getMouseButtonClickCounter() > clickCountToDelete)
+            || Desktop::getInstance().getMouseButtonClickCounter() > clickCountToDelete)
         delete this;
 }

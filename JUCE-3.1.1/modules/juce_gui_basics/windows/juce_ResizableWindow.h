@@ -228,7 +228,9 @@ public:
 
         @see setContentOwned, setContentNonOwned
     */
-    Component* getContentComponent() const noexcept                 { return contentComponent; }
+    Component* getContentComponent() const noexcept                 {
+        return contentComponent;
+    }
 
     /** Changes the current content component.
 
@@ -307,8 +309,8 @@ public:
     //==============================================================================
     // Deprecated: use setContentOwned() and setContentNonOwned() instead.
     JUCE_DEPRECATED (void setContentComponent (Component* newContentComponent,
-                                               bool deleteOldOne = true,
-                                               bool resizeToFit = false));
+                     bool deleteOldOne = true,
+                     bool resizeToFit = false));
     using TopLevelWindow::addToDesktop;
 
     //==============================================================================
@@ -351,7 +353,7 @@ protected:
     /** @internal */
     int getDesktopWindowStyleFlags() const override;
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     /** Overridden to warn people about adding components directly to this component
         instead of using setContentOwned().
 
@@ -366,7 +368,7 @@ protected:
         a base-class method call to Component::addAndMakeVisible(), to side-step this warning.
     */
     void addAndMakeVisible (Component*, int zOrder = -1);
-   #endif
+#endif
 public:
     ScopedPointer <ResizableCornerComponent> resizableCorner;
     ScopedPointer <ResizableBorderComponent> resizableBorder;
@@ -379,20 +381,20 @@ private:
     Rectangle<int> lastNonFullScreenPos;
     ComponentBoundsConstrainer defaultConstrainer;
     ComponentBoundsConstrainer* constrainer;
-    #if JUCE_DEBUG
+#if JUCE_DEBUG
     bool hasBeenResized;
-    #endif
+#endif
 
     void initialise (bool addToDesktop);
     void updateLastPosIfNotFullScreen();
     void updateLastPosIfShowing();
     void setContent (Component*, bool takeOwnership, bool resizeToFit);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // The parameters for these methods have changed - please update your code!
     JUCE_DEPRECATED (void getBorderThickness (int& left, int& top, int& right, int& bottom));
     JUCE_DEPRECATED (void getContentComponentBorder (int& left, int& top, int& right, int& bottom));
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ResizableWindow)
 };

@@ -213,7 +213,9 @@ public:
 
         So for example a double-click event will return 2, a triple-click 3, etc.
     */
-    int getNumberOfClicks() const noexcept                              { return numberOfClicks; }
+    int getNumberOfClicks() const noexcept                              {
+        return numberOfClicks;
+    }
 
     /** Returns the time that the mouse button has been held down for.
 

@@ -44,28 +44,28 @@ String SystemStats::getOperatingSystemName()
 
 bool SystemStats::isOperatingSystem64Bit()
 {
-   #if JUCE_64BIT
+#if JUCE_64BIT
     return true;
-   #else
+#else
     //xxx not sure how to find this out?..
     return false;
-   #endif
+#endif
 }
 
 //==============================================================================
 namespace LinuxStatsHelpers
 {
-    String getCpuInfo (const char* const key)
-    {
-        StringArray lines;
-        File ("/proc/cpuinfo").readLines (lines);
+String getCpuInfo (const char* const key)
+{
+    StringArray lines;
+    File ("/proc/cpuinfo").readLines (lines);
 
-        for (int i = lines.size(); --i >= 0;) // (NB - it's important that this runs in reverse order)
-            if (lines[i].upToFirstOccurrenceOf (":", false, false).trim().equalsIgnoreCase (key))
-                return lines[i].fromFirstOccurrenceOf (":", false, false).trim();
+    for (int i = lines.size(); --i >= 0;) // (NB - it's important that this runs in reverse order)
+        if (lines[i].upToFirstOccurrenceOf (":", false, false).trim().equalsIgnoreCase (key))
+            return lines[i].fromFirstOccurrenceOf (":", false, false).trim();
 
-        return String();
-    }
+    return String();
+}
 }
 
 String SystemStats::getDeviceDescription()
@@ -137,9 +137,15 @@ static String getLocaleValue (nl_item key)
     return result;
 }
 
-String SystemStats::getUserLanguage()    { return getLocaleValue (_NL_IDENTIFICATION_LANGUAGE); }
-String SystemStats::getUserRegion()      { return getLocaleValue (_NL_IDENTIFICATION_TERRITORY); }
-String SystemStats::getDisplayLanguage() { return getUserLanguage() + "-" + getUserRegion(); }
+String SystemStats::getUserLanguage()    {
+    return getLocaleValue (_NL_IDENTIFICATION_LANGUAGE);
+}
+String SystemStats::getUserRegion()      {
+    return getLocaleValue (_NL_IDENTIFICATION_TERRITORY);
+}
+String SystemStats::getDisplayLanguage() {
+    return getUserLanguage() + "-" + getUserRegion();
+}
 
 //==============================================================================
 void CPUInformation::initialise() noexcept

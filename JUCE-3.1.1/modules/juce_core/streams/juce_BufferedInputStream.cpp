@@ -28,41 +28,41 @@
 
 namespace
 {
-    int calcBufferStreamBufferSize (int requestedSize, InputStream* const source) noexcept
-    {
-        // You need to supply a real stream when creating a BufferedInputStream
-        jassert (source != nullptr);
+int calcBufferStreamBufferSize (int requestedSize, InputStream* const source) noexcept
+{
+    // You need to supply a real stream when creating a BufferedInputStream
+    jassert (source != nullptr);
 
-        requestedSize = jmax (256, requestedSize);
+    requestedSize = jmax (256, requestedSize);
 
-        const int64 sourceSize = source->getTotalLength();
-        if (sourceSize >= 0 && sourceSize < requestedSize)
-            requestedSize = jmax (32, (int) sourceSize);
+    const int64 sourceSize = source->getTotalLength();
+    if (sourceSize >= 0 && sourceSize < requestedSize)
+        requestedSize = jmax (32, (int) sourceSize);
 
-        return requestedSize;
-    }
+    return requestedSize;
+}
 }
 
 //==============================================================================
 BufferedInputStream::BufferedInputStream (InputStream* const sourceStream, const int bufferSize_,
-                                          const bool deleteSourceWhenDestroyed)
-   : source (sourceStream, deleteSourceWhenDestroyed),
-     bufferSize (calcBufferStreamBufferSize (bufferSize_, sourceStream)),
-     position (sourceStream->getPosition()),
-     lastReadPos (0),
-     bufferStart (position),
-     bufferOverlap (128)
+        const bool deleteSourceWhenDestroyed)
+    : source (sourceStream, deleteSourceWhenDestroyed),
+      bufferSize (calcBufferStreamBufferSize (bufferSize_, sourceStream)),
+      position (sourceStream->getPosition()),
+      lastReadPos (0),
+      bufferStart (position),
+      bufferOverlap (128)
 {
     buffer.malloc ((size_t) bufferSize);
 }
 
 BufferedInputStream::BufferedInputStream (InputStream& sourceStream, const int bufferSize_)
-   : source (&sourceStream, false),
-     bufferSize (calcBufferStreamBufferSize (bufferSize_, &sourceStream)),
-     position (sourceStream.getPosition()),
-     lastReadPos (0),
-     bufferStart (position),
-     bufferOverlap (128)
+    : source (&sourceStream, false),
+      bufferSize (calcBufferStreamBufferSize (bufferSize_, &sourceStream)),
+      position (sourceStream.getPosition()),
+      lastReadPos (0),
+      bufferStart (position),
+      bufferOverlap (128)
 {
     buffer.malloc ((size_t) bufferSize);
 }
@@ -102,8 +102,8 @@ void BufferedInputStream::ensureBuffered()
         int bytesRead;
 
         if (position < lastReadPos
-             && position >= bufferEndOverlap
-             && position >= bufferStart)
+                && position >= bufferEndOverlap
+                && position >= bufferStart)
         {
             const int bytesToKeep = (int) (lastReadPos - position);
             memmove (buffer, buffer + (int) (position - bufferStart), (size_t) bytesToKeep);
@@ -134,7 +134,7 @@ int BufferedInputStream::read (void* destBuffer, int maxBytesToRead)
     jassert (destBuffer != nullptr && maxBytesToRead >= 0);
 
     if (position >= bufferStart
-         && position + maxBytesToRead <= lastReadPos)
+            && position + maxBytesToRead <= lastReadPos)
     {
         memcpy (destBuffer, buffer + (int) (position - bufferStart), (size_t) maxBytesToRead);
         position += maxBytesToRead;
@@ -178,7 +178,7 @@ int BufferedInputStream::read (void* destBuffer, int maxBytesToRead)
 String BufferedInputStream::readString()
 {
     if (position >= bufferStart
-         && position < lastReadPos)
+            && position < lastReadPos)
     {
         const int maxChars = (int) (lastReadPos - position);
 

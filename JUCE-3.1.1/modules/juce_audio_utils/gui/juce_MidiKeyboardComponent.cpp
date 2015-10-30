@@ -582,7 +582,7 @@ void MidiKeyboardComponent::drawBlackNote (int midiNoteNumber,
     String text ("");
     if( midiNoteNumber == root_note )
         text = MidiMessage::getMidiNoteName (midiNoteNumber, true, true, octaveNumForMiddleC);
-    
+
     if (text.isNotEmpty())
     {
         g.setColour (Colour(0xffffffff));

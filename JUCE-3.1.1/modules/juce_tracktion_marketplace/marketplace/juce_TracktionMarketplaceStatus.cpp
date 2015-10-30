@@ -92,9 +92,15 @@ struct KeyFileUtils
         return numbers;
     }
 
-    static String getLicensee (const XmlElement& xml)       { return xml.getStringAttribute ("user"); }
-    static String getEmail (const XmlElement& xml)          { return xml.getStringAttribute ("email"); }
-    static String getAppID (const XmlElement& xml)          { return xml.getStringAttribute ("app"); }
+    static String getLicensee (const XmlElement& xml)       {
+        return xml.getStringAttribute ("user");
+    }
+    static String getEmail (const XmlElement& xml)          {
+        return xml.getStringAttribute ("email");
+    }
+    static String getAppID (const XmlElement& xml)          {
+        return xml.getStringAttribute ("app");
+    }
 
     struct KeyFileData
     {
@@ -184,20 +190,20 @@ void TracktionMarketplaceStatus::save()
 static String getEncodedIDString (const String& input)
 {
     static const char* const platform =
-       #if JUCE_MAC
+#if JUCE_MAC
         "M";
-       #elif JUCE_WINDOWS
+#elif JUCE_WINDOWS
         "W";
-       #elif JUCE_LINUX
+#elif JUCE_LINUX
         "L";
-       #elif JUCE_IOS
+#elif JUCE_IOS
         "I";
-       #elif JUCE_ANDROID
+#elif JUCE_ANDROID
         "A";
-       #endif
+#endif
 
     return platform + MD5 ((input + "salt_1" + platform).toUTF8())
-                        .toHexString().substring (0, 9).toUpperCase();
+           .toHexString().substring (0, 9).toUpperCase();
 }
 
 StringArray TracktionMarketplaceStatus::getLocalMachineIDs()
@@ -207,11 +213,11 @@ StringArray TracktionMarketplaceStatus::getLocalMachineIDs()
     // First choice for an ID number is a filesystem ID for the user's home
     // folder or windows directory.
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     uint64 num = File::getSpecialLocation (File::windowsSystemDirectory).getFileIdentifier();
-   #else
+#else
     uint64 num = File ("~").getFileIdentifier();
-   #endif
+#endif
 
     if (num != 0)
     {
@@ -317,7 +323,7 @@ TracktionMarketplaceStatus::UnlockResult TracktionMarketplaceStatus::handleXmlRe
 
     if (r.errorMessage.isEmpty() && r.informativeMessage.isEmpty() && r.urlToLaunch.isEmpty() && ! r.succeeded)
         r.errorMessage = TRANS ("Unexpected or corrupted reply from XYZ").replace ("XYZ", getWebsiteName()) + "...\n\n"
-                            + TRANS("Please try again in a few minutes, and contact us for support if this message appears again.");
+                         + TRANS("Please try again in a few minutes, and contact us for support if this message appears again.");
 
     return r;
 }
@@ -342,17 +348,17 @@ TracktionMarketplaceStatus::UnlockResult TracktionMarketplaceStatus::handleFaile
 }
 
 TracktionMarketplaceStatus::UnlockResult TracktionMarketplaceStatus::attemptWebserverUnlock (const String& email,
-                                                                                             const String& password)
+        const String& password)
 {
     // This method will block while it contacts the server, so you must run it on a background thread!
     jassert (! MessageManager::getInstance()->isThisTheMessageThread());
 
     URL url (getServerAuthenticationURL()
-                .withParameter ("product", getMarketplaceProductID())
-                .withParameter ("email", email)
-                .withParameter ("pw", password)
-                .withParameter ("os", SystemStats::getOperatingSystemName())
-                .withParameter ("mach", getLocalMachineIDs()[0]));
+             .withParameter ("product", getMarketplaceProductID())
+             .withParameter ("email", email)
+             .withParameter ("pw", password)
+             .withParameter ("os", SystemStats::getOperatingSystemName())
+             .withParameter ("mach", getLocalMachineIDs()[0]));
 
     DBG ("Trying to unlock via URL: " << url.toString (true));
 
@@ -370,10 +376,10 @@ TracktionMarketplaceStatus::UnlockResult TracktionMarketplaceStatus::attemptWebs
 
 //==============================================================================
 String TracktionMarketplaceKeyGeneration::generateKeyFile (const String& appName,
-                                                           const String& userEmail,
-                                                           const String& userName,
-                                                           const String& machineNumbers,
-                                                           const RSAKey& privateKey)
+        const String& userEmail,
+        const String& userName,
+        const String& machineNumbers,
+        const RSAKey& privateKey)
 {
     XmlElement xml ("key");
 

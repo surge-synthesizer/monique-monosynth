@@ -184,9 +184,9 @@ public:
         jassert (rangeToRemove.getLength() >= 0);
 
         if (rangeToRemove.getLength() > 0
-             && values.size() > 0
-             && rangeToRemove.getStart() < values.getUnchecked (values.size() - 1)
-             && values.getUnchecked(0) < rangeToRemove.getEnd())
+                && values.size() > 0
+                && rangeToRemove.getStart() < values.getUnchecked (values.size() - 1)
+                && values.getUnchecked(0) < rangeToRemove.getEnd())
         {
             const bool onAtStart = contains (rangeToRemove.getStart() - 1);
             const Type lastValue (jmin (rangeToRemove.getEnd(), values.getLast()));
@@ -259,7 +259,7 @@ public:
                     return false;
 
                 if (values.getUnchecked (i << 1) <= range.getStart()
-                     && range.getEnd() <= values.getUnchecked ((i << 1) + 1))
+                        && range.getEnd() <= values.getUnchecked ((i << 1) + 1))
                     return true;
             }
         }

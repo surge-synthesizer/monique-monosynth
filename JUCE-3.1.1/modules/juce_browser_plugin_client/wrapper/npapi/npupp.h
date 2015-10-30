@@ -337,8 +337,8 @@ typedef NPIdentifier (* NP_LOADDS NPN_GetStringIdentifierUPP)(const NPUTF8* name
 
 /* NPN_GetStringIdentifiers */
 typedef void (* NP_LOADDS NPN_GetStringIdentifiersUPP)(const NPUTF8** names,
-                                                 int32_t nameCount,
-                                                 NPIdentifier* identifiers);
+        int32_t nameCount,
+        NPIdentifier* identifiers);
 #define NewNPN_GetStringIdentifiersProc(FUNC)		\
 		((NPN_GetStringIdentifiersUPP) (FUNC))
 #define CallNPN_GetStringIdentifiersProc(FUNC, ARG1, ARG2, ARG3)		\
@@ -602,18 +602,18 @@ typedef NPError (* NP_LOADDS NPP_MainEntryUPP)(NPNetscapeFuncs*, NPPluginFuncs*,
 
 enum
 {
- kBPSupportedMIMETypesStructVers_1    = 1
+    kBPSupportedMIMETypesStructVers_1    = 1
 };
 
 typedef struct _BPSupportedMIMETypes
 {
- SInt32    structVersion;      /* struct version */
- Handle    typeStrings;        /* STR# formated handle, allocated by plug-in */
- Handle    infoStrings;        /* STR# formated handle, allocated by plug-in */
+    SInt32    structVersion;      /* struct version */
+    Handle    typeStrings;        /* STR# formated handle, allocated by plug-in */
+    Handle    infoStrings;        /* STR# formated handle, allocated by plug-in */
 } BPSupportedMIMETypes;
 OSErr BP_GetSupportedMIMETypes(BPSupportedMIMETypes *mimeInfo, UInt32 flags);
 
- /* NP_GetMIMEDescription */
+/* NP_GetMIMEDescription */
 #define NP_GETMIMEDESCRIPTION_NAME "NP_GetMIMEDescription"
 typedef const char* (* NP_LOADDS NP_GetMIMEDescriptionUPP)();
 #define NewNP_GetMIMEDescEntryProc(FUNC)		\

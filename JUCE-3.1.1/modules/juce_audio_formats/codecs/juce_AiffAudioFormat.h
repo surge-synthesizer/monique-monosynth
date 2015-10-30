@@ -62,9 +62,9 @@ public:
     bool canDoStereo() override;
     bool canDoMono() override;
 
-   #if JUCE_MAC
+#if JUCE_MAC
     bool canHandleFile (const File& fileToTest) override;
-   #endif
+#endif
 
     //==============================================================================
     AudioFormatReader* createReaderFor (InputStream* sourceStream,

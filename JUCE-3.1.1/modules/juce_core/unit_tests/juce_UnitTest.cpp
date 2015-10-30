@@ -256,5 +256,7 @@ void UnitTestRunner::addFail (const String& failureMessage)
 
     resultsUpdated();
 
-    if (assertOnFailure) { jassertfalse; }
+    if (assertOnFailure) {
+        jassertfalse;
+    }
 }

@@ -33,8 +33,12 @@ void Logger::outputDebugString (const String& text)
 
 //==============================================================================
 #ifdef JUCE_DLL_BUILD
- JUCE_API void* juceDLL_malloc (size_t sz)    { return std::malloc (sz); }
- JUCE_API void  juceDLL_free (void* block)    { std::free (block); }
+JUCE_API void* juceDLL_malloc (size_t sz)    {
+    return std::malloc (sz);
+}
+JUCE_API void  juceDLL_free (void* block)    {
+    std::free (block);
+}
 #endif
 
 //==============================================================================
@@ -54,13 +58,13 @@ static void callCPUID (int result[4], int infoType)
 
 static void callCPUID (int result[4], int infoType)
 {
-   #if ! JUCE_MINGW
+#if ! JUCE_MINGW
     __try
-   #endif
+#endif
     {
-       #if JUCE_GCC
+#if JUCE_GCC
         __asm__ __volatile__ ("cpuid" : "=a" (result[0]), "=b" (result[1]), "=c" (result[2]),"=d" (result[3]) : "a" (infoType));
-       #else
+#else
         __asm
         {
             mov    esi, result
@@ -72,11 +76,11 @@ static void callCPUID (int result[4], int infoType)
             mov    dword ptr [esi +  8], ecx
             mov    dword ptr [esi + 12], edx
         }
-       #endif
+#endif
     }
-   #if ! JUCE_MINGW
+#if ! JUCE_MINGW
     __except (EXCEPTION_EXECUTE_HANDLER) {}
-   #endif
+#endif
 }
 
 #endif
@@ -137,11 +141,20 @@ static bool isWindowsVersionOrLater (SystemStats::OperatingSystemType target)
 
         switch (target)
         {
-            case SystemStats::WinVista:    break;
-            case SystemStats::Windows7:    info.dwMinorVersion = 1; break;
-            case SystemStats::Windows8_0:  info.dwMinorVersion = 2; break;
-            case SystemStats::Windows8_1:  info.dwMinorVersion = 3; break;
-            default:                       jassertfalse; break;
+        case SystemStats::WinVista:
+            break;
+        case SystemStats::Windows7:
+            info.dwMinorVersion = 1;
+            break;
+        case SystemStats::Windows8_0:
+            info.dwMinorVersion = 2;
+            break;
+        case SystemStats::Windows8_1:
+            info.dwMinorVersion = 3;
+            break;
+        default:
+            jassertfalse;
+            break;
         }
     }
     else
@@ -159,14 +172,14 @@ static bool isWindowsVersionOrLater (SystemStats::OperatingSystemType target)
 
     return VerifyVersionInfo (&info,
                               VER_MAJORVERSION | VER_MINORVERSION
-                               | VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR,
+                              | VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR,
                               mask) != FALSE;
 }
 
 SystemStats::OperatingSystemType SystemStats::getOperatingSystemType()
 {
     const SystemStats::OperatingSystemType types[]
-            = { Windows8_1, Windows8_0, Windows7, WinVista, WinXP, Win2000 };
+        = { Windows8_1, Windows8_0, Windows7, WinVista, WinXP, Win2000 };
 
     for (int i = 0; i < numElementsInArray (types); ++i)
         if (isWindowsVersionOrLater (types[i]))
@@ -182,13 +195,27 @@ String SystemStats::getOperatingSystemName()
 
     switch (getOperatingSystemType())
     {
-        case Windows8_1:        name = "Windows 8.1";       break;
-        case Windows8_0:        name = "Windows 8.0";       break;
-        case Windows7:          name = "Windows 7";         break;
-        case WinVista:          name = "Windows Vista";     break;
-        case WinXP:             name = "Windows XP";        break;
-        case Win2000:           name = "Windows 2000";      break;
-        default:                jassertfalse; break; // !! new type of OS?
+    case Windows8_1:
+        name = "Windows 8.1";
+        break;
+    case Windows8_0:
+        name = "Windows 8.0";
+        break;
+    case Windows7:
+        name = "Windows 7";
+        break;
+    case WinVista:
+        name = "Windows Vista";
+        break;
+    case WinXP:
+        name = "Windows XP";
+        break;
+    case Win2000:
+        name = "Windows 2000";
+        break;
+    default:
+        jassertfalse;
+        break; // !! new type of OS?
     }
 
     return name;
@@ -201,9 +228,9 @@ String SystemStats::getDeviceDescription()
 
 bool SystemStats::isOperatingSystem64Bit()
 {
-   #if JUCE_64BIT
+#if JUCE_64BIT
     return true;
-   #else
+#else
     typedef BOOL (WINAPI* LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
 
     LPFN_ISWOW64PROCESS fnIsWow64Process
@@ -212,9 +239,9 @@ bool SystemStats::isOperatingSystem64Bit()
     BOOL isWow64 = FALSE;
 
     return fnIsWow64Process != nullptr
-            && fnIsWow64Process (GetCurrentProcess(), &isWow64)
-            && isWow64 != FALSE;
-   #endif
+           && fnIsWow64Process (GetCurrentProcess(), &isWow64)
+           && isWow64 != FALSE;
+#endif
 }
 
 //==============================================================================
@@ -261,15 +288,15 @@ public:
         // app less demanding on the CPU.
         // For more info, see win32 documentation about the timeBeginPeriod
         // function.
-       #ifndef JUCE_WIN32_TIMER_PERIOD
-        #define JUCE_WIN32_TIMER_PERIOD 1
-       #endif
+#ifndef JUCE_WIN32_TIMER_PERIOD
+#define JUCE_WIN32_TIMER_PERIOD 1
+#endif
 
-       #if JUCE_WIN32_TIMER_PERIOD > 0
+#if JUCE_WIN32_TIMER_PERIOD > 0
         const MMRESULT res = timeBeginPeriod (JUCE_WIN32_TIMER_PERIOD);
         (void) res;
         jassert (res == TIMERR_NOERROR);
-       #endif
+#endif
 
         LARGE_INTEGER f;
         QueryPerformanceFrequency (&f);
@@ -313,11 +340,11 @@ double Time::getMillisecondCounterHiRes() noexcept       { return hiResCounterHa
 //==============================================================================
 static int64 juce_getClockCycleCounter() noexcept
 {
-   #if JUCE_USE_MSVC_INTRINSICS
+#if JUCE_USE_MSVC_INTRINSICS
     // MS intrinsics version...
     return (int64) __rdtsc();
 
-   #elif JUCE_GCC
+#elif JUCE_GCC
     // GNU inline asm version...
     unsigned int hi = 0, lo = 0;
 
@@ -327,13 +354,13 @@ static int64 juce_getClockCycleCounter() noexcept
          rdtsc                          \n\
          movl %%eax, %[lo]              \n\
          movl %%edx, %[hi]"
-         :
-         : [hi] "m" (hi),
-           [lo] "m" (lo)
-         : "cc", "eax", "ebx", "ecx", "edx", "memory");
+        :
+        : [hi] "m" (hi),
+        [lo] "m" (lo)
+        : "cc", "eax", "ebx", "ecx", "edx", "memory");
 
     return (int64) ((((uint64) hi) << 32) | lo);
-   #else
+#else
     // MSVC inline asm version...
     unsigned int hi = 0, lo = 0;
 
@@ -347,7 +374,7 @@ static int64 juce_getClockCycleCounter() noexcept
     }
 
     return (int64) ((((uint64) hi) << 32) | lo);
-   #endif
+#endif
 }
 
 int SystemStats::getCpuSpeedInMegaherz()
@@ -394,7 +421,7 @@ bool Time::setSystemTimeToThisTime() const
     // do this twice because of daylight saving conversion problems - the
     // first one sets it up, the second one kicks it in.
     return SetLocalTime (&st) != 0
-            && SetLocalTime (&st) != 0;
+           && SetLocalTime (&st) != 0;
 }
 
 int SystemStats::getPageSize()
@@ -436,8 +463,12 @@ static String getLocaleValue (LCID locale, LCTYPE key, const char* defaultValue)
     return defaultValue;
 }
 
-String SystemStats::getUserLanguage()     { return getLocaleValue (LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME,  "en"); }
-String SystemStats::getUserRegion()       { return getLocaleValue (LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, "US"); }
+String SystemStats::getUserLanguage()     {
+    return getLocaleValue (LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME,  "en");
+}
+String SystemStats::getUserRegion()       {
+    return getLocaleValue (LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, "US");
+}
 
 String SystemStats::getDisplayLanguage()
 {

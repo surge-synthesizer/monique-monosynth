@@ -65,7 +65,9 @@ public:
 
     //==============================================================================
     /** Returns the file that this logger is writing to. */
-    const File& getLogFile() const noexcept               { return logFile; }
+    const File& getLogFile() const noexcept               {
+        return logFile;
+    }
 
     //==============================================================================
     /** Helper function to create a log file in the correct place for this platform.
@@ -80,9 +82,9 @@ public:
         @param maxInitialFileSizeBytes      (see the FileLogger constructor for more info on this)
     */
     static FileLogger* createDefaultAppLogger (const String& logFileSubDirectoryName,
-                                               const String& logFileName,
-                                               const String& welcomeMessage,
-                                               const int64 maxInitialFileSizeBytes = 128 * 1024);
+            const String& logFileName,
+            const String& welcomeMessage,
+            const int64 maxInitialFileSizeBytes = 128 * 1024);
 
     /** Helper function to create a log file in the correct place for this platform.
 
@@ -101,9 +103,9 @@ public:
         @param welcomeMessage               a message that will be written to the log when it's opened.
     */
     static FileLogger* createDateStampedLogger (const String& logFileSubDirectoryName,
-                                                const String& logFileNameRoot,
-                                                const String& logFileNameSuffix,
-                                                const String& welcomeMessage);
+            const String& logFileNameRoot,
+            const String& logFileNameSuffix,
+            const String& welcomeMessage);
 
     //==============================================================================
     /** Returns an OS-specific folder where log-files should be stored.

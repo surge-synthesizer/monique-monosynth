@@ -136,7 +136,7 @@ public:
         */
         DialogWindow* create();
 
-       #if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
+#if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
         /** Launches and runs the dialog modally, returning the status code that was
             used to terminate the modal loop.
 
@@ -144,7 +144,7 @@ public:
             use launchAsync() instead of this method.
         */
         int runModal();
-       #endif
+#endif
     };
 
     //==============================================================================
@@ -195,7 +195,7 @@ public:
                             bool shouldBeResizable = false,
                             bool useBottomRightCornerResizer = false);
 
-   #if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
+#if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
     /** Easy way of quickly showing a dialog box containing a given component.
 
         Note: this method has been superceded by the DialogWindow::LaunchOptions structure,
@@ -242,7 +242,7 @@ public:
                                 bool escapeKeyTriggersCloseButton,
                                 bool shouldBeResizable = false,
                                 bool useBottomRightCornerResizer = false);
-   #endif
+#endif
 
 
 protected:

@@ -30,9 +30,9 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_OptionPopup::refresh() noexcept
 {
-    ComponentColours& colours = look_and_feel->colours;
-    Colour button_off = colours.button_off_colour;
-    Colour button_on = colours.button_on_colour;
+    SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::POPUP_THEME );
+    Colour button_off = theme.button_off_colour;
+    Colour button_on = theme.button_on_colour;
     button_option_a->setColour( TextButton::buttonColourId, param_a->get_value() ? button_on : button_off );
     button_option_b->setColour( TextButton::buttonColourId, param_b->get_value() ? button_on : button_off );
 }

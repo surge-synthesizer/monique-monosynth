@@ -24,7 +24,7 @@
 
 /** Keeps track of the active top level window. */
 class TopLevelWindowManager  : private Timer,
-                               private DeletedAtShutdown
+    private DeletedAtShutdown
 {
 public:
     TopLevelWindowManager()  : currentActive (nullptr)
@@ -95,9 +95,9 @@ private:
     bool isWindowActive (TopLevelWindow* const tlw) const
     {
         return (tlw == currentActive
-                 || tlw->isParentOf (currentActive)
-                 || tlw->hasKeyboardFocus (true))
-                && tlw->isShowing();
+                || tlw->isParentOf (currentActive)
+                || tlw->hasKeyboardFocus (true))
+               && tlw->isShowing();
     }
 
     TopLevelWindow* findCurrentlyActiveWindow() const
@@ -191,7 +191,7 @@ void TopLevelWindow::visibilityChanged()
     if (isShowing())
         if (ComponentPeer* p = getPeer())
             if ((p->getStyleFlags() & (ComponentPeer::windowIsTemporary
-                                        | ComponentPeer::windowIgnoresKeyPresses)) == 0)
+                                       | ComponentPeer::windowIgnoresKeyPresses)) == 0)
                 toFront (true);
 }
 
@@ -277,7 +277,7 @@ void TopLevelWindow::addToDesktop (int windowStyleFlags, void* nativeWindowToAtt
     */
 
     jassert ((windowStyleFlags & ~ComponentPeer::windowIsSemiTransparent)
-               == (getDesktopWindowStyleFlags() & ~ComponentPeer::windowIsSemiTransparent));
+             == (getDesktopWindowStyleFlags() & ~ComponentPeer::windowIsSemiTransparent));
 
     Component::addToDesktop (windowStyleFlags, nativeWindowToAttachTo);
 
@@ -309,7 +309,7 @@ void TopLevelWindow::centreAroundComponent (Component* c, const int width, const
         setBounds (Rectangle<int> (targetCentre.x - width / 2,
                                    targetCentre.y - height / 2,
                                    width, height)
-                     .constrainedWithin (parentArea.reduced (12, 12)));
+                   .constrainedWithin (parentArea.reduced (12, 12)));
     }
 }
 

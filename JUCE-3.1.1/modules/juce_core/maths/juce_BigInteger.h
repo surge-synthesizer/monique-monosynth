@@ -67,10 +67,10 @@ public:
     /** Creates a copy of another BigInteger. */
     BigInteger (const BigInteger&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     BigInteger (BigInteger&&) noexcept;
     BigInteger& operator= (BigInteger&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~BigInteger();
@@ -326,8 +326,8 @@ OutputStream& JUCE_CALLTYPE operator<< (OutputStream& stream, const BigInteger& 
 
 //==============================================================================
 #ifndef DOXYGEN
- // For backwards compatibility, BitArray is defined as an alias for BigInteger.
- typedef BigInteger BitArray;
+// For backwards compatibility, BitArray is defined as an alias for BigInteger.
+typedef BigInteger BitArray;
 #endif
 
 

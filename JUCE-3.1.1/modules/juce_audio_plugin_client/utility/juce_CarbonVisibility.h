@@ -38,9 +38,15 @@ static pascal OSStatus windowVisibilityBodge (EventHandlerCallRef, EventRef e, v
 
     switch (GetEventKind (e))
     {
-        case kEventWindowInit:    [hostWindow display]; break;
-        case kEventWindowShown:   [hostWindow orderFront: nil]; break;
-        case kEventWindowHidden:  [hostWindow orderOut: nil]; break;
+    case kEventWindowInit:
+        [hostWindow display];
+        break;
+    case kEventWindowShown:
+[hostWindow orderFront: nil];
+        break;
+    case kEventWindowHidden:
+[hostWindow orderOut: nil];
+        break;
     }
 
     return eventNotHandledErr;
@@ -68,12 +74,12 @@ static void removeWindowHidingHooks (Component* comp)
 {
     if (comp != nullptr)
         RemoveEventHandler ((EventHandlerRef) (void*) (pointer_sized_int)
-                              comp->getProperties() ["carbonEventRef"].toString().getHexValue64());
+                            comp->getProperties() ["carbonEventRef"].toString().getHexValue64());
 }
 
 #elif JUCE_MAC
- static void attachWindowHidingHooks (void*, void*, void*) {}
- static void removeWindowHidingHooks (void*) {}
+static void attachWindowHidingHooks (void*, void*, void*) {}
+static void removeWindowHidingHooks (void*) {}
 #endif
 
 #endif   // JUCE_CARBONVISIBILITY_H_INCLUDED

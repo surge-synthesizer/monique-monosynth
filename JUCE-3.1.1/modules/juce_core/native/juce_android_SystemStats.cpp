@@ -106,14 +106,14 @@ static bool systemInitialised = false;
 
 JNIEnv* getEnv() noexcept
 {
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     if (! systemInitialised)
     {
         DBG ("*** Call to getEnv() when system not initialised");
         jassertfalse;
         std::exit (EXIT_FAILURE);
     }
-   #endif
+#endif
 
     return threadLocalJNIEnvHolder.getOrAttach();
 }
@@ -135,9 +135,9 @@ void AndroidSystem::initialise (JNIEnv* env, jobject act, jstring file, jstring 
     JNIClassBase::initialiseAllClasses (env);
 
     threadLocalJNIEnvHolder.initialise (env);
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     systemInitialised = true;
-   #endif
+#endif
 
     activity = GlobalRef (act);
     appFile = juceString (env, file);
@@ -148,9 +148,9 @@ void AndroidSystem::shutdown (JNIEnv* env)
 {
     activity.clear();
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     systemInitialised = false;
-   #endif
+#endif
 
     JNIClassBase::releaseAllClasses (env);
 }
@@ -160,35 +160,35 @@ AndroidSystem android;
 //==============================================================================
 namespace AndroidStatsHelpers
 {
-    #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
+#define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD) \
      STATICMETHOD (getProperty, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;")
 
-    DECLARE_JNI_CLASS (SystemClass, "java/lang/System");
-    #undef JNI_CLASS_MEMBERS
+DECLARE_JNI_CLASS (SystemClass, "java/lang/System");
+#undef JNI_CLASS_MEMBERS
 
-    String getSystemProperty (const String& name)
-    {
-        return juceString (LocalRef<jstring> ((jstring) getEnv()->CallStaticObjectMethod (SystemClass,
-                                                                                          SystemClass.getProperty,
-                                                                                          javaString (name).get())));
-    }
+String getSystemProperty (const String& name)
+{
+    return juceString (LocalRef<jstring> ((jstring) getEnv()->CallStaticObjectMethod (SystemClass,
+                                          SystemClass.getProperty,
+                                          javaString (name).get())));
+}
 
-    String getLocaleValue (bool isRegion)
-    {
-        return juceString (LocalRef<jstring> ((jstring) getEnv()->CallStaticObjectMethod (JuceAppActivity,
-                                                                                          JuceAppActivity.getLocaleValue,
-                                                                                          isRegion)));
-    }
+String getLocaleValue (bool isRegion)
+{
+    return juceString (LocalRef<jstring> ((jstring) getEnv()->CallStaticObjectMethod (JuceAppActivity,
+                                          JuceAppActivity.getLocaleValue,
+                                          isRegion)));
+}
 
-    #define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD)
-    DECLARE_JNI_CLASS (BuildClass, "android/os/Build");
-    #undef JNI_CLASS_MEMBERS
+#define JNI_CLASS_MEMBERS(METHOD, STATICMETHOD, FIELD, STATICFIELD)
+DECLARE_JNI_CLASS (BuildClass, "android/os/Build");
+#undef JNI_CLASS_MEMBERS
 
-    String getAndroidOsBuildValue (const char* fieldName)
-    {
-        return juceString (LocalRef<jstring> ((jstring) getEnv()->GetStaticObjectField (
-                            BuildClass, getEnv()->GetStaticFieldID (BuildClass, fieldName, "Ljava/lang/String;"))));
-    }
+String getAndroidOsBuildValue (const char* fieldName)
+{
+    return juceString (LocalRef<jstring> ((jstring) getEnv()->GetStaticObjectField (
+            BuildClass, getEnv()->GetStaticFieldID (BuildClass, fieldName, "Ljava/lang/String;"))));
+}
 }
 
 //==============================================================================
@@ -205,16 +205,16 @@ String SystemStats::getOperatingSystemName()
 String SystemStats::getDeviceDescription()
 {
     return AndroidStatsHelpers::getAndroidOsBuildValue ("MODEL")
-            + "-" + AndroidStatsHelpers::getAndroidOsBuildValue ("SERIAL");
+           + "-" + AndroidStatsHelpers::getAndroidOsBuildValue ("SERIAL");
 }
 
 bool SystemStats::isOperatingSystem64Bit()
 {
-   #if JUCE_64BIT
+#if JUCE_64BIT
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 String SystemStats::getCpuVendor()
@@ -229,12 +229,12 @@ int SystemStats::getCpuSpeedInMegaherz()
 
 int SystemStats::getMemorySizeInMegabytes()
 {
-   #if __ANDROID_API__ >= 9
+#if __ANDROID_API__ >= 9
     struct sysinfo sysi;
 
     if (sysinfo (&sysi) == 0)
         return (sysi.totalram * sysi.mem_unit / (1024 * 1024));
-   #endif
+#endif
 
     return 0;
 }
@@ -271,9 +271,15 @@ String SystemStats::getComputerName()
 }
 
 
-String SystemStats::getUserLanguage()    { return AndroidStatsHelpers::getLocaleValue (false); }
-String SystemStats::getUserRegion()      { return AndroidStatsHelpers::getLocaleValue (true); }
-String SystemStats::getDisplayLanguage() { return getUserLanguage() + "-" + getUserRegion(); }
+String SystemStats::getUserLanguage()    {
+    return AndroidStatsHelpers::getLocaleValue (false);
+}
+String SystemStats::getUserRegion()      {
+    return AndroidStatsHelpers::getLocaleValue (true);
+}
+String SystemStats::getDisplayLanguage() {
+    return getUserLanguage() + "-" + getUserRegion();
+}
 
 //==============================================================================
 void CPUInformation::initialise() noexcept

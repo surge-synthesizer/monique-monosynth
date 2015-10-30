@@ -61,10 +61,10 @@ void AudioSourcePlayer::setGain (const float newGain) noexcept
 }
 
 void AudioSourcePlayer::audioDeviceIOCallback (const float** inputChannelData,
-                                               int totalNumInputChannels,
-                                               float** outputChannelData,
-                                               int totalNumOutputChannels,
-                                               int numSamples)
+        int totalNumInputChannels,
+        float** outputChannelData,
+        int totalNumOutputChannels,
+        int numSamples)
 {
     // these should have been prepared by audioDeviceAboutToStart()...
     jassert (sampleRate > 0 && bufferSize > 0);

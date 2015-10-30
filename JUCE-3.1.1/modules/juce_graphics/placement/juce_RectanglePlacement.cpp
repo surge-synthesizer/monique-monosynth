@@ -23,7 +23,8 @@
 */
 
 RectanglePlacement::RectanglePlacement (const RectanglePlacement& other) noexcept
-    : flags (other.flags)
+:
+flags (other.flags)
 {
 }
 
@@ -59,7 +60,7 @@ void RectanglePlacement::applyTo (double& x, double& y, double& w, double& h,
     else
     {
         double scale = (flags & fillDestination) != 0 ? jmax (dw / w, dh / h)
-                                                      : jmin (dw / w, dh / h);
+                       : jmin (dw / w, dh / h);
 
         if ((flags & onlyReduceInSize) != 0)
             scale = jmin (scale, 1.0);
@@ -100,7 +101,7 @@ AffineTransform RectanglePlacement::getTransformToFit (const Rectangle<float>& s
     if ((flags & stretchToFit) == 0)
     {
         scaleX = (flags & fillDestination) != 0 ? jmax (scaleX, scaleY)
-                                                : jmin (scaleX, scaleY);
+                 : jmin (scaleX, scaleY);
 
         if ((flags & onlyReduceInSize) != 0)
             scaleX = jmin (scaleX, 1.0f);
@@ -122,6 +123,6 @@ AffineTransform RectanglePlacement::getTransformToFit (const Rectangle<float>& s
     }
 
     return AffineTransform::translation (-source.getX(), -source.getY())
-                .scaled (scaleX, scaleY)
-                .translated (newX, newY);
+           .scaled (scaleX, scaleY)
+           .translated (newX, newY);
 }

@@ -241,6 +241,10 @@ class WAVESlConfig : public ModulationSliderConfigBase
     {
         return false;
     }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::OSC_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -369,6 +373,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
 public:
     WAVESlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        ModulationSliderConfigBase(6),
         id(id_),
         wave( &synth_data_->osc_datas[id_]->wave ),
         fm_amount( &synth_data_->osc_datas[id_]->fm_amount ),
@@ -409,6 +414,10 @@ class OSCSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::OSC_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -599,11 +608,12 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        ModulationSliderConfigBase(6),
         id(id_),
         front_param( id == 0 ? &synth_data_->fm_osc_data->master_shift : &synth_data_->osc_datas[id_]->tune ),
         is_lfo_modulated( &synth_data_->osc_datas[id_]->is_lfo_modulated ),
         top_text( String("L-MOD") ),
-        bottom_text( id_ == 0 ? String("PHASE") : String("TUNE-") + String(id_+1) ),
+        bottom_text( id_ == 0 ? String("PHASE") : String("TUNE") ),
 
         synth_data( synth_data_ )
     {}
@@ -631,6 +641,10 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return false;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FM_THEME;
     }
 
     //==============================================================================
@@ -762,6 +776,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig(MoniqueSynthData*const synth_data_)
         :
+        ModulationSliderConfigBase( 1 ),
         fm_freq( &synth_data_->fm_osc_data->fm_freq ),
         fm_shape( &synth_data_->fm_osc_data->fm_shape ),
         sync( &synth_data_->fm_osc_data->sync )
@@ -791,6 +806,10 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FM_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -899,6 +918,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig(MoniqueSynthData*const synth_data_)
         :
+        ModulationSliderConfigBase( 1 ),
         fm_swing( &synth_data_->fm_osc_data->fm_swing )
     {}
 
@@ -1185,7 +1205,7 @@ class GForceSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "DESTROY";
+        return "DIST";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -1260,7 +1280,6 @@ public:
 class FAttackSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const attack;
-    Parameter*const max_attack_time;
 
     const bool is_main_adsr;
 
@@ -1269,6 +1288,17 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
     }
 
     //==============================================================================
@@ -1294,6 +1324,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -1303,6 +1334,7 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     {
         return max_attack_time;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -1329,13 +1361,13 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "ATTACK";
+        return "ATT";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "RANGE";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -1350,23 +1382,18 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( not attack->midi_control->get_ctrl_mode() )
-        {
-            return String( auto_round( MIN_ENV_TIMES + attack->get_value() * max_attack_time->get_value()) );
-        }
-        else
-        {
-            return String(max_attack_time->get_value());
-        }
+        return String( auto_round( MIN_ENV_TIMES + attack->get_value() * MAX_ENV_TIMES ) );
     }
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
     }
+    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
         return (entered_value_-MIN_ENV_TIMES)/max_attack_time->get_value();
     }
+    */
 
     //==============================================================================
     // TOOLTIP
@@ -1390,27 +1417,17 @@ class FAttackSlConfig : public ModulationSliderConfigBase
 
         is_main_adsr
     )
-    BOTTOM_BUTTON_SLIDERS
-    (
-        "ATTACK",
-        "MAX ATTACK"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the the maximum, adjustable attack time for the front slider."
-    )
 
 public:
     FAttackSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         attack( &synth_data_->filter_datas[id_]->env_data->attack ),
-        max_attack_time( &synth_data_->filter_datas[id_]->env_data->max_attack_time ),
         is_main_adsr(false)
     {}
     FAttackSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         attack( &synth_data_->env_data->attack ),
-        max_attack_time( &synth_data_->env_data->max_attack_time ),
         is_main_adsr(true)
     {}
 
@@ -1428,7 +1445,6 @@ public:
 class FDecaySlConfig : public ModulationSliderConfigBase
 {
     Parameter*const decay;
-    Parameter*const max_decay_time;
 
     const bool is_main_adsr;
 
@@ -1437,6 +1453,17 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
     }
 
     //==============================================================================
@@ -1462,6 +1489,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -1471,6 +1499,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     {
         return max_decay_time;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -1497,13 +1526,13 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "DECAY";
+        return "DEC";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "RANGE";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -1518,20 +1547,14 @@ class FDecaySlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        if( not decay->midi_control->get_ctrl_mode() )
+        float value = decay->get_value();
+        if( value > 0 )
         {
-            if( decay->get_value() > 0 )
-            {
-                return String( auto_round(decay->get_value() * max_decay_time->get_value()) + MIN_ENV_TIMES );
-            }
-            else
-            {
-                return String( "off" );
-            }
+            return String( auto_round( value * (MAX_ENV_TIMES+MIN_ENV_TIMES) ));
         }
         else
         {
-            return String(max_decay_time->get_value());
+            return "OFF";
         }
     }
     StringRef get_center_suffix() const noexcept override
@@ -1545,10 +1568,12 @@ class FDecaySlConfig : public ModulationSliderConfigBase
             return "";
         }
     }
+    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
         return (entered_value_)/max_decay_time->get_value();
     }
+    */
 
     //==============================================================================
     // TOOLTIP
@@ -1572,27 +1597,17 @@ class FDecaySlConfig : public ModulationSliderConfigBase
 
         is_main_adsr
     )
-    BOTTOM_BUTTON_SLIDERS
-    (
-        "DECAY",
-        "MAX DECAY"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the the maximum, adjustable decay time for the front slider."
-    )
 
 public:
     FDecaySlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         decay( &synth_data_->filter_datas[id_]->env_data->decay ),
-        max_decay_time( &synth_data_->filter_datas[id_]->env_data->max_decay_time ),
         is_main_adsr(false)
     {}
     FDecaySlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         decay( &synth_data_->env_data->decay ),
-        max_decay_time( &synth_data_->env_data->max_decay_time ),
         is_main_adsr(true)
     {}
 
@@ -1618,6 +1633,17 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
     }
 
     //==============================================================================
@@ -1680,7 +1706,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "SUSTAIN";
+        return "SUS";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -1737,7 +1763,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
 
 public:
     FSustainSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain( &synth_data_->filter_datas[id_]->env_data->sustain ), is_main_adsr(false) {}
-    FSustainSlConfig( MoniqueSynthData*const synth_data_ ) : sustain( &synth_data_->env_data->sustain ), is_main_adsr(true) {}
+    FSustainSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), sustain( &synth_data_->env_data->sustain ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1761,6 +1787,17 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
     }
 
     //==============================================================================
@@ -1823,7 +1860,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "SUS TIME";
+        return "HOLD";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -1845,13 +1882,13 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     String get_center_value() const noexcept override
     {
         float value = sustain_time->get_value() * 10000;
-        if( value <= 10000 )
+        if( value < 10000 )
         {
             return String(auto_round(value));
         }
         else
         {
-            return String("unltd");
+            return String("UNLTD");
         }
     }
     StringRef get_center_suffix() const noexcept override
@@ -1895,7 +1932,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
 public:
     FSustainTimeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain_time( &synth_data_->filter_datas[id_]->env_data->sustain_time ), is_main_adsr(false) {}
-    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_ ) : sustain_time( &synth_data_->env_data->sustain_time ), is_main_adsr(true) {}
+    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), sustain_time( &synth_data_->env_data->sustain_time ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
@@ -1911,7 +1948,6 @@ public:
 class FReleaseSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const release;
-    Parameter*const max_release_time;
 
     const bool is_main_adsr;
 
@@ -1920,6 +1956,17 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     bool get_is_linear() const noexcept override
     {
         return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
     }
 
     //==============================================================================
@@ -1945,6 +1992,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
+    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -1954,6 +2002,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     {
         return max_release_time;
     }
+    */
 
     //==============================================================================
     // TOP BUTTON
@@ -1980,13 +2029,13 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "RELEASE";
+        return "REL";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "RANGE";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -1999,25 +2048,21 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     {
         return SHOW_OWN_VALUE;
     }
+
     String get_center_value() const noexcept override
     {
-        if( not release->midi_control->get_ctrl_mode() )
-        {
-            return String( auto_round( MIN_ENV_TIMES + release->get_value() * max_release_time->get_value() ) );
-        }
-        else
-        {
-            return String(max_release_time->get_value());
-        }
+        return String( auto_round( MIN_ENV_TIMES + release->get_value() * MAX_ENV_TIMES ) );
     }
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
     }
+    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
         return (entered_value_-MIN_ENV_TIMES)/max_release_time->get_value();
     }
+    */
 
     //==============================================================================
     // TOOLTIP
@@ -2041,28 +2086,18 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
         is_main_adsr
     )
-    BOTTOM_BUTTON_SLIDERS
-    (
-        "RELEASE",
-        "MAX RELEASE"
-    )
-    BACK_SLIDER_DESCRIPTION
-    (
-        "Define the the maximum, adjustable release time for the front slider."
-    )
 
 public:
     FReleaseSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         release( &synth_data_->filter_datas[id_]->env_data->release ),
-        max_release_time( &synth_data_->filter_datas[id_]->env_data->max_release_time ),
         is_main_adsr(false)
     {}
 
     FReleaseSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         release( &synth_data_->env_data->release ),
-        max_release_time( &synth_data_->env_data->max_release_time ),
         is_main_adsr(true)
     {}
 
@@ -2092,6 +2127,17 @@ class FShapeSlConfig : public ModulationSliderConfigBase
         return true;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        if( is_main_adsr )
+        {
+            return COLOUR_THEMES::FX_THEME;
+        }
+        else
+        {
+            return COLOUR_THEMES::FILTER_THEME;
+        }
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -2189,6 +2235,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION_2_CASE
     (
         ""
@@ -2204,7 +2251,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
 public:
     FShapeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : shape( &synth_data_->filter_datas[id_]->env_data->shape ), is_main_adsr(false) {}
-    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
+    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FShapeSlConfig)
 };
@@ -2220,6 +2267,12 @@ public:
 class EnvLfoSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const adsr_lfo_mix;
+
+    bool is_opaque() const noexcept
+    {
+        return false;
+    }
+
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2288,11 +2341,11 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "MOD MIX";
+        return "";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
     return "";
@@ -2354,6 +2407,7 @@ public:
 class LFOSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const speed;
+    MoniqueSynthData*const synth_data;
 
     String bottom_text;
 
@@ -2365,6 +2419,14 @@ class LFOSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    bool is_opaque() const noexcept
+    {
+        return false;
+    }
+    bool use_click_through_hack() const noexcept
+    {
+        return true;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -2447,60 +2509,25 @@ class LFOSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        const float speed_ = speed->get_value();
-        if( speed_ <= 6 )
-        {
-            if( speed_ == 0 )
-                return "16/1";
-            else if( speed_ == 1 )
-                return "12/1";
-            else if( speed_ == 2 )
-                return "8/1";
-            else if( speed_ == 3 )
-                return "4/1";
-            else if( speed_ == 4 )
-                return "3/1";
-            else if( speed_ == 5 )
-                return "2/1";
-            else
-                return "1/1";
-        }
-        else if( speed_ <= 17 )
-        {
-            if( speed_ == 7 )
-                return "3/4";
-            else if( speed_ == 8 )
-                return "1/2";
-            else if( speed_ == 9 )
-                return "1/3";
-            else if( speed_ == 10 )
-                return "1/4";
-            else if( speed_ == 11 )
-                return "1/8";
-            else if( speed_ == 12 )
-                return "1/12";
-            else if( speed_ == 13 )
-                return "1/16";
-            else if( speed_ == 14 )
-                return "1/24";
-            else if( speed_ == 15 )
-                return "1/32";
-            else if( speed_ == 16 )
-                return "1/64";
-            else
-                return "1/128";
-        }
-        else
-        {
-            return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
-        }
+        return get_lfo_speed_multi_as_text( speed->get_value(), synth_data->runtime_info, synth_data->runtime_notifyer->get_sample_rate() );
     }
     StringRef get_center_suffix() const noexcept override
     {
         if( speed->get_value() <= 17 )
-            return "th";
+        {
+            if( is_integer(speed->get_value()) )
+            {
+                return "th";
+            }
+            else
+            {
+                return "hz";
+            }
+        }
         else
+        {
             return "#";
+        }
     }
 
     //==============================================================================
@@ -2519,6 +2546,7 @@ public:
     LFOSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
         speed( &synth_data_->lfo_datas[id_]->speed ),
+        synth_data( synth_data_ ),
 
         bottom_text( "LFO " + String(id_+1) )
     {}
@@ -3058,7 +3086,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "VOLUME";
+        return "VOL";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -3146,6 +3174,10 @@ class BPMSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3271,6 +3303,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
 public:
     BPMSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 3 ),
         speed( &synth_data_->speed ),
         sync( &synth_data_->sync ),
         runtime_info( synth_data_->runtime_info )
@@ -3300,6 +3333,10 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3401,6 +3438,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 public:
     SpeedMultiSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 3 ),
         speed_multi( &synth_data_->arp_sequencer_data->speed_multi ),
         speed( &synth_data_->speed )
     {}
@@ -3429,6 +3467,10 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3558,6 +3600,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 public:
     OctaveOffsetSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 3 ),
         octave_offset( &synth_data_->octave_offset ),
         note_offset( &synth_data_->note_offset )
     {}
@@ -3586,6 +3629,10 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3647,7 +3694,7 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "DESTROY";
+        return "DIST";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -3687,6 +3734,7 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
 public:
     FXDistortionSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         distortion( &synth_data_->distortion )
     {}
 
@@ -3714,6 +3762,10 @@ class FColourSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3826,6 +3878,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         shape( &synth_data_->shape ),
         bypass( &synth_data_->eq_data->bypass )
     {}
@@ -3853,6 +3906,10 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3955,6 +4012,7 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 public:
     RRoomSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         room( &synth_data_->reverb_data->room )
     {}
 
@@ -3981,6 +4039,10 @@ class RWidthSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4083,6 +4145,7 @@ class RWidthSlConfig : public ModulationSliderConfigBase
 public:
     RWidthSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         width( &synth_data_->reverb_data->width )
     {}
 
@@ -4100,6 +4163,7 @@ public:
 class RDrySlConfig : public ModulationSliderConfigBase
 {
     Parameter*const dry_wet_mix;
+    Parameter*const pan;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4109,6 +4173,10 @@ class RDrySlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4133,17 +4201,15 @@ class RDrySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return clipping;
+        return pan;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -4172,11 +4238,11 @@ class RDrySlConfig : public ModulationSliderConfigBase
     {
         return "DRY|WET";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "PAN";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4185,23 +4251,39 @@ class RDrySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        if( dry_wet_mix->midi_control->get_ctrl_mode() )
+        {
+            return String(auto_round(pan->get_value()*100));
+        }
+        else
+        {
+            return String(auto_round(dry_wet_mix->get_value()*100));
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( dry_wet_mix->midi_control->get_ctrl_mode() )
+        {
+            if( pan->get_value() > 0 )
+                return "R";
+            else
+                return "L";
+        }
+        else
+        {
+            return "";
+        }
     }
-    */
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the wet/dry mix of the reverb effect.\n"
@@ -4211,7 +4293,9 @@ class RDrySlConfig : public ModulationSliderConfigBase
 public:
     RDrySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        dry_wet_mix( &synth_data_->reverb_data->dry_wet_mix )
+        ModulationSliderConfigBase( 2 ),
+        dry_wet_mix( &synth_data_->reverb_data->dry_wet_mix ),
+        pan( &synth_data_->reverb_data->pan )
     {}
 
     JUCE_LEAK_DETECTOR (RDrySlConfig)
@@ -4228,6 +4312,7 @@ public:
 class DelaySlConfig : public ModulationSliderConfigBase
 {
     Parameter*const delay;
+    Parameter*const pan;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -4237,6 +4322,10 @@ class DelaySlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4261,17 +4350,15 @@ class DelaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return clipping;
+        return pan;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -4300,11 +4387,11 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return "DELAY";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "PAN";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4313,23 +4400,39 @@ class DelaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // CENTER LABEL
-    /*
     SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
+        return SHOW_OWN_VALUE;
     }
     String get_center_value() const noexcept override
     {
-    return "";
+        if( delay->midi_control->get_ctrl_mode() )
+        {
+            return String(auto_round(pan->get_value()*100));
+        }
+        else
+        {
+            return String(auto_round(delay->get_value()*100));
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-    return "";
+        if( delay->midi_control->get_ctrl_mode() )
+        {
+            if( pan->get_value() > 0 )
+                return "R";
+            else
+                return "L";
+        }
+        else
+        {
+            return "";
+        }
     }
-    */
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the delay time of the delay effect.\n"
@@ -4339,7 +4442,9 @@ class DelaySlConfig : public ModulationSliderConfigBase
 public:
     DelaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        delay( &synth_data_->delay )
+        ModulationSliderConfigBase( 2 ),
+        delay( &synth_data_->delay ),
+        pan( &synth_data_->delay_pan )
     {}
 
     JUCE_LEAK_DETECTOR (DelaySlConfig)
@@ -4365,6 +4470,10 @@ class BypassConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4472,6 +4581,7 @@ class BypassConfig : public ModulationSliderConfigBase
 public:
     BypassConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         effect_bypass( &synth_data_->effect_bypass )
     {}
 
@@ -4498,6 +4608,10 @@ class VolumeConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::MASTER_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4557,7 +4671,7 @@ class VolumeConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "VOLUME";
+        return "VOL";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -4597,6 +4711,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 public:
     VolumeConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 5 ),
         volume( &synth_data_->volume )
     {}
 
@@ -4614,7 +4729,7 @@ public:
 class CModSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const modulation;
-    BoolParameter*const hold_modulation;
+    Parameter*const pan;
 
     MoniqueSynthData*const synth_data;
     ChorusData*const chorus_data;
@@ -4627,6 +4742,10 @@ class CModSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4651,7 +4770,6 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
         return VALUE_SLIDER_2;
@@ -4659,12 +4777,12 @@ class CModSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return state;
+        return pan;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
+    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
         return TOP_BUTTON_IS_MODULATOR;
@@ -4706,18 +4824,19 @@ class CModSlConfig : public ModulationSliderConfigBase
 
         return value;
     }
+    */
 
     //==============================================================================
     // BOTTOM BUTTON
-    /*
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "CHORS";
+        return "CHORUS";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MO-ENV";
+        return "PAN";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4732,15 +4851,33 @@ class CModSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( auto_round(chorus_data->modulation*100)  );
+        if( modulation->midi_control->get_ctrl_mode() )
+        {
+            return String( auto_round(pan->get_value()*100)  );
+        }
+        else
+        {
+            return String( auto_round(modulation->get_value()*100)  );
+        }
     }
     StringRef get_center_suffix() const noexcept override
     {
-        return "";
+        if( modulation->midi_control->get_ctrl_mode() )
+        {
+            if( pan->get_value() > 0 )
+                return "R";
+            else
+                return "L";
+        }
+        else
+        {
+            return "";
+        }
     }
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the chorus amount.\n"
@@ -4758,8 +4895,9 @@ class CModSlConfig : public ModulationSliderConfigBase
 public:
     CModSlConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 2 ),
         modulation( &synth_data_->chorus_data->modulation ),
-        hold_modulation( &synth_data_->chorus_data->hold_modulation ),
+        pan( &synth_data_->chorus_data->pan ),
 
         synth_data( synth_data_ ),
         chorus_data( synth_data_->chorus_data )
@@ -4793,6 +4931,10 @@ class GlideConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4852,11 +4994,11 @@ class GlideConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "NOTE-G";
+        return "NOTE";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "VELO-G";
+        return "VELO";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -4927,6 +5069,7 @@ class GlideConfig : public ModulationSliderConfigBase
 public:
     GlideConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 3 ),
         glide( &synth_data_->glide ),
         velocity_glide_time( &synth_data_->velocity_glide_time ),
         connect( &synth_data_->arp_sequencer_data->connect ),
@@ -4959,6 +5102,10 @@ class ShuffleConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // OPTION POPUP
@@ -5110,6 +5257,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
 public:
     ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
+        ModulationSliderConfigBase( 3 ),
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
         is_on( &synth_data_->arp_sequencer_data->is_on ),
 
@@ -5146,7 +5294,7 @@ class EQSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
-    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept override
     {
         bool success = false;
         EQData*eq_data = synth_data->eq_data;
@@ -5162,6 +5310,10 @@ class EQSlConfig : public ModulationSliderConfigBase
         }
 
         return success;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
     }
 
     //==============================================================================
@@ -5297,6 +5449,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 public:
     EQSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        ModulationSliderConfigBase( 2 ),
         id( id_ ),
         velocity( &synth_data_->eq_data->velocity[id_] ),
         hold( &synth_data_->eq_data->hold[id_] ),
@@ -5338,6 +5491,10 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::ARP_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -5460,6 +5617,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 public:
     ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        ModulationSliderConfigBase( 3 ),
         octave_offset( &synth_data_->octave_offset ),
         tune( &synth_data_->arp_sequencer_data->tune[id_] ),
         velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
@@ -5480,7 +5638,13 @@ public:
 //==============================================================================
 class MorphSLConfig : public ModulationSliderConfigBase
 {
+    const int id;
+
     Parameter*const morhp_state;
+    BoolParameter*const is_morph_modulated;
+
+    MoniqueSynthData*const synth_data;
+
     const String bottom_text;
 
     //==============================================================================
@@ -5491,6 +5655,14 @@ class MorphSLConfig : public ModulationSliderConfigBase
     return false;
     }
     */
+    bool action_keep_env_pop_open_for( const MFOData*const  ) const noexcept override
+    {
+        return true;
+    }
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::MORPH_THEME;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -5518,46 +5690,69 @@ class MorphSLConfig : public ModulationSliderConfigBase
     /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return clipping;
+        return morhp_automation_power;
     }
     */
 
     //==============================================================================
     // TOP BUTTON
-    /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-    return TOP_BUTTON_TYPE_IS_UNKNOWN;
+        return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-    return nullptr;
+        return is_morph_modulated;
     }
     StringRef get_top_button_text() const noexcept override
     {
-    return "";
+        return "MFO";
     }
     float get_top_button_amp() const noexcept override
     {
-    return NO_TOP_BUTTON_AMP;
+        float value = NO_TOP_BUTTON_AMP;
+        const bool is_on = not bool(is_morph_modulated->get_value());
+        if( synth_data->animate_envs )
+        {
+            if( is_on )
+            {
+                value = synth_data->voice->get_mfo_amp(id);
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
+        else
+        {
+            if( is_on )
+            {
+                value = TOP_BUTTON_IS_ON;
+            }
+            else
+            {
+                value = TOP_BUTTON_IS_OFF;
+            }
+        }
+
+        return value;
     }
-    */
 
     //==============================================================================
     // BOTTOM BUTTON
-    /*
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "MIX";
+        return "MORPH";
     }
+    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "LFO";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -5626,7 +5821,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
 public:
     MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
+        ModulationSliderConfigBase( 4 ),
+        id(id_),
         morhp_state( &synth_data_->morhp_states[id_] ),
+        is_morph_modulated( &synth_data_->is_morph_modulated[id_] ),
+        synth_data( synth_data_ ),
         bottom_text( String( "TOGGL" ) + String(id_+1) )
     {}
 
@@ -5634,6 +5833,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

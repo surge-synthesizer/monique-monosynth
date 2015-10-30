@@ -84,13 +84,26 @@ public:
         releaseDC();
     }
 
-    void initialiseOnRenderThread (OpenGLContext& c) { context = &c; }
-    void shutdownOnRenderThread()           { deactivateCurrentContext(); context = nullptr; }
+    void initialiseOnRenderThread (OpenGLContext& c) {
+        context = &c;
+    }
+    void shutdownOnRenderThread()           {
+        deactivateCurrentContext();
+        context = nullptr;
+    }
 
-    static void deactivateCurrentContext()  { wglMakeCurrent (0, 0); }
-    bool makeActive() const noexcept        { return isActive() || wglMakeCurrent (dc, renderContext) != FALSE; }
-    bool isActive() const noexcept          { return wglGetCurrentContext() == renderContext; }
-    void swapBuffers() const noexcept       { SwapBuffers (dc); }
+    static void deactivateCurrentContext()  {
+        wglMakeCurrent (0, 0);
+    }
+    bool makeActive() const noexcept        {
+        return isActive() || wglMakeCurrent (dc, renderContext) != FALSE;
+    }
+    bool isActive() const noexcept          {
+        return wglGetCurrentContext() == renderContext;
+    }
+    void swapBuffers() const noexcept       {
+        SwapBuffers (dc);
+    }
 
     bool setSwapInterval (int numFramesPerSwap)
     {
@@ -112,9 +125,15 @@ public:
                           SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOOWNERZORDER);
     }
 
-    bool createdOk() const noexcept                 { return getRawContext() != nullptr; }
-    void* getRawContext() const noexcept            { return renderContext; }
-    unsigned int getFrameBufferID() const noexcept  { return 0; }
+    bool createdOk() const noexcept                 {
+        return getRawContext() != nullptr;
+    }
+    void* getRawContext() const noexcept            {
+        return renderContext;
+    }
+    unsigned int getFrameBufferID() const noexcept  {
+        return 0;
+    }
 
     void triggerRepaint()
     {
@@ -122,7 +141,9 @@ public:
             context->triggerRepaint();
     }
 
-    struct Locker { Locker (NativeContext&) {} };
+    struct Locker {
+        Locker (NativeContext&) {}
+    };
 
 private:
     struct DummyComponent  : public Component
@@ -130,7 +151,9 @@ private:
         DummyComponent (NativeContext& c) : context (c) {}
 
         // The windowing code will call this when a paint callback happens
-        void handleCommandMessage (int) override   { context.triggerRepaint(); }
+        void handleCommandMessage (int) override   {
+            context.triggerRepaint();
+        }
 
         NativeContext& context;
     };
@@ -141,21 +164,21 @@ private:
     HDC dc;
     OpenGLContext* context;
 
-    #define JUCE_DECLARE_WGL_EXTENSION_FUNCTION(name, returnType, params) \
+#define JUCE_DECLARE_WGL_EXTENSION_FUNCTION(name, returnType, params) \
         typedef returnType (__stdcall *type_ ## name) params; type_ ## name name;
 
     JUCE_DECLARE_WGL_EXTENSION_FUNCTION (wglChoosePixelFormatARB,  BOOL, (HDC, const int*, const FLOAT*, UINT, int*, UINT*))
     JUCE_DECLARE_WGL_EXTENSION_FUNCTION (wglSwapIntervalEXT,       BOOL, (int))
     JUCE_DECLARE_WGL_EXTENSION_FUNCTION (wglGetSwapIntervalEXT,    int, ())
-    #undef JUCE_DECLARE_WGL_EXTENSION_FUNCTION
+#undef JUCE_DECLARE_WGL_EXTENSION_FUNCTION
 
     void initialiseGLExtensions()
     {
-        #define JUCE_INIT_WGL_FUNCTION(name)    name = (type_ ## name) OpenGLHelpers::getExtensionFunction (#name);
+#define JUCE_INIT_WGL_FUNCTION(name)    name = (type_ ## name) OpenGLHelpers::getExtensionFunction (#name);
         JUCE_INIT_WGL_FUNCTION (wglChoosePixelFormatARB);
         JUCE_INIT_WGL_FUNCTION (wglSwapIntervalEXT);
         JUCE_INIT_WGL_FUNCTION (wglGetSwapIntervalEXT);
-        #undef JUCE_INIT_WGL_FUNCTION
+#undef JUCE_INIT_WGL_FUNCTION
     }
 
     void createNativeWindow (Component& component)
@@ -200,7 +223,7 @@ private:
         pfd.cDepthBits      = (BYTE) pixelFormat.depthBufferBits;
         pfd.cStencilBits    = (BYTE) pixelFormat.stencilBufferBits;
         pfd.cAccumBits      = (BYTE) (pixelFormat.accumulationBufferRedBits + pixelFormat.accumulationBufferGreenBits
-                                        + pixelFormat.accumulationBufferBlueBits + pixelFormat.accumulationBufferAlphaBits);
+                                      + pixelFormat.accumulationBufferBlueBits + pixelFormat.accumulationBufferAlphaBits);
         pfd.cAccumRedBits   = (BYTE) pixelFormat.accumulationBufferRedBits;
         pfd.cAccumGreenBits = (BYTE) pixelFormat.accumulationBufferGreenBits;
         pfd.cAccumBlueBits  = (BYTE) pixelFormat.accumulationBufferBlueBits;
@@ -216,28 +239,43 @@ private:
             int atts[64];
             int n = 0;
 
-            atts[n++] = WGL_DRAW_TO_WINDOW_ARB;   atts[n++] = GL_TRUE;
-            atts[n++] = WGL_SUPPORT_OPENGL_ARB;   atts[n++] = GL_TRUE;
-            atts[n++] = WGL_DOUBLE_BUFFER_ARB;    atts[n++] = GL_TRUE;
-            atts[n++] = WGL_PIXEL_TYPE_ARB;       atts[n++] = WGL_TYPE_RGBA_ARB;
+            atts[n++] = WGL_DRAW_TO_WINDOW_ARB;
+            atts[n++] = GL_TRUE;
+            atts[n++] = WGL_SUPPORT_OPENGL_ARB;
+            atts[n++] = GL_TRUE;
+            atts[n++] = WGL_DOUBLE_BUFFER_ARB;
+            atts[n++] = GL_TRUE;
+            atts[n++] = WGL_PIXEL_TYPE_ARB;
+            atts[n++] = WGL_TYPE_RGBA_ARB;
             atts[n++] = WGL_ACCELERATION_ARB;
             atts[n++] = WGL_FULL_ACCELERATION_ARB;
 
-            atts[n++] = WGL_COLOR_BITS_ARB;  atts[n++] = pixelFormat.redBits + pixelFormat.greenBits + pixelFormat.blueBits;
-            atts[n++] = WGL_RED_BITS_ARB;    atts[n++] = pixelFormat.redBits;
-            atts[n++] = WGL_GREEN_BITS_ARB;  atts[n++] = pixelFormat.greenBits;
-            atts[n++] = WGL_BLUE_BITS_ARB;   atts[n++] = pixelFormat.blueBits;
-            atts[n++] = WGL_ALPHA_BITS_ARB;  atts[n++] = pixelFormat.alphaBits;
-            atts[n++] = WGL_DEPTH_BITS_ARB;  atts[n++] = pixelFormat.depthBufferBits;
+            atts[n++] = WGL_COLOR_BITS_ARB;
+            atts[n++] = pixelFormat.redBits + pixelFormat.greenBits + pixelFormat.blueBits;
+            atts[n++] = WGL_RED_BITS_ARB;
+            atts[n++] = pixelFormat.redBits;
+            atts[n++] = WGL_GREEN_BITS_ARB;
+            atts[n++] = pixelFormat.greenBits;
+            atts[n++] = WGL_BLUE_BITS_ARB;
+            atts[n++] = pixelFormat.blueBits;
+            atts[n++] = WGL_ALPHA_BITS_ARB;
+            atts[n++] = pixelFormat.alphaBits;
+            atts[n++] = WGL_DEPTH_BITS_ARB;
+            atts[n++] = pixelFormat.depthBufferBits;
 
-            atts[n++] = WGL_STENCIL_BITS_ARB;       atts[n++] = pixelFormat.stencilBufferBits;
-            atts[n++] = WGL_ACCUM_RED_BITS_ARB;     atts[n++] = pixelFormat.accumulationBufferRedBits;
-            atts[n++] = WGL_ACCUM_GREEN_BITS_ARB;   atts[n++] = pixelFormat.accumulationBufferGreenBits;
-            atts[n++] = WGL_ACCUM_BLUE_BITS_ARB;    atts[n++] = pixelFormat.accumulationBufferBlueBits;
-            atts[n++] = WGL_ACCUM_ALPHA_BITS_ARB;   atts[n++] = pixelFormat.accumulationBufferAlphaBits;
+            atts[n++] = WGL_STENCIL_BITS_ARB;
+            atts[n++] = pixelFormat.stencilBufferBits;
+            atts[n++] = WGL_ACCUM_RED_BITS_ARB;
+            atts[n++] = pixelFormat.accumulationBufferRedBits;
+            atts[n++] = WGL_ACCUM_GREEN_BITS_ARB;
+            atts[n++] = pixelFormat.accumulationBufferGreenBits;
+            atts[n++] = WGL_ACCUM_BLUE_BITS_ARB;
+            atts[n++] = pixelFormat.accumulationBufferBlueBits;
+            atts[n++] = WGL_ACCUM_ALPHA_BITS_ARB;
+            atts[n++] = pixelFormat.accumulationBufferAlphaBits;
 
             if (pixelFormat.multisamplingLevel > 0
-                  && OpenGLHelpers::isExtensionSupported ("GL_ARB_multisample"))
+                    && OpenGLHelpers::isExtensionSupported ("GL_ARB_multisample"))
             {
                 atts[n++] = WGL_SAMPLE_BUFFERS_ARB;
                 atts[n++] = 1;

@@ -52,12 +52,16 @@ public:
     /** Returns the default new-line sequence that the library uses.
         @see getDefault()
     */
-    operator String() const                         { return getDefault(); }
+    operator String() const                         {
+        return getDefault();
+    }
 
     /** Returns the default new-line sequence that the library uses.
         @see OutputStream::setNewLineString()
     */
-    operator StringRef() const noexcept             { return getDefault(); }
+    operator StringRef() const noexcept             {
+        return getDefault();
+    }
 };
 
 //==============================================================================
@@ -80,7 +84,9 @@ extern NewLine newLine;
 JUCE_API String& JUCE_CALLTYPE operator<< (String& string1, const NewLine&);
 
 #if JUCE_STRING_UTF_TYPE != 8 && ! defined (DOXYGEN)
- inline String operator+ (String s1, const NewLine&)      { return s1 += NewLine::getDefault(); }
+inline String operator+ (String s1, const NewLine&)      {
+    return s1 += NewLine::getDefault();
+}
 #endif
 
 #endif   // JUCE_NEWLINE_H_INCLUDED

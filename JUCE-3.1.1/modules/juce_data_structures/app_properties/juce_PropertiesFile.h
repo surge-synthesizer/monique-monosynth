@@ -41,8 +41,8 @@
     @see PropertySet
 */
 class JUCE_API  PropertiesFile  : public PropertySet,
-                                  public ChangeBroadcaster,
-                                  private Timer
+    public ChangeBroadcaster,
+    private Timer
 {
 public:
     //==============================================================================
@@ -179,7 +179,9 @@ public:
         If the file failed to load correctly because it was corrupt or had insufficient
         access, this will be false.
     */
-    bool isValidFile() const noexcept               { return loadedOk; }
+    bool isValidFile() const noexcept               {
+        return loadedOk;
+    }
 
     //==============================================================================
     /** This will flush all the values to disk if they've changed since the last
@@ -218,7 +220,9 @@ public:
 
     //==============================================================================
     /** Returns the file that's being used. */
-    const File& getFile() const noexcept            { return file; }
+    const File& getFile() const noexcept            {
+        return file;
+    }
 
 
 protected:

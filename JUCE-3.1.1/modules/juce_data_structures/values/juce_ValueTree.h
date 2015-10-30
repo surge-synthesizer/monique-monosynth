@@ -87,9 +87,9 @@ public:
     /** Makes this object reference another node. */
     ValueTree& operator= (const ValueTree&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     ValueTree (ValueTree&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~ValueTree();
@@ -119,7 +119,9 @@ public:
         It's hard to create an invalid node, but you might get one returned, e.g. by an out-of-range
         call to getChild().
     */
-    bool isValid() const                            { return object != nullptr; }
+    bool isValid() const                            {
+        return object != nullptr;
+    }
 
     /** Returns a deep copy of this tree and all its sub-nodes. */
     ValueTree createCopy() const;
@@ -509,7 +511,8 @@ private:
     template <typename ElementComparator>
     struct ComparatorAdapter
     {
-        ComparatorAdapter (ElementComparator& comp) noexcept : comparator (comp) {}
+    ComparatorAdapter (ElementComparator& comp) noexcept :
+        comparator (comp) {}
 
         int compareElements (const ValueTree* const first, const ValueTree* const second)
         {

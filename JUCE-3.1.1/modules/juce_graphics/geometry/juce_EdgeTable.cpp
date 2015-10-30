@@ -27,10 +27,10 @@ const int juce_edgeTableDefaultEdgesPerLine = 32;
 //==============================================================================
 EdgeTable::EdgeTable (const Rectangle<int>& area,
                       const Path& path, const AffineTransform& transform)
-   : bounds (area),
-     maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
-     lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
-     needToCheckEmptiness (true)
+    : bounds (area),
+      maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
+      lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
+      needToCheckEmptiness (true)
 {
     allocate();
     int* t = table;
@@ -101,10 +101,10 @@ EdgeTable::EdgeTable (const Rectangle<int>& area,
 }
 
 EdgeTable::EdgeTable (const Rectangle<int>& rectangleToAdd)
-   : bounds (rectangleToAdd),
-     maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
-     lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
-     needToCheckEmptiness (true)
+    : bounds (rectangleToAdd),
+      maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
+      lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
+      needToCheckEmptiness (true)
 {
     allocate();
     table[0] = 0;
@@ -125,10 +125,10 @@ EdgeTable::EdgeTable (const Rectangle<int>& rectangleToAdd)
 }
 
 EdgeTable::EdgeTable (const RectangleList<int>& rectanglesToAdd)
-   : bounds (rectanglesToAdd.getBounds()),
-     maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
-     lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
-     needToCheckEmptiness (true)
+    : bounds (rectanglesToAdd.getBounds()),
+      maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
+      lineStrideElements (juce_edgeTableDefaultEdgesPerLine * 2 + 1),
+      needToCheckEmptiness (true)
 {
     allocate();
     clearLineSizes();
@@ -147,10 +147,10 @@ EdgeTable::EdgeTable (const RectangleList<int>& rectanglesToAdd)
 }
 
 EdgeTable::EdgeTable (const RectangleList<float>& rectanglesToAdd)
-   : bounds (rectanglesToAdd.getBounds().getSmallestIntegerContainer()),
-     maxEdgesPerLine (rectanglesToAdd.getNumRectangles() * 2),
-     lineStrideElements (rectanglesToAdd.getNumRectangles() * 4 + 1),
-     needToCheckEmptiness (true)
+    : bounds (rectanglesToAdd.getBounds().getSmallestIntegerContainer()),
+      maxEdgesPerLine (rectanglesToAdd.getNumRectangles() * 2),
+      lineStrideElements (rectanglesToAdd.getNumRectangles() * 4 + 1),
+      needToCheckEmptiness (true)
 {
     bounds.setHeight (bounds.getHeight() + 1);
     allocate();
@@ -190,13 +190,13 @@ EdgeTable::EdgeTable (const RectangleList<float>& rectanglesToAdd)
 }
 
 EdgeTable::EdgeTable (const Rectangle<float>& rectangleToAdd)
-   : bounds (Rectangle<int> ((int) std::floor (rectangleToAdd.getX()),
-                             roundToInt (rectangleToAdd.getY() * 256.0f) >> 8,
-                             2 + (int) rectangleToAdd.getWidth(),
-                             2 + (int) rectangleToAdd.getHeight())),
-     maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
-     lineStrideElements ((juce_edgeTableDefaultEdgesPerLine << 1) + 1),
-     needToCheckEmptiness (true)
+    : bounds (Rectangle<int> ((int) std::floor (rectangleToAdd.getX()),
+                              roundToInt (rectangleToAdd.getY() * 256.0f) >> 8,
+                              2 + (int) rectangleToAdd.getWidth(),
+                              2 + (int) rectangleToAdd.getHeight())),
+    maxEdgesPerLine (juce_edgeTableDefaultEdgesPerLine),
+    lineStrideElements ((juce_edgeTableDefaultEdgesPerLine << 1) + 1),
+    needToCheckEmptiness (true)
 {
     jassert (! rectangleToAdd.isEmpty());
     allocate();
@@ -721,7 +721,8 @@ void EdgeTable::excludeRectangle (const Rectangle<int>& r)
         const int rectLine[] = { 4, std::numeric_limits<int>::min(), 255,
                                  clipped.getX() << 8, 0,
                                  clipped.getRight() << 8, 255,
-                                 std::numeric_limits<int>::max(), 0 };
+                                 std::numeric_limits<int>::max(), 0
+                               };
 
         for (int i = top; i < bottom; ++i)
             intersectWithEdgeTableLine (i, rectLine);

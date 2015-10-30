@@ -61,10 +61,14 @@ public:
     void setLooping (bool shouldLoop);
 
     /** Returns whether loop-mode is turned on or not. */
-    bool isLooping() const                                      { return looping; }
+    bool isLooping() const                                      {
+        return looping;
+    }
 
     /** Returns the reader that's being used. */
-    AudioFormatReader* getAudioFormatReader() const noexcept    { return reader; }
+    AudioFormatReader* getAudioFormatReader() const noexcept    {
+        return reader;
+    }
 
     //==============================================================================
     /** Implementation of the AudioSource method. */

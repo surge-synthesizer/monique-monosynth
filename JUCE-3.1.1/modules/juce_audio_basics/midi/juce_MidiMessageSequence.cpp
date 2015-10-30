@@ -118,7 +118,7 @@ double MidiMessageSequence::getEventTime (const int index) const noexcept
 
 //==============================================================================
 MidiMessageSequence::MidiEventHolder* MidiMessageSequence::addEvent (const MidiMessage& newMessage,
-                                                                     double timeAdjustment)
+        double timeAdjustment)
 {
     MidiEventHolder* const newOne = new MidiEventHolder (newMessage);
 
@@ -238,8 +238,8 @@ void MidiMessageSequence::addTimeToMessages (const double delta) noexcept
 
 //==============================================================================
 void MidiMessageSequence::extractMidiChannelMessages (const int channelNumberToExtract,
-                                                      MidiMessageSequence& destSequence,
-                                                      const bool alsoIncludeMetaEvents) const
+        MidiMessageSequence& destSequence,
+        const bool alsoIncludeMetaEvents) const
 {
     for (int i = 0; i < list.size(); ++i)
     {
@@ -277,8 +277,8 @@ void MidiMessageSequence::deleteSysExMessages()
 
 //==============================================================================
 void MidiMessageSequence::createControllerUpdatesForTime (const int channelNumber,
-                                                          const double time,
-                                                          OwnedArray<MidiMessage>& dest)
+        const double time,
+        OwnedArray<MidiMessage>& dest)
 {
     bool doneProg = false;
     bool donePitchWheel = false;
@@ -322,7 +322,7 @@ void MidiMessageSequence::createControllerUpdatesForTime (const int channelNumbe
 
 //==============================================================================
 MidiMessageSequence::MidiEventHolder::MidiEventHolder (const MidiMessage& mm)
-   : message (mm), noteOffObject (nullptr)
+    : message (mm), noteOffObject (nullptr)
 {
 }
 

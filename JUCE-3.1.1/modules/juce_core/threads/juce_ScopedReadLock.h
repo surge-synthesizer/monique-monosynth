@@ -67,7 +67,10 @@ public:
         otherwise there are no guarantees what will happen! Best just to use it
         as a local stack object, rather than creating one with the new() operator.
     */
-    inline explicit ScopedReadLock (const ReadWriteLock& lock) noexcept   : lock_ (lock) { lock.enterRead(); }
+inline explicit ScopedReadLock (const ReadWriteLock& lock) noexcept   :
+    lock_ (lock) {
+        lock.enterRead();
+    }
 
     /** Destructor.
 

@@ -99,8 +99,8 @@ void ImageConvolutionKernel::createGaussianBlur (const float radius)
 
 //==============================================================================
 void ImageConvolutionKernel::applyToImage (Image& destImage,
-                                           const Image& sourceImage,
-                                           const Rectangle<int>& destinationArea) const
+        const Image& sourceImage,
+        const Rectangle<int>& destinationArea) const
 {
     if (sourceImage == destImage)
     {
@@ -109,8 +109,8 @@ void ImageConvolutionKernel::applyToImage (Image& destImage,
     else
     {
         if (sourceImage.getWidth() != destImage.getWidth()
-             || sourceImage.getHeight() != destImage.getHeight()
-             || sourceImage.getFormat() != destImage.getFormat())
+                || sourceImage.getHeight() != destImage.getHeight()
+                || sourceImage.getFormat() != destImage.getFormat())
         {
             jassertfalse;
             return;

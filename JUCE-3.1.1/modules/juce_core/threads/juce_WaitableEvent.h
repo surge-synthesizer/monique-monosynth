@@ -103,13 +103,13 @@ public:
 
 private:
     //==============================================================================
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     void* handle;
-   #else
+#else
     mutable pthread_cond_t condition;
     mutable pthread_mutex_t mutex;
     mutable bool triggered, manualReset;
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaitableEvent)
 };

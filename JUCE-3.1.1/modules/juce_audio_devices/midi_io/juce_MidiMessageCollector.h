@@ -37,7 +37,7 @@
     @see MidiMessage, MidiInput
 */
 class JUCE_API  MidiMessageCollector    : public MidiKeyboardStateListener,
-                                          public MidiInputCallback
+    public MidiInputCallback
 {
 public:
     //==============================================================================

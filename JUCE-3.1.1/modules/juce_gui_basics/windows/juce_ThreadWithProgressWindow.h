@@ -79,7 +79,7 @@
     @see Thread, AlertWindow
 */
 class JUCE_API  ThreadWithProgressWindow  : public Thread,
-                                            private Timer
+    private Timer
 {
 public:
     //==============================================================================
@@ -111,7 +111,7 @@ public:
     ~ThreadWithProgressWindow();
 
     //==============================================================================
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     /** Starts the thread and waits for it to finish.
 
         This will start the thread, make the dialog box appear, and wait until either
@@ -124,7 +124,7 @@ public:
         @returns true if the thread finished normally; false if the user pressed cancel
     */
     bool runThread (int threadPriority = 5);
-   #endif
+#endif
 
     /** Starts the thread and returns.
 
@@ -148,7 +148,9 @@ public:
     void setStatusMessage (const String& newStatusMessage);
 
     /** Returns the AlertWindow that is being used. */
-    AlertWindow* getAlertWindow() const noexcept        { return alertWindow; }
+    AlertWindow* getAlertWindow() const noexcept        {
+        return alertWindow;
+    }
 
     //==============================================================================
     /** This method is called (on the message thread) when the operation has finished.

@@ -74,13 +74,13 @@ PluginDescription& PluginDescription::operator= (const PluginDescription& other)
 bool PluginDescription::isDuplicateOf (const PluginDescription& other) const noexcept
 {
     return fileOrIdentifier == other.fileOrIdentifier
-            && uid == other.uid;
+           && uid == other.uid;
 }
 
 static String getPluginDescSuffix (const PluginDescription& d)
 {
     return "-" + String::toHexString (d.fileOrIdentifier.hashCode())
-         + "-" + String::toHexString (d.uid);
+           + "-" + String::toHexString (d.uid);
 }
 
 bool PluginDescription::matchesIdentifierString (const String& identifierString) const

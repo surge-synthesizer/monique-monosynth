@@ -51,16 +51,16 @@
 #include "../stk_core/stk_core.h"
 
 #if JUCE_LITTLE_ENDIAN && ! defined (__LITTLE_ENDIAN__)
- #define __LITTLE_ENDIAN__
+#define __LITTLE_ENDIAN__
 #endif
 
 #if JUCE_MAC
- #define __MACOSX_CORE__
+#define __MACOSX_CORE__
 #endif
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4127 4702 4244 4305 4100 4996 4309)
+#pragma warning (push)
+#pragma warning (disable: 4127 4702 4244 4305 4100 4996 4309)
 #endif
 
 #include "generators/ADSR.h"
@@ -75,7 +75,7 @@
 #include "generators/SineWave.h"
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 #endif   // __STK_GENERATORS_HEADER__

@@ -216,7 +216,7 @@ protected:
 
     Point<int> originRelativeToComponent;
 
-  #ifndef DOXYGEN
+#ifndef DOXYGEN
     /** Internal utility class used by Drawables. */
     template <class DrawableType>
     class Positioner  : public RelativeCoordinatePositionerBase
@@ -227,7 +227,9 @@ protected:
               owner (c)
         {}
 
-        bool registerCoordinates()      { return owner.registerCoordinates (*this); }
+        bool registerCoordinates()      {
+            return owner.registerCoordinates (*this);
+        }
         void applyToComponentBounds()
         {
             ComponentScope scope (getComponent());
@@ -246,7 +248,7 @@ protected:
     };
 
     Drawable (const Drawable&);
-  #endif
+#endif
 
 private:
     void nonConstDraw (Graphics&, float opacity, const AffineTransform&);

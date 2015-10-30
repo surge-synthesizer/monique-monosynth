@@ -78,22 +78,30 @@ public:
                   int timeOutMillisecs = 3000);
 
     /** True if the socket is currently connected. */
-    bool isConnected() const noexcept                           { return connected; }
+    bool isConnected() const noexcept                           {
+        return connected;
+    }
 
     /** Closes the connection. */
     void close();
 
     /** Returns the name of the currently connected host. */
-    const String& getHostName() const noexcept                  { return hostName; }
+    const String& getHostName() const noexcept                  {
+        return hostName;
+    }
 
     /** Returns the port number that's currently open. */
-    int getPort() const noexcept                                { return portNumber; }
+    int getPort() const noexcept                                {
+        return portNumber;
+    }
 
     /** True if the socket is connected to this machine rather than over the network. */
     bool isLocal() const noexcept;
 
     /** Returns the OS's socket handle that's currently open. */
-    int getRawSocketHandle() const noexcept                     { return handle; }
+    int getRawSocketHandle() const noexcept                     {
+        return handle;
+    }
 
     //==============================================================================
     /** Waits until the socket is ready for reading or writing.
@@ -226,22 +234,30 @@ public:
                   int timeOutMillisecs = 3000);
 
     /** True if the socket is currently connected. */
-    bool isConnected() const noexcept                           { return connected; }
+    bool isConnected() const noexcept                           {
+        return connected;
+    }
 
     /** Closes the connection. */
     void close();
 
     /** Returns the name of the currently connected host. */
-    const String& getHostName() const noexcept                  { return hostName; }
+    const String& getHostName() const noexcept                  {
+        return hostName;
+    }
 
     /** Returns the port number that's currently open. */
-    int getPort() const noexcept                                { return portNumber; }
+    int getPort() const noexcept                                {
+        return portNumber;
+    }
 
     /** True if the socket is connected to this machine rather than over the network. */
     bool isLocal() const noexcept;
 
     /** Returns the OS's socket handle that's currently open. */
-    int getRawSocketHandle() const noexcept                     { return handle; }
+    int getRawSocketHandle() const noexcept                     {
+        return handle;
+    }
 
     //==============================================================================
     /** Waits until the socket is ready for reading or writing.

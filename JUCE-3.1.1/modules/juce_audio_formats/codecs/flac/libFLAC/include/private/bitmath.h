@@ -48,39 +48,39 @@
 static inline unsigned int FLAC__clz_soft_uint32(unsigned int word)
 {
     static const unsigned char byte_to_unary_table[] = {
-    8, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        8, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     };
 
     return (word) > 0xffffff ? byte_to_unary_table[(word) >> 24] :
-    (word) > 0xffff ? byte_to_unary_table[(word) >> 16] + 8 :
-    (word) > 0xff ? byte_to_unary_table[(word) >> 8] + 16 :
-    byte_to_unary_table[(word)] + 24;
+           (word) > 0xffff ? byte_to_unary_table[(word) >> 16] + 8 :
+           (word) > 0xff ? byte_to_unary_table[(word) >> 8] + 16 :
+           byte_to_unary_table[(word)] + 24;
 }
 
 static inline unsigned int FLAC__clz_uint32(FLAC__uint32 v)
 {
-/* Never used with input 0 */
+    /* Never used with input 0 */
     FLAC__ASSERT(v > 0);
 #if defined(__INTEL_COMPILER)
     return _bit_scan_reverse(v) ^ 31U;
 #elif defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-/* This will translate either to (bsr ^ 31U), clz , ctlz, cntlz, lzcnt depending on
- * -march= setting or to a software routine in exotic machines. */
+    /* This will translate either to (bsr ^ 31U), clz , ctlz, cntlz, lzcnt depending on
+     * -march= setting or to a software routine in exotic machines. */
     return __builtin_clz(v);
 #elif defined(_MSC_VER) && (_MSC_VER >= 1400)
     {
@@ -148,7 +148,7 @@ static inline unsigned FLAC__bitmath_ilog2_wide(FLAC__uint64 v)
     FLAC__ASSERT(v > 0);
 #if defined(__GNUC__) && (__GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
     return sizeof(FLAC__uint64) * CHAR_BIT - 1 - __builtin_clzll(v);
-/* Sorry, only supported in x64/Itanium.. and both have fast FPU which makes integer-only encoder pointless */
+    /* Sorry, only supported in x64/Itanium.. and both have fast FPU which makes integer-only encoder pointless */
 #elif (defined(_MSC_VER) && (_MSC_VER >= 1400)) && (defined(_M_IA64) || defined(_M_X64))
     {
         unsigned long idx;
@@ -156,12 +156,12 @@ static inline unsigned FLAC__bitmath_ilog2_wide(FLAC__uint64 v)
         return idx;
     }
 #else
-/*  Brain-damaged compilers will use the fastest possible way that is,
-    de Bruijn sequences (http://supertech.csail.mit.edu/papers/debruijn.pdf)
-    (C) Timothy B. Terriberry (tterribe@xiph.org) 2001-2009 CC0 (Public domain).
-*/
+    /*  Brain-damaged compilers will use the fastest possible way that is,
+        de Bruijn sequences (http://supertech.csail.mit.edu/papers/debruijn.pdf)
+        (C) Timothy B. Terriberry (tterribe@xiph.org) 2001-2009 CC0 (Public domain).
+    */
     {
-        static const unsigned char DEBRUIJN_IDX64[64]={
+        static const unsigned char DEBRUIJN_IDX64[64]= {
             0, 1, 2, 7, 3,13, 8,19, 4,25,14,28, 9,34,20,40,
             5,17,26,38,15,46,29,48,10,31,35,54,21,50,41,57,
             63, 6,12,18,24,27,33,39,16,37,45,47,30,53,49,56,

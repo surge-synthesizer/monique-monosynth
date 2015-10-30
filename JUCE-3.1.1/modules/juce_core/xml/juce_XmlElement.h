@@ -164,10 +164,10 @@ public:
     /** Creates a (deep) copy of another element. */
     XmlElement& operator= (const XmlElement&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     XmlElement (XmlElement&&) noexcept;
     XmlElement& operator= (XmlElement&&) noexcept;
-   #endif
+#endif
 
     /** Deleting an XmlElement will also delete all of its child elements. */
     ~XmlElement() noexcept;
@@ -262,7 +262,9 @@ public:
         E.g. for an element such as \<MOOSE legs="4" antlers="2">, this would return "MOOSE".
         @see hasTagName
     */
-    const String& getTagName() const noexcept            { return tagName; }
+    const String& getTagName() const noexcept            {
+        return tagName;
+    }
 
     /** Returns the namespace portion of the tag-name, or an empty string if none is specified. */
     String getNamespace() const;
@@ -434,7 +436,9 @@ public:
         see getNextElement() for an example of how to iterate the sub-elements.
         @see forEachXmlChildElement
     */
-    XmlElement* getFirstChildElement() const noexcept       { return firstChildElement; }
+    XmlElement* getFirstChildElement() const noexcept       {
+        return firstChildElement;
+    }
 
     /** Returns the next of this element's siblings.
 
@@ -462,7 +466,9 @@ public:
 
         @see getNextElement, isTextElement, forEachXmlChildElement
     */
-    inline XmlElement* getNextElement() const noexcept          { return nextListItem; }
+    inline XmlElement* getNextElement() const noexcept          {
+        return nextListItem;
+    }
 
     /** Returns the next of this element's siblings which has the specified tag
         name.

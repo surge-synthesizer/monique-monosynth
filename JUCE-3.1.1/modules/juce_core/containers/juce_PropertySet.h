@@ -159,7 +159,9 @@ public:
     StringPairArray& getAllProperties() noexcept                        { return properties; }
 
     /** Returns the lock used when reading or writing to this set */
-    const CriticalSection& getLock() const noexcept                     { return lock; }
+    const CriticalSection& getLock() const noexcept                     {
+        return lock;
+    }
 
     //==============================================================================
     /** Returns an XML element which encapsulates all the items in this property set.
@@ -192,7 +194,9 @@ public:
     /** Returns the fallback property set.
         @see setFallbackPropertySet
     */
-    PropertySet* getFallbackPropertySet() const noexcept                { return fallbackProperties; }
+    PropertySet* getFallbackPropertySet() const noexcept                {
+        return fallbackProperties;
+    }
 
 protected:
     /** Subclasses can override this to be told when one of the properies has been changed. */

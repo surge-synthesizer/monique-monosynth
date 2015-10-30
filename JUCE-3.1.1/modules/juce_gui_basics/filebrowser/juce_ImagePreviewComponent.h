@@ -33,7 +33,7 @@
     @see FileChooserDialogBox, FilePreviewComponent
 */
 class JUCE_API  ImagePreviewComponent  : public FilePreviewComponent,
-                                         private Timer
+    private Timer
 {
 public:
     //==============================================================================

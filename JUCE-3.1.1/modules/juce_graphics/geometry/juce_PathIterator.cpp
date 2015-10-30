@@ -23,15 +23,15 @@
 */
 
 #if JUCE_MSVC && JUCE_DEBUG
- #pragma optimize ("t", on)
+#pragma optimize ("t", on)
 #endif
 
 const float PathFlatteningIterator::defaultTolerance = 0.6f;
 
 //==============================================================================
 PathFlatteningIterator::PathFlatteningIterator (const Path& path_,
-                                                const AffineTransform& transform_,
-                                                const float tolerance)
+        const AffineTransform& transform_,
+        const float tolerance)
     : x2 (0),
       y2 (0),
       closesSubPath (false),
@@ -57,7 +57,7 @@ PathFlatteningIterator::~PathFlatteningIterator()
 bool PathFlatteningIterator::isLastInSubpath() const noexcept
 {
     return stackPos == stackBase.getData()
-             && (index >= path.numElements || points [index] == Path::moveMarker);
+           && (index >= path.numElements || points [index] == Path::moveMarker);
 }
 
 bool PathFlatteningIterator::next()
@@ -140,10 +140,10 @@ bool PathFlatteningIterator::next()
             ++subPathIndex;
 
             closesSubPath = (stackPos == stackBase)
-                             && (index < path.numElements)
-                             && (points [index] == Path::closeSubPathMarker)
-                             && x2 == subPathCloseX
-                             && y2 == subPathCloseY;
+                            && (index < path.numElements)
+                            && (points [index] == Path::closeSubPathMarker)
+                            && x2 == subPathCloseX
+                            && y2 == subPathCloseY;
 
             return true;
         }
@@ -224,7 +224,7 @@ bool PathFlatteningIterator::next()
             const float error2Y = m5y - y3;
 
             if (error1X * error1X + error1Y * error1Y > toleranceSquared
-                 || error2X * error2X + error2Y * error2Y > toleranceSquared)
+                    || error2X * error2X + error2Y * error2Y > toleranceSquared)
             {
                 *stackPos++ = y4;
                 *stackPos++ = x4;
@@ -282,5 +282,5 @@ bool PathFlatteningIterator::next()
 }
 
 #if JUCE_MSVC && JUCE_DEBUG
-  #pragma optimize ("", on)  // resets optimisations to the project defaults
+#pragma optimize ("", on)  // resets optimisations to the project defaults
 #endif

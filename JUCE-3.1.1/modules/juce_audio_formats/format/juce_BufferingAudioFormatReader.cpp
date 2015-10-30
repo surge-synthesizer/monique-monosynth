@@ -23,8 +23,8 @@
 */
 
 BufferingAudioReader::BufferingAudioReader (AudioFormatReader* sourceReader,
-                                            TimeSliceThread& timeSliceThread,
-                                            int samplesToBuffer)
+        TimeSliceThread& timeSliceThread,
+        int samplesToBuffer)
     : AudioFormatReader (nullptr, sourceReader->getFormatName()),
       source (sourceReader), thread (timeSliceThread),
       nextReadPosition (0),

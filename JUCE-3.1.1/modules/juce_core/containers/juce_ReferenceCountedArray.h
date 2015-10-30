@@ -62,7 +62,8 @@ public:
         @see ReferenceCountedObject, Array, OwnedArray
     */
     ReferenceCountedArray() noexcept
-        : numUsed (0)
+:
+    numUsed (0)
     {
     }
 
@@ -704,10 +705,10 @@ public:
         const ScopedLockType lock (getLock());
 
         if (isPositiveAndBelow (index1, numUsed)
-             && isPositiveAndBelow (index2, numUsed))
+        && isPositiveAndBelow (index2, numUsed))
         {
             std::swap (data.elements [index1],
-                       data.elements [index2]);
+            data.elements [index2]);
         }
     }
 
@@ -741,8 +742,8 @@ public:
                 if (newIndex > currentIndex)
                 {
                     memmove (data.elements + currentIndex,
-                             data.elements + currentIndex + 1,
-                             sizeof (ObjectClass*) * (size_t) (newIndex - currentIndex));
+                    data.elements + currentIndex + 1,
+                    sizeof (ObjectClass*) * (size_t) (newIndex - currentIndex));
                 }
                 else
                 {
@@ -832,7 +833,7 @@ public:
                const bool retainOrderOfEquivalentItems = false) const noexcept
     {
         (void) comparator;  // if you pass in an object with a static compareElements() method, this
-                            // avoids getting warning messages about the parameter being unused
+        // avoids getting warning messages about the parameter being unused
 
         const ScopedLockType lock (getLock());
         sortArray (comparator, data.elements.getData(), 0, size() - 1, retainOrderOfEquivalentItems);
@@ -868,18 +869,20 @@ public:
         To lock, you can call getLock().enter() and getLock().exit(), or preferably use
         an object of ScopedLockType as an RAII lock for it.
     */
-    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      { return data; }
+    inline const TypeOfCriticalSectionToUse& getLock() const noexcept      {
+        return data;
+    }
 
     /** Returns the type of scoped lock to use for locking this array */
     typedef typename TypeOfCriticalSectionToUse::ScopedLockType ScopedLockType;
 
 
     //==============================================================================
-   #ifndef DOXYGEN
+#ifndef DOXYGEN
     // Note that the swapWithArray method has been replaced by a more flexible templated version,
     // and renamed "swapWith" to be more consistent with the names used in other classes.
     JUCE_DEPRECATED_WITH_BODY (void swapWithArray (ReferenceCountedArray& other) noexcept, { swapWith (other); })
-   #endif
+#endif
 
 private:
     //==============================================================================

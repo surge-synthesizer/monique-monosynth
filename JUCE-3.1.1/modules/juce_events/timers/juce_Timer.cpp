@@ -23,8 +23,8 @@
 */
 
 class Timer::TimerThread  : private Thread,
-                            private DeletedAtShutdown,
-                            private AsyncUpdater
+    private DeletedAtShutdown,
+    private AsyncUpdater
 {
 public:
     typedef CriticalSection LockType; // (mysteriously, using a SpinLock here causes problems on some XP machines..)
@@ -62,7 +62,7 @@ public:
             }
 
             const int elapsed = (int) (now >= lastTime ? (now - lastTime)
-                                                       : (std::numeric_limits<uint32>::max() - (lastTime - now)));
+                                       : (std::numeric_limits<uint32>::max() - (lastTime - now)));
             lastTime = now;
 
             const int timeUntilFirstTimer = getTimeUntilFirstTimer (elapsed);
@@ -173,7 +173,7 @@ public:
             tim->periodMs = newCounter;
 
             if ((tim->next != nullptr && tim->next->countdownMs < tim->countdownMs)
-                 || (tim->previous != nullptr && tim->previous->countdownMs > tim->countdownMs))
+            || (tim->previous != nullptr && tim->previous->countdownMs > tim->countdownMs))
             {
                 instance->removeTimer (tim);
                 instance->addTimer (tim);
@@ -202,11 +202,11 @@ private:
     //==============================================================================
     void addTimer (Timer* const t) noexcept
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         // trying to add a timer that's already here - shouldn't get to this point,
         // so if you get this assertion, let me know!
         jassert (! timerExists (t));
-       #endif
+#endif
 
         Timer* i = firstTimer;
 
@@ -231,18 +231,18 @@ private:
             t->next->previous = t;
 
         jassert ((t->next == nullptr || t->next->countdownMs >= t->countdownMs)
-                  && (t->previous == nullptr || t->previous->countdownMs <= t->countdownMs));
+        && (t->previous == nullptr || t->previous->countdownMs <= t->countdownMs));
 
         notify();
     }
 
     void removeTimer (Timer* const t) noexcept
     {
-       #if JUCE_DEBUG
+#if JUCE_DEBUG
         // trying to remove a timer that's not here - shouldn't get to this point,
         // so if you get this assertion, let me know!
         jassert (timerExists (t));
-       #endif
+#endif
 
         if (t->previous != nullptr)
         {
@@ -277,7 +277,7 @@ private:
         startThread (7);
     }
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     bool timerExists (Timer* const t) const noexcept
     {
         for (Timer* tt = firstTimer; tt != nullptr; tt = tt->next)
@@ -286,7 +286,7 @@ private:
 
         return false;
     }
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TimerThread)
 };
@@ -296,18 +296,20 @@ Timer::TimerThread::LockType Timer::TimerThread::lock;
 
 //==============================================================================
 Timer::Timer() noexcept
-   : countdownMs (0),
-     periodMs (0),
-     previous (nullptr),
-     next (nullptr)
+:
+countdownMs (0),
+            periodMs (0),
+            previous (nullptr),
+            next (nullptr)
 {
 }
 
 Timer::Timer (const Timer&) noexcept
-   : countdownMs (0),
-     periodMs (0),
-     previous (nullptr),
-     next (nullptr)
+:
+countdownMs (0),
+periodMs (0),
+previous (nullptr),
+next (nullptr)
 {
 }
 

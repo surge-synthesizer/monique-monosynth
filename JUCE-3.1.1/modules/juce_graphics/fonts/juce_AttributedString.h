@@ -47,17 +47,19 @@ public:
 
     AttributedString (const AttributedString&);
     AttributedString& operator= (const AttributedString&);
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     AttributedString (AttributedString&&) noexcept;
     AttributedString& operator= (AttributedString&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~AttributedString();
 
     //==============================================================================
     /** Returns the complete text of this attributed string. */
-    const String& getText() const noexcept                  { return text; }
+    const String& getText() const noexcept                  {
+        return text;
+    }
 
     /** Replaces all the text.
         This will change the text, but won't affect any of the colour or font attributes
@@ -97,7 +99,9 @@ public:
     /** Returns the justification that should be used for laying-out the text.
         This may include both vertical and horizontal flags.
     */
-    Justification getJustification() const noexcept         { return justification; }
+    Justification getJustification() const noexcept         {
+        return justification;
+    }
 
     /** Sets the justification that should be used for laying-out the text.
         This may include both vertical and horizontal flags.
@@ -116,7 +120,9 @@ public:
     };
 
     /** Returns the word-wrapping behaviour. */
-    WordWrap getWordWrap() const noexcept                   { return wordWrap; }
+    WordWrap getWordWrap() const noexcept                   {
+        return wordWrap;
+    }
 
     /** Sets the word-wrapping behaviour. */
     void setWordWrap (WordWrap newWordWrap) noexcept;
@@ -133,14 +139,18 @@ public:
     };
 
     /** Returns the reading direction for the text. */
-    ReadingDirection getReadingDirection() const noexcept   { return readingDirection; }
+    ReadingDirection getReadingDirection() const noexcept   {
+        return readingDirection;
+    }
 
     /** Sets the reading direction that should be used for the text. */
     void setReadingDirection (ReadingDirection newReadingDirection) noexcept;
 
     //==============================================================================
     /** Returns the extra line-spacing distance. */
-    float getLineSpacing() const noexcept                   { return lineSpacing; }
+    float getLineSpacing() const noexcept                   {
+        return lineSpacing;
+    }
 
     /** Sets an extra line-spacing distance. */
     void setLineSpacing (float newLineSpacing) noexcept;
@@ -164,10 +174,14 @@ public:
         ~Attribute();
 
         /** If this attribute specifies a font, this returns it; otherwise it returns nullptr. */
-        const Font* getFont() const noexcept            { return font; }
+        const Font* getFont() const noexcept            {
+            return font;
+        }
 
         /** If this attribute specifies a colour, this returns it; otherwise it returns nullptr. */
-        const Colour* getColour() const noexcept        { return colour; }
+        const Colour* getColour() const noexcept        {
+            return colour;
+        }
 
         /** The range of characters to which this attribute will be applied. */
         const Range<int> range;
@@ -184,12 +198,16 @@ public:
     };
 
     /** Returns the number of attributes that have been added to this string. */
-    int getNumAttributes() const noexcept                       { return attributes.size(); }
+    int getNumAttributes() const noexcept                       {
+        return attributes.size();
+    }
 
     /** Returns one of the string's attributes.
         The index provided must be less than getNumAttributes(), and >= 0.
     */
-    const Attribute* getAttribute (int index) const noexcept    { return attributes.getUnchecked (index); }
+    const Attribute* getAttribute (int index) const noexcept    {
+        return attributes.getUnchecked (index);
+    }
 
     //==============================================================================
     /** Adds a colour attribute for the specified range. */

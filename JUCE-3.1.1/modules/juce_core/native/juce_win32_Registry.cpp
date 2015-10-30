@@ -69,9 +69,9 @@ struct RegistryKeyWrapper
         const RegistryKeyWrapper key (regValuePath, true, wow64Flags);
 
         return key.key != 0
-                && RegSetValueEx (key.key, key.wideCharValueName, 0, type,
-                                  reinterpret_cast <const BYTE*> (data),
-                                  (DWORD) dataSize) == ERROR_SUCCESS;
+               && RegSetValueEx (key.key, key.wideCharValueName, 0, type,
+                                 reinterpret_cast <const BYTE*> (data),
+                                 (DWORD) dataSize) == ERROR_SUCCESS;
     }
 
     static uint32 getBinaryValue (const String& regValuePath, MemoryBlock& result, DWORD wow64Flags)
@@ -107,9 +107,12 @@ struct RegistryKeyWrapper
         MemoryBlock buffer;
         switch (getBinaryValue (regValuePath, buffer, wow64Flags))
         {
-            case REG_SZ:    return static_cast <const WCHAR*> (buffer.getData());
-            case REG_DWORD: return String ((int) *reinterpret_cast<const DWORD*> (buffer.getData()));
-            default:        break;
+        case REG_SZ:
+            return static_cast <const WCHAR*> (buffer.getData());
+        case REG_DWORD:
+            return String ((int) *reinterpret_cast<const DWORD*> (buffer.getData()));
+        default:
+            break;
         }
 
         return defaultValue;
@@ -202,26 +205,32 @@ void JUCE_CALLTYPE WindowsRegistry::deleteKey (const String& regKeyPath, WoW64Mo
 }
 
 bool JUCE_CALLTYPE WindowsRegistry::registerFileAssociation (const String& fileExtension,
-                                                             const String& symbolicDescription,
-                                                             const String& fullDescription,
-                                                             const File& targetExecutable,
-                                                             const int iconResourceNumber,
-                                                             const bool registerForCurrentUserOnly,
-                                                             WoW64Mode mode)
+        const String& symbolicDescription,
+        const String& fullDescription,
+        const File& targetExecutable,
+        const int iconResourceNumber,
+        const bool registerForCurrentUserOnly,
+        WoW64Mode mode)
 {
     const char* const root = registerForCurrentUserOnly ? "HKEY_CURRENT_USER\\Software\\Classes\\"
-                                                        : "HKEY_CLASSES_ROOT\\";
+                             : "HKEY_CLASSES_ROOT\\";
     const String key (root + symbolicDescription);
 
     return setValue (root + fileExtension + "\\", symbolicDescription, mode)
-        && setValue (key + "\\", fullDescription, mode)
-        && setValue (key + "\\shell\\open\\command\\", targetExecutable.getFullPathName() + " \"%1\"", mode)
-        && (iconResourceNumber == 0
-              || setValue (key + "\\DefaultIcon\\",
-                           targetExecutable.getFullPathName() + "," + String (iconResourceNumber)));
+           && setValue (key + "\\", fullDescription, mode)
+           && setValue (key + "\\shell\\open\\command\\", targetExecutable.getFullPathName() + " \"%1\"", mode)
+           && (iconResourceNumber == 0
+               || setValue (key + "\\DefaultIcon\\",
+                            targetExecutable.getFullPathName() + "," + String (iconResourceNumber)));
 }
 
 // These methods are deprecated:
-String WindowsRegistry::getValueWow64 (const String& p, const String& defVal)  { return getValue (p, defVal, WoW64_64bit); }
-bool WindowsRegistry::valueExistsWow64 (const String& p)                       { return valueExists (p, WoW64_64bit); }
-bool WindowsRegistry::keyExistsWow64 (const String& p)                         { return keyExists (p, WoW64_64bit); }
+String WindowsRegistry::getValueWow64 (const String& p, const String& defVal)  {
+    return getValue (p, defVal, WoW64_64bit);
+}
+bool WindowsRegistry::valueExistsWow64 (const String& p)                       {
+    return valueExists (p, WoW64_64bit);
+}
+bool WindowsRegistry::keyExistsWow64 (const String& p)                         {
+    return keyExists (p, WoW64_64bit);
+}

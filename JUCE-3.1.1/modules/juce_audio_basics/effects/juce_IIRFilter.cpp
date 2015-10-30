@@ -27,12 +27,14 @@
 
 //==============================================================================
 IIRFilter::IIRFilter() noexcept
-    : v1 (0), v2 (0), active (false)
+:
+v1 (0), v2 (0), active (false)
 {
 }
 
 IIRFilter::IIRFilter (const IIRFilter& other) noexcept
-    : v1 (0), v2 (0), active (other.active)
+:
+v1 (0), v2 (0), active (other.active)
 {
     //const SpinLock::ScopedLockType sl (other.processLock);
     coefficients = other.coefficients;
@@ -70,7 +72,7 @@ float IIRFilter::processSingleSampleRaw (const float in) noexcept
 {
     if(!active)
       return in;
-  
+
     float out = coefficients.coefficients[0] * in + v1;
 
     JUCE_SNAP_TO_ZERO (out);

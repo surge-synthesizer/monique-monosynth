@@ -86,7 +86,7 @@
     @see JUCEApplicationBase, START_JUCE_APPLICATION
 */
 class JUCE_API  JUCEApplication  : public JUCEApplicationBase,
-                                   public ApplicationCommandTarget
+    public ApplicationCommandTarget
 {
 public:
     //==============================================================================

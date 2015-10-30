@@ -48,13 +48,17 @@ public:
     void setText (const String& newText);
 
     /** Returns the currently displayed text */
-    const String& getText() const noexcept                              { return text;}
+    const String& getText() const noexcept                              {
+        return text;
+    }
 
     /** Sets the colour of the text. */
     void setColour (Colour newColour);
 
     /** Returns the current text colour. */
-    Colour getColour() const noexcept                                   { return colour; }
+    Colour getColour() const noexcept                                   {
+        return colour;
+    }
 
     /** Sets the font to use.
         Note that the font height and horizontal scale are set as RelativeCoordinates using
@@ -65,24 +69,34 @@ public:
     void setFont (const Font& newFont, bool applySizeAndScale);
 
     /** Returns the current font. */
-    const Font& getFont() const noexcept                                { return font; }
+    const Font& getFont() const noexcept                                {
+        return font;
+    }
 
     /** Changes the justification of the text within the bounding box. */
     void setJustification (Justification newJustification);
 
     /** Returns the current justification. */
-    Justification getJustification() const noexcept                     { return justification; }
+    Justification getJustification() const noexcept                     {
+        return justification;
+    }
 
     /** Returns the parallelogram that defines the text bounding box. */
-    const RelativeParallelogram& getBoundingBox() const noexcept        { return bounds; }
+    const RelativeParallelogram& getBoundingBox() const noexcept        {
+        return bounds;
+    }
 
     /** Sets the bounding box that contains the text. */
     void setBoundingBox (const RelativeParallelogram& newBounds);
 
-    const RelativeCoordinate& getFontHeight() const                     { return fontHeight; }
+    const RelativeCoordinate& getFontHeight() const                     {
+        return fontHeight;
+    }
     void setFontHeight (const RelativeCoordinate& newHeight);
 
-    const RelativeCoordinate& getFontHorizontalScale() const            { return fontHScale; }
+    const RelativeCoordinate& getFontHorizontalScale() const            {
+        return fontHScale;
+    }
     void setFontHorizontalScale (const RelativeCoordinate& newScale);
 
     //==============================================================================

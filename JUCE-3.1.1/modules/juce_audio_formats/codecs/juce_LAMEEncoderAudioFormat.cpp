@@ -33,8 +33,8 @@ public:
             unsigned int bitsPerSample, const StringPairArray& metadata)
         : AudioFormatWriter (destStream, formatName, sampleRate,
                              numberOfChannels, bitsPerSample),
-          vbrLevel (vbr), cbrBitrate (cbr),
-          tempWav (".wav")
+        vbrLevel (vbr), cbrBitrate (cbr),
+        tempWav (".wav")
     {
         WavAudioFormat wavFormat;
 
@@ -110,7 +110,8 @@ private:
         if (cp.start (processArgs))
         {
             const String childOutput (cp.readAllProcessOutput());
-            DBG (childOutput); (void) childOutput;
+            DBG (childOutput);
+            (void) childOutput;
 
             cp.waitForProcessToFinish (10000);
             return tempMP3.getFile().getSize() > 0;
@@ -174,15 +175,22 @@ Array<int> LAMEEncoderAudioFormat::getPossibleBitDepths()
     return Array<int> (depths);
 }
 
-bool LAMEEncoderAudioFormat::canDoStereo()      { return true; }
-bool LAMEEncoderAudioFormat::canDoMono()        { return true; }
-bool LAMEEncoderAudioFormat::isCompressed()     { return true; }
+bool LAMEEncoderAudioFormat::canDoStereo()      {
+    return true;
+}
+bool LAMEEncoderAudioFormat::canDoMono()        {
+    return true;
+}
+bool LAMEEncoderAudioFormat::isCompressed()     {
+    return true;
+}
 
 StringArray LAMEEncoderAudioFormat::getQualityOptions()
 {
     static const char* vbrOptions[] = { "VBR quality 0 (best)", "VBR quality 1", "VBR quality 2", "VBR quality 3",
                                         "VBR quality 4 (normal)", "VBR quality 5", "VBR quality 6", "VBR quality 7",
-                                        "VBR quality 8", "VBR quality 9 (smallest)", nullptr };
+                                        "VBR quality 8", "VBR quality 9 (smallest)", nullptr
+                                      };
     StringArray opts (vbrOptions);
 
     const int cbrRates[] = { 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
@@ -199,11 +207,11 @@ AudioFormatReader* LAMEEncoderAudioFormat::createReaderFor (InputStream*, const 
 }
 
 AudioFormatWriter* LAMEEncoderAudioFormat::createWriterFor (OutputStream* streamToWriteTo,
-                                                            double sampleRateToUse,
-                                                            unsigned int numberOfChannels,
-                                                            int bitsPerSample,
-                                                            const StringPairArray& metadataValues,
-                                                            int qualityOptionIndex)
+        double sampleRateToUse,
+        unsigned int numberOfChannels,
+        int bitsPerSample,
+        const StringPairArray& metadataValues,
+        int qualityOptionIndex)
 {
     int vbr = 4;
     int cbr = 0;

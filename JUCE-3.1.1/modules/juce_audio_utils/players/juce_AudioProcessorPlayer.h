@@ -39,7 +39,7 @@
     @see AudioProcessor, AudioProcessorGraph
 */
 class JUCE_API  AudioProcessorPlayer    : public AudioIODeviceCallback,
-                                          public MidiInputCallback
+    public MidiInputCallback
 {
 public:
     //==============================================================================
@@ -57,7 +57,9 @@ public:
     void setProcessor (AudioProcessor* processorToPlay);
 
     /** Returns the current audio processor that is being played. */
-    AudioProcessor* getCurrentProcessor() const noexcept            { return processor; }
+    AudioProcessor* getCurrentProcessor() const noexcept            {
+        return processor;
+    }
 
     /** Returns a midi message collector that you can pass midi messages to if you
         want them to be injected into the midi stream that is being sent to the

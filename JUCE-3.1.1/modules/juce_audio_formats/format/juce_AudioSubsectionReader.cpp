@@ -23,13 +23,13 @@
 */
 
 AudioSubsectionReader::AudioSubsectionReader (AudioFormatReader* const source_,
-                                              const int64 startSample_,
-                                              const int64 length_,
-                                              const bool deleteSourceWhenDeleted_)
-   : AudioFormatReader (0, source_->getFormatName()),
-     source (source_),
-     startSample (startSample_),
-     deleteSourceWhenDeleted (deleteSourceWhenDeleted_)
+        const int64 startSample_,
+        const int64 length_,
+        const bool deleteSourceWhenDeleted_)
+    : AudioFormatReader (0, source_->getFormatName()),
+      source (source_),
+      startSample (startSample_),
+      deleteSourceWhenDeleted (deleteSourceWhenDeleted_)
 {
     length = jmin (jmax ((int64) 0, source->lengthInSamples - startSample), length_);
 
@@ -48,7 +48,7 @@ AudioSubsectionReader::~AudioSubsectionReader()
 
 //==============================================================================
 bool AudioSubsectionReader::readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer,
-                                         int64 startSampleInFile, int numSamples)
+        int64 startSampleInFile, int numSamples)
 {
     clearSamplesBeyondAvailableLength (destSamples, numDestChannels, startOffsetInDestBuffer,
                                        startSampleInFile, numSamples, length);
@@ -58,11 +58,11 @@ bool AudioSubsectionReader::readSamples (int** destSamples, int numDestChannels,
 }
 
 void AudioSubsectionReader::readMaxLevels (int64 startSampleInFile,
-                                           int64 numSamples,
-                                           float& lowestLeft,
-                                           float& highestLeft,
-                                           float& lowestRight,
-                                           float& highestRight)
+        int64 numSamples,
+        float& lowestLeft,
+        float& highestLeft,
+        float& lowestRight,
+        float& highestRight)
 {
     startSampleInFile = jmax ((int64) 0, startSampleInFile);
     numSamples = jmax ((int64) 0, jmin (numSamples, length - startSampleInFile));

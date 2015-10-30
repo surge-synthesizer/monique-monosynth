@@ -114,7 +114,26 @@ class EventButton : public TextButton
 public:
     EventButton( const String& name_ ) : TextButton( name_ ) { }
 };
+class BottomButton : public TextButton
+{
+    friend class Monique_Ui_DualSlider;
+    Monique_Ui_DualSlider* owner;
 
+    void mouseEnter (const MouseEvent& event) override;
+    void mouseExit (const MouseEvent& event) override;
+public:
+    BottomButton( const String& name_ ) : TextButton( name_ ) { }
+};
+class Labels : public Label
+{
+    friend class Monique_Ui_DualSlider;
+    Monique_Ui_DualSlider* owner;
+
+    void mouseEnter (const MouseEvent& event) override;
+    void mouseExit (const MouseEvent& event) override;
+public:
+    Labels( const String& name_, const String& text_ ) : Label( name_, text_ ) { }
+};
 enum
 {
     TOP_BUTTON_IS_ON = -4,
@@ -125,6 +144,15 @@ enum
 
 struct ModulationSliderConfigBase
 {
+    // TODO remove
+    int bg_colour_code;
+
+    //
+    virtual bool is_opaque() const noexcept
+    {
+        return true;
+    }
+
     //==============================================================================
     // BASIC SLIDER TYPE
     virtual bool get_is_linear() const noexcept
@@ -134,6 +162,18 @@ struct ModulationSliderConfigBase
     virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
     {
         return false;
+    }
+    virtual bool action_keep_env_pop_open_for( const MFOData*const mfo_ ) const noexcept
+    {
+        return false;
+    }
+    virtual bool use_click_through_hack() const noexcept
+    {
+        return false;
+    }
+    virtual COLOUR_THEMES get_colour_theme() const noexcept 
+    {
+      return COLOUR_THEMES::FILTER_THEME;
     }
 
     //==============================================================================
@@ -162,12 +202,12 @@ struct ModulationSliderConfigBase
     {
         return "";
     }
-    
+
     //==============================================================================
     // FRONT SLIDER
     virtual SLIDER_STYLES get_front_slider_style() const noexcept
     {
-        return UNDEFINED_SLIDER_STYLE;
+        return VALUE_SLIDER;
     }
     virtual Parameter* get_front_parameter_base() const noexcept = 0;
     virtual int get_override_front_min_value() const noexcept
@@ -187,7 +227,7 @@ struct ModulationSliderConfigBase
     // BACK SLIDER
     virtual SLIDER_STYLES get_back_slider_style() const noexcept
     {
-        return UNDEFINED_SLIDER_STYLE;
+        return MODULATION_SLIDER;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     virtual Parameter* get_back_parameter_base() const noexcept
@@ -280,7 +320,7 @@ struct ModulationSliderConfigBase
     }
 
 protected:
-    ModulationSliderConfigBase() {}
+    ModulationSliderConfigBase( int bg_colour_code_ = 0 ) : bg_colour_code(bg_colour_code_) {}
 
 public:
     virtual ~ModulationSliderConfigBase() {}
@@ -302,8 +342,8 @@ class MoniqueSynthData;
 class Monique_Ui_DualSlider  : public Component,
                                public Monique_Ui_Refreshable,
                                public ButtonListener,
-                               public LabelListener,
-                               public SliderListener
+                               public SliderListener,
+                               public LabelListener
 {
 public:
     //==============================================================================
@@ -312,11 +352,14 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    bool is_opaque;
+    bool is_linear;
     bool is_in_ctrl_view() const;
     void set_ctrl_view_mode( bool mode_ );
     void show_view_mode();
     void update_return_values() noexcept;
     bool force_repaint;
+    bool force_show_center_value;
 
     Parameter* get_front_parameter() noexcept { return front_parameter; }
 
@@ -324,6 +367,7 @@ public:
     const float original_h;
 
     ModulationSliderConfigBase*const _config;
+    SectionTheme*theme;
 
 private:
     Parameter* front_parameter;
@@ -338,6 +382,7 @@ private:
     bool runtime_show_value_popup;
     bool last_runtime_show_value_popup;
     ModulationSliderConfigBase::SHOW_TYPES show_value_popup_type;
+    float last_value;
     float last_painted_value_slider_val;
     float last_painted_mod_slider_val;
 
@@ -352,14 +397,17 @@ public:
     void topButtonEnter (Component*a_);
     void topButtonExit (Component*b_);
 
+    void mouseDown (const MouseEvent& event) override;
+    void mouseEnter (const MouseEvent& event) override;
+    void mouseExit (const MouseEvent& event) override;
 public:
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
-    void labelTextChanged (Label* labelThatHasChanged);
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void labelTextChanged (Label* labelThatHasChanged);
 
 
 
@@ -368,12 +416,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<EventButton> button_top;
-    ScopedPointer<Label> label_top;
-    ScopedPointer<SnapSlider> slider_value;
-    ScopedPointer<TextButton> button_bottom;
+    ScopedPointer<BottomButton> button_bottom;
     ScopedPointer<Left2MiddleSlider> slider_modulation;
-    ScopedPointer<Label> label;
+    ScopedPointer<Labels> label;
+    ScopedPointer<EventButton> button_top;
+    ScopedPointer<SnapSlider> slider_value;
+    ScopedPointer<Labels> label_top;
 
 
     //==============================================================================

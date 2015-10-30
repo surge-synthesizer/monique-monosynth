@@ -108,12 +108,16 @@ public:
 
     //==============================================================================
     /** Returns true if the timer is currently running. */
-    bool isTimerRunning() const noexcept                    { return periodMs > 0; }
+    bool isTimerRunning() const noexcept                    {
+        return periodMs > 0;
+    }
 
     /** Returns the timer's interval.
         @returns the timer's interval in milliseconds if it's running, or 0 if it's not.
     */
-    int getTimerInterval() const noexcept                   { return periodMs; }
+    int getTimerInterval() const noexcept                   {
+        return periodMs;
+    }
 
 
     //==============================================================================

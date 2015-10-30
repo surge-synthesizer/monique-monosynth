@@ -37,7 +37,7 @@
     @see TextButton, DrawableButton, ToggleButton
 */
 class JUCE_API  Button  : public Component,
-                          public SettableTooltipClient
+    public SettableTooltipClient
 {
 protected:
     //==============================================================================
@@ -62,7 +62,9 @@ public:
     /** Returns the text displayed in the button.
         @see setButtonText
     */
-    const String& getButtonText() const               { return text; }
+    const String& getButtonText() const               {
+        return text;
+    }
 
     //==============================================================================
     /** Returns true if the button is currently being held down.
@@ -102,7 +104,9 @@ public:
 
         @see setToggleState
     */
-    bool getToggleState() const noexcept                        { return isOn.getValue(); }
+    bool getToggleState() const noexcept                        {
+        return isOn.getValue();
+    }
 
     /** Returns the Value object that represents the botton's toggle state.
         You can use this Value object to connect the button's state to external values or setters,
@@ -151,7 +155,9 @@ public:
     /** Returns the ID of the group to which this button belongs.
         (See setRadioGroupId() for an explanation of this).
     */
-    int getRadioGroupId() const noexcept                        { return radioGroupId; }
+    int getRadioGroupId() const noexcept                        {
+        return radioGroupId;
+    }
 
     //==============================================================================
     /**
@@ -213,7 +219,9 @@ public:
                               bool generateTooltip);
 
     /** Returns the command ID that was set by setCommandToTrigger(). */
-    CommandID getCommandID() const noexcept             { return commandID; }
+    CommandID getCommandID() const noexcept             {
+        return commandID;
+    }
 
     //==============================================================================
     /** Assigns a shortcut key to trigger the button.
@@ -301,27 +309,37 @@ public:
     void setConnectedEdges (int connectedEdgeFlags);
 
     /** Returns the set of flags passed into setConnectedEdges(). */
-    int getConnectedEdgeFlags() const noexcept          { return connectedEdgeFlags; }
+    int getConnectedEdgeFlags() const noexcept          {
+        return connectedEdgeFlags;
+    }
 
     /** Indicates whether the button adjoins another one on its left edge.
         @see setConnectedEdges
     */
-    bool isConnectedOnLeft() const noexcept             { return (connectedEdgeFlags & ConnectedOnLeft) != 0; }
+    bool isConnectedOnLeft() const noexcept             {
+        return (connectedEdgeFlags & ConnectedOnLeft) != 0;
+    }
 
     /** Indicates whether the button adjoins another one on its right edge.
         @see setConnectedEdges
     */
-    bool isConnectedOnRight() const noexcept            { return (connectedEdgeFlags & ConnectedOnRight) != 0; }
+    bool isConnectedOnRight() const noexcept            {
+        return (connectedEdgeFlags & ConnectedOnRight) != 0;
+    }
 
     /** Indicates whether the button adjoins another one on its top edge.
         @see setConnectedEdges
     */
-    bool isConnectedOnTop() const noexcept              { return (connectedEdgeFlags & ConnectedOnTop) != 0; }
+    bool isConnectedOnTop() const noexcept              {
+        return (connectedEdgeFlags & ConnectedOnTop) != 0;
+    }
 
     /** Indicates whether the button adjoins another one on its bottom edge.
         @see setConnectedEdges
     */
-    bool isConnectedOnBottom() const noexcept           { return (connectedEdgeFlags & ConnectedOnBottom) != 0; }
+    bool isConnectedOnBottom() const noexcept           {
+        return (connectedEdgeFlags & ConnectedOnBottom) != 0;
+    }
 
 
     //==============================================================================
@@ -344,7 +362,9 @@ public:
     void setState (ButtonState newState);
 
     /** Returns the button's current over/down/up state. */
-    ButtonState getState() const noexcept               { return buttonState; }
+    ButtonState getState() const noexcept               {
+        return buttonState;
+    }
 
     // This method's parameters have changed - see the new version.
     JUCE_DEPRECATED (void setToggleState (bool, bool));
@@ -377,11 +397,13 @@ public:
         virtual void drawDrawableButton (Graphics&, DrawableButton&, bool isMouseOverButton, bool isButtonDown) = 0;
 
     private:
-       #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
         // These method have been deprecated: see their replacements above.
         //virtual int getTextButtonFont (TextButton&) { return 0; }
-        virtual int changeTextButtonWidthToFitText (TextButton&, int) { return 0; }
-       #endif
+        virtual int changeTextButtonWidthToFitText (TextButton&, int) {
+            return 0;
+        }
+#endif
     };
 
 protected:
@@ -507,8 +529,8 @@ private:
 };
 
 #ifndef DOXYGEN
- /** This typedef is just for compatibility with old code and VC6 - newer code should use Button::Listener instead. */
- typedef Button::Listener ButtonListener;
+/** This typedef is just for compatibility with old code and VC6 - newer code should use Button::Listener instead. */
+typedef Button::Listener ButtonListener;
 #endif
 
 #endif   // JUCE_BUTTON_H_INCLUDED

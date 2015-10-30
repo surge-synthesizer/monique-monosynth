@@ -61,8 +61,8 @@ public:
         @see PluginDescription::createInstance
     */
     virtual AudioPluginInstance* createInstanceFromDescription (const PluginDescription& desc,
-                                                                double initialSampleRate,
-                                                                int initialBufferSize) = 0;
+            double initialSampleRate,
+            int initialBufferSize) = 0;
 
     /** Should do a quick check to see if this file or directory might be a plugin of
         this format.
@@ -92,7 +92,7 @@ public:
         than manually.
     */
     virtual StringArray searchPathsForPlugins (const FileSearchPath& directoriesToSearch,
-                                               bool recursive) = 0;
+            bool recursive) = 0;
 
     /** Returns the typical places to look for this kind of plugin.
 

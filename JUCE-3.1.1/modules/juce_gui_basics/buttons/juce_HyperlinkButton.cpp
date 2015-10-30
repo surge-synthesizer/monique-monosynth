@@ -24,21 +24,21 @@
 
 HyperlinkButton::HyperlinkButton (const String& linkText,
                                   const URL& linkURL)
-   : Button (linkText),
-     url (linkURL),
-     font (14.0f, Font::underlined),
-     resizeFont (true),
-     justification (Justification::centred)
+    : Button (linkText),
+      url (linkURL),
+      font (14.0f, Font::underlined),
+      resizeFont (true),
+      justification (Justification::centred)
 {
     setMouseCursor (MouseCursor::PointingHandCursor);
     setTooltip (linkURL.toString (false));
 }
 
 HyperlinkButton::HyperlinkButton ()
-   : Button (String::empty),
-     font (14.0f, Font::underlined),
-     resizeFont (true),
-     justification (Justification::centred)
+    : Button (String::empty),
+      font (14.0f, Font::underlined),
+      resizeFont (true),
+      justification (Justification::centred)
 {
     setMouseCursor (MouseCursor::PointingHandCursor);
 }
@@ -97,7 +97,7 @@ void HyperlinkButton::paintButton (Graphics& g,
 
     if (isEnabled())
         g.setColour ((isMouseOverButton) ? textColour.darker ((isButtonDown) ? 1.3f : 0.4f)
-                                         : textColour);
+                         : textColour);
     else
         g.setColour (textColour.withMultipliedAlpha (0.4f));
 

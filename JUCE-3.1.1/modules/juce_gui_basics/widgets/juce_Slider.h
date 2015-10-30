@@ -48,7 +48,7 @@
     @see Slider::Listener
 */
 class JUCE_API  Slider  : public Component,
-                          public SettableTooltipClient
+    public SettableTooltipClient
 {
 public:
     //==============================================================================
@@ -534,8 +534,8 @@ public:
             @see sliderDragStarted, Slider::stoppedDragging
         */
         virtual void sliderDragEnded (Slider*) {}
-        
-        
+
+
         virtual void sliderClicked (Slider*) {}
     };
 
@@ -798,12 +798,12 @@ public:
                                        Slider&) = 0;
 
         virtual void drawLinearSliderBackground (Graphics&,
-                                                 int x, int y, int width, int height,
-                                                 float sliderPos,
-                                                 float minSliderPos,
-                                                 float maxSliderPos,
-                                                 const Slider::SliderStyle style,
-                                                 Slider&) = 0;
+                int x, int y, int width, int height,
+                float sliderPos,
+                float minSliderPos,
+                float maxSliderPos,
+                const Slider::SliderStyle style,
+                Slider&) = 0;
 
         virtual void drawLinearSliderThumb (Graphics&,
                                             int x, int y, int width, int height,
@@ -830,13 +830,13 @@ public:
         virtual Font getSliderPopupFont (Slider&) = 0;
         virtual int getSliderPopupPlacement (Slider&) = 0;
 
-       #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
         // These methods' parameters have changed: see the new method signatures.
         virtual void createSliderButton (bool) {}
         virtual void getSliderEffect() {}
         virtual void getSliderPopupFont() {}
         virtual void getSliderPopupPlacement() {}
-       #endif
+#endif
     };
 
     //==============================================================================
@@ -874,7 +874,7 @@ private:
 
     void init (SliderStyle, TextEntryBoxPosition);
 
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // These methods' bool parameters have changed: see the new method signature.
     JUCE_DEPRECATED (void setValue (double, bool));
     JUCE_DEPRECATED (void setValue (double, bool, bool));
@@ -887,7 +887,7 @@ private:
     JUCE_DEPRECATED (void setMinAndMaxValues (double, double, bool, bool));
     JUCE_DEPRECATED (void setMinAndMaxValues (double, double, bool));
     virtual void snapValue (double, bool) {}
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Slider)
 };

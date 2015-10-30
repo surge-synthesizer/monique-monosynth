@@ -39,19 +39,21 @@
 class CharPointer_UTF16
 {
 public:
-   #if JUCE_NATIVE_WCHAR_IS_UTF16
+#if JUCE_NATIVE_WCHAR_IS_UTF16
     typedef wchar_t CharType;
-   #else
+#else
     typedef int16 CharType;
-   #endif
+#endif
 
     inline explicit CharPointer_UTF16 (const CharType* const rawPointer) noexcept
-        : data (const_cast <CharType*> (rawPointer))
+:
+    data (const_cast <CharType*> (rawPointer))
     {
     }
 
     inline CharPointer_UTF16 (const CharPointer_UTF16& other) noexcept
-        : data (other.data)
+:
+    data (other.data)
     {
     }
 
@@ -68,21 +70,39 @@ public:
     }
 
     /** This is a pointer comparison, it doesn't compare the actual text. */
-    inline bool operator== (CharPointer_UTF16 other) const noexcept     { return data == other.data; }
-    inline bool operator!= (CharPointer_UTF16 other) const noexcept     { return data != other.data; }
-    inline bool operator<= (CharPointer_UTF16 other) const noexcept     { return data <= other.data; }
-    inline bool operator<  (CharPointer_UTF16 other) const noexcept     { return data <  other.data; }
-    inline bool operator>= (CharPointer_UTF16 other) const noexcept     { return data >= other.data; }
-    inline bool operator>  (CharPointer_UTF16 other) const noexcept     { return data >  other.data; }
+    inline bool operator== (CharPointer_UTF16 other) const noexcept     {
+        return data == other.data;
+    }
+    inline bool operator!= (CharPointer_UTF16 other) const noexcept     {
+        return data != other.data;
+    }
+    inline bool operator<= (CharPointer_UTF16 other) const noexcept     {
+        return data <= other.data;
+    }
+    inline bool operator<  (CharPointer_UTF16 other) const noexcept     {
+        return data <  other.data;
+    }
+    inline bool operator>= (CharPointer_UTF16 other) const noexcept     {
+        return data >= other.data;
+    }
+    inline bool operator>  (CharPointer_UTF16 other) const noexcept     {
+        return data >  other.data;
+    }
 
     /** Returns the address that this pointer is pointing to. */
-    inline CharType* getAddress() const noexcept        { return data; }
+    inline CharType* getAddress() const noexcept        {
+        return data;
+    }
 
     /** Returns the address that this pointer is pointing to. */
-    inline operator const CharType*() const noexcept    { return data; }
+    inline operator const CharType*() const noexcept    {
+        return data;
+    }
 
     /** Returns true if this pointer is pointing to a null character. */
-    inline bool isEmpty() const noexcept                { return *data == 0; }
+    inline bool isEmpty() const noexcept                {
+        return *data == 0;
+    }
 
     /** Returns the unicode character that this pointer is pointing to. */
     juce_wchar operator*() const noexcept
@@ -349,7 +369,7 @@ public:
         return CharacterFunctions::compareIgnoreCaseUpTo (*this, other, maxChars);
     }
 
-   #if JUCE_MSVC && ! DOXYGEN
+#if JUCE_MSVC && ! DOXYGEN
     int compareIgnoreCase (const CharPointer_UTF16 other) const noexcept
     {
         return _wcsicmp (data, other.data);
@@ -365,7 +385,7 @@ public:
         const CharType* const t = wcsstr (data, stringToFind.getAddress());
         return t == nullptr ? -1 : (int) (t - data);
     }
-   #endif
+#endif
 
     /** Returns the character index of a substring, or -1 if it isn't found. */
     template <typename CharPointer>
@@ -384,58 +404,78 @@ public:
     int indexOf (const juce_wchar charToFind, const bool ignoreCase) const noexcept
     {
         return ignoreCase ? CharacterFunctions::indexOfCharIgnoreCase (*this, charToFind)
-                          : CharacterFunctions::indexOfChar (*this, charToFind);
+               : CharacterFunctions::indexOfChar (*this, charToFind);
     }
 
     /** Returns true if the first character of this string is whitespace. */
-    bool isWhitespace() const noexcept      { return CharacterFunctions::isWhitespace (operator*()) != 0; }
+    bool isWhitespace() const noexcept      {
+        return CharacterFunctions::isWhitespace (operator*()) != 0;
+    }
     /** Returns true if the first character of this string is a digit. */
-    bool isDigit() const noexcept           { return CharacterFunctions::isDigit (operator*()) != 0; }
+    bool isDigit() const noexcept           {
+        return CharacterFunctions::isDigit (operator*()) != 0;
+    }
     /** Returns true if the first character of this string is a letter. */
-    bool isLetter() const noexcept          { return CharacterFunctions::isLetter (operator*()) != 0; }
+    bool isLetter() const noexcept          {
+        return CharacterFunctions::isLetter (operator*()) != 0;
+    }
     /** Returns true if the first character of this string is a letter or digit. */
-    bool isLetterOrDigit() const noexcept   { return CharacterFunctions::isLetterOrDigit (operator*()) != 0; }
+    bool isLetterOrDigit() const noexcept   {
+        return CharacterFunctions::isLetterOrDigit (operator*()) != 0;
+    }
     /** Returns true if the first character of this string is upper-case. */
-    bool isUpperCase() const noexcept       { return CharacterFunctions::isUpperCase (operator*()) != 0; }
+    bool isUpperCase() const noexcept       {
+        return CharacterFunctions::isUpperCase (operator*()) != 0;
+    }
     /** Returns true if the first character of this string is lower-case. */
-    bool isLowerCase() const noexcept       { return CharacterFunctions::isLowerCase (operator*()) != 0; }
+    bool isLowerCase() const noexcept       {
+        return CharacterFunctions::isLowerCase (operator*()) != 0;
+    }
 
     /** Returns an upper-case version of the first character of this string. */
-    juce_wchar toUpperCase() const noexcept { return CharacterFunctions::toUpperCase (operator*()); }
+    juce_wchar toUpperCase() const noexcept {
+        return CharacterFunctions::toUpperCase (operator*());
+    }
     /** Returns a lower-case version of the first character of this string. */
-    juce_wchar toLowerCase() const noexcept { return CharacterFunctions::toLowerCase (operator*()); }
+    juce_wchar toLowerCase() const noexcept {
+        return CharacterFunctions::toLowerCase (operator*());
+    }
 
     /** Parses this string as a 32-bit integer. */
     int getIntValue32() const noexcept
     {
-       #if JUCE_MSVC
+#if JUCE_MSVC
         return _wtoi (data);
-       #else
+#else
         return CharacterFunctions::getIntValue <int, CharPointer_UTF16> (*this);
-       #endif
+#endif
     }
 
     /** Parses this string as a 64-bit integer. */
     int64 getIntValue64() const noexcept
     {
-       #if JUCE_MSVC
+#if JUCE_MSVC
         return _wtoi64 (data);
-       #else
+#else
         return CharacterFunctions::getIntValue <int64, CharPointer_UTF16> (*this);
-       #endif
+#endif
     }
 
     /** Parses this string as a floating point double. */
-    double getDoubleValue() const noexcept  { return CharacterFunctions::getDoubleValue (*this); }
+    double getDoubleValue() const noexcept  {
+        return CharacterFunctions::getDoubleValue (*this);
+    }
 
     /** Returns the first non-whitespace character in the string. */
-    CharPointer_UTF16 findEndOfWhitespace() const noexcept   { return CharacterFunctions::findEndOfWhitespace (*this); }
+    CharPointer_UTF16 findEndOfWhitespace() const noexcept   {
+        return CharacterFunctions::findEndOfWhitespace (*this);
+    }
 
     /** Returns true if the given unicode character can be represented in this encoding. */
     static bool canRepresent (juce_wchar character) noexcept
     {
         return ((unsigned int) character) < (unsigned int) 0x10ffff
-                 && (((unsigned int) character) < 0xd800 || ((unsigned int) character) > 0xdfff);
+        && (((unsigned int) character) < 0xd800 || ((unsigned int) character) > 0xdfff);
     }
 
     /** Returns true if this data contains a valid string in this encoding. */
@@ -492,7 +532,7 @@ public:
         const uint8* const c = static_cast<const uint8*> (possibleByteOrder);
 
         return c[0] == (uint8) byteOrderMarkBE1
-            && c[1] == (uint8) byteOrderMarkBE2;
+        && c[1] == (uint8) byteOrderMarkBE2;
     }
 
     /** Returns true if the first pair of bytes in this pointer are the UTF16 byte-order mark (little endian).
@@ -504,7 +544,7 @@ public:
         const uint8* const c = static_cast<const uint8*> (possibleByteOrder);
 
         return c[0] == (uint8) byteOrderMarkLE1
-            && c[1] == (uint8) byteOrderMarkLE2;
+        && c[1] == (uint8) byteOrderMarkLE2;
     }
 
 private:

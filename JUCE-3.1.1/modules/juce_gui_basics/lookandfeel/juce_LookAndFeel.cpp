@@ -129,7 +129,7 @@ MouseCursor LookAndFeel::getMouseCursorFor (Component& component)
 }
 
 LowLevelGraphicsContext* LookAndFeel::createGraphicsContext (const Image& imageToRenderOn, const Point<int>& origin,
-                                                             const RectangleList<int>& initialClip)
+        const RectangleList<int>& initialClip)
 {
     return new LowLevelGraphicsSoftwareRenderer (imageToRenderOn, origin, initialClip);
 }
@@ -142,9 +142,9 @@ void LookAndFeel::setUsingNativeAlertWindows (bool shouldUseNativeAlerts)
 
 bool LookAndFeel::isUsingNativeAlertWindows()
 {
-   #if JUCE_LINUX
+#if JUCE_LINUX
     return false; // not available currently..
-   #else
+#else
     return useNativeAlertWindows;
-   #endif
+#endif
 }

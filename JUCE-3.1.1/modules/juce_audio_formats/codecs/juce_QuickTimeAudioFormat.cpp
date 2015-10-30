@@ -27,37 +27,37 @@
 } // (juce namespace)
 
 #if ! JUCE_WINDOWS
- #define Point CarbonDummyPointName // (workaround to avoid definition of "Point" by old Carbon headers)
- #define Component CarbonDummyCompName
- #include <QuickTime/Movies.h>
- #include <QuickTime/QTML.h>
- #include <QuickTime/QuickTimeComponents.h>
- #include <QuickTime/MediaHandlers.h>
- #include <QuickTime/ImageCodec.h>
- #undef Point
- #undef Component
+#define Point CarbonDummyPointName // (workaround to avoid definition of "Point" by old Carbon headers)
+#define Component CarbonDummyCompName
+#include <QuickTime/Movies.h>
+#include <QuickTime/QTML.h>
+#include <QuickTime/QuickTimeComponents.h>
+#include <QuickTime/MediaHandlers.h>
+#include <QuickTime/ImageCodec.h>
+#undef Point
+#undef Component
 #else
- #if JUCE_MSVC
-  #pragma warning (push)
-  #pragma warning (disable : 4100)
- #endif
+#if JUCE_MSVC
+#pragma warning (push)
+#pragma warning (disable : 4100)
+#endif
 
- /* If you've got an include error here, you probably need to install the QuickTime SDK and
-    add its header directory to your include path.
+/* If you've got an include error here, you probably need to install the QuickTime SDK and
+   add its header directory to your include path.
 
-    Alternatively, if you don't need any QuickTime services, just set the JUCE_QUICKTIME flag to 0.
- */
- #undef SIZE_MAX
- #include <Movies.h>
- #include <QTML.h>
- #include <QuickTimeComponents.h>
- #include <MediaHandlers.h>
- #include <ImageCodec.h>
- #undef SIZE_MAX
+   Alternatively, if you don't need any QuickTime services, just set the JUCE_QUICKTIME flag to 0.
+*/
+#undef SIZE_MAX
+#include <Movies.h>
+#include <QTML.h>
+#include <QuickTimeComponents.h>
+#include <MediaHandlers.h>
+#include <ImageCodec.h>
+#undef SIZE_MAX
 
- #if JUCE_MSVC
-  #pragma warning (pop)
- #endif
+#if JUCE_MSVC
+#pragma warning (pop)
+#endif
 #endif
 
 namespace juce
@@ -85,10 +85,10 @@ public:
         {
             bufferList.calloc (256, 1);
 
-           #if JUCE_WINDOWS
+#if JUCE_WINDOWS
             if (InitializeQTML (0) != noErr)
                 return;
-           #endif
+#endif
 
             if (EnterMovies() != noErr)
                 return;
@@ -111,7 +111,7 @@ public:
                     GetMediaHandlerDescription (media, &mediaType, 0, 0);
 
                     if (mediaType == SoundMediaType
-                         && trackCount++ == trackNum_)
+                    && trackCount++ == trackNum_)
                     {
                         ok = true;
                         break;
@@ -130,15 +130,15 @@ public:
             samplesPerFrame = (int) (GetMediaDecodeDuration (media) / GetMediaSampleCount (media));
 
             trackUnitsPerFrame = GetMovieTimeScale (movie) * samplesPerFrame
-                                    / GetMediaTimeScale (media);
+                                 / GetMediaTimeScale (media);
 
             MovieAudioExtractionBegin (movie, 0, &extractor);
 
             unsigned long output_layout_size;
             OSStatus err = MovieAudioExtractionGetPropertyInfo (extractor,
-                                                                kQTPropertyClass_MovieAudioExtraction_Audio,
-                                                                kQTMovieAudioExtractionAudioPropertyID_AudioChannelLayout,
-                                                                0, &output_layout_size, 0);
+                           kQTPropertyClass_MovieAudioExtraction_Audio,
+                           kQTMovieAudioExtractionAudioPropertyID_AudioChannelLayout,
+                           0, &output_layout_size, 0);
             if (err != noErr)
                 return;
 
@@ -167,8 +167,8 @@ public:
                 return;
 
             inputStreamDesc.mFormatFlags = kAudioFormatFlagIsSignedInteger
-                                            | kAudioFormatFlagIsPacked
-                                            | kAudioFormatFlagsNativeEndian;
+                                           | kAudioFormatFlagIsPacked
+                                           | kAudioFormatFlagsNativeEndian;
             inputStreamDesc.mBitsPerChannel = sizeof (SInt16) * 8;
             inputStreamDesc.mChannelsPerFrame = jmin ((UInt32) 2, inputStreamDesc.mChannelsPerFrame);
             inputStreamDesc.mBytesPerFrame = sizeof (SInt16) * inputStreamDesc.mChannelsPerFrame;
@@ -225,9 +225,9 @@ public:
 
             DisposeMovie (movie);
 
-           #if JUCE_MAC
+#if JUCE_MAC
             ExitMoviesOnThread ();
-           #endif
+#endif
         }
     }
 
@@ -250,9 +250,9 @@ public:
                     time.value.lo = (UInt32) startSampleInFile;
 
                     OSStatus err = MovieAudioExtractionSetProperty (extractor,
-                                                                    kQTPropertyClass_MovieAudioExtraction_Movie,
-                                                                    kQTMovieAudioExtractionMoviePropertyID_CurrentTime,
-                                                                    sizeof (time), &time);
+                    kQTPropertyClass_MovieAudioExtraction_Movie,
+                    kQTMovieAudioExtractionMoviePropertyID_CurrentTime,
+                    sizeof (time), &time);
 
                     if (err != noErr)
                     {
@@ -329,18 +329,18 @@ private:
     //==============================================================================
     void checkThreadIsAttached()
     {
-       #if JUCE_MAC
+#if JUCE_MAC
         if (Thread::getCurrentThreadId() != lastThreadId)
             EnterMoviesOnThread (0);
         AttachMovieToCurrentThread (movie);
-       #endif
+#endif
     }
 
     void detachThread()
     {
-       #if JUCE_MAC
+#if JUCE_MAC
         DetachMovieFromCurrentThread (movie);
-       #endif
+#endif
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (QTAudioReader)
@@ -356,15 +356,23 @@ QuickTimeAudioFormat::~QuickTimeAudioFormat()
 {
 }
 
-Array<int> QuickTimeAudioFormat::getPossibleSampleRates()    { return Array<int>(); }
-Array<int> QuickTimeAudioFormat::getPossibleBitDepths()      { return Array<int>(); }
+Array<int> QuickTimeAudioFormat::getPossibleSampleRates()    {
+    return Array<int>();
+}
+Array<int> QuickTimeAudioFormat::getPossibleBitDepths()      {
+    return Array<int>();
+}
 
-bool QuickTimeAudioFormat::canDoStereo()    { return true; }
-bool QuickTimeAudioFormat::canDoMono()      { return true; }
+bool QuickTimeAudioFormat::canDoStereo()    {
+    return true;
+}
+bool QuickTimeAudioFormat::canDoMono()      {
+    return true;
+}
 
 //==============================================================================
 AudioFormatReader* QuickTimeAudioFormat::createReaderFor (InputStream* sourceStream,
-                                                          const bool deleteStreamIfOpeningFails)
+        const bool deleteStreamIfOpeningFails)
 {
     ScopedPointer<QTAudioReader> r (new QTAudioReader (sourceStream, 0));
 
@@ -378,11 +386,11 @@ AudioFormatReader* QuickTimeAudioFormat::createReaderFor (InputStream* sourceStr
 }
 
 AudioFormatWriter* QuickTimeAudioFormat::createWriterFor (OutputStream* /*streamToWriteTo*/,
-                                                          double /*sampleRateToUse*/,
-                                                          unsigned int /*numberOfChannels*/,
-                                                          int /*bitsPerSample*/,
-                                                          const StringPairArray& /*metadataValues*/,
-                                                          int /*qualityOptionIndex*/)
+        double /*sampleRateToUse*/,
+        unsigned int /*numberOfChannels*/,
+        int /*bitsPerSample*/,
+        const StringPairArray& /*metadataValues*/,
+        int /*qualityOptionIndex*/)
 {
     jassertfalse; // not yet implemented!
     return nullptr;

@@ -36,7 +36,7 @@
     @see MenuBarModel::Listener, MenuBarComponent, PopupMenu
 */
 class JUCE_API  MenuBarModel      : private AsyncUpdater,
-                                    private ApplicationCommandManagerListener
+    private ApplicationCommandManagerListener
 {
 public:
     //==============================================================================
@@ -127,7 +127,7 @@ public:
                                    int topLevelMenuIndex) = 0;
 
     //==============================================================================
-   #if JUCE_MAC || DOXYGEN
+#if JUCE_MAC || DOXYGEN
     /** OSX ONLY - Sets the model that is currently being shown as the main
         menu bar at the top of the screen on the Mac.
 
@@ -158,7 +158,7 @@ public:
         argument to setMacMainMenu(), or nullptr if none was specified.
     */
     static const PopupMenu* getMacExtraAppleItemsMenu();
-   #endif
+#endif
 
     //==============================================================================
     /** @internal */

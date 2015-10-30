@@ -235,7 +235,7 @@ BlowFish::~BlowFish() noexcept {}
 uint32 BlowFish::F (const uint32 x) const noexcept
 {
     return ((s[0][(x >> 24) & 0xff] + s[1][(x >> 16) & 0xff])
-                ^ s[2][(x >> 8) & 0xff]) + s[3][x & 0xff];
+            ^ s[2][(x >> 8) & 0xff]) + s[3][x & 0xff];
 }
 
 void BlowFish::encrypt (uint32& data1, uint32& data2) const noexcept

@@ -42,7 +42,7 @@ public:
     */
     float coefficients[5];
 
-					   
+
     //==============================================================================
     /** Creates a null set of coefficients (which will produce silence). */
     IIRCoefficients() noexcept;
@@ -61,7 +61,7 @@ public:
     IIRCoefficients& operator= (const IIRCoefficients&) noexcept;
     /** Destructor. */
     ~IIRCoefficients() noexcept;
-    
+
     /** Returns the coefficients for a low-pass filter. */
     static IIRCoefficients makeLowPass (double sampleRate,
                                         double frequency) noexcept;
@@ -266,7 +266,7 @@ public:
 
     /** Applies a set of coefficients to this filter. */
     void setCoefficients (const IIRCoefficients& newCoefficients) noexcept;
-    
+
     //==============================================================================
     /** Creates a filter.
 
@@ -343,7 +343,7 @@ inline float IIRFilter::processSingleSampleRaw ( float in) noexcept
 
 inline void IIRFilter::processSamples (float* const samples, const int numSamples) noexcept
 {
-   // const SpinLock::ScopedLockType sl (processLock);
+    // const SpinLock::ScopedLockType sl (processLock);
 
     // HACK DISABLED
     //if (active)
@@ -365,8 +365,10 @@ inline void IIRFilter::processSamples (float* const samples, const int numSample
             lv2 = c2 * in - c4 * out;
         }
 
-        JUCE_SNAP_TO_ZERO (lv1);  v1 = lv1;
-        JUCE_SNAP_TO_ZERO (lv2);  v2 = lv2;
+        JUCE_SNAP_TO_ZERO (lv1);
+        v1 = lv1;
+        JUCE_SNAP_TO_ZERO (lv2);
+        v2 = lv2;
     }
 }
 inline void IIRFilter::processSamples (float* const dest_, const float* const src_, const int numSamples) noexcept
@@ -391,8 +393,10 @@ inline void IIRFilter::processSamples (float* const dest_, const float* const sr
             lv2 = c2 * in - c4 * out;
         }
 
-        JUCE_SNAP_TO_ZERO (lv1);  v1 = lv1;
-        JUCE_SNAP_TO_ZERO (lv2);  v2 = lv2;
+        JUCE_SNAP_TO_ZERO (lv1);
+        v1 = lv1;
+        JUCE_SNAP_TO_ZERO (lv2);
+        v2 = lv2;
     }
 }
 

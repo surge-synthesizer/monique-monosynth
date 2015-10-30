@@ -30,68 +30,68 @@ CheckEventBlockedByModalComps isEventBlockedByModalComps = nullptr;
 //==============================================================================
 namespace WindowsMessageHelpers
 {
-    const unsigned int specialId   = WM_APP + 0x4400;
-    const unsigned int broadcastId = WM_APP + 0x4403;
+const unsigned int specialId   = WM_APP + 0x4400;
+const unsigned int broadcastId = WM_APP + 0x4403;
 
-    const TCHAR messageWindowName[] = _T("JUCEWindow");
-    ScopedPointer<HiddenMessageWindow> messageWindow;
+const TCHAR messageWindowName[] = _T("JUCEWindow");
+ScopedPointer<HiddenMessageWindow> messageWindow;
 
-    void dispatchMessageFromLParam (LPARAM lParam)
+void dispatchMessageFromLParam (LPARAM lParam)
+{
+    MessageManager::MessageBase* const message = reinterpret_cast <MessageManager::MessageBase*> (lParam);
+
+    JUCE_TRY
     {
-        MessageManager::MessageBase* const message = reinterpret_cast <MessageManager::MessageBase*> (lParam);
-
-        JUCE_TRY
-        {
-            message->messageCallback();
-        }
-        JUCE_CATCH_EXCEPTION
-
-        message->decReferenceCount();
+        message->messageCallback();
     }
+    JUCE_CATCH_EXCEPTION
 
-    //==============================================================================
-    LRESULT CALLBACK messageWndProc (HWND h, const UINT message, const WPARAM wParam, const LPARAM lParam) noexcept
+    message->decReferenceCount();
+}
+
+//==============================================================================
+LRESULT CALLBACK messageWndProc (HWND h, const UINT message, const WPARAM wParam, const LPARAM lParam) noexcept
+{
+    if (h == juce_messageWindowHandle)
     {
-        if (h == juce_messageWindowHandle)
+        if (message == specialId)
         {
-            if (message == specialId)
+            // (These are trapped early in our dispatch loop, but must also be checked
+            // here in case some 3rd-party code is running the dispatch loop).
+            dispatchMessageFromLParam (lParam);
+            return 0;
+        }
+        else if (message == broadcastId)
+        {
+            const ScopedPointer<String> messageString ((String*) lParam);
+            MessageManager::getInstance()->deliverBroadcastMessage (*messageString);
+            return 0;
+        }
+        else if (message == WM_COPYDATA)
+        {
+            const COPYDATASTRUCT* const data = reinterpret_cast <const COPYDATASTRUCT*> (lParam);
+
+            if (data->dwData == broadcastId)
             {
-                // (These are trapped early in our dispatch loop, but must also be checked
-                // here in case some 3rd-party code is running the dispatch loop).
-                dispatchMessageFromLParam (lParam);
+                const String messageString (CharPointer_UTF32 ((const CharPointer_UTF32::CharType*) data->lpData),
+                                            data->cbData / sizeof (CharPointer_UTF32::CharType));
+
+                PostMessage (juce_messageWindowHandle, broadcastId, 0, (LPARAM) new String (messageString));
                 return 0;
             }
-            else if (message == broadcastId)
-            {
-                const ScopedPointer<String> messageString ((String*) lParam);
-                MessageManager::getInstance()->deliverBroadcastMessage (*messageString);
-                return 0;
-            }
-            else if (message == WM_COPYDATA)
-            {
-                const COPYDATASTRUCT* const data = reinterpret_cast <const COPYDATASTRUCT*> (lParam);
-
-                if (data->dwData == broadcastId)
-                {
-                    const String messageString (CharPointer_UTF32 ((const CharPointer_UTF32::CharType*) data->lpData),
-                                                data->cbData / sizeof (CharPointer_UTF32::CharType));
-
-                    PostMessage (juce_messageWindowHandle, broadcastId, 0, (LPARAM) new String (messageString));
-                    return 0;
-                }
-            }
         }
-
-        return DefWindowProc (h, message, wParam, lParam);
     }
 
-    BOOL CALLBACK broadcastEnumWindowProc (HWND hwnd, LPARAM lParam)
-    {
-        if (hwnd != juce_messageWindowHandle)
-            reinterpret_cast <Array<HWND>*> (lParam)->add (hwnd);
+    return DefWindowProc (h, message, wParam, lParam);
+}
 
-        return TRUE;
-    }
+BOOL CALLBACK broadcastEnumWindowProc (HWND hwnd, LPARAM lParam)
+{
+    if (hwnd != juce_messageWindowHandle)
+        reinterpret_cast <Array<HWND>*> (lParam)->add (hwnd);
+
+    return TRUE;
+}
 }
 
 //==============================================================================
@@ -117,7 +117,7 @@ bool MessageManager::dispatchNextMessageOnSystemQueue (const bool returnIfNoPend
         else if (isEventBlockedByModalComps == nullptr || ! isEventBlockedByModalComps (m))
         {
             if ((m.message == WM_LBUTTONDOWN || m.message == WM_RBUTTONDOWN)
-                  && ! JuceWindowIdentifier::isJUCEWindow (m.hwnd))
+                    && ! JuceWindowIdentifier::isJUCEWindow (m.hwnd))
             {
                 // if it's someone else's window being clicked on, and the focus is
                 // currently on a juce window, pass the kb focus over..
@@ -213,5 +213,7 @@ struct MountedVolumeListChangeDetector::Pimpl   : private DeviceChangeDetector
     Array<File> lastVolumeList;
 };
 
-MountedVolumeListChangeDetector::MountedVolumeListChangeDetector()  { pimpl = new Pimpl (*this); }
+MountedVolumeListChangeDetector::MountedVolumeListChangeDetector()  {
+    pimpl = new Pimpl (*this);
+}
 MountedVolumeListChangeDetector::~MountedVolumeListChangeDetector() {}

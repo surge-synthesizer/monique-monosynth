@@ -24,50 +24,54 @@
 
 namespace LagrangeHelpers
 {
-    template <int k>
-    struct ResampleHelper
-    {
-        static forcedinline void calc (float& a, float b) { a *= b * (1.0f / k); }
-    };
-
-    template<>
-    struct ResampleHelper <0>
-    {
-        static forcedinline void calc (float&, float) {}
-    };
-
-    template <int k>
-    static forcedinline float calcCoefficient (float input, const float offset) noexcept
-    {
-        ResampleHelper <0 - k>::calc (input, -2.0f - offset);
-        ResampleHelper <1 - k>::calc (input, -1.0f - offset);
-        ResampleHelper <2 - k>::calc (input,  0.0f - offset);
-        ResampleHelper <3 - k>::calc (input,  1.0f - offset);
-        ResampleHelper <4 - k>::calc (input,  2.0f - offset);
-        return input;
+template <int k>
+struct ResampleHelper
+{
+    static forcedinline void calc (float& a, float b) {
+        a *= b * (1.0f / k);
     }
+};
 
-    static forcedinline float valueAtOffset (const float* const inputs, const float offset) noexcept
-    {
-        return calcCoefficient<0> (inputs[4], offset)
-             + calcCoefficient<1> (inputs[3], offset)
-             + calcCoefficient<2> (inputs[2], offset)
-             + calcCoefficient<3> (inputs[1], offset)
-             + calcCoefficient<4> (inputs[0], offset);
-    }
+template<>
+struct ResampleHelper <0>
+{
+    static forcedinline void calc (float&, float) {}
+};
 
-    static forcedinline void push (float* inputs, const float newValue) noexcept
-    {
-        inputs[4] = inputs[3];
-        inputs[3] = inputs[2];
-        inputs[2] = inputs[1];
-        inputs[1] = inputs[0];
-        inputs[0] = newValue;
-    }
+template <int k>
+static forcedinline float calcCoefficient (float input, const float offset) noexcept
+{
+    ResampleHelper <0 - k>::calc (input, -2.0f - offset);
+    ResampleHelper <1 - k>::calc (input, -1.0f - offset);
+    ResampleHelper <2 - k>::calc (input,  0.0f - offset);
+    ResampleHelper <3 - k>::calc (input,  1.0f - offset);
+    ResampleHelper <4 - k>::calc (input,  2.0f - offset);
+    return input;
+}
+
+static forcedinline float valueAtOffset (const float* const inputs, const float offset) noexcept
+{
+    return calcCoefficient<0> (inputs[4], offset)
+    + calcCoefficient<1> (inputs[3], offset)
+    + calcCoefficient<2> (inputs[2], offset)
+    + calcCoefficient<3> (inputs[1], offset)
+    + calcCoefficient<4> (inputs[0], offset);
+}
+
+static forcedinline void push (float* inputs, const float newValue) noexcept
+{
+    inputs[4] = inputs[3];
+    inputs[3] = inputs[2];
+    inputs[2] = inputs[1];
+    inputs[1] = inputs[0];
+    inputs[0] = newValue;
+}
 }
 
 //==============================================================================
-LagrangeInterpolator::LagrangeInterpolator()  { reset(); }
+LagrangeInterpolator::LagrangeInterpolator()  {
+    reset();
+}
 LagrangeInterpolator::~LagrangeInterpolator() {}
 
 void LagrangeInterpolator::reset() noexcept
@@ -135,7 +139,7 @@ int LagrangeInterpolator::process (const double actualRatio, const float* in,
 }
 
 int LagrangeInterpolator::processAdding (const double actualRatio, const float* in,
-                                         float* out, const int numOut, const float gain) noexcept
+        float* out, const int numOut, const float gain) noexcept
 {
     if (actualRatio == 1.0)
     {

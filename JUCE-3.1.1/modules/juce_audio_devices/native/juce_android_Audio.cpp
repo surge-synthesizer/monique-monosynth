@@ -33,7 +33,7 @@
  METHOD (release,       "release",  "()V") \
  METHOD (flush,         "flush",    "()V") \
  METHOD (write,         "write",    "([SII)I") \
-
+ 
 DECLARE_JNI_CLASS (AudioTrack, "android/media/AudioTrack");
 #undef JNI_CLASS_MEMBERS
 
@@ -46,7 +46,7 @@ DECLARE_JNI_CLASS (AudioTrack, "android/media/AudioTrack");
  METHOD (stop,              "stop",             "()V") \
  METHOD (read,              "read",             "([SII)I") \
  METHOD (release,           "release",          "()V") \
-
+ 
 DECLARE_JNI_CLASS (AudioRecord, "android/media/AudioRecord");
 #undef JNI_CLASS_MEMBERS
 
@@ -66,7 +66,7 @@ const char* const javaAudioTypeName = "Android Audio";
 
 //==============================================================================
 class AndroidAudioIODevice  : public AudioIODevice,
-                              public Thread
+    public Thread
 {
 public:
     //==============================================================================
@@ -97,7 +97,7 @@ public:
         }
 
         DBG ("Audio device - min buffers: " << minBufferSizeOut << ", " << minBufferSizeIn << "; "
-              << sampleRate << " Hz; input chans: " << numDeviceInputChannelsAvailable);
+             << sampleRate << " Hz; input chans: " << numDeviceInputChannelsAvailable);
     }
 
     ~AndroidAudioIODevice()
@@ -146,15 +146,17 @@ public:
         {
             b.add (n);
             n += n < 64 ? 16
-                        : (n < 512 ? 32
-                                   : (n < 1024 ? 64
-                                               : (n < 2048 ? 128 : 256)));
+                 : (n < 512 ? 32
+                    : (n < 1024 ? 64
+                       : (n < 2048 ? 128 : 256)));
         }
 
         return b;
     }
 
-    int getDefaultBufferSize() override                 { return 2048; }
+    int getDefaultBufferSize() override                 {
+        return 2048;
+    }
 
     String open (const BigInteger& inputChannels,
                  const BigInteger& outputChannels,
@@ -192,8 +194,8 @@ public:
         {
             numDeviceOutputChannels = 2;
             outputDevice = GlobalRef (env->NewObject (AudioTrack, AudioTrack.constructor,
-                                                      STREAM_MUSIC, sampleRate, CHANNEL_OUT_STEREO, ENCODING_PCM_16BIT,
-                                                      (jint) (minBufferSizeOut * numDeviceOutputChannels * sizeof (int16)), MODE_STREAM));
+                                      STREAM_MUSIC, sampleRate, CHANNEL_OUT_STEREO, ENCODING_PCM_16BIT,
+                                      (jint) (minBufferSizeOut * numDeviceOutputChannels * sizeof (int16)), MODE_STREAM));
 
             if (env->CallIntMethod (outputDevice, AudioTrack.getState) != STATE_UNINITIALIZED)
                 isRunning = true;
@@ -205,10 +207,10 @@ public:
         {
             numDeviceInputChannels = jmin (numClientInputChannels, numDeviceInputChannelsAvailable);
             inputDevice = GlobalRef (env->NewObject (AudioRecord, AudioRecord.constructor,
-                                                     0 /* (default audio source) */, sampleRate,
-                                                     numDeviceInputChannelsAvailable > 1 ? CHANNEL_IN_STEREO : CHANNEL_IN_MONO,
-                                                     ENCODING_PCM_16BIT,
-                                                     (jint) (minBufferSizeIn * numDeviceInputChannels * sizeof (int16))));
+                                     0 /* (default audio source) */, sampleRate,
+                                     numDeviceInputChannelsAvailable > 1 ? CHANNEL_IN_STEREO : CHANNEL_IN_MONO,
+                                     ENCODING_PCM_16BIT,
+                                     (jint) (minBufferSizeIn * numDeviceInputChannels * sizeof (int16))));
 
             if (env->CallIntMethod (inputDevice, AudioRecord.getState) != STATE_UNINITIALIZED)
                 isRunning = true;
@@ -244,16 +246,36 @@ public:
         }
     }
 
-    int getOutputLatencyInSamples() override             { return (minBufferSizeOut * 3) / 4; }
-    int getInputLatencyInSamples() override              { return (minBufferSizeIn * 3) / 4; }
-    bool isOpen() override                               { return isRunning; }
-    int getCurrentBufferSizeSamples() override           { return actualBufferSize; }
-    int getCurrentBitDepth() override                    { return 16; }
-    double getCurrentSampleRate() override               { return sampleRate; }
-    BigInteger getActiveOutputChannels() const override  { return activeOutputChans; }
-    BigInteger getActiveInputChannels() const override   { return activeInputChans; }
-    String getLastError() override                       { return lastError; }
-    bool isPlaying() override                            { return isRunning && callback != 0; }
+    int getOutputLatencyInSamples() override             {
+        return (minBufferSizeOut * 3) / 4;
+    }
+    int getInputLatencyInSamples() override              {
+        return (minBufferSizeIn * 3) / 4;
+    }
+    bool isOpen() override                               {
+        return isRunning;
+    }
+    int getCurrentBufferSizeSamples() override           {
+        return actualBufferSize;
+    }
+    int getCurrentBitDepth() override                    {
+        return 16;
+    }
+    double getCurrentSampleRate() override               {
+        return sampleRate;
+    }
+    BigInteger getActiveOutputChannels() const override  {
+        return activeOutputChans;
+    }
+    BigInteger getActiveInputChannels() const override   {
+        return activeInputChans;
+    }
+    String getLastError() override                       {
+        return lastError;
+    }
+    bool isPlaying() override                            {
+        return isRunning && callback != 0;
+    }
 
     void start (AudioIODeviceCallback* newCallback) override
     {
@@ -409,10 +431,18 @@ public:
 
     //==============================================================================
     void scanForDevices() {}
-    StringArray getDeviceNames (bool wantInputNames) const              { return StringArray (javaAudioTypeName); }
-    int getDefaultDeviceIndex (bool forInput) const                     { return 0; }
-    int getIndexOfDevice (AudioIODevice* device, bool asInput) const    { return device != nullptr ? 0 : -1; }
-    bool hasSeparateInputsAndOutputs() const                            { return false; }
+    StringArray getDeviceNames (bool wantInputNames) const              {
+        return StringArray (javaAudioTypeName);
+    }
+    int getDefaultDeviceIndex (bool forInput) const                     {
+        return 0;
+    }
+    int getIndexOfDevice (AudioIODevice* device, bool asInput) const    {
+        return device != nullptr ? 0 : -1;
+    }
+    bool hasSeparateInputsAndOutputs() const                            {
+        return false;
+    }
 
     AudioIODevice* createDevice (const String& outputDeviceName,
                                  const String& inputDeviceName)
@@ -422,7 +452,7 @@ public:
         if (outputDeviceName.isNotEmpty() || inputDeviceName.isNotEmpty())
         {
             dev = new AndroidAudioIODevice (outputDeviceName.isNotEmpty() ? outputDeviceName
-                                                                          : inputDeviceName);
+                                            : inputDeviceName);
 
             if (dev->getCurrentSampleRate() <= 0 || dev->getDefaultBufferSize() <= 0)
                 dev = nullptr;
@@ -441,10 +471,10 @@ extern bool isOpenSLAvailable();
 
 AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_Android()
 {
-   #if JUCE_USE_ANDROID_OPENSLES
+#if JUCE_USE_ANDROID_OPENSLES
     if (isOpenSLAvailable())
         return nullptr;
-   #endif
+#endif
 
     return new AndroidAudioIODeviceType();
 }

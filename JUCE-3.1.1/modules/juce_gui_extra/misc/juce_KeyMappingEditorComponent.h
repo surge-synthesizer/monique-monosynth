@@ -60,10 +60,14 @@ public:
                      Colour textColour);
 
     /** Returns the KeyPressMappingSet that this component is acting upon. */
-    KeyPressMappingSet& getMappings() const noexcept                { return mappings; }
+    KeyPressMappingSet& getMappings() const noexcept                {
+        return mappings;
+    }
 
     /** Returns the ApplicationCommandManager that this component is connected to. */
-    ApplicationCommandManager& getCommandManager() const noexcept   { return mappings.getCommandManager(); }
+    ApplicationCommandManager& getCommandManager() const noexcept   {
+        return mappings.getCommandManager();
+    }
 
 
     //==============================================================================

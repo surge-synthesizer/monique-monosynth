@@ -89,10 +89,10 @@ public:
     /** Copies from another file object. */
     File& operator= (const File& otherFile);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     File (File&&) noexcept;
     File& operator= (File&&) noexcept;
-   #endif
+#endif
 
     //==============================================================================
     /** This static constant is used for referring to an 'invalid' file. */
@@ -147,7 +147,9 @@ public:
 
         @see getFileName, getRelativePathFrom
     */
-    const String& getFullPathName() const noexcept          { return fullPath; }
+    const String& getFullPathName() const noexcept          {
+        return fullPath;
+    }
 
     /** Returns the last section of the pathname.
 
@@ -851,10 +853,10 @@ public:
         /** In a plugin, this will return the path of the host executable. */
         hostApplicationPath,
 
-       #if JUCE_WINDOWS
+#if JUCE_WINDOWS
         /** On a Windows machine, returns the location of the Windows/System32 folder. */
         windowsSystemDirectory,
-       #endif
+#endif
 
         /** The directory in which applications normally get installed.
             So on windows, this would be something like "c:\program files", on the
@@ -943,24 +945,24 @@ public:
     /** Adds a separator character to the end of a path if it doesn't already have one. */
     static String addTrailingSeparator (const String& path);
 
-   #if JUCE_MAC || JUCE_IOS || DOXYGEN
+#if JUCE_MAC || JUCE_IOS || DOXYGEN
     //==============================================================================
     /** OSX ONLY - Finds the OSType of a file from the its resources. */
     OSType getMacOSType() const;
 
     /** OSX ONLY - Returns true if this file is actually a bundle. */
     bool isBundle() const;
-   #endif
+#endif
 
-   #if JUCE_MAC || DOXYGEN
+#if JUCE_MAC || DOXYGEN
     /** OSX ONLY - Adds this file to the OSX dock */
     void addToDock() const;
-   #endif
+#endif
 
-   #if JUCE_WINDOWS
+#if JUCE_WINDOWS
     /** Windows ONLY - Creates a win32 .LNK shortcut file that links to this file. */
     bool createLink (const String& description, const File& linkFileToCreate) const;
-   #endif
+#endif
 
 private:
     //==============================================================================

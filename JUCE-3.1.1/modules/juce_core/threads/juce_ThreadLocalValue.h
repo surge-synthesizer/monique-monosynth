@@ -33,7 +33,7 @@
 #if ! ((JUCE_MSVC && (JUCE_64BIT || ! defined (JucePlugin_PluginCode))) \
        || (JUCE_MAC && JUCE_CLANG && defined (MAC_OS_X_VERSION_10_7) \
              && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_7))
- #define JUCE_NO_COMPILER_THREAD_LOCAL 1
+#define JUCE_NO_COMPILER_THREAD_LOCAL 1
 #endif
 
 //==============================================================================
@@ -68,14 +68,14 @@ public:
     */
     ~ThreadLocalValue()
     {
-       #if JUCE_NO_COMPILER_THREAD_LOCAL
+#if JUCE_NO_COMPILER_THREAD_LOCAL
         for (ObjectHolder* o = first.value; o != nullptr;)
         {
             ObjectHolder* const next = o->next;
             delete o;
             o = next;
         }
-       #endif
+#endif
     }
 
     /** Returns a reference to this thread's instance of the value.
@@ -83,24 +83,33 @@ public:
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    Type& operator*() const noexcept                        { return get(); }
+    Type& operator*() const noexcept                        {
+        return get();
+    }
 
     /** Returns a pointer to this thread's instance of the value.
         Note that the first time a thread tries to access the value, an instance of the
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    operator Type*() const noexcept                         { return &get(); }
+    operator Type*() const noexcept                         {
+        return &get();
+    }
 
     /** Accesses a method or field of the value object.
         Note that the first time a thread tries to access the value, an instance of the
         value object will be created - so if your value's class has a non-trivial
         constructor, be aware that this method could invoke it.
     */
-    Type* operator->() const noexcept                       { return &get(); }
+    Type* operator->() const noexcept                       {
+        return &get();
+    }
 
     /** Assigns a new value to the thread-local object. */
-    ThreadLocalValue& operator= (const Type& newValue)      { get() = newValue; return *this; }
+    ThreadLocalValue& operator= (const Type& newValue)      {
+        get() = newValue;
+        return *this;
+    }
 
     /** Returns a reference to this thread's instance of the value.
         Note that the first time a thread tries to access the value, an instance of the
@@ -109,7 +118,7 @@ public:
     */
     Type& get() const noexcept
     {
-       #if JUCE_NO_COMPILER_THREAD_LOCAL
+#if JUCE_NO_COMPILER_THREAD_LOCAL
         const Thread::ThreadID threadId = Thread::getCurrentThreadId();
 
         for (ObjectHolder* o = first.get(); o != nullptr; o = o->next)
@@ -143,13 +152,13 @@ public:
         while (! first.compareAndSetBool (newObject, newObject->next));
 
         return newObject->object;
-       #elif JUCE_MAC
+#elif JUCE_MAC
         static __thread Type object;
         return object;
-       #elif JUCE_MSVC
+#elif JUCE_MSVC
         static __declspec(thread) Type object;
         return object;
-       #endif
+#endif
     }
 
     /** Called by a thread before it terminates, to allow this class to release
@@ -157,7 +166,7 @@ public:
     */
     void releaseCurrentThreadStorage()
     {
-       #if JUCE_NO_COMPILER_THREAD_LOCAL
+#if JUCE_NO_COMPILER_THREAD_LOCAL
         const Thread::ThreadID threadId = Thread::getCurrentThreadId();
 
         for (ObjectHolder* o = first.get(); o != nullptr; o = o->next)
@@ -168,12 +177,12 @@ public:
                 o->threadId = nullptr;
             }
         }
-       #endif
+#endif
     }
 
 private:
     //==============================================================================
-   #if JUCE_NO_COMPILER_THREAD_LOCAL
+#if JUCE_NO_COMPILER_THREAD_LOCAL
     struct ObjectHolder
     {
         ObjectHolder (const Thread::ThreadID& tid)
@@ -189,7 +198,7 @@ private:
 
     mutable Atomic<ObjectHolder*> first;
     SpinLock lock;
-   #endif
+#endif
 
     JUCE_DECLARE_NON_COPYABLE (ThreadLocalValue)
 };

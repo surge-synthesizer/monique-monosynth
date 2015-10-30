@@ -37,8 +37,10 @@ class Monique_Ui_DragPad;
                                                                     //[/Comments]
 */
 class Monique_Ui_MorphConfig  : public Component,
+                                public Monique_Ui_Refreshable,
                                 public ComboBoxListener,
-                                public ButtonListener
+                                public ButtonListener,
+                                public SliderListener
 {
 public:
     //==============================================================================
@@ -47,15 +49,13 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Monique_Ui_Refresher*const ui_refresher;
-    MoniqueSynthData* synth_data;
-    UiLookAndFeel*const look_and_feel;
-
     const float original_w;
     const float original_h;
+    int last_program;
 
 private:
     Array< ComboBox* > morph_combos;
+    void refresh() noexcept override;
     void refresh_combos() noexcept;
     //[/UserMethods]
 
@@ -63,6 +63,7 @@ private:
     void resized();
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
+    void sliderValueChanged (Slider* sliderThatWasMoved);
 
 
 
@@ -86,28 +87,29 @@ private:
     ScopedPointer<ComboBox> combo_morph_group_7;
     ScopedPointer<ComboBox> combo_morph_group_8;
     ScopedPointer<Label> label_19;
-    ScopedPointer<TextButton> button_set_left_1;
-    ScopedPointer<TextButton> button_set_left_2;
-    ScopedPointer<TextButton> button_set_left_3;
-    ScopedPointer<TextButton> button_set_left_4;
-    ScopedPointer<TextButton> button_set_right_1;
-    ScopedPointer<TextButton> button_set_right_2;
-    ScopedPointer<TextButton> button_set_right_3;
-    ScopedPointer<TextButton> button_set_right_4;
-    ScopedPointer<TextButton> button_set_all_from_current;
+    ScopedPointer<TextButton> button_set_1;
     ScopedPointer<Label> label_ui_headline_1;
     ScopedPointer<Label> label_ui_headline_2;
     ScopedPointer<Label> label_ui_headline_3;
     ScopedPointer<Label> label_ui_headline_4;
     ScopedPointer<Label> label_4;
-    ScopedPointer<Label> label_5;
-    ScopedPointer<Label> label_25;
-    ScopedPointer<Label> label_26;
-    ScopedPointer<Label> label_27;
-    ScopedPointer<Label> label_28;
-    ScopedPointer<Label> label_29;
     ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<Label> label_35;
+    ScopedPointer<Label> label_2;
+    ScopedPointer<TextButton> button_set_2;
+    ScopedPointer<Label> label_3;
+    ScopedPointer<Label> label_5;
+    ScopedPointer<Label> label_6;
+    ScopedPointer<TextButton> button_set_3;
+    ScopedPointer<Label> label_7;
+    ScopedPointer<Label> label_8;
+    ScopedPointer<Label> label_9;
+    ScopedPointer<TextButton> button_set_4;
+    ScopedPointer<Label> label_10;
+    ScopedPointer<Label> label_11;
+    ScopedPointer<Label> label_12;
+    ScopedPointer<Slider> slider_morph_motor_time;
+    ScopedPointer<Label> label_ui_headline_6;
     ScopedPointer<Monique_Ui_DragPad> drag_pad;
 
 

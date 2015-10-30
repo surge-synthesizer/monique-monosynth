@@ -25,11 +25,13 @@
 struct CustomMouseCursorInfo
 {
     CustomMouseCursorInfo (const Image& im, int hsX, int hsY) noexcept
-        : image (im), hotspot (hsX, hsY), scaleFactor (1.0f)
+:
+    image (im), hotspot (hsX, hsY), scaleFactor (1.0f)
     {}
 
     CustomMouseCursorInfo (const Image& im, Point<int> hs, float scale) noexcept
-        : image (im), hotspot (hs), scaleFactor (scale)
+:
+    image (im), hotspot (hs), scaleFactor (scale)
     {}
 
     void* create() const;
@@ -107,7 +109,9 @@ public:
         }
     }
 
-    void* getHandle() const noexcept        { return handle; }
+    void* getHandle() const noexcept        {
+        return handle;
+    }
 
 private:
     void* const handle;
@@ -129,7 +133,8 @@ SpinLock MouseCursor::SharedCursorHandle::lock;
 
 //==============================================================================
 MouseCursor::MouseCursor() noexcept
-    : cursorHandle (nullptr)
+:
+cursorHandle (nullptr)
 {
 }
 
@@ -173,7 +178,8 @@ MouseCursor& MouseCursor::operator= (const MouseCursor& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 MouseCursor::MouseCursor (MouseCursor&& other) noexcept
-    : cursorHandle (other.cursorHandle)
+:
+cursorHandle (other.cursorHandle)
 {
     other.cursorHandle = nullptr;
 }
@@ -193,11 +199,15 @@ bool MouseCursor::operator== (const MouseCursor& other) const noexcept
 bool MouseCursor::operator== (StandardCursorType type) const noexcept
 {
     return cursorHandle != nullptr ? cursorHandle->isStandardType (type)
-                                   : (type == NormalCursor);
+           : (type == NormalCursor);
 }
 
-bool MouseCursor::operator!= (const MouseCursor& other) const noexcept  { return ! operator== (other); }
-bool MouseCursor::operator!= (StandardCursorType type)  const noexcept  { return ! operator== (type); }
+bool MouseCursor::operator!= (const MouseCursor& other) const noexcept  {
+    return ! operator== (other);
+}
+bool MouseCursor::operator!= (StandardCursorType type)  const noexcept  {
+    return ! operator== (type);
+}
 
 void* MouseCursor::getHandle() const noexcept
 {

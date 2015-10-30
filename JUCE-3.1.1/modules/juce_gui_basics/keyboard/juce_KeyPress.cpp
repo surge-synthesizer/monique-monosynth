@@ -23,23 +23,27 @@
 */
 
 KeyPress::KeyPress() noexcept
-    : keyCode (0), textCharacter (0)
+:
+keyCode (0), textCharacter (0)
 {
 }
 
 KeyPress::KeyPress (int code, ModifierKeys m, juce_wchar textChar) noexcept
-    : keyCode (code), mods (m), textCharacter (textChar)
+:
+keyCode (code), mods (m), textCharacter (textChar)
 {
 }
 
 KeyPress::KeyPress (const int code) noexcept
-    : keyCode (code), textCharacter (0)
+:
+keyCode (code), textCharacter (0)
 {
 }
 
 KeyPress::KeyPress (const KeyPress& other) noexcept
-    : keyCode (other.keyCode), mods (other.mods),
-      textCharacter (other.textCharacter)
+:
+keyCode (other.keyCode), mods (other.mods),
+        textCharacter (other.textCharacter)
 {
 }
 
@@ -60,14 +64,14 @@ bool KeyPress::operator== (int otherKeyCode) const noexcept
 bool KeyPress::operator== (const KeyPress& other) const noexcept
 {
     return mods.getRawFlags() == other.mods.getRawFlags()
-            && (textCharacter == other.textCharacter
-                 || textCharacter == 0
-                 || other.textCharacter == 0)
-            && (keyCode == other.keyCode
-                 || (keyCode < 256
-                      && other.keyCode < 256
-                      && CharacterFunctions::toLowerCase ((juce_wchar) keyCode)
-                           == CharacterFunctions::toLowerCase ((juce_wchar) other.keyCode)));
+           && (textCharacter == other.textCharacter
+               || textCharacter == 0
+               || other.textCharacter == 0)
+           && (keyCode == other.keyCode
+               || (keyCode < 256
+                   && other.keyCode < 256
+                   && CharacterFunctions::toLowerCase ((juce_wchar) keyCode)
+                   == CharacterFunctions::toLowerCase ((juce_wchar) other.keyCode)));
 }
 
 bool KeyPress::operator!= (const KeyPress& other) const noexcept
@@ -83,115 +87,130 @@ bool KeyPress::operator!= (int otherKeyCode) const noexcept
 bool KeyPress::isCurrentlyDown() const
 {
     return isKeyCurrentlyDown (keyCode)
-            && (ModifierKeys::getCurrentModifiers().getRawFlags() & ModifierKeys::allKeyboardModifiers)
-                  == (mods.getRawFlags() & ModifierKeys::allKeyboardModifiers);
+           && (ModifierKeys::getCurrentModifiers().getRawFlags() & ModifierKeys::allKeyboardModifiers)
+           == (mods.getRawFlags() & ModifierKeys::allKeyboardModifiers);
 }
 
 //==============================================================================
 namespace KeyPressHelpers
 {
-    struct KeyNameAndCode
-    {
-        const char* name;
-        int code;
-    };
+struct KeyNameAndCode
+{
+    const char* name;
+    int code;
+};
 
-    const KeyNameAndCode translations[] =
-    {
-        { "spacebar",       KeyPress::spaceKey },
-        { "return",         KeyPress::returnKey },
-        { "escape",         KeyPress::escapeKey },
-        { "backspace",      KeyPress::backspaceKey },
-        { "cursor left",    KeyPress::leftKey },
-        { "cursor right",   KeyPress::rightKey },
-        { "cursor up",      KeyPress::upKey },
-        { "cursor down",    KeyPress::downKey },
-        { "page up",        KeyPress::pageUpKey },
-        { "page down",      KeyPress::pageDownKey },
-        { "home",           KeyPress::homeKey },
-        { "end",            KeyPress::endKey },
-        { "delete",         KeyPress::deleteKey },
-        { "insert",         KeyPress::insertKey },
-        { "tab",            KeyPress::tabKey },
-        { "play",           KeyPress::playKey },
-        { "stop",           KeyPress::stopKey },
-        { "fast forward",   KeyPress::fastForwardKey },
-        { "rewind",         KeyPress::rewindKey }
-    };
+const KeyNameAndCode translations[] =
+{
+    { "spacebar",       KeyPress::spaceKey },
+    { "return",         KeyPress::returnKey },
+    { "escape",         KeyPress::escapeKey },
+    { "backspace",      KeyPress::backspaceKey },
+    { "cursor left",    KeyPress::leftKey },
+    { "cursor right",   KeyPress::rightKey },
+    { "cursor up",      KeyPress::upKey },
+    { "cursor down",    KeyPress::downKey },
+    { "page up",        KeyPress::pageUpKey },
+    { "page down",      KeyPress::pageDownKey },
+    { "home",           KeyPress::homeKey },
+    { "end",            KeyPress::endKey },
+    { "delete",         KeyPress::deleteKey },
+    { "insert",         KeyPress::insertKey },
+    { "tab",            KeyPress::tabKey },
+    { "play",           KeyPress::playKey },
+    { "stop",           KeyPress::stopKey },
+    { "fast forward",   KeyPress::fastForwardKey },
+    { "rewind",         KeyPress::rewindKey }
+};
 
-    struct ModifierDescription
-    {
-        const char* name;
-        int flag;
-    };
+struct ModifierDescription
+{
+    const char* name;
+    int flag;
+};
 
-    static const ModifierDescription modifierNames[] =
-    {
-        { "ctrl",      ModifierKeys::ctrlModifier },
-        { "control",   ModifierKeys::ctrlModifier },
-        { "ctl",       ModifierKeys::ctrlModifier },
-        { "shift",     ModifierKeys::shiftModifier },
-        { "shft",      ModifierKeys::shiftModifier },
-        { "alt",       ModifierKeys::altModifier },
-        { "option",    ModifierKeys::altModifier },
-        { "command",   ModifierKeys::commandModifier },
-        { "cmd",       ModifierKeys::commandModifier }
-    };
+static const ModifierDescription modifierNames[] =
+{
+    { "ctrl",      ModifierKeys::ctrlModifier },
+    { "control",   ModifierKeys::ctrlModifier },
+    { "ctl",       ModifierKeys::ctrlModifier },
+    { "shift",     ModifierKeys::shiftModifier },
+    { "shft",      ModifierKeys::shiftModifier },
+    { "alt",       ModifierKeys::altModifier },
+    { "option",    ModifierKeys::altModifier },
+    { "command",   ModifierKeys::commandModifier },
+    { "cmd",       ModifierKeys::commandModifier }
+};
 
-    static const char* numberPadPrefix() noexcept      { return "numpad "; }
+static const char* numberPadPrefix() noexcept      { return "numpad "; }
 
-    static int getNumpadKeyCode (const String& desc)
+static int getNumpadKeyCode (const String& desc)
+{
+    if (desc.containsIgnoreCase (numberPadPrefix()))
     {
-        if (desc.containsIgnoreCase (numberPadPrefix()))
+        const juce_wchar lastChar = desc.trimEnd().getLastCharacter();
+
+        switch (lastChar)
         {
-            const juce_wchar lastChar = desc.trimEnd().getLastCharacter();
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+            return (int) (KeyPress::numberPad0 + lastChar - '0');
 
-            switch (lastChar)
-            {
-                case '0': case '1': case '2': case '3': case '4':
-                case '5': case '6': case '7': case '8': case '9':
-                    return (int) (KeyPress::numberPad0 + lastChar - '0');
+        case '+':
+            return KeyPress::numberPadAdd;
+        case '-':
+            return KeyPress::numberPadSubtract;
+        case '*':
+            return KeyPress::numberPadMultiply;
+        case '/':
+            return KeyPress::numberPadDivide;
+        case '.':
+            return KeyPress::numberPadDecimalPoint;
+        case '=':
+            return KeyPress::numberPadEquals;
 
-                case '+':   return KeyPress::numberPadAdd;
-                case '-':   return KeyPress::numberPadSubtract;
-                case '*':   return KeyPress::numberPadMultiply;
-                case '/':   return KeyPress::numberPadDivide;
-                case '.':   return KeyPress::numberPadDecimalPoint;
-                case '=':   return KeyPress::numberPadEquals;
-
-                default:    break;
-            }
-
-            if (desc.endsWith ("separator"))  return KeyPress::numberPadSeparator;
-            if (desc.endsWith ("delete"))     return KeyPress::numberPadDelete;
+        default:
+            break;
         }
 
-        return 0;
+        if (desc.endsWith ("separator"))  return KeyPress::numberPadSeparator;
+        if (desc.endsWith ("delete"))     return KeyPress::numberPadDelete;
     }
 
-   #if JUCE_MAC
-    struct OSXSymbolReplacement
-    {
-        const char* text;
-        juce_wchar symbol;
-    };
+    return 0;
+}
 
-    const OSXSymbolReplacement osxSymbols[] =
-    {
-        { "shift + ",     0x21e7 },
-        { "command + ",   0x2318 },
-        { "option + ",    0x2325 },
-        { "ctrl + ",      0x2303 },
-        { "return",       0x21b5 },
-        { "cursor left",  0x2190 },
-        { "cursor right", 0x2192 },
-        { "cursor up",    0x2191 },
-        { "cursor down",  0x2193 },
-        { "backspace",    0x232b },
-        { "delete",       0x2326 },
-        { "spacebar",     0x2423 }
-    };
-   #endif
+#if JUCE_MAC
+struct OSXSymbolReplacement
+{
+    const char* text;
+    juce_wchar symbol;
+};
+
+const OSXSymbolReplacement osxSymbols[] =
+{
+    { "shift + ",     0x21e7 },
+    { "command + ",   0x2318 },
+    { "option + ",    0x2325 },
+    { "ctrl + ",      0x2303 },
+    { "return",       0x21b5 },
+    { "cursor left",  0x2190 },
+    { "cursor right", 0x2192 },
+    { "cursor up",    0x2191 },
+    { "cursor down",  0x2193 },
+    { "backspace",    0x232b },
+    { "delete",       0x2326 },
+    { "spacebar",     0x2423 }
+};
+#endif
 }
 
 //==============================================================================
@@ -229,8 +248,8 @@ KeyPress KeyPress::createFromDescription (const String& desc)
         {
             // give up and use the hex code..
             const int hexCode = desc.fromFirstOccurrenceOf ("#", false, false)
-                                    .retainCharacters ("0123456789abcdefABCDEF")
-                                    .getHexValue32();
+                                .retainCharacters ("0123456789abcdefABCDEF")
+                                .getHexValue32();
 
             if (hexCode > 0)
                 key = hexCode;
@@ -256,12 +275,12 @@ String KeyPress::getTextDescription() const
         if (mods.isCtrlDown())      desc << "ctrl + ";
         if (mods.isShiftDown())     desc << "shift + ";
 
-       #if JUCE_MAC
+#if JUCE_MAC
         if (mods.isAltDown())       desc << "option + ";
         if (mods.isCommandDown())   desc << "command + ";
-       #else
+#else
         if (mods.isAltDown())       desc << "alt + ";
-       #endif
+#endif
 
         for (int i = 0; i < numElementsInArray (KeyPressHelpers::translations); ++i)
             if (keyCode == KeyPressHelpers::translations[i].code)
@@ -285,7 +304,7 @@ String KeyPress::getTextDescription() const
 
 String KeyPress::getTextDescriptionWithIcons() const
 {
-   #if JUCE_MAC
+#if JUCE_MAC
     String s (getTextDescription());
 
     for (int i = 0; i < numElementsInArray (KeyPressHelpers::osxSymbols); ++i)
@@ -293,7 +312,7 @@ String KeyPress::getTextDescriptionWithIcons() const
                        String::charToString (KeyPressHelpers::osxSymbols[i].symbol));
 
     return s;
-   #else
+#else
     return getTextDescription();
-   #endif
+#endif
 }

@@ -137,13 +137,17 @@ public:
 
     //==============================================================================
     /** Returns the device's name, (as set in the constructor). */
-    const String& getName() const noexcept                          { return name; }
+    const String& getName() const noexcept                          {
+        return name;
+    }
 
     /** Returns the type of the device.
 
         E.g. "CoreAudio", "ASIO", etc. - this comes from the AudioIODeviceType that created it.
     */
-    const String& getTypeName() const noexcept                      { return typeName; }
+    const String& getTypeName() const noexcept                      {
+        return typeName;
+    }
 
     //==============================================================================
     /** Returns the names of all the available output channels on this device.

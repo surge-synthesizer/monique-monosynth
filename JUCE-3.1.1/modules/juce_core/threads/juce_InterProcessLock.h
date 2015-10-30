@@ -90,7 +90,9 @@ public:
             otherwise there are no guarantees what will happen! Best just to use it
             as a local stack object, rather than creating one with the new() operator.
         */
-        explicit ScopedLockType (InterProcessLock& l)        : ipLock (l) { lockWasSuccessful = l.enter(); }
+        explicit ScopedLockType (InterProcessLock& l)        : ipLock (l) {
+            lockWasSuccessful = l.enter();
+        }
 
         /** Destructor.
 
@@ -99,10 +101,14 @@ public:
             Make sure this object is created and deleted by the same thread,
             otherwise there are no guarantees what will happen!
         */
-        inline ~ScopedLockType()                             { ipLock.exit(); }
+        inline ~ScopedLockType()                             {
+            ipLock.exit();
+        }
 
         /** Returns true if the InterProcessLock was successfully locked. */
-        bool isLocked() const noexcept                       { return lockWasSuccessful; }
+        bool isLocked() const noexcept                       {
+            return lockWasSuccessful;
+        }
 
     private:
         //==============================================================================

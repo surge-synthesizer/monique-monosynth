@@ -40,8 +40,8 @@
     @see ThreadWithProgressWindow
 */
 class JUCE_API  ProgressBar  : public Component,
-                               public SettableTooltipClient,
-                               private Timer
+    public SettableTooltipClient,
+    private Timer
 {
 public:
     //==============================================================================

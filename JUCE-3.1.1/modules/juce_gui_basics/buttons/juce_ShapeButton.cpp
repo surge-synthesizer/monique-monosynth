@@ -23,10 +23,10 @@
 */
 
 ShapeButton::ShapeButton (const String& t, Colour n, Colour o, Colour d)
-  : Button (t),
-    normalColour (n), overColour (o), downColour (d),
-    maintainShapeProportions (false),
-    outlineWidth (0.0f)
+    : Button (t),
+      normalColour (n), overColour (o), downColour (d),
+      maintainShapeProportions (false),
+      outlineWidth (0.0f)
 {
 }
 
@@ -69,7 +69,7 @@ void ShapeButton::setShape (const Path& newShape,
             newBounds = newBounds.expanded (4.0f);
 
         shape.applyTransform (AffineTransform::translation (-newBounds.getX(),
-                                                            -newBounds.getY()));
+                              -newBounds.getY()));
 
         setSize (1 + (int) (newBounds.getWidth()  + outlineWidth) + border.getLeftAndRight(),
                  1 + (int) (newBounds.getHeight() + outlineWidth) + border.getTopAndBottom());
@@ -102,8 +102,8 @@ void ShapeButton::paintButton (Graphics& g, bool isMouseOverButton, bool isButto
     const AffineTransform trans (shape.getTransformToScaleToFit (r, maintainShapeProportions));
 
     g.setColour (isButtonDown ? downColour
-                              : isMouseOverButton ? overColour
-                                                  : normalColour);
+                 : isMouseOverButton ? overColour
+                 : normalColour);
     g.fillPath (shape, trans);
 
     if (outlineWidth > 0.0f)

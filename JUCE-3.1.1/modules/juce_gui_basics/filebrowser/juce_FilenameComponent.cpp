@@ -106,26 +106,26 @@ void FilenameComponent::setDefaultBrowseTarget (const File& newDefaultDirectory)
 File FilenameComponent::getLocationToBrowse()
 {
     return getCurrentFile() == File::nonexistent ? defaultBrowseFile
-                                                 : getCurrentFile();
+           : getCurrentFile();
 }
 
 void FilenameComponent::buttonClicked (Button*)
 {
-   #if JUCE_MODAL_LOOPS_PERMITTED
+#if JUCE_MODAL_LOOPS_PERMITTED
     FileChooser fc (isDir ? TRANS ("Choose a new directory")
-                          : TRANS ("Choose a new file"),
+                    : TRANS ("Choose a new file"),
                     getLocationToBrowse(),
                     wildcard);
 
     if (isDir ? fc.browseForDirectory()
-              : (isSaving ? fc.browseForFileToSave (false)
-                          : fc.browseForFileToOpen()))
+            : (isSaving ? fc.browseForFileToSave (false)
+               : fc.browseForFileToOpen()))
     {
         setCurrentFile (fc.getResult(), true);
     }
-   #else
+#else
     jassertfalse; // needs rewriting to deal with non-modal environments
-   #endif
+#endif
 }
 
 void FilenameComponent::comboBoxChanged (ComboBox*)

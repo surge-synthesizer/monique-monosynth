@@ -64,12 +64,14 @@ static void blurSingleChannelImage (Image& image, int radius)
 
 //==============================================================================
 DropShadow::DropShadow() noexcept
-    : colour (0x90000000), radius (4)
+:
+colour (0x90000000), radius (4)
 {
 }
 
 DropShadow::DropShadow (Colour shadowColour, const int r, Point<int> o) noexcept
-    : colour (shadowColour), radius (r), offset (o)
+:
+colour (shadowColour), radius (r), offset (o)
 {
     jassert (radius > 0);
 }
@@ -95,8 +97,8 @@ void DropShadow::drawForPath (Graphics& g, const Path& path) const
     jassert (radius > 0);
 
     const Rectangle<int> area ((path.getBounds().getSmallestIntegerContainer() + offset)
-                                   .expanded (radius + 1)
-                                   .getIntersection (g.getClipBounds().expanded (radius + 1)));
+                               .expanded (radius + 1)
+                               .getIntersection (g.getClipBounds().expanded (radius + 1)));
 
     if (area.getWidth() > 2 && area.getHeight() > 2)
     {
@@ -106,7 +108,7 @@ void DropShadow::drawForPath (Graphics& g, const Path& path) const
             Graphics g2 (renderedPath);
             g2.setColour (Colours::white);
             g2.fillPath (path, AffineTransform::translation ((float) (offset.x - area.getX()),
-                                                             (float) (offset.y - area.getY())));
+                         (float) (offset.y - area.getY())));
         }
 
         blurSingleChannelImage (renderedPath, radius);

@@ -64,9 +64,10 @@ public:
         return *this;
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     RectangleList (RectangleList&& other) noexcept
-        : rects (static_cast<Array<RectangleType>&&> (other.rects))
+:
+    rects (static_cast<Array<RectangleType>&&> (other.rects))
     {
     }
 
@@ -75,19 +76,25 @@ public:
         rects = static_cast<Array<RectangleType>&&> (other.rects);
         return *this;
     }
-   #endif
+#endif
 
     //==============================================================================
     /** Returns true if the region is empty. */
-    bool isEmpty() const noexcept                               { return rects.size() == 0; }
+    bool isEmpty() const noexcept                               {
+        return rects.size() == 0;
+    }
 
     /** Returns the number of rectangles in the list. */
-    int getNumRectangles() const noexcept                       { return rects.size(); }
+    int getNumRectangles() const noexcept                       {
+        return rects.size();
+    }
 
     /** Returns one of the rectangles at a particular index.
         @returns  the rectangle at the index, or an empty rectangle if the index is out-of-range.
     */
-    RectangleType getRectangle (int index) const noexcept       { return rects[index]; }
+    RectangleType getRectangle (int index) const noexcept       {
+        return rects[index];
+    }
 
     //==============================================================================
     /** Removes all rectangles to leave an empty region. */
@@ -624,9 +631,13 @@ public:
 
     //==============================================================================
     /** Standard method for iterating the rectangles in the list. */
-    const RectangleType* begin() const noexcept     { return rects.begin(); }
+    const RectangleType* begin() const noexcept     {
+        return rects.begin();
+    }
     /** Standard method for iterating the rectangles in the list. */
-    const RectangleType* end() const noexcept       { return rects.end(); }
+    const RectangleType* end() const noexcept       {
+        return rects.end();
+    }
 
     /** Increases the internal storage to hold a minimum number of rectangles.
         Calling this before adding a large number of rectangles means that

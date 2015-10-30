@@ -64,10 +64,10 @@ void AudioProcessorPlayer::setProcessor (AudioProcessor* const processorToPlay)
 
 //==============================================================================
 void AudioProcessorPlayer::audioDeviceIOCallback (const float** const inputChannelData,
-                                                  const int numInputChannels,
-                                                  float** const outputChannelData,
-                                                  const int numOutputChannels,
-                                                  const int numSamples)
+        const int numInputChannels,
+        float** const outputChannelData,
+        const int numOutputChannels,
+        const int numSamples)
 {
     // these should have been prepared by audioDeviceAboutToStart()...
     jassert (sampleRate > 0 && blockSize > 0);

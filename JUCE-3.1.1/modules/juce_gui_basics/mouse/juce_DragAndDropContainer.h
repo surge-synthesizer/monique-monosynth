@@ -163,7 +163,7 @@ protected:
         @see performExternalDragDropOfFiles
     */
     virtual bool shouldDropFilesWhenDraggedExternally (const DragAndDropTarget::SourceDetails& sourceDetails,
-                                                       StringArray& files, bool& canMoveFiles);
+            StringArray& files, bool& canMoveFiles);
 
     /** Subclasses can override this to be told when a drag starts. */
     virtual void dragOperationStarted();
@@ -178,7 +178,9 @@ private:
     friend struct ContainerDeletePolicy<DragImageComponent>;
     ScopedPointer<DragImageComponent> dragImageComponent;
 
-    JUCE_DEPRECATED (virtual bool shouldDropFilesWhenDraggedExternally (const String&, Component*, StringArray&, bool&)) { return false; }
+    JUCE_DEPRECATED (virtual bool shouldDropFilesWhenDraggedExternally (const String&, Component*, StringArray&, bool&)) {
+        return false;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DragAndDropContainer)
 };

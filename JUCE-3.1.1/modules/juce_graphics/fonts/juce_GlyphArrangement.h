@@ -47,30 +47,46 @@ public:
     PositionedGlyph (const PositionedGlyph&);
     PositionedGlyph& operator= (const PositionedGlyph&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     PositionedGlyph (PositionedGlyph&&) noexcept;
     PositionedGlyph& operator= (PositionedGlyph&&) noexcept;
-   #endif
+#endif
 
     ~PositionedGlyph();
 
     /** Returns the character the glyph represents. */
-    juce_wchar getCharacter() const noexcept    { return character; }
+    juce_wchar getCharacter() const noexcept    {
+        return character;
+    }
     /** Checks whether the glyph is actually empty. */
-    bool isWhitespace() const noexcept          { return whitespace; }
+    bool isWhitespace() const noexcept          {
+        return whitespace;
+    }
 
     /** Returns the position of the glyph's left-hand edge. */
-    float getLeft() const noexcept              { return x; }
+    float getLeft() const noexcept              {
+        return x;
+    }
     /** Returns the position of the glyph's right-hand edge. */
-    float getRight() const noexcept             { return x + w; }
+    float getRight() const noexcept             {
+        return x + w;
+    }
     /** Returns the y position of the glyph's baseline. */
-    float getBaselineY() const noexcept         { return y; }
+    float getBaselineY() const noexcept         {
+        return y;
+    }
     /** Returns the y position of the top of the glyph. */
-    float getTop() const                        { return y - font.getAscent(); }
+    float getTop() const                        {
+        return y - font.getAscent();
+    }
     /** Returns the y position of the bottom of the glyph. */
-    float getBottom() const                     { return y + font.getDescent(); }
+    float getBottom() const                     {
+        return y + font.getDescent();
+    }
     /** Returns the bounds of the glyph. */
-    Rectangle<float> getBounds() const          { return Rectangle<float> (x, getTop(), w, font.getHeight()); }
+    Rectangle<float> getBounds() const          {
+        return Rectangle<float> (x, getTop(), w, font.getHeight());
+    }
 
     //==============================================================================
     /** Shifts the glyph's position by a relative amount. */
@@ -135,7 +151,9 @@ public:
 
     //==============================================================================
     /** Returns the total number of glyphs in the arrangement. */
-    int getNumGlyphs() const noexcept                           { return glyphs.size(); }
+    int getNumGlyphs() const noexcept                           {
+        return glyphs.size();
+    }
 
     /** Returns one of the glyphs from the arrangement.
 

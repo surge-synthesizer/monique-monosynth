@@ -125,13 +125,13 @@ COLD RuntimeInfo::~RuntimeInfo() noexcept {}
 //==============================================================================
 //==============================================================================
 #define LFO_NAME "LFO"
-COLD LFOData::LFOData( int id_ ) noexcept
+COLD LFOData::LFOData( SmoothManager*smooth_manager_, int id_ ) noexcept
 :
 speed
 (
     MIN_MAX( 0, 16+127-33 ),
     4,
-    16+127-33,
+    (16+127-33)*10,
 
     generate_param_name(LFO_NAME,id_,"speed"),
     generate_short_human_name(LFO_NAME,id_,"speed")
@@ -147,6 +147,56 @@ static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
 static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &lfo_data_->speed );
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+#define LFO_COMPLEX_NAME "MFO"
+COLD MFOData::MFOData( SmoothManager*const smooth_manager_, int id_ ) noexcept
+:
+speed
+(
+    MIN_MAX( 0, 16 ),
+    4,
+    16,
+
+    generate_param_name(LFO_COMPLEX_NAME,id_,"speed"),
+    generate_short_human_name(LFO_COMPLEX_NAME,id_,"speed")
+),
+wave
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(LFO_COMPLEX_NAME,id_,"wave"),
+    generate_short_human_name(LFO_COMPLEX_NAME,id_,"wave")
+),
+wave_smoother( smooth_manager_, &wave ),
+phase_shift
+(
+    MIN_MAX( 0, 1 ),
+    0,
+    1000,
+    generate_param_name(LFO_COMPLEX_NAME,id_,"phase"),
+    generate_short_human_name(LFO_COMPLEX_NAME,id_,"phase")
+),
+phase_shift_smoother(smooth_manager_,&phase_shift)
+{}
+COLD MFOData::~MFOData() noexcept {}
+
+//==============================================================================
+static inline void copy( MFOData* dest_, const MFOData* src_ ) noexcept
+{
+    dest_->speed = src_->speed;
+    dest_->wave = src_->wave;
+    dest_->phase_shift = src_->phase_shift;
+}
+static inline void collect_saveable_parameters( MFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
+{
+    params_.add( &lfo_data_->speed );
+    params_.add( &lfo_data_->wave );
+    params_.add( &lfo_data_->phase_shift );
 }
 
 //==============================================================================
@@ -318,7 +368,7 @@ attack
 (
     MIN_MAX( 0, 1 ),
     0.05,
-    20000,
+    5000,
     generate_param_name(ENV_NAME,id,"attack"),
     generate_short_human_name(ENV_NAME,id_,"attack")
 ),
@@ -334,7 +384,7 @@ decay
 (
     MIN_MAX( 0, 1 ),
     0.02,
-    20000,
+    5000,
     generate_param_name(ENV_NAME,id,"decay"),
     generate_short_human_name(ENV_NAME,id_,"decay")
 ),
@@ -359,7 +409,7 @@ sustain_time
 (
     MIN_MAX( 0.001, 1 ),
     1,
-    10000,
+    5000-1,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -367,7 +417,7 @@ release
 (
     MIN_MAX( 0, 1 ),
     0.2,
-    20000,
+    5000,
     generate_param_name(ENV_NAME,id,"release"),
     generate_short_human_name(ENV_NAME,id_,"release")
 ),
@@ -386,7 +436,8 @@ shape
     1000,
     generate_param_name(ENV_NAME,id,"shape"),
     generate_short_human_name(ENV_NAME,id_,"shape")
-)
+),
+shape_smoother( smooth_manager_ , &shape )
 {
 }
 COLD ENVData::~ENVData() noexcept {}
@@ -395,16 +446,13 @@ COLD ENVData::~ENVData() noexcept {}
 static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_max_times_ ) noexcept
 {
     params_.add( &data_->attack );
+    params_.add( &data_->max_attack_time );
     params_.add( &data_->decay );
+    params_.add( &data_->max_decay_time );
     params_.add( &data_->sustain );
-    if( include_max_times_ )
-    {
-        params_.add( &data_->max_attack_time );
-        params_.add( &data_->max_decay_time );
-        params_.add( &data_->max_release_time );
-    }
     params_.add( &data_->sustain_time );
     params_.add( &data_->release );
+    params_.add( &data_->max_release_time );
 
     params_.add( &data_->shape );
 }
@@ -814,7 +862,7 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
 //==============================================================================
 //==============================================================================
 #define REVERB_NAME "VERB"
-COLD ReverbData::ReverbData( int id_ ) noexcept
+COLD ReverbData::ReverbData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 :
 room
 (
@@ -824,6 +872,7 @@ room
     generate_param_name(REVERB_NAME,id_,"room"),
     generate_short_human_name("FX","r_room")
 ),
+room_smoother( smooth_manager_, &room ),
 dry_wet_mix
 (
     MIN_MAX( 0, 1 ),
@@ -832,6 +881,7 @@ dry_wet_mix
     generate_param_name(REVERB_NAME,id_,"dry-wet"),
     generate_short_human_name("FX","r_dry-wet")
 ),
+dry_wet_mix_smoother( smooth_manager_, &dry_wet_mix ),
 width
 (
     MIN_MAX( 0, 1 ),
@@ -839,7 +889,18 @@ width
     1000,
     generate_param_name(REVERB_NAME,id_,"width"),
     generate_short_human_name("FX","r_width")
-)
+),
+width_smoother( smooth_manager_, &width ),
+pan
+(
+    MIN_MAX( -1, 1 ),
+    0,
+    2000,
+    generate_param_name(REVERB_NAME,id_,"pan"),
+    generate_short_human_name("FX","reverb_pan"),
+    0.0
+),
+pan_smoother(smooth_manager_,&pan)
 {}
 
 COLD ReverbData::~ReverbData() noexcept {}
@@ -850,12 +911,14 @@ static inline void copy( ReverbData* dest_, const ReverbData* src_ ) noexcept
     dest_->room = src_->room;
     dest_->width = src_->width;
     dest_->dry_wet_mix = src_->dry_wet_mix;
+    dest_->pan = src_->pan;
 }
 static inline void collect_saveable_parameters( ReverbData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->room );
     params_.add( &data_->width );
     params_.add( &data_->dry_wet_mix );
+    params_.add( &data_->pan );
 }
 
 //==============================================================================
@@ -873,106 +936,42 @@ modulation
     generate_short_human_name("FX","chorus-amount")
 ),
 modulation_smoother( smooth_manager_, &modulation ),
-hold_modulation
+pan
 (
-    true,
-    generate_param_name(CHORUS_NAME,id_,"hold-modulation"),
-    generate_short_human_name("FX","chorus-env_ON")
+    MIN_MAX( -1, 1 ),
+    0,
+    2000,
+    generate_param_name(CHORUS_NAME,id_,"pan"),
+    generate_short_human_name("FX","chorus_pan"),
+    0.0
 ),
-
-// ----
-env_data( new ENVData( smooth_manager_, CHORUS_ENV_ID_OFFSET ) )
+pan_smoother(smooth_manager_,&pan)
 {
-    env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
-    env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
-    env_data->max_release_time = env_data->max_release_time.get_info().max_value;
 }
 COLD ChorusData::~ChorusData() noexcept
 {
-    delete env_data;
 }
 
 //==============================================================================
 static inline void copy( ChorusData* dest_, const ChorusData* src_ ) noexcept
 {
-    dest_->hold_modulation = src_->hold_modulation;
     dest_->modulation = src_->modulation;
-
-    copy( dest_->env_data, src_->env_data, false );
+    dest_->pan = src_->pan;
 }
 static inline void collect_saveable_parameters( ChorusData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->modulation );
-    params_.add( &data_->hold_modulation );
-
-    collect_saveable_parameters( data_->env_data, params_, false );
+    params_.add( &data_->pan );
 }
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class MorphGroup : public Timer, ParameterListener
-{
-    MorphGroup* left_morph_source;
-    MorphGroup* right_morph_source;
-
-    friend class MoniqueSynthData;
-    Array< Parameter* > params;
-    float last_power_of_right;
-    Array< BoolParameter* > switch_bool_params;
-    bool current_switch;
-    Array< IntParameter* > switch_int_params;
-
-public:
-    //==========================================================================
-    inline void morph( float morph_amount_ ) noexcept;
-    inline void morph_switchs( bool left_right_ ) noexcept;
-
-private:
-    //==========================================================================
-    Array< float > sync_param_deltas;
-    Array< float > sync_modulation_deltas;
-    void run_sync_morph() noexcept;
-    int current_callbacks;
-    void timerCallback() override;
-
-private:
-    //==========================================================================
-    // WILL ONLY BE CALLED IN THE MASTER MORPH GROUP, COZ THE SUB GROUBS DOES NOT LISTEN THE PARAMS
-    // UPDATES THE LEFT AND RIGHT SOURCES
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
-    void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
-
-public:
-    //==========================================================================
-    // INIT
-    COLD MorphGroup() noexcept;
-    COLD ~MorphGroup() noexcept;
-
-    COLD void register_parameter( Parameter* param_, bool is_master_ ) noexcept;
-    COLD void register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept;
-    COLD void register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept;
-
-    COLD void set_sources( MorphGroup* left_source_, MorphGroup* right_source_,
-                           float current_morph_amount_, bool current_switch_state_ ) noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MorphGroup)
-};
 
 //==============================================================================
 COLD MorphGroup::MorphGroup() noexcept
 :
 left_morph_source( nullptr ),
-                   right_morph_source( nullptr ),
-                   last_power_of_right(0),
-                   current_switch(LEFT),
-                   current_callbacks(-1)
+right_morph_source( nullptr ),
+last_power_of_right(0),
+current_switch(LEFT),
+current_callbacks(-1)
 {}
 
 COLD MorphGroup::~MorphGroup() noexcept {}
@@ -1638,11 +1637,12 @@ COLD MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type,
         MoniqueAudioProcessor*const audio_processor_,
         RuntimeNotifyer*const runtime_notifyer_,
         RuntimeInfo*const info_,
-        DataBuffer*data_buffer_ ) noexcept
+        DataBuffer*data_buffer_,
+        SmoothManager*smooth_manager_ ) noexcept
 :
 ui_look_and_feel( look_and_feel_ ),
                   audio_processor( audio_processor_ ),
-                  smooth_manager( data_type == MASTER ? new SmoothManager(runtime_notifyer_) : nullptr ),
+                  smooth_manager( data_type == MASTER ? new SmoothManager(runtime_notifyer_) : smooth_manager_ ),
                   runtime_notifyer( runtime_notifyer_ ),
                   runtime_info( info_ ),
                   data_buffer( data_buffer_ ),
@@ -1661,7 +1661,7 @@ ui_look_and_feel( look_and_feel_ ),
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
                       generate_short_human_name("MAIN","volume")
                   ),
-                  volume_smoother(smooth_manager,&volume),
+                  volume_smoother( smooth_manager ,&volume),
                   glide
                   (
                       MIN_MAX( 0, 1 ),
@@ -1670,6 +1670,7 @@ ui_look_and_feel( look_and_feel_ ),
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
                       generate_short_human_name("GLOB","note_glide")
                   ),
+                  glide_smoother(smooth_manager ,&glide ),
                   delay
                   (
                       MIN_MAX( 0, 1 ),
@@ -1679,6 +1680,15 @@ ui_look_and_feel( look_and_feel_ ),
                       generate_short_human_name("FX","delay")
                   ),
                   delay_smoother(smooth_manager,&delay),
+                  delay_pan
+                  (
+                      MIN_MAX( -1, 1 ),
+                      0,
+                      2000,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_pan"),
+                      generate_short_human_name("FX","delay_pan")
+                  ),
+                  delay_pan_smoother(smooth_manager,&delay_pan),
                   effect_bypass
                   (
                       MIN_MAX( 0, 1 ),
@@ -1939,7 +1949,7 @@ ui_look_and_feel( look_and_feel_ ),
                   env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
                   eq_data(new EQData( smooth_manager, MASTER )),
                   arp_sequencer_data(new ArpSequencerData( MASTER )),
-                  reverb_data(new ReverbData( MASTER ) ),
+                  reverb_data(new ReverbData( smooth_manager, MASTER ) ),
                   chorus_data(new ChorusData( smooth_manager, MASTER )),
 
 // MORPH
@@ -1955,6 +1965,28 @@ ui_look_and_feel( look_and_feel_ ),
                       SYNTH_DATA_NAME,SYNTH_DATA_NAME,
                       MASTER,
                       "morph_state","morph",false
+                  ),
+                  is_morph_modulated
+                  (
+                      SUM_MORPHER_GROUPS,
+
+                      false,
+
+                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                      MASTER,
+                      "is_morph_modulated","is_morph_mod",false
+                  ),
+                  morhp_automation_power
+                  (
+                      SUM_MORPHER_GROUPS,
+
+                      MIN_MAX( 0, 1 ),
+                      0,
+                      1000,
+
+                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                      MASTER,
+                      "mfo_power","morph_mod_power",false
                   ),
                   morhp_switch_states
                   (
@@ -2007,10 +2039,18 @@ ui_look_and_feel( look_and_feel_ ),
     // LFO DATA
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        LFOData* data = new LFOData(i);
+        LFOData* data = new LFOData(smooth_manager,i);
         lfo_datas.add( data );
     }
     lfo_datas.minimiseStorageOverheads();
+
+    // MFO DATA
+    for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+    {
+        MFOData* data = new MFOData(smooth_manager,i);
+        mfo_datas.add( data );
+    }
+    mfo_datas.minimiseStorageOverheads();
 
     // FILTERS
     for( int i = 0 ; i != SUM_FILTERS ; ++i )
@@ -2061,6 +2101,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
     dest_->delay = src_->delay;
+    dest_->delay_pan = src_->delay_pan;
     dest_->effect_bypass = src_->effect_bypass;
     dest_->speed = src_->speed;
     dest_->glide_motor_time = src_->glide_motor_time;
@@ -2070,6 +2111,11 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->shape = src_->shape;
     dest_->octave_offset = src_->octave_offset;
     dest_->note_offset = src_->note_offset;
+
+    for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+    {
+        dest_->is_morph_modulated[i].set_value( src_->is_morph_modulated[i].get_value());
+    }
 
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
@@ -2108,6 +2154,11 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
         collect_saveable_parameters( lfo_datas[i], saveable_parameters );
+        saveable_parameters.add( &is_morph_modulated[i] );
+    }
+    for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+    {
+        collect_saveable_parameters( mfo_datas[i], saveable_parameters );
     }
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
     {
@@ -2123,6 +2174,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->shape );
     saveable_parameters.add( &this->distortion );
     saveable_parameters.add( &this->delay );
+    saveable_parameters.add( &this->delay_pan );
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
     saveable_parameters.add( &this->effect_bypass );
@@ -2272,6 +2324,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[0]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->release.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[0]->env_data->shape.ptr(), data_type == MASTER  );
             }
 
             {
@@ -2315,6 +2368,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[1]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->release.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[1]->env_data->shape.ptr(), data_type == MASTER  );
             }
 
             {
@@ -2358,6 +2412,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_2->register_parameter( filter_datas[2]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->release.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->max_release_time.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( filter_datas[2]->env_data->shape.ptr(), data_type == MASTER  );
             }
         }
 
@@ -2404,17 +2459,13 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( reverb_data->room.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( reverb_data->dry_wet_mix.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( reverb_data->width.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( reverb_data->pan.ptr(), data_type == MASTER  );
             // DELAY
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( delay_pan.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->attack.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->decay.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->sustain.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->sustain_time.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->release.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( chorus_data->env_data->shape.ptr(), data_type == MASTER  );
-            morph_group_3->register_switch_parameter( chorus_data->hold_modulation.bool_ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( chorus_data->pan.ptr(), data_type == MASTER  );
         }
 
         // ARP
@@ -2459,14 +2510,14 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
     if( data_type == MASTER )
     {
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
 
         // SETUP THE MORPH GROUP
         // TODO, do not initalize the unneded morph groups
@@ -2653,7 +2704,7 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
 }
 
 //==============================================================================
-void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool left_or_right_ ) noexcept
+void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool left_or_right_, bool run_sync_morph_ ) noexcept
 {
     MorphGroup* morph_group_to_update;
     MorphGroup* morph_group_source;
@@ -2733,7 +2784,10 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         param->set_modulation_amount_without_notification( source_param->get_modulation_amount() );
     }
 
-    run_sync_morph();
+    if( run_sync_morph_ )
+    {
+        run_sync_morph();
+    }
 }
 
 void MoniqueSynthData::refresh_morph_programms() noexcept
@@ -3123,13 +3177,16 @@ bool MoniqueSynthData::replace() noexcept
     String bank_name = banks[current_bank];
     String program_name = program_names_per_bank.getReference(current_bank)[current_program];
     File program = get_program_file( bank_name, program_name );
-    bool success = AlertWindow::showOkCancelBox
+    bool success = true;
+    /*
+    AlertWindow::showOkCancelBox
     (
         AlertWindow::AlertIconType::QuestionIcon,
         "REPLACE PROJECT?",
         String("Overwrite project: ")+bank_name+String(":")+program_name,
         "YES", "NO"
     );
+    */
     if( success )
     {
         success = write2file( bank_name, program_name );
@@ -3314,10 +3371,32 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
     {
         // PARAMS
         // TODO, this is not really required. coz the morph groubs will set this values
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        //if( id != MASTER )
         {
-            read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+            {
+                Parameter*const param = saveable_parameters.getUnchecked(i);
+                read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+                /*
+		if( param->get_info().name.contains("max_release") )
+                {
+                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) );
+                }
+                if( param->get_info().name.contains("max_decay") )
+                {
+                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
+                }
+                if( param->get_info().name.contains("max_attack") )
+                {
+                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
+                }
+                */
+            }
         }
+
 
         // MORPH STUFF
         if( id == MASTER )
@@ -3464,6 +3543,8 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
+
 
 
 

@@ -98,7 +98,9 @@ public:
         This is an array of 16 bytes. To reconstruct a Uuid from its data, use
         the constructor or operator= method that takes an array of uint8s.
     */
-    const uint8* getRawData() const noexcept                { return uuid; }
+    const uint8* getRawData() const noexcept                {
+        return uuid;
+    }
 
     /** Creates a UUID from a 16-byte array.
         @see getRawData

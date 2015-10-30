@@ -79,7 +79,7 @@ public:
         virtual ~LookAndFeelMethods() {}
 
         virtual void drawStretchableLayoutResizerBar (Graphics&, int w, int h,
-                                                      bool isVerticalBar, bool isMouseOver, bool isMouseDragging) = 0;
+                bool isVerticalBar, bool isMouseOver, bool isMouseDragging) = 0;
     };
 
     //==============================================================================

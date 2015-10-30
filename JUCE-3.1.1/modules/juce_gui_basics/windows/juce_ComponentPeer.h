@@ -91,12 +91,16 @@ public:
     /** Returns the set of style flags that were set when the window was created.
         @see Component::addToDesktop
     */
-    int getStyleFlags() const noexcept                      { return styleFlags; }
+    int getStyleFlags() const noexcept                      {
+        return styleFlags;
+    }
 
     /** Returns a unique ID for this peer.
         Each peer that is created is given a different ID.
     */
-    uint32 getUniqueID() const noexcept                     { return uniqueID; }
+    uint32 getUniqueID() const noexcept                     {
+        return uniqueID;
+    }
 
     //==============================================================================
     /** Returns the raw handle to whatever kind of window is being used.
@@ -200,7 +204,9 @@ public:
     void setConstrainer (ComponentBoundsConstrainer* newConstrainer) noexcept;
 
     /** Returns the current constrainer, if one has been set. */
-    ComponentBoundsConstrainer* getConstrainer() const noexcept             { return constrainer; }
+    ComponentBoundsConstrainer* getConstrainer() const noexcept             {
+        return constrainer;
+    }
 
     /** Checks if a point is in the window.
 
@@ -318,7 +324,9 @@ public:
         String text;
         Point<int> position;
 
-        bool isEmpty() const noexcept       { return files.size() == 0 && text.isEmpty(); }
+        bool isEmpty() const noexcept       {
+            return files.size() == 0 && text.isEmpty();
+        }
         void clear() noexcept               { files.clear(); text.clear(); }
     };
 

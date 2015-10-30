@@ -33,7 +33,7 @@
     Use setImage to give it an image, and it'll display it - simple as that!
 */
 class JUCE_API  ImageComponent  : public Component,
-                                  public SettableTooltipClient
+    public SettableTooltipClient
 {
 public:
     //==============================================================================

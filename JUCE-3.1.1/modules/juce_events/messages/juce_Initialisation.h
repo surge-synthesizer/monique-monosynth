@@ -86,21 +86,21 @@ public:
     See the JUCEApplication and JUCEApplicationBase class documentation for more details.
 */
 #ifdef DOXYGEN
- #define START_JUCE_APPLICATION(AppClass)
+#define START_JUCE_APPLICATION(AppClass)
 #elif JUCE_ANDROID
- #define START_JUCE_APPLICATION(AppClass) \
+#define START_JUCE_APPLICATION(AppClass) \
    juce::JUCEApplicationBase* juce_CreateApplication() { return new AppClass(); }
 
 #else
- #if JUCE_WINDOWS && ! defined (_CONSOLE)
-  #define JUCE_MAIN_FUNCTION       int __stdcall WinMain (struct HINSTANCE__*, struct HINSTANCE__*, char*, int)
-  #define JUCE_MAIN_FUNCTION_ARGS
- #else
-  #define JUCE_MAIN_FUNCTION       int main (int argc, char* argv[])
-  #define JUCE_MAIN_FUNCTION_ARGS  argc, (const char**) argv
- #endif
+#if JUCE_WINDOWS && ! defined (_CONSOLE)
+#define JUCE_MAIN_FUNCTION       int __stdcall WinMain (struct HINSTANCE__*, struct HINSTANCE__*, char*, int)
+#define JUCE_MAIN_FUNCTION_ARGS
+#else
+#define JUCE_MAIN_FUNCTION       int main (int argc, char* argv[])
+#define JUCE_MAIN_FUNCTION_ARGS  argc, (const char**) argv
+#endif
 
- #define START_JUCE_APPLICATION(AppClass) \
+#define START_JUCE_APPLICATION(AppClass) \
     static juce::JUCEApplicationBase* juce_CreateApplication() { return new AppClass(); } \
     extern "C" JUCE_MAIN_FUNCTION \
     { \

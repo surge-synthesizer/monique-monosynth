@@ -23,10 +23,10 @@
 */
 
 BufferingAudioSource::BufferingAudioSource (PositionableAudioSource* s,
-                                            TimeSliceThread& thread,
-                                            const bool deleteSourceWhenDeleted,
-                                            const int bufferSizeSamples,
-                                            const int numChannels)
+        TimeSliceThread& thread,
+        const bool deleteSourceWhenDeleted,
+        const int bufferSizeSamples,
+        const int numChannels)
     : source (s, deleteSourceWhenDeleted),
       backgroundThread (thread),
       numberOfSamplesToBuffer (jmax (1024, bufferSizeSamples)),
@@ -41,7 +41,7 @@ BufferingAudioSource::BufferingAudioSource (PositionableAudioSource* s,
     jassert (source != nullptr);
 
     jassert (numberOfSamplesToBuffer > 1024); // not much point using this class if you're
-                                              //  not using a larger buffer..
+    //  not using a larger buffer..
 }
 
 BufferingAudioSource::~BufferingAudioSource()
@@ -55,8 +55,8 @@ void BufferingAudioSource::prepareToPlay (int samplesPerBlockExpected, double ne
     const int bufferSizeNeeded = jmax (samplesPerBlockExpected * 2, numberOfSamplesToBuffer);
 
     if (newSampleRate != sampleRate
-         || bufferSizeNeeded != buffer.getNumSamples()
-         || ! isPrepared)
+            || bufferSizeNeeded != buffer.getNumSamples()
+            || ! isPrepared)
     {
         backgroundThread.removeTimeSliceClient (this);
 
@@ -74,7 +74,7 @@ void BufferingAudioSource::prepareToPlay (int samplesPerBlockExpected, double ne
         backgroundThread.addTimeSliceClient (this);
 
         while (bufferValidEnd - bufferValidStart < jmin (((int) newSampleRate) / 4,
-                                                         buffer.getNumSamples() / 2))
+                buffer.getNumSamples() / 2))
         {
             backgroundThread.moveToFrontOfQueue (this);
             Thread::sleep (5);
@@ -152,8 +152,8 @@ int64 BufferingAudioSource::getNextReadPosition() const
 {
     jassert (source->getTotalLength() > 0);
     return (source->isLooping() && nextPlayPos > 0)
-                    ? nextPlayPos % source->getTotalLength()
-                    : nextPlayPos;
+           ? nextPlayPos % source->getTotalLength()
+           : nextPlayPos;
 }
 
 void BufferingAudioSource::setNextReadPosition (int64 newPosition)
@@ -196,7 +196,7 @@ bool BufferingAudioSource::readNextBufferChunk()
             bufferValidEnd = 0;
         }
         else if (std::abs ((int) (newBVS - bufferValidStart)) > 512
-                  || std::abs ((int) (newBVE - bufferValidEnd)) > 512)
+                 || std::abs ((int) (newBVE - bufferValidEnd)) > 512)
         {
             newBVE = jmin (newBVE, bufferValidEnd + maxChunkSize);
 

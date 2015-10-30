@@ -64,23 +64,29 @@ public:
     /** Makes a copy of another FillType. */
     FillType& operator= (const FillType&);
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     FillType (FillType&&) noexcept;
     FillType& operator= (FillType&&) noexcept;
-   #endif
+#endif
 
     /** Destructor. */
     ~FillType() noexcept;
 
     //==============================================================================
     /** Returns true if this is a solid colour fill, and not a gradient or image. */
-    bool isColour() const noexcept          { return gradient == nullptr && image.isNull(); }
+    bool isColour() const noexcept          {
+        return gradient == nullptr && image.isNull();
+    }
 
     /** Returns true if this is a gradient fill. */
-    bool isGradient() const noexcept        { return gradient != nullptr; }
+    bool isGradient() const noexcept        {
+        return gradient != nullptr;
+    }
 
     /** Returns true if this is a tiled image pattern fill. */
-    bool isTiledImage() const noexcept      { return image.isValid(); }
+    bool isTiledImage() const noexcept      {
+        return image.isValid();
+    }
 
     /** Turns this object into a solid colour fill.
         If the object was an image or gradient, those fields will no longer be valid. */
@@ -103,7 +109,9 @@ public:
     /** Returns the current opacity to be applied to the colour, gradient, or image.
         @see setOpacity
     */
-    float getOpacity() const noexcept       { return colour.getFloatAlpha(); }
+    float getOpacity() const noexcept       {
+        return colour.getFloatAlpha();
+    }
 
     /** Returns true if this fill type is completely transparent. */
     bool isInvisible() const noexcept;

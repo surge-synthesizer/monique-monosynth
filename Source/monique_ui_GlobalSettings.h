@@ -22,6 +22,8 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "App_h_includer.h"
+
+class SectionTheme;
 //[/Headers]
 
 
@@ -37,8 +39,8 @@
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public AsyncUpdater,
-                                   public ComboBoxListener,
                                    public ButtonListener,
+                                   public ComboBoxListener,
                                    public SliderListener
 {
 public:
@@ -48,11 +50,15 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    SectionTheme* editable_theme;
+
     void refresh() noexcept override;
     void handleAsyncUpdate() override;
 
     const float original_w;
     const float original_h;
+
+    uint32 colour_clipboard;
 
 private:
     //==============================================================================
@@ -92,9 +98,11 @@ private:
         }
     } cpu_usage_smoother;
 
+    bool force_repaint;
     Colour* current_edited_colour;
     Colour last_repainted_colour;
-    void open_colour_selector( Colour& colour_to_edit_ );
+    COLOUR_CODES current_colour;
+    void open_colour_selector( COLOUR_CODES code_ );
 
     //==============================================================================
     // AUDIO
@@ -103,8 +111,8 @@ private:
 
     void paint (Graphics& g);
     void resized();
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void sliderValueChanged (Slider* sliderThatWasMoved);
 
     // Binary resources:
@@ -117,6 +125,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> button_colour_bg;
+    ScopedPointer<TextButton> button_colour_background;
+    ScopedPointer<Label> label_buttons__;
+    ScopedPointer<Label> label_slider__;
+    ScopedPointer<Label> label_section__;
+    ScopedPointer<HyperlinkButton> link_to_monoplugs;
     ScopedPointer<Label> label_9;
     ScopedPointer<Label> label_2;
     ScopedPointer<Label> label_4;
@@ -129,16 +143,8 @@ private:
     ScopedPointer<Label> label_7;
     ScopedPointer<Label> label_8;
     ScopedPointer<ComboBox> combo_sample_rate;
-    ScopedPointer<ColourSelector> colour_selector;
-    ScopedPointer<Label> label_colour_4;
     ScopedPointer<TextButton> button_current_editor_color;
-    ScopedPointer<Label> label_colour_7;
-    ScopedPointer<Label> label_colour_9;
-    ScopedPointer<Label> label_colour_6;
-    ScopedPointer<Label> label_colour_5;
-    ScopedPointer<Slider> slider_morph_motor_time;
     ScopedPointer<Slider> slider_glide_time;
-    ScopedPointer<Label> label13;
     ScopedPointer<Label> label7;
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
@@ -154,18 +160,11 @@ private:
     ScopedPointer<ToggleButton> toggle_slider_linear;
     ScopedPointer<ToggleButton> toggle_slider_rotary;
     ScopedPointer<Label> label_ui_headline_5;
-    ScopedPointer<Label> label_colour_1;
-    ScopedPointer<Label> label_colour_8;
-    ScopedPointer<Label> label_colour_2;
-    ScopedPointer<TextButton> button_colour_bg;
-    ScopedPointer<TextButton> button_colour_border;
     ScopedPointer<TextButton> button_colour_buttons_on;
     ScopedPointer<TextButton> button_colour_slider_1;
     ScopedPointer<TextButton> button_colour_slider_2;
     ScopedPointer<TextButton> button_colour_slider_mod;
-    ScopedPointer<Label> label_colour_3;
-    ScopedPointer<TextButton> button_colour_signal_lines;
-    ScopedPointer<TextButton> button_colour_buttons_off;
+    ScopedPointer<TextButton> button_colour_buttons_font_on;
     ScopedPointer<TextButton> button_colour_labels;
     ScopedPointer<Label> label_ui_headline_6;
     ScopedPointer<TextButton> button_preset_1;
@@ -177,7 +176,27 @@ private:
     ScopedPointer<Label> label_ui_headline_7;
     ScopedPointer<ImageButton> image_vst;
     ScopedPointer<Label> label_ui_headline_9;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
+    ScopedPointer<TextButton> button_colour_bg_svg_1;
+    ScopedPointer<TextButton> button_colour_bg_svg_2;
+    ScopedPointer<TextButton> button_colour_bg_svg_3;
+    ScopedPointer<TextButton> button_colour_bg_svg_4;
+    ScopedPointer<TextButton> button_colour_bg_svg_5;
+    ScopedPointer<TextButton> button_colour_bg_svg_6;
+    ScopedPointer<TextButton> button_colour_bg_svg_7;
+    ScopedPointer<TextButton> copy;
+    ScopedPointer<TextButton> past;
+    ScopedPointer<TextButton> button_colour_buttons_off;
+    ScopedPointer<TextButton> button_colour_buttons_font_off;
+    ScopedPointer<TextButton> button_colour_slider_bg;
+    ScopedPointer<TextButton> button_preset_4;
+    ScopedPointer<Label> label_11;
+    ScopedPointer<ToggleButton> toggle_for_all;
+    ScopedPointer<TextButton> copy2;
+    ScopedPointer<TextButton> past2;
+    ScopedPointer<TextButton> button_colour_slider_disabled;
+    ScopedPointer<Label> label_section;
+    ScopedPointer<Label> label_colour;
+    ScopedPointer<ColourSelector> colour_selector;
 
 
     //==============================================================================

@@ -69,19 +69,23 @@ public:
 
     //==============================================================================
     /** Returns the sample's name */
-    const String& getName() const noexcept                  { return name; }
+    const String& getName() const noexcept                  {
+        return name;
+    }
 
     /** Returns the audio sample data.
         This could return nullptr if there was a problem loading the data.
     */
-    AudioSampleBuffer* getAudioData() const noexcept        { return data; }
+    AudioSampleBuffer* getAudioData() const noexcept        {
+        return data;
+    }
 
     void set_release_time_in_samles( int samples_ ) {
-      releaseSamples = samples_;
+        releaseSamples = samples_;
     }
-    
+
     void change_sample( AudioFormatReader& source );
-    
+
 private:
     //==============================================================================
     friend class SamplerVoice;
@@ -126,7 +130,7 @@ public:
     void controllerMoved (int controllerNumber, int newValue) override;
 
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
-    
+
 private:
     //==============================================================================
     float releaseSamples;
@@ -136,7 +140,7 @@ private:
     bool isInAttack, isInRelease;
 
     const SamplerSound*playingSound;
-    
+
     JUCE_LEAK_DETECTOR (SamplerVoice)
 };
 

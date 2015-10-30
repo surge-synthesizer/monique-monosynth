@@ -36,7 +36,7 @@
     @see PropertyComponent
 */
 class JUCE_API  ButtonPropertyComponent  : public PropertyComponent,
-                                           private ButtonListener // (can't use Button::Listener due to idiotic VC2005 bug)
+    private ButtonListener // (can't use Button::Listener due to idiotic VC2005 bug)
 {
 public:
     //==============================================================================

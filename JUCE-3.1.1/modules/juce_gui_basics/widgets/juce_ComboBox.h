@@ -42,10 +42,10 @@
     @see ComboBox::Listener
 */
 class JUCE_API  ComboBox  : public Component,
-                            public SettableTooltipClient,
-                            public LabelListener,  // (can't use Label::Listener due to idiotic VC2005 bug)
-                            public ValueListener,
-                            private AsyncUpdater
+    public SettableTooltipClient,
+    public LabelListener,  // (can't use Label::Listener due to idiotic VC2005 bug)
+    public ValueListener,
+    private AsyncUpdater
 {
 public:
     //==============================================================================
@@ -185,7 +185,9 @@ public:
         You can call Value::referTo() on this object to make the combo box control
         another Value object.
     */
-    Value& getSelectedIdAsValue()                       { return currentId; }
+    Value& getSelectedIdAsValue()                       {
+        return currentId;
+    }
 
     /** Sets one of the items to be the current selection.
 
@@ -378,7 +380,9 @@ public:
     /** @internal */
     void handleAsyncUpdate() override;
     /** @internal */
-    String getTooltip() override                        { return label->getTooltip(); }
+    String getTooltip() override                        {
+        return label->getTooltip();
+    }
     /** @internal */
     void mouseDown (const MouseEvent&) override;
     /** @internal */

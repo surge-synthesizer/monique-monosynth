@@ -30,22 +30,22 @@
 #define JUCE_CORE_H_INCLUDED
 
 #ifndef JUCE_MODULE_AVAILABLE_juce_core
- /* If you fail to make sure that all your compile units are building JUCE with the same set of
-    option flags, then there's a risk that different compile units will treat the classes as having
-    different memory layouts, leading to very nasty memory corruption errors when they all get
-    linked together. That's why it's best to always include the Introjucer-generated AppConfig.h
-    file before any juce headers.
+/* If you fail to make sure that all your compile units are building JUCE with the same set of
+   option flags, then there's a risk that different compile units will treat the classes as having
+   different memory layouts, leading to very nasty memory corruption errors when they all get
+   linked together. That's why it's best to always include the Introjucer-generated AppConfig.h
+   file before any juce headers.
 
-    Note that if you do have an AppConfig.h file and hit this warning, it means that it doesn't
-    contain the JUCE_MODULE_AVAILABLE_xxx flags, which are necessary for some inter-module
-    functionality to work correctly. In that case, you should either rebuild your AppConfig.h with
-    the latest introjucer, or fix it manually to contain these flags.
- */
- #ifdef _MSC_VER
-  #pragma message ("Have you included your AppConfig.h file before including the JUCE headers?")
- #else
-  #warning "Have you included your AppConfig.h file before including the JUCE headers?"
- #endif
+   Note that if you do have an AppConfig.h file and hit this warning, it means that it doesn't
+   contain the JUCE_MODULE_AVAILABLE_xxx flags, which are necessary for some inter-module
+   functionality to work correctly. In that case, you should either rebuild your AppConfig.h with
+   the latest introjucer, or fix it manually to contain these flags.
+*/
+#ifdef _MSC_VER
+#pragma message ("Have you included your AppConfig.h file before including the JUCE headers?")
+#else
+#warning "Have you included your AppConfig.h file before including the JUCE headers?"
+#endif
 #endif
 
 //==============================================================================
@@ -58,7 +58,7 @@
     but if you define this value, you can override this to force it to be true or false.
 */
 #ifndef JUCE_FORCE_DEBUG
- //#define JUCE_FORCE_DEBUG 0
+//#define JUCE_FORCE_DEBUG 0
 #endif
 
 //=============================================================================
@@ -74,11 +74,11 @@
     @see jassert, jassertfalse, Logger
 */
 #ifndef JUCE_LOG_ASSERTIONS
- #if JUCE_ANDROID
-  #define JUCE_LOG_ASSERTIONS 1
- #else
-  #define JUCE_LOG_ASSERTIONS 0
- #endif
+#if JUCE_ANDROID
+#define JUCE_LOG_ASSERTIONS 1
+#else
+#define JUCE_LOG_ASSERTIONS 0
+#endif
 #endif
 
 //=============================================================================
@@ -88,7 +88,7 @@
     class and the JUCE_LEAK_DETECTOR macro for more details about enabling leak checking for specific classes.
 */
 #if JUCE_DEBUG && ! defined (JUCE_CHECK_MEMORY_LEAKS)
- #define JUCE_CHECK_MEMORY_LEAKS 1
+#define JUCE_CHECK_MEMORY_LEAKS 1
 #endif
 
 //=============================================================================
@@ -98,7 +98,7 @@
     automatically added to the link stage.
 */
 #ifndef JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES
- #define JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES 0
+#define JUCE_DONT_AUTOLINK_TO_WIN32_LIBRARIES 0
 #endif
 
 /** Config: JUCE_INCLUDE_ZLIB_CODE
@@ -110,11 +110,11 @@
     specify the path where your zlib headers live.
 */
 #ifndef JUCE_INCLUDE_ZLIB_CODE
- #define JUCE_INCLUDE_ZLIB_CODE 1
+#define JUCE_INCLUDE_ZLIB_CODE 1
 #endif
 
 #ifndef JUCE_ZLIB_INCLUDE_PATH
- #define JUCE_ZLIB_INCLUDE_PATH <zlib.h>
+#define JUCE_ZLIB_INCLUDE_PATH <zlib.h>
 #endif
 
 /*  Config: JUCE_CATCH_UNHANDLED_EXCEPTIONS
@@ -122,22 +122,22 @@
     to your JUCEApplicationBase::unhandledException() callback.
 */
 #ifndef JUCE_CATCH_UNHANDLED_EXCEPTIONS
- //#define JUCE_CATCH_UNHANDLED_EXCEPTIONS 1
+//#define JUCE_CATCH_UNHANDLED_EXCEPTIONS 1
 #endif
 
 #ifndef JUCE_STRING_UTF_TYPE
- #define JUCE_STRING_UTF_TYPE 8
+#define JUCE_STRING_UTF_TYPE 8
 #endif
 
 //=============================================================================
 //=============================================================================
 #if JUCE_MSVC
- #pragma warning (disable: 4251) // (DLL build warning, must be disabled before pushing the warning state)
- #pragma warning (push)
- #pragma warning (disable: 4786) // (long class name warning)
- #ifdef __INTEL_COMPILER
-  #pragma warning (disable: 1125)
- #endif
+#pragma warning (disable: 4251) // (DLL build warning, must be disabled before pushing the warning state)
+#pragma warning (push)
+#pragma warning (disable: 4786) // (long class name warning)
+#ifdef __INTEL_COMPILER
+#pragma warning (disable: 1125)
+#endif
 #endif
 
 #include "system/juce_StandardHeader.h"
@@ -166,8 +166,8 @@ extern JUCE_API void JUCE_CALLTYPE logAssertion (const char* file, int line) noe
 #include "text/juce_CharacterFunctions.h"
 
 #if JUCE_MSVC
- #pragma warning (push)
- #pragma warning (disable: 4514 4996)
+#pragma warning (push)
+#pragma warning (disable: 4514 4996)
 #endif
 
 #include "text/juce_CharPointer_UTF8.h"
@@ -176,7 +176,7 @@ extern JUCE_API void JUCE_CALLTYPE logAssertion (const char* file, int line) noe
 #include "text/juce_CharPointer_ASCII.h"
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 #include "text/juce_String.h"
@@ -279,7 +279,7 @@ extern JUCE_API void JUCE_CALLTYPE logAssertion (const char* file, int line) noe
 }
 
 #if JUCE_MSVC
- #pragma warning (pop)
+#pragma warning (pop)
 #endif
 
 #endif   // JUCE_CORE_H_INCLUDED

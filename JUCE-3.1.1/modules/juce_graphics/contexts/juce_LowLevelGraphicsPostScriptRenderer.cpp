@@ -28,16 +28,16 @@
 
 //==============================================================================
 #if JUCE_DEBUG && WARN_ABOUT_NON_POSTSCRIPT_OPERATIONS
- #define notPossibleInPostscriptAssert jassertfalse
+#define notPossibleInPostscriptAssert jassertfalse
 #else
- #define notPossibleInPostscriptAssert
+#define notPossibleInPostscriptAssert
 #endif
 
 //==============================================================================
 LowLevelGraphicsPostScriptRenderer::LowLevelGraphicsPostScriptRenderer (OutputStream& resultingPostScript,
-                                                                        const String& documentTitle,
-                                                                        const int totalWidth_,
-                                                                        const int totalHeight_)
+        const String& documentTitle,
+        const int totalWidth_,
+        const int totalHeight_)
     : out (resultingPostScript),
       totalWidth (totalWidth_),
       totalHeight (totalHeight_),
@@ -49,32 +49,32 @@ LowLevelGraphicsPostScriptRenderer::LowLevelGraphicsPostScriptRenderer (OutputSt
     const float scale = jmin ((520.0f / totalWidth_), (750.0f / totalHeight));
 
     out << "%!PS-Adobe-3.0 EPSF-3.0"
-           "\n%%BoundingBox: 0 0 600 824"
-           "\n%%Pages: 0"
-           "\n%%Creator: Raw Material Software JUCE"
-           "\n%%Title: " << documentTitle <<
-           "\n%%CreationDate: none"
-           "\n%%LanguageLevel: 2"
-           "\n%%EndComments"
-           "\n%%BeginProlog"
-           "\n%%BeginResource: JRes"
-           "\n/bd {bind def} bind def"
-           "\n/c {setrgbcolor} bd"
-           "\n/m {moveto} bd"
-           "\n/l {lineto} bd"
-           "\n/rl {rlineto} bd"
-           "\n/ct {curveto} bd"
-           "\n/cp {closepath} bd"
-           "\n/pr {3 index 3 index moveto 1 index 0 rlineto 0 1 index rlineto pop neg 0 rlineto pop pop closepath} bd"
-           "\n/doclip {initclip newpath} bd"
-           "\n/endclip {clip newpath} bd"
-           "\n%%EndResource"
-           "\n%%EndProlog"
-           "\n%%BeginSetup"
-           "\n%%EndSetup"
-           "\n%%Page: 1 1"
-           "\n%%BeginPageSetup"
-           "\n%%EndPageSetup\n\n"
+        "\n%%BoundingBox: 0 0 600 824"
+        "\n%%Pages: 0"
+        "\n%%Creator: Raw Material Software JUCE"
+        "\n%%Title: " << documentTitle <<
+        "\n%%CreationDate: none"
+        "\n%%LanguageLevel: 2"
+        "\n%%EndComments"
+        "\n%%BeginProlog"
+        "\n%%BeginResource: JRes"
+        "\n/bd {bind def} bind def"
+        "\n/c {setrgbcolor} bd"
+        "\n/m {moveto} bd"
+        "\n/l {lineto} bd"
+        "\n/rl {rlineto} bd"
+        "\n/ct {curveto} bd"
+        "\n/cp {closepath} bd"
+        "\n/pr {3 index 3 index moveto 1 index 0 rlineto 0 1 index rlineto pop neg 0 rlineto pop pop closepath} bd"
+        "\n/doclip {initclip newpath} bd"
+        "\n/endclip {clip newpath} bd"
+        "\n%%EndResource"
+        "\n%%EndProlog"
+        "\n%%BeginSetup"
+        "\n%%EndSetup"
+        "\n%%Page: 1 1"
+        "\n%%BeginPageSetup"
+        "\n%%EndPageSetup\n\n"
         << "40 800 translate\n"
         << scale << ' ' << scale << " scale\n\n";
 }
@@ -105,7 +105,9 @@ void LowLevelGraphicsPostScriptRenderer::addTransform (const AffineTransform& /*
     jassertfalse;
 }
 
-float LowLevelGraphicsPostScriptRenderer::getPhysicalPixelScaleFactor()    { return 1.0f; }
+float LowLevelGraphicsPostScriptRenderer::getPhysicalPixelScaleFactor()    {
+    return 1.0f;
+}
 
 bool LowLevelGraphicsPostScriptRenderer::clipToRectangle (const Rectangle<int>& r)
 {
@@ -149,7 +151,7 @@ bool LowLevelGraphicsPostScriptRenderer::clipRegionIntersects (const Rectangle<i
 Rectangle<int> LowLevelGraphicsPostScriptRenderer::getClipBounds() const
 {
     return stateStack.getLast()->clip.getBounds().translated (-stateStack.getLast()->xOffset,
-                                                              -stateStack.getLast()->yOffset);
+            -stateStack.getLast()->yOffset);
 }
 
 bool LowLevelGraphicsPostScriptRenderer::isClipEmpty() const
@@ -271,20 +273,20 @@ void LowLevelGraphicsPostScriptRenderer::writePath (const Path& path) const
             break;
 
         case Path::Iterator::quadraticTo:
-            {
-                const float cp1x = lastX + (i.x1 - lastX) * 2.0f / 3.0f;
-                const float cp1y = lastY + (i.y1 - lastY) * 2.0f / 3.0f;
-                const float cp2x = cp1x + (i.x2 - lastX) / 3.0f;
-                const float cp2y = cp1y + (i.y2 - lastY) / 3.0f;
+        {
+            const float cp1x = lastX + (i.x1 - lastX) * 2.0f / 3.0f;
+            const float cp1y = lastY + (i.y1 - lastY) * 2.0f / 3.0f;
+            const float cp2x = cp1x + (i.x2 - lastX) / 3.0f;
+            const float cp2y = cp1y + (i.y2 - lastY) / 3.0f;
 
-                writeXY (cp1x, cp1y);
-                writeXY (cp2x, cp2y);
-                writeXY (i.x2, i.y2);
-                out << "ct ";
-                lastX = i.x2;
-                lastY = i.y2;
-            }
-            break;
+            writeXY (cp1x, cp1y);
+            writeXY (cp2x, cp2y);
+            writeXY (i.x2, i.y2);
+            out << "ct ";
+            lastX = i.x2;
+            lastY = i.y2;
+        }
+        break;
 
         case Path::Iterator::cubicTo:
             writeXY (i.x1, i.y1);
@@ -409,8 +411,8 @@ void LowLevelGraphicsPostScriptRenderer::fillPath (const Path& path, const Affin
 
 //==============================================================================
 void LowLevelGraphicsPostScriptRenderer::writeImage (const Image& im,
-                                                     const int sx, const int sy,
-                                                     const int maxW, const int maxH) const
+        const int sx, const int sy,
+        const int maxW, const int maxH) const
 {
     out << "{<\n";
 
@@ -474,7 +476,7 @@ void LowLevelGraphicsPostScriptRenderer::drawImage (const Image& sourceImage, co
 
     out << "gsave ";
     writeTransform (transform.translated ((float) stateStack.getLast()->xOffset, (float) stateStack.getLast()->yOffset)
-                             .scaled (1.0f, -1.0f));
+                    .scaled (1.0f, -1.0f));
 
     RectangleList<int> imageClip;
     sourceImage.createSolidAreaMask (imageClip, 0.5f);

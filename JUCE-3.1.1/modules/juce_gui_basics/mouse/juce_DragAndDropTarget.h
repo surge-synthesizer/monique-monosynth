@@ -139,14 +139,22 @@ public:
 
     //==============================================================================
 private:
-   #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
     // The parameters for these methods have changed - please update your code!
     virtual void isInterestedInDragSource (const String&, Component*) {}
-    virtual int itemDragEnter (const String&, Component*, int, int) { return 0; }
-    virtual int itemDragMove (const String&, Component*, int, int) { return 0; }
-    virtual int itemDragExit (const String&, Component*) { return 0; }
-    virtual int itemDropped (const String&, Component*, int, int) { return 0; }
-   #endif
+    virtual int itemDragEnter (const String&, Component*, int, int) {
+        return 0;
+    }
+    virtual int itemDragMove (const String&, Component*, int, int) {
+        return 0;
+    }
+    virtual int itemDragExit (const String&, Component*) {
+        return 0;
+    }
+    virtual int itemDropped (const String&, Component*, int, int) {
+        return 0;
+    }
+#endif
 };
 
 #endif   // JUCE_DRAGANDDROPTARGET_H_INCLUDED

@@ -57,7 +57,9 @@ public:
         UnregisterClass (getClassNameFromAtom(), 0);
     }
 
-    inline HWND getHWND() const noexcept     { return hwnd; }
+    inline HWND getHWND() const noexcept     {
+        return hwnd;
+    }
 
 private:
     ATOM atom;
@@ -113,15 +115,15 @@ private:
     HiddenMessageWindow messageWindow;
 
     static LRESULT CALLBACK deviceChangeEventCallback (HWND h, const UINT message,
-                                                       const WPARAM wParam, const LPARAM lParam)
+            const WPARAM wParam, const LPARAM lParam)
     {
         if (message == WM_DEVICECHANGE
-             && (wParam == 0x8000 /*DBT_DEVICEARRIVAL*/
-                  || wParam == 0x8004 /*DBT_DEVICEREMOVECOMPLETE*/
-                  || wParam == 0x0007 /*DBT_DEVNODES_CHANGED*/))
+                && (wParam == 0x8000 /*DBT_DEVICEARRIVAL*/
+                    || wParam == 0x8004 /*DBT_DEVICEREMOVECOMPLETE*/
+                    || wParam == 0x0007 /*DBT_DEVNODES_CHANGED*/))
         {
             ((DeviceChangeDetector*) GetWindowLongPtr (h, GWLP_USERDATA))
-                ->triggerAsyncDeviceChangeCallback();
+            ->triggerAsyncDeviceChangeCallback();
         }
 
         return DefWindowProc (h, message, wParam, lParam);

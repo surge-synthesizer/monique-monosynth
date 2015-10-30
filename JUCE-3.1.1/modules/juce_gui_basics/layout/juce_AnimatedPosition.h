@@ -54,7 +54,7 @@ public:
     AnimatedPosition()
         : position(), grabbedPos(), releaseVelocity(),
           range (-std::numeric_limits<double>::max(),
-                  std::numeric_limits<double>::max())
+                 std::numeric_limits<double>::max())
     {
     }
 
@@ -138,10 +138,14 @@ public:
     };
 
     /** Adds a listener to be called when the value changes. */
-    void addListener (Listener* listener)       { listeners.add (listener); }
+    void addListener (Listener* listener)       {
+        listeners.add (listener);
+    }
 
     /** Removes a previously-registered listener. */
-    void removeListener (Listener* listener)    { listeners.remove (listener); }
+    void removeListener (Listener* listener)    {
+        listeners.remove (listener);
+    }
 
     //==============================================================================
     /** The behaviour object.

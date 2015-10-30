@@ -32,10 +32,11 @@ struct NamedValueSet::NamedValue
     NamedValue (Identifier n, const var& v)  : name (n), value (v) {}
     NamedValue (const NamedValue& other) : name (other.name), value (other.value) {}
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     NamedValue (NamedValue&& other) noexcept
-        : name (static_cast<Identifier&&> (other.name)),
-          value (static_cast<var&&> (other.value))
+:
+    name (static_cast<Identifier&&> (other.name)),
+         value (static_cast<var&&> (other.value))
     {
     }
 
@@ -49,10 +50,14 @@ struct NamedValueSet::NamedValue
         value = static_cast<var&&> (other.value);
         return *this;
     }
-   #endif
+#endif
 
-    bool operator== (const NamedValue& other) const noexcept   { return name == other.name && value == other.value; }
-    bool operator!= (const NamedValue& other) const noexcept   { return ! operator== (other); }
+    bool operator== (const NamedValue& other) const noexcept   {
+        return name == other.name && value == other.value;
+    }
+    bool operator!= (const NamedValue& other) const noexcept   {
+        return ! operator== (other);
+    }
 
     Identifier name;
     var value;
@@ -64,7 +69,7 @@ NamedValueSet::NamedValueSet() noexcept
 }
 
 NamedValueSet::NamedValueSet (const NamedValueSet& other)
-   : values (other.values)
+    : values (other.values)
 {
 }
 
@@ -77,7 +82,8 @@ NamedValueSet& NamedValueSet::operator= (const NamedValueSet& other)
 
 #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
 NamedValueSet::NamedValueSet (NamedValueSet&& other) noexcept
-    : values (static_cast <Array<NamedValue>&&> (other.values))
+:
+values (static_cast <Array<NamedValue>&&> (other.values))
 {
 }
 

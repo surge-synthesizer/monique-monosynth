@@ -37,7 +37,7 @@
     @see Toolbar
 */
 class JUCE_API  ToolbarItemPalette    : public Component,
-                                        public DragAndDropContainer
+    public DragAndDropContainer
 {
 public:
     //==============================================================================

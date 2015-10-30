@@ -93,10 +93,10 @@ URL& URL::operator= (const URL& other)
 bool URL::operator== (const URL& other) const
 {
     return url == other.url
-        && postData == other.postData
-        && parameterNames == other.parameterNames
-        && parameterValues == other.parameterValues
-        && filesToUpload == other.filesToUpload;
+           && postData == other.postData
+           && parameterNames == other.parameterNames
+           && parameterValues == other.parameterValues
+           && filesToUpload == other.filesToUpload;
 }
 
 bool URL::operator!= (const URL& other) const
@@ -110,59 +110,59 @@ URL::~URL()
 
 namespace URLHelpers
 {
-    static String getMangledParameters (const URL& url)
+static String getMangledParameters (const URL& url)
+{
+    jassert (url.getParameterNames().size() == url.getParameterValues().size());
+    String p;
+
+    for (int i = 0; i < url.getParameterNames().size(); ++i)
     {
-        jassert (url.getParameterNames().size() == url.getParameterValues().size());
-        String p;
+        if (i > 0)
+            p << '&';
 
-        for (int i = 0; i < url.getParameterNames().size(); ++i)
-        {
-            if (i > 0)
-                p << '&';
-
-            p << URL::addEscapeChars (url.getParameterNames()[i], true)
-              << '='
-              << URL::addEscapeChars (url.getParameterValues()[i], true);
-        }
-
-        return p;
+        p << URL::addEscapeChars (url.getParameterNames()[i], true)
+          << '='
+          << URL::addEscapeChars (url.getParameterValues()[i], true);
     }
 
-    static int findEndOfScheme (const String& url)
-    {
-        int i = 0;
+    return p;
+}
 
-        while (CharacterFunctions::isLetterOrDigit (url[i])
-                || url[i] == '+' || url[i] == '-' || url[i] == '.')
-            ++i;
+static int findEndOfScheme (const String& url)
+{
+    int i = 0;
 
-        return url[i] == ':' ? i + 1 : 0;
-    }
+    while (CharacterFunctions::isLetterOrDigit (url[i])
+            || url[i] == '+' || url[i] == '-' || url[i] == '.')
+        ++i;
 
-    static int findStartOfNetLocation (const String& url)
-    {
-        int start = findEndOfScheme (url);
-        while (url[start] == '/')
-            ++start;
+    return url[i] == ':' ? i + 1 : 0;
+}
 
-        return start;
-    }
+static int findStartOfNetLocation (const String& url)
+{
+    int start = findEndOfScheme (url);
+    while (url[start] == '/')
+        ++start;
 
-    static int findStartOfPath (const String& url)
-    {
-        return url.indexOfChar (findStartOfNetLocation (url), '/') + 1;
-    }
+    return start;
+}
 
-    static void concatenatePaths (String& path, const String& suffix)
-    {
-        if (! path.endsWithChar ('/'))
-            path << '/';
+static int findStartOfPath (const String& url)
+{
+    return url.indexOfChar (findStartOfNetLocation (url), '/') + 1;
+}
 
-        if (suffix.startsWithChar ('/'))
-            path += suffix.substring (1);
-        else
-            path += suffix;
-    }
+static void concatenatePaths (String& path, const String& suffix)
+{
+    if (! path.endsWithChar ('/'))
+        path << '/';
+
+    if (suffix.startsWithChar ('/'))
+        path += suffix.substring (1);
+    else
+        path += suffix;
+}
 }
 
 void URL::addParameter (const String& name, const String& value)
@@ -197,8 +197,8 @@ String URL::getDomain() const
     const int end2 = url.indexOfChar (start, ':');
 
     const int end = (end1 < 0 && end2 < 0) ? std::numeric_limits<int>::max()
-                                           : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
-                                                                     : jmin (end1, end2));
+                    : ((end1 < 0 || end2 < 0) ? jmax (end1, end2)
+                       : jmin (end1, end2));
     return url.substring (start, end);
 }
 
@@ -207,7 +207,7 @@ String URL::getSubPath() const
     const int startOfPath = URLHelpers::findStartOfPath (url);
 
     return startOfPath <= 0 ? String()
-                            : url.substring (startOfPath);
+           : url.substring (startOfPath);
 }
 
 String URL::getScheme() const
@@ -309,11 +309,11 @@ bool URL::isProbablyAWebsiteURL (const String& possibleURL)
             return true;
 
     if (possibleURL.containsChar ('@')
-         || possibleURL.containsChar (' '))
+            || possibleURL.containsChar (' '))
         return false;
 
     const String topLevelDomain (possibleURL.upToFirstOccurrenceOf ("/", false, false)
-                                            .fromLastOccurrenceOf (".", false, false));
+                                 .fromLastOccurrenceOf (".", false, false));
 
     return topLevelDomain.isNotEmpty() && topLevelDomain.length() <= 3;
 }
@@ -323,8 +323,8 @@ bool URL::isProbablyAnEmailAddress (const String& possibleEmailAddress)
     const int atSign = possibleEmailAddress.indexOfChar ('@');
 
     return atSign > 0
-            && possibleEmailAddress.lastIndexOfChar ('.') > (atSign + 1)
-            && ! possibleEmailAddress.endsWithChar ('.');
+           && possibleEmailAddress.lastIndexOfChar ('.') > (atSign + 1)
+           && ! possibleEmailAddress.endsWithChar ('.');
 }
 
 //==============================================================================
@@ -348,9 +348,9 @@ InputStream* URL::createInputStream (const bool usePostCommand,
         headers << "\r\n";
 
     ScopedPointer<WebInputStream> wi (new WebInputStream (toString (! usePostCommand),
-                                                          usePostCommand, headersAndPostData,
-                                                          progressCallback, progressCallbackContext,
-                                                          headers, timeOutMs, responseHeaders));
+                                      usePostCommand, headersAndPostData,
+                                      progressCallback, progressCallbackContext,
+                                      headers, timeOutMs, responseHeaders));
 
     if (statusCode != nullptr)
         *statusCode = wi->statusCode;
@@ -481,7 +481,7 @@ String URL::removeEscapeChars (const String& s)
 String URL::addEscapeChars (const String& s, const bool isParameter)
 {
     const CharPointer_UTF8 legalChars (isParameter ? "_-.*!'()"
-                                                   : ",$_-.*!'()");
+                                       : ",$_-.*!'()");
 
     Array<char> utf8 (s.toRawUTF8(), (int) s.getNumBytesAsUTF8());
 
@@ -490,7 +490,7 @@ String URL::addEscapeChars (const String& s, const bool isParameter)
         const char c = utf8.getUnchecked(i);
 
         if (! (CharacterFunctions::isLetterOrDigit (c)
-                 || legalChars.indexOf ((juce_wchar) c) >= 0))
+                || legalChars.indexOf ((juce_wchar) c) >= 0))
         {
             utf8.set (i, '%');
             utf8.insert (++i, "0123456789ABCDEF" [((uint8) c) >> 4]);

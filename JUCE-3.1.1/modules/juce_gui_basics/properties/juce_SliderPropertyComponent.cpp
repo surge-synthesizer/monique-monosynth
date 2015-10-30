@@ -23,10 +23,10 @@
 */
 
 SliderPropertyComponent::SliderPropertyComponent (const String& name,
-                                                  const double rangeMin,
-                                                  const double rangeMax,
-                                                  const double interval,
-                                                  const double skewFactor)
+        const double rangeMin,
+        const double rangeMax,
+        const double interval,
+        const double skewFactor)
     : PropertyComponent (name)
 {
     addAndMakeVisible (slider);
@@ -39,11 +39,11 @@ SliderPropertyComponent::SliderPropertyComponent (const String& name,
 }
 
 SliderPropertyComponent::SliderPropertyComponent (const Value& valueToControl,
-                                                  const String& name,
-                                                  const double rangeMin,
-                                                  const double rangeMax,
-                                                  const double interval,
-                                                  const double skewFactor)
+        const String& name,
+        const double rangeMin,
+        const double rangeMax,
+        const double interval,
+        const double skewFactor)
     : PropertyComponent (name)
 {
     addAndMakeVisible (slider);

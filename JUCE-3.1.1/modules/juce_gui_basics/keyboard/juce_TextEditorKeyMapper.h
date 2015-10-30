@@ -52,7 +52,7 @@ struct TextEditorKeyMapper
         if (key == KeyPress (KeyPress::downKey, ModifierKeys::ctrlModifier, 0) && target.scrollUp())   return true;
         if (key == KeyPress (KeyPress::upKey,   ModifierKeys::ctrlModifier, 0) && target.scrollDown()) return true;
 
-       #if JUCE_MAC
+#if JUCE_MAC
         if (mods.isCommandDown() && ! ctrlOrAltDown)
         {
             if (key.isKeyCode (KeyPress::upKey))        return target.moveCaretToTop (isShiftDown);
@@ -63,7 +63,7 @@ struct TextEditorKeyMapper
 
         if (mods.isCommandDown())
             ++numCtrlAltCommandKeys;
-       #endif
+#endif
 
         if (numCtrlAltCommandKeys < 2)
         {
@@ -71,9 +71,9 @@ struct TextEditorKeyMapper
             if (key.isKeyCode (KeyPress::rightKey)) return target.moveCaretRight (ctrlOrAltDown, isShiftDown);
 
             if (key.isKeyCode (KeyPress::homeKey))  return ctrlOrAltDown ? target.moveCaretToTop         (isShiftDown)
-                                                                         : target.moveCaretToStartOfLine (isShiftDown);
+                        : target.moveCaretToStartOfLine (isShiftDown);
             if (key.isKeyCode (KeyPress::endKey))   return ctrlOrAltDown ? target.moveCaretToEnd         (isShiftDown)
-                                                                         : target.moveCaretToEndOfLine   (isShiftDown);
+                        : target.moveCaretToEndOfLine   (isShiftDown);
         }
 
         if (numCtrlAltCommandKeys == 0)
@@ -92,15 +92,15 @@ struct TextEditorKeyMapper
         }
 
         if (key == KeyPress ('c', ModifierKeys::commandModifier, 0)
-              || key == KeyPress (KeyPress::insertKey, ModifierKeys::ctrlModifier, 0))
+                || key == KeyPress (KeyPress::insertKey, ModifierKeys::ctrlModifier, 0))
             return target.copyToClipboard();
 
         if (key == KeyPress ('x', ModifierKeys::commandModifier, 0)
-              || key == KeyPress (KeyPress::deleteKey, ModifierKeys::shiftModifier, 0))
+                || key == KeyPress (KeyPress::deleteKey, ModifierKeys::shiftModifier, 0))
             return target.cutToClipboard();
 
         if (key == KeyPress ('v', ModifierKeys::commandModifier, 0)
-              || key == KeyPress (KeyPress::insertKey, ModifierKeys::shiftModifier, 0))
+                || key == KeyPress (KeyPress::insertKey, ModifierKeys::shiftModifier, 0))
             return target.pasteFromClipboard();
 
         if (key == KeyPress ('a', ModifierKeys::commandModifier, 0))
@@ -110,7 +110,7 @@ struct TextEditorKeyMapper
             return target.undo();
 
         if (key == KeyPress ('y', ModifierKeys::commandModifier, 0)
-             || key == KeyPress ('z', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0))
+                || key == KeyPress ('z', ModifierKeys::commandModifier | ModifierKeys::shiftModifier, 0))
             return target.redo();
 
         return false;

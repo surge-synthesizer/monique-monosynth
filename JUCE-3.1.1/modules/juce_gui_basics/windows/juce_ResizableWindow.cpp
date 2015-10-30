@@ -29,9 +29,9 @@ ResizableWindow::ResizableWindow (const String& name,
       resizeToFitContent (false),
       fullscreen (false),
       constrainer (nullptr)
-     #if JUCE_DEBUG
+#if JUCE_DEBUG
       , hasBeenResized (false)
-     #endif
+#endif
 {
     initialise (addToDesktop_);
 }
@@ -44,9 +44,9 @@ ResizableWindow::ResizableWindow (const String& name,
       resizeToFitContent (false),
       fullscreen (false),
       constrainer (nullptr)
-     #if JUCE_DEBUG
+#if JUCE_DEBUG
       , hasBeenResized (false)
-     #endif
+#endif
 {
     setBackgroundColour (backgroundColour_);
 
@@ -136,8 +136,8 @@ void ResizableWindow::setContentNonOwned (Component* newContentComponent, const 
 }
 
 void ResizableWindow::setContentComponent (Component* const newContentComponent,
-                                           const bool deleteOldOne,
-                                           const bool resizeToFitWhenContentChangesSize)
+        const bool deleteOldOne,
+        const bool resizeToFitWhenContentChangesSize)
 {
     if (newContentComponent != contentComponent)
     {
@@ -223,9 +223,9 @@ void ResizableWindow::resized()
 
     updateLastPosIfShowing();
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     hasBeenResized = true;
-   #endif
+#endif
 }
 
 void ResizableWindow::childBoundsChanged (Component* child)
@@ -296,7 +296,7 @@ void ResizableWindow::setResizable (const bool shouldBeResizable,
 bool ResizableWindow::isResizable() const noexcept
 {
     return resizableCorner != nullptr
-        || resizableBorder != nullptr;
+           || resizableBorder != nullptr;
 }
 
 void ResizableWindow::setResizeLimits (const int newMinimumWidth,
@@ -311,7 +311,7 @@ void ResizableWindow::setResizeLimits (const int newMinimumWidth,
         setConstrainer (&defaultConstrainer);
 
     defaultConstrainer.setSizeLimits (newMinimumWidth, newMinimumHeight,
-                                      newMaximumWidth, newMaximumHeight);
+    newMaximumWidth, newMaximumHeight);
 
     setBoundsConstrained (getBounds());
 }
@@ -355,7 +355,7 @@ void ResizableWindow::paint (Graphics& g)
         lf.drawResizableWindowBorder (g, getWidth(), getHeight(),
                                       getBorderThickness(), *this);
 
-   #if JUCE_DEBUG
+#if JUCE_DEBUG
     /* If this fails, then you've probably written a subclass with a resized()
        callback but forgotten to make it call its parent class's resized() method.
 
@@ -368,7 +368,7 @@ void ResizableWindow::paint (Graphics& g)
        layout.
     */
     jassert (hasBeenResized || (getWidth() == 0 && getHeight() == 0));
-   #endif
+#endif
 }
 
 void ResizableWindow::lookAndFeelChanged()

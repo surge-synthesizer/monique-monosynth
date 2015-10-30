@@ -26,176 +26,270 @@ extern int64 getMouseEventTime();
 
 namespace ActiveXHelpers
 {
-    //==============================================================================
-    class JuceIStorage   : public ComBaseClassHelper <IStorage>
+//==============================================================================
+class JuceIStorage   : public ComBaseClassHelper <IStorage>
+{
+public:
+    JuceIStorage() {}
+
+    JUCE_COMRESULT CreateStream (const WCHAR*, DWORD, DWORD, DWORD, IStream**)           {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT OpenStream (const WCHAR*, void*, DWORD, DWORD, IStream**)             {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT CreateStorage (const WCHAR*, DWORD, DWORD, DWORD, IStorage**)         {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT OpenStorage (const WCHAR*, IStorage*, DWORD, SNB, DWORD, IStorage**)  {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT CopyTo (DWORD, IID const*, SNB, IStorage*)                            {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT MoveElementTo (const OLECHAR*,IStorage*, const OLECHAR*, DWORD)       {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT Commit (DWORD)                                                        {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT Revert()                                                              {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT EnumElements (DWORD, void*, DWORD, IEnumSTATSTG**)                    {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT DestroyElement (const OLECHAR*)                                       {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT RenameElement (const WCHAR*, const WCHAR*)                            {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetElementTimes (const WCHAR*, FILETIME const*, FILETIME const*, FILETIME const*)    {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetClass (REFCLSID)                                                   {
+        return S_OK;
+    }
+    JUCE_COMRESULT SetStateBits (DWORD, DWORD)                                           {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT Stat (STATSTG*, DWORD)                                                {
+        return E_NOTIMPL;
+    }
+};
+
+//==============================================================================
+class JuceOleInPlaceFrame   : public ComBaseClassHelper <IOleInPlaceFrame>
+{
+public:
+    JuceOleInPlaceFrame (HWND hwnd)   : window (hwnd) {}
+
+    JUCE_COMRESULT GetWindow (HWND* lphwnd)                      {
+        *lphwnd = window;
+        return S_OK;
+    }
+    JUCE_COMRESULT ContextSensitiveHelp (BOOL)                   {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT GetBorder (LPRECT)                            {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT RequestBorderSpace (LPCBORDERWIDTHS)          {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetBorderSpace (LPCBORDERWIDTHS)              {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetActiveObject (IOleInPlaceActiveObject*, LPCOLESTR)     {
+        return S_OK;
+    }
+    JUCE_COMRESULT InsertMenus (HMENU, LPOLEMENUGROUPWIDTHS)     {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetMenu (HMENU, HOLEMENU, HWND)               {
+        return S_OK;
+    }
+    JUCE_COMRESULT RemoveMenus (HMENU)                           {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetStatusText (LPCOLESTR)                     {
+        return S_OK;
+    }
+    JUCE_COMRESULT EnableModeless (BOOL)                         {
+        return S_OK;
+    }
+    JUCE_COMRESULT TranslateAccelerator (LPMSG, WORD)            {
+        return E_NOTIMPL;
+    }
+
+private:
+    HWND window;
+};
+
+//==============================================================================
+class JuceIOleInPlaceSite   : public ComBaseClassHelper <IOleInPlaceSite>
+{
+public:
+    JuceIOleInPlaceSite (HWND hwnd)
+        : window (hwnd),
+          frame (new JuceOleInPlaceFrame (window))
+    {}
+
+    ~JuceIOleInPlaceSite()
     {
-    public:
-        JuceIStorage() {}
+        frame->Release();
+    }
 
-        JUCE_COMRESULT CreateStream (const WCHAR*, DWORD, DWORD, DWORD, IStream**)           { return E_NOTIMPL; }
-        JUCE_COMRESULT OpenStream (const WCHAR*, void*, DWORD, DWORD, IStream**)             { return E_NOTIMPL; }
-        JUCE_COMRESULT CreateStorage (const WCHAR*, DWORD, DWORD, DWORD, IStorage**)         { return E_NOTIMPL; }
-        JUCE_COMRESULT OpenStorage (const WCHAR*, IStorage*, DWORD, SNB, DWORD, IStorage**)  { return E_NOTIMPL; }
-        JUCE_COMRESULT CopyTo (DWORD, IID const*, SNB, IStorage*)                            { return E_NOTIMPL; }
-        JUCE_COMRESULT MoveElementTo (const OLECHAR*,IStorage*, const OLECHAR*, DWORD)       { return E_NOTIMPL; }
-        JUCE_COMRESULT Commit (DWORD)                                                        { return E_NOTIMPL; }
-        JUCE_COMRESULT Revert()                                                              { return E_NOTIMPL; }
-        JUCE_COMRESULT EnumElements (DWORD, void*, DWORD, IEnumSTATSTG**)                    { return E_NOTIMPL; }
-        JUCE_COMRESULT DestroyElement (const OLECHAR*)                                       { return E_NOTIMPL; }
-        JUCE_COMRESULT RenameElement (const WCHAR*, const WCHAR*)                            { return E_NOTIMPL; }
-        JUCE_COMRESULT SetElementTimes (const WCHAR*, FILETIME const*, FILETIME const*, FILETIME const*)    { return E_NOTIMPL; }
-        JUCE_COMRESULT SetClass (REFCLSID)                                                   { return S_OK; }
-        JUCE_COMRESULT SetStateBits (DWORD, DWORD)                                           { return E_NOTIMPL; }
-        JUCE_COMRESULT Stat (STATSTG*, DWORD)                                                { return E_NOTIMPL; }
-    };
+    JUCE_COMRESULT GetWindow (HWND* lphwnd)      {
+        *lphwnd = window;
+        return S_OK;
+    }
+    JUCE_COMRESULT ContextSensitiveHelp (BOOL)   {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT CanInPlaceActivate()          {
+        return S_OK;
+    }
+    JUCE_COMRESULT OnInPlaceActivate()           {
+        return S_OK;
+    }
+    JUCE_COMRESULT OnUIActivate()                {
+        return S_OK;
+    }
 
-    //==============================================================================
-    class JuceOleInPlaceFrame   : public ComBaseClassHelper <IOleInPlaceFrame>
+    JUCE_COMRESULT GetWindowContext (LPOLEINPLACEFRAME* lplpFrame, LPOLEINPLACEUIWINDOW* lplpDoc, LPRECT, LPRECT, LPOLEINPLACEFRAMEINFO lpFrameInfo)
     {
-    public:
-        JuceOleInPlaceFrame (HWND hwnd)   : window (hwnd) {}
-
-        JUCE_COMRESULT GetWindow (HWND* lphwnd)                      { *lphwnd = window; return S_OK; }
-        JUCE_COMRESULT ContextSensitiveHelp (BOOL)                   { return E_NOTIMPL; }
-        JUCE_COMRESULT GetBorder (LPRECT)                            { return E_NOTIMPL; }
-        JUCE_COMRESULT RequestBorderSpace (LPCBORDERWIDTHS)          { return E_NOTIMPL; }
-        JUCE_COMRESULT SetBorderSpace (LPCBORDERWIDTHS)              { return E_NOTIMPL; }
-        JUCE_COMRESULT SetActiveObject (IOleInPlaceActiveObject*, LPCOLESTR)     { return S_OK; }
-        JUCE_COMRESULT InsertMenus (HMENU, LPOLEMENUGROUPWIDTHS)     { return E_NOTIMPL; }
-        JUCE_COMRESULT SetMenu (HMENU, HOLEMENU, HWND)               { return S_OK; }
-        JUCE_COMRESULT RemoveMenus (HMENU)                           { return E_NOTIMPL; }
-        JUCE_COMRESULT SetStatusText (LPCOLESTR)                     { return S_OK; }
-        JUCE_COMRESULT EnableModeless (BOOL)                         { return S_OK; }
-        JUCE_COMRESULT TranslateAccelerator (LPMSG, WORD)            { return E_NOTIMPL; }
-
-    private:
-        HWND window;
-    };
-
-    //==============================================================================
-    class JuceIOleInPlaceSite   : public ComBaseClassHelper <IOleInPlaceSite>
-    {
-    public:
-        JuceIOleInPlaceSite (HWND hwnd)
-            : window (hwnd),
-              frame (new JuceOleInPlaceFrame (window))
-        {}
-
-        ~JuceIOleInPlaceSite()
-        {
-            frame->Release();
+        /* Note: if you call AddRef on the frame here, then some types of object (e.g. web browser control) cause leaks..
+           If you don't call AddRef then others crash (e.g. QuickTime).. Bit of a catch-22, so letting it leak is probably preferable.
+        */
+        if (lplpFrame != nullptr) {
+            frame->AddRef();
+            *lplpFrame = frame;
         }
+        if (lplpDoc != nullptr)   *lplpDoc = nullptr;
+        lpFrameInfo->fMDIApp = FALSE;
+        lpFrameInfo->hwndFrame = window;
+        lpFrameInfo->haccel = 0;
+        lpFrameInfo->cAccelEntries = 0;
+        return S_OK;
+    }
 
-        JUCE_COMRESULT GetWindow (HWND* lphwnd)      { *lphwnd = window; return S_OK; }
-        JUCE_COMRESULT ContextSensitiveHelp (BOOL)   { return E_NOTIMPL; }
-        JUCE_COMRESULT CanInPlaceActivate()          { return S_OK; }
-        JUCE_COMRESULT OnInPlaceActivate()           { return S_OK; }
-        JUCE_COMRESULT OnUIActivate()                { return S_OK; }
+    JUCE_COMRESULT Scroll (SIZE)                 {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT OnUIDeactivate (BOOL)         {
+        return S_OK;
+    }
+    JUCE_COMRESULT OnInPlaceDeactivate()         {
+        return S_OK;
+    }
+    JUCE_COMRESULT DiscardUndoState()            {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT DeactivateAndUndo()           {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT OnPosRectChange (LPCRECT)     {
+        return S_OK;
+    }
 
-        JUCE_COMRESULT GetWindowContext (LPOLEINPLACEFRAME* lplpFrame, LPOLEINPLACEUIWINDOW* lplpDoc, LPRECT, LPRECT, LPOLEINPLACEFRAMEINFO lpFrameInfo)
+private:
+    HWND window;
+    JuceOleInPlaceFrame* frame;
+};
+
+//==============================================================================
+class JuceIOleClientSite  : public ComBaseClassHelper <IOleClientSite>
+{
+public:
+    JuceIOleClientSite (HWND window)
+        : inplaceSite (new JuceIOleInPlaceSite (window))
+    {}
+
+    ~JuceIOleClientSite()
+    {
+        inplaceSite->Release();
+    }
+
+    JUCE_COMRESULT QueryInterface (REFIID type, void** result)
+    {
+        if (type == IID_IOleInPlaceSite)
         {
-            /* Note: if you call AddRef on the frame here, then some types of object (e.g. web browser control) cause leaks..
-               If you don't call AddRef then others crash (e.g. QuickTime).. Bit of a catch-22, so letting it leak is probably preferable.
-            */
-            if (lplpFrame != nullptr) { frame->AddRef(); *lplpFrame = frame; }
-            if (lplpDoc != nullptr)   *lplpDoc = nullptr;
-            lpFrameInfo->fMDIApp = FALSE;
-            lpFrameInfo->hwndFrame = window;
-            lpFrameInfo->haccel = 0;
-            lpFrameInfo->cAccelEntries = 0;
+            inplaceSite->AddRef();
+            *result = static_cast <IOleInPlaceSite*> (inplaceSite);
             return S_OK;
         }
 
-        JUCE_COMRESULT Scroll (SIZE)                 { return E_NOTIMPL; }
-        JUCE_COMRESULT OnUIDeactivate (BOOL)         { return S_OK; }
-        JUCE_COMRESULT OnInPlaceDeactivate()         { return S_OK; }
-        JUCE_COMRESULT DiscardUndoState()            { return E_NOTIMPL; }
-        JUCE_COMRESULT DeactivateAndUndo()           { return E_NOTIMPL; }
-        JUCE_COMRESULT OnPosRectChange (LPCRECT)     { return S_OK; }
-
-    private:
-        HWND window;
-        JuceOleInPlaceFrame* frame;
-    };
-
-    //==============================================================================
-    class JuceIOleClientSite  : public ComBaseClassHelper <IOleClientSite>
-    {
-    public:
-        JuceIOleClientSite (HWND window)
-            : inplaceSite (new JuceIOleInPlaceSite (window))
-        {}
-
-        ~JuceIOleClientSite()
-        {
-            inplaceSite->Release();
-        }
-
-        JUCE_COMRESULT QueryInterface (REFIID type, void** result)
-        {
-            if (type == IID_IOleInPlaceSite)
-            {
-                inplaceSite->AddRef();
-                *result = static_cast <IOleInPlaceSite*> (inplaceSite);
-                return S_OK;
-            }
-
-            return ComBaseClassHelper <IOleClientSite>::QueryInterface (type, result);
-        }
-
-        JUCE_COMRESULT SaveObject()                                  { return E_NOTIMPL; }
-        JUCE_COMRESULT GetMoniker (DWORD, DWORD, IMoniker**)         { return E_NOTIMPL; }
-        JUCE_COMRESULT GetContainer (LPOLECONTAINER* ppContainer)    { *ppContainer = nullptr; return E_NOINTERFACE; }
-        JUCE_COMRESULT ShowObject()                                  { return S_OK; }
-        JUCE_COMRESULT OnShowWindow (BOOL)                           { return E_NOTIMPL; }
-        JUCE_COMRESULT RequestNewObjectLayout()                      { return E_NOTIMPL; }
-
-    private:
-        JuceIOleInPlaceSite* inplaceSite;
-    };
-
-    //==============================================================================
-    static Array<ActiveXControlComponent*> activeXComps;
-
-    HWND getHWND (const ActiveXControlComponent* const component)
-    {
-        HWND hwnd = 0;
-        const IID iid = IID_IOleWindow;
-
-        if (IOleWindow* const window = (IOleWindow*) component->queryInterface (&iid))
-        {
-            window->GetWindow (&hwnd);
-            window->Release();
-        }
-
-        return hwnd;
+        return ComBaseClassHelper <IOleClientSite>::QueryInterface (type, result);
     }
 
-    void offerActiveXMouseEventToPeer (ComponentPeer* const peer, HWND hwnd, UINT message, LPARAM lParam)
-    {
-        RECT activeXRect, peerRect;
-        GetWindowRect (hwnd, &activeXRect);
-        GetWindowRect ((HWND) peer->getNativeHandle(), &peerRect);
-
-        switch (message)
-        {
-            case WM_MOUSEMOVE:
-            case WM_LBUTTONDOWN:
-            case WM_MBUTTONDOWN:
-            case WM_RBUTTONDOWN:
-            case WM_LBUTTONUP:
-            case WM_MBUTTONUP:
-            case WM_RBUTTONUP:
-                peer->handleMouseEvent (0, Point<int> (GET_X_LPARAM (lParam) + activeXRect.left - peerRect.left,
-                                                       GET_Y_LPARAM (lParam) + activeXRect.top  - peerRect.top).toFloat(),
-                                        ModifierKeys::getCurrentModifiersRealtime(),
-                                        getMouseEventTime());
-                break;
-
-            default:
-                break;
-        }
+    JUCE_COMRESULT SaveObject()                                  {
+        return E_NOTIMPL;
     }
+    JUCE_COMRESULT GetMoniker (DWORD, DWORD, IMoniker**)         {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT GetContainer (LPOLECONTAINER* ppContainer)    {
+        *ppContainer = nullptr;
+        return E_NOINTERFACE;
+    }
+    JUCE_COMRESULT ShowObject()                                  {
+        return S_OK;
+    }
+    JUCE_COMRESULT OnShowWindow (BOOL)                           {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT RequestNewObjectLayout()                      {
+        return E_NOTIMPL;
+    }
+
+private:
+    JuceIOleInPlaceSite* inplaceSite;
+};
+
+//==============================================================================
+static Array<ActiveXControlComponent*> activeXComps;
+
+HWND getHWND (const ActiveXControlComponent* const component)
+{
+    HWND hwnd = 0;
+    const IID iid = IID_IOleWindow;
+
+    if (IOleWindow* const window = (IOleWindow*) component->queryInterface (&iid))
+    {
+        window->GetWindow (&hwnd);
+        window->Release();
+    }
+
+    return hwnd;
+}
+
+void offerActiveXMouseEventToPeer (ComponentPeer* const peer, HWND hwnd, UINT message, LPARAM lParam)
+{
+    RECT activeXRect, peerRect;
+    GetWindowRect (hwnd, &activeXRect);
+    GetWindowRect ((HWND) peer->getNativeHandle(), &peerRect);
+
+    switch (message)
+    {
+    case WM_MOUSEMOVE:
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_MBUTTONUP:
+    case WM_RBUTTONUP:
+        peer->handleMouseEvent (0, Point<int> (GET_X_LPARAM (lParam) + activeXRect.left - peerRect.left,
+                                               GET_Y_LPARAM (lParam) + activeXRect.top  - peerRect.top).toFloat(),
+                                ModifierKeys::getCurrentModifiersRealtime(),
+                                getMouseEventTime());
+        break;
+
+    default:
+        break;
+    }
+}
 }
 
 //==============================================================================
@@ -390,7 +484,7 @@ void* ActiveXControlComponent::queryInterface (const void* iid) const
     void* result = nullptr;
 
     if (control != nullptr && control->control != nullptr
-         && SUCCEEDED (control->control->QueryInterface (*(const IID*) iid, &result)))
+            && SUCCEEDED (control->control->QueryInterface (*(const IID*) iid, &result)))
         return result;
 
     return nullptr;

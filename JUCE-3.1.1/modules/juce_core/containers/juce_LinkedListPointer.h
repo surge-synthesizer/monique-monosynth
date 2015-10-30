@@ -64,13 +64,15 @@ public:
     //==============================================================================
     /** Creates a null pointer to an empty list. */
     LinkedListPointer() noexcept
-        : item (nullptr)
+:
+    item (nullptr)
     {
     }
 
     /** Creates a pointer to a list whose head is the item provided. */
     explicit LinkedListPointer (ObjectType* const headItem) noexcept
-        : item (headItem)
+:
+    item (headItem)
     {
     }
 
@@ -81,9 +83,10 @@ public:
         return *this;
     }
 
-   #if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
+#if JUCE_COMPILER_SUPPORTS_MOVE_SEMANTICS
     LinkedListPointer (LinkedListPointer&& other) noexcept
-        : item (other.item)
+:
+    item (other.item)
     {
         other.item = nullptr;
     }
@@ -96,7 +99,7 @@ public:
         other.item = nullptr;
         return *this;
     }
-   #endif
+#endif
 
     //==============================================================================
     /** Returns the item which this pointer points to. */
@@ -341,7 +344,8 @@ public:
         /** Creates an appender which will add items to the given list.
         */
         Appender (LinkedListPointer& endOfListPointer) noexcept
-            : endOfList (&endOfListPointer)
+    :
+        endOfList (&endOfListPointer)
         {
             // This can only be used to add to the end of a list.
             jassert (endOfListPointer.item == nullptr);

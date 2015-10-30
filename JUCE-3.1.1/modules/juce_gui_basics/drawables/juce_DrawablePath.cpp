@@ -381,25 +381,25 @@ void DrawablePath::ValueTreeWrapper::Element::convertToPathBreak (UndoManager* u
 
 namespace DrawablePathHelpers
 {
-    static Point<float> findCubicSubdivisionPoint (float proportion, const Point<float> points[4])
-    {
-        const Point<float> mid1 (points[0] + (points[1] - points[0]) * proportion),
-                           mid2 (points[1] + (points[2] - points[1]) * proportion),
-                           mid3 (points[2] + (points[3] - points[2]) * proportion);
+static Point<float> findCubicSubdivisionPoint (float proportion, const Point<float> points[4])
+{
+    const Point<float> mid1 (points[0] + (points[1] - points[0]) * proportion),
+          mid2 (points[1] + (points[2] - points[1]) * proportion),
+          mid3 (points[2] + (points[3] - points[2]) * proportion);
 
-        const Point<float> newCp1 (mid1 + (mid2 - mid1) * proportion),
-                           newCp2 (mid2 + (mid3 - mid2) * proportion);
+    const Point<float> newCp1 (mid1 + (mid2 - mid1) * proportion),
+          newCp2 (mid2 + (mid3 - mid2) * proportion);
 
-        return newCp1 + (newCp2 - newCp1) * proportion;
-    }
+    return newCp1 + (newCp2 - newCp1) * proportion;
+}
 
-    static Point<float> findQuadraticSubdivisionPoint (float proportion, const Point<float> points[3])
-    {
-        const Point<float> mid1 (points[0] + (points[1] - points[0]) * proportion),
-                           mid2 (points[1] + (points[2] - points[1]) * proportion);
+static Point<float> findQuadraticSubdivisionPoint (float proportion, const Point<float> points[3])
+{
+    const Point<float> mid1 (points[0] + (points[1] - points[0]) * proportion),
+          mid2 (points[1] + (points[2] - points[1]) * proportion);
 
-        return mid1 + (mid2 - mid1) * proportion;
-    }
+    return mid1 + (mid2 - mid1) * proportion;
+}
 }
 
 float DrawablePath::ValueTreeWrapper::Element::findProportionAlongLine (Point<float> targetPoint, Expression::Scope* scope) const
@@ -472,11 +472,11 @@ ValueTree DrawablePath::ValueTreeWrapper::Element::insertPoint (Point<float> tar
         const Point<float> points[] = { rp1.resolve (scope), rp2.resolve (scope), rp3.resolve (scope), rp4.resolve (scope) };
 
         const Point<float> mid1 (points[0] + (points[1] - points[0]) * bestProp),
-                           mid2 (points[1] + (points[2] - points[1]) * bestProp),
-                           mid3 (points[2] + (points[3] - points[2]) * bestProp);
+              mid2 (points[1] + (points[2] - points[1]) * bestProp),
+              mid3 (points[2] + (points[3] - points[2]) * bestProp);
 
         const Point<float> newCp1 (mid1 + (mid2 - mid1) * bestProp),
-                           newCp2 (mid2 + (mid3 - mid2) * bestProp);
+              newCp2 (mid2 + (mid3 - mid2) * bestProp);
 
         const Point<float> newCentre (newCp1 + (newCp2 - newCp1) * bestProp);
 
@@ -500,7 +500,7 @@ ValueTree DrawablePath::ValueTreeWrapper::Element::insertPoint (Point<float> tar
         const Point<float> points[] = { rp1.resolve (scope), rp2.resolve (scope), rp3.resolve (scope) };
 
         const Point<float> mid1 (points[0] + (points[1] - points[0]) * bestProp),
-                           mid2 (points[1] + (points[2] - points[1]) * bestProp);
+              mid2 (points[1] + (points[2] - points[1]) * bestProp);
 
         const Point<float> newCentre (mid1 + (mid2 - mid1) * bestProp);
 

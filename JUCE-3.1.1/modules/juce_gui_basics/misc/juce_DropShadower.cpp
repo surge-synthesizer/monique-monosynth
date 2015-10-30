@@ -35,8 +35,8 @@ public:
         {
             setSize (1, 1); // to keep the OS happy by not having zero-size windows
             addToDesktop (ComponentPeer::windowIgnoresMouseClicks
-                            | ComponentPeer::windowIsTemporary
-                            | ComponentPeer::windowIgnoresKeyPresses);
+                          | ComponentPeer::windowIsTemporary
+                          | ComponentPeer::windowIgnoresKeyPresses);
         }
         else if (Component* const parent = comp->getParentComponent())
         {
@@ -47,9 +47,9 @@ public:
     void paint (Graphics& g) override
     {
         if (Component* c = target)
-	{
+        {
             shadow.drawForRectangle (g, getLocalArea (c, c->getLocalBounds()));
-	}
+        }
     }
 
     void resized() override
@@ -75,7 +75,7 @@ private:
 
 //==============================================================================
 DropShadower::DropShadower (const DropShadow& ds)
-   : owner (nullptr), shadow (ds), reentrant (false)
+    : owner (nullptr), shadow (ds), reentrant (false)
 {
 }
 
@@ -170,8 +170,8 @@ void DropShadower::updateShadows()
     }
 
     if (owner->isShowing()
-         && owner->getWidth() > 0 && owner->getHeight() > 0
-         && (Desktop::canUseSemiTransparentWindows() || owner->getParentComponent() != nullptr))
+            && owner->getWidth() > 0 && owner->getHeight() > 0
+            && (Desktop::canUseSemiTransparentWindows() || owner->getParentComponent() != nullptr))
     {
         while (shadowWindows.size() < 4)
             shadowWindows.add (new ShadowWindow (owner, shadow));
@@ -195,11 +195,20 @@ void DropShadower::updateShadows()
             {
                 switch (i)
                 {
-                    case 0: sw->setBounds (x - shadowEdge, y, shadowEdge, h); break;
-                    case 1: sw->setBounds (x + w, y, shadowEdge, h); break;
-                    case 2: sw->setBounds (x, y, w, shadowEdge); break;
-                    case 3: sw->setBounds (x, owner->getBottom(), w, shadowEdge); break;
-                    default: break;
+                case 0:
+                    sw->setBounds (x - shadowEdge, y, shadowEdge, h);
+                    break;
+                case 1:
+                    sw->setBounds (x + w, y, shadowEdge, h);
+                    break;
+                case 2:
+                    sw->setBounds (x, y, w, shadowEdge);
+                    break;
+                case 3:
+                    sw->setBounds (x, owner->getBottom(), w, shadowEdge);
+                    break;
+                default:
+                    break;
                 }
             }
 

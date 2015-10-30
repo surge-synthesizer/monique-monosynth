@@ -29,17 +29,32 @@ class JuceIStream   : public ComBaseClassHelper <IStream>
 {
 public:
     JuceIStream (InputStream& in) noexcept
-        : ComBaseClassHelper <IStream> (0), source (in)
+:
+    ComBaseClassHelper <IStream> (0), source (in)
     {
     }
 
-    JUCE_COMRESULT Commit (DWORD)                        { return S_OK; }
-    JUCE_COMRESULT Write (const void*, ULONG, ULONG*)    { return E_NOTIMPL; }
-    JUCE_COMRESULT Clone (IStream**)                     { return E_NOTIMPL; }
-    JUCE_COMRESULT SetSize (ULARGE_INTEGER)              { return E_NOTIMPL; }
-    JUCE_COMRESULT Revert()                              { return E_NOTIMPL; }
-    JUCE_COMRESULT LockRegion (ULARGE_INTEGER, ULARGE_INTEGER, DWORD)    { return E_NOTIMPL; }
-    JUCE_COMRESULT UnlockRegion (ULARGE_INTEGER, ULARGE_INTEGER, DWORD)  { return E_NOTIMPL; }
+    JUCE_COMRESULT Commit (DWORD)                        {
+        return S_OK;
+    }
+    JUCE_COMRESULT Write (const void*, ULONG, ULONG*)    {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT Clone (IStream**)                     {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT SetSize (ULARGE_INTEGER)              {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT Revert()                              {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT LockRegion (ULARGE_INTEGER, ULARGE_INTEGER, DWORD)    {
+        return E_NOTIMPL;
+    }
+    JUCE_COMRESULT UnlockRegion (ULARGE_INTEGER, ULARGE_INTEGER, DWORD)  {
+        return E_NOTIMPL;
+    }
 
     JUCE_COMRESULT Read (void* dest, ULONG numBytes, ULONG* bytesRead)
     {
@@ -183,7 +198,7 @@ public:
                 WORD streamNum;
 
                 HRESULT hr = wmSyncReader->GetNextSample (1, sampleBuffer.resetAndGetPointerAddress(),
-                                                          &sampleTime, &duration, &flags, &outputNum, &streamNum);
+                             &sampleTime, &duration, &flags, &outputNum, &streamNum);
 
                 if (sampleBuffer != nullptr)
                 {
@@ -320,12 +335,22 @@ WindowsMediaAudioFormat::WindowsMediaAudioFormat()
 
 WindowsMediaAudioFormat::~WindowsMediaAudioFormat() {}
 
-Array<int> WindowsMediaAudioFormat::getPossibleSampleRates()    { return Array<int>(); }
-Array<int> WindowsMediaAudioFormat::getPossibleBitDepths()      { return Array<int>(); }
+Array<int> WindowsMediaAudioFormat::getPossibleSampleRates()    {
+    return Array<int>();
+}
+Array<int> WindowsMediaAudioFormat::getPossibleBitDepths()      {
+    return Array<int>();
+}
 
-bool WindowsMediaAudioFormat::canDoStereo()     { return true; }
-bool WindowsMediaAudioFormat::canDoMono()       { return true; }
-bool WindowsMediaAudioFormat::isCompressed()    { return true; }
+bool WindowsMediaAudioFormat::canDoStereo()     {
+    return true;
+}
+bool WindowsMediaAudioFormat::canDoMono()       {
+    return true;
+}
+bool WindowsMediaAudioFormat::isCompressed()    {
+    return true;
+}
 
 //==============================================================================
 AudioFormatReader* WindowsMediaAudioFormat::createReaderFor (InputStream* sourceStream, bool deleteStreamIfOpeningFails)
@@ -342,8 +367,8 @@ AudioFormatReader* WindowsMediaAudioFormat::createReaderFor (InputStream* source
 }
 
 AudioFormatWriter* WindowsMediaAudioFormat::createWriterFor (OutputStream* /*streamToWriteTo*/, double /*sampleRateToUse*/,
-                                                             unsigned int /*numberOfChannels*/, int /*bitsPerSample*/,
-                                                             const StringPairArray& /*metadataValues*/, int /*qualityOptionIndex*/)
+        unsigned int /*numberOfChannels*/, int /*bitsPerSample*/,
+        const StringPairArray& /*metadataValues*/, int /*qualityOptionIndex*/)
 {
     jassertfalse; // not yet implemented!
     return nullptr;

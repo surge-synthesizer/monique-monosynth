@@ -82,8 +82,8 @@
     @see Component::addKeyListener(), KeyMappingEditorComponent, ApplicationCommandManager
 */
 class JUCE_API  KeyPressMappingSet  : public KeyListener,
-                                      public ChangeBroadcaster,
-                                      private FocusChangeListener
+    public ChangeBroadcaster,
+    private FocusChangeListener
 {
 public:
     //==============================================================================
@@ -108,7 +108,9 @@ public:
     ~KeyPressMappingSet();
 
     //==============================================================================
-    ApplicationCommandManager& getCommandManager() const noexcept       { return commandManager; }
+    ApplicationCommandManager& getCommandManager() const noexcept       {
+        return commandManager;
+    }
 
     //==============================================================================
     /** Returns a list of keypresses that are assigned to a particular command.

@@ -38,16 +38,18 @@ public:
 
     /** Creates a Draggable3DOrientation, initially set up to be aligned along the X axis. */
     Draggable3DOrientation (float objectRadius = 0.5f) noexcept
-        : radius (jmax (0.1f, objectRadius)),
-          quaternion (VectorType::xAxis(), 0)
+:
+    radius (jmax (0.1f, objectRadius)),
+           quaternion (VectorType::xAxis(), 0)
     {
     }
 
     /** Creates a Draggable3DOrientation from a user-supplied quaternion. */
     Draggable3DOrientation (const Quaternion<GLfloat>& quaternionToUse,
                             float objectRadius = 0.5f) noexcept
-        : radius (jmax (0.1f, objectRadius)),
-          quaternion (quaternionToUse)
+:
+    radius (jmax (0.1f, objectRadius)),
+    quaternion (quaternionToUse)
     {
     }
 
@@ -138,7 +140,7 @@ private:
 
         return VectorType (pos.x, pos.y,
                            xySquared < radiusSquared * 0.5f ? std::sqrt (radiusSquared - xySquared)
-                                                            : (radiusSquared / (2.0f * std::sqrt (xySquared))));
+                           : (radiusSquared / (2.0f * std::sqrt (xySquared))));
     }
 
     QuaternionType rotationFromMove (const VectorType& from, const VectorType& to) const noexcept

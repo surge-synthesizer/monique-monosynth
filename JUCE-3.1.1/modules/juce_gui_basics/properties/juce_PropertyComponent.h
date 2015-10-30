@@ -43,7 +43,7 @@
          ChoicePropertyComponent, ButtonPropertyComponent, BooleanPropertyComponent
 */
 class JUCE_API  PropertyComponent  : public Component,
-                                     public SettableTooltipClient
+    public SettableTooltipClient
 {
 public:
     //==============================================================================
@@ -69,7 +69,9 @@ public:
         This value is specified either in the constructor or by a subclass changing the
         preferredHeight member variable.
     */
-    int getPreferredHeight() const noexcept                 { return preferredHeight; }
+    int getPreferredHeight() const noexcept                 {
+        return preferredHeight;
+    }
 
     void setPreferredHeight (int newHeight) noexcept        { preferredHeight = newHeight; }
 

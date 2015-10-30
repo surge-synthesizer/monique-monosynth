@@ -77,7 +77,7 @@ public:
                                         rounded up to 1)
     */
     void startTimer (int intervalInMilliseconds);
-    
+
     void startTimerMicro (int intervalInMicroiseconds);
 
     /** Stops the timer.

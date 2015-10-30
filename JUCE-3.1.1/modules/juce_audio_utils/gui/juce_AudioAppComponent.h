@@ -35,7 +35,7 @@
     and runs audio through the
 */
 class AudioAppComponent   : public Component,
-                            public AudioSource
+    public AudioSource
 {
 public:
     AudioAppComponent();
