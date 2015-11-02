@@ -52,6 +52,10 @@ noexcept
     BoolParameter* top_parameter = slider_config_->get_top_button_parameter_base();
     bool has_bottom_button = slider_config_->get_back_parameter_base() != nullptr;
     bool has_bottom_label = not has_bottom_button;
+    if( String(slider_config_->get_bottom_button_text().text) == "" )
+    {
+        has_bottom_label = false;
+    }
 
     front_slider_->setOpaque(true);
     back_slider_->setVisible(false);
@@ -63,7 +67,7 @@ noexcept
     bottom_button_->setVisible(false);
     bottom_button_->setEnabled(false);
     bottom_button_->setOpaque(true);
-    top_label_->setVisible(false);
+    top_label_->setVisible(slider_config_->get_is_linear());
     top_label_->setEnabled(true);
     top_label_->setOpaque(true);
     top_label_->setEditable(true);
@@ -174,8 +178,6 @@ noexcept
 
         // BOTTOM BUTTON
         bottom_button_->setButtonText( slider_config_->get_bottom_button_text().text );
-        bottom_button_->setColour (TextButton::buttonColourId, theme->button_off_colour );
-        bottom_button_->setColour (TextButton::textColourOnId, theme->button_off_font_colour );
 
         StringRef tooltip = slider_config_->get_tootip_bottom();
         if( not tooltip.isEmpty() )
@@ -194,10 +196,7 @@ noexcept
     {
         top_button_->setVisible(true);
         top_button_->setEnabled(true);
-
         top_button_->setButtonText( slider_config_->get_top_button_text().text );
-        top_button_->setColour (TextButton::buttonColourId, theme->button_off_colour );
-        top_button_->setColour (TextButton::textColourOnId, theme->button_off_font_colour );
 
         StringRef tooltip = slider_config_->get_tootip_top();
         if( not tooltip.isEmpty() )
@@ -237,22 +236,32 @@ void Monique_Ui_DualSlider::show_view_mode()
         button_bottom->setButtonText( not is_in_ctrl_mode ? _config->get_bottom_button_text().text : _config->get_bottom_button_switch_text().text );
         if( modulation_parameter )
         {
-            button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? theme->mod_slider_track_colour : theme->button_off_colour );
+            button_bottom->setToggleState(is_in_ctrl_mode,dontSendNotification);
+            if( button_bottom->getProperties().set( VAR_INDEX_BUTTON_AMP, is_in_ctrl_mode ? MOD_SLIDER_COLOUR : 0 ) )
+            {
+                button_bottom->repaint();
+            }
         }
         else
         {
-            button_bottom->setColour(TextButton::buttonColourId, is_in_ctrl_mode ? theme->value_2_slider_track_colour : theme->button_off_colour );
+            button_bottom->setToggleState(is_in_ctrl_mode,dontSendNotification);
+            if( button_bottom->getProperties().set( VAR_INDEX_BUTTON_AMP, is_in_ctrl_mode ? VALUE_SLIDER_2_COLOUR : 0 ) )
+            {
+                button_bottom->repaint();
+            }
         }
     }
 
+    /*
     if( label_top )
     {
         if( not label_top->isBeingEdited() )
         {
-            label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
+            // label_top->SET_LABEL_STYLE( is_in_ctrl_mode ? IS_SECOND_VALUE_LABEL : IS_VALUE_LABEL );
             //label_top->repaint();
         }
     }
+    */
 }
 
 void Monique_Ui_DualSlider::update_return_values() noexcept
@@ -291,31 +300,32 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     amp = 1;
                 amp = (amp+1)*0.5f;
 
-                button_top->setColour
-                (
-                    TextButton::buttonColourId,
-                    theme->button_on_colour.darker( 1.0f-amp ).interpolatedWith(theme->button_off_colour,1.0f-amp)
-                );
+                button_top->setToggleState(true,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, amp ) )
+                {
+                    button_top->repaint();
+                }
             }
             else if( amp == TOP_BUTTON_IS_ON )
             {
-                button_top->setColour
-                (
-                    TextButton::buttonColourId,
-                    theme->button_on_colour
-                );
+                button_top->setToggleState(true,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                    button_top->repaint();
+                }
             }
             else if( amp == TOP_BUTTON_IS_OFF )
             {
-                button_top->setColour
-                (
-                    TextButton::buttonColourId,
-                    theme->button_off_colour
-                );
+                button_top->setToggleState(false,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) ) {
+                    button_top->repaint();
+                }
             }
             else if( amp == FIXED_TOP_BUTTON_COLOUR )
             {
-                button_top->setColour (TextButton::buttonColourId, theme->button_on_colour.darker( 1.0f ) );
+                button_top->setToggleState(true,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                    button_top->repaint();
+                }
             }
             else if( top_parameter->get_value() != false )
             {
@@ -324,21 +334,33 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     if( synth_data->animate_envs )
                     {
                         float modulation = modulation_parameter->get_runtime_info().get_last_modulation_amount();
-                        button_top->setColour (TextButton::buttonColourId, theme->button_on_colour.darker( 1.0f-modulation ) );
+                        button_top->setToggleState(true,dontSendNotification);
+                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, (modulation+1)*0.5 ) ) {
+                            button_top->repaint();
+                        }
                     }
                     else
-		    {
-                        button_top->setColour (TextButton::buttonColourId, theme->button_on_colour );
-		    }
+                    {
+                        button_top->setToggleState(true,dontSendNotification);
+                        if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                            button_top->repaint();
+                        }
+                    }
                 }
                 else
-		{
-                    button_top->setColour (TextButton::buttonColourId, theme->button_on_colour );
-		}
+                {
+                    button_top->setToggleState(true,dontSendNotification);
+                    if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 1 ) ) {
+                        button_top->repaint();
+                    }
+                }
             }
             else
             {
-                button_top->setColour (TextButton::buttonColourId, theme->button_off_colour );
+                button_top->setToggleState(false,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ) ) {
+                    button_top->repaint();
+                }
             }
         }
         else if( top_button_type == ModulationSliderConfigBase::TOP_BUTTON_IS_ON_OFF )
@@ -354,21 +376,28 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 is_forced_off = *opt_b_parameter;
             }
 
-            Colour col;
             if( is_forced_off )
             {
-                col = theme->button_off_colour.interpolatedWith(Colours::red,0.2f);
+                button_top->setToggleState(false,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_BIT_RED ) ) {
+                    button_top->repaint();
+                }
             }
             else if( is_forced_on )
             {
-                col = theme->button_on_colour.interpolatedWith(Colours::red,0.5f);
+                button_top->setToggleState(true,dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, FORCE_RED ) ) {
+                    button_top->repaint();
+                }
             }
             else
             {
-                col = top_parameter->get_value() == true ? theme->button_on_colour : theme->button_off_colour;
+                top_parameter->get_value() == true ? theme->button_on_colour : theme->button_off_colour;
+                button_top->setToggleState(top_parameter->get_value() == true ? true : false, dontSendNotification);
+                if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, top_parameter->get_value() == true ? 1 : 0 ) ) {
+                    button_top->repaint();
+                }
             }
-
-            button_top->setColour (TextButton::buttonColourId, col );
         }
     }
 
@@ -407,12 +436,15 @@ void Monique_Ui_DualSlider::refresh() noexcept
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always || force_show_center_value;
         if( slider_value->isVertical() )
         {
-            if( not label_top->isBeingEdited() )
+            if( label_top )
             {
-                label_top->setVisible(true);
-                label_top->setEnabled(slider_value->isEnabled());
-                label_top->setEditable(slider_value->isEnabled());
-                label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+                if( not label_top->isBeingEdited() )
+                {
+                    label_top->setVisible(true);
+                    label_top->setEnabled(slider_value->isEnabled());
+                    label_top->setEditable(slider_value->isEnabled());
+                    label_top->setText( _config->get_center_value()+String(_config->get_center_suffix().text), dontSendNotification );
+                }
             }
         }
         else if( show_popup )
@@ -445,11 +477,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         if( slider_modulation )
                         {
                             float modulation_value = slider_modulation->getValue();
-                            if( last_painted_mod_slider_val != modulation_value )
+                            last_painted_mod_slider_val = modulation_value;
+                            if( slider_modulation->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round(modulation_value*100)) + String("@") + String("%") ) )
                             {
-                                last_painted_mod_slider_val = modulation_value;
-                                slider_modulation->SET_VALUE_TO_PAINT( String(round01(modulation_value*100)) + String("@") + String("%") );
-
                                 is_repaint_required = true;
                             }
                             slider_modulation->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -460,11 +490,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     else
                     {
                         float value = slider_value->getValue();
-                        if( last_painted_value_slider_val != value or force_show_center_value )
+                        last_painted_value_slider_val = value;
+                        if( slider_value->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round(value*100)) ) )
                         {
-                            last_painted_value_slider_val = value;
-                            slider_value->SET_VALUE_TO_PAINT( String(round01(value*100)) );
-
                             is_repaint_required = true;
                         }
                         slider_value->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -497,10 +525,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
                         if( slider_modulation )
                         {
                             float modulation_value = slider_modulation->getValue();
-                            if( last_painted_mod_slider_val != modulation_value )
+                            last_painted_mod_slider_val = modulation_value;
+                            if( slider_modulation->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) ) )
                             {
-                                last_painted_mod_slider_val = modulation_value;
-                                slider_modulation->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
                                 is_repaint_required = true;
                             }
                             slider_modulation->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -511,12 +538,9 @@ void Monique_Ui_DualSlider::refresh() noexcept
                     else
                     {
                         float value = slider_value->getValue();
-                        // TODO or switched!
-                        if( last_painted_value_slider_val != value or force_show_center_value )
+                        last_painted_value_slider_val = value;
+                        if( slider_value->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) ) )
                         {
-                            last_painted_value_slider_val = value;
-                            slider_value->SET_VALUE_TO_PAINT( _config->get_center_value() + String("@") + String(_config->get_center_suffix().text) );
-
                             is_repaint_required = true;
                         }
                         slider_value->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -673,8 +697,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     label_top->setColour (TextEditor::backgroundColourId, bg_colour);
     slider_value->setColour (Slider::backgroundColourId, bg_colour);
     slider_modulation->setColour (Slider::backgroundColourId, bg_colour);
-    button_bottom->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
-    button_top->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
+    //button_bottom->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
+    //button_top->getProperties().set(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,true);
 
     last_painted_mod_slider_val = -999999;
     last_painted_value_slider_val = -999999;
@@ -729,6 +753,8 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     //  label_top = nullptr;
     if( not label->isVisible() )
         label = nullptr;
+    if( not label_top->isVisible() )
+        label_top = nullptr;
 
     front_parameter = _config->get_front_parameter_base();
     back_parameter = _config->get_back_parameter_base();
@@ -754,14 +780,22 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     }
 
     show_view_mode();
-    setOpaque(is_opaque);
+    setOpaque(not _config->use_click_through_hack());
     if( label )
     {
-        label->setOpaque(is_opaque);
+        label->setOpaque(not _config->use_click_through_hack());
     }
     if( label_top )
     {
-        label_top->setOpaque(is_opaque);
+        label_top->setOpaque(not _config->use_click_through_hack());
+    }
+    if( button_bottom )
+    {
+        button_bottom->setOpaque(not _config->use_click_through_hack());
+    }
+    if( button_top )
+    {
+        button_top->setOpaque(not _config->use_click_through_hack());
     }
     /*
     //[/UserPreSize]
@@ -796,9 +830,13 @@ Monique_Ui_DualSlider::~Monique_Ui_DualSlider()
 void Monique_Ui_DualSlider::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
-    if( is_opaque )
+    if( not _config->use_click_through_hack() )
     {
         g.fillAll ( theme->area_colour );
+    }
+    else
+    {
+        g.fillAll ( Colour(0x00000000) );
     }
     /*
     //[/UserPrePaint]
@@ -949,12 +987,18 @@ void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
     {
         //[UserLabelCode_label_top] -- add your label text handling code here..
         if( slider_value->isEnabled() )
-            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue() ), sendNotification );
-        else if( slider_modulation )
         {
-            if( slider_modulation->isEnabled() )
-                slider_modulation->setValue( label_top->getText().getFloatValue()/1000, sendNotification );
+            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue()/front_parameter->get_info().num_steps ), sendNotification );
         }
+        /*
+            else if( slider_modulation )
+            {
+                if( slider_modulation->isEnabled() )
+            {
+                    slider_modulation->setValue( label_top->getText().getFloatValue()/5000, sendNotification );
+            }
+            }
+            */
         //[/UserLabelCode_label_top]
     }
 
@@ -1133,3 +1177,4 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

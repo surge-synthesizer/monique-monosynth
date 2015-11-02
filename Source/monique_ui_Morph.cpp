@@ -36,11 +36,17 @@ void Monique_Ui_MorphConfig::refresh() noexcept
         slider_morph_motor_time->setValue( motor_time, dontSendNotification );
         if( motor_time > 999 )
         {
-            slider_morph_motor_time->SET_VALUE_TO_PAINT( String( round01( float(motor_time) / 1000 ) ) + String("@") + String("s") );
+            if( slider_morph_motor_time->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String( round01( float(motor_time) / 1000 ) ) + String("@") + String("s") ) )
+            {
+                slider_morph_motor_time->repaint();
+            }
         }
         else
         {
-            slider_morph_motor_time->SET_VALUE_TO_PAINT( String(motor_time) + String("@") + String("ms") );
+            if( slider_morph_motor_time->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(motor_time) + String("@") + String("ms") ) )
+            {
+                slider_morph_motor_time->repaint();
+            }
         }
     }
 
@@ -448,15 +454,6 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
 
 
     //[UserPreSize]
-    slider_morph_motor_time->getProperties().set( VAR_INDEX_SLIDER_TYPE, VALUE_SLIDER );
-    slider_morph_motor_time->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-
-    Colour button_off = look_and_feel_->colours.get_theme( COLOUR_THEMES::MORPH_EDITOR_THEME ).button_off_colour;
-    button_set_1->setColour( TextButton::buttonColourId, button_off );
-    button_set_2->setColour( TextButton::buttonColourId, button_off );
-    button_set_3->setColour( TextButton::buttonColourId, button_off );
-    button_set_4->setColour( TextButton::buttonColourId, button_off );
-
     morph_combos.add( combo_morph_group_1 );
     morph_combos.add( combo_morph_group_2 );
     morph_combos.add( combo_morph_group_3 );
@@ -472,10 +469,64 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     for( int i = 0 ; i < getNumChildComponents() ; ++i )
     {
         Component* comp = getChildComponent(i);
-        //comp->setWantsKeyboardFocus(false);
-        //comp->setOpaque(true);
+        comp->setOpaque(true);
     }
     drag_pad->setOpaque(false);
+    label_ui_headline_5->setOpaque(false);
+    label_30->setOpaque(false);
+    label_31->setOpaque(false);
+    label_34->setOpaque(false);
+    label_35->setOpaque(false);
+    label_33->setOpaque(false);
+    label_32->setOpaque(false);
+    label_ui_headline_6->setOpaque(false);
+    label_ui_headline_1->setOpaque(false);
+    label_ui_headline_2->setOpaque(false);
+    label_ui_headline_4->setOpaque(false);
+    label_ui_headline_3->setOpaque(false);
+
+    label_ui_headline_5->getProperties().set( VAR_INDEX_COLOUR_THEME, MORPH_THEME );
+    label_34->getProperties().set( VAR_INDEX_COLOUR_THEME, MORPH_THEME );
+    label_35->getProperties().set( VAR_INDEX_COLOUR_THEME, MORPH_THEME );
+    slider_morph_motor_time->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
+    slider_morph_motor_time->getProperties().set( VAR_INDEX_COLOUR_THEME, MORPH_THEME );
+    label_ui_headline_6->getProperties().set( VAR_INDEX_COLOUR_THEME, MORPH_THEME );
+
+    label_ui_headline_1->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    combo_morph_group_5->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    combo_morph_group_1->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    button_set_1->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    label_19->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    label_4->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    label_2->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    label_30->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+
+    label_ui_headline_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    combo_morph_group_6->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    combo_morph_group_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    button_set_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    label_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    label_5->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    label_6->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    label_31->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+
+    label_ui_headline_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    combo_morph_group_8->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    combo_morph_group_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    button_set_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    label_10->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    label_11->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    label_12->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    label_32->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+
+    label_ui_headline_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    combo_morph_group_7->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    combo_morph_group_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    button_set_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    label_7->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    label_8->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    label_9->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    label_33->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
     /*
     //[/UserPreSize]
 
@@ -600,43 +651,43 @@ void Monique_Ui_MorphConfig::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label_31->setBounds (1270, 30, 80, 40);
-    label_32->setBounds (1270, 130, 80, 40);
-    label_33->setBounds (1070, 130, 80, 40);
-    label_30->setBounds (1070, 30, 80, 40);
-    label_34->setBounds (1050 + 309 / 2 - (80 / 2), 0 + 180 / 2 + -12 - (35 / 2), 80, 35);
-    combo_morph_group_1->setBounds (70, 90, 180, 35);
-    combo_morph_group_2->setBounds (330, 90, 180, 35);
-    combo_morph_group_3->setBounds (850, 90, 180, 35);
-    combo_morph_group_4->setBounds (590, 90, 180, 35);
-    combo_morph_group_5->setBounds (70, 50, 180, 35);
-    combo_morph_group_6->setBounds (330, 50, 180, 35);
-    combo_morph_group_7->setBounds (850, 50, 180, 35);
-    combo_morph_group_8->setBounds (590, 50, 180, 35);
-    label_19->setBounds (20, 50, 50, 35);
+    label_31->setBounds (1270, 30, 80, 30);
+    label_32->setBounds (1270, 130, 80, 30);
+    label_33->setBounds (1070, 130, 80, 30);
+    label_30->setBounds (1070, 30, 80, 30);
+    label_34->setBounds (1050 + 309 / 2 - (80 / 2), 0 + 180 / 2 + -13 - (30 / 2), 80, 30);
+    combo_morph_group_1->setBounds (70, 90, 180, 30);
+    combo_morph_group_2->setBounds (330, 90, 180, 30);
+    combo_morph_group_3->setBounds (850, 90, 180, 30);
+    combo_morph_group_4->setBounds (590, 90, 180, 30);
+    combo_morph_group_5->setBounds (70, 50, 180, 30);
+    combo_morph_group_6->setBounds (330, 50, 180, 30);
+    combo_morph_group_7->setBounds (850, 50, 180, 30);
+    combo_morph_group_8->setBounds (590, 50, 180, 30);
+    label_19->setBounds (20, 50, 50, 30);
     button_set_1->setBounds (70, 130, 180, 30);
-    label_ui_headline_1->setBounds (10, 0, 260, 35);
-    label_ui_headline_2->setBounds (270, 0, 260, 35);
-    label_ui_headline_3->setBounds (790, 0, 260, 35);
-    label_ui_headline_4->setBounds (530, 0, 260, 35);
-    label_4->setBounds (20, 90, 50, 35);
-    label_ui_headline_5->setBounds (1050 + 309 / 2 - (320 / 2), 0, 320, 35);
+    label_ui_headline_1->setBounds (10, 0, 260, 30);
+    label_ui_headline_2->setBounds (270, 0, 260, 30);
+    label_ui_headline_3->setBounds (790, 0, 260, 30);
+    label_ui_headline_4->setBounds (530, 0, 260, 30);
+    label_4->setBounds (20, 90, 50, 30);
+    label_ui_headline_5->setBounds (1050 + 309 / 2 - (320 / 2), 0, 320, 30);
     label_35->setBounds (1050 + 309 / 2 - (130 / 2), 0 + 180 / 2 + 15 - (30 / 2), 130, 30);
-    label_2->setBounds (20, 130, 50, 35);
+    label_2->setBounds (20, 130, 50, 30);
     button_set_2->setBounds (330, 130, 180, 30);
-    label_3->setBounds (280, 50, 50, 35);
-    label_5->setBounds (280, 90, 50, 35);
-    label_6->setBounds (280, 130, 50, 35);
+    label_3->setBounds (280, 50, 50, 30);
+    label_5->setBounds (280, 90, 50, 30);
+    label_6->setBounds (280, 130, 50, 30);
     button_set_3->setBounds (850, 130, 180, 30);
-    label_7->setBounds (800, 50, 50, 35);
-    label_8->setBounds (800, 90, 50, 35);
-    label_9->setBounds (800, 130, 50, 35);
+    label_7->setBounds (800, 50, 50, 30);
+    label_8->setBounds (800, 90, 50, 30);
+    label_9->setBounds (800, 130, 50, 30);
     button_set_4->setBounds (590, 130, 180, 30);
-    label_10->setBounds (540, 50, 50, 35);
-    label_11->setBounds (540, 90, 50, 35);
-    label_12->setBounds (540, 130, 50, 35);
+    label_10->setBounds (540, 50, 50, 30);
+    label_11->setBounds (540, 90, 50, 30);
+    label_12->setBounds (540, 130, 50, 30);
     slider_morph_motor_time->setBounds (1370, 60, 70, 60);
-    label_ui_headline_6->setBounds (1050 + 309 / 2 + 200 - (89 / 2), 0, 89, 35);
+    label_ui_headline_6->setBounds (1050 + 311, 0, 89, 30);
     drag_pad->setBounds (1050, 0, 309, 180);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
@@ -803,65 +854,65 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="1361 0 90 198" cornerSize="10" fill="solid: ffffffee" hasStroke="0"/>
   </BACKGROUND>
   <LABEL name="" id="cd3ee10dff65146e" memberName="label_31" virtualName=""
-         explicitFocusOrder="0" pos="1270 30 80 40" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1270 30 80 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="da0d8b83db1722b2" memberName="label_32" virtualName=""
-         explicitFocusOrder="0" pos="1270 130 80 40" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1270 130 80 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ARP (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="143c47240065ecd" memberName="label_33" virtualName=""
-         explicitFocusOrder="0" pos="1070 130 80 40" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1070 130 80 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="d382fc2bef399418" memberName="label_30" virtualName=""
-         explicitFocusOrder="0" pos="1070 30 80 40" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="1070 30 80 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSC (R)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <LABEL name="" id="447056352a2f62e6" memberName="label_34" virtualName=""
-         explicitFocusOrder="0" pos="0Cc -12.5Cc 80 35" posRelativeX="c1f9aa7ebccd3843"
+         explicitFocusOrder="0" pos="0Cc -13Cc 80 30" posRelativeX="c1f9aa7ebccd3843"
          posRelativeY="c1f9aa7ebccd3843" textCol="ffff3b00" edTextCol="ffff3b00"
          edBkgCol="0" labelText="ALL (L)" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="36"/>
   <COMBOBOX name="" id="6b20aebfc73aac49" memberName="combo_morph_group_1"
-            virtualName="" explicitFocusOrder="0" pos="70 90 180 35" tooltip="Load a program to the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="70 90 180 30" tooltip="Load a program to the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="feb2297e12b64ba2" memberName="combo_morph_group_2"
-            virtualName="" explicitFocusOrder="0" pos="330 90 180 35" tooltip="Load a program to the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="330 90 180 30" tooltip="Load a program to the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="308668407147eb6a" memberName="combo_morph_group_3"
-            virtualName="" explicitFocusOrder="0" pos="850 90 180 35" tooltip="Load a program to the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="850 90 180 30" tooltip="Load a program to the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="6f35e1d484c7ec07" memberName="combo_morph_group_4"
-            virtualName="" explicitFocusOrder="0" pos="590 90 180 35" tooltip="Load a program to the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="590 90 180 30" tooltip="Load a program to the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="bc6993231c0c71b4" memberName="combo_morph_group_5"
-            virtualName="" explicitFocusOrder="0" pos="70 50 180 35" tooltip="Load a program to the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="70 50 180 30" tooltip="Load a program to the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="bd00414d21da9940" memberName="combo_morph_group_6"
-            virtualName="" explicitFocusOrder="0" pos="330 50 180 35" tooltip="Load a program to the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="330 50 180 30" tooltip="Load a program to the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="dc620a04b2f3c235" memberName="combo_morph_group_7"
-            virtualName="" explicitFocusOrder="0" pos="850 50 180 35" tooltip="Load a program to the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="850 50 180 30" tooltip="Load a program to the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="97e42362463feae7" memberName="combo_morph_group_8"
-            virtualName="" explicitFocusOrder="0" pos="590 50 180 35" tooltip="Load a program to the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="590 50 180 30" tooltip="Load a program to the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <LABEL name="" id="2d5427059e8d821" memberName="label_19" virtualName=""
-         explicitFocusOrder="0" pos="20 50 50 35" textCol="ffff3b00" edTextCol="ffff3b00"
+         explicitFocusOrder="0" pos="20 50 50 30" textCol="ffff3b00" edTextCol="ffff3b00"
          edBkgCol="0" labelText="LEFT" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="34"/>
@@ -870,32 +921,32 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET TO CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="b59f286362d58d43" memberName="label_ui_headline_1"
-         virtualName="" explicitFocusOrder="0" pos="10 0 260 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="10 0 260 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="OSC MORPH (OSC)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="693cc31199788cce" memberName="label_ui_headline_2"
-         virtualName="" explicitFocusOrder="0" pos="270 0 260 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="270 0 260 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FILTER MORPH (FLT)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="f367122df639fda8" memberName="label_ui_headline_3"
-         virtualName="" explicitFocusOrder="0" pos="790 0 260 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="790 0 260 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX/EQ MORPH (FX)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="43e970e3cf227751" memberName="label_ui_headline_4"
-         virtualName="" explicitFocusOrder="0" pos="530 0 260 35" textCol="ff1111ff"
+         virtualName="" explicitFocusOrder="0" pos="530 0 260 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="ARP MORPH (ARP)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="e7f40caf971a23eb" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="20 90 50 35" textCol="ffff3b00" edTextCol="ffff3b00"
+         explicitFocusOrder="0" pos="20 90 50 30" textCol="ffff3b00" edTextCol="ffff3b00"
          edBkgCol="0" labelText="RIGHT" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="34"/>
   <LABEL name="" id="53d7da04fb78032a" memberName="label_ui_headline_5"
-         virtualName="" explicitFocusOrder="0" pos="0Cc 0 320 35" posRelativeX="c1f9aa7ebccd3843"
+         virtualName="" explicitFocusOrder="0" pos="0Cc 0 320 30" posRelativeX="c1f9aa7ebccd3843"
          textCol="ff1111ff" edTextCol="ffff3b00" edBkgCol="0" labelText="MORPH PAD (DRAG IT!)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
@@ -906,7 +957,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="1bbfcd7b95bbf419" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="20 130 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="20 130 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="L&amp;R" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
@@ -915,17 +966,17 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET TO CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="455b79aac9991718" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="280 50 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="280 50 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LEFT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="cc65e5b8bd2e839c" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="280 90 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="280 90 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RIGHT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="690291096626b3fb" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="280 130 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="280 130 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="L&amp;R" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
@@ -934,17 +985,17 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET TO CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="7d4dc33eb1a70605" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="800 50 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="800 50 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LEFT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="9bc5565527b0f21c" memberName="label_8" virtualName=""
-         explicitFocusOrder="0" pos="800 90 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="800 90 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RIGHT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="3f40246ec502a912" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="800 130 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="800 130 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="L&amp;R" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
@@ -953,17 +1004,17 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET TO CURRENT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="6e1e76eb8c001ce9" memberName="label_10" virtualName=""
-         explicitFocusOrder="0" pos="540 50 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="540 50 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="LEFT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="73f2398305a5f70f" memberName="label_11" virtualName=""
-         explicitFocusOrder="0" pos="540 90 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="540 90 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="RIGHT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="c86f0fc9f5141d39" memberName="label_12" virtualName=""
-         explicitFocusOrder="0" pos="540 130 50 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="540 130 50 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="L&amp;R" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="34"/>
@@ -975,7 +1026,7 @@ BEGIN_JUCER_METADATA
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="be24663ea3b6bd4" memberName="label_ui_headline_6"
-         virtualName="" explicitFocusOrder="0" pos="200.5Cc 0 89 35" posRelativeX="c1f9aa7ebccd3843"
+         virtualName="" explicitFocusOrder="0" pos="311 0 89 30" posRelativeX="c1f9aa7ebccd3843"
          textCol="ff1111ff" edTextCol="ffff3b00" edBkgCol="0" labelText="SMOOTH"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>

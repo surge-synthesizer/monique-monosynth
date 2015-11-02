@@ -29,6 +29,12 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
+void Monique_Ui_ENVPopup::timerCallback()
+{
+    if( ++callbacks > 9 )
+        stopTimer();
+    repaint();
+}
 void Monique_Ui_ENVPopup::refresh() noexcept
 {
     if( is_repainting )
@@ -36,20 +42,27 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         return;
     }
 
-    if( last_attack != env_data->attack.get_value()
-    or last_sustain != env_data->sustain.get_value()
-    or last_decay != env_data->decay.get_value()
-    or sustain_time != env_data->sustain_time.get_value()
-    or last_release != env_data->release.get_value()
-    or last_shape != env_data->shape.get_value()
+    const float attack__ = env_data->attack.get_value();
+    const float sustain__ = env_data->sustain.get_value();
+    const float decay__ = env_data->decay.get_value();
+    const float release__ = env_data->release.get_value();
+    const float shape__ = env_data->shape.get_value();
+    const float sustain_time__ = env_data->sustain_time.get_value();
+
+    if( last_attack != attack__
+    or last_sustain != sustain__
+    or last_decay != decay__
+    or sustain_time != sustain_time__
+    or last_release != release__
+    or last_shape != shape__
       )
     {
-        last_attack = env_data->attack.get_value();
-        last_sustain = env_data->sustain.get_value();
-        last_decay = env_data->decay.get_value();
-        sustain_time = env_data->sustain_time.get_value();
-        last_shape = env_data->shape.get_value();
-        last_release = env_data->release.get_value();
+        last_attack = attack__;
+        last_sustain = sustain__;
+        last_decay = decay__;
+        sustain_time = sustain_time__;
+        last_shape = shape__;
+        last_release = release__;
 
         slider_attack->setValue( last_attack, dontSendNotification );
         label_attack->setText(String( last_attack*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
@@ -62,20 +75,20 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         else
         {
             slider_decay->setValue( 0, dontSendNotification );
-            label_decay->setText(String( "off" ), dontSendNotification);
+            label_decay->setText(String( "OFF" ), dontSendNotification);
         }
 
         slider_sustain->setValue( last_sustain, dontSendNotification );
         label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
 
-        slider_sustain_time->setValue( sustain_time*10000, dontSendNotification );
-        if( slider_sustain_time->getValue() < 10000 )
+        slider_sustain_time->setValue( sustain_time, dontSendNotification );
+        if( slider_sustain_time->getValue()*MAX_ENV_TIMES < MAX_ENV_TIMES )
         {
-            label_sustain_time->setText(String( round0(slider_sustain_time->getValue()) )+String("ms"), dontSendNotification);
+            label_sustain_time->setText(String( sustain_time*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
         }
         else
         {
-            label_sustain_time->setText(String( "unltd" ), dontSendNotification);
+            label_sustain_time->setText(String( "UNLTD" ), dontSendNotification);
         }
 
         slider_release->setValue( last_release, dontSendNotification );
@@ -83,12 +96,15 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
         slider_env_shape->setValue( last_shape, dontSendNotification );
 
+        stopTimer();
+        callbacks = 0;
         repaint();
+        startTimer( synth_data->glide_motor_time.get_value()/10 + 5 );
     }
 
     {
         ComponentColours& colours = look_and_feel->colours;
-        Colour button_off = colours.get_theme( COLOUR_THEMES::POPUP_THEME  ).area_colour;
+        Colour button_off = colours.get_theme( theme  ).area_colour;
         auto_close->setColour (TextButton::buttonColourId, synth_data->auto_close_env_popup ? Colours::yellow : button_off );
         keep->setColour (TextButton::buttonColourId, synth_data->auto_switch_env_popup ? Colours::green : button_off );
     }
@@ -98,6 +114,13 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
 void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_, Monique_Ui_DualSlider*owner_ )
 {
+    theme = owner_->_config->get_colour_theme();
+    for( int i = 0 ; i != getNumChildComponents() ; ++i )
+    {
+        Component*child = getChildComponent(i);
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, theme );
+    }
+
     owner_slider = owner_;
     related_to_comp = comp_;
     Component* parent = comp_->getParentComponent();
@@ -210,6 +233,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     owner_slider = nullptr;
     setOwner(this);
     is_repainting = false;
+    theme = COLOUR_THEMES::FILTER_THEME;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_attack_bottom = new Label (String::empty,
@@ -270,7 +294,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_release->addListener (this);
 
     addAndMakeVisible (slider_sustain_time = new Slider ("0"));
-    slider_sustain_time->setRange (0, 10000, 1);
+    slider_sustain_time->setRange (0, 1, 0.0002);
     slider_sustain_time->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     slider_sustain_time->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -292,40 +316,44 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
                                                  TRANS("x\n")));
     label_attack->setFont (Font (15.00f, Font::plain));
     label_attack->setJustificationType (Justification::centred);
-    label_attack->setEditable (false, false, false);
+    label_attack->setEditable (true, true, false);
     label_attack->setColour (Label::textColourId, Colours::yellow);
     label_attack->setColour (TextEditor::textColourId, Colours::black);
     label_attack->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_attack->addListener (this);
 
     addAndMakeVisible (label_decay = new Label ("VL",
                                                 TRANS("x\n")));
     label_decay->setFont (Font (15.00f, Font::plain));
     label_decay->setJustificationType (Justification::centred);
-    label_decay->setEditable (false, false, false);
+    label_decay->setEditable (true, true, false);
     label_decay->setColour (Label::textColourId, Colours::yellow);
     label_decay->setColour (TextEditor::textColourId, Colours::black);
     label_decay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_decay->addListener (this);
 
     addAndMakeVisible (label_sustain_time = new Label ("VL",
                                                        TRANS("x\n")));
     label_sustain_time->setFont (Font (15.00f, Font::plain));
     label_sustain_time->setJustificationType (Justification::centred);
-    label_sustain_time->setEditable (false, false, false);
+    label_sustain_time->setEditable (true, true, false);
     label_sustain_time->setColour (Label::textColourId, Colours::yellow);
     label_sustain_time->setColour (TextEditor::textColourId, Colours::black);
     label_sustain_time->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_sustain_time->addListener (this);
 
     addAndMakeVisible (label_release = new Label ("VL",
                                                   TRANS("x\n")));
     label_release->setFont (Font (15.00f, Font::plain));
     label_release->setJustificationType (Justification::centred);
-    label_release->setEditable (false, false, false);
+    label_release->setEditable (true, true, false);
     label_release->setColour (Label::textColourId, Colours::yellow);
     label_release->setColour (TextEditor::textColourId, Colours::black);
     label_release->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_release->addListener (this);
 
     addAndMakeVisible (slider_sustain = new Slider ("0"));
-    slider_sustain->setRange (0, 1, 0.0002);
+    slider_sustain->setRange (0, 1, 0.001);
     slider_sustain->setSliderStyle (Slider::LinearVertical);
     slider_sustain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     slider_sustain->setColour (Slider::rotarySliderFillColourId, Colours::yellow);
@@ -347,10 +375,11 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
                                                   TRANS("x\n")));
     label_sustain->setFont (Font (15.00f, Font::plain));
     label_sustain->setJustificationType (Justification::centred);
-    label_sustain->setEditable (false, false, false);
+    label_sustain->setEditable (true, true, false);
     label_sustain->setColour (Label::textColourId, Colours::yellow);
     label_sustain->setColour (TextEditor::textColourId, Colours::black);
     label_sustain->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label_sustain->addListener (this);
 
     addAndMakeVisible (plotter = new Component());
 
@@ -427,12 +456,18 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     related_to_comp = nullptr;
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
-        getChildComponent(i)->setWantsKeyboardFocus(false);
         Component*child = getChildComponent(i);
+	child->setWantsKeyboardFocus(false);
         child->setOpaque(true);
-        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::POPUP_THEME );
     }
     plotter->setOpaque(false);
+
+    close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    keep->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    auto_close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+
     //setOpaque(true);
     //[/UserPreSize]
 
@@ -493,16 +528,15 @@ void Monique_Ui_ENVPopup::paint (Graphics& g)
 
 #include "mono_ui_includeHacks_BEGIN.h"
 
-    g.setColour (colours.get_theme( COLOUR_THEMES::POPUP_THEME  ).area_colour);
+    g.setColour (colours.get_theme( theme  ).area_colour);
     g.fillRoundedRectangle (1.0f, 10.0f, 708.0f, 179.0f, 10.000f);
 
-    Colour outline_and_track = colours.get_theme( COLOUR_THEMES::POPUP_THEME  ).value_slider_track_colour;
+    Colour outline_and_track = colours.get_theme( theme ).value_slider_track_colour;
     g.setColour (outline_and_track);
     g.drawRoundedRectangle (1.0f, 10.0f, 708.0f, 179.0f, 10.000f, 1.000f);
 
-    g.setColour (outline_and_track);
     g.fillPath (internalPath1);
-    
+
     /*
     //[/UserPrePaint]
 
@@ -607,24 +641,24 @@ void Monique_Ui_ENVPopup::resized()
     /*
     //[/UserPreResize]
 
-    label_attack_bottom->setBounds (20, 140, 60, 33);
+    label_attack_bottom->setBounds (20, 140, 60, 30);
     slider_attack->setBounds (20, 60, 60, 80);
-    label_decay_bottom->setBounds (80, 140, 60, 33);
+    label_decay_bottom->setBounds (80, 140, 60, 30);
     slider_decay->setBounds (80, 60, 60, 80);
-    label_release_bottom->setBounds (260, 140, 60, 33);
+    label_release_bottom->setBounds (260, 140, 60, 30);
     slider_release->setBounds (260, 60, 60, 80);
     slider_sustain_time->setBounds (200, 60, 60, 80);
-    label_sustain_time_bottom->setBounds (200, 140, 60, 33);
-    label_attack->setBounds (20, 20, 60, 33);
-    label_decay->setBounds (80, 20, 60, 33);
-    label_sustain_time->setBounds (200, 20, 60, 33);
-    label_release->setBounds (260, 20, 60, 33);
+    label_sustain_time_bottom->setBounds (200, 140, 60, 30);
+    label_attack->setBounds (20, 20, 60, 30);
+    label_decay->setBounds (80, 20, 60, 30);
+    label_sustain_time->setBounds (200, 20, 60, 30);
+    label_release->setBounds (260, 20, 60, 30);
     slider_sustain->setBounds (140, 60, 60, 80);
-    label_sustain_bottom->setBounds (140, 140, 60, 33);
-    label_sustain->setBounds (140, 20, 60, 33);
+    label_sustain_bottom->setBounds (140, 140, 60, 30);
+    label_sustain->setBounds (140, 20, 60, 30);
     plotter->setBounds (410, 20, 240, 159);
     slider_env_shape->setBounds (340, 60, 60, 80);
-    label_shape->setBounds (340, 140, 60, 33);
+    label_shape->setBounds (340, 140, 60, 30);
     close->setBounds (660, 20, 40, 20);
     keep->setBounds (660, 70, 40, 20);
     auto_close->setBounds (660, 50, 40, 20);
@@ -668,7 +702,7 @@ void Monique_Ui_ENVPopup::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == slider_sustain_time)
     {
         //[UserSliderCode_slider_sustain_time] -- add your slider handling code here..
-        env_data->sustain_time = sliderThatWasMoved->getValue()/10000;
+        env_data->sustain_time = sliderThatWasMoved->getValue();
         //[/UserSliderCode_slider_sustain_time]
     }
     else if (sliderThatWasMoved == slider_sustain)
@@ -686,6 +720,46 @@ void Monique_Ui_ENVPopup::sliderValueChanged (Slider* sliderThatWasMoved)
 
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
+}
+
+void Monique_Ui_ENVPopup::labelTextChanged (Label* labelThatHasChanged)
+{
+    //[UserlabelTextChanged_Pre]
+    //[/UserlabelTextChanged_Pre]
+
+    if (labelThatHasChanged == label_attack)
+    {
+        //[UserLabelCode_label_attack] -- add your label text handling code here..
+        slider_attack->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->attack.get_info().num_steps, sendNotification );
+        //[/UserLabelCode_label_attack]
+    }
+    else if (labelThatHasChanged == label_decay)
+    {
+        //[UserLabelCode_label_decay] -- add your label text handling code here..
+        slider_decay->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->decay.get_info().num_steps, sendNotification );
+        //[/UserLabelCode_label_decay]
+    }
+    else if (labelThatHasChanged == label_sustain_time)
+    {
+        //[UserLabelCode_label_sustain_time] -- add your label text handling code here..
+        slider_sustain_time->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->sustain_time.get_info().num_steps, sendNotification );
+        //[/UserLabelCode_label_sustain_time]
+    }
+    else if (labelThatHasChanged == label_release)
+    {
+        //[UserLabelCode_label_release] -- add your label text handling code here..
+        slider_release->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->release.get_info().num_steps, sendNotification );
+        //[/UserLabelCode_label_release]
+    }
+    else if (labelThatHasChanged == label_sustain)
+    {
+        //[UserLabelCode_label_sustain] -- add your label text handling code here..
+        slider_sustain->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->sustain.get_info().num_steps, sendNotification );
+        //[/UserLabelCode_label_sustain]
+    }
+
+    //[UserlabelTextChanged_Post]
+    //[/UserlabelTextChanged_Post]
 }
 
 void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
@@ -720,7 +794,7 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
         if( not SHARED::getInstance()->env_clipboard )
         {
             SHARED::getInstance()->env_clipboard = new ENVData( nullptr, 999);
-        } ::copy( SHARED::getInstance()->env_clipboard, env_data, false );
+        } ::copy( SHARED::getInstance()->env_clipboard, env_data );
         //[/UserButtonCode_copy]
     }
     else if (buttonThatWasClicked == past)
@@ -728,7 +802,7 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_past] -- add your button handler code here..
         if( SHARED::getInstance()->env_clipboard )
         {
-            ::copy( env_data, SHARED::getInstance()->env_clipboard, false );
+            ::copy( env_data, SHARED::getInstance()->env_clipboard );
         }
         //[/UserButtonCode_past]
     }
@@ -753,7 +827,7 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_ENVPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower"
+                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_"
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;env_data(env_data_),&#10;sustain(sustain_),&#10;original_w(710), original_h(190),&#10;left(left_)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
@@ -764,7 +838,7 @@ BEGIN_JUCER_METADATA
     <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
   </BACKGROUND>
   <LABEL name="" id="c4d4f0ae59fb458b" memberName="label_attack_bottom"
-         virtualName="" explicitFocusOrder="0" pos="20 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="20 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="ATT" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -775,7 +849,7 @@ BEGIN_JUCER_METADATA
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="5269c763f2d5a37b" memberName="label_decay_bottom"
-         virtualName="" explicitFocusOrder="0" pos="80 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="80 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DEC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -786,7 +860,7 @@ BEGIN_JUCER_METADATA
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="d001c80859e5b7cb" memberName="label_release_bottom"
-         virtualName="" explicitFocusOrder="0" pos="260 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="260 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="REL" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
@@ -799,49 +873,49 @@ BEGIN_JUCER_METADATA
   <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time"
           virtualName="Slider" explicitFocusOrder="0" pos="200 60 60 80"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
-          textboxbkgd="ff161616" min="0" max="10000" int="1" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
+          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ffcf23120599c6e5" memberName="label_sustain_time_bottom"
-         virtualName="" explicitFocusOrder="0" pos="200 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="200 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="HOLD" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="a09cec04c5ae6b58" memberName="label_attack" virtualName=""
-         explicitFocusOrder="0" pos="20 20 60 33" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="x&#10;" editableSingleClick="0" editableDoubleClick="0"
+         explicitFocusOrder="0" pos="20 20 60 30" textCol="ffffff00" edTextCol="ff000000"
+         edBkgCol="0" labelText="x&#10;" editableSingleClick="1" editableDoubleClick="1"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="1b295ca55294b0a2" memberName="label_decay" virtualName=""
-         explicitFocusOrder="0" pos="80 20 60 33" textCol="ffffff00" edTextCol="ff000000"
-         edBkgCol="0" labelText="x&#10;" editableSingleClick="0" editableDoubleClick="0"
+         explicitFocusOrder="0" pos="80 20 60 30" textCol="ffffff00" edTextCol="ff000000"
+         edBkgCol="0" labelText="x&#10;" editableSingleClick="1" editableDoubleClick="1"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="e1944df446a5aea6" memberName="label_sustain_time"
-         virtualName="" explicitFocusOrder="0" pos="200 20 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         virtualName="" explicitFocusOrder="0" pos="200 20 60 30" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
+         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="72cc727ebebbec15" memberName="label_release" virtualName=""
-         explicitFocusOrder="0" pos="260 20 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         explicitFocusOrder="0" pos="260 20 60 30" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
+         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="b7e5d3f5d3dbf47a" memberName="slider_sustain" virtualName="Slider"
           explicitFocusOrder="0" pos="140 60 60 80" rotarysliderfill="ffffff00"
           rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
+          min="0" max="1" int="0.0010000000000000000208" style="LinearVertical"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ee00adc332943fc6" memberName="label_sustain_bottom"
-         virtualName="" explicitFocusOrder="0" pos="140 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="140 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <LABEL name="VL" id="8b7051eff652e1d6" memberName="label_sustain" virtualName=""
-         explicitFocusOrder="0" pos="140 20 60 33" textCol="ffffff00"
-         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         explicitFocusOrder="0" pos="140 20 60 30" textCol="ffffff00"
+         edTextCol="ff000000" edBkgCol="0" labelText="x&#10;" editableSingleClick="1"
+         editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="c88b6f548bad2da7" memberName="plotter" virtualName=""
                     explicitFocusOrder="0" pos="410 20 240 159" class="Component"
@@ -854,7 +928,7 @@ BEGIN_JUCER_METADATA
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="ad65d35c7b51c7ea" memberName="label_shape"
-         virtualName="" explicitFocusOrder="0" pos="340 140 60 33" textCol="ffffff00"
+         virtualName="" explicitFocusOrder="0" pos="340 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SHAPE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>

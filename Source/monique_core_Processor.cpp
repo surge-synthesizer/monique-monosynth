@@ -326,11 +326,20 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     synth_data->save_settings();
 
     SHARED::getInstance()->num_instances--;
-    if( SHARED::getInstance()->num_instances == 0 and SHARED::getInstance()->env_clipboard )
+    if( SHARED::getInstance()->num_instances == 0 )
     {
+      if( SHARED::getInstance()->env_clipboard )
+      {
         ENVData*env = SHARED::getInstance()->env_clipboard;
         SHARED::getInstance()->env_clipboard = nullptr;
         delete env;
+      }
+      if( SHARED::getInstance()->mfo_clipboard )
+      {
+        MFOData*mfo = SHARED::getInstance()->mfo_clipboard;
+        SHARED::getInstance()->mfo_clipboard = nullptr;
+        delete mfo;
+      }
     }
 
     delete synth;

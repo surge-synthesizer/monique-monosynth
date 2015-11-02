@@ -183,9 +183,6 @@ private:
     ScopedPointer<Label> label_band_hz_4;
     ScopedPointer<Label> label_band_hz_1;
     ScopedPointer<Label> label_morph;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_11;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_12;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_13;
     ScopedPointer<TextButton> button_edit_input_env_3_3;
     ScopedPointer<TextButton> button_edit_input_env_3_2;
     ScopedPointer<TextButton> button_edit_input_env_3_1;
@@ -199,16 +196,9 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> reverb_width;
     ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
-    ScopedPointer<Monique_Ui_DualSlider> eq_1;
-    ScopedPointer<Monique_Ui_DualSlider> eq_3;
-    ScopedPointer<Monique_Ui_DualSlider> eq_4;
-    ScopedPointer<Monique_Ui_DualSlider> eq_5;
-    ScopedPointer<Monique_Ui_DualSlider> eq_6;
-    ScopedPointer<Monique_Ui_DualSlider> eq_7;
     ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Monique_Ui_DualSlider> delay2;
     ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
-    ScopedPointer<Monique_Ui_DualSlider> eq_2;
     ScopedPointer<Label> label_band_hz_2;
     ScopedPointer<Label> label_band_hz_3;
     ScopedPointer<Monique_Ui_DualSlider> speed_multi;
@@ -294,13 +284,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> lfo_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_cutoff_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_cutoff_3;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_1;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_2;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_3;
     ScopedPointer<Monique_Ui_DualSlider> flt_distortion_1;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_6;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_7;
-    ScopedPointer<Monique_Ui_DualSlider> flt_input_8;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_resonance_3;
@@ -393,6 +377,22 @@ private:
     ScopedPointer<TextButton> button_edit_mfo_4;
     ScopedPointer<Label> label_reverb;
     ScopedPointer<Label> label_fx_section;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_13;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_12;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_11;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_6;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_7;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_8;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_3;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_2;
+    ScopedPointer<Monique_Ui_DualSlider> flt_input_1;
+    ScopedPointer<Monique_Ui_DualSlider> eq_3;
+    ScopedPointer<Monique_Ui_DualSlider> eq_2;
+    ScopedPointer<Monique_Ui_DualSlider> eq_1;
+    ScopedPointer<Monique_Ui_DualSlider> eq_4;
+    ScopedPointer<Monique_Ui_DualSlider> eq_5;
+    ScopedPointer<Monique_Ui_DualSlider> eq_6;
+    ScopedPointer<Monique_Ui_DualSlider> eq_7;
 
 
     //==============================================================================

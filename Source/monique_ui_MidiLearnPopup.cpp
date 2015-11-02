@@ -49,6 +49,15 @@ void Monique_Ui_MainwindowPopup::set_element_to_show( Component*const comp_ )
     int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
     int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
     setTopLeftPosition( x+comp_->getWidth()/2 - getWidth()/2, y+comp_->getHeight() );
+
+    COLOUR_THEMES theme = static_cast<COLOUR_THEMES>( int(comp_->getProperties().getWithDefault( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME )) );
+    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    {
+        Component*child = getChildComponent(i);
+        child->setOpaque(true);
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, theme );
+    }
+    this->getProperties().set( VAR_INDEX_COLOUR_THEME, theme );
 }
 void Monique_Ui_MainwindowPopup::update_positions( )
 {
@@ -90,6 +99,8 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_
 
     //[UserPreSize]
     related_to_comp = nullptr;
+    
+    close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
 
     for( int i = 0 ; i != 128 ; ++i )
     {
@@ -127,6 +138,17 @@ void Monique_Ui_MainwindowPopup::paint (Graphics& g)
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 #include "mono_ui_includeHacks_BEGIN.h"
+
+    COLOUR_THEMES theme_id =  static_cast<COLOUR_THEMES>( int(this->getProperties().getWithDefault( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME ) ) );
+    g.setColour (colours.get_theme( theme_id ).area_colour);
+    g.fillRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f);
+
+    g.setColour (colours.get_theme( theme_id ).value_slider_track_colour);
+    g.drawRoundedRectangle (1.0f, 10.0f, 78.0f, 84.0f, 10.000f, 1.000f);
+    
+    g.fillPath (internalPath1);
+
+    /*
     //[/UserPrePaint]
 
     g.setColour (Colour (0xbaffffff));
@@ -139,6 +161,7 @@ void Monique_Ui_MainwindowPopup::paint (Graphics& g)
     g.fillPath (internalPath1);
 
     //[UserPaint] Add your own custom painting code here..
+    */
     //[/UserPaint]
 }
 

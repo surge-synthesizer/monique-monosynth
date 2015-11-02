@@ -1,58 +1,36 @@
-LFO BRAUCH:
-- viereck
-- phase offset
-- speed
+TODO:
+copy past theme 
+own editor for colours
+load save them
+bug: morph stopt nicht beim programwechsel
+add a default colour theme to the binary and load it if nothing is available
+crashed on force arp off 
+
 
 
 MORPH TODO:
 arp tune and velocity
 sustain or not?
 do not smooth the original parameters : buggy on smoothmanager zero
-min und max modulation
-copy past mfo 
-does not always repaint all colours
+wenn der auto morph aufhört müssen wir zum slider state zurück und von da starten wir auch
 
-MORPH NOTES:
-env and lfo not modulated by an automated morph
-also not the modulation amounts: this reduces the cpu useage 
-
-
-TODO
-lfo wie mfo
-
-add a default theme to the binary and load it if nothing is available
-option die aktuelle modulation auf dem slider anzuzeigen
-option: open popups on mouse over?
-
-4 sekunden max times.
-
-nicht frei skallierbar
-
-show waves on sliders everytime
-layer erstellen, namen für die einzelnen objekte
-verschiedene hintergrundfarben der editoren und die topleiste je nach offen editor färben
-
-färbe die morph slider nach ihren gruppen
-slider und labels sind nicht opaque
-output meter filter 1 bis 3
-hide mac osx audio devices
-
-farben pro layer für buttons, fonts, button font, 
+MORPH NOTES - NOT AFFECTED PARAMETER:
+env and lfo not modulated by an auto morph
+also not supported: modulation amounts
+arp tune (to keep it musically)
 
 
 
 
-viereck lfo für morphgroups
 
-option toggle buttons on absolutely left or right!
-
-presets: folder für arp, fx, filter und osc morphs. (also um die einfach zu klassivizieren.
-reverb: juce hat ein stereo reverb
-
-knacken von BASS DRUM AUF BASS DRUM 2
+NOTES:
+lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 
 TIM:
 steps sind nicht automatisierbar
+
+
+
 
 DONE:
 add: amp env shape
@@ -75,20 +53,42 @@ add: pan for effects
 improved: show also the center value if the mouse is over the top or bottom button
 changed: lfos can be run in finer ganulations and added buttons to set it to note duration speeds 
 fix: setup slider sensitivity wasnt updated
+fix: env time input via labels was not correct
+improve: slider value roundings
+improve/fix: update the plotter in the env and lfo popups smoothed (depending on you smooth/glide time (setup))
+fix: program combobox was still editable if you hit esc
+fix: another possible crackl on program change
+add: ui aspect ratio
+improved: arp steps shows a small flash if it is the current step in the timeline also if the step isn't enabled 
+
 
 UI
 ****************************************************************************
-- add: a good background which explains the signal flow
 - add option: always start in ctrl mode
 - add: welcome popup, if you like to disable the arp -> press this "holly button"
 - option: pitch arp only or trigger notes anyway
 - add: FactoryDefault, StateOnProgramm oder User Return
-- add: env shape slider for main and filter env's
+- add: output meter filter 1 bis 3
+- change: on mac hide osx audio devices
+- show waves on sliders everytime?
+- improve: fixed aspect ratio
+- tooltip for resizer
+- feedback if you have stored a program, like a green button
+- set current as return for popups
+- remove maximize button
 
 ENGINE
 ****************************************************************************
 - add: panic
 - midi: the standard midi assignments are not complete
+- midi support für alle knöppe checken
+- midi learn für popups
+- sync der mfos passt nicht mit dem mmidi sync
+- check midi sync and so on
+- reverb: stereo effects
+- delay: stereo effects
+- add: for morph: option toggle buttons on absolutely left or right
+- lfo wie mfo? needed? -> but reduce the speed
 
 PROGRAMS
 ****************************************************************************
@@ -153,6 +153,8 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- min und max mfo power
+- option die aktuelle modulation auf dem slider anzuzeigen
 - automatisieren von fm frequence!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> super geil
 global colour theme and programm theme
 - animate arp on keyboard

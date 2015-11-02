@@ -40,6 +40,32 @@
 #define VAR_INDEX_OVERRIDE_BUTTON_COLOUR "2"
 #define VAR_INDEX_COLOUR_THEME_INVERTED "3"
 #define VAR_INDEX_SLIDER_LABEL_STYLE "4"
+#define VAR_INDEX_BUTTON_AMP "5"
+#define VAR_INDEX_STATE_VAR "6"
+#define VAR_INDEX_VALUE_TO_SHOW "7"
+
+#define TURN_BUTTON_OFF( button ) \
+if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, TURN_OFF ) ) { \
+        button->repaint(); \
+    }
+
+#define TURN_BUTTON_ON( button ) \
+if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, TURN_ON ) ) { \
+        button->repaint(); \
+    }
+
+#define TURN_BUTTON_ON_OR_OFF( button, state ) \
+ if(state) { TURN_BUTTON_ON(button); } else { TURN_BUTTON_OFF(button); }
+
+enum COLOR_REPLACEMENTS
+{
+    TURN_OFF = 0,
+    TURN_ON = 1,
+    FORCE_BIT_RED = 2,
+    FORCE_RED,
+    USE_AREA_COLOUR,
+    USE_AREA_TRANSCULENT
+};
 
 enum COLOUR_THEMES
 {
@@ -61,7 +87,7 @@ enum COLOUR_THEMES
 };
 enum COLOUR_CODES
 {
-    AREA_COLOUR,
+    AREA_COLOUR = USE_AREA_TRANSCULENT + 1,
     AREA_FONT_COLOUR,
     VALUE_SLIDER_COLOUR,
     VALUE_SLIDER_2_COLOUR,
@@ -210,19 +236,19 @@ struct ComponentColours
         //themes.add( new SectionTheme( MIDI_THEME ) );
         themes.add( new SectionTheme( MORPH_THEME ) );
         themes.add( new SectionTheme( BG_THEME ) );
-	
-	SectionTheme*theme = new SectionTheme(DUMMY_THEME);
-	theme->area_colour = Colours::magenta;
-	theme->area_font_colour = Colours::magenta;
-	theme->value_slider_track_colour = Colours::magenta;
-	theme->value_2_slider_track_colour = Colours::magenta;
-	theme->mod_slider_track_colour = Colours::magenta;
-	theme->disabled_track_colour = Colours::magenta;
-	theme->slider_bg_colour = Colours::magenta;
-	theme->button_on_font_colour = Colours::magenta;
-	theme->button_on_colour = Colours::magenta;
-	theme->button_off_font_colour = Colours::magenta;
-	theme->button_off_colour = Colours::magenta;
+
+        SectionTheme*theme = new SectionTheme(DUMMY_THEME);
+        theme->area_colour = Colours::magenta;
+        theme->area_font_colour = Colours::magenta;
+        theme->value_slider_track_colour = Colours::magenta;
+        theme->value_2_slider_track_colour = Colours::magenta;
+        theme->mod_slider_track_colour = Colours::magenta;
+        theme->disabled_track_colour = Colours::magenta;
+        theme->slider_bg_colour = Colours::magenta;
+        theme->button_on_font_colour = Colours::magenta;
+        theme->button_on_colour = Colours::magenta;
+        theme->button_off_font_colour = Colours::magenta;
+        theme->button_off_colour = Colours::magenta;
         themes.add( theme );
     }
     const SectionTheme& get_theme(COLOUR_THEMES id_) const noexcept
@@ -253,17 +279,6 @@ enum MODULATION_SLIDER_STYLE
     MODULATION_SLIDER_MOVES_WITH_MASTER_FROM_ZERO,
     MODULATION_SLIDER_MOVES_WITH_MASTER,
 };
-
-
-#define IS_VALUE_LABEL "VL"
-#define IS_SECOND_VALUE_LABEL "SVL"
-#define IS_DESCRIPTION_LABEL "DL"
-
-#define GET_VALUE_TO_PAINT getName
-#define SET_VALUE_TO_PAINT setName
-
-#define GET_LABEL_STYLE getName
-#define SET_LABEL_STYLE setName
 
 //==============================================================================
 //==============================================================================
@@ -365,6 +380,16 @@ public:
     int getSliderThumbRadius (Slider&) override;
     Font getSliderPopupFont (Slider&) override;
     int getSliderPopupPlacement (Slider&) override;
+
+    PopupMenu* getCustomPopupMenu (Slider*) override;
+
+
+    static bool is_global_user_return;// = true;
+    static bool is_global_factory_return;// = false;
+    static bool is_global_program_return;// = false;
+    static bool is_global_undo_return;// = false;
+    bool sliderMenuCallback (const int result, Slider* slider) override;
+    bool sliderDoubleClicked ( Slider* slider) override;
 
     //==============================================================================
     void getTooltipSize (const String& tipText, int& width, int& height) override;

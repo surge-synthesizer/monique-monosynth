@@ -303,10 +303,21 @@ class SmoothManager : public RuntimeListener, DeletedAtShutdown
     friend class ContainerDeletePolicy< SmoothManager >;
     COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept;
     COLD ~SmoothManager() noexcept;
-
+public:
+    int morph_glide_time[SUM_MORPHER_GROUPS];
+    int morph_glide_counter[SUM_MORPHER_GROUPS];
+    bool last_morph_was_automated[SUM_MORPHER_GROUPS];
+    float last_power_of_right[SUM_MORPHER_GROUPS];
+    float from_power_of_right[SUM_MORPHER_GROUPS];
+    mono_AudioSampleBuffer<SUM_MORPHER_GROUPS> glided_power_of_right_buffer;
+    void sample_rate_changed(double) noexcept override
+    {
+	glided_power_of_right_buffer.setSize( block_size );
+    }
+    
 public:
     void smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept;
-    void automated_morph( const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept;
+    void automated_morph( bool do_really_morph_, int id_, const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept;
     void reset() noexcept;
 
 public:
@@ -365,7 +376,7 @@ class SmoothedParameter : public RuntimeListener
 public:
     void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
     void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
-    void process_amp( bool use_env_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
+    void process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
 
     inline const float* get_smoothed_buffer() const noexcept
     {
@@ -409,12 +420,12 @@ struct LFOData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
-static bool is_integer( float value_ ) noexcept
+static inline bool is_integer( float value_ ) noexcept
 {
     return value_ == int(value_);
 }
 
-static float get_lfo_speed_multi( float speed_ ) noexcept
+static inline float get_lfo_speed_multi( float speed_ ) noexcept
 {
     float factor = 1;
     if( speed_ <= 6 )
@@ -510,13 +521,13 @@ static float get_lfo_speed_multi( float speed_ ) noexcept
 
     return factor;
 }
-static float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+static inline float lfo_speed_in_hertz( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
 {
     const float bars_per_sec = info_->bpm/4/60;
     const float cycles_per_sec = bars_per_sec/get_lfo_speed_multi( speed_ );
     return cycles_per_sec;
 }
-static String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
+static inline String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info_, float sample_rate_ ) noexcept
 {
     if( speed_ <= 6 )
     {
@@ -625,6 +636,12 @@ struct MFOData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MFOData)
 };
+static inline void copy( MFOData* dest_, const MFOData* src_ ) noexcept
+{
+    dest_->speed = src_->speed;
+    dest_->wave = src_->wave;
+    dest_->phase_shift = src_->phase_shift;
+}
 
 //==============================================================================
 //==============================================================================
@@ -689,20 +706,17 @@ struct OSCData
 //==============================================================================
 //==============================================================================
 #define MIN_ENV_TIMES 1 // 15
-#define MAX_ENV_TIMES 5000-MIN_ENV_TIMES // 15
+#define MAX_ENV_TIMES 5000-1 // 15
 struct ENVData
 {
     const int id;
 
     Parameter attack;
-    IntParameter max_attack_time;
     Parameter decay;
-    IntParameter max_decay_time;
     Parameter sustain;
     SmoothedParameter sustain_smoother;
     Parameter sustain_time;
     Parameter release;
-    IntParameter max_release_time;
 
     Parameter shape;
     SmoothedParameter shape_smoother;
@@ -713,16 +727,13 @@ struct ENVData
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ENVData)
 };
-static inline void copy( ENVData* dest_, const ENVData* src_, bool include_max_times_ ) noexcept
+static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
 {
     dest_->attack = src_->attack;
-    dest_->max_attack_time = src_->max_attack_time;
     dest_->decay = src_->decay;
-    dest_->max_decay_time = src_->max_decay_time;
     dest_->sustain = src_->sustain;
     dest_->sustain_time = src_->sustain_time;
     dest_->release = src_->release;
-    dest_->max_release_time = src_->max_release_time;
 
     dest_->shape = src_->shape;
 }
@@ -1144,6 +1155,7 @@ class MorphGroup : public Timer, ParameterListener
     MorphGroup* right_morph_source;
 
     friend class MoniqueSynthData;
+    friend class SmoothManager;
     Array< Parameter* > params;
     float last_power_of_right;
     Array< BoolParameter* > switch_bool_params;
@@ -1155,8 +1167,12 @@ public:
     inline void morph( float morph_amount_ ) noexcept;
     inline void morph_switchs( bool left_right_ ) noexcept;
 
-    // return true if the morph was successful
-    inline bool morph( const Parameter* original_param_,  float* value_target_buffer_, float* mod_target_buffer_, const float* morph_amount_, int num_samples_ ) noexcept;
+    // return the last last_power_of_right
+    inline void morph( const Parameter* original_param_,
+                       float* value_target_buffer_,
+                       float* mod_target_buffer_,
+                       const float* morph_amount_,
+                       int num_samples_ ) noexcept;
 
 private:
     //==========================================================================
@@ -1477,9 +1493,10 @@ class SHARED
 public:
     int num_instances ;
     ENVData* env_clipboard;
+    MFOData* mfo_clipboard;
     juce_DeclareSingleton( SHARED, false );
 
-    SHARED() : num_instances(0), env_clipboard(nullptr) {}
+    SHARED() : num_instances(0), env_clipboard(nullptr),mfo_clipboard(nullptr) {}
 };
 
 #endif

@@ -39,8 +39,8 @@ class SectionTheme;
 class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public AsyncUpdater,
-                                   public ButtonListener,
                                    public ComboBoxListener,
+                                   public ButtonListener,
                                    public SliderListener
 {
 public:
@@ -111,8 +111,8 @@ private:
 
     void paint (Graphics& g);
     void resized();
-    void buttonClicked (Button* buttonThatWasClicked);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
+    void buttonClicked (Button* buttonThatWasClicked);
     void sliderValueChanged (Slider* sliderThatWasMoved);
 
     // Binary resources:
@@ -125,12 +125,15 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<Label> label_ui_headline_7;
+    ScopedPointer<Label> label_ui_headline_9;
+    ScopedPointer<ComboBox> combo_audio_driver;
+    ScopedPointer<Label> label_ui_headline_3;
     ScopedPointer<TextButton> button_colour_bg;
     ScopedPointer<TextButton> button_colour_background;
     ScopedPointer<Label> label_buttons__;
     ScopedPointer<Label> label_slider__;
     ScopedPointer<Label> label_section__;
-    ScopedPointer<HyperlinkButton> link_to_monoplugs;
     ScopedPointer<Label> label_9;
     ScopedPointer<Label> label_2;
     ScopedPointer<Label> label_4;
@@ -138,7 +141,6 @@ private:
     ScopedPointer<Label> label_cpu_usage;
     ScopedPointer<ComboBox> combo_block_size;
     ScopedPointer<Label> label_10;
-    ScopedPointer<ComboBox> combo_audio_driver;
     ScopedPointer<ComboBox> combo_audio_device;
     ScopedPointer<Label> label_7;
     ScopedPointer<Label> label_8;
@@ -172,10 +174,7 @@ private:
     ScopedPointer<TextButton> button_preset_3;
     ScopedPointer<Label> label_6;
     ScopedPointer<ToggleButton> toggle_one_pedal;
-    ScopedPointer<Label> label_ui_headline_3;
-    ScopedPointer<Label> label_ui_headline_7;
     ScopedPointer<ImageButton> image_vst;
-    ScopedPointer<Label> label_ui_headline_9;
     ScopedPointer<TextButton> button_colour_bg_svg_1;
     ScopedPointer<TextButton> button_colour_bg_svg_2;
     ScopedPointer<TextButton> button_colour_bg_svg_3;
@@ -197,6 +196,7 @@ private:
     ScopedPointer<Label> label_section;
     ScopedPointer<Label> label_colour;
     ScopedPointer<ColourSelector> colour_selector;
+    ScopedPointer<HyperlinkButton> link_to_monoplugs;
 
 
     //==============================================================================

@@ -43,7 +43,7 @@ static Colour createBaseColour (Colour buttonColour,
     return baseColour;
 }
 
-static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
+static TextLayout layoutTooltipText (const String& text, Colour colour, Font& font_ ) noexcept
 {
     const int maxToolTipWidth = 530;
 
@@ -53,6 +53,7 @@ static TextLayout layoutTooltipText (const String& text, Colour colour) noexcept
     (
         text + String("\n\n_________________________________________________________________________\n\nNERVES ARE ON THE EDGE?\n-----------------------\nTool tips you can disable in the setup."),
         Font(Typeface::createSystemTypefaceFor(BinaryData::SourceCodeProMedium_otf, BinaryData::SourceCodeProMedium_otfSize)).withHeight(15.0f),
+        //font_,
         colour
     );
 
@@ -276,7 +277,7 @@ UiLookAndFeel::UiLookAndFeel() noexcept
     for (int i = 0; i < numElementsInArray (standardColours); i += 2)
         setColour ((int) standardColours [i], Colour ((uint32) standardColours [i + 1]));
 
-    defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,BinaryData::LatoSemibold_ttfSize));
+    defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,BinaryData::LatoSemibold_ttfSize)).withHeight(15.0f);
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Segoe,BinaryData::SegoeSize));
 }
@@ -291,6 +292,8 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
 {
     SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
+    const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
+    const bool is_toggled = button.getToggleState();
     if( button.isOpaque() )
     {
         g.fillAll( theme.area_colour );
@@ -304,10 +307,105 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     {
         color_1 = isButtonDown ? colours.midi_learn.darker (0.4f) : colours.midi_learn.brighter (0.25f);
     }
-    else // if( not override_theme_colour )
+    else if( override_theme_colour != 0 )
     {
-        color_1 = Colour(backgroundColour);
+        color_1 = button.findColour( TextButton::buttonColourId );
     }
+    else if( amp == COLOR_REPLACEMENTS::FORCE_BIT_RED )
+    {
+        color_1 = theme.button_off_colour.interpolatedWith(Colours::red,0.2f);
+    }
+    else if( amp == COLOR_REPLACEMENTS::FORCE_RED )
+    {
+        color_1 = theme.button_on_colour.interpolatedWith(Colours::red,0.5f);
+    }
+    else if( amp == VALUE_SLIDER_COLOUR )
+    {
+        color_1 = theme.value_slider_track_colour;
+    }
+    else if( amp == VALUE_SLIDER_2_COLOUR )
+    {
+        color_1 = theme.value_2_slider_track_colour;
+    }
+    else if( amp == MOD_SLIDER_COLOUR )
+    {
+        color_1 = theme.mod_slider_track_colour;
+    }
+    else if( amp == AREA_COLOUR )
+    {
+        color_1 = theme.area_colour;
+    }
+    else if( amp == AREA_FONT_COLOUR )
+    {
+        color_1 = theme.area_font_colour;
+    }
+    else if( amp == DISABLED_SLIDER_COLOUR )
+    {
+        color_1 = theme.disabled_track_colour;
+    }
+    else if( amp == SLIDER_BACKGROUND_COLOUR )
+    {
+        color_1 = theme.slider_bg_colour;
+    }
+    else if( amp == BUTTON_ON_COLOUR )
+    {
+        color_1 = theme.button_on_colour;
+    }
+    else if( amp == BUTTON_ON_FONT_COLOUR )
+    {
+        color_1 = theme.button_on_font_colour;
+    }
+    else if( amp == BUTTON_OFF_COLOUR )
+    {
+        color_1 = theme.button_off_colour;
+    }
+    else if( amp == BUTTON_OFF_FONT_COLOUR )
+    {
+        color_1 = theme.button_off_font_colour;
+    }
+    else if( amp == COLOR_REPLACEMENTS::USE_AREA_COLOUR )
+    {
+        color_1 = theme.area_colour;
+    }
+    else if( amp == COLOR_REPLACEMENTS::USE_AREA_TRANSCULENT )
+    {
+        color_1 = theme.area_colour.withAlpha(0.5f);
+    }
+    else if( amp == 1 )
+    {
+        color_1 = theme.button_on_colour;
+    }
+    else if( amp != 0 )
+    {
+        color_1 = theme.button_on_colour.darker( 1.0f-amp ).interpolatedWith(theme.button_off_colour,1.0f-amp); //Colour(backgroundColour);
+    }
+    else if( is_toggled )
+    {
+        color_1 = theme.button_on_colour.darker( 1.0f-amp ).interpolatedWith(theme.button_off_colour,1.0f-amp); //Colour(backgroundColour);
+    }
+    else
+    {
+        color_1 = theme.button_off_colour;
+    }
+
+
+
+    /*
+    if( is_forced_off )
+            {
+                col = theme->button_off_colour.interpolatedWith(Colours::red,0.2f);
+            }
+            else if( is_forced_on )
+            {
+                col = theme->button_on_colour.interpolatedWith(Colours::red,0.5f);
+            }
+            else
+            {
+                col = top_parameter->get_value() == true ? theme->button_on_colour : theme->button_off_colour;
+            }
+
+    */
+
 
     /*
     else if( not button.isEnabled() )
@@ -355,11 +453,11 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
     const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / (button.isConnectedOnRight() ? 4 : 2));
 
     const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
-    Colour color_1 = theme.button_off_font_colour;
-    if( button.findColour(TextButton::buttonColourId) != theme.button_off_colour )
-    {
-        color_1 = theme.button_on_font_colour;
-    }
+    const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
+    const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
+
+    const bool is_toggled = amp != 0;
+    const Colour color_1 = override_theme_colour ? button.findColour(TextButton::buttonColourId).contrasting(1) : is_toggled ? theme.button_on_font_colour : theme.button_off_font_colour;
 
     g.setFont (defaultFont.withHeight(fontHeight));
     g.setColour(color_1);
@@ -452,7 +550,9 @@ AlertWindow* UiLookAndFeel::createAlertWindow (const String& title, const String
 void UiLookAndFeel::drawAlertBox (Graphics& g, AlertWindow& alert,
                                   const Rectangle<int>& textArea, TextLayout& textLayout)
 {
-    g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
+    // g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
+
+    g.fillRoundedRectangle( 0, 0, alert.getWidth(), alert.getHeight(), 10 );
 
     int iconSpaceUsed = 0;
 
@@ -540,7 +640,7 @@ Font UiLookAndFeel::getAlertWindowFont()
 //==============================================================================
 Font UiLookAndFeel::getPopupMenuFont()
 {
-    return defaultFont.withHeight(18.0f);
+    return defaultFont;
 }
 
 void UiLookAndFeel::getIdealPopupMenuItemSize (const String& text, const bool isSeparator,
@@ -700,8 +800,8 @@ void UiLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
 //==============================================================================
 void UiLookAndFeel::fillTextEditorBackground (Graphics& g, int /*width*/, int /*height*/, TextEditor& textEditor)
 {
-    textEditor.setColour (TextEditor::textColourId, colours.get_theme(BG_THEME).area_colour );
-    g.fillAll (textEditor.findColour (TextEditor::backgroundColourId));
+    g.fillAll (colours.get_theme(BG_THEME).area_colour);
+    //textEditor.setColour (TextEditor::textColourId,  );
 }
 
 void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, TextEditor& textEditor)
@@ -711,11 +811,11 @@ void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, T
         if (textEditor.hasKeyboardFocus (true) && ! textEditor.isReadOnly())
         {
             g.setColour (textEditor.findColour (TextEditor::focusedOutlineColourId));
-            g.drawRect (0, 4, width, height-8, 1);
+            g.drawRoundedRectangle (0, 0, width, height, 1, 1.5);
 
             g.setOpacity (1.0f);
             const Colour shadowColour (textEditor.findColour (TextEditor::shadowColourId).withMultipliedAlpha (0.75f));
-            drawBevel (g, 0, 0, width, height + 2, 3, shadowColour, shadowColour);
+            drawBevel (g, 0, 0, width, height, 3, shadowColour, shadowColour);
         }
         else
         {
@@ -724,7 +824,7 @@ void UiLookAndFeel::drawTextEditorOutline (Graphics& g, int width, int height, T
 
             g.setOpacity (1.0f);
             const Colour shadowColour (textEditor.findColour (TextEditor::shadowColourId));
-            drawBevel (g, 0, 0, width, height + 2, 3, shadowColour, shadowColour);
+            drawBevel (g, 0, 0, width, height, 3, shadowColour, shadowColour);
         }
     }
 }
@@ -739,6 +839,7 @@ void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool
                                   int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& box)
 {
     SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(box.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    const Colour& user_colour = box.findColour( ComboBox::backgroundColourId );
     if( box.isOpaque() )
     {
         g.fillAll( theme.area_colour );
@@ -746,7 +847,9 @@ void UiLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool
 
     const float outlineThickness =1; // box.isEnabled() ? (isButtonDown ? 1.2f : 0.8f) : 0.3f;
 
-    g.setColour (theme.button_off_colour);
+    Colour color_1 = user_colour.getARGB() != 0xff000000 ? user_colour : theme.button_off_colour; // 0xff000000 default col
+
+    g.setColour (color_1);
     g.fillRoundedRectangle (1, 1, width-2, height-2, 4);
 
     drawGlassLozenge (g,
@@ -792,7 +895,9 @@ Font UiLookAndFeel::getComboBoxFont (ComboBox& box)
 
 Label* UiLookAndFeel::createComboBoxTextBox (ComboBox&)
 {
-    return new Label (String::empty, String::empty);
+    Label* label = new Label (String::empty, String::empty);
+    label->getProperties().set( VAR_INDEX_BUTTON_AMP, BUTTON_ON_COLOUR );
+    return label;
 }
 
 void UiLookAndFeel::positionComboBoxText (ComboBox& box, Label& label)
@@ -812,8 +917,9 @@ Font UiLookAndFeel::getLabelFont (Label& label)
 
 void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
 {
-    const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
+    SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::ARP_THEME) ) ) );
     const bool is_inverted = label.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME_INVERTED,false);
+    const float amp = label.getProperties().getWithDefault(VAR_INDEX_BUTTON_AMP,0);
     if( label.isOpaque() )
     {
         g.fillAll( not is_inverted ? theme.area_colour : theme.area_font_colour );
@@ -830,7 +936,16 @@ void UiLookAndFeel::drawLabel (Graphics& g, Label& label)
         const float rightIndent = jmin (fontHeight, 1.0f + cornerSize / 4);
 
         g.setFont (defaultFont.withHeight(fontHeight));
-        g.setColour( is_inverted ? theme.area_colour : theme.area_font_colour);
+        Colour col;
+        if( amp != 0 )
+        {
+            col = theme.get_color( static_cast< COLOUR_CODES > ( int(amp) ) );
+        }
+        else
+        {
+            col = theme.area_font_colour;
+        }
+        g.setColour( is_inverted ? theme.area_colour : col);
         g.drawText (label.getText(),   Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),   Justification::centred, false);
     }
 }
@@ -1035,7 +1150,6 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
     float rotaryEndAngle_ = rotaryEndAngle;
 
     const bool is_midi_learn_mode = static_cast< Component* >( &slider ) == midi_learn_comp;
-
     if( slider.getMinimum() < 0 )
     {
         if( slider_type == MODULATION_SLIDER )
@@ -1104,7 +1218,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         }
 
         filledArc.clear();
-        if( sliderPos )
+        if( sliderPos != 0 )
         {
             if( slider_type != VALUE_SLIDER )
             {
@@ -1135,24 +1249,24 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         const int slider_label_style = slider.getProperties().getWithDefault( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::DONT_SHOW_TEXT );
         if( slider_label_style == SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX )
         {
-            String value_to_paint = slider.GET_VALUE_TO_PAINT();
+            String value_to_paint = slider.getProperties().getWithDefault( VAR_INDEX_VALUE_TO_SHOW, String(slider.getValue()) );
             const String suffix = value_to_paint.fromFirstOccurrenceOf("@",false,true);
             value_to_paint = value_to_paint.upToFirstOccurrenceOf("@",false,true);
 
-            const int label_x_ident = width/3.5;
-            const int label_y_ident = height/4;
-            const int label_h = height/2;
-            const int label_w = width-label_x_ident*2;
 
             if( suffix == "wav" )
             {
+                const float label_x_ident = float(width)/3.2;
+                const float label_y_ident = float(height)/3.2;
+                const float label_h = float(height)-label_y_ident*2;
+                const float label_w = float(width)-label_x_ident*2;
                 float value_as_float = value_to_paint.getFloatValue();
 
                 Path wave_path;
-                if( value_as_float <= 1 )
+                if( value_as_float <= 1 and value_as_float >= 0 )
                 {
                     float square_weight = value_as_float;
-                    for( int i = 0 ; i != label_w*4 ; ++i )
+                    for( int i = 1 ; i < int(label_w*4 +1) ; ++i )
                     {
                         float value_sin = std::sin( (1.0f/float(label_w*4)*i )*(float_Pi*2) );
                         float value_square;
@@ -1170,18 +1284,18 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float mix = value_sin*(1.0f-square_weight) + value_square*square_weight;
 
                         float x = label_x_ident + float(i)/4;
-                        float y = label_h - float(label_h)*mix/4;
+                        float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 0 )
+                        if( i == 1 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
                     }
                 }
-                else if( value_as_float <= 2 )
+                else if( value_as_float <= 2 and value_as_float >= 1 )
                 {
                     float saw_weight = value_as_float - 1;
-                    for( int i = 0 ; i != label_w*4 ; ++i )
+                    for( int i = 1 ; i < int(label_w*4) ; ++i )
                     {
                         float value_sin = std::sin( (1.0f/float(label_w*4)*i )*(float_Pi*2) );
                         float value_square;
@@ -1211,18 +1325,18 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float mix = value_square*(1.0f-saw_weight) + value_saw*saw_weight;
 
                         float x = label_x_ident + float(i)/4;
-                        float y = label_h - float(label_h)*mix/4;
+                        float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 0 )
+                        if( i == 1 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
                     }
                 }
-                else /* RAND */
+                else if( value_as_float <= 3 and value_as_float >= 2 )
                 {
                     float rand_weight = value_as_float - 2;
-                    for( int i = 0 ; i != label_w*4 ; ++i )
+                    for( int i = 1 ; i < int(label_w*4) ; ++i )
                     {
                         float value_saw;
                         if( i < 1 )
@@ -1239,9 +1353,9 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float mix = value_saw*(1.0f-rand_weight) + ((Random::getSystemRandom().nextFloat()-0.5)*2) *rand_weight;
 
                         float x = label_x_ident + float(i)/4;
-                        float y = label_h - float(label_h)*mix/4;
+                        float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 0 )
+                        if( i == 1 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
@@ -1256,16 +1370,27 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
             // DRAW VALUE
             else
             {
+                const float label_x_ident = float(width)/4;
+                const float label_y_ident = float(height)/4;
+                const float label_h = float(height)-label_y_ident*2;
+                const float label_w = float(width)-label_x_ident*2;
+
                 Path text_path;
-                float font_height_factor = 0.5f;
+                float font_height_factor = 0.1f;
                 if( value_to_paint == "0" )
-                    font_height_factor = 0.35f;
+                    font_height_factor = 0.5f;
 
                 GlyphArrangement glyphs;
-                glyphs.addFittedText( defaultFont.withHeight(font_height_factor*height),
+                glyphs.addFittedText( defaultFont.withHeight(label_h),
                                       value_to_paint,
                                       label_x_ident, label_y_ident, label_w, label_h,
-                                      Justification::centred, 1, 0.2f);
+                                      Justification::centred, 1, 0.5f);
+                /*
+                        glyphs.addJustifiedText( defaultFont.withHeight(label_h),
+                                                 value_to_paint,
+                                                 label_x_ident, label_y_ident, label_w,
+                                                 Justification::centred);
+                                                 */
                 /*
                         glyphs.addCurtailedLineOfText( defaultFont.withHeight(font_height_factor*height),
                                               value_to_paint,
@@ -1342,11 +1467,161 @@ int UiLookAndFeel::getSliderPopupPlacement (Slider&)
 {
     return BubbleComponent::above | BubbleComponent::below | BubbleComponent::left | BubbleComponent::right;
 }
+PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
+{
+    PopupMenu* menu = new PopupMenu();
+    menu->setLookAndFeel (this);
 
+    {
+/*
+#define GLOBAL_RETURN_MODE_USER "UGRM"
+#define GLOBAL_RETURN_MODE_FACTORY "FGRM"
+#define GLOBAL_RETURN_MODE_PROGRAM "PGRM"
+#define GLOBAL_RETURN_MODE_UNDO "UGRM"
+
+#define RETURN_VALUE_USER "URV"
+#define RETURN_VALUE_FACTORY "FRV"
+#define RETURN_VALUE_PROGRAM "PRV"
+#define RETURN_VALUE_UNDO "URV"
+*/
+        const float slider_value = slider_->getValue();
+        const float user_value = slider_->getProperties().getWithDefault( RETURN_VALUE_USER, 0 );
+        const float factory_value = slider_->getProperties().getWithDefault( RETURN_VALUE_FACTORY, 0 );
+        const float program_value = slider_->getProperties().getWithDefault( RETURN_VALUE_PROGRAM, 0 );
+        const float undo_value = slider_->getProperties().getWithDefault( RETURN_VALUE_UNDO, slider_value );
+
+        menu->addSeparator();
+        menu->addSectionHeader("RESTORE VALUES:");
+        menu->addItem (1, TRANS ("-> User"), true, user_value == slider_value );
+        menu->addItem (2, TRANS ("-> Factory Default"), true, factory_value == slider_value );
+        menu->addItem (3, TRANS ("-> State On Program"), true, program_value == slider_value );
+        menu->addItem (4, TRANS ("-> Undo"), true, undo_value == slider_value );
+
+        menu->addSeparator();
+        menu->addSectionHeader("UPDATE VALUES");
+        menu->addItem (5, TRANS ("-> Set new User Return Value"), true, false );
+
+        menu->addSeparator();
+        menu->addSectionHeader("SET GLOBAL DOUBLE CLICK RETURN MODE");
+        menu->addItem (6, TRANS ("-> User"), true, is_global_user_return );
+        menu->addItem (7, TRANS ("-> Factory Default"), true, is_global_factory_return );
+        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
+        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
+	
+        menu->addSeparator();
+        menu->addSectionHeader("HANDLING LINEAR SLIDERS");
+        menu->addItem (10, TRANS ("-> User"), true, is_global_user_return );
+        menu->addItem (11, TRANS ("-> Factory Default"), true, is_global_factory_return );
+        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
+        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
+	
+        menu->addSeparator();
+        menu->addSectionHeader("HANDLING ROTARY SLIDERS");
+        menu->addItem (6, TRANS ("-> User"), true, is_global_user_return );
+        menu->addItem (7, TRANS ("-> Factory Default"), true, is_global_factory_return );
+        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
+        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
+    }
+    
+    return menu;
+}
+
+bool UiLookAndFeel::is_global_user_return = false;
+        bool UiLookAndFeel::is_global_factory_return = false;
+                bool UiLookAndFeel::is_global_program_return = false;
+                        bool UiLookAndFeel::is_global_undo_return = true;
+                                bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
+{
+    if (slider != nullptr)
+    {
+        switch (result)
+        {
+        case 1:
+            slider->setVelocityBasedMode (! slider->getVelocityBasedMode());
+            break;
+        case 2:
+            slider->setSliderStyle (Slider::Rotary);
+            break;
+        case 3:
+            slider->setSliderStyle (Slider::RotaryHorizontalDrag);
+            break;
+        case 4:
+            slider->setSliderStyle (Slider::RotaryVerticalDrag);
+            break;
+        case 5:
+            slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+            break;
+        case 6:
+            slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_USER, 0 ), sendNotificationSync );
+            break;
+        case 7:
+            slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_FACTORY, 0 ), sendNotificationSync );
+            break;
+        case 8:
+            slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_PROGRAM, 0 ), sendNotificationSync );
+            break;
+        case 9:
+            slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_UNDO, slider->getValue() ), sendNotificationSync );
+            break;
+        case 10:
+            slider->getProperties().set( RETURN_VALUE_USER, slider->getValue() );
+            break;
+        case 11:
+            is_global_user_return = true;
+            is_global_factory_return = false;
+            is_global_program_return = false;
+            is_global_undo_return = false;
+            break;
+        case 12:
+            is_global_factory_return = true;
+            is_global_user_return = false;
+            is_global_program_return = false;
+            is_global_undo_return = false;
+            break;
+        case 13:
+            is_global_program_return = true;
+            is_global_user_return = false;
+            is_global_factory_return = false;
+            is_global_undo_return = false;
+            break;
+        case 14:
+            is_global_undo_return = true;
+            is_global_user_return = false;
+            is_global_factory_return = false;
+            is_global_program_return = false;
+            break;
+        default:
+            break;
+        }
+    }
+
+    return true;
+}
+bool UiLookAndFeel::sliderDoubleClicked ( Slider* slider)
+{
+    if( is_global_user_return )
+    {
+        slider->setValue (float(slider->getProperties().getWithDefault( RETURN_VALUE_USER, 0 )), sendNotificationSync);
+    }
+    else if( is_global_factory_return )
+    {
+        slider->setValue (float(slider->getProperties().getWithDefault( RETURN_VALUE_FACTORY, 0 )), sendNotificationSync);
+    }
+    else if( is_global_program_return )
+    {
+        slider->setValue (float(slider->getProperties().getWithDefault( RETURN_VALUE_PROGRAM, 0 )), sendNotificationSync);
+    }
+    else
+    {
+        const float current_value = slider->getValue();
+        slider->setValue (float(slider->getProperties().getWithDefault( RETURN_VALUE_UNDO, current_value )), sendNotificationSync);
+        slider->getProperties().set( RETURN_VALUE_UNDO, current_value );
+    }
+}
 //==============================================================================
 void UiLookAndFeel::getTooltipSize (const String& tipText, int& width, int& height)
 {
-    const TextLayout tl (LookAndFeelHelpers::layoutTooltipText (tipText, Colours::black));
+    const TextLayout tl (LookAndFeelHelpers::layoutTooltipText (tipText, Colours::black, defaultFont ));
 
     width  = (int) (tl.getWidth() + 30.0f);
     height = (int) (tl.getHeight() + 20.0f);
@@ -1361,7 +1636,7 @@ void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int
     g.drawRect (0, 0, width, height, 1);
 //#endif
 
-    LookAndFeelHelpers::layoutTooltipText (text, findColour (TooltipWindow::textColourId))
+    LookAndFeelHelpers::layoutTooltipText (text, findColour (TooltipWindow::textColourId), defaultFont)
     .draw (g, Rectangle<float> ((float) width, (float) height));
 }
 

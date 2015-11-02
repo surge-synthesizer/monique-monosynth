@@ -186,12 +186,6 @@ phase_shift_smoother(smooth_manager_,&phase_shift)
 COLD MFOData::~MFOData() noexcept {}
 
 //==============================================================================
-static inline void copy( MFOData* dest_, const MFOData* src_ ) noexcept
-{
-    dest_->speed = src_->speed;
-    dest_->wave = src_->wave;
-    dest_->phase_shift = src_->phase_shift;
-}
 static inline void collect_saveable_parameters( MFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &lfo_data_->speed );
@@ -372,14 +366,6 @@ attack
     generate_param_name(ENV_NAME,id,"attack"),
     generate_short_human_name(ENV_NAME,id_,"attack")
 ),
-max_attack_time
-(
-    MIN_MAX( 100, 20000 ),
-    2000,
-    generate_param_name(ENV_NAME,id,"max_attack_t"),
-    generate_short_human_name(ENV_NAME,id_,"max_attack_t")
-),
-
 decay
 (
     MIN_MAX( 0, 1 ),
@@ -388,14 +374,6 @@ decay
     generate_param_name(ENV_NAME,id,"decay"),
     generate_short_human_name(ENV_NAME,id_,"decay")
 ),
-max_decay_time
-(
-    MIN_MAX( 100, 20000 ),
-    250,
-    generate_param_name(ENV_NAME,id,"max_decay_t"),
-    generate_short_human_name(ENV_NAME,id_,"max_decay_t")
-),
-
 sustain
 (
     MIN_MAX( 0, 1 ),
@@ -407,9 +385,9 @@ sustain
 sustain_smoother(smooth_manager_,&sustain),
 sustain_time
 (
-    MIN_MAX( 0.001, 1 ),
+    MIN_MAX( 0, 1 ),
     1,
-    5000-1,
+    MAX_ENV_TIMES,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -421,14 +399,6 @@ release
     generate_param_name(ENV_NAME,id,"release"),
     generate_short_human_name(ENV_NAME,id_,"release")
 ),
-max_release_time
-(
-    MIN_MAX( 100, 20000 ),
-    4000,
-    generate_param_name(ENV_NAME,id,"max_release_t"),
-    generate_short_human_name(ENV_NAME,id_,"max_release_t")
-),
-
 shape
 (
     MIN_MAX( 0, 1 ),
@@ -443,16 +413,13 @@ shape_smoother( smooth_manager_ , &shape )
 COLD ENVData::~ENVData() noexcept {}
 
 //==============================================================================
-static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_, bool include_max_times_ ) noexcept
+static inline void collect_saveable_parameters( ENVData* data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &data_->attack );
-    params_.add( &data_->max_attack_time );
     params_.add( &data_->decay );
-    params_.add( &data_->max_decay_time );
     params_.add( &data_->sustain );
     params_.add( &data_->sustain_time );
     params_.add( &data_->release );
-    params_.add( &data_->max_release_time );
 
     params_.add( &data_->shape );
 }
@@ -607,9 +574,6 @@ env_data( new ENVData( smooth_manager_, id_ ) )
         input_smoothers.add( new SmoothedParameter(smooth_manager_,&input_sustains[i]) );
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
-        env_data->max_attack_time.set_value(env_data->max_attack_time.get_info().max_value) ;
-        env_data->max_decay_time.set_value(env_data->max_decay_time.get_info().max_value) ;
-        env_data->max_release_time.set_value(env_data->max_release_time.get_info().max_value) ;
         input_envs.add( env_data );
     }
 }
@@ -640,10 +604,10 @@ static inline void copy( FilterData* dest_, const FilterData* src_ ) noexcept
         dest_->input_holds[i] = src_->input_holds[i];
         dest_->input_sustains[i] = src_->input_sustains[i];
 
-        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i), false );
+        copy( dest_->input_envs.getUnchecked(i), src_->input_envs.getUnchecked(i) );
     }
 
-    copy( dest_->env_data, src_->env_data, true );
+    copy( dest_->env_data, src_->env_data );
 }
 static inline void collect_saveable_parameters( FilterData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -651,9 +615,9 @@ static inline void collect_saveable_parameters( FilterData* data_, Array< Parame
     {
         params_.add( &data_->input_sustains[i] );
         params_.add( &data_->input_holds[i] );
-        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_, false );
+        collect_saveable_parameters( data_->input_envs.getUnchecked(i), params_ );
     }
-    collect_saveable_parameters( data_->env_data, params_, true );
+    collect_saveable_parameters( data_->env_data, params_ );
 
     params_.add( &data_->adsr_lfo_mix );
 
@@ -826,9 +790,6 @@ bypass_smoother(smooth_manager_,&bypass)
         velocity_smoothers.add( new SmoothedParameter( smooth_manager_, &velocity[band_id] ) );
 
         ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
-        env_data->max_attack_time = env_data->max_attack_time.get_info().max_value;
-        env_data->max_decay_time = env_data->max_decay_time.get_info().max_value;
-        env_data->max_release_time = env_data->max_release_time.get_info().max_value;
         envs.add( env_data );
     }
 }
@@ -841,7 +802,7 @@ static inline void copy( EQData* dest_, const EQData* src_ ) noexcept
     {
         dest_->velocity[i] = src_->velocity[i];
         dest_->hold[i] = src_->hold[i];
-        copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ), false );
+        copy( dest_->envs.getUnchecked( i ), src_->envs.getUnchecked( i ) );
     }
 
     dest_->bypass = src_->bypass;
@@ -852,7 +813,7 @@ static inline void collect_saveable_parameters( EQData* data_, Array< Parameter*
     {
         params_.add( &data_->velocity[i] );
         params_.add( &data_->hold[i] );
-        collect_saveable_parameters( data_->envs.getUnchecked( i ), params_, false );
+        collect_saveable_parameters( data_->envs.getUnchecked( i ), params_ );
     }
 
     params_.add( &data_->bypass );
@@ -1367,6 +1328,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     ReverbData& reverb_data( *synth_data.reverb_data );
     ChorusData& chorus_data( *synth_data.chorus_data );
 
+    /*
     // 0 Bank Select // FIX!
     // 1
     synth_data.glide.midi_control->train( 1, nullptr, midi_device_manager_ );
@@ -1571,6 +1533,7 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     // TODO
     // 126 UNUSED
     // 127 UNUSED
+    */
 };
 
 //==============================================================================
@@ -2133,7 +2096,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
         copy( dest_->filter_datas[i], src_->filter_datas[i] );
     }
 
-    copy( dest_->env_data, src_->env_data, true );
+    copy( dest_->env_data, src_->env_data );
     copy( dest_->eq_data, src_->eq_data );
     copy( dest_->arp_sequencer_data, src_->arp_sequencer_data );
     copy( dest_->reverb_data, src_->reverb_data );
@@ -2178,7 +2141,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
     saveable_parameters.add( &this->effect_bypass );
-    collect_saveable_parameters( env_data, saveable_parameters, true );
+    collect_saveable_parameters( env_data, saveable_parameters );
     collect_saveable_parameters( eq_data, saveable_parameters );
     saveable_parameters.add( &this->volume );
 
@@ -2317,13 +2280,10 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[0]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->env_data->max_attack_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->env_data->max_decay_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->sustain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[0]->env_data->max_release_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[0]->env_data->shape.ptr(), data_type == MASTER  );
             }
 
@@ -2361,13 +2321,10 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[1]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->env_data->max_attack_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->env_data->max_decay_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->sustain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[1]->env_data->max_release_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[1]->env_data->shape.ptr(), data_type == MASTER  );
             }
 
@@ -2405,13 +2362,10 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[2]->env_data->attack.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->env_data->max_attack_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->decay.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->env_data->max_decay_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->sustain.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->sustain_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->release.ptr(), data_type == MASTER  );
-                morph_group_2->register_parameter( filter_datas[2]->env_data->max_release_time.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( filter_datas[2]->env_data->shape.ptr(), data_type == MASTER  );
             }
         }
@@ -2420,13 +2374,10 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         {
             morph_group_3->register_parameter( volume.ptr(), data_type == MASTER );
             morph_group_3->register_parameter( env_data->attack.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( env_data->max_attack_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->decay.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( env_data->max_decay_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->sustain.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->sustain_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->release.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( env_data->max_release_time.ptr(), data_type == MASTER  );
 
             //speed_multi
         }

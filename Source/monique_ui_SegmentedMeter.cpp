@@ -19,8 +19,9 @@ Monique_Ui_Refreshable(ui_refresher_),
                        last_numSeg   (-1),
                        sampleCount   (0),
 
+                       my_bg( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour.getARGB() ),
                        my_red( Colours::red.getARGB() ),
-                       my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB()),
+                       my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
                        my_green( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
 
                        needsRepaint  (true)

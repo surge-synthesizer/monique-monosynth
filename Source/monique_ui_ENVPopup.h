@@ -41,7 +41,9 @@ class ENVData;
 class Monique_Ui_ENVPopup  : public Component,
                              public Monique_Ui_Refreshable,
                              public DropShadower,
+                             public Timer,
                              public SliderListener,
+                             public LabelListener,
                              public ButtonListener
 {
 public:
@@ -56,6 +58,10 @@ public:
     void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);
     void update_positions();
     void refresh() noexcept override;
+    void timerCallback() override;
+    int callbacks;
+
+    COLOUR_THEMES theme;
 
     const ENVData*const is_open_for() const noexcept
     {
@@ -93,6 +99,7 @@ private:
     void paint (Graphics& g);
     void resized();
     void sliderValueChanged (Slider* sliderThatWasMoved);
+    void labelTextChanged (Label* labelThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
 
 

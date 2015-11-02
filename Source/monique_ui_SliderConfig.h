@@ -955,7 +955,7 @@ class InputSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
-    virtual bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept
+    bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept override
     {
         bool success = false;
         FilterData*filter_data = synth_data->filter_datas[filter_id];
@@ -965,6 +965,10 @@ class InputSlConfig : public ModulationSliderConfigBase
         }
 
         return success;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
     }
 
     //==============================================================================
@@ -1051,6 +1055,7 @@ class InputSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return bottom_text;
@@ -1059,7 +1064,6 @@ class InputSlConfig : public ModulationSliderConfigBase
     {
         return "MO-ENV";
     }
-    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -1733,10 +1737,12 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return "%";
     }
+    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
         return entered_value_/100;
     }
+    */
 
     //==============================================================================
     // TOOLTIP
@@ -1881,8 +1887,8 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain_time->get_value() * 10000;
-        if( value < 10000 )
+        float value = sustain_time->get_value() * 5000;
+        if( value < 5000 )
         {
             return String(auto_round(value));
         }
@@ -1898,10 +1904,12 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         else
             return "ms";
     }
+    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
         return entered_value_/10000;
     }
+    */
 
     //==============================================================================
     // TOOLTIP
@@ -2268,11 +2276,14 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const adsr_lfo_mix;
 
-    bool is_opaque() const noexcept
+    bool is_opaque() const noexcept override
     {
         return false;
     }
-
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
+    }
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -2419,11 +2430,11 @@ class LFOSlConfig : public ModulationSliderConfigBase
     return false;
     }
     */
-    bool is_opaque() const noexcept
+    bool is_opaque() const noexcept override
     {
         return false;
     }
-    bool use_click_through_hack() const noexcept
+    bool use_click_through_hack() const noexcept override
     {
         return true;
     }
@@ -3530,7 +3541,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "OCTAVE";
+        return "OCT";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -5119,11 +5130,11 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     StringRef get_top_button_option_param_a_text() const noexcept override
     {
-        return "FORCE ARP ON";
+        return "FORCED ON";
     }
     StringRef get_top_button_option_param_b_text() const noexcept override
     {
-        return "FORCE ARP OFF";
+        return "FORCED OFF";
     }
     StringRef get_top_button_option_param_a_tool_tip() const noexcept override
     {
@@ -5314,6 +5325,10 @@ class EQSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
     }
 
     //==============================================================================
@@ -5558,7 +5573,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "VELOCITY";
+        return "VELO";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -5703,7 +5718,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     // TOP BUTTON
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-        return TOP_BUTTON_IS_ON_OFF;
+        return TOP_BUTTON_IS_MODULATOR;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
@@ -5716,7 +5731,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     float get_top_button_amp() const noexcept override
     {
         float value = NO_TOP_BUTTON_AMP;
-        const bool is_on = not bool(is_morph_modulated->get_value());
+        const bool is_on = bool(is_morph_modulated->get_value());
         if( synth_data->animate_envs )
         {
             if( is_on )

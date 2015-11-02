@@ -635,60 +635,16 @@ public:
 
     void showPopupMenu()
     {
-        PopupMenu m;
-        m.setLookAndFeel (&owner.getLookAndFeel());
-        //m.addItem (1, TRANS ("Velocity-sensitive mode"), true, isVelocityBased);
-        //m.addSeparator();
-
-        //if (isRotary())
-        if( false )
+        if( PopupMenu* menu = owner.getLookAndFeel().getCustomPopupMenu( &owner ) )
         {
-            PopupMenu rotaryMenu;
-            rotaryMenu.addItem (2, TRANS ("Use circular dragging"),           true, style == Rotary);
-            rotaryMenu.addItem (3, TRANS ("Use left-right dragging"),         true, style == RotaryHorizontalDrag);
-            rotaryMenu.addItem (4, TRANS ("Use up-down dragging"),            true, style == RotaryVerticalDrag);
-            rotaryMenu.addItem (5, TRANS ("Use left-right/up-down dragging"), true, style == RotaryHorizontalVerticalDrag);
-
-            m.addSubMenu (TRANS ("Rotary mode"), rotaryMenu);
+            menu->showMenuAsync (PopupMenu::Options(), ModalCallbackFunction::forComponent (sliderMenuCallback, &owner));
         }
-
-        if( doubleClickToValue ) {
-            m.addSeparator();
-            m.addItem (6, TRANS ("Set current value as new return"), true, lastCurrentValue == doubleClickReturnValue );
-        }
-
-        m.showMenuAsync (PopupMenu::Options(),
-                         ModalCallbackFunction::forComponent (sliderMenuCallback, &owner));
     }
 
     static void sliderMenuCallback (const int result, Slider* slider)
     {
-        if (slider != nullptr)
-        {
-            switch (result)
-            {
-            case 1:
-                slider->setVelocityBasedMode (! slider->getVelocityBasedMode());
-                break;
-            case 2:
-                slider->setSliderStyle (Rotary);
-                break;
-            case 3:
-                slider->setSliderStyle (RotaryHorizontalDrag);
-                break;
-            case 4:
-                slider->setSliderStyle (RotaryVerticalDrag);
-                break;
-            case 5:
-                slider->setSliderStyle (RotaryHorizontalVerticalDrag);
-                break;
-            case 6:
-                slider->setDoubleClickReturnValue ( true, slider->getValue() );
-                break;
-            default:
-                break;
-            }
-        }
+      if( slider )
+      slider->getLookAndFeel().sliderMenuCallback( result, slider );
     }
 
     int getThumbIndexAt (const MouseEvent& e)
@@ -979,9 +935,16 @@ public:
         {
             restoreMouseIfHidden();
 
-            if (sendChangeOnlyOnRelease && valueOnMouseDown != (double) currentValue.getValue())
+            if (sendChangeOnlyOnRelease && valueOnMouseDown != (double) currentValue.getValue() )
+            {
                 triggerChangeMessage (sendNotificationAsync);
+            }
 
+            if( valueOnMouseDown != (double) currentValue.getValue() )
+            {
+#define RETURN_VALUE_UNDO "URV"
+                owner.getProperties().set( RETURN_VALUE_UNDO, valueOnMouseDown );
+            }
             currentDrag = nullptr;
             popupDisplay = nullptr;
 
@@ -990,6 +953,7 @@ public:
                 incButton->setState (Button::buttonNormal);
                 decButton->setState (Button::buttonNormal);
             }
+
         }
         else if (popupDisplay != nullptr)
         {
@@ -1001,19 +965,19 @@ public:
 
     bool canDoubleClickToValue() const
     {
-        return doubleClickToValue
-               && style != IncDecButtons
-               && minimum <= doubleClickReturnValue
-               && maximum >= doubleClickReturnValue;
+        return true;
+        /*
+          return doubleClickToValue
+                 && style != IncDecButtons
+                 && minimum <= doubleClickReturnValue
+                 && maximum >= doubleClickReturnValue;
+             */
     }
 
     void mouseDoubleClick()
     {
-        if (canDoubleClickToValue())
-        {
-            DragInProgress drag (*this);
-            setValue (doubleClickReturnValue, sendNotificationSync);
-        }
+        DragInProgress drag (*this);
+        owner.getLookAndFeel().sliderDoubleClicked(&owner);
     }
 
     double getMouseWheelDelta (double value, double wheelAmount)
@@ -1391,7 +1355,6 @@ public:
     }
 };
 
-
 //==============================================================================
 Slider::Slider()
 {
@@ -1753,4 +1716,5 @@ void Slider::mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel
     if (! (isEnabled() && pimpl->mouseWheelMove (e, wheel)))
         Component::mouseWheelMove (e, wheel);
 }
+
 

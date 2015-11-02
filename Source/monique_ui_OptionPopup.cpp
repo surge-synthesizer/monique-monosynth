@@ -33,8 +33,9 @@ void Monique_Ui_OptionPopup::refresh() noexcept
     SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::POPUP_THEME );
     Colour button_off = theme.button_off_colour;
     Colour button_on = theme.button_on_colour;
-    button_option_a->setColour( TextButton::buttonColourId, param_a->get_value() ? button_on : button_off );
-    button_option_b->setColour( TextButton::buttonColourId, param_b->get_value() ? button_on : button_off );
+    
+    TURN_BUTTON_ON_OR_OFF( button_option_a, param_a->get_value() );
+    TURN_BUTTON_ON_OR_OFF( button_option_b, param_b->get_value() );
 }
 
 void Monique_Ui_OptionPopup::set_element_to_show( Component*const comp_ )
@@ -90,7 +91,13 @@ Monique_Ui_OptionPopup::Monique_Ui_OptionPopup (Monique_Ui_Refresher*ui_refreshe
 
     //[UserPreSize]
     related_to_comp = nullptr;
-
+    for( int i = 0 ; i < getNumChildComponents() ; ++i )
+    {
+        getChildComponent(i)->setWantsKeyboardFocus(false);
+        Component*child = getChildComponent(i);
+        child->setOpaque(true);
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::ARP_THEME );
+    }
     /*
     //[/UserPreSize]
 
@@ -122,18 +129,27 @@ void Monique_Ui_OptionPopup::paint (Graphics& g)
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 #include "mono_ui_includeHacks_BEGIN.h"
-    //[/UserPrePaint]
-
-    g.setColour (Colour (0xbaffffff));
+    g.setColour ( look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).area_colour );
     g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
 
-    g.setColour (Colours::red);
+    g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).value_slider_track_colour );
     g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
 
-    g.setColour (Colours::red);
+    g.fillPath (internalPath1);
+
+    /*
+    //[/UserPrePaint]
+
+    g.setColour ( look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).area_colour );
+    g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
+
+    g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).button_on_colour );
+    g.drawRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f, 1.000f);
+
     g.fillPath (internalPath1);
 
     //[UserPaint] Add your own custom painting code here..
+    */
     //[/UserPaint]
 }
 

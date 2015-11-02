@@ -16,6 +16,10 @@
     <GROUP id="{8386EEF7-9B29-927B-7B69-C8A551AB6901}" name="PLUGIN"/>
     <GROUP id="{2E733443-696C-4121-1666-0210A9C76624}" name="Source">
       <GROUP id="{89DD6163-9C1F-98B6-77E9-ACDC97B6F8DF}" name="Monique">
+        <FILE id="KhyHeH" name="monique_ui_MFOPopup.cpp" compile="1" resource="0"
+              file="../Source/monique_ui_MFOPopup.cpp"/>
+        <FILE id="GYD33A" name="monique_ui_MFOPopup.h" compile="0" resource="0"
+              file="../Source/monique_ui_MFOPopup.h"/>
         <FILE id="mwLWpc" name="App.h" compile="0" resource="0" file="../Source/App.h"/>
         <FILE id="Rx262E" name="App_h_includer.h" compile="0" resource="0"
               file="../Source/App_h_includer.h"/>
@@ -104,10 +108,12 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="QQJOA4" name="SourceCodePro-Medium.otf" compile="0" resource="1"
+            file="../Fonts/SourceCodePro-Medium.otf"/>
+      <FILE id="WOjNuL" name="Lato-Semibold.ttf" compile="0" resource="1"
+            file="../Fonts/lato/Lato-Semibold.ttf"/>
       <FILE id="VdluEn" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../Files/FACTORTY DEFAULT.mlprog"/>
-      <FILE id="iSXn87" name="SourceCodePro-Medium.otf" compile="0" resource="1"
-            file="../Fonts/source-code-pro/SourceCodePro-Medium.otf"/>
       <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"
             file="../Fonts/FjallaOne-Regular.otf"/>
     </GROUP>

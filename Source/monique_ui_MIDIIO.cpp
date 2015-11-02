@@ -32,10 +32,6 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MidiIO::refresh() noexcept
 {
-    SectionTheme& theme = look_and_feel->colours.get_theme( COLOUR_THEMES::POPUP_THEME );
-    Colour button_off = theme.button_off_colour;
-    button_midi_learn->setColour( TextButton::buttonColourId, midi_control_handler->is_waiting_for_param() ? Colours::red : midi_control_handler->is_learning() ? Colours::red : button_off );
-
     toggle_input_main_thru->setToggleState( _audio_device_manager->main_input_thru, dontSendNotification );
     toggle_input_main_cc->setToggleState( _audio_device_manager->use_main_input_as_cc, dontSendNotification );
     toggle_input_cc_thru->setToggleState( _audio_device_manager->cc_input_thru, dontSendNotification );
@@ -46,6 +42,8 @@ void Monique_Ui_MidiIO::refresh() noexcept
         last_state_change = state_change_counter;
         update_combo_boxed();
     }
+    
+    TURN_BUTTON_ON_OR_OFF( button_midi_learn, midi_control_handler->is_waiting_for_param() ? true : midi_control_handler->is_learning() ? true : false );
 }
 void Monique_Ui_MidiIO::update_combo_boxed()
 {
@@ -250,7 +248,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     toggle_input_main_thru->addListener (this);
 
     addAndMakeVisible (label_5 = new Label (String::empty,
-                                            TRANS("THRU (OUT):")));
+                                            TRANS("THRU (OUT)")));
     label_5->setFont (Font (30.00f, Font::plain));
     label_5->setJustificationType (Justification::centredLeft);
     label_5->setEditable (false, false, false);
@@ -298,7 +296,7 @@ Monique_Ui_MidiIO::Monique_Ui_MidiIO (Monique_Ui_Refresher*ui_refresher_, mono_A
     toggle_input_cc_thru->addListener (this);
 
     addAndMakeVisible (label_9 = new Label (String::empty,
-                                            TRANS("Controller Feedback (OUT):")));
+                                            TRANS("Controller Feedback (OUT)")));
     label_9->setFont (Font (30.00f, Font::plain));
     label_9->setJustificationType (Justification::centredLeft);
     label_9->setEditable (false, false, false);
@@ -466,23 +464,23 @@ void Monique_Ui_MidiIO::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    label_7->setBounds (545, 15, 35, 35);
-    combo_input_main->setBounds (35, 50, 430, 35);
-    combo_input_main_channel->setBounds (475, 50, 60, 35);
-    label_3->setBounds (35, 15, 410, 35);
-    toggle_input_main_thru->setBounds (595, 50, 60, 35);
-    label_5->setBounds (975, 15, 300, 35);
-    combo_output_thru->setBounds (975, 50, 465, 35);
-    label_6->setBounds (35, 95, 410, 35);
-    combo_input_cc->setBounds (35, 130, 430, 35);
+    label_7->setBounds (545, 15, 35, 30);
+    combo_input_main->setBounds (35, 50, 430, 30);
+    combo_input_main_channel->setBounds (475, 50, 60, 30);
+    label_3->setBounds (35, 15, 430, 30);
+    toggle_input_main_thru->setBounds (595, 50, 60, 30);
+    label_5->setBounds (975, 15, 430, 30);
+    combo_output_thru->setBounds (975, 50, 465, 30);
+    label_6->setBounds (35, 95, 430, 30);
+    combo_input_cc->setBounds (35, 130, 430, 30);
     toggle_input_main_cc->setBounds (545, 50, 35, 35);
-    toggle_input_cc_thru->setBounds (595, 130, 60, 35);
-    label_9->setBounds (975, 95, 300, 35);
-    combo_output_cc->setBounds (975, 130, 465, 35);
-    slider_midi_pickup->setBounds (865, 105, 60, 65);
-    label_2->setBounds (855 - 180, 120, 180, 35);
-    label_4->setBounds (595, 15, 60, 35);
-    button_midi_learn->setBounds (560 - 85, 130, 85, 35);
+    toggle_input_cc_thru->setBounds (595, 130, 60, 30);
+    label_9->setBounds (975, 95, 430, 30);
+    combo_output_cc->setBounds (975, 130, 465, 30);
+    slider_midi_pickup->setBounds (865, 100, 60, 60);
+    label_2->setBounds (855 - 180, 115, 180, 30);
+    label_4->setBounds (595, 15, 60, 30);
+    button_midi_learn->setBounds (560 - 85, 130, 85, 30);
     //[UserResized] Add your own custom resize handling here..
 
     if( not has_grabbed_focus )
@@ -617,76 +615,76 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="450 120 1 16" cornerSize="1" fill="solid: ffff3b00" hasStroke="0"/>
   </BACKGROUND>
   <LABEL name="" id="cc90d2b25e08ea4d" memberName="label_7" virtualName=""
-         explicitFocusOrder="0" pos="545 15 35 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="545 15 35 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <COMBOBOX name="RECIEVE_MIDI_MAIN" id="7c9b1844748d88e" memberName="combo_input_main"
-            virtualName="" explicitFocusOrder="0" pos="35 50 430 35" tooltip="Select a MIDI device as input for notes.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here.&#10;STANDALONE: MIDI-Clock will be received at this input."
+            virtualName="" explicitFocusOrder="0" pos="35 50 430 30" tooltip="Select a MIDI device as input for notes.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here.&#10;STANDALONE: MIDI-Clock will be received at this input."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <COMBOBOX name="" id="f28f9452a84a6616" memberName="combo_input_main_channel"
-            virtualName="" explicitFocusOrder="0" pos="475 50 60 35" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
+            virtualName="" explicitFocusOrder="0" pos="475 50 60 30" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
             editable="0" layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="OMNI"/>
   <LABEL name="" id="af53a5122473eec4" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="35 15 410 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="35 15 430 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT (Notes, CC optional, Clock)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="" id="de81426eb5b7f19d" memberName="toggle_input_main_thru"
-                virtualName="" explicitFocusOrder="0" pos="595 50 60 35" tooltip="Enable this to forward messages from the INPUT device to the THRU device."
+                virtualName="" explicitFocusOrder="0" pos="595 50 60 30" tooltip="Enable this to forward messages from the INPUT device to the THRU device."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="" id="1b0bd4421c8d9acd" memberName="label_5" virtualName=""
-         explicitFocusOrder="0" pos="975 15 300 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="THRU (OUT):" editableSingleClick="0"
+         explicitFocusOrder="0" pos="975 15 430 30" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="THRU (OUT)" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="SEND_MIDI_THRU" id="8d7dd9d502564afb" memberName="combo_output_thru"
-            virtualName="" explicitFocusOrder="0" pos="975 50 465 35" tooltip="Select a MIDI device there you like to forward incoming MIDI messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Send to host&quot; here."
+            virtualName="" explicitFocusOrder="0" pos="975 50 465 30" tooltip="Select a MIDI device there you like to forward incoming MIDI messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Send to host&quot; here."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <LABEL name="" id="9e4ab2352c294adf" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="35 95 410 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="35 95 430 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="Controller INPUT (CC only)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="RECIEVE_CC" id="db50823c1df0e85" memberName="combo_input_cc"
-            virtualName="" explicitFocusOrder="0" pos="35 130 430 35" tooltip="Select a MIDI device as input for CC messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here, but if the routing of your host isn't the best, you can directly select a MIDI controller device here.&#10;&#10;See: MIDI TRAIN (right)"
+            virtualName="" explicitFocusOrder="0" pos="35 130 430 30" tooltip="Select a MIDI device as input for CC messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Receive from host&quot; here, but if the routing of your host isn't the best, you can directly select a MIDI controller device here.&#10;&#10;See: MIDI TRAIN (right)"
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <TOGGLEBUTTON name="" id="9b95f066f9f18093" memberName="toggle_input_main_cc"
                 virtualName="" explicitFocusOrder="0" pos="545 50 35 35" tooltip="Enable this to receive also CC MIDI messages from the selected input device."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <TOGGLEBUTTON name="" id="c29d5dd5da0a9644" memberName="toggle_input_cc_thru"
-                virtualName="" explicitFocusOrder="0" pos="595 130 60 35" tooltip="Enable this to forward messages from the Controller INPUT device to the THRU device."
+                virtualName="" explicitFocusOrder="0" pos="595 130 60 30" tooltip="Enable this to forward messages from the Controller INPUT device to the THRU device."
                 buttonText="" connectedEdges="0" needsCallback="1" radioGroupId="0"
                 state="0"/>
   <LABEL name="" id="d17ed12f73d131d7" memberName="label_9" virtualName=""
-         explicitFocusOrder="0" pos="975 95 300 35" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller Feedback (OUT):"
+         explicitFocusOrder="0" pos="975 95 430 30" textCol="ffff3b00"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="Controller Feedback (OUT)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="SEND_MIDI_CC_FEEDBACK" id="997c13a17c6bb37" memberName="combo_output_cc"
-            virtualName="" explicitFocusOrder="0" pos="975 130 465 35" tooltip="Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."
+            virtualName="" explicitFocusOrder="0" pos="975 130 465 30" tooltip="Select a MIDI device there you like to send the controller feedback messages. Normally this is the input of your MIDI contoller which you have selected as Controller INPUT."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_midi_pickup"
-          virtualName="Slider" explicitFocusOrder="0" pos="865 105 60 65"
+          virtualName="Slider" explicitFocusOrder="0" pos="865 100 60 60"
           tooltip="Define the CC PICKUP in percent. &#10;&#10;Example:&#10;A listen sliders value is 50 (MIN:0, MAX:100).&#10;The current position of your MIDI controller slider is 0% or 0.&#10;The PICKUP offset is about 50% (middle).&#10;&#10;If you move the MIDI controller slider the slider on the user inderface does not change until the slider on your MIDI controller reaches the position of about 25%."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1000" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
           textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="2416a86178a53ffa" memberName="label_2" virtualName=""
-         explicitFocusOrder="0" pos="855r 120 180 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="855r 115 180 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CC PICKUP OFFSET:"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="34"/>
   <LABEL name="" id="8b2ddb83988f0903" memberName="label_4" virtualName=""
-         explicitFocusOrder="0" pos="595 15 60 35" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="595 15 60 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="THRU" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="53f01906b113ce41" memberName="button_midi_learn"
-              virtualName="" explicitFocusOrder="0" pos="560r 130 85 35" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
+              virtualName="" explicitFocusOrder="0" pos="560r 130 85 30" tooltip="Enables the MIDI train/learn mode.&#10;&#10;Handling: enable MIDI train and select a slider or button on the main user interface. A little window pops up. Now you can move a slider on your MIDI controller (sender) to assign it to the element on the user interface (listener).&#10;&#10;Shortcut: CTRL + m"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="TRAIN"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

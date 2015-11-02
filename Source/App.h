@@ -1,9 +1,29 @@
 #ifndef APP_H_INCLUDED
 #define APP_H_INCLUDED
 
+/* USER RETURN NOTES FOR SLIDERS
+   SET_USER_RETURN_VALUE
+*/
+#define GLOBAL_RETURN_MODE_USER "UGRM"
+#define GLOBAL_RETURN_MODE_FACTORY "FGRM"
+#define GLOBAL_RETURN_MODE_PROGRAM "PGRM"
+#define GLOBAL_RETURN_MODE_UNDO "UGRM"
+	  
+#define RETURN_VALUE_USER "URV"
+#define RETURN_VALUE_FACTORY "FRV"
+#define RETURN_VALUE_PROGRAM "PRV"
+#define RETURN_VALUE_UNDO "URV"
 
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 #define JUCE_JACK_CLIENT_NAME "MoniqueJACK"
 
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 #define MONO_SNAP_TO_ZERO(n)    if (! (n < -1.0e-8f || n > 1.0e-8f)) n = 0;
 
 // --------------------------------------------------------------------------------------------
@@ -69,7 +89,7 @@ public:
     }
     void clear() noexcept
     {
-       buffer->clear();
+        buffer->clear();
     }
 
     //==========================================================================
@@ -181,15 +201,18 @@ static inline float round0001( float value ) noexcept
 }
 static inline float auto_round( float value ) noexcept
 {
-    if( value < 1 )
-    {
-        value = round0001( value );
-    }
-    else if( value < 10 )
+    /*
+      if( value < 1 and value > -1 )
+      {
+          value = round0001( value );
+      }
+      else
+        */
+    if( value < 10 and value > -10 )
     {
         value = round001( value );
     }
-    else if( value < 100 )
+    else if( value < 100 and value > -100 )
     {
         value = round01( value );
     }

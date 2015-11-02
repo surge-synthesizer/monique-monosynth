@@ -108,6 +108,8 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="Bubcit" name="Lato-Semibold.ttf" compile="0" resource="1"
+            file="../Fonts/lato/Lato-Semibold.ttf"/>
       <FILE id="KeQDOj" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../Files/FACTORTY DEFAULT.mlprog"/>
       <FILE id="twDY6d" name="FjallaOne-Regular.otf" compile="0" resource="1"

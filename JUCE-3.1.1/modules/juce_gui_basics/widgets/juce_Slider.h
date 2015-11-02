@@ -830,6 +830,11 @@ public:
         virtual Font getSliderPopupFont (Slider&) = 0;
         virtual int getSliderPopupPlacement (Slider&) = 0;
 
+	// HACK
+        virtual PopupMenu* getCustomPopupMenu (Slider*) { return nullptr; }
+	virtual bool sliderMenuCallback ( const int result, Slider* slider) { jassert(getCustomPopupMenu(slider)); return false; }
+	virtual bool sliderDoubleClicked ( Slider* slider) { return false; }
+	
 #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
         // These methods' parameters have changed: see the new method signatures.
         virtual void createSliderButton (bool) {}

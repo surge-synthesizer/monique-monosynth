@@ -142,7 +142,14 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
         Component*child = getChildComponent(i);
-        child->setOpaque(true);
+        if( Button*button = dynamic_cast< Button* >( child ) )
+        {
+            button->setOpaque(false);
+        }
+        else
+        {
+            child->setOpaque(true);
+        }
         child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::OSZI_THEME );
     }
     drawing_area->setOpaque(false);
@@ -266,6 +273,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
             {
                 const Colour col_fill(col_.withAlpha(0.2f));
                 const Colour norm_col(col_.withAlpha(0.4f + jmax(0.0f,jmin(0.6f,0.8f*scale_) )));
+		const float alpha_norm = 0.4f + jmax(0.0f,jmin(0.6f,0.8f*scale_));
+		const float alpha_fill = 0.2f;
 
                 int last_x = -9999;
                 int x_counter = 1;
@@ -318,12 +327,12 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                         int h = h_float;
                         if( paint_line  )
                         {
-                            g.setColour(col_fill);
+                            g.setColour(col_fill.withAlpha(compression_multi*alpha_fill));
                             g.fillRect(x, y_center_ - h, 1, h);
                         }
                         // DOT
                         {
-                            g.setColour(norm_col);
+                            g.setColour(norm_col.withAlpha(compression_multi*alpha_norm));
                             g.fillRect(x_float, float(y_center_)-h_float , 1.0f, 1.0f);
                         }
                     }
@@ -338,12 +347,12 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
                         int h = h_float;
                         if( paint_line )
                         {
-                            g.setColour(col_fill);
+                            g.setColour(col_fill.withAlpha(compression_multi*alpha_fill));
                             g.fillRect(x, y_center_, 1, h);
                         }
                         // DOT
                         {
-                            g.setColour(norm_col);
+                            g.setColour(norm_col.withAlpha(compression_multi*alpha_norm));
                             g.fillRect(x_float, float(y_center_)+h_float, 1.0f, 1.0f);
                         }
                     }
@@ -552,28 +561,8 @@ void Monique_Ui_AmpPainter::paint (Graphics& g)
 
 
         {
-
-#include "mono_ui_includeHacks_BEGIN.h"
-
-            g.setGradientFill (ColourGradient (Colour (0xff050505),
-                                               119.0f, 80.0f,
-                                               Colour (0x00ff0000),
-                                               140.0f, 80.0f,
-                                               false));
-            g.fillRoundedRectangle (119.0f, 20.0f, 20.0f, 130.0f, 1.000f);
-
-            g.setGradientFill (ColourGradient (Colour (0xff050505),
-                                               1345.0f, 80.0f,
-                                               Colour (0x00ff0000),
-                                               1325.0f, 80.0f,
-                                               false));
-            g.fillRoundedRectangle (1325.0f, 20.0f, 20.0f, 128.0f, 1.000f);
-
-#include "mono_ui_includeHacks_END.h"
             g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::OSZI_THEME ).area_colour);
             g.fillPath (internalPath2);
-
-            g.setColour (look_and_feel->colours.get_theme( COLOUR_THEMES::OSZI_THEME ).area_colour);
             g.fillPath (internalPath1);
         }
 
@@ -766,29 +755,43 @@ void Monique_Ui_AmpPainter::timerCallback()
 
 void Monique_Ui_AmpPainter::refresh_buttons()
 {
-    ComponentColours& colours = look_and_feel->colours;
-    Colour button_on = colours.get_theme( COLOUR_THEMES::OSZI_THEME  ).button_on_colour;
-    Colour button_off = colours.get_theme( COLOUR_THEMES::OSZI_THEME  ).button_off_colour;
-
     sl_show_range->setValue(synth_data->osci_show_range, dontSendNotification );
 
+#define SWITCH_OSZI_THEMES( state, button, theme, type ) \
+    if( state ) \
+    { \
+        if( button->getProperties().set( VAR_INDEX_COLOUR_THEME, theme ) ) \
+        { \
+	    button->getProperties().set( VAR_INDEX_BUTTON_AMP, type ); \
+            button->repaint(); \
+        } \
+    } \
+    else \
+    { \
+        if( button->getProperties().set( VAR_INDEX_COLOUR_THEME, OSZI_THEME ) ) \
+        { \
+	    button->getProperties().set( VAR_INDEX_BUTTON_AMP, 0 ); \
+            button->repaint(); \
+        } \
+    }
 
-    osc_1->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).value_slider_track_colour : button_off );
-    osc_2->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).value_2_slider_track_colour : button_off );
-    osc_3->setColour( TextButton::buttonColourId, synth_data->osci_show_osc_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::OSC_THEME).mod_slider_track_colour : button_off );
+    SWITCH_OSZI_THEMES( synth_data->osci_show_osc_1, osc_1, OSC_THEME, VALUE_SLIDER_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_osc_2, osc_2, OSC_THEME, VALUE_SLIDER_2_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_osc_3, osc_3, OSC_THEME, MOD_SLIDER_COLOUR )
 
-    eq->setColour( TextButton::buttonColourId, synth_data->osci_show_eq ? look_and_feel->colours.get_theme(COLOUR_THEMES::FX_THEME).value_slider_track_colour : button_off );
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_1, f_1, FILTER_THEME, VALUE_SLIDER_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_2, f_2, FILTER_THEME, VALUE_SLIDER_2_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_3, f_3, FILTER_THEME, MOD_SLIDER_COLOUR )
 
-    f_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_slider_track_colour : button_off );
-    f_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_2_slider_track_colour : button_off );
-    f_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).mod_slider_track_colour : button_off );
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_env_1, f_env_1, FILTER_THEME, VALUE_SLIDER_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_env_2, f_env_2, FILTER_THEME, VALUE_SLIDER_2_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_flt_env_3, f_env_3, FILTER_THEME, MOD_SLIDER_COLOUR )
 
-    f_env_1->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_1 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_slider_track_colour : button_off );
-    f_env_2->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_2 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).value_2_slider_track_colour : button_off );
-    f_env_3->setColour( TextButton::buttonColourId, synth_data->osci_show_flt_env_3 ? look_and_feel->colours.get_theme(COLOUR_THEMES::FILTER_THEME).mod_slider_track_colour : button_off );
 
-    out->setColour( TextButton::buttonColourId, synth_data->osci_show_out ? look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).value_slider_track_colour : button_off );
-    out_env->setColour( TextButton::buttonColourId, synth_data->osci_show_out_env ? look_and_feel->colours.get_theme(COLOUR_THEMES::MASTER_THEME).value_2_slider_track_colour : button_off );
+    SWITCH_OSZI_THEMES( synth_data->osci_show_eq, eq, FX_THEME, VALUE_SLIDER_COLOUR )
+
+    SWITCH_OSZI_THEMES( synth_data->osci_show_out, out, MASTER_THEME, VALUE_SLIDER_COLOUR )
+    SWITCH_OSZI_THEMES( synth_data->osci_show_out_env, out_env, MASTER_THEME, VALUE_SLIDER_2_COLOUR )
 }
 
 //==============================================================================
