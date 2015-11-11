@@ -146,11 +146,12 @@ void DragPad::mouseDrag(const MouseEvent& event)
 
 //==============================================================================
 Monique_Ui_DragPad::Monique_Ui_DragPad (Monique_Ui_Refresher*ui_refresher_)
-    : ui_refresher(ui_refresher_),
+    : original_w(80),
+      original_h(130),
+      ui_refresher(ui_refresher_),
       left2right_state(0.5),
       top2bottom_state(0.5),
-      current_position(0,0),
-      original_w(80), original_h(130)
+      current_position(0,0)
 {
     //[Constructor_pre] You can add your own custom stuff here..
     look_and_feel = ui_refresher->look_and_feel;
@@ -213,7 +214,6 @@ void Monique_Ui_DragPad::paint (Graphics& g)
         w_h,
         colours_.get_theme( COLOUR_THEMES::MORPH_THEME  ).value_slider_track_colour, 0.3f
     );
-#include "mono_ui_includeHacks_BEGIN.h"
     /*
     //[/UserPrePaint]
 
@@ -231,6 +231,8 @@ void Monique_Ui_DragPad::paint (Graphics& g)
 void Monique_Ui_DragPad::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+#include "mono_ui_includeHacks_BEGIN.h"
+    WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
     track_area->setBounds (0, 0, 80, 130);
@@ -262,7 +264,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_DragPad" componentName=""
                  parentClasses="public Component" constructorParams="Monique_Ui_Refresher*ui_refresher_"
-                 variableInitialisers="ui_refresher(ui_refresher_),&#10;left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0),&#10;original_w(80), original_h(130)"
+                 variableInitialisers="original_w(80), &#10;original_h(130),&#10;ui_refresher(ui_refresher_),&#10;left2right_state(0.5),&#10;top2bottom_state(0.5),&#10;current_position(0,0)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="80" initialHeight="130">
   <BACKGROUND backgroundColour="50505">

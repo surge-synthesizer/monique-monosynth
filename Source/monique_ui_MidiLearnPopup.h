@@ -50,8 +50,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Component* related_to_comp;
-    void set_element_to_show(Component*const);
+    const Component* related_to_comp;
+    void set_element_to_show(const Component*const);
     void update_positions();
     void refresh() noexcept override;
 

@@ -108,7 +108,7 @@ RuntimeListener( runtime_notifyer_ ),
                  restored_audio_devices(true),
                  init_first_time_audio_device(true)
 {
-    sample_rate_changed(0);
+    sample_rate_or_block_changed();
 }
 
 COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
@@ -136,13 +136,15 @@ COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
 }
 
 //==============================================================================
-COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) noexcept
+COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
 {
     cc_feedback_collector.reset(sample_rate);
     thru_collector.reset(sample_rate);
     cc_input_collector.reset(sample_rate);
     note_input_collector.reset(sample_rate);
     sync_input_collector.reset(sample_rate);
+    std::cout << "reset "<< sample_rate << std::endl;
+    std::cout << "reset "<< block_size << std::endl;
 }
 
 //==============================================================================
@@ -281,6 +283,12 @@ COLD String mono_AudioDeviceManager::restore_audio_device( bool try_to_open_an_a
     else
     {
         restored_audio_devices = true;
+
+        AudioDeviceManager::AudioDeviceSetup current_device_setup;
+        getAudioDeviceSetup( current_device_setup );
+
+        runtime_notifyer->set_block_size( current_device_setup.bufferSize );
+        runtime_notifyer->set_sample_rate( current_device_setup.sampleRate );
     }
 
     return error;
@@ -306,6 +314,13 @@ COLD String mono_AudioDeviceManager::read_defaults() noexcept
             if( error == "" and active_device )
             {
                 AudioDeviceManager::updateXml();
+
+                AudioDeviceManager::AudioDeviceSetup current_device_setup;
+                getAudioDeviceSetup( current_device_setup );
+
+                runtime_notifyer->set_block_size( current_device_setup.bufferSize );
+                runtime_notifyer->set_sample_rate( current_device_setup.sampleRate );
+
                 break;
             }
             else
@@ -610,7 +625,7 @@ COLD bool mono_AudioDeviceManager::is_selected_in_device_open( mono_AudioDeviceM
     }
     }
 
-    return ERROR;
+    return false;
 }
 COLD mono_AudioDeviceManager::DEVICE_STATE mono_AudioDeviceManager::get_selected_in_device_state( INPUT_ID input_id_ ) const noexcept
 {
@@ -979,7 +994,7 @@ COLD void mono_AudioDeviceManager::OpenStateChecker::timerCallback()
                                            AlertWindow::AlertIconType::QuestionIcon,
                                            "MIDI IN DEVICE CONNECTED.",
                                            "Monique found a previously connected MIDI CC IN port.\n"
-                                           "Do you like to reactivate that port: " + selected_cc_in_device + "?"
+                                           "Do you like to reactivate that port: " + selected_cc_in_device + "?",
                                            "YES", "NO"
                                        );
                         if(force_quit)

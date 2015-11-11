@@ -60,7 +60,7 @@ private:
 //==============================================================================
 COLD StandaloneFilterWindow::StandaloneFilterWindow(const String& title) noexcept
 :
-DocumentWindow(title, Colour(0xff000000), DocumentWindow::allButtons, false )
+DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false )
 {
     setOpaque(true);
     createFilter();
@@ -178,6 +178,14 @@ COLD void StandaloneFilterWindow::resetFilter() noexcept
 //==============================================================================
 COLD void StandaloneFilterWindow::closeButtonPressed()
 {
+    filter->set_audio_offline();
+    {
+        filter->closeAudioDevice();
+        filter->player.setProcessor (nullptr);
+        filter->removeAudioCallback (&filter->player);
+        filter->audio_is_successful_initalized = false;
+    }
+    
     filter->synth_data->ask_and_save_if_changed();
     JUCEApplicationBase::quit();
 }

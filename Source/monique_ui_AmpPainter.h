@@ -60,8 +60,7 @@ public:
     }
 
 private:
-    COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    COLD virtual void block_size_changed() noexcept override;
+    COLD virtual void sample_rate_or_block_changed() noexcept override;
 
 public:
     COLD EndlessBuffer( RuntimeNotifyer*const notifyer_ ) noexcept;
@@ -149,8 +148,7 @@ public:
     }
 
 private:
-    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-    COLD void block_size_changed() noexcept override;
+    COLD void sample_rate_or_block_changed() noexcept override;
 
 public:
     COLD EndlessSwitchBuffer( RuntimeNotifyer*const notifyer_ ) noexcept;
@@ -218,8 +216,8 @@ public:
 
 private:
     int current_buffer_start_pos;
-    UiLookAndFeel*const look_and_feel;
     MoniqueSynthData*const synth_data;
+    UiLookAndFeel*const look_and_feel;
     OwnedArray<EndlessBuffer> filter_values;
     OwnedArray<EndlessBuffer> filter_env_values;
     ScopedPointer< EndlessBuffer > eq_values;

@@ -290,10 +290,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-        if( id )
-            return top_parameter;
-        else
-            return nullptr;
+        return top_parameter;
     }
     StringRef get_top_button_text() const noexcept override
     {
@@ -327,7 +324,10 @@ class WAVESlConfig : public ModulationSliderConfigBase
     // CENTER LABEL
     ModulationSliderConfigBase::SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
     {
-        return SHOW_OWN_VALUE;
+        if( fm_amount->midi_control->get_ctrl_mode() )
+            return SHOW_OWN_VALUE;
+        else
+            return SHOW_OWN_VALUE_ALWAYS;
     }
     String get_center_value() const noexcept override
     {
@@ -351,14 +351,21 @@ class WAVESlConfig : public ModulationSliderConfigBase
         "Define the wave form of this oscillator.\n"
         "(Sine (LEFT), Square, Saw, Noise (RIGHT))"
     )
-    TOP_BUTTON_DESCRIPTION
+    TOP_BUTTON_DESCRIPTION_2_CASE
     (
+        "Turns Key Sync for all oscillators on or off."
+        "\n"
+        "If Key Sync is enabled all oscillators will be hard reseted to a new cycle at each note on.\n"
+        "\n",
+
         "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
         "\n"
         "If SYNC is enabled the oscillator waits for the next cycle of OSC 1 to start its next own cycle.\n"
         "If SYNC is disabled this oscillator is absolutely independent.\n"
         "\n"
-        "Note: the oscillator will be auto-synced to OSC 1 at a defined tune of exactly 0 and +/-24."
+        "Note: the oscillator will be auto-synced to OSC 1 at a defined tune of exactly 0 and +/-24.",
+
+        id == 0
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -378,7 +385,7 @@ public:
         wave( &synth_data_->osc_datas[id_]->wave ),
         fm_amount( &synth_data_->osc_datas[id_]->fm_amount ),
         top_parameter( &synth_data_->osc_datas[id_]->sync ),
-        top_text( "SYNC" ),
+        top_text( id_ == 0 ? "K-SNC" : "SYNC" ),
         bottom_text( "WAV-" + String(id_+1) )
     {}
 
@@ -778,8 +785,8 @@ public:
         :
         ModulationSliderConfigBase( 1 ),
         fm_freq( &synth_data_->fm_osc_data->fm_freq ),
-        fm_shape( &synth_data_->fm_osc_data->fm_shape ),
-        sync( &synth_data_->fm_osc_data->sync )
+        sync( &synth_data_->fm_osc_data->sync ),
+        fm_shape( &synth_data_->fm_osc_data->fm_shape )
     {}
 
     JUCE_LEAK_DETECTOR (FMFreqSlConfig)
@@ -2670,14 +2677,17 @@ class FCutoffSLConfig : public ModulationSliderConfigBase
     {
         if( not cutoff->midi_control->get_ctrl_mode() )
         {
-            if( filter_type->get_value() == LPF )
-            {
-                return String( auto_round( 965.0f * cutoff->get_value() + MIN_CUTOFF ) );
-            }
-            else
-            {
-                return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
-            }
+            /*
+                if( filter_type->get_value() == LPF )
+                {
+                    return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
+                }
+                else
+                {
+                    return String( auto_round( MAX_CUTOFF * cutoff->get_value() + MIN_CUTOFF ) );
+                }
+                */
+            return String( auto_round( get_cutoff(cutoff->get_value()) ) );
         }
         else
         {
@@ -3250,21 +3260,19 @@ class BPMSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        String value( auto_round(runtime_info->bpm) );
+        float bpm( runtime_info->bpm );
 #ifdef IS_STANDALONE
         if( runtime_info->is_extern_synced )
         {
-            value = value + String(" EXT");
+            return String(auto_round(bpm)) + String(" E");
         }
         else
         {
-            value = value + String(" BPM");
+            return String(round01(bpm)) + String(" I");
         }
 #else
-        value += String(" BPM");
+        return String(round01(bpm)) + String(" BPM");
 #endif
-
-        return value;
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
@@ -3274,7 +3282,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     */
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return false;
+        return true;
     }
 
     //==============================================================================
@@ -3285,7 +3293,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(auto_round(speed->get_value()));
+        return String(round01(speed->get_value()));
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -4247,7 +4255,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "DRY|WET";
+        return "WET";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -4841,7 +4849,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "CHORUS";
+        return "CHOR";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -5471,7 +5479,6 @@ public:
 
         synth_data( synth_data_ )
     {
-        const float frequency_low_pass = get_low_pass_band_frequency( id_ );
         const float frequency_high_pass = get_high_pass_band_frequency( id_ );
         bottom_text = String( frequency_high_pass ) + String("Hz");
     }
@@ -5636,8 +5643,8 @@ public:
         octave_offset( &synth_data_->octave_offset ),
         tune( &synth_data_->arp_sequencer_data->tune[id_] ),
         velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
-        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) ),
-        voice( synth_data_->voice )
+        voice( synth_data_->voice ),
+        bottom_text( id_ == 0 ? String(("STEP " + String(id_+1))) : String(id_+1) )
     {}
 
     JUCE_LEAK_DETECTOR (ArpStepSlConfig)
@@ -5848,6 +5855,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

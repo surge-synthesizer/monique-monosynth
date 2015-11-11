@@ -8,11 +8,12 @@
 #define GLOBAL_RETURN_MODE_FACTORY "FGRM"
 #define GLOBAL_RETURN_MODE_PROGRAM "PGRM"
 #define GLOBAL_RETURN_MODE_UNDO "UGRM"
-	  
+
 #define RETURN_VALUE_USER "URV"
 #define RETURN_VALUE_FACTORY "FRV"
 #define RETURN_VALUE_PROGRAM "PRV"
 #define RETURN_VALUE_UNDO "URV"
+
 
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -54,6 +55,10 @@
 #include "../Standalone/JuceLibraryCode/JuceHeader.h"
 #endif
 
+#ifdef JUCE_WINDOWS
+#include "vld.h" // need for debuging, but can be removed without any effects!
+#endif
+  
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------
@@ -61,9 +66,11 @@
 
 // INLINING //
 #if JUCE_LINUX || JUCE_MAC
-#define COLD __attribute__ ((noinline,cold))
+#define COLD 
+  //__attribute__ ((noinline,cold))
 #elif JUCE_WINDOWS
-#define COLD __declspec(noinline)
+#define COLD
+  //__declspec(noinline)
 #else
 #define COLD inline
 #endif
@@ -75,59 +82,75 @@
 template<int num_channels>
 class mono_AudioSampleBuffer
 {
-    AudioSampleBuffer*const buffer;
+#ifdef JUCE_DEBUG
+#define DEBUG_BUFFER_SIDE_OFFSET 1
+#else
+#define DEBUG_BUFFER_SIDE_OFFSET 0
+#endif
+  
+    AudioSampleBuffer buffer;
     int size;
 
 public:
-    inline const float* getReadPointer (int channelNumber = 0) const noexcept;
-    inline float* getWritePointer (int channelNumber = 0) noexcept;
 
-    //==========================================================================
-    COLD void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept;
-    inline int get_size() const noexcept {
+    inline const float* getReadPointer (int channelNumber = 0) const noexcept
+    {
+#ifdef JUCE_DEBUG
+	if( buffer.getReadPointer( channelNumber )[size] != 0 )
+	{
+	    std::cout<< "buffer size overwriten " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+	}
+#endif
+        return buffer.getReadPointer( channelNumber );
+    }
+    inline float* getWritePointer (int channelNumber = 0) noexcept
+    {
+#ifdef JUCE_DEBUG
+	if( buffer.getReadPointer( channelNumber )[size] != 0 )
+	{
+	    std::cout<< "buffer size overwriten " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+	}
+#endif
+        return buffer.getWritePointer( channelNumber );
+	
+    }
+    inline void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept
+    {
+        buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, keep_existing_content_ );
+        size = newNumSamples;
+#ifdef JUCE_DEBUG
+	buffer.clear();
+#endif
+    }
+
+    inline int get_size() const noexcept
+    {
         return size;
     }
-    void clear() noexcept
+    inline void clear() noexcept
     {
-        buffer->clear();
+        buffer.clear();
     }
 
     //==========================================================================
-    COLD mono_AudioSampleBuffer(int numSamples) noexcept;
-    COLD ~mono_AudioSampleBuffer() noexcept;
-};
-
-//==============================================================================
-template<int num_channels>
-COLD mono_AudioSampleBuffer<num_channels>::mono_AudioSampleBuffer(int numSamples) noexcept
+    COLD mono_AudioSampleBuffer(int numSamples) noexcept
 :
-buffer( new AudioSampleBuffer( num_channels, numSamples ) ), size( numSamples )
-{
-    buffer->clear();
-}
-template<int num_channels>
-COLD mono_AudioSampleBuffer<num_channels>::~mono_AudioSampleBuffer() noexcept
-{
-    delete buffer;
-}
-
-//==============================================================================
-template<int num_channels>
-inline const float* mono_AudioSampleBuffer<num_channels>::getReadPointer (int channelNumber) const noexcept
-{
-    return buffer->getReadPointer( channelNumber );
-}
-template<int num_channels>
-inline float* mono_AudioSampleBuffer<num_channels>::getWritePointer (int channelNumber) noexcept
-{
-    return buffer->getWritePointer( channelNumber );
-}
-template<int num_channels>
-COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples, bool keep_existing_content_ ) noexcept
-{
-    buffer->setSize( num_channels, newNumSamples, keep_existing_content_, keep_existing_content_ );
-    size = newNumSamples;
-}
+    buffer( AudioSampleBuffer( num_channels, numSamples+DEBUG_BUFFER_SIDE_OFFSET ) ), size( numSamples )
+    {
+        buffer.clear();
+    }
+    COLD ~mono_AudioSampleBuffer() noexcept
+    {
+#ifdef JUCE_DEBUG
+	if( buffer.getReadPointer( 0 )[size] != 0 )
+	{
+	    std::cout<< "buffer size overwriten" << std::endl;
+	  jassert( false );
+	}
+#endif
+       // delete buffer;
+    }
+};
 
 // MSVC REPLACEMENTS
 #define CONSTEXPR_SUPPORT
@@ -164,6 +187,8 @@ COLD void mono_AudioSampleBuffer<num_channels>::setSize (int newNumSamples, bool
 // --------------------------------------------------------------------------------------------
 
 #define PROJECT_FOLDER String("/Monoplugs/Monique/")
+#define THEMES_FOLDER String("/Monoplugs/Monique/Themes/")
+#define MIDI_FOLDER String("/Monoplugs/Monique/MIDI/")
 #if JUCE_MAC
 #	define ROOT_FOLDER userMusicDirectory
 #elif JUCE_LINUX || RASPBERRY || JUCE_ANDROID
@@ -252,16 +277,6 @@ static inline void debug_sample_print( float in_, int samples_to_print = 1024, c
   time_sum+= (Time::getMillisecondCounterHiRes()-time); \
   std::cout << time_sum/time_counter << std::endl;
 #endif
-
-// TWEAKED ALGORYTHIMS
-//==============================================================================
-//==============================================================================
-//==============================================================================
-inline static int mono_floor(float x) noexcept
-{
-    const int i = int(x);
-    return i - ( i > x );
-}
 
 #endif  // APP_H_INCLUDED
 

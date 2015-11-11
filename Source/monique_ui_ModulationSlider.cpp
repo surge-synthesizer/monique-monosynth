@@ -84,7 +84,6 @@ noexcept
         const ParameterInfo& info = front_parameter->get_info();
         {
             const float init = info.init_value;
-            // TODO dynamically update?
             front_slider_->setDoubleClickReturnValue( true, init );
             front_slider_->setPopupMenuEnabled( true );
             front_slider_->setValue( front_parameter->get_value(), dontSendNotification );
@@ -268,17 +267,20 @@ void Monique_Ui_DualSlider::update_return_values() noexcept
 {
     if( slider_value )
     {
-        slider_value->setDoubleClickReturnValue( true, front_parameter->get_info().init_value );
+        slider_value->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_value );
+        slider_value->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_value );
     }
     if( slider_modulation )
     {
         if( modulation_parameter )
         {
-            slider_modulation->setDoubleClickReturnValue( true, modulation_parameter->get_info().init_modulation_amount );
+            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_modulation_amount );
+            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_modulation_amount );
         }
         else if( back_parameter )
         {
-            slider_modulation->setDoubleClickReturnValue( true, back_parameter->get_info().init_value );
+            slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, back_parameter->get_info().factory_default_value );
+            slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, back_parameter->get_info().program_on_load_value );
         }
     }
 }
@@ -392,7 +394,6 @@ void Monique_Ui_DualSlider::refresh() noexcept
             }
             else
             {
-                top_parameter->get_value() == true ? theme->button_on_colour : theme->button_off_colour;
                 button_top->setToggleState(top_parameter->get_value() == true ? true : false, dontSendNotification);
                 if( button_top->getProperties().set( VAR_INDEX_BUTTON_AMP, top_parameter->get_value() == true ? 1 : 0 ) ) {
                     button_top->repaint();
@@ -434,6 +435,7 @@ void Monique_Ui_DualSlider::refresh() noexcept
     {
         bool is_repaint_required = false; // force_repaint;
         const bool show_popup = runtime_show_value_popup || look_and_feel->show_values_always || force_show_center_value;
+        const int show_value_popup_type = _config->show_slider_value_on_top_on_change();
         if( slider_value->isVertical() )
         {
             if( label_top )
@@ -447,9 +449,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
             }
         }
-        else if( show_popup )
+        else if( show_popup or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
         {
-            const bool show_value_popup_type = _config->show_slider_value_on_top_on_change();
             const bool is_in_ctrl_mode = is_in_ctrl_view();
 
             // SHOW DEFAUL CENTER LABEL
@@ -504,7 +505,8 @@ void Monique_Ui_DualSlider::refresh() noexcept
                 }
             }
             // SHOW DEFINED CENTER LABEL
-            else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE )
+            else if( show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE
+                     or show_value_popup_type == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS )
             {
                 // NON ROTARY
                 if( slider_value->isVertical() )
@@ -852,6 +854,8 @@ void Monique_Ui_DualSlider::paint (Graphics& g)
 void Monique_Ui_DualSlider::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+    WIDTH_AND_HIGHT_FACTORS
+
     if( slider_value )
         slider_value->setBounds (3, 38, 56, 56);
     if( button_bottom )
@@ -959,6 +963,21 @@ void Monique_Ui_DualSlider::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == slider_value)
     {
         //[UserSliderCode_slider_value] -- add your slider handling code here..
+        if( back_parameter )
+        {
+            IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
+            (
+                front_parameter,
+                back_parameter,
+                sliderThatWasMoved
+            )
+            else
+            {
+                front_parameter->set_value( sliderThatWasMoved->getValue() );
+            }
+            get_editor()->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
+        }
+        else
         {
             IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
             (
@@ -969,8 +988,8 @@ void Monique_Ui_DualSlider::sliderValueChanged (Slider* sliderThatWasMoved)
             {
                 front_parameter->set_value( sliderThatWasMoved->getValue() );
             }
+            get_editor()->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
         }
-        get_editor()->show_info_popup( sliderThatWasMoved, front_parameter->midi_control );
         //[/UserSliderCode_slider_value]
     }
 
@@ -1177,4 +1196,5 @@ END_JUCER_METADATA
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+
 

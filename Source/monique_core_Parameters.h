@@ -44,6 +44,8 @@ class ParameterListener
 protected:
     COLD ParameterListener() noexcept;
     COLD ~ParameterListener() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( ParameterListener )
 };
 
 // ==============================================================================
@@ -59,7 +61,12 @@ struct ParameterInfo
     const float max_value;
     const float init_value;
 
+    float factory_default_value;
+    float program_on_load_value;
+
     const float init_modulation_amount;
+    float factory_default_modulation_amount;
+    float program_on_load_modulation_amount;
 
     const int num_steps;
 
@@ -92,7 +99,7 @@ class ParameterRuntimeInfo
 {
 public:
     SmoothedParameter*my_smoother;
-    
+
     // ==============================================================================
     inline void set_last_modulation_amount( float current_modulation_amount_ ) noexcept
     {
@@ -232,7 +239,10 @@ public:
     }
     inline float operator= ( const Parameter& other_ ) noexcept
     {
-        set_value(other_.value);
+        if (this != &other_)
+        {
+            set_value(other_.value);
+        }
         return value;
     }
     inline void set_value_without_notification( float value_ ) noexcept
@@ -404,6 +414,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( Parameter )
     MONO_NOT_MOVE_COPY_OPERATOR( Parameter )
+    JUCE_LEAK_DETECTOR(Parameter)
 };
 
 // ==============================================================================
@@ -518,7 +529,10 @@ public:
     }
     inline bool operator= ( const BoolParameter& other_ ) noexcept
     {
-        value = other_.value;
+        if (this != &other_)
+        {
+            value = other_.value;
+        }
         return bool(value);
     }
 
@@ -536,6 +550,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( BoolParameter )
     MONO_NOT_MOVE_COPY_OPERATOR( BoolParameter )
+    JUCE_LEAK_DETECTOR(BoolParameter)
 };
 // ==============================================================================
 // ==============================================================================
@@ -589,7 +604,11 @@ public:
     }
     inline int operator= ( const IntParameter& other_ ) noexcept
     {
-        return operator=(int(other_.value));
+        if (this != &other_)
+        {
+            operator=(int(other_.value));
+        }
+        return int(value);
     }
 
 private:
@@ -606,6 +625,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( IntParameter )
     MONO_NOT_MOVE_COPY_OPERATOR( IntParameter )
+    JUCE_LEAK_DETECTOR(IntParameter)
 };
 
 // ==============================================================================
@@ -619,6 +639,8 @@ public:
                             const String& name_, const String& short_name_,
                             const float init_modulation_amount_ ) noexcept;
     COLD ~ModulatedParameter() noexcept;
+
+    JUCE_LEAK_DETECTOR(ModulatedParameter)
 };
 
 //==============================================================================
@@ -682,6 +704,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( ArrayOfParameters )
     MONO_NOT_MOVE_COPY_OPERATOR( ArrayOfParameters )
+    JUCE_LEAK_DETECTOR(ArrayOfParameters)
 };
 
 //==============================================================================
@@ -732,6 +755,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( ArrayOfBoolParameters )
     MONO_NOT_MOVE_COPY_OPERATOR( ArrayOfBoolParameters )
+    JUCE_LEAK_DETECTOR(ArrayOfBoolParameters)
 };
 
 //==============================================================================
@@ -782,6 +806,7 @@ private:
     // ==============================================================================
     MONO_NOT_CTOR_COPYABLE( ArrayOfIntParameters )
     MONO_NOT_MOVE_COPY_OPERATOR( ArrayOfIntParameters )
+    JUCE_LEAK_DETECTOR(ArrayOfIntParameters)
 };
 
 //==============================================================================
@@ -1074,7 +1099,8 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
             {
                 new_value = info.min_value;
             }
-            
+
+            const_cast<ParameterInfo&>(param_->get_info()).program_on_load_value = new_value;
             param_->set_value_on_load( new_value );
             success = true;
         }
@@ -1084,6 +1110,7 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
     {
         float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
 
+        const_cast<ParameterInfo&>(param_->get_info()).program_on_load_modulation_amount = new_modulation_amount;
         param_->set_modulation_amount_without_notification( new_modulation_amount );
         success = true;
     }
@@ -1091,6 +1118,31 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
     if( success )
     {
         param_->notify_on_load_value_listeners();
+    }
+}
+static inline void read_parameter_factory_default_from_file( const XmlElement& xml_, Parameter* param_ ) noexcept
+{
+    const ParameterInfo& info = param_->get_info();
+    {
+        float new_value = xml_.getDoubleAttribute( info.name, info.init_value );
+        {
+            const float max_value = info.max_value;
+            if( new_value > max_value )
+            {
+                new_value = max_value;
+            }
+            else if( new_value < info.min_value )
+            {
+                new_value = info.min_value;
+            }
+            const_cast<ParameterInfo&>(param_->get_info()).factory_default_value = new_value;
+        }
+    }
+
+    if( has_modulation( param_ ) )
+    {
+        float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
+        const_cast<ParameterInfo&>(param_->get_info()).factory_default_modulation_amount = new_modulation_amount;
     }
 }
 
@@ -1159,6 +1211,7 @@ public:
     };
 
 private:
+    friend class MIDIControlHandler;
     friend class Parameter;
     int8 midi_number; // NOTES OR CC
     String is_ctrl_version_of_name;
@@ -1211,6 +1264,8 @@ public:
     COLD ~MIDIControl();
 
     void clear();
+
+    JUCE_LEAK_DETECTOR(MIDIControl)
 };
 
 class UiLookAndFeel;
@@ -1224,6 +1279,29 @@ class MIDIControlHandler
     Parameter* learning_ctrl_param;
 
     Array< Component* > learning_comps;
+    Array< MIDIControl* > trained_midi_ctrls_;
+    void add_trained( MIDIControl*midi_ctrl_ ) noexcept
+    {
+        trained_midi_ctrls_.add( midi_ctrl_ );
+    }
+    void remove_trained( MIDIControl*midi_ctrl_ ) noexcept
+    {
+        trained_midi_ctrls_.removeFirstMatchingValue( midi_ctrl_ );
+    }
+    friend class MIDIControl;
+    MIDIControl* get_trained( String& for_first_name_ ) noexcept
+    {
+        for( int i = 0 ; i != trained_midi_ctrls_.size() ; ++i )
+        {
+            MIDIControl*midi_control = trained_midi_ctrls_.getUnchecked(i);
+            if( midi_control->is_ctrl_version_of_name == for_first_name_ )
+            {
+                return midi_control;
+            }
+        }
+
+        return nullptr;
+    }
 
 public:
     void toggle_midi_learn() noexcept;
@@ -1242,6 +1320,8 @@ private:
     friend class ContainerDeletePolicy< MIDIControlHandler >;
     COLD MIDIControlHandler( UiLookAndFeel*look_and_feel_, MoniqueAudioProcessor*const audio_processor_ ) noexcept;
     COLD ~MIDIControlHandler() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MIDIControlHandler)
 };
 
 inline bool MIDIControlHandler::is_waiting_for_param() const noexcept

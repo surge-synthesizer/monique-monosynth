@@ -45,7 +45,6 @@ static inline int reduce_id_to_smaller_100( int id_ ) noexcept
 COLD RuntimeListener::RuntimeListener( RuntimeNotifyer*const notifyer_ ) noexcept :
 notifyer( notifyer_ ),
           sample_rate( notifyer_ ? notifyer_->sample_rate : 1 ),
-          sample_rate_1ths( notifyer_ ? notifyer_->sample_rate_1ths : 1 ),
           block_size( notifyer_ ? notifyer_->block_size : 1 )
 {
     if( notifyer )
@@ -64,45 +63,42 @@ COLD RuntimeListener::~RuntimeListener() noexcept
 }
 
 //==============================================================================
-COLD void RuntimeListener::set_sample_rate( double sr_ ) noexcept
-{
-    sample_rate = sr_;
-    sample_rate_1ths = 1.0f/sample_rate;
-};
+COLD void RuntimeListener::set_sample_rate( double sr_ ) noexcept { sample_rate = sr_; };
 COLD void RuntimeListener::set_block_size( int bs_ ) noexcept { block_size = bs_; };
-COLD void RuntimeListener::sample_rate_changed( double /* old_sr_ */ ) noexcept {};
-COLD void RuntimeListener::block_size_changed() noexcept {};
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
 COLD RuntimeNotifyer::RuntimeNotifyer() noexcept :
-sample_rate(44100),
-            sample_rate_1ths( 1.0/44100),
-block_size(512) {}
+sample_rate(1),
+block_size(1) {}
 COLD RuntimeNotifyer::~RuntimeNotifyer() noexcept {}
 
 //==============================================================================
 COLD void RuntimeNotifyer::set_sample_rate( double sr_ ) noexcept
 {
-    double old_sr = sample_rate;
-    sample_rate = sr_;
-    sample_rate_1ths = 1.0/sample_rate;
-    for( int i = 0 ; i != listeners.size() ; ++i )
+    if( sample_rate != sr_ )
     {
-        listeners[i]->set_sample_rate(sr_);
-        listeners[i]->sample_rate_changed(old_sr);
+        sample_rate = sr_;
+        for( int i = 0 ; i != listeners.size() ; ++i )
+        {
+            listeners[i]->set_sample_rate(sr_);
+            listeners[i]->sample_rate_or_block_changed();
+        }
     }
 };
 COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 {
-    block_size = bs_;
-    for( int i = 0 ; i != listeners.size() ; ++i ) {
-        listeners[i]->set_block_size(bs_);
-        listeners[i]->block_size_changed();
-    }
-};
-
+    if( block_size != bs_ )
+    {
+        block_size = bs_;
+        for( int i = 0 ; i != listeners.size() ; ++i )
+        {
+            listeners[i]->set_block_size(bs_);
+            listeners[i]->sample_rate_or_block_changed();
+        }
+    };
+}
 
 //==============================================================================
 //==============================================================================
@@ -110,7 +106,8 @@ COLD void RuntimeNotifyer::set_block_size( int bs_ ) noexcept
 COLD RuntimeInfo::RuntimeInfo() noexcept
 :
 samples_since_start(0),
-                    bpm(120)
+                    bpm(120),
+                    steps_per_sample(0)
 #ifdef IS_STANDALONE
                     ,
                     is_extern_synced(false),
@@ -129,9 +126,9 @@ COLD LFOData::LFOData( SmoothManager*smooth_manager_, int id_ ) noexcept
 :
 speed
 (
-    MIN_MAX( 0, 16+127-33 ),
+    MIN_MAX( 0, 16 ),
     4,
-    (16+127-33)*10,
+    16,
 
     generate_param_name(LFO_NAME,id_,"speed"),
     generate_short_human_name(LFO_NAME,id_,"speed")
@@ -278,13 +275,13 @@ COLD OSCData::OSCData( SmoothManager*const smooth_manager_, int id_ ) noexcept
 id(id_),
 sync
 (
-    true,
-    generate_param_name(OSC_NAME,id_, id_ == MASTER_OSC ? "spacer" : "sync" ),
+    id_ == MASTER_OSC ? false : true,
+    generate_param_name(OSC_NAME,id_, id_ == MASTER_OSC ? "key-sync" : "sync" ),
     generate_short_human_name
     (
         OSC_NAME,
         id_,
-        "sync"
+        id_ == MASTER_OSC ? "key-sync" : "sync"
     )
 ),
 wave
@@ -935,7 +932,13 @@ current_switch(LEFT),
 current_callbacks(-1)
 {}
 
-COLD MorphGroup::~MorphGroup() noexcept {}
+COLD MorphGroup::~MorphGroup() noexcept
+{
+    for( int i = 0 ; i != params.size() ; i++ )
+    {
+        params.getUnchecked(i)->remove_listener(this);
+    }
+}
 
 //==============================================================================
 COLD void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) noexcept
@@ -1202,7 +1205,7 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                         new_right = min;
                         new_left = (current_value/left_power) - (right_power/left_power)*new_right;
                     }
-                    else if( new_left > max )
+                    else if( new_right > max )
                     {
                         new_right = max;
                         new_left = (current_value/left_power) - (right_power/left_power)*new_right;
@@ -1290,7 +1293,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
                     new_right = min;
                     new_left = (current_value/left_power) - (right_power/left_power)*new_right;
                 }
-                else if( new_left > max )
+                else if( new_right > max )
                 {
                     new_right = max;
                     new_left = (current_value/left_power) - (right_power/left_power)*new_right;
@@ -1546,8 +1549,8 @@ struct CREATE_SIN_LOOKUP
 {
     static float* exec() noexcept
     {
-        float* table_ = new float[LOOKUP_TABLE_SIZE];
-        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        float* table_ = new float[LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE+1; i++)
         {
             table_[i] = std::sin( double(i) / TABLESIZE_MULTI );
         }
@@ -1562,8 +1565,8 @@ struct CREATE_COS_LOOKUP
 {
     static float* exec() noexcept
     {
-        float* table_ = new float[LOOKUP_TABLE_SIZE];
-        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        float* table_ = new float[LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE+1; i++)
         {
             table_[i] = std::cos( double(i) / TABLESIZE_MULTI );
         }
@@ -1578,8 +1581,8 @@ struct CREATE_EXP_LOOKUP
 {
     static float* exec() noexcept
     {
-        float* table_ = new float[LOOKUP_TABLE_SIZE];
-        for(int i = 0; i < LOOKUP_TABLE_SIZE; i++)
+        float* table_ = new float[LOOKUP_TABLE_SIZE+1];
+        for(int i = 0; i < LOOKUP_TABLE_SIZE+1; i++)
         {
 #define EXP_PI_05_CORRECTION 4.81048f
 #define LOG_PI_1_CORRECTION 1.42108f
@@ -1897,7 +1900,26 @@ ui_look_and_feel( look_and_feel_ ),
                       MIN_MAX( 100, 2000 ),
                       500,
                       generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
-                      generate_short_human_name("CONF","slider_sensitivity")
+                      generate_short_human_name("CONF","rotary_sensitivity")
+                  ),
+                  sliders_linear_sensitivity
+                  (
+                      MIN_MAX( 100, 2000 ),
+                      500,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_linear_sensitivity"),
+                      generate_short_human_name("CONF","linear_sensitivity")
+                  ),
+                  is_rotary_sliders_velocity_mode
+                  (
+                      false,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
+                      generate_short_human_name("CONF","rotary_velocity_mode")
+                  ),
+                  is_linear_sliders_velocity_mode
+                  (
+                      true,
+                      generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
+                      generate_short_human_name("CONF","rotary_velocity_mode")
                   ),
                   ui_scale_factor
                   (
@@ -1961,14 +1983,6 @@ ui_look_and_feel( look_and_feel_ ),
                       MASTER,
                       "morph_switch_state","morph_tgl",false
                   ),
-                  linear_morhp_state
-                  (
-                      MIN_MAX( 0, 3 ),
-                      0,
-                      100,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"linear_morhp_state"),
-                      generate_short_human_name("GLOB","morph_line")
-                  ),
                   morph_motor_time
                   (
                       MIN_MAX( 20, 20000 ),
@@ -1987,14 +2001,20 @@ ui_look_and_feel( look_and_feel_ ),
                   current_program_abs(-1),
                   current_bank(0),
 
-                  error_string("ERROR"),
-                  alternative_program_name("NO PROGRAM SELECTED")
+                  current_theme("DARK"),
+
+                  alternative_program_name("NO PROGRAM SELECTED"),
+                  error_string("ERROR")
 {
     // OSCS DATA
     fm_osc_data = new FMOscData(smooth_manager);
     for( int i = 0 ; i != SUM_OSCS ; ++i )
     {
         OSCData* data = new OSCData(smooth_manager,i);
+        if( i == MASTER_OSC )
+        {
+            data->tune_smoother.set_offline();
+        }
         osc_datas.add( data );
     }
     osc_datas.minimiseStorageOverheads();
@@ -2035,27 +2055,58 @@ ui_look_and_feel( look_and_feel_ ),
         all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
         all_parameters.add( &ctrl );
-        all_parameters.add( &linear_morhp_state );
 
         refresh_banks_and_programms( *this );
         set_default_midi_assignments( *this, audio_processor_ );
     }
 }
-#include "monique_core_Synth.h"
 COLD MoniqueSynthData::~MoniqueSynthData() noexcept
 {
+    morhp_states[0].remove_listener(this);
+    morhp_states[1].remove_listener(this);
+    morhp_states[2].remove_listener(this);
+    morhp_states[3].remove_listener(this);
+
+    morph_group_1->stopTimer();
+    morph_group_2->stopTimer();
+    morph_group_3->stopTimer();
+    morph_group_4->stopTimer();
+
+    morph_group_1 = nullptr;
+    morph_group_2 = nullptr;
+    morph_group_3 = nullptr;
+    morph_group_4 = nullptr;
+
+    left_morph_sources.clear();
+    right_morph_sources.clear();
+
+    chorus_data = nullptr;
     eq_data = nullptr;
     arp_sequencer_data = nullptr;
     reverb_data = nullptr;
-    chorus_data = nullptr;
+    env_data = nullptr;
 
+    filter_datas.clear();
+    mfo_datas.clear();
     lfo_datas.clear();
     osc_datas.clear();
-    filter_datas.clear();
+    fm_osc_data = nullptr;
 
-    delete [] exp_lookup;
-    delete [] cos_lookup;
-    delete [] sine_lookup;
+    if( id == MASTER )
+    {
+        if( exp_lookup )
+        {
+            delete exp_lookup;
+        }
+        if( cos_lookup )
+        {
+            delete cos_lookup;
+        }
+        if( sine_lookup )
+        {
+            delete sine_lookup;
+        }
+    }
 }
 
 //==============================================================================
@@ -2117,11 +2168,11 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
         collect_saveable_parameters( lfo_datas[i], saveable_parameters );
-        saveable_parameters.add( &is_morph_modulated[i] );
     }
     for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
     {
         collect_saveable_parameters( mfo_datas[i], saveable_parameters );
+        saveable_parameters.add( &is_morph_modulated[i] );
     }
     for( int flt_id = 0 ; flt_id != SUM_FILTERS ; ++flt_id )
     {
@@ -2155,6 +2206,20 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 
 
     saveable_parameters.minimiseStorageOverheads();
+    if( id == MASTER )
+    {
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            Parameter*param = saveable_parameters.getUnchecked(i);
+            if( SmoothedParameter*smoother = param->get_runtime_info().my_smoother )
+            {
+                if( not param->get_info().name.contains("morph") )
+                {
+                    //smoother->do_smooth(false);
+                }
+            }
+        }
+    }
 }
 
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
@@ -2183,6 +2248,9 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &sliders_in_rotary_mode );
     global_parameters.add( &sliders_sensitivity );
+    global_parameters.add( &is_rotary_sliders_velocity_mode );
+    global_parameters.add( &is_linear_sliders_velocity_mode );
+    global_parameters.add( &sliders_linear_sensitivity );
 
     global_parameters.add( &ui_scale_factor );
 
@@ -2200,14 +2268,14 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 //==============================================================================
 COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 {
-    left_morph_source_names.add( "FACTORY DEFAULT" );
-    left_morph_source_names.add( "FACTORY DEFAULT" );
-    left_morph_source_names.add( "FACTORY DEFAULT" );
-    left_morph_source_names.add( "FACTORY DEFAULT" );
-    right_morph_source_names.add( "FACTORY DEFAULT" );
-    right_morph_source_names.add( "FACTORY DEFAULT" );
-    right_morph_source_names.add( "FACTORY DEFAULT" );
-    right_morph_source_names.add( "FACTORY DEFAULT" );
+    left_morph_source_names.add( "UNDEFINED" );
+    left_morph_source_names.add( "UNDEFINED" );
+    left_morph_source_names.add( "UNDEFINED" );
+    left_morph_source_names.add( "UNDEFINED" );
+    right_morph_source_names.add( "UNDEFINED" );
+    right_morph_source_names.add( "UNDEFINED" );
+    right_morph_source_names.add( "UNDEFINED" );
+    right_morph_source_names.add( "UNDEFINED" );
     {
         // OSC'S
         {
@@ -2461,14 +2529,19 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     // ONLY THE MASTER HAS MORPHE SORCES - OTHERWISE WE BUILD UNLIMITED SOURCES FOR SOURCE
     if( data_type == MASTER )
     {
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        left_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
-        right_morph_sources.add( new MoniqueSynthData(static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager ) );
+        for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+        {
+            MoniqueSynthData*morph_data;
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager );
+           //hat eine änderungscaskade zur folge!!!
+	    //morph_data->load_default();
+            left_morph_sources.add( morph_data );
+
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager );
+           //hat eine änderungscaskade zur folge!!!
+	    //morph_data->load_default();
+            right_morph_sources.add( morph_data );
+        }
 
         // SETUP THE MORPH GROUP
         // TODO, do not initalize the unneded morph groups
@@ -2482,7 +2555,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         {
             morhp_states[morpher_id].register_listener(this);
         }
-        linear_morhp_state.register_listener(this);
     }
     left_morph_sources.minimiseStorageOverheads();
     right_morph_sources.minimiseStorageOverheads();
@@ -2593,6 +2665,7 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
     {
         morph( 3, *param_ );
     }
+    /*
     else if( param_ == linear_morhp_state.ptr() )
     {
         float value = *param_;
@@ -2652,6 +2725,7 @@ void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ 
             }
         }
     }
+    */
 }
 
 //==============================================================================
@@ -2790,6 +2864,151 @@ bool MoniqueSynthData::try_to_load_programm_to_right_side( int morpher_id_, int 
     return success;
 }
 
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline File get_theme_folder() noexcept
+{
+    File folder = File::getSpecialLocation(File::SpecialLocationType::ROOT_FOLDER);
+    folder = File(folder.getFullPathName()+THEMES_FOLDER);
+    folder.createDirectory();
+
+    return folder;
+}
+static inline File get_theme_file( const String& name_ ) noexcept
+{
+    return File( get_theme_folder().getFullPathName()
+    + String("/")
+    + name_
+    + ".mcol");
+}
+static inline String& generate_theme_name( String& name_ ) noexcept
+{
+    bool exist = false;
+    int counter = 1;
+    String counter_name("");
+    do
+    {
+        File program = get_theme_file( name_ + counter_name );
+        if( program.exists() )
+        {
+            counter_name = String(" - ")+ String(counter);
+            counter++;
+            exist = true;
+        }
+        else
+        {
+            name_ = name_+counter_name;
+            exist = false;
+        }
+    } while( exist );
+
+    return name_;
+}
+
+const StringArray& MoniqueSynthData::get_themes() noexcept
+{
+    File theme_folder = get_theme_folder();
+    Array< File > theme_files;
+    theme_folder.findChildFiles( theme_files, File::findFiles, false, "*.mcol" );
+
+    colour_themes.clearQuick();
+    for( int i = 0 ; i != theme_files.size() ; ++i )
+    {
+        colour_themes.add( theme_files.getReference(i).getFileNameWithoutExtension() );
+    }
+    colour_themes.sortNatural();
+
+    return colour_themes;
+}
+const String& MoniqueSynthData::get_current_theme() const noexcept
+{
+    return current_theme;
+}
+bool MoniqueSynthData::load_theme( const String& name_ ) noexcept
+{
+    bool success = false;
+    File file = get_theme_file( name_ );
+    ScopedPointer<XmlElement> xml = XmlDocument( file ).getDocumentElement();
+    if( xml )
+    {
+        if( xml->hasTagName("THEME-1.0") )
+        {
+            ui_look_and_feel->colours.read_from(xml);
+            success = true;
+        }
+    }
+
+    if( success )
+    {
+        current_theme = name_;
+    }
+
+    return success;
+}
+bool MoniqueSynthData::replace_theme( const String& name_ ) noexcept
+{
+    if( current_theme == "" )
+    {
+        current_theme = "SAVED AS - MISSING ORIGINAL";
+    }
+
+    /*
+    AlertWindow::showOkCancelBox
+    (
+        AlertWindow::AlertIconType::QuestionIcon,
+        "REPLACE PROJECT?",
+        String("Overwrite project: ")+bank_name+String(":")+program_name,
+        "YES", "NO"
+    );
+    */
+    //if( success )
+
+    bool success = false;
+    XmlElement xml("THEME-1.0");
+    ui_look_and_feel->colours.save_to( &xml );
+    success = xml.writeToFile(get_theme_file( name_ ),"");
+
+    return success;
+}
+bool MoniqueSynthData::remove_theme( const String& name_ ) noexcept
+{
+    if( current_theme == "" )
+        return false;
+
+    bool success = AlertWindow::showOkCancelBox
+    (
+        AlertWindow::AlertIconType::QuestionIcon,
+        "DELETE THEME?",
+        String("Delete colour theme: ")+current_theme,
+        "YES", "NO"
+    );
+    if( success )
+    {
+        File theme = get_theme_file( current_theme );
+        success = theme.moveToTrash();
+    }
+
+    return success;
+}
+bool MoniqueSynthData::create_new_theme( const String& name_ ) noexcept
+{
+    String old_name = name_;
+    const String new_name = generate_theme_name(old_name);
+    File file = get_theme_file( new_name );
+    XmlElement xml("THEME-1.0");
+    ui_look_and_feel->colours.save_to( &xml );
+
+    const bool success = xml.writeToFile(file,"");
+    if( success )
+    {
+        current_theme = new_name;
+    }
+
+    return success;
+}
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -2873,63 +3092,17 @@ static inline File get_bank_folder( const String& bank_name_ ) noexcept
 
     return folder;
 }
-static inline void sort_by_name( Array< File >& file_array_ ) noexcept
-{
-    for( int file_to_sort_id = 0; file_to_sort_id != file_array_.size() ; ++file_to_sort_id )
-    {
-        String to_move_name = file_array_.getReference(file_to_sort_id).getFileName();
-        for( int compare_id = 0 ; compare_id != file_array_.size() ; ++compare_id )
-        {
-            if( file_to_sort_id != compare_id )
-            {
-                if( file_array_.getReference(compare_id).getFileName().compareNatural(to_move_name) > 0 )
-                {
-                    file_array_.swap( file_to_sort_id, compare_id );
-
-                    // RESET FIRST LOOP
-                    file_to_sort_id--; // -1 for ++LOOP
-                    break;
-                }
-            }
-        }
-    }
-}
-/*
-static inline void sort_by_date( Array< File >& file_array_ )
-{
-    for( int file_to_sort_id = 0; file_to_sort_id != file_array_.size() ; ++file_to_sort_id )
-    {
-        Time to_move_time = file_array_.getReference(file_to_sort_id).getLastModificationTime();
-        for( int compare_id = 0 ; compare_id != file_array_.size() ; ++compare_id )
-        {
-            if( file_to_sort_id != compare_id )
-            {
-                Time to_compare_time = file_array_.getReference(compare_id).getLastModificationTime();
-                if( to_compare_time < to_move_time )
-                {
-                    file_array_.swap( file_to_sort_id, compare_id );
-
-                    // RESET FIRST LOOP
-                    file_to_sort_id--; // -1 for ++LOOP
-                    break;
-                }
-            }
-        }
-    }
-}
-*/
 void MoniqueSynthData::update_bank_programms( MoniqueSynthData& synth_data, int bank_id_, StringArray& program_names_ ) noexcept
 {
     File bank_folder = get_bank_folder( synth_data.banks[bank_id_] );
     Array< File > program_files;
     bank_folder.findChildFiles( program_files, File::findFiles, false, "*.mlprog" );
-    //sort_by_date(program_files);
-    sort_by_name(program_files);
 
     for( int i = 0 ; i != program_files.size() ; ++i )
     {
         program_names_.add( program_files.getReference(i).getFileNameWithoutExtension() );
     }
+    program_names_.sortNatural();
 }
 
 //==============================================================================
@@ -3265,10 +3438,16 @@ bool MoniqueSynthData::load( const String bank_name_, const String program_name_
 // ==============================================================================
 void MoniqueSynthData::load_default() noexcept
 {
-    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog );
-    read_from( xml );
+    if( not factory_default )
+    {
+        factory_default = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog );
+    }
+    read_from( factory_default );
+    for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+    {
+        read_parameter_factory_default_from_file( *factory_default, saveable_parameters.getUnchecked(i) );
+    }
     alternative_program_name = FACTORY_NAME;
-    //current_bank = 0;
     current_program = -1;
 }
 // ==============================================================================
@@ -3326,25 +3505,32 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
         {
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
-                Parameter*const param = saveable_parameters.getUnchecked(i);
                 read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
                 /*
-		if( param->get_info().name.contains("max_release") )
+                if( param->get_info().name.contains("max_release") )
+                              {
+                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) );
+                              }
+                              if( param->get_info().name.contains("max_decay") )
+                              {
+                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
+                              }
+                              if( param->get_info().name.contains("max_attack") )
+                              {
+                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
+                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
+                              }
+                              */
+            }
+
+            if( ui_look_and_feel )
+            {
+                if( ui_look_and_feel->mainwindow )
                 {
-                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) );
+                    ui_look_and_feel->mainwindow->update_slider_return_values();
                 }
-                if( param->get_info().name.contains("max_decay") )
-                {
-                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
-                }
-                if( param->get_info().name.contains("max_attack") )
-                {
-                    Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                    param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
-                }
-                */
             }
         }
 
@@ -3389,6 +3575,7 @@ void MoniqueSynthData::save_settings() const noexcept
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
 #endif
+        xml.setAttribute( "LAST_THEME", current_theme );
 
         ui_look_and_feel->colours.save_to( &xml );
 
@@ -3455,6 +3642,7 @@ void MoniqueSynthData::load_settings() noexcept
         current_bank = xml->getIntAttribute( "BANK", 0 );
         current_program = xml->getIntAttribute( "PROG", -1 );
 #endif
+        current_theme = xml->getStringAttribute( "LAST_THEME", "" );
 
         ui_look_and_feel->colours.read_from( xml );
     }
@@ -3494,6 +3682,8 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
+
 
 
 

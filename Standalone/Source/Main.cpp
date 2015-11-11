@@ -1,5 +1,6 @@
 #include "../../Source/App_h_includer.h"
 #include "juce_StandaloneFilterWindow.h"
+
 /*
 #define ARRAY_SIZE 100000
 #define TEST_CYCLES 10000
@@ -106,7 +107,7 @@ bool MoniqueSynthesizerApp::moreThanOneInstanceAllowed()
 
 //==============================================================================
 COLD void MoniqueSynthesizerApp::initialise (const String&)
-{  
+{
     standaloneFilterWindow = new StandaloneFilterWindow( getApplicationName() + String(" ") + getApplicationVersion() );
 #ifndef PROFILE
     {
@@ -119,9 +120,9 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
         standaloneFilterWindow->setDropShadowEnabled( true );
 
 #if JUCE_MAC
-        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton | DocumentWindow::maximiseButton, true );
+        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, true );
 #else
-        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton | DocumentWindow::maximiseButton, false );
+        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false );
 #endif
         standaloneFilterWindow->setResizable(true,true);
 
@@ -137,6 +138,12 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
 COLD void MoniqueSynthesizerApp::shutdown()
 {
     DBG( "USR QUIT") ;
+    MoniqueAudioProcessor*processor = reinterpret_cast< MoniqueAudioProcessor* >( standaloneFilterWindow->getAudioProcessor() );
+    processor->set_audio_offline();
+    processor->player.setProcessor (nullptr);
+    processor->removeAudioCallback (&processor->player);
+    processor->closeAudioDevice();
+
     standaloneFilterWindow = nullptr; // (deletes our window)
 }
 
@@ -146,7 +153,12 @@ COLD void MoniqueSynthesizerApp::resumed() {}
 COLD void MoniqueSynthesizerApp::systemRequestedQuit()
 {
     DBG( "SYS QUIT") ;
-
+    MoniqueAudioProcessor*processor = reinterpret_cast< MoniqueAudioProcessor* >( standaloneFilterWindow->getAudioProcessor() );
+    processor->set_audio_offline();
+    processor->player.setProcessor (nullptr);
+    processor->removeAudioCallback (&processor->player);
+    processor->closeAudioDevice();
+    
     quit();
 }
 COLD void MoniqueSynthesizerApp::anotherInstanceStarted (const String&)
@@ -156,3 +168,6 @@ COLD void MoniqueSynthesizerApp::anotherInstanceStarted (const String&)
 //==============================================================================
 // This macro generates the main() routine that launches the app.
 START_JUCE_APPLICATION (MoniqueSynthesizerApp)
+
+
+

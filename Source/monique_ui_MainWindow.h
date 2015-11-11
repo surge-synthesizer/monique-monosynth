@@ -63,8 +63,7 @@ class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
                                public Monique_Ui_Refreshable,
                                public AsyncUpdater,
                                public ButtonListener,
-                               public ComboBoxListener,
-                               public SliderListener
+                               public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -94,8 +93,13 @@ public:
     void show_current_voice_data();
     void handleAsyncUpdate() override;
     void show_programs_and_select(bool force);
+    void update_slider_return_values() noexcept;
+    void restore_slider_value( Component*slider_, int type_ /* 0 = user, 1 = factory, 2, program */ ) noexcept;
+    void global_slider_settings_changed( Component*parent_ ) noexcept;
     void show_ctrl_state();
-    void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ );
+    Parameter* find_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
+    Parameter* find_back_parameter_in_dual_sliders( const Component* comp_ ) noexcept;
+    void show_info_popup( Component* comp_, MIDIControl* midi_conrtrol_ , bool force_turn_on_ = false );
     void close_all_subeditors();
     void open_env_popup( ENVData*const env_data_, Parameter*const sustain_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, bool has_negative_sustain_ ) noexcept;
     void open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept;
@@ -117,9 +121,7 @@ public:
     Array< TextButton* > sequence_buttons;
     void resize_sequence_buttons();
     void switch_finalizer_tab( bool fx_ );
-    void update_slider_handling();
     Array< Monique_Ui_DualSlider* > dual_sliders;
-    //void update_slider_return_values();
     void update_size();
 
     Array<int> last_morpher_index;
@@ -138,7 +140,6 @@ public:
         NOT_SET
     };
     EDIT_TYPES program_edit_type;
-    void sliderClicked (Slider*s_) override;
 
     bool is_ctrl_down;
 
@@ -149,7 +150,6 @@ public:
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
     bool keyPressed (const KeyPress& key);
     bool keyStateChanged (const bool isKeyDown);
     void modifierKeysChanged (const ModifierKeys& modifiers);
@@ -304,7 +304,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_attack_6;
     ScopedPointer<Monique_Ui_DualSlider> osc_wave_1;
     ScopedPointer<Monique_Ui_DualSlider> osc_wave_2;
-    ScopedPointer<Slider> sl_morhp_mix;
     ScopedPointer<TextButton> button_programm_delete;
     ScopedPointer<TextButton> filter_type_6_1;
     ScopedPointer<TextButton> filter_type_6_2;

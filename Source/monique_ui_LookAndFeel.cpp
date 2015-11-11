@@ -23,6 +23,9 @@
 */
 
 #include "monique_ui_LookAndFeel.h"
+#include "monique_ui_MainWindow.h"
+#include "monique_core_Datastructures.h"
+
 #define CAN_OPAQUE true
 //==============================================================================
 //==============================================================================
@@ -127,8 +130,47 @@ void ComponentColours::save_to(XmlElement* xml_) noexcept
 //==============================================================================
 //==============================================================================
 UiLookAndFeel::UiLookAndFeel() noexcept
+:
+mainwindow(nullptr),
+           is_global_user_return
+           (
+               false,
+               generate_param_name("LF",0, "is_global_user_return" ),
+               generate_short_human_name( "LF", "is_global_user_return" )
+           ),
+           is_global_factory_return
+           (
+               false,
+               generate_param_name("LF",0, "is_global_factory_return" ),
+               generate_short_human_name( "LF", "is_global_factory_return" )
+           ),
+           is_global_program_return
+           (
+               false,
+               generate_param_name("LF",0, "is_global_program_return" ),
+               generate_short_human_name( "LF", "is_global_program_return" )
+           ),
+           is_global_undo_return
+           (
+               true,
+               generate_param_name("LF",0, "is_global_undo_return" ),
+               generate_short_human_name( "LF", "is_global_undo_return" )
+           ),
+
+           synth_data(nullptr),
+
+           popup_smooth_Slider(new Slider("")),
+           popup_linear_sensi_slider(new Slider("")),
+           popup_rotary_sensi_slider(new Slider("")),
+           popup_test_slider(new Slider("")),
+           popup_midi_snap_slider(new Slider(""))
 {
     std::cout << "MONIQUE: init style" << std::endl;
+
+    popup_smooth_Slider->addListener( this );
+    popup_rotary_sensi_slider->addListener( this );
+    popup_linear_sensi_slider->addListener( this );
+    popup_midi_snap_slider->addListener( this );
 
     // initialise the standard set of colours..
     const uint32 textButtonColour      = 0xffbbbbff;
@@ -278,6 +320,8 @@ UiLookAndFeel::UiLookAndFeel() noexcept
         setColour ((int) standardColours [i], Colour ((uint32) standardColours [i + 1]));
 
     defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::LatoSemibold_ttf,BinaryData::LatoSemibold_ttfSize)).withHeight(15.0f);
+    ScopedPointer<XmlElement> xml = XmlDocument::parse( BinaryData::DARK_mcol );
+    colours.read_from( xml );
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Tahoma_ttf,BinaryData::Tahoma_ttfSize));
     // defaultFont = Font(Typeface::createSystemTypefaceFor(BinaryData::Segoe,BinaryData::SegoeSize));
 }
@@ -307,7 +351,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     {
         color_1 = isButtonDown ? colours.midi_learn.darker (0.4f) : colours.midi_learn.brighter (0.25f);
     }
-    else if( override_theme_colour != 0 )
+    else if( override_theme_colour )
     {
         color_1 = button.findColour( TextButton::buttonColourId );
     }
@@ -440,7 +484,7 @@ Font UiLookAndFeel::getTextButtonFont (TextButton& button, int buttonHeigh)
 {
     return defaultFont; // button.getFont();
 }
-#define FONT_SCALE 0.6f
+#define FONT_SCALE 0.55f
 #define IDENT_SCALE (1.0f-FONT_SCALE)*0.5
 void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
@@ -665,10 +709,11 @@ void UiLookAndFeel::getIdealPopupMenuItemSize (const String& text, const bool is
 
 void UiLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)
 {
-    const Colour background (findColour (PopupMenu::backgroundColourId));
+    const SectionTheme& theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
+    const Colour background (theme.button_off_colour);
 
     g.fillAll (background);
-    g.setColour (background.overlaidWith (Colour (0x2badd8e6)));
+    g.setColour (background.overlaidWith (theme.area_font_colour.withAlpha(0.07f)));
 
     for (int i = 0; i < height; i += 3)
         g.fillRect (0, i, width, 1);
@@ -681,14 +726,15 @@ void UiLookAndFeel::drawPopupMenuBackground (Graphics& g, int width, int height)
 
 void UiLookAndFeel::drawPopupMenuUpDownArrow (Graphics& g, int width, int height, bool isScrollUpArrow)
 {
-    const Colour background (findColour (PopupMenu::backgroundColourId));
+    const SectionTheme& theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
+    const Colour background (theme.button_on_colour);
 
     g.setGradientFill (ColourGradient (background, 0.0f, height * 0.5f,
                                        background.withAlpha (0.0f),
                                        0.0f, isScrollUpArrow ? ((float) height) : 0.0f,
                                        false));
 
-    g.fillRect (1, 1, width - 2, height - 2);
+    g.fillRect (0, 0, width, height);
 
     const float hw = width * 0.5f;
     const float arrowW = height * 0.3f;
@@ -700,7 +746,7 @@ void UiLookAndFeel::drawPopupMenuUpDownArrow (Graphics& g, int width, int height
                    hw + arrowW, y1,
                    hw, y2);
 
-    g.setColour (findColour (PopupMenu::textColourId).withAlpha (0.5f));
+    g.setColour (theme.button_on_font_colour.withAlpha (0.8f));
     g.fillPath (p);
 }
 
@@ -711,6 +757,7 @@ void UiLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
                                        const String& shortcutKeyText,
                                        const Drawable* icon, const Colour* const textColourToUse)
 {
+    const SectionTheme& theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
     if (isSeparator)
     {
         Rectangle<int> r (area.reduced (5, 0));
@@ -724,23 +771,25 @@ void UiLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
     }
     else
     {
-        Colour textColour (findColour (PopupMenu::textColourId));
-
-        if (textColourToUse != nullptr)
-            textColour = *textColourToUse;
-
         Rectangle<int> r (area.reduced (1));
 
         if (isHighlighted)
         {
-            g.setColour (findColour (PopupMenu::highlightedBackgroundColourId));
+            g.setColour (theme.button_on_colour);
             g.fillRect (r);
 
-            g.setColour (findColour (PopupMenu::highlightedTextColourId));
+            g.setColour (theme.button_on_font_colour);
+        }
+        else if( isTicked )
+        {
+            g.setColour (theme.button_on_colour.withAlpha(0.7f));
+            g.fillRect (r);
+
+            g.setColour (theme.button_on_font_colour);
         }
         else
         {
-            g.setColour (textColour);
+            g.setColour (theme.button_off_font_colour);
         }
 
         if (! isActive)
@@ -796,7 +845,16 @@ void UiLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
         }
     }
 }
+void UiLookAndFeel::drawPopupMenuSectionHeader (Graphics& g, const Rectangle<int>& area, const String& sectionName)
+{
+    const SectionTheme& theme = colours.get_theme(COLOUR_THEMES::BG_THEME);
+    g.setFont (getPopupMenuFont().boldened());
+    g.setColour (theme.button_on_colour);
 
+    g.drawFittedText (sectionName,
+                      area.getX() + 12, area.getY(), area.getWidth() - 16, (int) (area.getHeight() * 0.8f),
+                      Justification::bottomLeft, 1);
+}
 //==============================================================================
 void UiLookAndFeel::fillTextEditorBackground (Graphics& g, int /*width*/, int /*height*/, TextEditor& textEditor)
 {
@@ -986,14 +1044,33 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
     Path indent;
     if (slider.isHorizontal())
     {
+        const float iy = y + height * 0.5f - sliderRadius*0.75;
+        const float ih = sliderRadius*1.5;
 
-        const float iy = y + height * 0.5f - sliderRadius * 0.5f;
-        const float ih = sliderRadius;
+        {
+            g.setColour (theme.slider_bg_colour) ;
+            indent.addRoundedRectangle (2, iy, slider.getWidth() - 4, ih - 4, 2 );
+            g.fillPath (indent);
+            g.strokePath(indent,PathStrokeType(2.5f));
+            indent.clear();
+        }
 
-        g.setColour (theme.slider_bg_colour) ;
-        indent.addRoundedRectangle (x - sliderRadius, iy,
-                                    width + sliderRadius*2, ih,
-                                    5.0f);
+        {
+            g.setColour (col) ;
+            float width =  slider.getWidth() - 4;
+            const float value = slider.getValue();
+            float scale = value > 0 ? 0.02 : 0;
+            const float real_scale = 1.0f/slider.getMaximum()*slider.getValue();
+            if(real_scale > 0.02 )
+            {
+                scale = real_scale;
+            }
+
+            float slider_pos = width * scale;
+            indent.addRoundedRectangle ( 2, iy, slider_pos, ih -4, 2 );
+
+            g.fillPath (indent);
+        }
 
         g.fillPath (indent);
         g.strokePath(indent,PathStrokeType(2.5f));
@@ -1013,20 +1090,18 @@ void UiLookAndFeel::drawLinearSliderBackground (Graphics& g, int x, int y, int w
             g.fillPath (indent);
             g.strokePath(indent,PathStrokeType(2.5f));
             indent.clear();
-            /*
+        }
 
-                  g.setColour (col) ;
-                  indent.addRectangle (ix, float(y) - sliderRadius + sliderPos,
-                                       iw, float(height) + sliderRadius*2.5 - sliderPos);
-                                       */
-
+        {
             g.setColour (col) ;
             float height =  slider.getHeight() - 4;
             const float value = slider.getValue();
             float scale = value > 0 ? 0.02 : 0;
             const float real_scale = 1.0f/slider.getMaximum()*slider.getValue();
             if(real_scale > 0.02 )
+            {
                 scale = real_scale;
+            }
 
             float slider_pos = height * scale;
             indent.addRoundedRectangle (ix, height-slider_pos + 2, iw, slider_pos, 2 );
@@ -1218,7 +1293,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
         }
 
         filledArc.clear();
-        if( sliderPos != 0 )
+        //if( sliderPos != 0 )
         {
             if( slider_type != VALUE_SLIDER )
             {
@@ -1253,7 +1328,6 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
             const String suffix = value_to_paint.fromFirstOccurrenceOf("@",false,true);
             value_to_paint = value_to_paint.upToFirstOccurrenceOf("@",false,true);
 
-
             if( suffix == "wav" )
             {
                 const float label_x_ident = float(width)/3.2;
@@ -1266,7 +1340,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                 if( value_as_float <= 1 and value_as_float >= 0 )
                 {
                     float square_weight = value_as_float;
-                    for( int i = 1 ; i < int(label_w*4 +1) ; ++i )
+                    for( int i = 0 ; i < int(label_w*4) ; ++i )
                     {
                         float value_sin = std::sin( (1.0f/float(label_w*4)*i )*(float_Pi*2) );
                         float value_square;
@@ -1286,7 +1360,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float x = label_x_ident + float(i)/4;
                         float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 1 )
+                        if( i == 0 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
@@ -1295,7 +1369,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                 else if( value_as_float <= 2 and value_as_float >= 1 )
                 {
                     float saw_weight = value_as_float - 1;
-                    for( int i = 1 ; i < int(label_w*4) ; ++i )
+                    for( int i = 0 ; i < int(label_w*4) ; ++i )
                     {
                         float value_sin = std::sin( (1.0f/float(label_w*4)*i )*(float_Pi*2) );
                         float value_square;
@@ -1327,7 +1401,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float x = label_x_ident + float(i)/4;
                         float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 1 )
+                        if( i == 0 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
@@ -1336,7 +1410,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                 else if( value_as_float <= 3 and value_as_float >= 2 )
                 {
                     float rand_weight = value_as_float - 2;
-                    for( int i = 1 ; i < int(label_w*4) ; ++i )
+                    for( int i = 0 ; i < int(label_w*4) ; ++i )
                     {
                         float value_saw;
                         if( i < 1 )
@@ -1355,7 +1429,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         float x = label_x_ident + float(i)/4;
                         float y = (label_y_ident+label_h) - label_h*(mix+1)*0.5;
 
-                        if( i == 1 )
+                        if( i == 0 )
                             wave_path.startNewSubPath( x, y );
                         else
                             wave_path.lineTo( x, y );
@@ -1371,35 +1445,18 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
             else
             {
                 const float label_x_ident = float(width)/4;
-                const float label_y_ident = float(height)/4;
+                const float label_y_ident = float(height)/3.25;
                 const float label_h = float(height)-label_y_ident*2;
                 const float label_w = float(width)-label_x_ident*2;
 
                 Path text_path;
-                float font_height_factor = 0.1f;
-                if( value_to_paint == "0" )
-                    font_height_factor = 0.5f;
-
                 GlyphArrangement glyphs;
                 glyphs.addFittedText( defaultFont.withHeight(label_h),
                                       value_to_paint,
                                       label_x_ident, label_y_ident, label_w, label_h,
                                       Justification::centred, 1, 0.5f);
-                /*
-                        glyphs.addJustifiedText( defaultFont.withHeight(label_h),
-                                                 value_to_paint,
-                                                 label_x_ident, label_y_ident, label_w,
-                                                 Justification::centred);
-                                                 */
-                /*
-                        glyphs.addCurtailedLineOfText( defaultFont.withHeight(font_height_factor*height),
-                                              value_to_paint,
-                                              label_x_ident, label_y_ident, width, false);
-                                              */
+
                 glyphs.createPath(text_path);
-                // DropShadow drop_shadow( colours.bg, 1, Point<int>(0,0) );
-                //  drop_shadow.drawForPath( g, text_path );
-                // g.setColour( SliderCol );
                 g.fillPath(text_path);
 
                 // DRAW SUFFIX
@@ -1418,43 +1475,9 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                                           left_right_ident, height - height/4, width -left_right_ident*2, height/4,
                                           Justification::centred, 1, 0.5f);
                     glyphs.createPath(text_path);
-                    // DropShadow drop_shadow( colours.bg, 1, Point<int>(0,0) );
-                    // drop_shadow.drawForPath( g, text_path );
-                    // g.setColour( SliderCol );
                     g.fillPath(text_path);
                 }
             }
-        }
-        // NO VALUE
-        else if( slider_label_style == SLIDER_LABEL_STYLES::JUST_HIDE_CENTER )
-        {
-
-        }
-        else
-        {
-            /*
-                  const float innerRadius = radius * 0.2f;
-                  Path p;
-                  p.addTriangle (-innerRadius, 0.0f,
-                                 0.0f, -radius * THICKNESS * 0.7f,
-                                 innerRadius, 0.0f);
-
-                  p.addEllipse (-innerRadius, -innerRadius, innerRadius * 2.0f, innerRadius * 2.0f);
-                  p.applyTransform( AffineTransform::rotation (angle).translated (centreX, centreY) );
-                  */
-            /*
-            if( slider.isEnabled() )
-            {
-                DropShadow drop_shadow( SliderCol.darker(), 1, Point<int>(0,0) );
-                drop_shadow.drawForPath( g, p );
-            }
-            */
-            /*
-            {
-                g.setColour (SliderCol);
-                g.fillPath (p);
-            }
-            */
         }
     }
 }
@@ -1472,123 +1495,249 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
     PopupMenu* menu = new PopupMenu();
     menu->setLookAndFeel (this);
 
+
     {
-/*
-#define GLOBAL_RETURN_MODE_USER "UGRM"
-#define GLOBAL_RETURN_MODE_FACTORY "FGRM"
-#define GLOBAL_RETURN_MODE_PROGRAM "PGRM"
-#define GLOBAL_RETURN_MODE_UNDO "UGRM"
+        // TODO TOOLTIP - > maybe you can add a button for tooltips or just hack the class
 
-#define RETURN_VALUE_USER "URV"
-#define RETURN_VALUE_FACTORY "FRV"
-#define RETURN_VALUE_PROGRAM "PRV"
-#define RETURN_VALUE_UNDO "URV"
-*/
-        const float slider_value = slider_->getValue();
-        const float user_value = slider_->getProperties().getWithDefault( RETURN_VALUE_USER, 0 );
-        const float factory_value = slider_->getProperties().getWithDefault( RETURN_VALUE_FACTORY, 0 );
-        const float program_value = slider_->getProperties().getWithDefault( RETURN_VALUE_PROGRAM, 0 );
-        const float undo_value = slider_->getProperties().getWithDefault( RETURN_VALUE_UNDO, slider_value );
+        /*
+        #define GLOBAL_RETURN_MODE_USER "UGRM"
+        #define GLOBAL_RETURN_MODE_FACTORY "FGRM"
+        #define GLOBAL_RETURN_MODE_PROGRAM "PGRM"
+        #define GLOBAL_RETURN_MODE_UNDO "UGRM"
 
+        #define RETURN_VALUE_USER "URV"
+        #define RETURN_VALUE_FACTORY "FRV"
+        #define RETURN_VALUE_PROGRAM "PRV"
+        #define RETURN_VALUE_UNDO "URV"
+        */
         menu->addSeparator();
-        menu->addSectionHeader("RESTORE VALUES:");
-        menu->addItem (1, TRANS ("-> User"), true, user_value == slider_value );
-        menu->addItem (2, TRANS ("-> Factory Default"), true, factory_value == slider_value );
-        menu->addItem (3, TRANS ("-> State On Program"), true, program_value == slider_value );
-        menu->addItem (4, TRANS ("-> Undo"), true, undo_value == slider_value );
+        menu->addSectionHeader("RESTORE VALUES");
+        menu->addItem (1, TRANS ("User"), true, false );
+        menu->addItem (2, TRANS ("Factory Default"), true, false );
+        menu->addItem (3, TRANS ("State On Program"), true, false );
+        menu->addItem (4, TRANS ("Undo"), true, false );
 
         menu->addSeparator();
         menu->addSectionHeader("UPDATE VALUES");
-        menu->addItem (5, TRANS ("-> Set new User Return Value"), true, false );
+        menu->addItem (5, TRANS ("Set new User Value"), true, false );
 
         menu->addSeparator();
-        menu->addSectionHeader("SET GLOBAL DOUBLE CLICK RETURN MODE");
-        menu->addItem (6, TRANS ("-> User"), true, is_global_user_return );
-        menu->addItem (7, TRANS ("-> Factory Default"), true, is_global_factory_return );
-        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
-        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
-	
+        menu->addSectionHeader("GLOBAL DOUBLE CLICK RETURN MODE");
+        menu->addItem (6, TRANS ("User"), true, is_global_user_return );
+        menu->addItem (7, TRANS ("Factory Default"), true, is_global_factory_return );
+        menu->addItem (8, TRANS ("State On Program"), true, is_global_program_return );
+        menu->addItem (9, TRANS ("Undo (toggle last and current)"), true, is_global_undo_return );
+
         menu->addSeparator();
-        menu->addSectionHeader("HANDLING LINEAR SLIDERS");
-        menu->addItem (10, TRANS ("-> User"), true, is_global_user_return );
-        menu->addItem (11, TRANS ("-> Factory Default"), true, is_global_factory_return );
-        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
-        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
-	
         menu->addSeparator();
-        menu->addSectionHeader("HANDLING ROTARY SLIDERS");
-        menu->addItem (6, TRANS ("-> User"), true, is_global_user_return );
-        menu->addItem (7, TRANS ("-> Factory Default"), true, is_global_factory_return );
-        menu->addItem (8, TRANS ("-> State On Program"), true, is_global_program_return );
-        menu->addItem (9, TRANS ("-> Undo (toggle last and current)"), true, is_global_undo_return );
+        menu->addSeparator();
+        menu->addSectionHeader("GLOBAL INPUT SMOOTHING");
+        popup_smooth_Slider->setRange (1, 1000, 1);
+        popup_smooth_Slider->setSliderStyle (Slider::LinearHorizontal);
+        popup_smooth_Slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
+        popup_smooth_Slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
+        if( synth_data )
+        {
+            popup_linear_sensi_slider->setValue( int(synth_data->glide_motor_time), dontSendNotification );
+        }
+
+        menu->addCustomItem (10,
+                             popup_smooth_Slider,
+                             150, 30,
+                             false );
+
+        if( slider_->isHorizontal() or slider_->isVertical() )
+        {
+            menu->addSeparator();
+            menu->addSectionHeader("GLOBAL LINEAR SLIDER HANDLING");
+            menu->addItem (11, TRANS ("Velocity-sensitive Mode"), true, synth_data->is_linear_sliders_velocity_mode );
+
+            menu->addSeparator();
+            menu->addSectionHeader("GLOBAL LINEAR VELOCITY ACCELERATION");
+            popup_linear_sensi_slider->setRange (100, 2000, 1);
+            popup_linear_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
+            popup_linear_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
+            popup_test_slider->setMouseDragSensitivity(synth_data->sliders_linear_sensitivity);
+            popup_test_slider->setSliderStyle (Slider::LinearVertical);
+            if( synth_data )
+            {
+                popup_linear_sensi_slider->setValue( int(synth_data->sliders_linear_sensitivity), dontSendNotification );
+                popup_test_slider->setMouseDragSensitivity(synth_data->sliders_linear_sensitivity);
+            }
+            menu->addCustomItem (17,
+                                 popup_linear_sensi_slider,
+                                 150, 30,
+                                 false );
+        }
+        else
+        {
+            menu->addSeparator();
+            menu->addSectionHeader("GLOBAL ROTARY SLIDER HANDLING");
+            menu->addItem (12, TRANS ("Velocity Based Mode"), true, synth_data->is_rotary_sliders_velocity_mode );
+            menu->addItem (13, TRANS ("Use circular dragging (ignored in velocity mode)"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
+            //menu->addItem (14, TRANS ("Use left-right dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
+            //menu->addItem (15, TRANS ("Use up-down dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
+            menu->addItem (16, TRANS ("Use left-right/up-down dragging"), true, not synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
+
+            menu->addSeparator();
+            menu->addSectionHeader("GLOBAL ROTARY SLIDER SENSITIVITY");
+            popup_rotary_sensi_slider->setRange (100, 2000, 1);
+            popup_rotary_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
+            popup_rotary_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
+            popup_rotary_sensi_slider->setValue( int(synth_data->sliders_sensitivity), dontSendNotification );
+            popup_test_slider->setMouseDragSensitivity(synth_data->sliders_sensitivity);
+            popup_test_slider->setSliderStyle (synth_data->sliders_in_rotary_mode ? Slider::Rotary : Slider::RotaryHorizontalVerticalDrag );
+            menu->addCustomItem (18,
+                                 popup_rotary_sensi_slider,
+                                 150, 30,
+                                 false );
+        }
+
+        /*
+        menu->addSectionHeader("TEST SENSITIVITY and HANDLING");
+        popup_test_slider->setRange (0, 1000, 1);
+        popup_test_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
+        popup_test_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
+        popup_test_slider->setOpaque(true);
+        popup_test_slider->setValue(500,dontSendNotification);
+        menu->addCustomItem (19,
+                             popup_test_slider,
+                             60, 60,
+                             false );
+                             */
+
+        menu->addSeparator();
+        menu->addSectionHeader("MIDI");
+        menu->addItem (20, TRANS ("Map MIDI controller"), true, false );
+
+        menu->addSectionHeader("SNAP TO MIDI INPUT");
+        popup_midi_snap_slider->setRange (0, 1, 0.001);
+        popup_midi_snap_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
+        popup_midi_snap_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
+        popup_test_slider->setValue(500,dontSendNotification);
+        if( synth_data )
+        {
+            popup_midi_snap_slider->setValue( synth_data->midi_pickup_offset, dontSendNotification );
+        }
+        menu->addCustomItem (21,
+                             popup_midi_snap_slider,
+                             150, 30,
+                             false );
     }
-    
+    /*
+        bool isHorizontal() const noexcept;
+    bool isVertical() const noexcept;
+    void setScrollWheelEnabled (bool enabled);
+    overwrite maximum
+    overwrite minimum
+    void setMouseDragSensitivity (int distanceForFullScaleDrag);
+    int getMouseDragSensitivity() const noexcept;
+    */
     return menu;
 }
 
-bool UiLookAndFeel::is_global_user_return = false;
-        bool UiLookAndFeel::is_global_factory_return = false;
-                bool UiLookAndFeel::is_global_program_return = false;
-                        bool UiLookAndFeel::is_global_undo_return = true;
-                                bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
+bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
 {
     if (slider != nullptr)
     {
         switch (result)
         {
         case 1:
-            slider->setVelocityBasedMode (! slider->getVelocityBasedMode());
-            break;
-        case 2:
-            slider->setSliderStyle (Slider::Rotary);
-            break;
-        case 3:
-            slider->setSliderStyle (Slider::RotaryHorizontalDrag);
-            break;
-        case 4:
-            slider->setSliderStyle (Slider::RotaryVerticalDrag);
-            break;
-        case 5:
-            slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
-            break;
-        case 6:
             slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_USER, 0 ), sendNotificationSync );
             break;
-        case 7:
+        case 2:
             slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_FACTORY, 0 ), sendNotificationSync );
             break;
-        case 8:
+        case 3:
             slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_PROGRAM, 0 ), sendNotificationSync );
             break;
-        case 9:
+        case 4:
             slider->setValue ( slider->getProperties().getWithDefault( RETURN_VALUE_UNDO, slider->getValue() ), sendNotificationSync );
             break;
-        case 10:
+        case 5:
             slider->getProperties().set( RETURN_VALUE_USER, slider->getValue() );
             break;
-        case 11:
+        case 6:
             is_global_user_return = true;
             is_global_factory_return = false;
             is_global_program_return = false;
             is_global_undo_return = false;
             break;
-        case 12:
+        case 7:
             is_global_factory_return = true;
             is_global_user_return = false;
             is_global_program_return = false;
             is_global_undo_return = false;
             break;
-        case 13:
+        case 8:
             is_global_program_return = true;
             is_global_user_return = false;
             is_global_factory_return = false;
             is_global_undo_return = false;
             break;
-        case 14:
+        case 9:
             is_global_undo_return = true;
             is_global_user_return = false;
             is_global_factory_return = false;
             is_global_program_return = false;
+            break;
+        case 10:
+        {
+            //synth_data->glide_motor_time =
+        }
+        break;
+        case 11:
+            synth_data->is_linear_sliders_velocity_mode ^= true;
+            if( mainwindow )
+            {
+                mainwindow->global_slider_settings_changed(mainwindow);
+            }
+            break;
+        case 12:
+            synth_data->is_rotary_sliders_velocity_mode ^= true;
+            if( mainwindow )
+            {
+                mainwindow->global_slider_settings_changed(mainwindow);
+            }
+            break;
+        case 13:
+            synth_data->sliders_in_rotary_mode = true;
+            synth_data->is_rotary_sliders_velocity_mode = false;
+            if( mainwindow )
+            {
+                mainwindow->global_slider_settings_changed(mainwindow);
+            }
+            break;
+            /*
+            case 14:
+                slider->setSliderStyle (Slider::RotaryHorizontalDrag);
+                break;
+            case 15:
+                slider->setSliderStyle (Slider::RotaryVerticalDrag);
+                break;
+            */
+        case 16:
+            synth_data->sliders_in_rotary_mode = false;
+            synth_data->is_rotary_sliders_velocity_mode = false;
+            if( mainwindow )
+            {
+                mainwindow->global_slider_settings_changed(mainwindow);
+            }
+            break;
+        case 17:
+            slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+            break;
+        case 18:
+            slider->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+            break;
+            /*case 19:
+                /est_parameter = slider->getValue();
+                break;*/
+        case 20:
+            if( mainwindow )
+            {
+                mainwindow->show_info_popup( slider, nullptr, true );
+            }
             break;
         default:
             break;
@@ -1617,14 +1766,64 @@ bool UiLookAndFeel::sliderDoubleClicked ( Slider* slider)
         slider->setValue (float(slider->getProperties().getWithDefault( RETURN_VALUE_UNDO, current_value )), sendNotificationSync);
         slider->getProperties().set( RETURN_VALUE_UNDO, current_value );
     }
+
+    return true;
 }
+void UiLookAndFeel::sliderValueChanged (Slider* sliderThatWasMoved)
+{
+    if (sliderThatWasMoved == popup_smooth_Slider)
+    {
+        if( synth_data )
+        {
+            synth_data->glide_motor_time = sliderThatWasMoved->getValue();
+        }
+        if( mainwindow )
+        {
+            mainwindow->global_slider_settings_changed(mainwindow);
+        }
+    }
+    else if (sliderThatWasMoved == popup_linear_sensi_slider)
+    {
+        if( synth_data )
+        {
+            synth_data->sliders_linear_sensitivity = sliderThatWasMoved->getValue();
+            popup_test_slider->setMouseDragSensitivity(sliderThatWasMoved->getValue());
+        }
+        if( mainwindow )
+        {
+            mainwindow->global_slider_settings_changed(mainwindow);
+        }
+    }
+    else if (sliderThatWasMoved == popup_rotary_sensi_slider)
+    {
+        if( synth_data )
+        {
+            synth_data->sliders_sensitivity = sliderThatWasMoved->getValue();
+            popup_test_slider->setMouseDragSensitivity(sliderThatWasMoved->getValue());
+        }
+        if( mainwindow )
+        {
+            mainwindow->global_slider_settings_changed(mainwindow);
+        }
+    }
+    else if( sliderThatWasMoved == popup_midi_snap_slider )
+    {
+        synth_data->midi_pickup_offset = sliderThatWasMoved->getValue();
+    }
+}
+
 //==============================================================================
-void UiLookAndFeel::getTooltipSize (const String& tipText, int& width, int& height)
+Rectangle<int> UiLookAndFeel::getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea)
 {
     const TextLayout tl (LookAndFeelHelpers::layoutTooltipText (tipText, Colours::black, defaultFont ));
 
-    width  = (int) (tl.getWidth() + 30.0f);
-    height = (int) (tl.getHeight() + 20.0f);
+    const int w  = (int) (tl.getWidth() + 30.0f);
+    const int h = (int) (tl.getHeight() + 20.0f);
+
+    return Rectangle<int> (screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
+                           screenPos.y > parentArea.getCentreY() ? screenPos.y - (h + 6)  : screenPos.y + 6,
+                           w, h)
+           .constrainedWithin (parentArea);
 }
 
 void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int height)
@@ -1984,6 +2183,7 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
+
 
 
 

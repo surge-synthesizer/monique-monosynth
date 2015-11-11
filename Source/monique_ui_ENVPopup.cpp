@@ -123,13 +123,11 @@ void Monique_Ui_ENVPopup::set_element_to_show( Component*const comp_, Monique_Ui
 
     owner_slider = owner_;
     related_to_comp = comp_;
-    Component* parent = comp_->getParentComponent();
 
     int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
     int y = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getY();
 
     const float width_scale = 1.0f/original_w*getWidth();
-    const float height_scale = 1.0f/original_h*getHeight();
     const int left_move = not left ? getWidth() - (width_scale*80) + (width_scale*10) : (width_scale*10);
     setTopLeftPosition( x-left_move, y+comp_->getHeight() );
 }
@@ -146,7 +144,7 @@ void Monique_Ui_ENVPopup::set_clickable_components( Array<Component*>& comps_ ) 
     for( int i = 0 ; i != observed_comps.size() ; ++i )
     {
         Component*comp = observed_comps.getUnchecked(i);
-        if( Monique_Ui_Mainwindow*mainwin = dynamic_cast< Monique_Ui_Mainwindow* >( comp ) )
+        if( dynamic_cast< Monique_Ui_Mainwindow* >( comp ) )
         {
             comp->addMouseListener(this,false);
         }
@@ -527,7 +525,8 @@ void Monique_Ui_ENVPopup::paint (Graphics& g)
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 
 #include "mono_ui_includeHacks_BEGIN.h"
-
+    WIDTH_AND_HIGHT_FACTORS
+    
     g.setColour (colours.get_theme( theme  ).area_colour);
     g.fillRoundedRectangle (1.0f, 10.0f, 708.0f, 179.0f, 10.000f);
 
@@ -607,6 +606,7 @@ void Monique_Ui_ENVPopup::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
 #include "mono_ui_includeHacks_BEGIN.h"
+    WIDTH_AND_HIGHT_FACTORS
 
     const int left_move = not left ? original_w - 50-30 : 0;
 

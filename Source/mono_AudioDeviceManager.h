@@ -159,9 +159,9 @@ public:
     inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept;
     inline void clear_feedback_message( int cc_number_ ) noexcept;
 
+protected:
+    COLD void sample_rate_or_block_changed() noexcept override;
 private:
-    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
-
     class OpenStateChecker : public Timer
     {
         friend class mono_AudioDeviceManager;
@@ -207,7 +207,7 @@ public:
 
 protected:
     COLD mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept;
-    COLD ~mono_AudioDeviceManager() noexcept;
+    COLD virtual ~mono_AudioDeviceManager() noexcept;
     void clear_feedback() noexcept;
     void clear_feedback_and_shutdown() noexcept;
 
@@ -219,6 +219,8 @@ protected:
     COLD String read_defaults() noexcept;
     COLD void save() const noexcept;
     COLD String read() noexcept;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_AudioDeviceManager)
 };
 //==============================================================================
 
@@ -294,6 +296,7 @@ protected:
     virtual Monique_Ui_Mainwindow*get_editor() noexcept = 0;
     virtual MoniqueSynthData*get_synth_data() noexcept = 0;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_AudioDeviceManager)
 };
 //==============================================================================
 

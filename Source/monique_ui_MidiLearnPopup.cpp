@@ -43,7 +43,7 @@ void Monique_Ui_MainwindowPopup::refresh() noexcept
     }
 }
 
-void Monique_Ui_MainwindowPopup::set_element_to_show( Component*const comp_ )
+void Monique_Ui_MainwindowPopup::set_element_to_show( const Component*const comp_ )
 {
     related_to_comp = comp_;
     int x = get_editor()->getLocalPoint(comp_,Point<int>(0,0)).getX();
@@ -138,6 +138,7 @@ void Monique_Ui_MainwindowPopup::paint (Graphics& g)
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 #include "mono_ui_includeHacks_BEGIN.h"
+    WIDTH_AND_HIGHT_FACTORS
 
     COLOUR_THEMES theme_id =  static_cast<COLOUR_THEMES>( int(this->getProperties().getWithDefault( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::DUMMY_THEME ) ) );
     g.setColour (colours.get_theme( theme_id ).area_colour);
@@ -168,6 +169,7 @@ void Monique_Ui_MainwindowPopup::paint (Graphics& g)
 void Monique_Ui_MainwindowPopup::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+    WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
     combo_midi_number->setBounds (10, 20, 60, 30);

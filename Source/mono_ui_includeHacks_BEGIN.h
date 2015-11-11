@@ -28,7 +28,7 @@ COLOUR_REPLACEMENT_START
                        (x == 0xff11ff11) ? colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour : \
                                            Colour(x) \
                   )
-WIDTH_AND_HIGHT_FACTORS
+
 #define fillRoundedRectangle(x,y,w,h,r) fillRoundedRectangle (x > 2 ? float(x)*width_factor : x, \
                                                               y > 2 ? float(y)*height_factor : y, \
                                                               w > 2 ? float(w)*width_factor : w, \
@@ -75,13 +75,13 @@ WIDTH_AND_HIGHT_FACTORS
                       
 // resized
 //*****************************************************************************
-#define setBounds(x,y,w,h)         setBounds (x > 2 ? float(x)*(1.0f/original_w*getWidth()) : x, \
-                                              y > 2 ? float(y)*(1.0f/original_h*getHeight()) : y, \
-                                              w > 2 ? float(w)*(1.0f/original_w*getWidth()) : w, \
-                                              h > 2 ? float(h)*(1.0f/original_h*getHeight()) : h)
-#define startNewSubPath(x,y) startNewSubPath (x > 2 ? float(x)*(1.0f/original_w*getWidth()) : x, \
-                                              y > 2 ? float(y)*(1.0f/original_h*getHeight()) : y )
-#define lineTo(x,y)                   lineTo (x > 2 ? float(x)*(1.0f/original_w*getWidth()) : x, \
-                                              y > 2 ? float(y)*(1.0f/original_h*getHeight()) : y )
-#define quadraticTo(x,y,x2,y2)   quadraticTo (x*(1.0f/original_w*getWidth()), y*(1.0f/original_h*getHeight()),x2*(1.0f/original_w*getWidth()), y2*(1.0f/original_h*getHeight()))
+#define setBounds(x,y,w,h)         setBounds (x > 2 ? float(x)*width_factor : x, \
+                                              y > 2 ? float(y)*height_factor : y, \
+                                              w > 2 ? float(w)*width_factor : w, \
+                                              h > 2 ? float(h)*height_factor : h)
+#define startNewSubPath(x,y) startNewSubPath (x > 2 ? float(x)*width_factor : x, \
+                                              y > 2 ? float(y)*height_factor : y )
+#define lineTo(x,y)                   lineTo (x > 2 ? float(x)*width_factor : x, \
+                                              y > 2 ? float(y)*height_factor : y )
+#define quadraticTo(x,y,x2,y2)   quadraticTo (x*(1.0f/width_factor, y*height_factor,x2*width_factor, y2*height_factor))
 

@@ -46,10 +46,11 @@ public:
 private:
     ClockSmoothBuffer* clock_smoother;
     int64 last_clock_sample;
+    int64 last_step_sample;
     bool try_to_restart_arp;
 
     bool received_a_clock_in_time;
-    bool connection_missed_counter;
+    int connection_missed_counter;
     void timerCallback() override;
 #endif
 
@@ -80,7 +81,24 @@ private:
     // ==============================================================================
     // PROCESS
     AudioPlayHead::CurrentPositionInfo current_pos_info;
+
+#ifdef IS_STANDALONE
+    CriticalSection block_lock;
+public:
+    void set_audio_offline() noexcept
+    {
+        block_lock.enter();
+    }
+    void set_audio_online() noexcept
+    {
+        block_lock.exit();
+    }
+#endif
+
+private:
+    bool force_sample_rate_update;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
+    COLD void sample_rate_or_block_changed() noexcept override;
     COLD void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
     COLD void releaseResources() override;
     COLD void reset() override;

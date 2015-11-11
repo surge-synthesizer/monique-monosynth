@@ -40,8 +40,7 @@ class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public AsyncUpdater,
                                    public ComboBoxListener,
-                                   public ButtonListener,
-                                   public SliderListener
+                                   public ButtonListener
 {
 public:
     //==============================================================================
@@ -52,6 +51,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     SectionTheme* editable_theme;
 
+    bool block_colour_update;
     void refresh() noexcept override;
     void handleAsyncUpdate() override;
 
@@ -107,13 +107,13 @@ private:
     //==============================================================================
     // AUDIO
     void update_audio_devices();
+    void update_colour_presets();
     //[/UserMethods]
 
     void paint (Graphics& g);
     void resized();
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
-    void sliderValueChanged (Slider* sliderThatWasMoved);
 
     // Binary resources:
     static const char* vst_logo_100x_png;
@@ -145,23 +145,11 @@ private:
     ScopedPointer<Label> label_7;
     ScopedPointer<Label> label_8;
     ScopedPointer<ComboBox> combo_sample_rate;
-    ScopedPointer<TextButton> button_current_editor_color;
-    ScopedPointer<Slider> slider_glide_time;
-    ScopedPointer<Label> label7;
     ScopedPointer<Label> label_16;
     ScopedPointer<ToggleButton> toggle_animate_input_env;
     ScopedPointer<Label> label_18;
     ScopedPointer<ToggleButton> toggle_show_tooltips;
-    ScopedPointer<Label> label_ui_headline_1;
     ScopedPointer<Label> label_ui_headline_2;
-    ScopedPointer<Label> label_ui_headline_4;
-    ScopedPointer<Slider> slider_sensitivity;
-    ScopedPointer<Label> label2;
-    ScopedPointer<Label> label_3;
-    ScopedPointer<Label> label_5;
-    ScopedPointer<ToggleButton> toggle_slider_linear;
-    ScopedPointer<ToggleButton> toggle_slider_rotary;
-    ScopedPointer<Label> label_ui_headline_5;
     ScopedPointer<TextButton> button_colour_buttons_on;
     ScopedPointer<TextButton> button_colour_slider_1;
     ScopedPointer<TextButton> button_colour_slider_2;
@@ -169,9 +157,8 @@ private:
     ScopedPointer<TextButton> button_colour_buttons_font_on;
     ScopedPointer<TextButton> button_colour_labels;
     ScopedPointer<Label> label_ui_headline_6;
-    ScopedPointer<TextButton> button_preset_1;
-    ScopedPointer<TextButton> button_preset_2;
-    ScopedPointer<TextButton> button_preset_3;
+    ScopedPointer<TextButton> button_replace_preset;
+    ScopedPointer<TextButton> button_save_as_preset;
     ScopedPointer<Label> label_6;
     ScopedPointer<ToggleButton> toggle_one_pedal;
     ScopedPointer<ImageButton> image_vst;
@@ -187,7 +174,7 @@ private:
     ScopedPointer<TextButton> button_colour_buttons_off;
     ScopedPointer<TextButton> button_colour_buttons_font_off;
     ScopedPointer<TextButton> button_colour_slider_bg;
-    ScopedPointer<TextButton> button_preset_4;
+    ScopedPointer<TextButton> button_remove_preset;
     ScopedPointer<Label> label_11;
     ScopedPointer<ToggleButton> toggle_for_all;
     ScopedPointer<TextButton> copy2;
@@ -197,6 +184,11 @@ private:
     ScopedPointer<Label> label_colour;
     ScopedPointer<ColourSelector> colour_selector;
     ScopedPointer<HyperlinkButton> link_to_monoplugs;
+    ScopedPointer<TextButton> selected_section_marker;
+    ScopedPointer<TextButton> selected_element_marker;
+    ScopedPointer<Label> label_colour2;
+    ScopedPointer<Label> label_section2;
+    ScopedPointer<ComboBox> combo_theme;
 
 
     //==============================================================================

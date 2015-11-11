@@ -7,6 +7,7 @@
 #include "monique_ui_SegmentedMeter.h"
 #include "monique_ui_Refresher.h"
 #include "monique_ui_AmpPainter.h"
+#include "monique_ui_LookAndFeel.h"
 
 //==============================================================================
 //==============================================================================
@@ -29,16 +30,16 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 //==============================================================================
 //==============================================================================
 #ifdef IS_STANDALONE
-#define CLOCKS_TO_SMOOTH 24
+#define CLOCKS_TO_SMOOTH (24/6)
 class ClockSmoothBuffer : RuntimeListener
 {
     int pos;
-    double buffer[CLOCKS_TO_SMOOTH];
-    double sum;
+    float buffer[CLOCKS_TO_SMOOTH];
+    float sum;
 
 public:
     //==========================================================================
-    inline void add( double val_ ) noexcept
+    inline void add( float val_ ) noexcept
     {
         sum-=buffer[pos];
         buffer[pos] = val_;
@@ -49,16 +50,16 @@ public:
             pos = 0;
         }
     }
-    inline double add_and_get_average( double val_ ) noexcept
+    inline float add_and_get_average( float val_ ) noexcept
     {
         add(val_);
         return get_average();
     }
-    inline double get_average() const noexcept
+    inline float get_average() const noexcept
     {
         return sum * ( 1.0 / CLOCKS_TO_SMOOTH );
     }
-    inline void reset( double value_ ) noexcept
+    inline void reset( float value_ ) noexcept
     {
         sum = 0;
         for( int i = 0 ; i != CLOCKS_TO_SMOOTH ; ++i )
@@ -66,6 +67,11 @@ public:
             buffer[i] = value_;
             sum += value_;
         }
+    }
+    
+    void sample_rate_or_block_changed() noexcept override 
+    {
+      // TODO
     }
 
 public:
@@ -75,6 +81,9 @@ public:
         reset(0);
     }
     COLD ~ClockSmoothBuffer() {}
+
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ClockSmoothBuffer)
 };
 #endif
 
@@ -127,6 +136,8 @@ COLD NoteDownStore( MoniqueSynthData*const synth_data_ ) noexcept :
                soft_is_down(false)
     {}
     COLD ~NoteDownStore() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NoteDownStore)
 };
 
 //==============================================================================
@@ -139,7 +150,6 @@ void NoteDownStore::addNote( int8 note_number_, int64 sample_ ) noexcept
     }
 
     float master_tune = synth_data->osc_datas[MASTER_OSC]->tune;
-    float used_root_tune = root_note + master_tune;
     if( root_note == -1 )
     {
         root_note = note_number_;
@@ -244,31 +254,36 @@ COLD MoniqueAudioProcessor::MoniqueAudioProcessor() noexcept
 mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef IS_STANDALONE
                          last_clock_sample(0),
+                         last_step_sample(0),
                          try_to_restart_arp( false ),
                          connection_missed_counter(0),
                          received_a_clock_in_time(false),
-#else
+#endif
+                         stored_note(-1),
+                         stored_velocity(0),
+
+                         peak_meter(nullptr),
+#ifdef IS_PLUGIN
                          restore_time(-1),
 #endif
-                         peak_meter(nullptr),
                          amp_painter(nullptr),
-                         stored_note(-1),
-                         stored_velocity(0)
+                         
+                         force_sample_rate_update(true)
 {
     SHARED::getInstance()->num_instances++;
 #ifdef IS_STANDALONE
     clock_smoother = new ClockSmoothBuffer(runtime_notifyer);
 #endif
     std::cout << "MONIQUE: init core" << std::endl;
-    FloatVectorOperations::enableFlushToZeroMode(true);
     {
         ui_look_and_feel = new UiLookAndFeel();
         LookAndFeel::setDefaultLookAndFeel( ui_look_and_feel );
         midi_control_handler = new MIDIControlHandler( ui_look_and_feel, this );
 
         info = new RuntimeInfo();
-        data_buffer = new DataBuffer(getBlockSize());
+        data_buffer = new DataBuffer(1);
         synth_data = new MoniqueSynthData( MASTER, ui_look_and_feel, this, runtime_notifyer, info, data_buffer );
+        ui_look_and_feel->set_synth_data(synth_data);
         voice = new MoniqueSynthesiserVoice( this, synth_data, runtime_notifyer, info, data_buffer );
         synth_data->voice = voice;
         synth = new MoniqueSynthesizer( synth_data, voice, new MoniqueSynthesiserSound(), midi_control_handler );
@@ -278,9 +293,9 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
     {
+        synth_data->load_default();
         synth_data->load_settings();
         synth_data->read_midi();
-        synth_data->load_default();
 #ifdef IS_STANDALONE
         synth_data->load(true);
 #endif
@@ -298,8 +313,12 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
         setPlayConfigDetails ( 0, 2, setup.sampleRate, setup.bufferSize );
         addAudioCallback (&player);
         player.setProcessor (this);
+
+        prepareToPlay( setup.sampleRate, setup.bufferSize );
     }
 #endif
+    //_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_WNDW | _CRTDBG_MODE_WNDW);
+    DBG("init done");
 }
 
 COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
@@ -309,9 +328,6 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
 #ifdef IS_STANDALONE
     delete clock_smoother;
     mono_AudioDeviceManager::save();
-    closeAudioDevice();
-    removeAudioCallback (&player);
-    player.setProcessor(nullptr);
 #else
     for( int i = 0 ; i != automateable_parameters.size() ; ++i )
     {
@@ -328,22 +344,33 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     SHARED::getInstance()->num_instances--;
     if( SHARED::getInstance()->num_instances == 0 )
     {
-      if( SHARED::getInstance()->env_clipboard )
-      {
-        ENVData*env = SHARED::getInstance()->env_clipboard;
-        SHARED::getInstance()->env_clipboard = nullptr;
-        delete env;
-      }
-      if( SHARED::getInstance()->mfo_clipboard )
-      {
-        MFOData*mfo = SHARED::getInstance()->mfo_clipboard;
-        SHARED::getInstance()->mfo_clipboard = nullptr;
-        delete mfo;
-      }
+        if( SHARED::getInstance()->env_clipboard )
+        {
+            ENVData*env = SHARED::getInstance()->env_clipboard;
+            SHARED::getInstance()->env_clipboard = nullptr;
+            delete env;
+        }
+        if( SHARED::getInstance()->mfo_clipboard )
+        {
+            MFOData*mfo = SHARED::getInstance()->mfo_clipboard;
+            SHARED::getInstance()->mfo_clipboard = nullptr;
+            delete mfo;
+        }
     }
 
+    ui_look_and_feel->clear_synth_data();
+    synth->removeVoice(0);
     delete synth;
     delete synth_data;
+
+    ui_refresher = nullptr;
+    midi_control_handler = nullptr;
+    ui_look_and_feel = nullptr;
+    data_buffer = nullptr;
+    info = nullptr;
+    note_down_store = nullptr;
+
+    set_audio_online();
 }
 
 //==============================================================================
@@ -395,6 +422,11 @@ void MoniqueAudioProcessor::timerCallback()
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
+    if( not block_lock.tryEnter() )
+    {
+        return;
+    }
+
     if( buffer_.getNumChannels() < 1 )
     {
         return;
@@ -421,12 +453,11 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
     current_pos_info.timeSigDenominator = 4;
     current_pos_info.isPlaying = true;
     current_pos_info.isRecording = false;
-    current_pos_info.timeInSamples += buffer_.getNumSamples();
 
     {
         {
 #else // PLUGIN
-    if ( getPlayHead() != 0 )
+    if ( getPlayHead() != nullptr )
     {
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
         {
@@ -451,6 +482,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                             }
                         }
                     }
+                    info->clock_sync_information.clear();
 
                     // GET THE MESSAGES
                     MidiBuffer sync_messages;
@@ -468,6 +500,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                         static constexpr int clocks_per_step = 6;
                         static constexpr int clocks_per_beat = 24;
                         static constexpr int clocks_per_bar = 96;
+
                         while( message_iter.getNextEvent( input_midi_message, sample_position ) )
                         {
                             const int64 abs_event_time_in_samples = current_pos_info.timeInSamples+sample_position;
@@ -475,24 +508,47 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                             // CLOCK
                             if( input_midi_message.isMidiClock() )
                             {
+                                Timer::stopTimer();
                                 received_a_clock_in_time = true;
                                 info->is_extern_synced = true;
-                                if( not Timer::isTimerRunning() )
-                                {
-                                    Timer::startTimer( 100 );
-                                }
+                                info->clock_sync_information.add_clock( sample_position, abs_event_time_in_samples-last_clock_sample );
 
                                 const int clock_in_bar = info->clock_counter.clock();
                                 const int clock_absolute = info->clock_counter.clock_absolut();
+                                const int is_step = info->clock_counter.is_step();
+
+                                if( is_step )
+                                {
+                                    const int64 current_samples_per_step = abs_event_time_in_samples-last_step_sample;
+                                    last_step_sample = abs_event_time_in_samples;
+
+                                    // UPDATE SPEED INFO (should be used for ui)
+                                    {
+                                        int samples_per_beat = current_samples_per_step*4;
+                                        double ms_per_beat = samplesToMs(samples_per_beat,sample_rate);
+                                        if( ms_per_beat < 1 )
+                                        {
+                                            ms_per_beat = 1;
+                                        }
+                                        current_pos_info.bpm = clock_smoother->add_and_get_average((60.0f * 1000) / ms_per_beat);
+                                    }
+                                }
 
                                 // X 1
                                 bool success = false;
                                 if( speed_multiplyer == 1 )
                                 {
-                                    if( clock_in_bar % clocks_per_step == 0 )
+                                    if( clock_in_bar > 0 )
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples, abs_event_time_in_samples-last_clock_sample ) );
-
+                                        if( clock_in_bar % clocks_per_step == 0 )
+                                        {
+                                            info->steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples, abs_event_time_in_samples-last_clock_sample ) );
+                                            success = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
                                         success = true;
                                     }
                                 }
@@ -504,11 +560,19 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                                     int clock_id = clock_in_bar*speed_multiplyer;
                                     for( int i = 0 ; i != speed_multiplyer ; ++i )
                                     {
-                                        int tmp_clock_id = ((clock_id+i)%96);
-                                        if( tmp_clock_id % clocks_per_step == 0 )
+                                        if( clock_id > 0 )
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i, current_samples_per_clock ) );
+                                            int tmp_clock_id = ((clock_id+i)%96);
+                                            if( tmp_clock_id % clocks_per_step == 0 )
+                                            {
+                                                info->steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i, current_samples_per_clock ) );
 
+                                                success = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
                                             success = true;
                                         }
                                     }
@@ -516,36 +580,30 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                                 // X < 1 // WIRD SCHNELLER
                                 else
                                 {
-                                    const double speed_multiplyer__ = 1.0/speed_multiplyer;
-
-                                    const int factor = clocks_per_step*speed_multiplyer__;
-                                    const int faster_clocks_per_bar = clocks_per_bar*speed_multiplyer__;
-                                    const int faster_clocks_semi_absolut = clock_absolute % faster_clocks_per_bar;
-                                    if( faster_clocks_semi_absolut % factor == 0 )
+                                    if( clock_absolute > 0 )
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
+                                        const double speed_multiplyer__ = 1.0/speed_multiplyer;
 
-                                        success = true;
+                                        const double factor = speed_multiplyer__*clocks_per_step;
+                                        const double faster_clocks_per_bar = speed_multiplyer__*clocks_per_bar;
+                                        const double faster_clocks_semi_absolut = fmod(clock_absolute, faster_clocks_per_bar);
+                                        if( fmod(faster_clocks_semi_absolut, factor) == 0 )
+                                        {
+                                            info->steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
+
+                                            success = true;
+                                        }
                                     }
-                                }
-
-                                // SYNC SPEED
-                                if( is_synced )
-                                {
-                                    const double current_samples_per_clock = abs_event_time_in_samples-last_clock_sample;
-                                    int samples_per_beat = current_samples_per_clock*clocks_per_beat;
-                                    double ms_per_beat = samplesToMs(samples_per_beat,sample_rate);
-                                    if( not(ms_per_beat > 0 ) )
+                                    else
                                     {
-                                        ms_per_beat = 1;
+                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
                                     }
-
-                                    current_pos_info.bpm = clock_smoother->add_and_get_average((60.0 * 1000) / ms_per_beat);
                                 }
 
                                 last_clock_sample = abs_event_time_in_samples;
 
                                 info->clock_counter++;
+                                Timer::startTimer( 100 );
                             }
                             // SYNC START
                             else if( input_midi_message.isMidiStart() )
@@ -554,6 +612,10 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
                                 info->steps_in_block.clearQuick(true);
                                 info->is_running = true;
                                 info->is_extern_synced = true;
+
+                                last_clock_sample = last_clock_sample-abs_event_time_in_samples;
+                                last_step_sample = last_step_sample-abs_event_time_in_samples;
+                                current_pos_info.timeInSamples = last_clock_sample;
 
                                 if( try_to_restart_arp )
                                 {
@@ -644,6 +706,12 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
             }
         }
     }
+
+#ifdef IS_STANDALONE
+    current_pos_info.timeInSamples += buffer_.getNumSamples();
+#endif
+
+    block_lock.exit();
 }
 
 //==============================================================================
@@ -653,11 +721,29 @@ COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_si
 {
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
-    data_buffer->resize_buffer_if_required(block_size_);
-    synth->setCurrentPlaybackSampleRate (sampleRate);
-    runtime_notifyer->set_sample_rate( sampleRate );
-    runtime_notifyer->set_block_size( block_size_ );
+    if( sampleRate > 0 )
+    {
+        synth->setCurrentPlaybackSampleRate (sampleRate);
+        runtime_notifyer->set_sample_rate( sampleRate );
+    }
+    if( block_size_ > 0 )
+    {
+        runtime_notifyer->set_block_size(block_size_);
+        data_buffer->resize_buffer_if_required(block_size_);
+    }
+
     voice->reset_internal();
+}
+COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
+{
+    const bool sr_changed = runtime_notifyer->get_sample_rate() != getSampleRate();
+    const bool block_changed = runtime_notifyer->get_block_size() != getBlockSize();
+    if( sr_changed or block_changed or force_sample_rate_update )
+    {
+        force_sample_rate_update = false;
+        prepareToPlay(runtime_notifyer->get_sample_rate(),runtime_notifyer->get_block_size());
+    }
+    mono_AudioDeviceManager::sample_rate_or_block_changed();
 }
 COLD void MoniqueAudioProcessor::releaseResources()
 {
@@ -1006,3 +1092,4 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
         get_editor()->triggerAsyncUpdate();
     }
 }
+

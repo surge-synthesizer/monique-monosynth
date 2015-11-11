@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.5"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.7"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -104,40 +104,20 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{8DB58105-015A-A5CF-D546-593F18B4476A}" name="FILES">
+      <FILE id="AoJHsZ" name="DARK.mcol" compile="0" resource="1" file="../../../Documents/Monoplugs/Monique/Themes/DARK.mcol"/>
       <FILE id="Ky2RVE" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
             file="../Files/FACTORTY DEFAULT.mlprog"/>
       <GROUP id="{E712D6B8-7FD5-107A-50D2-5EEEFF030A3A}" name="fonts">
-        <FILE id="lioIoM" name="Segoe" compile="0" resource="1" file="../Fonts/Segoe"/>
-        <FILE id="uJbr0O" name="Tahoma.ttf" compile="0" resource="1" file="../Fonts/Tahoma.ttf"/>
-        <FILE id="Vs5noZ" name="Dosis-Regular.otf" compile="0" resource="1"
-              file="../Fonts/dosis/Dosis-Regular.otf"/>
-        <FILE id="jUQEvE" name="Dosis-SemiBold.otf" compile="0" resource="1"
-              file="../Fonts/dosis/Dosis-SemiBold.otf"/>
-        <FILE id="ZTQaIH" name="Lovelo Black.otf" compile="0" resource="1"
-              file="../Fonts/lovelo/Lovelo Black.otf"/>
-        <FILE id="DA2QGZ" name="Dense-Regular.otf" compile="0" resource="1"
-              file="../Fonts/Dense-Regular.otf"/>
-        <FILE id="gSE0RW" name="Montserrat-Regular.ttf" compile="0" resource="1"
-              file="../Fonts/Montserrat-Regular/montserrat/Montserrat-Regular.ttf"/>
-        <FILE id="mv9T7m" name="Lato-Black.ttf" compile="0" resource="1" file="../Fonts/lato/Lato-Black.ttf"/>
-        <FILE id="VKbNAd" name="Lato-Medium.ttf" compile="0" resource="1" file="../Fonts/lato/Lato-Medium.ttf"/>
-        <FILE id="Y5tCxm" name="Lato-Regular.ttf" compile="0" resource="1"
-              file="../Fonts/lato/Lato-Regular.ttf"/>
         <FILE id="kYGTuD" name="Lato-Semibold.ttf" compile="0" resource="1"
               file="../Fonts/lato/Lato-Semibold.ttf"/>
-        <FILE id="jxxFOV" name="wensleydale_gothic_nbp.ttf" compile="0" resource="1"
-              file="../Fonts/wensleydale-gothic-nbp/wensleydale_gothic_nbp.ttf"/>
-        <FILE id="kTsNsH" name="whitrabt.ttf" compile="0" resource="1" file="../Fonts/white-rabbit/whitrabt.ttf"/>
         <FILE id="KUgxEo" name="SourceCodePro-Medium.otf" compile="0" resource="1"
               file="../Fonts/SourceCodePro-Medium.otf"/>
-        <FILE id="RbX7Cw" name="FjallaOne-Regular.otf" compile="0" resource="1"
-              file="../Fonts/FjallaOne-Regular.otf"/>
       </GROUP>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
-                userNotes="_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;"
+                userNotes="_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC&#10;&#10;&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>
         <CONFIGURATION name="DEVEL" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
@@ -145,18 +125,18 @@
                        binaryPath="Builds/LINUX_D"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
         <MODULEPATH id="juce_cryptography" path="../JUCE-2.1.7/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/LINUX" extraCompilerFlags="-flto" extraLinkerFlags=""
@@ -169,17 +149,17 @@
                        optimisation="6" targetName="Monique_64" binaryPath="Builds/LINUX"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MAC" extraDefs="" extraCompilerFlags="-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
@@ -189,45 +169,67 @@
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
-                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+                       headerPath="" fastMath="0" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="/SUBSYSTEM:WINDOWS,5.1"
-            toolset="v140_xp">
+    <XCODE_MAC targetFolder="Builds/MAC_PROFILE" extraCompilerFlags="-pg&#10;-funroll-loops&#10;-Wnon-virtual-dtor&#10;-mdynamic-no-pic"
+               customPList="&lt;plist version=&quot;1.0&quot;&gt;&#10;&lt;dict&gt;&#10;&#9;&lt;key&gt;LSApplicationCategoryType&lt;/key&gt;&#10;&#9;&lt;string&gt;public.app-category.music&lt;/string&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               extraLinkerFlags="-pg&#10;">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="PROFILE" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
+                       osxArchitecture="64BitIntel" isDebug="0" optimisation="6" targetName="Monique"
+                       fastMath="0" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
+            userNotes="" extraCompilerFlags="" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
-                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
+                       isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="0" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="0" optimisation="3" targetName="Monique" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="1"
+                       isDebug="1" optimisation="1" targetName="Monique_64" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="0" alwaysGenerateDebugSymbols="1"
                        headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </VS2015>
   </EXPORTFORMATS>
@@ -251,6 +253,7 @@
                JUCE_ALSA="enabled" JUCE_JACK="enabled" JUCE_PLUGINHOST_VST="disabled"
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"
-               JUCE_FORCE_DEBUG="disabled" JUCE_LOG_ASSERTIONS="disabled" JUCE_USE_XSHM="enabled"
-               JUCE_USE_XRENDER="enabled" JUCE_USE_XCURSOR="enabled" DROWAUDIO_USE_CURL="disabled"/>
+               JUCE_USE_XSHM="enabled" JUCE_USE_XRENDER="enabled" JUCE_USE_XCURSOR="enabled"
+               DROWAUDIO_USE_CURL="disabled" JUCE_FORCE_DEBUG="enabled" JUCE_LOG_ASSERTIONS="enabled"
+               JUCE_CHECK_MEMORY_LEAKS="enabled"/>
 </JUCERPROJECT>

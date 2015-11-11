@@ -129,6 +129,8 @@ void Monique_Ui_OptionPopup::paint (Graphics& g)
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 #include "mono_ui_includeHacks_BEGIN.h"
+    WIDTH_AND_HIGHT_FACTORS
+    
     g.setColour ( look_and_feel->colours.get_theme( COLOUR_THEMES::ARP_THEME  ).area_colour );
     g.fillRoundedRectangle (10.0f, 0.0f, 129.0f, 89.0f, 10.000f);
 
@@ -156,6 +158,7 @@ void Monique_Ui_OptionPopup::paint (Graphics& g)
 void Monique_Ui_OptionPopup::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+    WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
     button_option_a->setBounds (20, 10, 110, 30);

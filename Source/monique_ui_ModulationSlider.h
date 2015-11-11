@@ -171,9 +171,9 @@ struct ModulationSliderConfigBase
     {
         return false;
     }
-    virtual COLOUR_THEMES get_colour_theme() const noexcept 
+    virtual COLOUR_THEMES get_colour_theme() const noexcept
     {
-      return COLOUR_THEMES::FILTER_THEME;
+        return COLOUR_THEMES::FILTER_THEME;
     }
 
     //==============================================================================
@@ -281,7 +281,8 @@ struct ModulationSliderConfigBase
     enum SHOW_TYPES
     {
         DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE,
-        SHOW_OWN_VALUE
+        SHOW_OWN_VALUE,
+	SHOW_OWN_VALUE_ALWAYS
     };
     virtual SHOW_TYPES show_slider_value_on_top_on_change() const noexcept
     {
@@ -340,10 +341,10 @@ class MoniqueSynthData;
                                                                     //[/Comments]
 */
 class Monique_Ui_DualSlider  : public Component,
-                               public Monique_Ui_Refreshable,
-                               public ButtonListener,
-                               public SliderListener,
-                               public LabelListener
+    public Monique_Ui_Refreshable,
+    public ButtonListener,
+    public SliderListener,
+    public LabelListener
 {
 public:
     //==============================================================================
@@ -362,6 +363,20 @@ public:
     bool force_show_center_value;
 
     Parameter* get_front_parameter() noexcept { return front_parameter; }
+    Parameter* get_back_parameter() noexcept { return back_parameter; }
+    Parameter* get_parameter( const Slider*slider_ ) noexcept
+    {
+        if( slider_ == slider_value )
+        {
+            return front_parameter;
+        }
+        else if( slider_ == slider_modulation )
+        {
+            return back_parameter;
+        }
+
+        return nullptr;
+    }
 
     const float original_w;
     const float original_h;

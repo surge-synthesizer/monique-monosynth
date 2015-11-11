@@ -83,7 +83,8 @@ enum COLOUR_THEMES
     //MIDI_THEME,
     //TOP_THEME,
 
-    SUM_OF
+    SUM_OF,
+    CLIPBOARD_THEME
 };
 enum COLOUR_CODES
 {
@@ -139,6 +140,21 @@ struct SectionTheme
     Colour button_off_font_colour;
     Colour button_off_colour;
 
+    void copy( const SectionTheme& other_ ) noexcept
+    {
+        area_colour = other_.area_colour;
+        area_font_colour = other_.area_font_colour;
+        value_slider_track_colour = other_.value_slider_track_colour;
+        value_2_slider_track_colour = other_.value_2_slider_track_colour;
+        mod_slider_track_colour = other_.mod_slider_track_colour;
+        disabled_track_colour = other_.disabled_track_colour;
+        slider_bg_colour = other_.slider_bg_colour;
+        button_on_font_colour = other_.button_on_font_colour;
+        button_on_colour = other_.button_on_colour;
+        button_off_font_colour = other_.button_off_font_colour;
+        button_off_colour = other_.button_off_colour;
+    }
+
     Colour& get_color( COLOUR_CODES code_ ) noexcept
     {
         switch( code_ )
@@ -163,7 +179,8 @@ struct SectionTheme
             return button_on_font_colour;
         case COLOUR_CODES::BUTTON_OFF_COLOUR :
             return button_off_colour;
-        case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
+            //case COLOUR_CODES::BUTTON_OFF_FONT_COLOUR :
+        default :
             return button_off_font_colour;
         }
     }
@@ -220,6 +237,7 @@ struct SectionTheme
 
 struct ComponentColours
 {
+    ScopedPointer<SectionTheme> theme_clipboard;
     OwnedArray<SectionTheme> themes;
 
     void init_themes() noexcept
@@ -283,9 +301,29 @@ enum MODULATION_SLIDER_STYLE
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class UiLookAndFeel  : public LookAndFeel_V2
+class Monique_Ui_Mainwindow;
+class MoniqueSynthData;
+class UiLookAndFeel  : public LookAndFeel_V2, public SliderListener
 {
+    friend class Monique_Ui_Mainwindow;
+    friend class MoniqueSynthData;
+    Monique_Ui_Mainwindow*mainwindow;
+
+    BoolParameter is_global_user_return;// = true;
+    BoolParameter is_global_factory_return;// = false;
+    BoolParameter is_global_program_return;// = false;
+    BoolParameter is_global_undo_return;// = false;
+
+    MoniqueSynthData*synth_data;
+
 public:
+    void set_synth_data( MoniqueSynthData*synth_data_ ) {
+        synth_data = synth_data_;
+    }
+    void clear_synth_data() {
+        synth_data = nullptr;
+    }
+
     ComponentColours colours;
     Component* midi_learn_comp;
     bool show_values_always;
@@ -340,7 +378,7 @@ public:
                             bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
                             const String& text, const String& shortcutKeyText,
                             const Drawable* icon, const Colour* textColour) override;
-
+    void drawPopupMenuSectionHeader (Graphics& g, const Rectangle<int>& area, const String& sectionName) override;
     Font getPopupMenuFont() override;
 
     void drawPopupMenuUpDownArrow (Graphics&, int width, int height, bool isScrollUpArrow) override;
@@ -381,18 +419,23 @@ public:
     Font getSliderPopupFont (Slider&) override;
     int getSliderPopupPlacement (Slider&) override;
 
-    PopupMenu* getCustomPopupMenu (Slider*) override;
-
-
-    static bool is_global_user_return;// = true;
-    static bool is_global_factory_return;// = false;
-    static bool is_global_program_return;// = false;
-    static bool is_global_undo_return;// = false;
-    bool sliderMenuCallback (const int result, Slider* slider) override;
-    bool sliderDoubleClicked ( Slider* slider) override;
 
     //==============================================================================
-    void getTooltipSize (const String& tipText, int& width, int& height) override;
+    //==============================================================================
+    //==============================================================================
+    ScopedPointer<Slider> popup_smooth_Slider;
+    ScopedPointer<Slider> popup_linear_sensi_slider;
+    ScopedPointer<Slider> popup_rotary_sensi_slider;
+    ScopedPointer<Slider> popup_midi_snap_slider;
+    ScopedPointer<Slider> popup_test_slider;
+    PopupMenu* getCustomPopupMenu (Slider*) /*override*/;
+    bool sliderMenuCallback (const int result, Slider* slider) /*override*/;
+    bool sliderDoubleClicked ( Slider* slider) /*override*/;
+    void sliderValueChanged (Slider* sliderThatWasMoved) /*override*/;
+
+    //==============================================================================
+    Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) override;
+    
     void drawTooltip (Graphics&, const String& text, int width, int height) override;
 
     //==============================================================================

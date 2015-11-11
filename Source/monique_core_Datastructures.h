@@ -92,6 +92,7 @@ enum MONIQUE_SETUP
 //==============================================================================
 //==============================================================================
 class MoniqueAudioProcessor;
+class mono_AudioDeviceManager;
 class DataBuffer // DEFINITION IN SYNTH.CPP
 {
     int size;
@@ -147,7 +148,6 @@ class RuntimeListener
 protected:
     //==========================================================================
     double sample_rate;
-    float sample_rate_1ths;
     int block_size;
 
 private:
@@ -155,13 +155,13 @@ private:
     friend class RuntimeNotifyer;
     COLD virtual void set_sample_rate( double sr_ ) noexcept;
 public:
-    inline double get_sample_rate() const noexcept {
+    inline double get_sample_rate() const noexcept 
+    {
         return sample_rate;
     }
 private:
     COLD virtual void set_block_size( int bs_ ) noexcept;
-    COLD virtual void sample_rate_changed( double /* old_sr_ */ ) noexcept;
-    COLD virtual void block_size_changed() noexcept;
+    COLD virtual void sample_rate_or_block_changed() noexcept = 0;
 
 protected:
     //==========================================================================
@@ -174,7 +174,7 @@ protected:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class RuntimeNotifyer
+class RuntimeNotifyer : public DeletedAtShutdown
 {
     //==========================================================================
     friend class RuntimeListener;
@@ -182,7 +182,6 @@ class RuntimeNotifyer
 
     //==========================================================================
     double sample_rate;
-    float sample_rate_1ths;
     int block_size;
 
 public:
@@ -202,6 +201,7 @@ public:
 private:
     //==========================================================================
     friend class MoniqueAudioProcessor;
+    friend class mono_AudioDeviceManager;
     friend class ContainerDeletePolicy< RuntimeNotifyer >;
     COLD RuntimeNotifyer() noexcept;
     COLD ~RuntimeNotifyer() noexcept;
@@ -214,6 +214,7 @@ struct RuntimeInfo
 {
     int64 samples_since_start;
     double bpm;
+    double steps_per_sample;
 
 #ifdef IS_STANDALONE
     bool is_extern_synced;
@@ -236,13 +237,17 @@ struct RuntimeInfo
                 clock_counter_absolut = 0;
             }
         }
-        inline int clock() noexcept
+        inline int clock() const noexcept
         {
             return clock_counter;
         }
-        inline int clock_absolut() noexcept
+        inline int clock_absolut() const noexcept
         {
             return clock_counter_absolut;
+        }
+        inline int is_step() const noexcept
+        {
+            return clock_counter_absolut%(96/16)==0;
         }
         inline void reset() noexcept
         {
@@ -267,6 +272,70 @@ struct RuntimeInfo
         {}
         inline ~Step() noexcept {}
     };
+
+    class ClockSync
+    {
+        struct SyncPosPair
+        {
+            const int pos_in_buffer;
+            const int samples_per_clock;
+
+            SyncPosPair(int pos_in_buffer_, int samples_per_clock_) noexcept
+                :
+                pos_in_buffer(pos_in_buffer_),
+                samples_per_clock(samples_per_clock_)
+            {}
+            ~SyncPosPair() noexcept {}
+        };
+
+        Array< SyncPosPair > clock_informations;
+
+        int last_samples_per_clock;
+
+    public:
+        int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
+        {
+            int samples_per_clock = last_samples_per_clock;
+            for( int i = 0 ; i < clock_informations.size() ; ++i )
+            {
+                const SyncPosPair& pair = clock_informations.getReference(i);
+                if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                {
+                    samples_per_clock = pair.samples_per_clock;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return samples_per_clock;
+        }
+        bool has_clocks_inside() const noexcept
+        {
+	  return clock_informations.size();
+	}
+        int get_last_samples_per_clock() const noexcept
+        {
+            return last_samples_per_clock;
+        }
+        void add_clock( int pos_in_buffer_, int samples_per_clock_ ) noexcept
+        {
+            clock_informations.add( SyncPosPair( pos_in_buffer_, samples_per_clock_ ) );
+        }
+        void clear() noexcept
+        {
+	    const int size = clock_informations.size();
+            if( size )
+            {
+                last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
+            }
+            clock_informations.clearQuick();
+        }
+
+        inline ClockSync() noexcept : last_samples_per_clock(0)  {}
+        inline ~ClockSync() noexcept {}
+    } clock_sync_information;
+
     OwnedArray<Step> steps_in_block;
 #endif
 
@@ -310,11 +379,11 @@ public:
     float last_power_of_right[SUM_MORPHER_GROUPS];
     float from_power_of_right[SUM_MORPHER_GROUPS];
     mono_AudioSampleBuffer<SUM_MORPHER_GROUPS> glided_power_of_right_buffer;
-    void sample_rate_changed(double) noexcept override
+    void sample_rate_or_block_changed() noexcept override
     {
-	glided_power_of_right_buffer.setSize( block_size );
+        glided_power_of_right_buffer.setSize( block_size );
     }
-    
+
 public:
     void smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept;
     void automated_morph( bool do_really_morph_, int id_, const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept;
@@ -369,11 +438,15 @@ class SmoothedParameter : public RuntimeListener
     float last_amp_automated;
     float last_amp_valued;
     bool was_automated_last_time;
+    bool is_smoothable;
 
-    COLD void sample_rate_changed( double ) noexcept override;
-    COLD void block_size_changed() noexcept override;
+    COLD void sample_rate_or_block_changed() noexcept override;
 
 public:
+    bool is_ready_for_smooth() const noexcept 
+    {
+      return is_smoothable;
+    }
     void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
     void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
     void process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
@@ -393,8 +466,9 @@ public:
     void reset() noexcept {}
 
     COLD SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept;
-    COLD ~SmoothedParameter() noexcept;
+    COLD virtual ~SmoothedParameter() noexcept;
 
+    COLD void do_smooth( bool state_ ) noexcept;
     COLD void set_offline() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
@@ -562,7 +636,7 @@ static inline String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info
 
         return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
     }
-    else if( speed_ <= 17 )
+    else // if( speed_ <= 17 )
     {
         if( speed_ == 7 )
         {
@@ -611,10 +685,12 @@ static inline String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info
 
         return String(round001(lfo_speed_in_hertz( speed_, info_, sample_rate_ )));
     }
+    /*
     else
     {
         return MidiMessage::getMidiNoteName(frequencyToMidi(midiToFrequency(33+speed_-18)),true,true,0);
     }
+    */
 }
 
 //==============================================================================
@@ -741,6 +817,12 @@ static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
+{
+    // exp(3)-1 19.0855
+    // exp(4)-1 
+    return MAX_CUTOFF * ((exp(cutoff_slider_value_*4)-1)/53.5982) + MIN_CUTOFF;
+}
 struct FilterData
 {
     IntParameter filter_type;
@@ -768,8 +850,9 @@ struct FilterData
 
     ArrayOfParameters input_sustains;
     OwnedArray<SmoothedParameter> input_smoothers;
-    OwnedArray<ENVData> input_envs;
     ArrayOfBoolParameters input_holds;
+    
+    OwnedArray<ENVData> input_envs;
 
     ENVData*const env_data;
 
@@ -1030,8 +1113,9 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
         return "6/8";
     case 15 :
         return "7/8";
-    case 16 :
-        return "1/1";
+    //case 16 :
+    default :
+	return "1/1";
     }
 }
 
@@ -1299,6 +1383,9 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter bind_sustain_and_sostenuto_pedal;
     BoolParameter sliders_in_rotary_mode;
     IntParameter sliders_sensitivity;
+    IntParameter sliders_linear_sensitivity;
+    BoolParameter is_rotary_sliders_velocity_mode;
+    BoolParameter is_linear_sliders_velocity_mode;
     Parameter ui_scale_factor;
 
     ScopedPointer< ENVData > env_data;
@@ -1362,7 +1449,6 @@ public:
     ArrayOfBoolParameters is_morph_modulated;
     ArrayOfParameters morhp_automation_power;
     ArrayOfBoolParameters morhp_switch_states;
-    Parameter linear_morhp_state;
     IntParameter morph_motor_time;
 
 public:
@@ -1412,6 +1498,18 @@ private:
     int current_program_abs;
     int current_bank;
 
+private:
+    String current_theme; // TODO store!
+    StringArray colour_themes;
+public:
+    // ==============================================================================
+    const StringArray& get_themes() noexcept;
+    const String& get_current_theme() const noexcept;
+    bool load_theme( const String& name_ ) noexcept;
+    bool replace_theme( const String& name_ ) noexcept;
+    bool remove_theme( const String& name_ ) noexcept;
+    bool create_new_theme( const String& name_ ) noexcept;
+
 public:
     // ==============================================================================
     static void refresh_banks_and_programms( MoniqueSynthData& synth_data ) noexcept;
@@ -1456,6 +1554,7 @@ private:
 
 public:
     // ==============================================================================
+    ScopedPointer<XmlElement> factory_default;
     void load_default() noexcept;
     void save_to( XmlElement* xml ) noexcept;
     void read_from( const XmlElement* xml ) noexcept;
@@ -1489,12 +1588,15 @@ public:
 //==============================================================================
 //==============================================================================
 class SHARED
+#ifdef IS_STANDALONE
+	: public DeletedAtShutdown
+#endif
 {
 public:
     int num_instances ;
     ENVData* env_clipboard;
     MFOData* mfo_clipboard;
-    juce_DeclareSingleton( SHARED, false );
+    juce_DeclareSingleton( SHARED, true );
 
     SHARED() : num_instances(0), env_clipboard(nullptr),mfo_clipboard(nullptr) {}
 };

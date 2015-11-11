@@ -1,101 +1,83 @@
-TODO:
-copy past theme 
-own editor for colours
-load save them
-bug: morph stopt nicht beim programwechsel
-add a default colour theme to the binary and load it if nothing is available
-crashed on force arp off 
 
+4.0.1
+-touch screen
+- morphs für vollume sollten gesmooth werden
 
-
-MORPH TODO:
-arp tune and velocity
-sustain or not?
-do not smooth the original parameters : buggy on smoothmanager zero
-wenn der auto morph aufhört müssen wir zum slider state zurück und von da starten wir auch
-
-MORPH NOTES - NOT AFFECTED PARAMETER:
-env and lfo not modulated by an auto morph
-also not supported: modulation amounts
-arp tune (to keep it musically)
-
-
-
-
+CHANGES 0.9.8
+- bpm label round to one point after comma
+- reduce label size in sliders
+- fix crash on selecting audio devices, changeing samples rates and so on
+- fix a lot of undefined behaviors on windows (and some on the mac)
+- fix memory leaks on shutdown
+- fix bugs on changing sample rate or blocksize
+- context menu: if velocity-sensitive mode is selection unselect rotary oder linear draging 
+- switch to juce framework version 4.0.1 from 3.1.1
+- add: key sync option, if enabled all osc will be hard reseted at each not on
+- force: show wave on wave sliders always
+- fix: colour glitsch in mfo and env popup
+- improved default theme: "highlight" the FX / EQ toggle
+- fix: slider jumps in velocity based mode
+- big performance improvement: removed some unneded smoothers
+- fix: init the left and right morph sides with the factory default program
 
 NOTES:
 lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 
 TIM:
 steps sind nicht automatisierbar
-
-
-
-
-DONE:
-add: amp env shape
-changed: ui style
-moved: morph section to the left
-swapped: arp morph and fx morph
-fix: sustain input was buggy
-fix: repaint for sliders was not correct
-changed: add tab buttons for fx/eq
-remove: save dialog
-changed: morph editor comes not with just one button to update the left and the right toggether
-move: morph motor time to the morph editor
-fix: refresh the morph editor on program change
-change: envelope sliders are always dragging in velocity based mode. that means a slow mouse movement changes the slider just a very little bit
-removed: range for envelopes
-removed: chorus env
-add: lfo buttons to increase the lfo speed in whole steps (and sync the lfo in this cases)
-fix: fx bypass wasnt correct
-add: pan for effects
-improved: show also the center value if the mouse is over the top or bottom button
-changed: lfos can be run in finer ganulations and added buttons to set it to note duration speeds 
-fix: setup slider sensitivity wasnt updated
-fix: env time input via labels was not correct
-improve: slider value roundings
-improve/fix: update the plotter in the env and lfo popups smoothed (depending on you smooth/glide time (setup))
-fix: program combobox was still editable if you hit esc
-fix: another possible crackl on program change
-add: ui aspect ratio
-improved: arp steps shows a small flash if it is the current step in the timeline also if the step isn't enabled 
-
+high resolution oszi for tim
+shaltplan
 
 UI
 ****************************************************************************
-- add option: always start in ctrl mode
-- add: welcome popup, if you like to disable the arp -> press this "holly button"
-- option: pitch arp only or trigger notes anyway
-- add: FactoryDefault, StateOnProgramm oder User Return
+- option: pitch arp only or trigger notes (second one is current)
 - add: output meter filter 1 bis 3
 - change: on mac hide osx audio devices
-- show waves on sliders everytime?
-- improve: fixed aspect ratio
 - tooltip for resizer
-- feedback if you have stored a program, like a green button
-- set current as return for popups
-- remove maximize button
+- tooltip for context menu items
+- feedback if you have stored a program, like a green flashing button
+- the circle around the mod mix slider is not always in centre
+- link to project webpage in programs to download more programs which are released after app release
+- disable shift mode if an text editor has focus and is enabled
+- maus bug on velocitybased track
+- Schrift - nicht alles gross schreiben
+- Farben werden nicht alle angezeit (im Ordner Themes sind die drin, aber nicht im Auswahlmenu) Der letzte den ich bearbeitet hatte wird aber als Default angezeigt
+- tool tips are not updated and may be incorrect for changed features or new features
+
 
 ENGINE
 ****************************************************************************
+- static noise on plugin startup
+- if you switch to another program and a "motor" morph is currently running -> the "motor" morph does not stop
 - add: panic
-- midi: the standard midi assignments are not complete
-- midi support für alle knöppe checken
-- midi learn für popups
-- sync der mfos passt nicht mit dem mmidi sync
-- check midi sync and so on
-- reverb: stereo effects
-- delay: stereo effects
-- add: for morph: option toggle buttons on absolutely left or right
-- lfo wie mfo? needed? -> but reduce the speed
+- midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
+- add midi support for some for some buttons
+- improve: reverb: stereo effects
+- improve: delay: stereo effects
+- may be a square wave for lfo1, 2 and 3
+- share global setting over plugin instances
+- left and right morph group on init have to be the factory default program
+- delay time reflexion, sync to beat, bis 500ms, triolisch
+- eq's kratzen beim morphen / fx morph crackls, also mehr ein parameter
+- change sustain ist nicht in ordnung
+- der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
+- canot store mapping for parameters which are not stored
+- mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
+- midi allow notes to control buttons
+- env speed not only ms sondern auch teiler
+- and add an popup like mfo
+- add back sub-steps lfo
+- leak context menu popup
+- speedänderung stanadlon mit eigener clock sollte nicht syncen!
 
 PROGRAMS
 ****************************************************************************
-- add: a good default program or settings to start with monique (e.g. filter inputs not zero)
-- make a starter for percussions
 - add factory programs to the binary
 - adjust: factory defaults
+
+BUILD
+****************************************************************************
+-linkt to static c++ 
 
 
 ****************************************************************************
@@ -153,6 +135,11 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- 128 morph preset per slider or 128 mesurement points
+- add: for morph: option toggle buttons on absolutely left or right
+- trigger lfo by lfo
+- midi button to toggle throug env popups
+- keyboard funktion um elemente der reihe nach auszuwählen und mit hoch runter zu verändern
 - min und max mfo power
 - option die aktuelle modulation auf dem slider anzuzeigen
 - automatisieren von fm frequence!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! --> super geil

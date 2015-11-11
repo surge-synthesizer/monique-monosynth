@@ -30,6 +30,8 @@ public:
 protected:
     Monique_Ui_Refreshable( Monique_Ui_Refresher*ui_refresher_ ) noexcept;
     ~Monique_Ui_Refreshable() noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Refreshable)
 };
 
 //==============================================================================
@@ -85,6 +87,8 @@ private:
                     editor(nullptr)
     {}
     ~Monique_Ui_Refresher() noexcept;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Monique_Ui_Refresher)
 };
 
 #endif

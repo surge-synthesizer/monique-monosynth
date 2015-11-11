@@ -19,10 +19,10 @@ Monique_Ui_Refreshable(ui_refresher_),
                        last_numSeg   (-1),
                        sampleCount   (0),
 
-                       my_bg( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour.getARGB() ),
                        my_red( Colours::red.getARGB() ),
                        my_yellow( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
                        my_green( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).button_on_colour.getARGB() ),
+                       my_bg( look_and_feel->colours.get_theme( COLOUR_THEMES::MASTER_THEME ).area_colour.getARGB() ),
 
                        needsRepaint  (true)
 {
@@ -82,9 +82,8 @@ void Monique_Ui_SegmentedMeter::resized()
             colour_off = Colour(my_red).darker(1).darker(0.5);
         }
 
-        float x = w - (i*segmentWidth);
-        float x2 = w - ((i+1.0f)*segmentWidth);
-
+        const float x = w - (segmentWidth*i);
+	
         gOn.setColour (colour_on);
         gOn.fillRoundedRectangle (x,1.0f, segmentWidth-2, h-2, 0);
 
@@ -127,7 +126,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
                      0, 0, w, h,
                      false);
 
-        const int offWidth = w - roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth());
+        const int offWidth = w - jmax(0,roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth()));
         g.drawImage (offImage,
                      0, 0, offWidth, h,
                      0, 0, offWidth, h,

@@ -44,8 +44,12 @@ type( type_ ),
       min_value(min_value_),
       max_value(max_value_),
       init_value(init_value_),
+      factory_default_value(0),
+      program_on_load_value(0),
 
       init_modulation_amount( init_modulation_amount_ ),
+      factory_default_modulation_amount( 0 ),
+      program_on_load_modulation_amount( 0 ),
 
       num_steps(num_steps_),
 
@@ -374,6 +378,7 @@ MIDIControl::~MIDIControl() {}
 
 void MIDIControl::clear()
 {
+    audio_processor->midi_control_handler->remove_trained( this );
     stop_listen_for_feedback();
     send_clear_feedback_only();
 
@@ -408,12 +413,17 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                 {
                     if( is_ctrl_version_of_name != "" )
                     {
-                        float current_value = get_percent_value( owner );
-                        // PICKUP
-                        if( current_value + pickup_offset_ >= value && current_value - pickup_offset_ <= value )
+                        std::cout << "in cc" << std::endl;
+
+                        if( MIDIControl* midi_control = audio_processor->midi_control_handler->get_trained( is_ctrl_version_of_name ) )
                         {
-                            set_percent_value( owner, value );
-                            success = true;
+                            float current_value = get_percent_value( midi_control->owner );
+                            // PICKUP
+                            if( current_value + pickup_offset_ >= value && current_value - pickup_offset_ <= value )
+                            {
+                                set_percent_value( midi_control->owner, value );
+                                success = true;
+                            }
                         }
                     }
                     else if( has_modulation( owner ) )
@@ -432,7 +442,6 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                 {
                     if( is_ctrl_version_of_name == "" )
                     {
-
                         float current_value = get_percent_value( owner );
                         // PICKUP
                         if( current_value + pickup_offset_ >= value && current_value - pickup_offset_ <= value )
@@ -470,12 +479,14 @@ bool MIDIControl::train( int controller_number_, Parameter*const is_ctrl_version
 
     if( success )
     {
+        audio_processor->midi_control_handler->add_trained( this );
         send_feedback_only();
         start_listen_for_feedback();
     }
     else
     {
         stop_listen_for_feedback();
+        audio_processor->midi_control_handler->remove_trained( this );
     }
 
     return success;
@@ -490,12 +501,14 @@ bool MIDIControl::train( int controller_number_, String is_ctrl_version_of_name_
 
     if( is_valid_trained() )
     {
+        audio_processor->midi_control_handler->add_trained( this );
         send_feedback_only();
         start_listen_for_feedback();
     }
     else
     {
         stop_listen_for_feedback();
+        audio_processor->midi_control_handler->remove_trained( this );
     }
     return true;
 }
@@ -581,14 +594,14 @@ inline void MIDIControl::send_standard_feedback(  ) const noexcept
 {
     if( is_valid_trained() )
     {
-        audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*get_percent_value( owner )) );
+        audio_processor->send_feedback_message( midi_number, std::floor(127.0f*get_percent_value( owner )) );
     }
 }
 inline void MIDIControl::send_modulation_feedback() const noexcept
 {
     if( is_valid_trained() )
     {
-        audio_processor->send_feedback_message( midi_number, mono_floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
+        audio_processor->send_feedback_message( midi_number, std::floor(127.0f*(owner->get_modulation_amount()*0.5f + 1.0f)) );
     }
 }
 // ==============================================================================
@@ -636,6 +649,7 @@ void MIDIControlHandler::set_learn_param( Parameter* param_, Component* comp_ ) 
     clear();
 
     learning_param = param_;
+    learning_ctrl_param = nullptr;
 
     learning_comps.add( comp_ );
     SET_COMPONENT_TO_MIDI_LEARN( comp_, ui_look_and_feel )
@@ -663,10 +677,12 @@ bool MIDIControlHandler::handle_incoming_message( int controller_number_ ) noexc
     {
         if( learning_param->midi_control->train( controller_number_, nullptr, audio_processor ) )
         {
+	  std::cout<<"train learning_param"<<std::endl;
             success = true;
         }
         if( learning_ctrl_param )
         {
+	  std::cout<<"train learning_ctrl_param"<<std::endl;
             learning_ctrl_param->midi_control->train( controller_number_, learning_param, audio_processor );
         }
 

@@ -427,6 +427,7 @@ void Monique_Ui_MidiIO::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
 #include "mono_ui_includeHacks_BEGIN.h"
+    WIDTH_AND_HIGHT_FACTORS
     //[/UserPrePaint]
 
     g.fillAll (Colour (0xff050505));
@@ -462,6 +463,7 @@ void Monique_Ui_MidiIO::paint (Graphics& g)
 void Monique_Ui_MidiIO::resized()
 {
     //[UserPreResize] Add your own custom resize code here..
+    WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
     label_7->setBounds (545, 15, 35, 30);
