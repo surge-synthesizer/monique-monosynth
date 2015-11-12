@@ -1620,7 +1620,7 @@ master_data( master_data_ ),
              delay_refexion
              (
                  MIN_MAX( 0, 1 ),
-                 0,
+                 0.5,
                  1000,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
                  generate_short_human_name("FX","delay_refexion")

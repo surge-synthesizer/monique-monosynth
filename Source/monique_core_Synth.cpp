@@ -3334,7 +3334,10 @@ private:
             //x_ = ((1.0f+distortion_add_on)*x_) - (x_*x_*x_)*distortion_add_on;
             // (std::atan(input_and_worker_)*(1.0f/float_Pi))*
             //x_ = x_*(1.0f-distortion_power_) + 0.5f*soft_clipping( x_*10 )*(distortion_power_);
-            x_ = x_*(1.0f-distortion_power_) + (std::atan( x_*10 )/10)*distortion_power_;
+            
+	  x_ = x_*(1.0f-distortion_power_) + (std::atan( x_*20 )/6.66)*distortion_power_;
+	  
+	  //x_ = x_*(1.0f-distortion_power_) + std::atan( x_*150 )*(1.0f/1.55)*distortion_power_;
         }
 
         return x_;
@@ -4285,6 +4288,7 @@ public:
         }
 
         const float result = sample_mix( buffer[read_index] , in );
+        //const float result = buffer[read_index] + in;
         buffer[write_index] = result * power_;
         if( ++write_index >= buffer_size )
         {
@@ -4301,9 +4305,9 @@ public:
     //==============================================================================
     COLD void sample_rate_or_block_changed() noexcept override
     {
-        if( buffer_size != int(sample_rate/4) )
+        if( buffer_size != int(sample_rate*0.5) )
         {
-            buffer_size = int(sample_rate/4);
+            buffer_size = int(sample_rate*0.5);
             if( buffer )
             {
                 delete[] buffer;

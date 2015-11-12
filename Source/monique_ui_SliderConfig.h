@@ -4490,6 +4490,8 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const delay_reflexion;
 
+    RuntimeNotifyer*const runtime_notifyer;
+
     //==============================================================================
     // BASIC SLIDER TYPE
     /*
@@ -4584,14 +4586,21 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(auto_round(delay_reflexion->get_value()*100));
+        float ms = samplesToMsFast(delay_reflexion->get_value()*runtime_notifyer->get_sample_rate()*0.5,runtime_notifyer->get_sample_rate());
+        if( ms < 50 )
+        {
+            ms = round01(ms);
+        }
+        else
+        {
+            ms = round01(ms);
+        }
+        return String(ms);
     }
-    /*
     StringRef get_center_suffix() const noexcept override
     {
-        
+        return "ms";
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -4606,7 +4615,9 @@ public:
     DelayReflexSlConfig( MoniqueSynthData*const synth_data_ )
         :
         ModulationSliderConfigBase( 2 ),
-        delay_reflexion( &synth_data_->delay_refexion )
+        delay_reflexion( &synth_data_->delay_refexion ),
+
+        runtime_notifyer( synth_data_->runtime_notifyer )
     {}
 
     JUCE_LEAK_DETECTOR (DelayReflexSlConfig)
