@@ -2130,6 +2130,10 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
                 dual_sliders.add(slider);
                 slider->setOpaque(false); // controlled by the slider itself
             }
+            else if( Label*label = dynamic_cast< Label* >( comp ) )
+	    {
+	      label->setInterceptsMouseClicks(false,false);
+	    }
         }
         adsr_lfo_mix->setOpaque(false);
         lfo_1->setOpaque(false);
