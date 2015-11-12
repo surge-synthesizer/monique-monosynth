@@ -4150,20 +4150,23 @@ public:
             index = 0;
         }
     }
-#define DELAY_GLIDE 0.01f
+#define FEEDBACK_GLIDE 0.01f
     inline float tick( float delay_ ) noexcept
     {
-        if( delay_ < last_delay - DELAY_GLIDE)
+        if( delay_ != last_delay )
         {
-            delay_ = last_delay - DELAY_GLIDE;
+            if( delay_ < last_delay - FEEDBACK_GLIDE)
+            {
+                delay_ = last_delay - FEEDBACK_GLIDE;
+            }
+            else if( delay_ > last_delay + FEEDBACK_GLIDE )
+            {
+                delay_ = last_delay + FEEDBACK_GLIDE;
+            }
+            last_delay = delay_;
         }
-        else if( delay_ > last_delay + DELAY_GLIDE )
-        {
-            delay_ = last_delay + DELAY_GLIDE;
-        }
-        last_delay = delay_;
 
-        float i = float(index) - delay_;
+        float i = float(index) - last_delay;
         if(i >= buffer_size)
         {
             i -= buffer_size;
@@ -4230,6 +4233,107 @@ public:
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class mono_Delay : public RuntimeListener
+{
+    int buffer_size;
+
+    int write_index;
+
+    float process_size_in_percent;
+    int read_offset;
+
+    int last_size_update;
+
+    float* buffer;
+
+public:
+    //==============================================================================
+#define DELAY_GLIDE 0.01f
+    inline float tick( float in, float power_, float process_size_in_percent_ ) noexcept
+    {
+        if( process_size_in_percent != process_size_in_percent_ )
+        {
+            if( process_size_in_percent_ < process_size_in_percent - DELAY_GLIDE)
+            {
+                process_size_in_percent_ = process_size_in_percent - DELAY_GLIDE;
+            }
+            else if( process_size_in_percent_ > process_size_in_percent + DELAY_GLIDE )
+            {
+                process_size_in_percent_ = process_size_in_percent + DELAY_GLIDE;
+            }
+
+            process_size_in_percent = process_size_in_percent_;
+            read_offset = jmax(1,int((buffer_size-1)*process_size_in_percent));
+        }
+
+        int read_index = write_index-read_offset;
+        if( read_index < 0 )
+        {
+            read_index += buffer_size;
+        }
+
+        const float result = sample_mix( buffer[read_index] , in );
+        buffer[write_index] = result * power_;
+        if( ++write_index >= buffer_size )
+        {
+            write_index = 0;
+        }
+
+        return result;
+    }
+    inline void reset() noexcept
+    {
+        write_index = 0;
+        sample_rate_or_block_changed();
+    }
+    //==============================================================================
+    COLD void sample_rate_or_block_changed() noexcept override
+    {
+        if( buffer_size != int(sample_rate/4) )
+        {
+            buffer_size = int(sample_rate/4);
+            if( buffer )
+            {
+                delete[] buffer;
+            }
+            buffer = new float[buffer_size];
+        }
+        FloatVectorOperations::clear( buffer, buffer_size );
+
+        read_offset = (buffer_size-1)*process_size_in_percent;
+    }
+
+public:
+    //==============================================================================
+    COLD mono_Delay( RuntimeNotifyer*const notifyer_ ) noexcept
+:
+    RuntimeListener( notifyer_ ),
+                     buffer(nullptr),
+                     buffer_size(0),
+                     write_index(0),
+                     read_offset(0),
+                     process_size_in_percent(-1)
+    {
+        sample_rate_or_block_changed();
+    }
+    COLD ~mono_Delay() noexcept
+    {
+        delete [] buffer;
+    }
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Delay)
 };
 
 //==============================================================================
@@ -4598,22 +4702,27 @@ COLD ZeroInCounter() noexcept :
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroInCounter)
 };
-class FXProcessor
+class FXProcessor : RuntimeListener
 {
     mono_ThreadManager*const thread_manager;
+
+    // DELAY
+    mono_Delay delay_l;
+    mono_Delay delay_r;
 
     // REVERB
     mono_Reverb reverb_l;
     mono_Reverb reverb_r;
 
     // CHORUS
-#define DELAY_BUFFER_SIZE 12000
+#define DELAY_BUFFER_SIZE (sample_rate*0.25)
     Chorus chorus_l;
     Chorus chorus_r;
     friend class mono_ParameterOwnerStore;
 
     // DELAY
     int delayPosition;
+    int delaySize;
     mono_AudioSampleBuffer<2> delayBuffer;
 
     // FINAL ENV
@@ -4693,28 +4802,17 @@ public:
             float*const left_delay_data = delayBuffer.getWritePointer (LEFT);
             float*const right_delay_data = delayBuffer.getWritePointer (RIGHT);
             const float* const smoothed_delay_buffer = synth_data->delay_smoother.get_smoothed_value_buffer();
+            const float* const smoothed_delay_reflexion_buffer = synth_data->delay_refexion_smoother.get_smoothed_value_buffer();
+
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
-                {
-                    const float in_l = left_out_buffer[sid];
-                    const float in_r = right_out_buffer[sid];
-                    const float delay_data_in_l = left_delay_data[delayPosition];
-                    const float delay_data_in_r = right_delay_data[delayPosition];
-                    float sample_l = delay_data_in_l+in_l;
-                    float sample_r = delay_data_in_r+in_r;
-                    const float pan = smoothed_pan_buffer[sid];
-                    const float left = jmax(0.0f,jmin(1.0f,pan+1));
-                    const float right = jmax(0.0f,jmin(1.0f,pan*-1+1));
-                    left_delay_data[delayPosition] = sample_l * smoothed_delay_buffer[sid] * left;
-                    right_delay_data[delayPosition] = sample_r * smoothed_delay_buffer[sid] * right;
-                    if ( ++delayPosition >= DELAY_BUFFER_SIZE )
-                    {
-                        delayPosition = 0;
-                    }
-
-                    left_out_buffer[sid] = sample_l;
-                    right_out_buffer[sid] = sample_r;
-                }
+                const float delay_power = smoothed_delay_buffer[sid];
+                const float delay_reflexion_size = smoothed_delay_reflexion_buffer[sid];
+                const float pan = smoothed_pan_buffer[sid];
+                const float left = jmax(0.0f,jmin(1.0f,pan+1));
+                const float right = jmax(0.0f,jmin(1.0f,pan*-1+1));
+                left_out_buffer[sid] = delay_l.tick( left_out_buffer[sid], delay_power*left, delay_reflexion_size );
+                right_out_buffer[sid] = delay_r.tick( right_out_buffer[sid], delay_power*right, delay_reflexion_size );
             }
         }
 
@@ -4845,6 +4943,8 @@ public:
             final_env->set_to_release();
         }
     }
+
+    //==========================================================================
     void reset() noexcept
     {
         reverb_l.reset();
@@ -4858,6 +4958,11 @@ public:
         last_output_smoother.reset();
         velocity_smoother.reset(0);
     }
+    void sample_rate_or_block_changed() noexcept override
+    {
+        delayBuffer.setSize( DELAY_BUFFER_SIZE );
+        delaySize = delayBuffer.get_size();
+    }
 
 public:
     //==============================================================================
@@ -4868,28 +4973,34 @@ public:
                       const float*const cos_lookup_,
                       const float*const exp_lookup_ ) noexcept
 :
-    thread_manager(thread_manager_),
+    RuntimeListener( notifyer_ ),
+                     thread_manager(thread_manager_),
 
-                   reverb_l(notifyer_),
-                   reverb_r(notifyer_),
+                     delay_l(notifyer_),
+                     delay_r(notifyer_),
 
-                   chorus_l(notifyer_),
-                   chorus_r(notifyer_),
+                     reverb_l(notifyer_),
+                     reverb_r(notifyer_),
 
-                   delayPosition( 0 ),
-                   delayBuffer ( DELAY_BUFFER_SIZE ),
+                     chorus_l(notifyer_),
+                     chorus_r(notifyer_),
 
-                   final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
+                     delayPosition( 0 ),
+                     delaySize(0),
+                     delayBuffer ( DELAY_BUFFER_SIZE ),
 
-                   velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
-                   last_output_smoother(),
+                     final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
-                   synth_data( synth_data_ ),
-                   data_buffer( synth_data_->data_buffer ),
-                   reverb_data( synth_data_->reverb_data ),
-                   chorus_data( synth_data_->chorus_data )
+                     velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
+                     last_output_smoother(),
+
+                     synth_data( synth_data_ ),
+                     data_buffer( synth_data_->data_buffer ),
+                     reverb_data( synth_data_->reverb_data ),
+                     chorus_data( synth_data_->chorus_data )
     {
         std::cout << "MONIQUE: init FX" << std::endl;
+        sample_rate_or_block_changed();
     }
 
     COLD ~FXProcessor() noexcept {}

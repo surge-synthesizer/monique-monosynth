@@ -2131,6 +2131,7 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
 {
     dest_->volume = src_->volume;
     dest_->glide = src_->glide;
+    dest_->delay = src_->delay_refexion;
     dest_->delay = src_->delay;
     dest_->delay_pan = src_->delay_pan;
     dest_->effect_bypass = src_->effect_bypass;
@@ -2204,6 +2205,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
 
     saveable_parameters.add( &this->shape );
     saveable_parameters.add( &this->distortion );
+    saveable_parameters.add( &this->delay_refexion );
     saveable_parameters.add( &this->delay );
     saveable_parameters.add( &this->delay_pan );
     collect_saveable_parameters( reverb_data, saveable_parameters );
@@ -2493,6 +2495,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             morph_group_3->register_parameter( reverb_data->pan.ptr(), data_type == MASTER  );
             // DELAY
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( delay_refexion.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( delay_pan.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );

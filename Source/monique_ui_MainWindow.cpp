@@ -3160,10 +3160,10 @@ void Monique_Ui_Mainwindow::resized()
     flt_shape_4->setBounds (790 - 60, 810 - 130, 60, 130);
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     delay3->setBounds (1020 - 60, 810 - 130, 60, 130);
-    label_fx_distortion->setBounds (820, 680, 60, 30);
+    label_fx_distortion->setBounds (815, 680, 70, 30);
     label_reverb->setBounds (1090, 680, 180, 30);
-    label_fx_chorus->setBounds (890, 680, 60, 30);
-    label_fx_delay->setBounds (960, 680, 110, 30);
+    label_fx_chorus->setBounds (885, 680, 70, 30);
+    label_fx_delay->setBounds (960, 680, 120, 30);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -5606,7 +5606,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1020r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new DelayReflexSlConfig(synth_data)"/>
   <LABEL name="" id="798798be2a99287c" memberName="label_fx_distortion"
-         virtualName="" explicitFocusOrder="0" pos="820 680 60 30" textCol="ff050505"
+         virtualName="" explicitFocusOrder="0" pos="815 680 70 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DESTROY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
@@ -5616,12 +5616,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="f084ba8b8cf92d8d" memberName="label_fx_chorus" virtualName=""
-         explicitFocusOrder="0" pos="890 680 60 30" textCol="ff050505"
+         explicitFocusOrder="0" pos="885 680 70 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
-         explicitFocusOrder="0" pos="960 680 110 30" textCol="ff050505"
+         explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>

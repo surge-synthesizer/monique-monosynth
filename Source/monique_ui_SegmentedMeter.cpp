@@ -114,8 +114,8 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
     g.addTransform( AffineTransform::rotation
                     (
                         (float) (180.0f / (180.0 / double_Pi)),
-                        0.5*w,
-                        0.5*h
+                        0.5f*w,
+                        0.5f*h
                     )
                   );
 
@@ -126,7 +126,7 @@ void Monique_Ui_SegmentedMeter::paint (Graphics &g)
                      0, 0, w, h,
                      false);
 
-        const int offWidth = w - jmax(0,roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth()));
+        const int offWidth = w - jmin(w,jmax(0,roundToInt((float(numSegs) / TOTAL_NUM_SEG) * onImage.getWidth())));
         g.drawImage (offImage,
                      0, 0, offWidth, h,
                      0, 0, offWidth, h,
