@@ -17,6 +17,7 @@
 //==============================================================================
 enum DATA_TYPES
 {
+    MORPH_LEFT,
     MORPH = 1,
     MASTER,
 
@@ -1373,13 +1374,36 @@ class MorphGroup : public Timer, ParameterListener
 
 public:
     //==========================================================================
-    inline int indexOf( const Parameter*param_ ) const noexcept {
+    inline int indexOf( const Parameter*param_ ) const noexcept 
+    {
         return params.indexOf( const_cast<Parameter*>(param_) );
     }
-    inline const Parameter* get_left_param( int index_ ) const noexcept {
+    // NOT FOR HIGH PERFORMANCE
+    inline int indexOfBools( const Parameter*param_ ) const noexcept 
+    {
+        if( type_of( param_ ) == IS_BOOL )
+	{
+	  return switch_bool_params.indexOf( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
+	}
+        
+        return -1;
+    }
+    // NOT FOR HIGH PERFORMANCE
+    inline int indexOfInts( const Parameter*param_ ) const noexcept 
+    {
+        if( type_of( param_ ) == IS_INT )
+	{
+	  return switch_int_params.indexOf( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
+	}
+        
+        return -1;
+    }
+    inline const Parameter* get_left_param( int index_ ) const noexcept 
+    {
         return left_morph_source->params.getUnchecked(index_);
     }
-    inline const Parameter* get_right_param( int index_ ) const noexcept {
+    inline const Parameter* get_right_param( int index_ ) const noexcept 
+    {
         return right_morph_source->params.getUnchecked(index_);
     }
 
@@ -1436,6 +1460,8 @@ public:
 class MoniqueSynthesiserVoice;
 struct MoniqueSynthData : ParameterListener
 {
+    MoniqueSynthData*const master_data;
+  
     UiLookAndFeel*const ui_look_and_feel; // WILL BE NULL FOR MORPH DATA
     MoniqueAudioProcessor*const audio_processor; // WILL BE NULL FOR MORPH DATA
 
@@ -1563,7 +1589,8 @@ private:
                            RuntimeNotifyer*const runtime_notifyer_,
                            RuntimeInfo*const info_,
                            DataBuffer*data_buffer_,
-                           SmoothManager*smooth_manager = nullptr /* NOTE: the master data owns the manager, but the morph groups will be smoothed*/
+                           SmoothManager*smooth_manager = nullptr, /* NOTE: the master data owns the manager, but the morph groups will be smoothed*/
+                           MoniqueSynthData* master_data = nullptr
                          ) noexcept;
     COLD ~MoniqueSynthData() noexcept;
 
@@ -1591,16 +1618,16 @@ public:
     const String& get_morph_source_name( int id_abs_ ) const noexcept;
 private:
 
-    COLD void init_morph_groups( DATA_TYPES data_type ) noexcept;
+    COLD void init_morph_groups( DATA_TYPES data_type, MoniqueSynthData*master_data_ ) noexcept;
 
     CriticalSection morph_lock;
 
 public:
-    inline float get_morph_state( int morpher_id_ ) const noexcept;
-    inline bool get_morph_switch_state( int morpher_id_ ) const noexcept;
-    inline void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;
-    inline void morph_switch_buttons( int morpher_id_, bool do_switch_ = true ) noexcept;
-    inline void run_sync_morph() noexcept;
+    float get_morph_state( int morpher_id_ ) const noexcept;
+    bool get_morph_switch_state( int morpher_id_ ) const noexcept;
+    void morph( int morpher_id_, float morph_amount_left_to_right_, bool force_ = false ) noexcept;
+    void morph_switch_buttons( int morpher_id_, bool do_switch_ = true ) noexcept;
+    void run_sync_morph() noexcept;
 
 private:
     void parameter_value_changed( Parameter* param_ ) noexcept override;

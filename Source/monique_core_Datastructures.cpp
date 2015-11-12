@@ -927,17 +927,17 @@ COLD void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_
 
     if( is_master_ )
     {
-      param_->register_listener(this);
+        param_->register_listener(this);
     }
 }
 COLD void MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept
 {
-    /*
     switch_int_params.add( param_ );
 
     if( is_master_ )
+    {
         param_->register_listener(this);
-    */
+    }
 }
 COLD void MorphGroup::set_sources( MorphGroup* left_source_, MorphGroup* right_source_, float current_morph_amount_, bool current_switch_state_ ) noexcept
 {
@@ -1080,32 +1080,30 @@ void MorphGroup::timerCallback()
 void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
 {
     // SUPPORT FOR INT AND BOOL DIABLED
-    /*
     TYPES_DEF type = type_of( param_ );
     if( type == IS_BOOL )
     {
-        const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
-        if( param_id != -1 )
+        if( current_switch != LEFT )
         {
-            if( current_switch == LEFT )
-                left_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
-            else
+            const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
+            if( param_id != -1 )
+            {
                 right_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
         }
     }
     else if( type == IS_INT )
     {
-        const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
-        if( param_id != -1 )
+        if( current_switch != LEFT )
         {
-            if( current_switch == LEFT )
-                left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
-            else
+            const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
+            if( param_id != -1 )
+            {
                 right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
         }
     }
-    else
-    */
+    else if( type == IS_FLOAT)
     {
         const int param_id = params.indexOf( param_ );
         if( param_id != -1 )
@@ -1575,407 +1573,409 @@ COLD MoniqueSynthData::MoniqueSynthData( DATA_TYPES data_type,
         RuntimeNotifyer*const runtime_notifyer_,
         RuntimeInfo*const info_,
         DataBuffer*data_buffer_,
-        SmoothManager*smooth_manager_ ) noexcept
+        SmoothManager*smooth_manager_,
+        MoniqueSynthData*master_data_ ) noexcept
 :
-ui_look_and_feel( look_and_feel_ ),
-                  audio_processor( audio_processor_ ),
-                  smooth_manager( data_type == MASTER ? new SmoothManager(runtime_notifyer_) : smooth_manager_ ),
-                  runtime_notifyer( runtime_notifyer_ ),
-                  runtime_info( info_ ),
-                  data_buffer( data_buffer_ ),
+master_data( master_data_ ),
+             ui_look_and_feel( look_and_feel_ ),
+             audio_processor( audio_processor_ ),
+             smooth_manager( data_type == MASTER ? new SmoothManager(runtime_notifyer_) : smooth_manager_ ),
+             runtime_notifyer( runtime_notifyer_ ),
+             runtime_info( info_ ),
+             data_buffer( data_buffer_ ),
 
-                  sine_lookup( data_type == MASTER ? CREATE_SIN_LOOKUP::exec() : nullptr ),
-                  cos_lookup( data_type == MASTER ? CREATE_COS_LOOKUP::exec() : nullptr ),
-                  exp_lookup( data_type == MASTER ? CREATE_EXP_LOOKUP::exec() : nullptr ),
+             sine_lookup( data_type == MASTER ? CREATE_SIN_LOOKUP::exec() : nullptr ),
+             cos_lookup( data_type == MASTER ? CREATE_COS_LOOKUP::exec() : nullptr ),
+             exp_lookup( data_type == MASTER ? CREATE_EXP_LOOKUP::exec() : nullptr ),
 
-                  id( data_type ),
+             id( data_type ),
 
-                  volume
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0.9,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
-                      generate_short_human_name("MAIN","volume")
-                  ),
-                  volume_smoother( smooth_manager ,&volume),
-                  glide
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0.05,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
-                      generate_short_human_name("GLOB","note_glide")
-                  ),
-                  glide_smoother(smooth_manager ,&glide ),
-                  delay
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
-                      generate_short_human_name("FX","delay")
-                  ),
-                  delay_smoother(smooth_manager,&delay),
-                  delay_pan
-                  (
-                      MIN_MAX( -1, 1 ),
-                      0,
-                      2000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_pan"),
-                      generate_short_human_name("FX","delay_pan")
-                  ),
-                  delay_pan_smoother(smooth_manager,&delay_pan),
-                  effect_bypass
-                  (
-                      MIN_MAX( 0, 1 ),
-                      1,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
-                      generate_short_human_name("FX","mix")
-                  ),
-                  effect_bypass_smoother(smooth_manager,&effect_bypass),
-                  shape
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0.05,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
-                      generate_short_human_name("EQ","resonance")
-                  ),
-                  shape_smoother(smooth_manager,&shape),
-                  distortion
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0.6,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
-                      generate_short_human_name("FX","destroy")
-                  ),
-                  distortion_smoother(smooth_manager,&distortion),
-                  octave_offset
-                  (
-                      MIN_MAX( -2, 2 ),
-                      0,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
-                      generate_short_human_name("GLOB","octave")
-                  ),
-                  note_offset
-                  (
-                      MIN_MAX( 0, 12 ),
-                      0,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
-                      generate_short_human_name("GLOB","note_offset")
-                  ),
+             volume
+             (
+                 MIN_MAX( 0, 1 ),
+                 0.9,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"volume"),
+                 generate_short_human_name("MAIN","volume")
+             ),
+             volume_smoother( smooth_manager ,&volume),
+             glide
+             (
+                 MIN_MAX( 0, 1 ),
+                 0.05,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"glide"),
+                 generate_short_human_name("GLOB","note_glide")
+             ),
+             glide_smoother(smooth_manager ,&glide ),
+             delay
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"delay"),
+                 generate_short_human_name("FX","delay")
+             ),
+             delay_smoother(smooth_manager,&delay),
+             delay_pan
+             (
+                 MIN_MAX( -1, 1 ),
+                 0,
+                 2000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_pan"),
+                 generate_short_human_name("FX","delay_pan")
+             ),
+             delay_pan_smoother(smooth_manager,&delay_pan),
+             effect_bypass
+             (
+                 MIN_MAX( 0, 1 ),
+                 1,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"effect_bypass"),
+                 generate_short_human_name("FX","mix")
+             ),
+             effect_bypass_smoother(smooth_manager,&effect_bypass),
+             shape
+             (
+                 MIN_MAX( 0, 1 ),
+                 0.05,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"shape"),
+                 generate_short_human_name("EQ","resonance")
+             ),
+             shape_smoother(smooth_manager,&shape),
+             distortion
+             (
+                 MIN_MAX( 0, 1 ),
+                 0.6,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"distortion"),
+                 generate_short_human_name("FX","destroy")
+             ),
+             distortion_smoother(smooth_manager,&distortion),
+             octave_offset
+             (
+                 MIN_MAX( -2, 2 ),
+                 0,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"octave_offset"),
+                 generate_short_human_name("GLOB","octave")
+             ),
+             note_offset
+             (
+                 MIN_MAX( 0, 12 ),
+                 0,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_note_offset"),
+                 generate_short_human_name("GLOB","note_offset")
+             ),
 
-                  sync
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
-                      generate_short_human_name("GLOB","speed_sync")
-                  ),
-                  speed
-                  (
-                      MIN_MAX( 20, 1000 ),
-                      128,
-                      980*10,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
-                      generate_short_human_name("GLOB","speed")
-                  ),
+             sync
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"sync"),
+                 generate_short_human_name("GLOB","speed_sync")
+             ),
+             speed
+             (
+                 MIN_MAX( 20, 1000 ),
+                 128,
+                 980*10,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"speed"),
+                 generate_short_human_name("GLOB","speed")
+             ),
 
-                  glide_motor_time
-                  (
-                      MIN_MAX( 1, 1000 ),
-                      50,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
-                      generate_short_human_name("GLOB","smooth_motor_time")
-                  ),
-                  velocity_glide_time
-                  (
-                      MIN_MAX( 1, 999 ),
-                      30,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
-                      generate_short_human_name("GLOB","velocity_glide")
-                  ),
+             glide_motor_time
+             (
+                 MIN_MAX( 1, 1000 ),
+                 50,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"smooth_motor_time"),
+                 generate_short_human_name("GLOB","smooth_motor_time")
+             ),
+             velocity_glide_time
+             (
+                 MIN_MAX( 1, 999 ),
+                 30,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"velocity_glide_time"),
+                 generate_short_human_name("GLOB","velocity_glide")
+             ),
 
-                  ctrl
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
-                      generate_short_human_name("GLOB","ctrl")
-                  ),
-                  midi_pickup_offset
-                  (
-                      MIN_MAX( 0, 1 ),
-                      1,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
-                      generate_short_human_name("MIDI","cc_pick_up")
-                  ),
-
-// -------------------------------------------------------------
-                  osci_show_osc_1
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
-                      generate_short_human_name("CONF","osci_show_osc_1")
-                  ),
-                  osci_show_osc_2
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
-                      generate_short_human_name("CONF","osci_show_osc_2")
-                  ),
-                  osci_show_osc_3
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
-                      generate_short_human_name("CONF","osci_show_osc_3")
-                  ),
-                  osci_show_flt_env_1
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
-                      generate_short_human_name("CONF","osci_show_flt_env_1")
-                  ),
-                  osci_show_flt_env_2
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
-                      generate_short_human_name("CONF","osci_show_flt_env_2")
-                  ),
-                  osci_show_flt_env_3
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
-                      generate_short_human_name("CONF","osci_show_flt_env_3")
-                  ),
-                  osci_show_flt_1
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
-                      generate_short_human_name("CONF","osci_show_flt_1")
-                  ),
-                  osci_show_flt_2
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
-                      generate_short_human_name("CONF","osci_show_flt_2")
-                  ),
-                  osci_show_flt_3
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
-                      generate_short_human_name("CONF","osci_show_flt_3")
-                  ),
-                  osci_show_eq
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
-                      generate_short_human_name("CONF","osci_show_eq")
-                  ),
-                  osci_show_out
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
-                      generate_short_human_name("CONF","osci_show_out")
-                  ),
-                  osci_show_out_env
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
-                      generate_short_human_name("CONF","osci_show_out_env")
-                  ),
-                  osci_show_range
-                  (
-                      MIN_MAX( 0, 1 ),
-                      0.05,
-                      100,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
-                      generate_short_human_name("CONF","osci_show_range")
-                  ),
+             ctrl
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"ctrl"),
+                 generate_short_human_name("GLOB","ctrl")
+             ),
+             midi_pickup_offset
+             (
+                 MIN_MAX( 0, 1 ),
+                 1,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"midi_pickup_offset"),
+                 generate_short_human_name("MIDI","cc_pick_up")
+             ),
 
 // -------------------------------------------------------------
-                  auto_close_env_popup
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
-                      generate_short_human_name("POP","auto_close_env_popup")
-                  ),
-                  auto_switch_env_popup
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
-                      generate_short_human_name("POP","auto_switch_env_popup")
-                  ),
+             osci_show_osc_1
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_1"),
+                 generate_short_human_name("CONF","osci_show_osc_1")
+             ),
+             osci_show_osc_2
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_2"),
+                 generate_short_human_name("CONF","osci_show_osc_2")
+             ),
+             osci_show_osc_3
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_osc_3"),
+                 generate_short_human_name("CONF","osci_show_osc_3")
+             ),
+             osci_show_flt_env_1
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_1"),
+                 generate_short_human_name("CONF","osci_show_flt_env_1")
+             ),
+             osci_show_flt_env_2
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_2"),
+                 generate_short_human_name("CONF","osci_show_flt_env_2")
+             ),
+             osci_show_flt_env_3
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_env_3"),
+                 generate_short_human_name("CONF","osci_show_flt_env_3")
+             ),
+             osci_show_flt_1
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_1"),
+                 generate_short_human_name("CONF","osci_show_flt_1")
+             ),
+             osci_show_flt_2
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_2"),
+                 generate_short_human_name("CONF","osci_show_flt_2")
+             ),
+             osci_show_flt_3
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_flt_3"),
+                 generate_short_human_name("CONF","osci_show_flt_3")
+             ),
+             osci_show_eq
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_eq"),
+                 generate_short_human_name("CONF","osci_show_eq")
+             ),
+             osci_show_out
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out"),
+                 generate_short_human_name("CONF","osci_show_out")
+             ),
+             osci_show_out_env
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_out_env"),
+                 generate_short_human_name("CONF","osci_show_out_env")
+             ),
+             osci_show_range
+             (
+                 MIN_MAX( 0, 1 ),
+                 0.05,
+                 100,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"osci_show_range"),
+                 generate_short_human_name("CONF","osci_show_range")
+             ),
 
 // -------------------------------------------------------------
-                  is_osci_open
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"is_osci_open"),
-                      generate_short_human_name("CONF","is_osci_open")
-                  ),
+             auto_close_env_popup
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_close_env_popup"),
+                 generate_short_human_name("POP","auto_close_env_popup")
+             ),
+             auto_switch_env_popup
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"auto_switch_env_popup"),
+                 generate_short_human_name("POP","auto_switch_env_popup")
+             ),
 
 // -------------------------------------------------------------
-                  keep_arp_always_on
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_ON_always"),
-                      generate_short_human_name("GLOB","arp_ON_always")
-                  ),
-                  keep_arp_always_off
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
-                      generate_short_human_name("GLOB","arp_OFF_always")
-                  ),
+             is_osci_open
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"is_osci_open"),
+                 generate_short_human_name("CONF","is_osci_open")
+             ),
+
+// -------------------------------------------------------------
+             keep_arp_always_on
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_ON_always"),
+                 generate_short_human_name("GLOB","arp_ON_always")
+             ),
+             keep_arp_always_off
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"arp_OFF_always"),
+                 generate_short_human_name("GLOB","arp_OFF_always")
+             ),
 
 
 // -------------------------------------------------------------
-                  num_extra_threads
-                  (
-                      MIN_MAX( 0, THREAD_LIMIT ),
-                      0,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
-                      generate_short_human_name("CONF","cpus")
-                  ),
+             num_extra_threads
+             (
+                 MIN_MAX( 0, THREAD_LIMIT ),
+                 0,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"cpus"),
+                 generate_short_human_name("CONF","cpus")
+             ),
 
 // -------------------------------------------------------------
-                  animate_envs
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
-                      generate_short_human_name("CONF","animate_envs")
-                  ),
-                  show_tooltips
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
-                      generate_short_human_name("CONF","show_tooltips")
-                  ),
-                  bind_sustain_and_sostenuto_pedal
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
-                      generate_short_human_name("MIDI","bind_pedals")
-                  ),
-                  sliders_in_rotary_mode
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
-                      generate_short_human_name("CONF","slider_type")
-                  ),
-                  sliders_sensitivity
-                  (
-                      MIN_MAX( 100, 2000 ),
-                      500,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
-                      generate_short_human_name("CONF","rotary_sensitivity")
-                  ),
-                  sliders_linear_sensitivity
-                  (
-                      MIN_MAX( 100, 2000 ),
-                      500,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_linear_sensitivity"),
-                      generate_short_human_name("CONF","linear_sensitivity")
-                  ),
-                  is_rotary_sliders_velocity_mode
-                  (
-                      false,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
-                      generate_short_human_name("CONF","rotary_velocity_mode")
-                  ),
-                  is_linear_sliders_velocity_mode
-                  (
-                      true,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
-                      generate_short_human_name("CONF","rotary_velocity_mode")
-                  ),
-                  ui_scale_factor
-                  (
-                      MIN_MAX( 0.6, 10 ),
-                      0.7,
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
-                      generate_short_human_name("CONF","ui_scale_factor")
-                  ),
+             animate_envs
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
+                 generate_short_human_name("CONF","animate_envs")
+             ),
+             show_tooltips
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"show_tooltips"),
+                 generate_short_human_name("CONF","show_tooltips")
+             ),
+             bind_sustain_and_sostenuto_pedal
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"bind_pedals"),
+                 generate_short_human_name("MIDI","bind_pedals")
+             ),
+             sliders_in_rotary_mode
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_rotary"),
+                 generate_short_human_name("CONF","slider_type")
+             ),
+             sliders_sensitivity
+             (
+                 MIN_MAX( 100, 2000 ),
+                 500,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
+                 generate_short_human_name("CONF","rotary_sensitivity")
+             ),
+             sliders_linear_sensitivity
+             (
+                 MIN_MAX( 100, 2000 ),
+                 500,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_linear_sensitivity"),
+                 generate_short_human_name("CONF","linear_sensitivity")
+             ),
+             is_rotary_sliders_velocity_mode
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
+                 generate_short_human_name("CONF","rotary_velocity_mode")
+             ),
+             is_linear_sliders_velocity_mode
+             (
+                 true,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"rotary_velocity_mode"),
+                 generate_short_human_name("CONF","rotary_velocity_mode")
+             ),
+             ui_scale_factor
+             (
+                 MIN_MAX( 0.6, 10 ),
+                 0.7,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"ui_scale_factor"),
+                 generate_short_human_name("CONF","ui_scale_factor")
+             ),
 
 // ----
-                  env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
-                  eq_data(new EQData( smooth_manager, MASTER )),
-                  arp_sequencer_data(new ArpSequencerData( MASTER )),
-                  reverb_data(new ReverbData( smooth_manager, MASTER ) ),
-                  chorus_data(new ChorusData( smooth_manager, MASTER )),
+             env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
+             eq_data(new EQData( smooth_manager, MASTER )),
+             arp_sequencer_data(new ArpSequencerData( MASTER )),
+             reverb_data(new ReverbData( smooth_manager, MASTER ) ),
+             chorus_data(new ChorusData( smooth_manager, MASTER )),
 
 // MORPH
 // -------------------------------------------------------------
-                  morhp_states
-                  (
-                      SUM_MORPHER_GROUPS,
+             morhp_states
+             (
+                 SUM_MORPHER_GROUPS,
 
-                      MIN_MAX( 0, 1 ),
-                      0,
-                      1000,
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
 
-                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-                      MASTER,
-                      "morph_state","morph",false
-                  ),
-                  is_morph_modulated
-                  (
-                      SUM_MORPHER_GROUPS,
+                 SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                 MASTER,
+                 "morph_state","morph",false
+             ),
+             is_morph_modulated
+             (
+                 SUM_MORPHER_GROUPS,
 
-                      false,
+                 false,
 
-                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-                      MASTER,
-                      "is_morph_modulated","is_morph_mod",false
-                  ),
-                  morhp_automation_power
-                  (
-                      SUM_MORPHER_GROUPS,
+                 SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                 MASTER,
+                 "is_morph_modulated","is_morph_mod",false
+             ),
+             morhp_automation_power
+             (
+                 SUM_MORPHER_GROUPS,
 
-                      MIN_MAX( 0, 1 ),
-                      0,
-                      1000,
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
 
-                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-                      MASTER,
-                      "mfo_power","morph_mod_power",false
-                  ),
-                  morhp_switch_states
-                  (
-                      SUM_MORPHER_GROUPS,
+                 SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                 MASTER,
+                 "mfo_power","morph_mod_power",false
+             ),
+             morhp_switch_states
+             (
+                 SUM_MORPHER_GROUPS,
 
-                      LEFT,
+                 LEFT,
 
-                      SYNTH_DATA_NAME,SYNTH_DATA_NAME,
-                      MASTER,
-                      "morph_switch_state","morph_tgl",false
-                  ),
-                  morph_motor_time
-                  (
-                      MIN_MAX( 20, 20000 ),
-                      1000,
-                      generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
-                      generate_short_human_name("CONF","morph_motor")
-                  ),
-                  morph_group_1( new MorphGroup() ),
-                  morph_group_2( new MorphGroup() ),
-                  morph_group_3( new MorphGroup() ),
-                  morph_group_4( new MorphGroup() ),
+                 SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                 MASTER,
+                 "morph_switch_state","morph_tgl",false
+             ),
+             morph_motor_time
+             (
+                 MIN_MAX( 20, 20000 ),
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"morph_motor_time"),
+                 generate_short_human_name("CONF","morph_motor")
+             ),
+             morph_group_1( new MorphGroup() ),
+             morph_group_2( new MorphGroup() ),
+             morph_group_3( new MorphGroup() ),
+             morph_group_4( new MorphGroup() ),
 
 // FILES
 // ----
-                  current_program(-1),
-                  current_program_abs(-1),
-                  current_bank(0),
+             current_program(-1),
+             current_program_abs(-1),
+             current_bank(0),
 
-                  current_theme("DARK"),
+             current_theme("DARK"),
 
-                  alternative_program_name("NO PROGRAM SELECTED"),
-                  error_string("ERROR")
+             alternative_program_name("NO PROGRAM SELECTED"),
+             error_string("ERROR")
 {
     // OSCS DATA
     fm_osc_data = new FMOscData(smooth_manager);
@@ -2015,7 +2015,7 @@ ui_look_and_feel( look_and_feel_ ),
     filter_datas.minimiseStorageOverheads();
 
     // MORPH STUFF
-    init_morph_groups( data_type );
+    init_morph_groups( data_type, master_data_ ? master_data_ : this );
 
     // FILE HANDLING (MUST BE AFTER SAVEABLE PARAMS)
     colect_saveable_parameters();
@@ -2029,6 +2029,43 @@ ui_look_and_feel( look_and_feel_ ),
 
         refresh_banks_and_programms( *this );
         set_default_midi_assignments( *this, audio_processor_ );
+    }
+
+
+    // REMOVE UNNEDED PARAMETERS FROM THE SAVABLES (COZ THEY HAVE MORPH DATA)
+    saveable_parameters.minimiseStorageOverheads();
+    if( id == MASTER )
+    {
+        automateable_parameters.addArray( saveable_parameters );
+        automateable_parameters.minimiseStorageOverheads();
+
+        for( int i = 0 ; i != automateable_parameters.size() ; ++i )
+        {
+            Parameter*param = automateable_parameters.getUnchecked(i);
+            bool success = false;
+            if( morph_group_1->indexOf( param ) != -1 or morph_group_1->indexOfBools( param ) != -1 or morph_group_1->indexOfInts( param ) != -1 )
+            {
+                success = true;
+            }
+            else if( morph_group_2->indexOf( param ) != -1 or morph_group_2->indexOfBools( param ) != -1 or morph_group_2->indexOfInts( param ) != -1 )
+            {
+                success = true;
+            }
+            else if( morph_group_3->indexOf( param ) != -1 or morph_group_3->indexOfBools( param ) != -1 or morph_group_3->indexOfInts( param ) != -1 )
+            {
+                success = true;
+            }
+            else if( morph_group_4->indexOf( param ) != -1 or morph_group_4->indexOfBools( param ) != -1 or morph_group_4->indexOfInts( param ) != -1 )
+            {
+                success = true;
+            }
+
+            if( success )
+            {
+                saveable_parameters.removeFirstMatchingValue( param );
+            }
+        }
+        saveable_parameters.minimiseStorageOverheads();
     }
 }
 COLD MoniqueSynthData::~MoniqueSynthData() noexcept
@@ -2174,42 +2211,6 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
-
-    // REMOVE UNNEDED PARAMETERS FROM THE SAVABLES (COZ THEY HAVE MORPH DATA)
-    saveable_parameters.minimiseStorageOverheads();
-    if( id == MASTER )
-    {
-        automateable_parameters.addArray( saveable_parameters );
-        automateable_parameters.minimiseStorageOverheads();
-
-        for( int i = 0 ; i != automateable_parameters.size() ; ++i )
-        {
-            Parameter*param = automateable_parameters.getUnchecked(i);
-            bool success = false;
-            if( morph_group_1->indexOf( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_2->indexOf( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_3->indexOf( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_4->indexOf( param ) != -1 )
-            {
-                success = true;
-            }
-            
-            if( success )
-            {
-                saveable_parameters.removeFirstMatchingValue( param );
-            }
-        }
-        saveable_parameters.minimiseStorageOverheads();
-    }
 }
 
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
@@ -2256,7 +2257,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
+COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynthData* master_data_ ) noexcept
 {
     left_morph_source_names.add( "UNDEFINED" );
     left_morph_source_names.add( "UNDEFINED" );
@@ -2266,6 +2267,8 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
     right_morph_source_names.add( "UNDEFINED" );
     right_morph_source_names.add( "UNDEFINED" );
     right_morph_source_names.add( "UNDEFINED" );
+
+    MoniqueSynthData* switch_data_ = this;
     {
         // OSC'S
         {
@@ -2274,24 +2277,24 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_1->register_parameter( fm_osc_data->master_shift.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
             }
             {
                 morph_group_1->register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->tune.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
             }
             {
                 morph_group_1->register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->tune.ptr(), data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
 
-                morph_group_1->register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
-                morph_group_1->register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( switch_data_->osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
             }
         }
 
@@ -2323,15 +2326,16 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                     morph_group_2->register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
@@ -2366,15 +2370,16 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                     morph_group_2->register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
@@ -2409,15 +2414,16 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                     morph_group_2->register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
-                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
@@ -2459,7 +2465,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
                 morph_group_3->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
 
-                morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
+                morph_group_3->register_switch_parameter( switch_data_->eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
 
             morph_group_3->register_parameter( eq_data->bypass.ptr(), data_type == MASTER  );
@@ -2486,19 +2492,13 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
         // ARP
         {
+            for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
             {
-                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
-                {
-                    morph_group_4->register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
-                }
+                morph_group_4->register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
+                morph_group_4->register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
             }
-
-            {
-                for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
-                {
-                    morph_group_4->register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
-                }
-            }
+            morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
 
             {
                 morph_group_4->register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
@@ -2508,11 +2508,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             {
                 // is_on
                 // speed_multi
-                morph_group_4->register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
-                //morph_group_arp_switchs->register_switch_parameter( arp_sequencer_data.connect.ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
+                //morph_group_arp_switchs->register_switch_parameter( switch_data_->arp_sequencer_data.connect.ptr(), data_type == MASTER  );
                 for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
                 {
-                    morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
+                    morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
                 }
             }
 
@@ -2529,12 +2529,12 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
         {
             MoniqueSynthData*morph_data;
-            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr );
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH_LEFT ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, this );
             //hat eine änderungscaskade zur folge!!!
             morph_data->load_default();
             left_morph_sources.add( morph_data );
 
-            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr );
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, this );
             //hat eine änderungscaskade zur folge!!!
             morph_data->load_default();
             right_morph_sources.add( morph_data );
@@ -3503,23 +3503,6 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
-                /*
-                if( param->get_info().name.contains("max_release") )
-                              {
-                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) );
-                              }
-                              if( param->get_info().name.contains("max_decay") )
-                              {
-                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
-                              }
-                              if( param->get_info().name.contains("max_attack") )
-                              {
-                                  Parameter*const param_before = saveable_parameters.getUnchecked(i-1);
-                                  param_before->set_value( jmin(1.0f,(1.0f /5000.0f*param_before->get_value()*param->get_value())) ) ;
-                              }
-                              */
             }
 
             if( ui_look_and_feel )

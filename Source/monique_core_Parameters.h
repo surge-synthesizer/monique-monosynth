@@ -487,7 +487,6 @@ inline void Parameter::notify_modulation_value_listeners() noexcept
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
-// TODO notifications
 class BoolParameter : public Parameter
 {
 public:
@@ -495,8 +494,8 @@ public:
     // GETTER
     inline bool operator^=( bool ) noexcept
     {
-        value = !value;
-        return value;
+        Parameter::set_value( !bool(value) );
+        return bool(value);
     }
     inline operator bool() const noexcept
     {
@@ -524,16 +523,12 @@ public:
     // SETTER
     inline bool operator= ( const bool value_ ) noexcept
     {
-        value = value_;
+        Parameter::set_value(value_);
         return bool(value);
     }
     inline bool operator= ( const BoolParameter& other_ ) noexcept
     {
-        if (this != &other_)
-        {
-            value = other_.value;
-        }
-        return bool(value);
+        return Parameter::operator=(other_.value);
     }
 
 private:
@@ -542,8 +537,7 @@ private:
     inline operator int() const noexcept = delete;
 
 public:
-    COLD BoolParameter( const bool init_value_,
-                        const String& name_, const String& short_name_ ) noexcept;
+    COLD BoolParameter( const bool init_value_, const String& name_, const String& short_name_ ) noexcept;
     COLD ~BoolParameter() noexcept;
 
 private:
@@ -587,28 +581,12 @@ public:
     // SETTER
     inline int operator= ( int value_ ) noexcept
     {
-        if( int(value) != value_ )
-        {
-            if( value_ > info->max_value )
-            {
-                value_ = info->max_value;
-            }
-            else if( value_ < info->min_value )
-            {
-                value_ = info->min_value;
-            }
-            value = value_;
-            notify_modulation_value_listeners();
-        }
+        Parameter::set_value( value_ );
         return int(value);
     }
     inline int operator= ( const IntParameter& other_ ) noexcept
     {
-        if (this != &other_)
-        {
-            operator=(int(other_.value));
-        }
-        return int(value);
+        return Parameter::operator=(other_.value);
     }
 
 private:

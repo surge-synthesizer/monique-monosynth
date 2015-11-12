@@ -2532,6 +2532,7 @@ public:
     inline void overwrite_current_value( float amp_ ) noexcept
     {
         env_osc.overwrite_current_value( amp_ );
+        last_sustain = amp_;
     }
     inline bool is_endless() noexcept
     {
@@ -5470,13 +5471,20 @@ void SmoothedParameter::smooth_and_morph
     int num_samples_
 ) noexcept
 {
+    left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+    left_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    right_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+    // LOOKING FORWART TO PROCESS MODUALATION AND AMP MODUALATION
+    modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    amp_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
     const bool is_modulateable = has_modulation( param_to_smooth );
     if( not is_modulateable )
     {
-        left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-        right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-        morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-
         left_morph_smoother.set_value( left_source_param_->get_value() );
         right_morph_smoother.set_value( right_source_param_->get_value() );
 
@@ -5503,30 +5511,10 @@ void SmoothedParameter::smooth_and_morph
             // KEEP UP TO DATE FOR A SWITCH
             morph_power_smoother.reset_glide_countdown();
         }
-
-        // LOOKING FORWART TO PROCESS MODUALATION
-        if( is_modulateable )
-        {
-            if( modulation_power_smoother.is_up_to_date() )
-            {
-                modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-                morph_power_smoother.reset_glide_countdown();
-            }
-        }
     }
     // ITS A COPY OF THE PROCESS ABOVE BUT WITH MODULATION
     else
     {
-        left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-        right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-        morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-
-        left_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-        right_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-
-        // LOOKING FORWART TO PROCESS MODUALATION
-        modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-
         left_morph_smoother.set_value( left_source_param_->get_value() );
         right_morph_smoother.set_value( right_source_param_->get_value() );
 
@@ -5639,18 +5627,22 @@ void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*e
         }
 
         param_to_smooth->get_runtime_info().set_last_modulation_amount( amp_buffer_[num_samples_-1] );
+
+        amp_power_smoother.set_info_flag(false);
     }
     else
     {
-        amp_power_smoother.set_value( 1 );
-        float current_amp_power = 0;
+        if( not amp_power_smoother.get_info_flag() )
+        {
+            amp_power_smoother.set_value( 1 );
+            amp_power_smoother.set_info_flag(true);
+        }
         if( not amp_power_smoother.is_up_to_date() )
         {
             env_->process( amp_buffer_, num_samples_ );
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
-                current_amp_power = amp_power_smoother.tick();
-                amp_buffer_[sid] = source[sid]*current_amp_power;
+                amp_buffer_[sid] = source[sid]*amp_power_smoother.tick();
                 DEBUG_CHECK_MIN_MAX( amp_buffer_[sid] );
             }
         }
@@ -5658,9 +5650,8 @@ void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*e
         {
             FloatVectorOperations::copy( amp_buffer_, source, num_samples_ );
 
-            // RESET ENVELOP TO BE ZERO
-            env_->reset();
-            env_->overwrite_current_value( current_amp_power );
+            // RESET ENVELOP TO BE UP TO DATE ON A SWITCH
+            env_->overwrite_current_value( amp_buffer_[num_samples_-1] );
         }
 
         param_to_smooth->get_runtime_info().set_last_modulation_amount( amp_buffer_[num_samples_-1] );
@@ -5828,7 +5819,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        data_buffer->filter_env_amps.getWritePointer(0),
 
                                        synth_data->morph_group_1,
-				       synth_data->mfo_datas[0],
+                                       synth_data->mfo_datas[0],
                                        synth_data,
 
                                        synth_data->is_morph_modulated[0],
@@ -5856,7 +5847,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        data_buffer->filter_env_amps.getWritePointer(1),
 
                                        synth_data->morph_group_2,
-				       synth_data->mfo_datas[1],
+                                       synth_data->mfo_datas[1],
                                        synth_data,
 
                                        synth_data->is_morph_modulated[1],
@@ -5885,7 +5876,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        data_buffer->filter_env_amps.getWritePointer(2),
 
                                        synth_data->morph_group_3,
-				       synth_data->mfo_datas[2],
+                                       synth_data->mfo_datas[2],
                                        synth_data,
 
                                        synth_data->is_morph_modulated[2],
@@ -5903,7 +5894,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             // MASTER THREAD
             SmoothExecuter executer_4( this,
                                        data_buffer->mfo_amplitudes.getWritePointer(3),
-				       nullptr,
+                                       nullptr,
 
                                        mfos[3],
                                        nullptr,
@@ -5914,7 +5905,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        nullptr,
 
                                        synth_data->morph_group_4,
-				       synth_data->mfo_datas[3],
+                                       synth_data->mfo_datas[3],
                                        synth_data,
 
                                        synth_data->is_morph_modulated[3],
@@ -5961,8 +5952,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
-        amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
-        //amp_painter->add_osc( 2, data_buffer->mfo_amplitudes.getReadPointer(3), num_samples_ );
+        // amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
+        amp_painter->add_osc( 2, data_buffer->band_env_buffers.getReadPointer(0), num_samples_ );
     }
 
     // UI INFORMATIONS

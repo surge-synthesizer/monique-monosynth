@@ -170,6 +170,12 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> filter_type_bg_button_3;
+    ScopedPointer<TextButton> filter_type_2_3;
+    ScopedPointer<TextButton> filter_type_bg_button_2;
+    ScopedPointer<TextButton> filter_type_2_2;
+    ScopedPointer<TextButton> filter_type_bg_button_1;
+    ScopedPointer<TextButton> filter_type_2_1;
     ScopedPointer<Label> label_lfo_1;
     ScopedPointer<Label> label_lfo_2;
     ScopedPointer<Label> label_lfo_3;
@@ -200,9 +206,6 @@ private:
     ScopedPointer<TextButton> button_edit_lfo_3;
     ScopedPointer<TextButton> button_edit_lfo_2;
     ScopedPointer<TextButton> button_edit_lfo_1;
-    ScopedPointer<TextButton> filter_type_bg_button_3;
-    ScopedPointer<TextButton> filter_type_bg_button_2;
-    ScopedPointer<TextButton> filter_type_bg_button_1;
     ScopedPointer<Label> label_band_hz_5;
     ScopedPointer<Label> label_band_hz_6;
     ScopedPointer<Label> label_band_hz_4;
@@ -265,11 +268,8 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_sustain_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_decay_1;
     ScopedPointer<Monique_Ui_DualSlider> flt_attack_1;
-    ScopedPointer<TextButton> filter_type_2_1;
     ScopedPointer<TextButton> filter_type_3_1;
-    ScopedPointer<TextButton> filter_type_2_2;
     ScopedPointer<TextButton> filter_type_3_2;
-    ScopedPointer<TextButton> filter_type_2_3;
     ScopedPointer<TextButton> filter_type_3_3;
     ScopedPointer<TextButton> filter_type_5_1;
     ScopedPointer<TextButton> filter_type_5_2;

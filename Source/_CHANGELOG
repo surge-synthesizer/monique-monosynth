@@ -32,6 +32,7 @@ CHANGES 0.9.8
 - fix: env shape was not morphable
 - fix: sustain input was a bit buggy
 - add: popup for lfo, add square and offset option to the lfo (same like the mfo)
+- add back: morph button toggles
 
 NOTES:
 
