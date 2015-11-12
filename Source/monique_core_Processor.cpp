@@ -352,7 +352,7 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
         }
         if( SHARED::getInstance()->mfo_clipboard )
         {
-            MFOData*mfo = SHARED::getInstance()->mfo_clipboard;
+            LFOData*mfo = SHARED::getInstance()->mfo_clipboard;
             SHARED::getInstance()->mfo_clipboard = nullptr;
             delete mfo;
         }

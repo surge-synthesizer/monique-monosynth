@@ -44,29 +44,12 @@ COLD SmoothedParameter::SmoothedParameter( SmoothManager*const smooth_manager_, 
 RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
                  smooth_manager(smooth_manager_),
 
-                 values(block_size),
-                 values_modulated(block_size),
+                 values(block_size), modulation_power(block_size),
 
                  param_to_smooth(param_to_smooth_),
 
                  max_value( param_to_smooth_->get_info().max_value ),
-                 min_value( param_to_smooth_->get_info().min_value ),
-
-                 last_value(0), // TO ENSURE START ON A SILENT STAGE
-                 last_target(-99),
-                 difference_per_sample(0),
-                 samples_left(0),
-                 buffer_is_linear_up_to_date_filled(false),
-
-                 last_modulator(0),
-                 was_modulated_last_time(false),
-
-                 amp_switch_samples_left_max(1),
-                 amp_switch_samples_left(0),
-                 last_amp_automated(0),
-                 last_amp_valued(0),
-                 was_automated_last_time(false),
-                 is_smoothable(true)
+                 min_value( param_to_smooth_->get_info().min_value )
 {
     if( smooth_manager )
     {
@@ -82,10 +65,6 @@ COLD SmoothedParameter::~SmoothedParameter() noexcept
         smooth_manager->smoothers.removeFirstMatchingValue(this);
     }
 }
-COLD void SmoothedParameter::do_smooth( bool state_ ) noexcept
-{
-    is_smoothable = state_;
-}
 COLD void SmoothedParameter::set_offline() noexcept
 {
     if( smooth_manager )
@@ -97,206 +76,19 @@ COLD void SmoothedParameter::set_offline() noexcept
 //==============================================================================
 COLD void SmoothedParameter::sample_rate_or_block_changed() noexcept
 {
-    modulator_smoother.reset(sample_rate);
     values.setSize( block_size );
-    values_modulated.setSize( block_size );
-    buffer_is_linear_up_to_date_filled = false;
-}
-
-inline void SmoothedParameter::smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept
-{
-    {
-        const float target = param_to_smooth->get_value();
-        if( target != last_target )
-        {
-            samples_left = glide_motor_time_in_samples;
-            difference_per_sample = (target - last_value) / samples_left;
-            last_target = target;
-        }
-    }
-
-    if( samples_left > 0 )
-    {
-        float* target_buffer = values.getWritePointer();
-        if( samples_left >= num_samples_ )
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                target_buffer[i] = last_value += difference_per_sample;
-            }
-            samples_left -= num_samples_;
-        }
-        else
-        {
-            int i = 0;
-            for(  ; i != samples_left ; ++i )
-            {
-                target_buffer[i] = last_value += difference_per_sample;
-            }
-            samples_left = 0;
-
-            for(  ; i < num_samples_ ; ++i )
-            {
-                target_buffer[i] = last_target;
-            }
-            last_value = last_target;
-        }
-
-        buffer_is_linear_up_to_date_filled = false;
-    }
-    else if( not buffer_is_linear_up_to_date_filled )
-    {
-        float* target_buffer = values.getWritePointer();
-        for( int i = 0 ; i != values.get_size() ; ++i )
-        {
-            target_buffer[i] = last_target;
-        }
-
-        last_value = last_target;
-        buffer_is_linear_up_to_date_filled = true;
-    }
+    modulation_power.setSize( block_size );
 }
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-COLD SmoothedParameter::ModulatorSignalSmoother::ModulatorSignalSmoother() noexcept :
-samples_left_max(1), samples_left(0)
-{
-    reset(44100);
-}
-COLD SmoothedParameter::ModulatorSignalSmoother::~ModulatorSignalSmoother() noexcept {}
 
-//==============================================================================
-void SmoothedParameter::ModulatorSignalSmoother::reset( float sample_rate_ ) noexcept
-{
-    samples_left = msToSamplesFast( 200, sample_rate_ );
-    samples_left_max = samples_left;
-}
-float SmoothedParameter::ModulatorSignalSmoother::attack( float current_modulator_signal_ ) noexcept
-{
-    if( samples_left > 0 )
-    {
-        samples_left--;
-        current_modulator_signal_ *= 1.0f-(1.0f/samples_left_max*samples_left);
-    }
-
-    return current_modulator_signal_;
-}
-float SmoothedParameter::ModulatorSignalSmoother::release_amount() noexcept
-{
-    if( samples_left > 0 )
-    {
-        samples_left--;
-        return (1.0f/samples_left_max*samples_left);
-    }
-    else
-    {
-        return 0;
-    }
-}
-bool SmoothedParameter::ModulatorSignalSmoother::is_released() const noexcept
-{
-    return samples_left == 0;
-}
 
 //==============================================================================
 //==============================================================================
 //==============================================================================
-inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept
-{
-    const float target_modulation = param_to_smooth->get_modulation_amount();
-    // TODO SMOOTH MODULATION AMOUNT
-    if( is_modulated_ and target_modulation != 0 )
-    {
-        if( not was_modulated_last_time )
-        {
-            modulator_smoother.reset(sample_rate);
-            was_modulated_last_time = true;
-        }
 
-        float* target_buffer = values_modulated.getWritePointer();
-        const float* source_buffer = values.getReadPointer();
-        if( target_modulation > 0 )
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                float in = source_buffer[i];
-                target_buffer[i] = in + modulator_smoother.attack( (max_value-in) * modulator_buffer_[i]*target_modulation );
-            }
-        }
-        else
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                float in = source_buffer[i];
-                target_buffer[i] = in + modulator_smoother.attack( (in-min_value) * modulator_buffer_[i]*target_modulation );
-            }
-        }
-
-        last_modulator = target_buffer[num_samples_-1];
-    }
-    else
-    {
-        // ADD THE LAST MODULATOR OFFSET
-        if( was_modulated_last_time )
-        {
-            modulator_smoother.reset(sample_rate);
-            was_modulated_last_time = false;
-        }
-
-        float* target_buffer = values_modulated.getWritePointer();
-        const float* source_buffer = values.getReadPointer();
-        if( not modulator_smoother.is_released() )
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                float in = source_buffer[i];
-                float release_power = modulator_smoother.release_amount();
-                target_buffer[i] = in*(1.0f-release_power) + last_modulator*release_power;
-            }
-        }
-        else
-        {
-            FloatVectorOperations::copy( target_buffer, source_buffer, num_samples_ );
-        }
-    }
-
-    param_to_smooth->get_runtime_info().set_last_modulation_amount( modulator_buffer_[num_samples_-1]*target_modulation );
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-COLD SmoothManager::SmoothManager(RuntimeNotifyer*const notifyer_) noexcept
-:
-RuntimeListener(notifyer_),
-notifyer(notifyer_),
-morph_glide_time { 1,1,1,1 },
-morph_glide_counter { 0,0,0,0 },
-last_morph_was_automated { false,false,false,false },
-last_power_of_right { 0,0,0,0 },
-from_power_of_right { 0,0,0,0 },
-glided_power_of_right_buffer( block_size )
-
-{}
-COLD SmoothManager::~SmoothManager() noexcept
-{
-}
-
-//==============================================================================
-inline void SmoothManager::smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept
-{
-    int glide_motor_time_in_samples( msToSamplesFast(glide_motor_time_in_ms_, sample_rate) );
-    for( int i = 0 ; i != smoothers.size() ; ++i )
-    {
-        SmoothedParameter*param = smoothers.getUnchecked(i);
-        if( param->is_ready_for_smooth() )
-        {
-            param->smooth( glide_motor_time_in_samples, num_samples_ );
-        }
-    }
-}
 
 //==============================================================================
 //==============================================================================
@@ -522,7 +314,7 @@ public:
             float last_average = get_average();
 
             size_in_ms = size_in_ms_;
-            size = jmax(int64(3),msToSamplesFast(size_in_ms_,sample_rate));
+            size = jmax(3,msToSamplesFast(size_in_ms_,sample_rate));
             buffer.setSize( size, true );
             ptr_to_buffer = buffer.getWritePointer();
 
@@ -553,7 +345,7 @@ COLD Smoother( RuntimeNotifyer*const notifyer_, int init_size_in_ms_ ) noexcept 
                     pos(0),
                     sum(0),
                     size_in_ms(init_size_in_ms_),
-                    size( jmax(int64(3),msToSamplesFast(init_size_in_ms_,sample_rate)) ),
+                    size( jmax(3,msToSamplesFast(init_size_in_ms_,sample_rate)) ),
                     buffer( size ),
                     ptr_to_buffer( buffer.getWritePointer() )
     {
@@ -825,6 +617,10 @@ public:
     inline bool is_new_cycle() const noexcept
     {
         return new_cycle;
+    }
+    inline bool is_clean() const noexcept
+    {
+        return angle == 0 and new_cycle and phase == 0;
     }
 
     //==========================================================================
@@ -1514,14 +1310,11 @@ class LFO : public RuntimeListener
     int count_first_steps;
 
     float last_speed;
-    float samples_per_cylce;
     float last_out;
 
     float glide_samples;
     int glide_counter;
     float glide_value;
-
-    const int id;
 
     DataBuffer*const data_buffer;
     const LFOData*const lfo_data;
@@ -1543,223 +1336,10 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
-    {
-        // USER SPEED
-        const float speed( lfo_data->speed );
-        const float speed_multi( get_lfo_speed_multi( speed ) );
-        if( speed != last_speed )
-        {
-            glide_samples = glide_counter = sample_rate/10;
-            glide_value = last_out;
-            last_speed = speed;
-        }
-
-        // TO MIDI CLOCK SYNC
-        int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
-#ifdef IS_STANDALONE
-        bool same_samples_per_block_for_buffer = true;
-        if( runtime_info->is_extern_synced )
-        {
-            if( not runtime_info->clock_sync_information.has_clocks_inside() )
-            {
-                same_samples_per_block_for_buffer = true;
-                calculate_delta( runtime_info->clock_sync_information.get_last_samples_per_clock(), speed_multi, sync_sample_pos );
-            }
-            else
-            {
-                same_samples_per_block_for_buffer = false;
-            }
-
-            if( runtime_info->samples_since_start <= 0 )
-            {
-                angle = 0;
-            }
-        }
-        else
-#endif
-            // PERFECT SYNC
-        {
-            const float bars_per_sec = runtime_info->bpm/4/60;
-            const float samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
-            const float samples_per_cylce = samples_per_bar * speed_multi;
-            delta = (1.0/samples_per_cylce);
-        }
-
-        // FORCE SYNC
-        if( step_number_ == 0 )
-        {
-            ++count_first_steps;
-            bool should_smooth = false;
-            //const bool is_syncable = speed_multi > 1 ? true : is_integer(speed);
-            //if( is_syncable )
-            {
-                if( fmod(count_first_steps%16, speed_multi) == 0 )
-                {
-                    //if( is_syncable )
-                    {
-                        should_smooth = angle != 0;
-                        angle = 0;
-                    }
-                }
-            }
-
-            if( should_smooth and glide_counter <= 0 )
-            {
-                glide_samples = glide_counter = jmax(10.0,sample_rate/100);
-                glide_value = last_out;
-            }
-        }
-
-        // PROCESS
-        {
-            float* process_buffer( data_buffer->lfo_amplitudes.getWritePointer(id) );
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                if( ++sync_sample_pos < 0 )
-                {
-                    continue;
-                }
-
-                {
-                    float amp;
-                    {
-                        // CURRENT ANGLE
-                        {
-#ifdef IS_STANDALONE
-                            if( not same_samples_per_block_for_buffer )
-                            {
-                                calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid ), speed_multi, sync_sample_pos );
-                            }
-#endif
-                            angle += delta;
-                        }
-
-                        // AMP
-                        {
-                            amp = lookup( sine_lookup, angle*double_Pi*2);
-                            if( amp > 1 )
-                            {
-                                amp = 1;
-                            }
-                            else if( amp < -1 )
-                            {
-                                amp = -1;
-                            }
-                            amp = lfo2amp(amp);
-                        }
-                    }
-
-                    if( --glide_counter > 0 )
-                    {
-                        float glide = (1.0f/glide_samples*glide_counter);
-                        amp = amp*(1.0f-glide) + glide_value*glide;
-                    }
-
-                    process_buffer[sid] = amp;
-                }
-            }
-            last_out = process_buffer[num_samples_-1];
-        }
-    }
-    void sample_rate_changed( double ) noexcept
-    {
-        last_speed = -1;
-    }
-
-    //==========================================================================
-    float get_current_amp() const noexcept
-    {
-        return last_out;
-    }
-
-    void sample_rate_or_block_changed() noexcept override
-    {
-        // TODO todo?
-    }
-private:
-    //==========================================================================
-    friend class MoniqueSynthesiserVoice;
-    COLD LFO( RuntimeNotifyer*const notifyer_, MoniqueSynthData*synth_data_, int id_, const float*const sine_lookup_ ) noexcept
-:
-    RuntimeListener(notifyer_),
-
-                    sine_lookup( sine_lookup_ ),
-
-                    delta(0),
-                    angle(0),
-                    last_samples_per_clock(-1),
-                    count_first_steps(0),
-
-                    last_speed(0),
-                    samples_per_cylce(100),
-                    last_out(0),
-
-                    glide_samples(0),
-                    glide_counter(0),
-                    glide_value(0),
-
-                    id( id_ ),
-
-                    data_buffer( synth_data_->data_buffer ),
-                    lfo_data( synth_data_->lfo_datas[id_] ),
-                    runtime_info( synth_data_->runtime_info )
-    {}
-    COLD ~LFO() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class MFO : public RuntimeListener
-{
-    const float*const sine_lookup;
-
-    float delta;
-    float angle;
-    int last_samples_per_clock;
-    int count_first_steps;
-
-    float last_speed;
-    float last_out;
-
-    float glide_samples;
-    int glide_counter;
-    float glide_value;
-
-    DataBuffer*const data_buffer;
-    const MFOData*const mfo_data;
-    const RuntimeInfo*const runtime_info;
-
-    //==============================================================================
-    inline void calculate_delta( const int samples_per_clock_, const float speed_multi_, const int64 sync_sample_pos_ ) noexcept
-    {
-        if( last_samples_per_clock != samples_per_clock_ )
-        {
-            {
-                const float samples_per_bar = samples_per_clock_*96;
-                const float samples_per_cylce = samples_per_bar * speed_multi_;
-                delta = (1.0f/samples_per_cylce);
-            }
-
-            last_samples_per_clock = samples_per_clock_;
-        }
-    }
-
-public:
     inline void process( float*dest_, int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
     {
         // USER SPEED
-        const float speed( mfo_data->speed );
+        const float speed( lfo_data->speed );
         const float speed_multi( get_lfo_speed_multi( speed ) );
         if( speed != last_speed )
         {
@@ -1829,8 +1409,8 @@ public:
 
         // PROCESS
         {
-            const float* smoothed_wave_buffer( mfo_data->wave_smoother.get_smoothed_buffer() );
-            const float* smoothed_offset_buffer( mfo_data->phase_shift_smoother.get_smoothed_buffer() );
+            const float* smoothed_wave_buffer( lfo_data->wave_smoother.get_smoothed_value_buffer() );
+            const float* smoothed_offset_buffer( lfo_data->phase_shift_smoother.get_smoothed_value_buffer() );
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 if( ++sync_sample_pos < 0 )
@@ -1895,7 +1475,7 @@ public:
 
 public:
     //==========================================================================
-    MFO( RuntimeNotifyer*const notifyer_, MoniqueSynthData*synth_data_, MFOData*mfo_data_, const float*const sine_lookup_ ) noexcept
+    LFO( RuntimeNotifyer*const notifyer_, MoniqueSynthData*synth_data_, LFOData*lfo_data_, const float*const sine_lookup_ ) noexcept
 :
     RuntimeListener(notifyer_),
 
@@ -1914,12 +1494,12 @@ public:
                     glide_value(0),
 
                     data_buffer( synth_data_->data_buffer ),
-                    mfo_data( mfo_data_ ),
+                    lfo_data( lfo_data_ ),
                     runtime_info( synth_data_->runtime_info )
     {}
-    ~MFO() noexcept {}
+    ~LFO() noexcept {}
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MFO)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFO)
 };
 
 //==============================================================================
@@ -1989,13 +1569,13 @@ public:
 
         fm_osc_data->master_shift_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
 
-        // const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
-        const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
-        const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
-        const float*const smoothed_fm_freq_buffer( fm_osc_data->fm_freq_smoother.get_smoothed_buffer() );
-        const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_buffer() );
-        const float*const smoothed_fm_phaser( fm_osc_data->fm_shape_smoother.get_smoothed_buffer() );
-        const float*const smoothed_phase_offset( fm_osc_data->master_shift_smoother.get_smoothed_modulated_buffer() );
+        // const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_value_buffer() );
+        const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_fm_freq_buffer( fm_osc_data->fm_freq_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_fm_phaser( fm_osc_data->fm_shape_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_phase_offset( fm_osc_data->master_shift_smoother.get_smoothed_value_buffer() );
 
         for( int sid = 0 ; sid < num_samples_ ; ++sid )
         {
@@ -2143,7 +1723,7 @@ public:
                     const float phase_move = smoothed_fm_phaser[sid]; // * jmin(1.0f,smoothed_fm_swing_buffer[sid]*80);
                     sample = (1.0f-fm_amount)*sample + fm_amount*( (1.0f-phase_move)*sample*modulator_sample + phase_move*(modulator_sample*modulator_sample*modulator_sample*sample) );
                 }
-                
+
                 if( --sync_glide_samples_left > 0 )
                 {
                     const float power = 1.0f/sync_glide_samples*sync_glide_samples_left;
@@ -2164,7 +1744,7 @@ public:
     inline void update( float root_note_, int sample_pos_ ) noexcept
     {
         root_note_ += synth_data->octave_offset *12;
-        const float glide = synth_data->glide_smoother.get_smoothed_buffer()[sample_pos_];
+        const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
         if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
         {
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
@@ -2187,7 +1767,7 @@ public:
     inline void reset() noexcept
     {
         float last_phase = cycle_counter.get_last_phase();
-      
+
         cycle_counter.reset();
         saw_generator.reset();
         square_generator.reset();
@@ -2198,7 +1778,7 @@ public:
 
         sync_value = last_value;
         sync_modulator_value = last_modulator_value;
-        sync_glide_samples = jmax(10, int(msToSamplesFast( 1, sample_rate )) );
+        sync_glide_samples = jmax(10, msToSamplesFast( 1, sample_rate ) );
         sync_glide_samples_left = sync_glide_samples;
     }
 
@@ -2293,18 +1873,18 @@ class SecondOSC : public RuntimeListener
 
 public:
     //==============================================================================
-    static inline bool is_syncanble_by_tune( float tune_, float master_tune_ ) noexcept
+    static inline bool is_syncanble_by_tune( float tune_ ) noexcept
     {
         bool syncable = false;
-        if( tune_ == master_tune_ )
+        if( tune_ == 0 )
         {
             syncable = true;
         }
-        else if( tune_ == master_tune_ +24 )
+        else if( tune_ == 0 +24 )
         {
             syncable = true;
         }
-        else if( tune_ == master_tune_ -24 )
+        else if( tune_ == 0 -24 )
         {
             syncable = true;
         }
@@ -2325,12 +1905,11 @@ public:
 
         const bool sync_to_master = osc_data->sync;
         osc_data->tune_smoother.process_modulation( is_lfo_modulated, lfo_amps, num_samples_ );
-        const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_modulated_buffer() );
-        const float*const smoothed_master_tune_buffer( master_osc_data->tune_smoother.get_smoothed_modulated_buffer() );
-        const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_buffer() );
-        const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_buffer() );
-        //const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_buffer() );
-        const float*const smoothed_fm_phaser( fm_osc_data->fm_shape_smoother.get_smoothed_buffer() );
+        const float*const smoothed_tune_buffer( osc_data->tune_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_fm_amount_buffer( osc_data->fm_amount_smoother.get_smoothed_value_buffer() );
+        const float*const smoothed_wave_buffer( osc_data->wave_smoother.get_smoothed_value_buffer() );
+        //const float*const smoothed_fm_swing_buffer( fm_osc_data->fm_swing_smoother.get_smoothed_modulated_value_buffer() );
+        const float*const smoothed_fm_phaser( fm_osc_data->fm_shape_smoother.get_smoothed_value_buffer() );
         for( int sid = 0 ; sid < num_samples_ ; ++sid )
         {
             // SETUP TUNE
@@ -2378,7 +1957,7 @@ public:
                 // FORCE SYNC OF THE SINE AT THE NEXT SID
                 if( cycle_counter.is_new_cycle() )
                 {
-                    const bool syncanble_by_tune = is_syncanble_by_tune(tune, smoothed_master_tune_buffer[sid]);
+                    const bool syncanble_by_tune = is_syncanble_by_tune(tune);
                     if( not syncanble_by_tune )
                     {
                         last_sync_was_to_tune = -25;
@@ -2465,7 +2044,7 @@ public:
     inline void update( float root_note_, int sample_pos_ ) noexcept
     {
         root_note_ += synth_data->octave_offset *12;
-        const float glide = synth_data->glide_smoother.get_smoothed_buffer()[sample_pos_];
+        const float glide = synth_data->glide_smoother.get_smoothed_value_buffer()[sample_pos_];
         if( glide != 0 and (root_note != root_note_ || freq_glide_samples_left > 0 ) )
         {
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
@@ -2497,7 +2076,7 @@ public:
         wait_for_new_master_cycle = false;
 
         sync_value = last_value;
-        sync_glide_samples = jmax(10, int(msToSamplesFast( 1, sample_rate )) );
+        sync_glide_samples = jmax(10, msToSamplesFast( 1, sample_rate ) );
         sync_glide_samples_left = sync_glide_samples;
     }
     void sample_rate_or_block_changed() noexcept override
@@ -2591,7 +2170,7 @@ public:
         start_amp = start_value_;
         target_amp = end_value_;
         shape = shape_*0.9+0.1;
-        time_in_samples = jmax(int64(10),msToSamplesFast( time_in_ms_+1, sample_rate ));
+        time_in_samples = jmax(10,msToSamplesFast( time_in_ms_+1, sample_rate ));
     }
     inline void calculate_attack_coeffecients() noexcept
     {
@@ -2629,7 +2208,7 @@ public:
     }
     inline void only_calculate_new_target( float target_ ) noexcept
     {
-        start_amp = out_amp;
+        //start_amp = out_amp;
         target_amp = target_;
         //sample_counter = time_in_samples;
         //delta = (float_Pi) / sample_counter;
@@ -2770,7 +2349,7 @@ public:
     //==========================================================================
     inline void process( float* dest_, const int num_samples_ ) noexcept
     {
-        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
+        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_value_buffer();
         for( int sid = 0 ; sid < num_samples_ ; ++sid )
         {
             const float sustain = smoothed_sustain_buffer[sid];
@@ -2798,8 +2377,8 @@ public:
 private:
     inline void update_stage( int sid_ ) noexcept
     {
-        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_buffer();
-        const float* smoothed_shape_buffer = env_data->shape_smoother.get_smoothed_buffer();
+        const float* smoothed_sustain_buffer = env_data->sustain_smoother.get_smoothed_value_buffer();
+        const float* smoothed_shape_buffer = env_data->shape_smoother.get_smoothed_value_buffer();
         switch( current_stage )
         {
         case TRIGGER_START : // --> ATTACK
@@ -2879,7 +2458,7 @@ private:
                     sustain_time*10000
                 );
                 env_osc.calculate_release_coeffecients();
-                is_sustain = true;
+                is_sustain = false;
                 goes_to_sustain = false;
             }
             current_stage = SUSTAIN;
@@ -3005,76 +2584,6 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept
-{
-    if( use_env_ )
-    {
-        if( not was_automated_last_time )
-        {
-            int current_stage = env_->get_current_stage();
-            if( current_stage == RELEASE or current_stage == END_ENV )
-            {
-                // env_->overwrite_current_value( last_amp_valued );
-                //env_->set_to_release();
-            }
-            else if( current_stage == ATTACK )
-            {
-                // env_->overwrite_current_value( last_amp_valued );
-                // env_->start_attack();
-            }
-            else if( current_stage == SUSTAIN )
-            {
-                //env_->overwrite_current_value( last_amp_valued );
-            }
-            was_automated_last_time = true;
-        }
-        env_->process( amp_buffer_, num_samples_ );
-
-        const float* source = values.getReadPointer();
-        for( int i = 0 ; i != num_samples_ ; ++i )
-        {
-            amp_buffer_[i] = amp_buffer_[i] * source[i];
-        }
-
-        last_amp_automated = amp_buffer_[num_samples_-1];
-    }
-    else
-    {
-        if( was_automated_last_time )
-        {
-            was_automated_last_time = false;
-
-            amp_switch_samples_left = jmax(50,int(msToSamplesFast( glide_time_in_ms_, sample_rate )));
-            amp_switch_samples_left_max = amp_switch_samples_left;
-        }
-
-        const float* source = values.getReadPointer();
-        if( amp_switch_samples_left > 0 )
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                amp_switch_samples_left--;
-                if( amp_switch_samples_left > 0 )
-                {
-                    float l_r_power = (1.0f/amp_switch_samples_left_max*amp_switch_samples_left);
-                    amp_buffer_[i] = source[i]*(1.0f-l_r_power) + last_amp_automated*l_r_power;
-                }
-                else
-                {
-                    amp_buffer_[i] = source[i];
-                }
-            }
-        }
-        else
-        {
-            for( int i = 0 ; i != num_samples_ ; ++i )
-            {
-                amp_buffer_[i] = source[i];
-            }
-        }
-        last_amp_valued = amp_buffer_[num_samples_-1];
-    }
-}
 
 //==============================================================================
 //==============================================================================
@@ -3761,7 +3270,7 @@ private:
     {
         // ADSTR - LFO MIX
         float* amp_mix = data_buffer->lfo_amplitudes.getWritePointer(id);
-        const float* smoothed_mix_buffer( filter_data->adsr_lfo_mix_smoother.get_smoothed_buffer() );
+        const float* smoothed_mix_buffer( filter_data->adsr_lfo_mix_smoother.get_smoothed_value_buffer() );
         {
             const float* env_amps = data_buffer->filter_env_amps.getReadPointer(id);
             const float* lfo_amplitudes = data_buffer->lfo_amplitudes.getReadPointer(id);
@@ -3867,9 +3376,9 @@ public:
                                  input_id( input_id_ ),
                                  num_samples_( num_samples__ ),
 
-                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_value_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_value_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_value_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
                                  out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3932,9 +3441,9 @@ public:
                                  input_id(input_id_),
                                  num_samples_(num_samples__),
 
-                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_value_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_value_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_value_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
                                  out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -3997,9 +3506,9 @@ public:
                                  input_id(input_id_),
                                  num_samples_(num_samples__),
 
-                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_modulated_buffer() ),
-                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_resonance_buffer( processor_->filter_data->resonance_smoother.get_smoothed_value_buffer() ),
+                                 tmp_cuttof_buffer( processor_->filter_data->cutoff_smoother.get_smoothed_value_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_value_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
                                  out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -4055,7 +3564,7 @@ public:
                                  input_id(input_id_),
                                  num_samples_(num_samples__),
 
-                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_modulated_buffer() ),
+                                 tmp_distortion_buffer( processor_->filter_data->distortion_smoother.get_smoothed_value_buffer() ),
 
                                  input_buffer(processor_->data_buffer->filter_input_samples.getReadPointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id )),
                                  out_buffer(processor_->data_buffer->filter_output_samples.getWritePointer( input_id_ + SUM_INPUTS_PER_FILTER * processor_->id ))
@@ -4100,10 +3609,10 @@ public:
         // COLLECT RESULTS
         float* const this_filter_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(id);
         {
-            const float*const smoothed_distortion_buffer( filter_data->distortion_smoother.get_smoothed_modulated_buffer() );
+            const float*const smoothed_distortion_buffer( filter_data->distortion_smoother.get_smoothed_value_buffer() );
             {
                 filter_data->output_smoother.process_modulation( filter_data->modulate_output, amp_mix, num_samples );
-                const float*const smoothed_output_buffer = filter_data->output_smoother.get_smoothed_modulated_buffer();
+                const float*const smoothed_output_buffer = filter_data->output_smoother.get_smoothed_value_buffer();
                 if( id != FILTER_3 )
                 {
                     float*const out_buffer_1( data_buffer->filter_output_samples.getWritePointer( 0 + SUM_INPUTS_PER_FILTER * id ) );
@@ -4141,7 +3650,7 @@ public:
 
         // PAN & MIX
         {
-            const float*const pan_buffer = filter_data->pan_smoother.get_smoothed_modulated_buffer();
+            const float*const pan_buffer = filter_data->pan_smoother.get_smoothed_value_buffer();
             float* const left_and_input_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(id);
             float* const right_output_buffer = data_buffer->filter_output_samples_l_r.getWritePointer(SUM_FILTERS+id);
             //const float multiplyer = id == FILTER_3 ? 1.5f : 1;
@@ -4172,7 +3681,7 @@ public:
             const float* const right_output_buffer_flt2 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+1);
             const float* const left_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(2);
             const float* const right_output_buffer_flt3 = data_buffer->filter_output_samples_l_r.getReadPointer(SUM_FILTERS+2);
-            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
+            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
             for( int sid = 0 ; sid != num_samples ; ++sid )
             {
                 const float left = sample_mix(sample_mix(left_output_buffer_flt1[sid], left_output_buffer_flt2[sid]), left_output_buffer_flt3[sid]);
@@ -4337,7 +3846,7 @@ public:
                 band_id(band_id_),
 
                 num_samples_(num_samples__),
-                smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_buffer() ),
+                smoothed_shape_buffer( processor_->synth_data->shape_smoother.get_smoothed_value_buffer() ),
 
                 filter_frequency( processor_->frequency_low_pass[band_id_] ),
                 high_pass_filter(processor_->high_pass_filters[band_id_]),
@@ -4404,9 +3913,9 @@ public:
             const float*const buffer_5( data_buffer->band_out_buffers.getReadPointer(4) );
             const float*const buffer_6( data_buffer->band_out_buffers.getReadPointer(5) );
             const float*const buffer_7( data_buffer->band_out_buffers.getReadPointer(6) );
-            //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_buffer() ;
-            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_buffer();
-            const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_buffer();
+            //const float* const smoothed_distortion = synth_data->final_clipping_smoother.get_smoothed_modulated_value_buffer() ;
+            const float* const smoothed_distortion = synth_data->distortion_smoother.get_smoothed_value_buffer();
+            const float* const smoothed_bypass = eq_data->bypass_smoother.get_smoothed_value_buffer();
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 const float distortion =  smoothed_distortion[sid];
@@ -4832,9 +4341,13 @@ public:
             countdown = stepsToTarget;
 
             if (countdown <= 0)
+            {
                 currentValue = target;
+            }
             else
+            {
                 step = (target - currentValue) / countdown;
+            }
         }
     }
 
@@ -4854,7 +4367,8 @@ public:
                  target(0),
                  step(0),
                  countdown(0),
-                 stepsToTarget(0)
+                 stepsToTarget(0),
+                 lastValue(0)
     {}
 
     COLD ~LinearSmoothedValue() noexcept {}
@@ -5101,8 +4615,8 @@ public:
         // STEREO CHORUS
         {
             // CHORUS
-            const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_buffer() );
-            const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_buffer() );
+            const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_value_buffer() );
+            const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_value_buffer() );
             const float max_chorus_delay_power_left = chorus_l.get_sample_rate() * (1.0f/200.454545455f);
             const float max_chorus_delay_power_right  = chorus_l.get_sample_rate() * (1.0f/220.5f);
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -5131,10 +4645,10 @@ public:
 
         // DELAY
         {
-            const float* const smoothed_pan_buffer = synth_data->delay_pan_smoother.get_smoothed_buffer();
+            const float* const smoothed_pan_buffer = synth_data->delay_pan_smoother.get_smoothed_value_buffer();
             float*const left_delay_data = delayBuffer.getWritePointer (LEFT);
             float*const right_delay_data = delayBuffer.getWritePointer (RIGHT);
-            const float* const smoothed_delay_buffer = synth_data->delay_smoother.get_smoothed_buffer();
+            const float* const smoothed_delay_buffer = synth_data->delay_smoother.get_smoothed_value_buffer();
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
                 {
@@ -5163,12 +4677,12 @@ public:
 
         // REVERB
         {
-            const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_buffer() );
-            const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_buffer();
+            const float* const smoothed_pan_buffer( reverb_data->pan_smoother.get_smoothed_value_buffer() );
+            const float*const smoothed_bypass_buffer = synth_data->effect_bypass_smoother.get_smoothed_value_buffer();
 
-            const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_buffer();
-            const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_buffer();
-            const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_buffer();
+            const float*const smoothed_room_buffer = reverb_data->room_smoother.get_smoothed_value_buffer();
+            const float*const smoothed_with_buffer = reverb_data->width_smoother.get_smoothed_value_buffer();
+            const float*const smoothed_dry_wet_mix_buffer = reverb_data->dry_wet_mix_smoother.get_smoothed_value_buffer();
             ReverbParameters& rever_params_l = reverb_l.get_parameters();
             ReverbParameters& rever_params_r = reverb_r.get_parameters();
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -5180,7 +4694,7 @@ public:
                     if(
                         rever_params_l.roomSize != reverb_room
                         || rever_params_l.dryLevel != reverb_dry_wet_mix
-                        // current_params.wetLevel != r_params.wetLevel
+                        //|| rever_params_r.wetLevel != r_params.wetLevel
                         || rever_params_l.width != reverb_width
                     )
                     {
@@ -5217,7 +4731,7 @@ public:
         {
             // FINAL MIX
             {
-                const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_buffer();
+                const float*const smoothed_volume_buffer = synth_data->volume_smoother.get_smoothed_value_buffer();
                 if( is_stereo )
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -5558,13 +5072,13 @@ audio_processor( audio_processor_ ),
     lfos = new LFO*[SUM_LFOS];
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        lfos[i] = new LFO( notifyer_, synth_data_, i, synth_data_->sine_lookup );
+        lfos[i] = new LFO( notifyer_, synth_data_, synth_data->lfo_datas[i], synth_data_->sine_lookup );
     }
 
-    mfos = new MFO*[SUM_MORPHER_GROUPS];
+    mfos = new LFO*[SUM_MORPHER_GROUPS];
     for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
     {
-        mfos[i] = new MFO( notifyer_, synth_data_, synth_data->mfo_datas[i], synth_data_->sine_lookup );
+        mfos[i] = new LFO( notifyer_, synth_data_, synth_data->mfo_datas[i], synth_data_->sine_lookup );
     }
 
     std::cout << "MONIQUE: init FILTERS & ENVELOPES" << std::endl;
@@ -5875,139 +5389,284 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
     release_if_inactive();
 }
 
-// TEST for developement, TODO move to ??
-inline void SmoothManager::automated_morph
+inline void SmoothManager::smooth_and_morph
 (
     bool do_really_morph_,
-    int id_,
-    const float* morph_amount_,
+    const float* morph_power_buffer_,
     int num_samples_,
-    int morph_motor_time_in_ms_,
+    int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
     MorphGroup*morph_group_
 ) noexcept
 {
-    // TODO smoothed buffer for the morph amount!
-    const float slider_state =  morph_group_->last_power_of_right;
-    if( do_really_morph_ != last_morph_was_automated[id_] )
+    // PROCESS THE MORPH
+    for( int i = 0 ; i != smoothers.size() ; ++i )
     {
-        if( do_really_morph_ )
+        SmoothedParameter*param = smoothers.getUnchecked(i);
+        const int index = morph_group_->indexOf( param->param_to_smooth );
+        if( index != -1 )
         {
-            from_power_of_right[id_] = morph_glide_counter[id_] > 0 ? last_power_of_right[id_] : slider_state;
-        }
-        else
-        {
-            from_power_of_right[id_] = last_power_of_right[id_];
-        }
-
-        last_morph_was_automated[id_] = do_really_morph_;
-        morph_glide_counter[id_] = jmax(10,int(msToSamplesFast(morph_motor_time_in_ms_,sample_rate)));
-        morph_glide_time[id_] = morph_glide_counter[id_];
-    }
-
-    float* power_glide_buffer = glided_power_of_right_buffer.getWritePointer(id_);
-    const float* buffer_to_use = power_glide_buffer;
-    if( morph_glide_counter[id_] > 0 )
-    {
-        // FORCE GLIDE MORPH
-        for( int sid = 0 ; sid != num_samples_ ; ++sid )
-        {
-            if( morph_glide_counter[id_] > 1 )
-            {
-                morph_glide_counter[id_]--;
-
-                const float factor = 1.0f/float(morph_glide_time[id_])*morph_glide_counter[id_];
-                if( do_really_morph_ )
-                {
-                    power_glide_buffer[sid] = jmin(1.0f,jmax(0.0f,morph_amount_[sid]*(1.0f-factor) + from_power_of_right[id_]*factor));
-                }
-                else
-                {
-                    power_glide_buffer[sid] = jmin(1.0f,jmax(0.0f,slider_state*(1.0f-factor) + from_power_of_right[id_]*factor));
-                }
-            }
-            else
-            {
-                if( do_really_morph_ )
-                {
-                    power_glide_buffer[sid] = morph_amount_[sid];
-                }
-                else
-                {
-                    power_glide_buffer[sid] = slider_state;
-                }
-            }
-        }
-
-        // FORCE MORPH
-        do_really_morph_ = true;
-    }
-    else
-    {
-        if( do_really_morph_ )
-        {
-            buffer_to_use = morph_amount_;
-            // TODO DISABLE THIS, JUST FOR VISUALISATION
-            //FloatVectorOperations::copy( power_glide_buffer, morph_amount_, num_samples_ );
-        }
-        else
-        {
-            FloatVectorOperations::fill( power_glide_buffer, slider_state, num_samples_ );
-        }
-    }
-    last_power_of_right[id_] = power_glide_buffer[num_samples_-1];
-
-    if( do_really_morph_ )
-    {
-        for( int i = 0 ; i != smoothers.size() ; ++i )
-        {
-            SmoothedParameter*smoothed_param = smoothers.getUnchecked(i);
-            morph_group_->morph
+            const Parameter*left_param = morph_group_->get_left_param( index );
+            const Parameter*right_param = morph_group_->get_right_param( index );
+            param->smooth_and_morph
             (
-                smoothed_param->param_to_smooth,
-                smoothed_param->values.getWritePointer(),
-                smoothed_param->values_modulated.getWritePointer(),
-                buffer_to_use,
+                do_really_morph_,
+                smooth_motor_time_in_ms_, morph_motor_time_in_ms_,
+                morph_power_buffer_, morph_group_->last_power_of_right,
+                left_param, right_param,
                 num_samples_
             );
         }
     }
 }
-inline void MorphGroup::morph
+
+#ifdef JUCE_DEBUG
+#define DEBUG_CHECK_MIN_MAX( x ) \
+  if( x > max_value ) \
+  { \
+    std::cout << "x to large: " << x << " max: " << max_value << std::endl; \
+  } \
+  else if( x < min_value ) \
+  { \
+    std::cout << "x to small: " << x << " max: " << min_value << std::endl; \
+  }
+#else
+#define DEBUG_CHECK_MIN_MAX( x )
+#endif
+
+#define FORCE_MIN_MAX( x ) jmax( jmin( x, max_value ), min_value )
+
+
+void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_samples_ ) noexcept
+{
+    simple_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+    simple_smoother.set_value( param_to_smooth->get_value() );
+    float*const target = values.getWritePointer();
+    if( not simple_smoother.is_up_to_date() )
+    {
+
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            target[sid] = FORCE_MIN_MAX( simple_smoother.tick() );
+        }
+
+        simple_smoother.set_info_flag(false);
+    }
+    else
+    {
+        if( not simple_smoother.get_info_flag() )
+        {
+            FloatVectorOperations::fill( target, simple_smoother.get_last_value(), block_size );
+
+            simple_smoother.set_info_flag(true);
+        }
+    }
+}
+void SmoothedParameter::smooth_and_morph
 (
-    const Parameter* original_param_,
-    float* value_target_buffer_,
-    float* mod_target_buffer_,
-    const float* morph_amount_,
+    bool is_automated_morph_,
+    int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
+    const float* morph_amp_buffer_, float morph_slider_state_,
+    const Parameter*left_source_param_, const Parameter*right_source_param_,
     int num_samples_
 ) noexcept
 {
-    const int index = params.indexOf( const_cast< Parameter* >( original_param_ ) );
-    if( index != -1 )
-    {   /*
-           if( not original_param_->get_info().name.contains("sustain")
-            and not original_param_->get_info().name.contains("SD_")
-            and not original_param_->get_info().name.contains("EQ_")
-            and not original_param_->get_info().name.contains("VERB_")
-            and not original_param_->get_info().name.contains("CHR_")
-             )
-           */
+    const bool is_modulateable = has_modulation( param_to_smooth );
+    if( not is_modulateable )
+    {
+        left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+        right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+        morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+        left_morph_smoother.set_value( left_source_param_->get_value() );
+        right_morph_smoother.set_value( right_source_param_->get_value() );
+
+        // AUTOMATED MORPH
+        float*const target = values.getWritePointer();
+        if( is_automated_morph_ )
         {
-            const Parameter*left_param = left_morph_source->params.getUnchecked(index);
-            const Parameter*right_param = right_morph_source->params.getUnchecked(index);
-
-            const SmoothedParameter*const left_smoother = left_param->get_runtime_info().my_smoother;
-            const float* const left_smoothed_buffer = left_smoother->get_smoothed_buffer();
-            const SmoothedParameter*const right_smoother = right_param->get_runtime_info().my_smoother;
-            const float* const right_smoothed_buffer = right_smoother->get_smoothed_buffer();
-
-            // VALUE
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
             {
-                const float power_of_right = morph_amount_[sid];
-                const float new_value = (left_smoothed_buffer[sid]*(1.0f - power_of_right)) + (right_smoothed_buffer[sid] * power_of_right);
-                value_target_buffer_[sid] = new_value;
+                const float power_of_right_ = morph_power_smoother.glide_tick( morph_amp_buffer_[sid] );
+                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_ );
             }
         }
+        // USER MORPH
+        else
+        {
+            morph_power_smoother.set_value( morph_slider_state_ );
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float power_of_right = morph_power_smoother.tick();
+                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right );
+            }
+
+            // KEEP UP TO DATE FOR A SWITCH
+            morph_power_smoother.reset_glide_countdown();
+        }
+
+        // LOOKING FORWART TO PROCESS MODUALATION
+        if( is_modulateable )
+        {
+            if( modulation_power_smoother.is_up_to_date() )
+            {
+                modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+                morph_power_smoother.reset_glide_countdown();
+            }
+        }
+    }
+    // ITS A COPY OF THE PROCESS ABOVE BUT WITH MODULATION
+    else
+    {
+        left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+        right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+        morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+        left_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+        right_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+        // LOOKING FORWART TO PROCESS MODUALATION
+        modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+
+        left_morph_smoother.set_value( left_source_param_->get_value() );
+        right_morph_smoother.set_value( right_source_param_->get_value() );
+
+        left_modulation_morph_smoother.set_value( left_source_param_->get_modulation_amount() );
+        right_modulation_morph_smoother.set_value( right_source_param_->get_modulation_amount() );
+
+        // AUTOMATED MORPH
+        float*const target = values.getWritePointer();
+        float*const target_modulation = modulation_power.getWritePointer();
+        if( is_automated_morph_ )
+        {
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float power_of_right_ = morph_power_smoother.glide_tick( morph_amp_buffer_[sid] );
+
+                // VALUE
+                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right_) + right_morph_smoother.tick()*power_of_right_ );
+                // MODULATION
+                target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right_) + right_modulation_morph_smoother.tick()*power_of_right_;
+            }
+        }
+        // USER MORPH
+        else
+        {
+            morph_power_smoother.set_value( morph_slider_state_ );
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                const float power_of_right = morph_power_smoother.tick();
+                // VALUE BLOCK
+                target[sid] = FORCE_MIN_MAX( left_morph_smoother.tick()*(1.0f - power_of_right) + right_morph_smoother.tick()*power_of_right );
+                // MODULATION BLOCK
+                target_modulation[sid] = left_modulation_morph_smoother.tick()*(1.0f - power_of_right) + right_modulation_morph_smoother.tick()*power_of_right;
+            }
+
+            // KEEP UP TO DATE FOR A SWITCH
+            morph_power_smoother.reset_glide_countdown();
+        }
+    }
+}
+
+inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_power_buffer_, int num_samples_ ) noexcept
+{
+    // modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ ); <--- NOTE: DONE BY SMOOTH_AND_MORPH
+
+    float*const source_and_target = values.getWritePointer();
+    const float*const modulation = modulation_power.getReadPointer();
+    if( is_modulated_ )
+    {
+        float current_modulation_power;
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            current_modulation_power = modulation[sid]*modulation_power_smoother.glide_tick( modulator_power_buffer_[sid] );
+            const float in = source_and_target[sid];
+            if( current_modulation_power > 0 )
+            {
+                source_and_target[sid] = in + (max_value-in) * current_modulation_power;
+                DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
+            }
+            else
+            {
+                source_and_target[sid] = in + (in-min_value) * current_modulation_power;
+                DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
+            }
+        }
+
+        param_to_smooth->get_runtime_info().set_last_modulation_amount( current_modulation_power );
+    }
+    else
+    {
+        modulation_power_smoother.set_value( 0 );
+        float current_modulation_power = 0;
+
+        if( not modulation_power_smoother.is_up_to_date() )
+        {
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                current_modulation_power = modulation[sid]*modulation_power_smoother.tick();
+                const float in = source_and_target[sid];
+                if( current_modulation_power > 0 )
+                {
+                    source_and_target[sid] = in + (max_value-in) * current_modulation_power;
+                    DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
+                }
+                else
+                {
+                    source_and_target[sid] = in + (in-min_value) * current_modulation_power;
+                    DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
+                }
+            }
+        }
+
+        param_to_smooth->get_runtime_info().set_last_modulation_amount( current_modulation_power );
+
+        // KEEP UP TO DATE FOR A SWITCH
+        modulation_power_smoother.reset_glide_countdown();
+    }
+}
+void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept
+{
+    const float* source = values.getReadPointer();
+    if( use_env_ )
+    {
+        env_->process( amp_buffer_, num_samples_ );
+
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
+        {
+            const float current_amp_power = amp_power_smoother.glide_tick( amp_buffer_[sid] );
+            amp_buffer_[sid] = source[sid]*current_amp_power;
+            DEBUG_CHECK_MIN_MAX( amp_buffer_[sid] );
+        }
+
+        param_to_smooth->get_runtime_info().set_last_modulation_amount( amp_buffer_[num_samples_-1] );
+    }
+    else
+    {
+        amp_power_smoother.set_value( 1 );
+        float current_amp_power = 0;
+        if( not amp_power_smoother.is_up_to_date() )
+        {
+            env_->process( amp_buffer_, num_samples_ );
+            for( int sid = 0 ; sid != num_samples_ ; ++sid )
+            {
+                current_amp_power = amp_power_smoother.tick();
+                amp_buffer_[sid] = source[sid]*current_amp_power;
+                DEBUG_CHECK_MIN_MAX( amp_buffer_[sid] );
+            }
+        }
+        else
+        {
+            FloatVectorOperations::copy( amp_buffer_, source, num_samples_ );
+
+            // RESET ENVELOP TO BE ZERO
+            env_->reset();
+            env_->overwrite_current_value( current_amp_power );
+        }
+
+        param_to_smooth->get_runtime_info().set_last_modulation_amount( amp_buffer_[num_samples_-1] );
+
+        // KEEP UP TO DATE FOR A SWITCH
+        amp_power_smoother.reset_glide_countdown();
     }
 }
 void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
@@ -6033,97 +5692,256 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     // MFOS
 
     // SMOOTH PARAMETERS
+    // TODO MULTITHREADED
     if( render_anything )
     {
-        int id = 0;
-        synth_data->smooth_manager->smooth(num_samples_, synth_data->glide_motor_time );
-        {
-            mfos[id]->process( data_buffer->mfo_amplitudes.getWritePointer(id), step_number_, start_sample_, num_samples );
-            synth_data->smooth_manager->automated_morph( synth_data->is_morph_modulated[id], id, data_buffer->mfo_amplitudes.getReadPointer(id), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_1 );
+        const int glide_motor_time = synth_data->glide_motor_time;
+        const int morph_motor_time = synth_data->morph_motor_time;
 
-        }
-        id = 1;
         {
-            mfos[id]->process( data_buffer->mfo_amplitudes.getWritePointer(id), step_number_, start_sample_, num_samples );
-            synth_data->smooth_manager->automated_morph( synth_data->is_morph_modulated[id], id, data_buffer->mfo_amplitudes.getReadPointer(id), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_2 );
-        }
-        id = 2;
-        {
-            mfos[id]->process( data_buffer->mfo_amplitudes.getWritePointer(id), step_number_, start_sample_, num_samples );
-            synth_data->smooth_manager->automated_morph( synth_data->is_morph_modulated[id], id, data_buffer->mfo_amplitudes.getReadPointer(id), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_3 );
-
-        }
-        id = 3;
-        {
-            mfos[id]->process( data_buffer->mfo_amplitudes.getWritePointer(id), step_number_, start_sample_, num_samples );
-            synth_data->smooth_manager->automated_morph( synth_data->is_morph_modulated[id], id, data_buffer->mfo_amplitudes.getReadPointer(id), num_samples_, synth_data->morph_motor_time, synth_data->morph_group_4 );
-        }
-    }
-
-    // MULTI THREADED FLT_ENV / LFO / OSC
-    {
-        // MAIN THREAD // NO DEPENCIES
-        lfos[0]->process( step_number_, start_sample_, num_samples );
-        master_osc->process( data_buffer, num_samples ); // NEED LFO 0
-        if( render_anything )
-        {
-            filter_processors[0]->env->process( data_buffer->filter_env_amps.getWritePointer(0), num_samples );
-        }
-
-        // SUB THREAD
-        // DEPENCIES OSC 0
-        struct Executer : public mono_Thread
-        {
-            MoniqueSynthesiserVoice*const voice;
-            const int num_samples;
-            const int start_sample;
-            const int step_number;
-            void exec() noexcept override
+            struct SmoothExecuter : public mono_Thread
             {
-                voice->lfos[1]->process( step_number, start_sample, num_samples );
-                voice->second_osc->process( voice->data_buffer, num_samples );
-                voice->filter_processors[1]->env->process( voice->data_buffer->filter_env_amps.getWritePointer(1), num_samples );
-            }
-            Executer(MoniqueSynthesiserVoice*const voice_,
-            int num_samples_,
-            int start_sample_,
-            int step_number_)
-                :
+                float*const mfo_buffer;
+                float*const lfo_buffer;
+
+                LFO*const mfo;
+                LFO*const lfo;
+                MasterOSC*const master_osc;
+                SecondOSC*const second_osc;
+                ENV*const filter_env;
+                float*const filter_env_buffer;
+
+                MoniqueSynthesiserVoice*const voice;
+                SmoothManager*const smooth_manager;
+                MorphGroup*const morph_group;
+                LFOData*const mfo_data;
+                MoniqueSynthData*const synth_data;
+                const bool is_modulated;
+
+                const int step_number;
+                const int start_sample;
+                const int num_samples;
+
+                const int glide_motor_time;
+                const int morph_motor_time;
+
+                void exec() noexcept override
+                {
+                    mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
+                    mfo_data->phase_shift_smoother.simple_smooth( glide_motor_time, num_samples );
+
+                    mfo->process( mfo_buffer, step_number, start_sample, num_samples );
+                    synth_data->smooth_manager->smooth_and_morph
+                    (
+                        is_modulated, mfo_buffer,
+                        num_samples, glide_motor_time, morph_motor_time,
+                        morph_group
+                    );
+
+                    if( lfo )
+                    {
+                        lfo->process( lfo_buffer, step_number, start_sample, num_samples );
+                    }
+                    if( master_osc )
+                    {
+                        master_osc->process( synth_data->data_buffer, num_samples ); // NEED LFO 0
+                    }
+                    if( second_osc )
+                    {
+                        second_osc->process( synth_data->data_buffer, num_samples ); // NEED LFO 0
+                    }
+                    if( filter_env )
+                    {
+                        filter_env->process( filter_env_buffer, num_samples ); // NEED LFO 0
+                    }
+                }
+
+                SmoothExecuter
+                (
+                    MoniqueSynthesiserVoice*const voice_,
+                    float*const mfo_buffer_,
+                    float*const lfo_buffer_,
+
+                    LFO*const mfo_,
+                    LFO*const lfo_,
+                    MasterOSC*const master_osc_,
+                    SecondOSC*const second_osc_,
+                    ENV*const filter_env_,
+                    float*const filter_env_buffer_,
+
+                    MorphGroup*const morph_group_,
+                    LFOData*const mfo_data_,
+                    MoniqueSynthData*const synth_data_,
+                    const bool is_modulated_,
+
+                    int step_number_,
+                    int start_sample_,
+                    int num_samples_,
+
+                    int glide_motor_time_,
+                    int morph_motor_time_
+
+                ) noexcept
+:
                 mono_Thread( voice_->thread_manager ),
-                voice(voice_),
-                num_samples(num_samples_),
-                start_sample(start_sample_),
-                step_number(step_number_)
-            {}
-        };
-        if( render_anything )
-        {
-            Executer executer( this, num_samples, start_sample_, step_number_ );
-            executer.try_run_paralel();
+                             mfo_buffer(mfo_buffer_),
+                             lfo_buffer(lfo_buffer_),
 
-            lfos[2]->process( step_number_, start_sample_, num_samples );
-            third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
-            filter_processors[2]->env->process( data_buffer->filter_env_amps.getWritePointer(2), num_samples );
+                             mfo(mfo_),
+                             lfo(lfo_),
+                             master_osc(master_osc_),
+                             second_osc(second_osc_),
+                             filter_env(filter_env_),
+                             filter_env_buffer(filter_env_buffer_),
 
-            while( executer.isWorking() ) {}
-        }
-        else
-        {
-            lfos[1]->process( step_number_, start_sample_, num_samples );
-            second_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
-            lfos[2]->process( step_number_, start_sample_, num_samples );
-            third_osc->process( data_buffer, num_samples ); // NEED OSC 0 && LFO 2
+                             voice( voice_ ),
+                             smooth_manager( synth_data_->smooth_manager ),
+                             morph_group( morph_group_ ),
+                             mfo_data(mfo_data_),
+                             synth_data(synth_data_),
+
+                             is_modulated(is_modulated_),
+
+                             step_number(step_number_),
+                             start_sample(start_sample_),
+                             num_samples(num_samples_),
+
+                             glide_motor_time(glide_motor_time_),
+                             morph_motor_time(morph_motor_time_)
+                {
+
+                }
+                ~SmoothExecuter() noexcept {}
+            };
+
+            // MASTER THREAD
+            SmoothExecuter executer_1( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(0),
+                                       data_buffer->lfo_amplitudes.getWritePointer(0),
+
+                                       mfos[0],
+                                       lfos[0],
+                                       master_osc,
+                                       nullptr,
+
+                                       filter_processors[0]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                                       data_buffer->filter_env_amps.getWritePointer(0),
+
+                                       synth_data->morph_group_1,
+				       synth_data->mfo_datas[0],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[0],
+
+                                       step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time
+                                     );
+            executer_1.exec();
+
+            // OPTIONAL THREAD WITH FILTER 1
+            SmoothExecuter executer_2( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(1),
+                                       data_buffer->lfo_amplitudes.getWritePointer(1),
+
+                                       mfos[1],
+                                       lfos[1],
+                                       nullptr,
+                                       second_osc, // NEED OSC
+
+                                       filter_processors[1]->env, // FIRST WILL BE DONE BY THE LAST THREAD
+                                       data_buffer->filter_env_amps.getWritePointer(1),
+
+                                       synth_data->morph_group_2,
+				       synth_data->mfo_datas[1],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[1],
+
+                                       step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time
+                                     );
+
+            executer_2.try_run_paralel();
+
+            // OPTIONAL THREAD
+            SmoothExecuter executer_3( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(2),
+                                       data_buffer->lfo_amplitudes.getWritePointer(2),
+
+                                       mfos[2],
+                                       lfos[2],
+                                       nullptr,
+                                       third_osc, // NEED OSC 0
+
+                                       filter_processors[2]->env,
+                                       data_buffer->filter_env_amps.getWritePointer(2),
+
+                                       synth_data->morph_group_3,
+				       synth_data->mfo_datas[2],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[2],
+
+                                       step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time
+                                     );
+
+            executer_3.try_run_paralel();
+
+            // MASTER THREAD
+            SmoothExecuter executer_4( this,
+                                       data_buffer->mfo_amplitudes.getWritePointer(3),
+				       nullptr,
+
+                                       mfos[3],
+                                       nullptr,
+                                       nullptr,
+                                       nullptr,
+
+                                       nullptr,
+                                       nullptr,
+
+                                       synth_data->morph_group_4,
+				       synth_data->mfo_datas[3],
+                                       synth_data,
+
+                                       synth_data->is_morph_modulated[3],
+
+                                       step_number_,
+                                       start_sample_,
+                                       num_samples,
+
+                                       glide_motor_time,
+                                       morph_motor_time
+                                     );
+            executer_4.exec();
+
+            while( executer_2.isWorking() ) {}
+            while( executer_3.isWorking() ) {}
+
+            // WITH THREADING INSIDE
+            filter_processors[0]->process( num_samples );
+            filter_processors[1]->process( num_samples );
+            filter_processors[2]->process( num_samples );
+
+            eq_processor->process( num_samples );
         }
     }
+
     if( render_anything )
     {
-        filter_processors[0]->process( num_samples );
-        filter_processors[1]->process( num_samples );
-        filter_processors[2]->process( num_samples );
-
-        eq_processor->process( num_samples );
-
-
         float velocity_to_use = current_velocity;
         bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
         if( synth_data->keep_arp_always_off )
@@ -6181,9 +5999,7 @@ void MoniqueSynthesiserVoice::reset() noexcept
 }
 void MoniqueSynthesiserVoice::reset_internal() noexcept
 {
-    for( int voice_id = 0 ;
-    voice_id != SUM_FILTERS ;
-    ++voice_id )
+    for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
     {
         filter_processors[voice_id]->reset();
     }
@@ -6247,14 +6063,6 @@ float MoniqueSynthesiserVoice::get_arp_sequence_amp( int step_ ) const noexcept
 float MoniqueSynthesiserVoice::get_current_frequency() const noexcept
 {
     return MidiMessage::getMidiNoteInHertz(current_note+arp_sequencer->get_current_tune());
-}
-float MoniqueSynthesiserVoice::get_flt_input_env_amp( int flt_id_, int input_id_ ) const noexcept
-{
-    return filter_processors[flt_id_]->input_envs[input_id_]->get_amp();
-}
-float MoniqueSynthesiserVoice::get_band_env_amp( int band_id_ ) const noexcept
-{
-    return eq_processor->envs[band_id_]->get_amp();
 }
 
 //==============================================================================
@@ -6391,9 +6199,9 @@ void MoniqueSynthData::get_full_adstr( ENVData&env_data_, Array< float >& curve 
         }
     }
 }
-void MoniqueSynthData::get_full_mfo( MFOData&mfo_data_, Array< float >& curve ) noexcept
+void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) noexcept
 {
-    MFO mfo( runtime_notifyer, this, &mfo_data_, sine_lookup );
+    LFO mfo( runtime_notifyer, this, &mfo_data_, sine_lookup );
     int count_time = runtime_notifyer->get_sample_rate() * 2; //msToSamplesFast( 44100, sample_rate );
     int i = 0;
     const int blocksize = runtime_notifyer->get_block_size();
@@ -6413,12 +6221,4 @@ void MoniqueSynthData::get_full_mfo( MFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
-
-
-
-
-
-
-
-
 

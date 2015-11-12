@@ -1,7 +1,16 @@
+lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
+bleibt im ctrl hängen, wenn ein popup offen 
+check close handlin mfo
 
 4.0.1
+
 -touch screen
-- morphs für vollume sollten gesmooth werden
+
+- linear slider velocity -> on ctrl on or of
+- zahleneingabe für colours
+- toogle buttons unter popup knopf
+- resonance modulaion lässt sich nicht mit einem klick deaktivieren
+
 
 CHANGES 0.9.8
 - bpm label round to one point after comma
@@ -19,14 +28,18 @@ CHANGES 0.9.8
 - fix: slider jumps in velocity based mode
 - big performance improvement: removed some unneded smoothers
 - fix: init the left and right morph sides with the factory default program
+- add: support to automorph for modulations
+- fix: env shape was not morphable
+- fix: sustain input was a bit buggy
+- add: popup for lfo, add square and offset option to the lfo (same like the mfo)
 
 NOTES:
-lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 
 TIM:
 steps sind nicht automatisierbar
 high resolution oszi for tim
 shaltplan
+
 
 UI
 ****************************************************************************
@@ -54,18 +67,15 @@ ENGINE
 - add midi support for some for some buttons
 - improve: reverb: stereo effects
 - improve: delay: stereo effects
-- may be a square wave for lfo1, 2 and 3
 - share global setting over plugin instances
-- left and right morph group on init have to be the factory default program
 - delay time reflexion, sync to beat, bis 500ms, triolisch
 - eq's kratzen beim morphen / fx morph crackls, also mehr ein parameter
-- change sustain ist nicht in ordnung
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
 - midi allow notes to control buttons
+- osc sync
 - env speed not only ms sondern auch teiler
-- and add an popup like mfo
 - add back sub-steps lfo
 - leak context menu popup
 - speedänderung stanadlon mit eigener clock sollte nicht syncen!

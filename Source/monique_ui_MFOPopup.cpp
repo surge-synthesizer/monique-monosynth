@@ -134,7 +134,7 @@ void Monique_Ui_MFOPopup::mouseDown (const MouseEvent& event)
             }
             if( not success and synth_data->auto_close_env_popup )
             {
-                mainwindow->open_mfo_popup(nullptr,nullptr,nullptr);
+                mainwindow->open_mfo_popup(nullptr,nullptr,nullptr,COLOUR_THEMES::DUMMY_THEME);
             }
         }
     }
@@ -162,7 +162,7 @@ void Monique_Ui_MFOPopup::mouseMagnify (const MouseEvent& event, float )
 //[/MiscUserDefs]
 
 //==============================================================================
-Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MFOData*const mfo_data_)
+Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, LFOData*const mfo_data_, COLOUR_THEMES theme_)
     : Monique_Ui_Refreshable(ui_refresher_),
       DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point<int>(10,10))),
       original_w(540), original_h(190),
@@ -175,6 +175,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     last_offset = 999;
     owner_slider = nullptr;
     setOwner(this);
+    theme = theme_;
     //[/Constructor_pre]
 
     addAndMakeVisible (slider_wave = new Slider ("0"));
@@ -311,7 +312,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
         getChildComponent(i)->setWantsKeyboardFocus(false);
         Component*child = getChildComponent(i);
         child->setOpaque(true);
-        child->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+        child->getProperties().set( VAR_INDEX_COLOUR_THEME, theme_ );
     }
     this->setRepaintsOnMouseActivity(false);
     plotter->setOpaque(false);
@@ -373,11 +374,11 @@ void Monique_Ui_MFOPopup::paint (Graphics& g)
 
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    
-    g.setColour (colours.get_theme( COLOUR_THEMES::MORPH_THEME  ).area_colour);
+
+    g.setColour (colours.get_theme( theme ).area_colour);
     g.fillRoundedRectangle (1.0f, 10.0f, 538.0f, 179.0f, 10.000f);
 
-    Colour outline_and_track = colours.get_theme( COLOUR_THEMES::MORPH_THEME  ).value_slider_track_colour;
+    Colour outline_and_track = colours.get_theme( theme ).value_slider_track_colour;
     g.setColour (outline_and_track);
     g.drawRoundedRectangle (1.0f, 10.0f, 538.0f, 179.0f, 10.000f, 1.000f);
 
@@ -517,7 +518,7 @@ void Monique_Ui_MFOPopup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_close] -- add your button handler code here..
         if(Monique_Ui_Mainwindow* mainwindow = get_editor())
         {
-            mainwindow->open_mfo_popup(nullptr,nullptr,nullptr);
+            mainwindow->open_mfo_popup(nullptr,nullptr,nullptr,COLOUR_THEMES::DUMMY_THEME);
         }
         //[/UserButtonCode_close]
     }
@@ -538,7 +539,7 @@ void Monique_Ui_MFOPopup::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_copy] -- add your button handler code here..
         if( not SHARED::getInstance()->mfo_clipboard )
         {
-            SHARED::getInstance()->mfo_clipboard = new MFOData( nullptr, 999);
+            SHARED::getInstance()->mfo_clipboard = new LFOData( nullptr, 999,"CBFO");
         } ::copy( SHARED::getInstance()->mfo_clipboard, mfo_data );
         //[/UserButtonCode_copy]
     }
@@ -585,7 +586,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MFOPopup" componentName=""
                  parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer"
-                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MFOData*const mfo_data_"
+                 constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, LFOData*const mfo_data_, COLOUR_THEMES theme_"
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;original_w(540), original_h(190),&#10;parent(parent_),&#10;mfo_data(mfo_data_)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="540" initialHeight="190">

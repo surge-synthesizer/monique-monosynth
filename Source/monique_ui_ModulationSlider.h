@@ -163,7 +163,7 @@ struct ModulationSliderConfigBase
     {
         return false;
     }
-    virtual bool action_keep_env_pop_open_for( const MFOData*const mfo_ ) const noexcept
+    virtual bool action_keep_env_pop_open_for( const LFOData*const mfo_ ) const noexcept
     {
         return false;
     }

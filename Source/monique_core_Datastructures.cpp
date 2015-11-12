@@ -121,53 +121,24 @@ COLD RuntimeInfo::~RuntimeInfo() noexcept {}
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define LFO_NAME "LFO"
-COLD LFOData::LFOData( SmoothManager*smooth_manager_, int id_ ) noexcept
+COLD LFOData::LFOData( SmoothManager*smooth_manager_, int id_, const char*name_ ) noexcept
 :
 speed
 (
-    MIN_MAX( 0, 16 ),
+    MIN_MAX( 0, 17 ),
     4,
-    16,
+    17,
 
-    generate_param_name(LFO_NAME,id_,"speed"),
-    generate_short_human_name(LFO_NAME,id_,"speed")
-)
-{}
-COLD LFOData::~LFOData() noexcept {}
-
-//==============================================================================
-static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
-{
-    dest_->speed = src_->speed;
-}
-static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
-{
-    params_.add( &lfo_data_->speed );
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-#define LFO_COMPLEX_NAME "MFO"
-COLD MFOData::MFOData( SmoothManager*const smooth_manager_, int id_ ) noexcept
-:
-speed
-(
-    MIN_MAX( 0, 16 ),
-    4,
-    16,
-
-    generate_param_name(LFO_COMPLEX_NAME,id_,"speed"),
-    generate_short_human_name(LFO_COMPLEX_NAME,id_,"speed")
+    generate_param_name(name_,id_,"speed"),
+    generate_short_human_name(name_,id_,"speed")
 ),
 wave
 (
     MIN_MAX( 0, 1 ),
     0,
     1000,
-    generate_param_name(LFO_COMPLEX_NAME,id_,"wave"),
-    generate_short_human_name(LFO_COMPLEX_NAME,id_,"wave")
+    generate_param_name(name_,id_,"wave"),
+    generate_short_human_name(name_,id_,"wave")
 ),
 wave_smoother( smooth_manager_, &wave ),
 phase_shift
@@ -175,15 +146,15 @@ phase_shift
     MIN_MAX( 0, 1 ),
     0,
     1000,
-    generate_param_name(LFO_COMPLEX_NAME,id_,"phase"),
-    generate_short_human_name(LFO_COMPLEX_NAME,id_,"phase")
+    generate_param_name(name_,id_,"phase"),
+    generate_short_human_name(name_,id_,"phase")
 ),
 phase_shift_smoother(smooth_manager_,&phase_shift)
 {}
-COLD MFOData::~MFOData() noexcept {}
+COLD LFOData::~LFOData() noexcept {}
 
 //==============================================================================
-static inline void collect_saveable_parameters( MFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
+static inline void collect_saveable_parameters( LFOData* lfo_data_, Array< Parameter* >& params_ ) noexcept
 {
     params_.add( &lfo_data_->speed );
     params_.add( &lfo_data_->wave );
@@ -952,12 +923,12 @@ COLD void MorphGroup::register_parameter( Parameter* param_, bool is_master_ ) n
 }
 COLD void MorphGroup::register_switch_parameter( BoolParameter* param_, bool is_master_ ) noexcept
 {
-    /*
     switch_bool_params.add( param_ );
 
     if( is_master_ )
+    {
       param_->register_listener(this);
-    */
+    }
 }
 COLD void MorphGroup::register_switch_parameter( IntParameter* param_, bool is_master_ ) noexcept
 {
@@ -2022,7 +1993,7 @@ ui_look_and_feel( look_and_feel_ ),
     // LFO DATA
     for( int i = 0 ; i != SUM_LFOS ; ++i )
     {
-        LFOData* data = new LFOData(smooth_manager,i);
+        LFOData* data = new LFOData(smooth_manager,i,"LFO");
         lfo_datas.add( data );
     }
     lfo_datas.minimiseStorageOverheads();
@@ -2030,7 +2001,7 @@ ui_look_and_feel( look_and_feel_ ),
     // MFO DATA
     for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
     {
-        MFOData* data = new MFOData(smooth_manager,i);
+        LFOData* data = new LFOData(smooth_manager,i,"MFO");
         mfo_datas.add( data );
     }
     mfo_datas.minimiseStorageOverheads();
@@ -2046,7 +2017,7 @@ ui_look_and_feel( look_and_feel_ ),
     // MORPH STUFF
     init_morph_groups( data_type );
 
-    // FILE HANDLING
+    // FILE HANDLING (MUST BE AFTER SAVEABLE PARAMS)
     colect_saveable_parameters();
 
     if( data_type == MASTER )
@@ -2204,21 +2175,40 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
 
-
+    // REMOVE UNNEDED PARAMETERS FROM THE SAVABLES (COZ THEY HAVE MORPH DATA)
     saveable_parameters.minimiseStorageOverheads();
     if( id == MASTER )
     {
-        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        automateable_parameters.addArray( saveable_parameters );
+        automateable_parameters.minimiseStorageOverheads();
+
+        for( int i = 0 ; i != automateable_parameters.size() ; ++i )
         {
-            Parameter*param = saveable_parameters.getUnchecked(i);
-            if( SmoothedParameter*smoother = param->get_runtime_info().my_smoother )
+            Parameter*param = automateable_parameters.getUnchecked(i);
+            bool success = false;
+            if( morph_group_1->indexOf( param ) != -1 )
             {
-                if( not param->get_info().name.contains("morph") )
-                {
-                    //smoother->do_smooth(false);
-                }
+                success = true;
+            }
+            else if( morph_group_2->indexOf( param ) != -1 )
+            {
+                success = true;
+            }
+            else if( morph_group_3->indexOf( param ) != -1 )
+            {
+                success = true;
+            }
+            else if( morph_group_4->indexOf( param ) != -1 )
+            {
+                success = true;
+            }
+            
+            if( success )
+            {
+                saveable_parameters.removeFirstMatchingValue( param );
             }
         }
+        saveable_parameters.minimiseStorageOverheads();
     }
 }
 
@@ -2345,6 +2335,8 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[0]->wave.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[0]->phase_shift.ptr(), data_type == MASTER  );
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[0]->env_data->attack.ptr(), data_type == MASTER  );
@@ -2386,6 +2378,8 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[1]->wave.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[1]->phase_shift.ptr(), data_type == MASTER  );
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[1]->env_data->attack.ptr(), data_type == MASTER  );
@@ -2427,6 +2421,8 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
 
                 // LFO
                 morph_group_2->register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[2]->wave.ptr(), data_type == MASTER  );
+                morph_group_2->register_parameter( lfo_datas[2]->phase_shift.ptr(), data_type == MASTER  );
 
                 // ENV
                 morph_group_2->register_parameter( filter_datas[2]->env_data->attack.ptr(), data_type == MASTER  );
@@ -2446,6 +2442,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
             morph_group_3->register_parameter( env_data->sustain.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->sustain_time.ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( env_data->release.ptr(), data_type == MASTER  );
+            morph_group_3->register_parameter( env_data->shape.ptr(), data_type == MASTER  );
 
             //speed_multi
         }
@@ -2532,14 +2529,14 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type ) noexcept
         for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
         {
             MoniqueSynthData*morph_data;
-            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager );
-           //hat eine änderungscaskade zur folge!!!
-	    //morph_data->load_default();
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr );
+            //hat eine änderungscaskade zur folge!!!
+            morph_data->load_default();
             left_morph_sources.add( morph_data );
 
-            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, smooth_manager );
-           //hat eine änderungscaskade zur folge!!!
-	    //morph_data->load_default();
+            morph_data = new MoniqueSynthData( static_cast< DATA_TYPES >( MORPH ), nullptr, nullptr, nullptr, nullptr, nullptr, nullptr );
+            //hat eine änderungscaskade zur folge!!!
+            morph_data->load_default();
             right_morph_sources.add( morph_data );
         }
 
@@ -3548,7 +3545,7 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
 
             for( int morpher_id = 0 ; morpher_id != SUM_MORPHER_GROUPS ; ++morpher_id )
             {
-                morph( morpher_id, morhp_states[morpher_id] );
+                morph( morpher_id, morhp_states[morpher_id], true );
                 morph_switch_buttons( morpher_id, false );
             }
 
@@ -3682,6 +3679,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

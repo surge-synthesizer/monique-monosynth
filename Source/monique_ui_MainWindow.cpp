@@ -778,6 +778,158 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     look_and_feel->mainwindow = this;
     //[/Constructor_pre]
 
+    addAndMakeVisible (label_lfo_1 = new Label (String::empty,
+                                                TRANS("LFO 1")));
+    label_lfo_1->setFont (Font (30.00f, Font::plain));
+    label_lfo_1->setJustificationType (Justification::centred);
+    label_lfo_1->setEditable (false, false, false);
+    label_lfo_1->setColour (Label::textColourId, Colour (0xff050505));
+    label_lfo_1->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_lfo_1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_lfo_2 = new Label (String::empty,
+                                                TRANS("LFO 2")));
+    label_lfo_2->setFont (Font (30.00f, Font::plain));
+    label_lfo_2->setJustificationType (Justification::centred);
+    label_lfo_2->setEditable (false, false, false);
+    label_lfo_2->setColour (Label::textColourId, Colour (0xff050505));
+    label_lfo_2->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_lfo_2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label_lfo_3 = new Label (String::empty,
+                                                TRANS("LFO 3")));
+    label_lfo_3->setFont (Font (30.00f, Font::plain));
+    label_lfo_3->setJustificationType (Justification::centred);
+    label_lfo_3->setEditable (false, false, false);
+    label_lfo_3->setColour (Label::textColourId, Colour (0xff050505));
+    label_lfo_3->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_lfo_3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,0)));
+
+    addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,1)));
+
+    addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,3)));
+
+    addAndMakeVisible (morpher_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                              new MorphSLConfig(synth_data,2)));
+
+    addAndMakeVisible (lfo_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,0)));
+
+    addAndMakeVisible (lfo_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,1)));
+
+    addAndMakeVisible (lfo_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                          new LFOSlConfig(synth_data,2)));
+
+    addAndMakeVisible (flt_input_11 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,0)));
+
+    addAndMakeVisible (flt_input_12 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,1)));
+
+    addAndMakeVisible (flt_input_13 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                 new InputSlConfig(synth_data,2,2)));
+
+    addAndMakeVisible (flt_input_8 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,2)));
+
+    addAndMakeVisible (flt_input_7 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,1)));
+
+    addAndMakeVisible (flt_input_6 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,1,0)));
+
+    addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,0)));
+
+    addAndMakeVisible (flt_input_3 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,2)));
+
+    addAndMakeVisible (flt_input_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                                new InputSlConfig(synth_data,0,1)));
+
+    addAndMakeVisible (button_toggle_morph_buttons_1 = new TextButton (String::empty));
+    button_toggle_morph_buttons_1->setButtonText (TRANS("OSC-T"));
+    button_toggle_morph_buttons_1->addListener (this);
+    button_toggle_morph_buttons_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_toggle_morph_buttons_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_toggle_morph_buttons_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_toggle_morph_buttons_2 = new TextButton (String::empty));
+    button_toggle_morph_buttons_2->setButtonText (TRANS("FLT-T"));
+    button_toggle_morph_buttons_2->addListener (this);
+    button_toggle_morph_buttons_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_toggle_morph_buttons_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_toggle_morph_buttons_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_toggle_morph_buttons_3 = new TextButton (String::empty));
+    button_toggle_morph_buttons_3->setButtonText (TRANS("ARP-T"));
+    button_toggle_morph_buttons_3->addListener (this);
+    button_toggle_morph_buttons_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_toggle_morph_buttons_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_toggle_morph_buttons_3->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_toggle_morph_buttons_4 = new TextButton (String::empty));
+    button_toggle_morph_buttons_4->setButtonText (TRANS("FX-T"));
+    button_toggle_morph_buttons_4->addListener (this);
+    button_toggle_morph_buttons_4->setColour (TextButton::buttonColourId, Colours::black);
+    button_toggle_morph_buttons_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_toggle_morph_buttons_4->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_mfo_1 = new TextButton (String::empty));
+    button_edit_mfo_1->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_mfo_1->addListener (this);
+    button_edit_mfo_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_mfo_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_mfo_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_mfo_2 = new TextButton (String::empty));
+    button_edit_mfo_2->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_mfo_2->addListener (this);
+    button_edit_mfo_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_mfo_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_mfo_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_mfo_3 = new TextButton (String::empty));
+    button_edit_mfo_3->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_mfo_3->addListener (this);
+    button_edit_mfo_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_mfo_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_mfo_3->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_mfo_4 = new TextButton (String::empty));
+    button_edit_mfo_4->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_mfo_4->addListener (this);
+    button_edit_mfo_4->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_mfo_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_mfo_4->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_lfo_3 = new TextButton (String::empty));
+    button_edit_lfo_3->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_lfo_3->addListener (this);
+    button_edit_lfo_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_lfo_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_lfo_3->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_lfo_2 = new TextButton (String::empty));
+    button_edit_lfo_2->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_lfo_2->addListener (this);
+    button_edit_lfo_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_lfo_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_lfo_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (button_edit_lfo_1 = new TextButton (String::empty));
+    button_edit_lfo_1->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_lfo_1->addListener (this);
+    button_edit_lfo_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_lfo_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_lfo_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
     addAndMakeVisible (filter_type_bg_button_3 = new TextButton (String::empty));
     filter_type_bg_button_3->setTooltip (TRANS("Set the filter type to LOW PASS."));
     filter_type_bg_button_3->addListener (this);
@@ -798,54 +950,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     filter_type_bg_button_1->setColour (TextButton::buttonColourId, Colours::black);
     filter_type_bg_button_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     filter_type_bg_button_1->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_minus_3 = new TextButton (String::empty));
-    lfo_minus_3->setTooltip (TRANS("Decrease the LFO speed in steps."));
-    lfo_minus_3->setButtonText (TRANS("-"));
-    lfo_minus_3->addListener (this);
-    lfo_minus_3->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_minus_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_minus_3->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_plus_3 = new TextButton (String::empty));
-    lfo_plus_3->setTooltip (TRANS("Increase the LFO speed in steps."));
-    lfo_plus_3->setButtonText (TRANS("+"));
-    lfo_plus_3->addListener (this);
-    lfo_plus_3->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_plus_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_plus_3->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_plus_2 = new TextButton (String::empty));
-    lfo_plus_2->setTooltip (TRANS("Increase the LFO speed in steps."));
-    lfo_plus_2->setButtonText (TRANS("+"));
-    lfo_plus_2->addListener (this);
-    lfo_plus_2->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_plus_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_plus_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_minus_2 = new TextButton (String::empty));
-    lfo_minus_2->setTooltip (TRANS("Decrease the LFO speed in steps."));
-    lfo_minus_2->setButtonText (TRANS("-"));
-    lfo_minus_2->addListener (this);
-    lfo_minus_2->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_minus_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_minus_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_plus_1 = new TextButton (String::empty));
-    lfo_plus_1->setTooltip (TRANS("Increase the LFO speed in steps."));
-    lfo_plus_1->setButtonText (TRANS("+"));
-    lfo_plus_1->addListener (this);
-    lfo_plus_1->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_plus_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_plus_1->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (lfo_minus_1 = new TextButton (String::empty));
-    lfo_minus_1->setTooltip (TRANS("Decrease the LFO speed in steps."));
-    lfo_minus_1->setButtonText (TRANS("-"));
-    lfo_minus_1->addListener (this);
-    lfo_minus_1->setColour (TextButton::buttonColourId, Colours::black);
-    lfo_minus_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    lfo_minus_1->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (label_band_hz_5 = new Label ("DL",
                                                     TRANS("1.2kHz")));
@@ -1000,18 +1104,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (speed_multi = new Monique_Ui_DualSlider (ui_refresher,
                                                                 new SpeedMultiSlConfig(synth_data)));
-
-    addAndMakeVisible (morpher_4 = new Monique_Ui_DualSlider (ui_refresher,
-                                                              new MorphSLConfig(synth_data,3)));
-
-    addAndMakeVisible (morpher_3 = new Monique_Ui_DualSlider (ui_refresher,
-                                                              new MorphSLConfig(synth_data,2)));
-
-    addAndMakeVisible (morpher_2 = new Monique_Ui_DualSlider (ui_refresher,
-                                                              new MorphSLConfig(synth_data,1)));
-
-    addAndMakeVisible (morpher_1 = new Monique_Ui_DualSlider (ui_refresher,
-                                                              new MorphSLConfig(synth_data,0)));
 
     addAndMakeVisible (osc_wave_3 = new Monique_Ui_DualSlider (ui_refresher,
                                                                new WAVESlConfig(synth_data,2)));
@@ -1396,17 +1488,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (osc_3 = new Monique_Ui_DualSlider (ui_refresher,
                                                           new OSCSlConfig(synth_data,2)));
 
-    addAndMakeVisible (lfo_1 = new Monique_Ui_DualSlider (ui_refresher,
-                                                          new LFOSlConfig(synth_data,0)));
-
     addAndMakeVisible (flt_cutoff_1 = new Monique_Ui_DualSlider (ui_refresher,
                                                                  new FCutoffSLConfig(synth_data,0)));
-
-    addAndMakeVisible (lfo_2 = new Monique_Ui_DualSlider (ui_refresher,
-                                                          new LFOSlConfig(synth_data,1)));
-
-    addAndMakeVisible (lfo_3 = new Monique_Ui_DualSlider (ui_refresher,
-                                                          new LFOSlConfig(synth_data,2)));
 
     addAndMakeVisible (flt_cutoff_2 = new Monique_Ui_DualSlider (ui_refresher,
                                                                  new FCutoffSLConfig(synth_data,1)));
@@ -1549,42 +1632,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     effect_finalizer_switch->setColour (TextButton::buttonColourId, Colour (0xffff11ff));
     effect_finalizer_switch->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
     effect_finalizer_switch->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (label_morph_osc = new Label (String::empty,
-                                                    TRANS("OSC")));
-    label_morph_osc->setFont (Font (30.00f, Font::plain));
-    label_morph_osc->setJustificationType (Justification::centred);
-    label_morph_osc->setEditable (false, false, false);
-    label_morph_osc->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_morph_osc->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_morph_osc->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_morph_flt = new Label (String::empty,
-                                                    TRANS("FLT")));
-    label_morph_flt->setFont (Font (30.00f, Font::plain));
-    label_morph_flt->setJustificationType (Justification::centred);
-    label_morph_flt->setEditable (false, false, false);
-    label_morph_flt->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_morph_flt->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_morph_flt->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_morph_fx = new Label (String::empty,
-                                                   TRANS("FX")));
-    label_morph_fx->setFont (Font (30.00f, Font::plain));
-    label_morph_fx->setJustificationType (Justification::centred);
-    label_morph_fx->setEditable (false, false, false);
-    label_morph_fx->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_morph_fx->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_morph_fx->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_morph_arp = new Label (String::empty,
-                                                    TRANS("ARP")));
-    label_morph_arp->setFont (Font (30.00f, Font::plain));
-    label_morph_arp->setJustificationType (Justification::centred);
-    label_morph_arp->setEditable (false, false, false);
-    label_morph_arp->setColour (Label::textColourId, Colour (0xffff3b00));
-    label_morph_arp->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_morph_arp->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (button_values_toggle = new TextButton (String::empty));
     button_values_toggle->setTooltip (TRANS("Turns the CTRL mode on or off.\n"
@@ -1946,46 +1993,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_monoplugs->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_monoplugs->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    addAndMakeVisible (button_edit_mfo_1 = new TextButton (String::empty));
-    button_edit_mfo_1->setTooltip (TRANS("Open/Close the morph editor.\n"
-    "\n"
-    "Note: press ESC to close editors."));
-    button_edit_mfo_1->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_mfo_1->addListener (this);
-    button_edit_mfo_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_mfo_1->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_edit_mfo_2 = new TextButton (String::empty));
-    button_edit_mfo_2->setTooltip (TRANS("Open/Close the morph editor.\n"
-    "\n"
-    "Note: press ESC to close editors."));
-    button_edit_mfo_2->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_mfo_2->addListener (this);
-    button_edit_mfo_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_mfo_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_edit_mfo_3 = new TextButton (String::empty));
-    button_edit_mfo_3->setTooltip (TRANS("Open/Close the morph editor.\n"
-    "\n"
-    "Note: press ESC to close editors."));
-    button_edit_mfo_3->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_mfo_3->addListener (this);
-    button_edit_mfo_3->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_mfo_3->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (button_edit_mfo_4 = new TextButton (String::empty));
-    button_edit_mfo_4->setTooltip (TRANS("Open/Close the morph editor.\n"
-    "\n"
-    "Note: press ESC to close editors."));
-    button_edit_mfo_4->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_mfo_4->addListener (this);
-    button_edit_mfo_4->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_mfo_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_mfo_4->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (label_reverb = new Label (String::empty,
                                                  TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
@@ -2003,33 +2010,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_fx_section->setColour (Label::textColourId, Colour (0xff050505));
     label_fx_section->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_fx_section->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (flt_input_13 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                 new InputSlConfig(synth_data,2,2)));
-
-    addAndMakeVisible (flt_input_12 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                 new InputSlConfig(synth_data,2,1)));
-
-    addAndMakeVisible (flt_input_11 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                 new InputSlConfig(synth_data,2,0)));
-
-    addAndMakeVisible (flt_input_6 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,1,0)));
-
-    addAndMakeVisible (flt_input_7 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,1,1)));
-
-    addAndMakeVisible (flt_input_8 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,1,2)));
-
-    addAndMakeVisible (flt_input_3 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,0,2)));
-
-    addAndMakeVisible (flt_input_2 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,0,1)));
-
-    addAndMakeVisible (flt_input_1 = new Monique_Ui_DualSlider (ui_refresher,
-                                                                new InputSlConfig(synth_data,0,0)));
 
     addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (ui_refresher,
                                                          new EQSlConfig(synth_data,2)));
@@ -2212,12 +2192,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
         button_edit_mfo_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
         button_edit_mfo_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
         button_edit_mfo_4->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
-        lfo_minus_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
-        lfo_minus_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
-        lfo_minus_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
-        lfo_plus_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
-        lfo_plus_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
-        lfo_plus_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
         button_show_active_input_l_2_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
         button_show_active_input_r_2_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
         button_show_active_input_l_2_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
@@ -2251,10 +2225,17 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
         label_morph->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
         button_open_morph->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
-        label_morph_osc->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
-        label_morph_flt->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
-        label_morph_arp->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
-        label_morph_fx->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+        button_toggle_morph_buttons_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+        button_toggle_morph_buttons_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+        button_toggle_morph_buttons_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+        button_toggle_morph_buttons_4->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::MORPH_THEME );
+
+	button_edit_lfo_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
+	button_edit_lfo_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
+	button_edit_lfo_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
+	label_lfo_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
+	label_lfo_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
+	label_lfo_3->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FILTER_THEME );
 
         label_amp_envelope->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         label_fx_section->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
@@ -2371,15 +2352,39 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    label_lfo_1 = nullptr;
+    label_lfo_2 = nullptr;
+    label_lfo_3 = nullptr;
+    morpher_1 = nullptr;
+    morpher_2 = nullptr;
+    morpher_4 = nullptr;
+    morpher_3 = nullptr;
+    lfo_1 = nullptr;
+    lfo_2 = nullptr;
+    lfo_3 = nullptr;
+    flt_input_11 = nullptr;
+    flt_input_12 = nullptr;
+    flt_input_13 = nullptr;
+    flt_input_8 = nullptr;
+    flt_input_7 = nullptr;
+    flt_input_6 = nullptr;
+    flt_input_1 = nullptr;
+    flt_input_3 = nullptr;
+    flt_input_2 = nullptr;
+    button_toggle_morph_buttons_1 = nullptr;
+    button_toggle_morph_buttons_2 = nullptr;
+    button_toggle_morph_buttons_3 = nullptr;
+    button_toggle_morph_buttons_4 = nullptr;
+    button_edit_mfo_1 = nullptr;
+    button_edit_mfo_2 = nullptr;
+    button_edit_mfo_3 = nullptr;
+    button_edit_mfo_4 = nullptr;
+    button_edit_lfo_3 = nullptr;
+    button_edit_lfo_2 = nullptr;
+    button_edit_lfo_1 = nullptr;
     filter_type_bg_button_3 = nullptr;
     filter_type_bg_button_2 = nullptr;
     filter_type_bg_button_1 = nullptr;
-    lfo_minus_3 = nullptr;
-    lfo_plus_3 = nullptr;
-    lfo_plus_2 = nullptr;
-    lfo_minus_2 = nullptr;
-    lfo_plus_1 = nullptr;
-    lfo_minus_1 = nullptr;
     label_band_hz_5 = nullptr;
     label_band_hz_6 = nullptr;
     label_band_hz_4 = nullptr;
@@ -2404,10 +2409,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     label_band_hz_2 = nullptr;
     label_band_hz_3 = nullptr;
     speed_multi = nullptr;
-    morpher_4 = nullptr;
-    morpher_3 = nullptr;
-    morpher_2 = nullptr;
-    morpher_1 = nullptr;
     osc_wave_3 = nullptr;
     keyboard = nullptr;
     glide2 = nullptr;
@@ -2480,10 +2481,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     osc_1 = nullptr;
     osc_2 = nullptr;
     osc_3 = nullptr;
-    lfo_1 = nullptr;
     flt_cutoff_1 = nullptr;
-    lfo_2 = nullptr;
-    lfo_3 = nullptr;
     flt_cutoff_2 = nullptr;
     flt_cutoff_3 = nullptr;
     flt_distortion_1 = nullptr;
@@ -2514,10 +2512,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     speed = nullptr;
     button_open_morph = nullptr;
     effect_finalizer_switch = nullptr;
-    label_morph_osc = nullptr;
-    label_morph_flt = nullptr;
-    label_morph_fx = nullptr;
-    label_morph_arp = nullptr;
     button_values_toggle = nullptr;
     octave_offset = nullptr;
     label_filter_inputs = nullptr;
@@ -2572,21 +2566,8 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     effect_finalizer_switch2 = nullptr;
     flt_shape_4 = nullptr;
     label_monoplugs = nullptr;
-    button_edit_mfo_1 = nullptr;
-    button_edit_mfo_2 = nullptr;
-    button_edit_mfo_3 = nullptr;
-    button_edit_mfo_4 = nullptr;
     label_reverb = nullptr;
     label_fx_section = nullptr;
-    flt_input_13 = nullptr;
-    flt_input_12 = nullptr;
-    flt_input_11 = nullptr;
-    flt_input_6 = nullptr;
-    flt_input_7 = nullptr;
-    flt_input_8 = nullptr;
-    flt_input_3 = nullptr;
-    flt_input_2 = nullptr;
-    flt_input_1 = nullptr;
     eq_3 = nullptr;
     eq_2 = nullptr;
     eq_1 = nullptr;
@@ -2880,15 +2861,39 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    label_lfo_1->setBounds (900, 120, 60, 30);
+    label_lfo_2->setBounds (900, 300, 60, 30);
+    label_lfo_3->setBounds (900, 480, 60, 30);
+    morpher_1->setBounds (260 - 60, 680, 60, 130);
+    morpher_2->setBounds (320 - 60, 680, 60, 130);
+    morpher_4->setBounds (380 - 60, 680, 60, 130);
+    morpher_3->setBounds (440 - 60, 680, 60, 130);
+    lfo_1->setBounds (900, 250 - 130, 60, 130);
+    lfo_2->setBounds (900, 430 - 130, 60, 130);
+    lfo_3->setBounds (900, 610 - 130, 60, 130);
+    flt_input_11->setBounds (260 - 60, 610 - 130, 60, 130);
+    flt_input_12->setBounds (320 - 60, 610 - 130, 60, 130);
+    flt_input_13->setBounds (380 - 60, 610 - 130, 60, 130);
+    flt_input_8->setBounds (380 - 60, 430 - 130, 60, 130);
+    flt_input_7->setBounds (320 - 60, 430 - 130, 60, 130);
+    flt_input_6->setBounds (200, 300, 60, 130);
+    flt_input_1->setBounds (200, 120, 60, 130);
+    flt_input_3->setBounds (320, 250 - 130, 60, 130);
+    flt_input_2->setBounds (320 - 60, 250 - 130, 60, 130);
+    button_toggle_morph_buttons_1->setBounds (260 - 60, 810, 60, 30);
+    button_toggle_morph_buttons_2->setBounds (320 - 60, 810, 60, 30);
+    button_toggle_morph_buttons_3->setBounds (380 - 60, 810, 60, 30);
+    button_toggle_morph_buttons_4->setBounds (440 - 60, 810, 60, 30);
+    button_edit_mfo_1->setBounds (260 - 60, 780, 60, 30);
+    button_edit_mfo_2->setBounds (320 - 60, 780, 60, 30);
+    button_edit_mfo_3->setBounds (380 - 60, 780, 60, 30);
+    button_edit_mfo_4->setBounds (440 - 60, 780, 60, 30);
+    button_edit_lfo_3->setBounds (960 - 60, 580, 60, 30);
+    button_edit_lfo_2->setBounds (960 - 60, 400, 60, 30);
+    button_edit_lfo_1->setBounds (960 - 60, 220, 60, 30);
     filter_type_bg_button_3->setBounds (1010, 480, 60, 130);
     filter_type_bg_button_2->setBounds (1010, 300, 60, 130);
     filter_type_bg_button_1->setBounds (1010, 120, 60, 130);
-    lfo_minus_3->setBounds (900, 480, 30, 30);
-    lfo_plus_3->setBounds (930, 480, 30, 30);
-    lfo_plus_2->setBounds (930, 300, 30, 30);
-    lfo_minus_2->setBounds (900, 300, 30, 30);
-    lfo_plus_1->setBounds (930, 120, 30, 30);
-    lfo_minus_1->setBounds (900, 120, 30, 30);
     label_band_hz_5->setBounds (1085, 636, 50, 30);
     label_band_hz_6->setBounds (1145, 636, 50, 30);
     label_band_hz_4->setBounds (1015, 636, 50, 30);
@@ -2913,10 +2918,6 @@ void Monique_Ui_Mainwindow::resized()
     label_band_hz_2->setBounds (885, 636, 50, 30);
     label_band_hz_3->setBounds (955, 636, 50, 30);
     speed_multi->setBounds (1340 - 60, 1010 - 130, 60, 130);
-    morpher_4->setBounds (380 - 60, 680, 60, 130);
-    morpher_3->setBounds (440 - 60, 680, 60, 130);
-    morpher_2->setBounds (320 - 60, 680, 60, 130);
-    morpher_1->setBounds (260 - 60, 680, 60, 130);
     osc_wave_3->setBounds (90 - 60, 610 - 130, 60, 130);
     keyboard->setBounds (0, 1050, 1465, 185);
     glide2->setBounds (100, 880, 60, 130);
@@ -2989,10 +2990,7 @@ void Monique_Ui_Mainwindow::resized()
     osc_1->setBounds (100, 120, 60, 130);
     osc_2->setBounds (100, 300, 60, 130);
     osc_3->setBounds (160 - 60, 610 - 130, 60, 130);
-    lfo_1->setBounds (900, 250 - 130, 60, 130);
     flt_cutoff_1->setBounds (1080, 250 - 130, 60, 130);
-    lfo_2->setBounds (900, 430 - 130, 60, 130);
-    lfo_3->setBounds (900, 610 - 130, 60, 130);
     flt_cutoff_2->setBounds (1140 - 60, 430 - 130, 60, 130);
     flt_cutoff_3->setBounds (1140 - 60, 610 - 130, 60, 130);
     flt_distortion_1->setBounds (1290 - 60, 250 - 130, 60, 130);
@@ -3023,10 +3021,6 @@ void Monique_Ui_Mainwindow::resized()
     speed->setBounds (1280 - 60, 1010 - 130, 60, 130);
     button_open_morph->setBounds (440 - 60, 645, 60, 30);
     effect_finalizer_switch->setBounds (810, 819, 120, 30);
-    label_morph_osc->setBounds (200, 810, 60, 30);
-    label_morph_flt->setBounds (260, 810, 60, 30);
-    label_morph_fx->setBounds (380, 810, 60, 30);
-    label_morph_arp->setBounds (320, 810, 60, 30);
     button_values_toggle->setBounds (30, 10, 60, 30);
     octave_offset->setBounds (1435 - 60, 880, 60, 130);
     label_filter_inputs->setBounds (210, 75, 170, 30);
@@ -3081,21 +3075,8 @@ void Monique_Ui_Mainwindow::resized()
     effect_finalizer_switch2->setBounds (930, 819, 120, 30);
     flt_shape_4->setBounds (790 - 60, 810 - 130, 60, 130);
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
-    button_edit_mfo_1->setBounds (260 - 60, 780, 60, 30);
-    button_edit_mfo_2->setBounds (320 - 60, 780, 60, 30);
-    button_edit_mfo_3->setBounds (380 - 60, 780, 60, 30);
-    button_edit_mfo_4->setBounds (440 - 60, 780, 60, 30);
     label_reverb->setBounds (1090, 680, 180, 30);
     label_fx_section->setBounds (820, 680, 240, 30);
-    flt_input_13->setBounds (380 - 60, 610 - 130, 60, 130);
-    flt_input_12->setBounds (320 - 60, 610 - 130, 60, 130);
-    flt_input_11->setBounds (260 - 60, 610 - 130, 60, 130);
-    flt_input_6->setBounds (200, 300, 60, 130);
-    flt_input_7->setBounds (320 - 60, 430 - 130, 60, 130);
-    flt_input_8->setBounds (380 - 60, 430 - 130, 60, 130);
-    flt_input_3->setBounds (320, 250 - 130, 60, 130);
-    flt_input_2->setBounds (320 - 60, 250 - 130, 60, 130);
-    flt_input_1->setBounds (200, 120, 60, 130);
     eq_3->setBounds (1010 - 60, 810 - 130, 60, 130);
     eq_2->setBounds (940 - 60, 810 - 130, 60, 130);
     eq_1->setBounds (880 - 60, 810 - 130, 60, 130);
@@ -3115,7 +3096,69 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == filter_type_bg_button_3)
+    if (buttonThatWasClicked == button_toggle_morph_buttons_1)
+    {
+        //[UserButtonCode_button_toggle_morph_buttons_1] -- add your button handler code here..
+        //[/UserButtonCode_button_toggle_morph_buttons_1]
+    }
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_2)
+    {
+        //[UserButtonCode_button_toggle_morph_buttons_2] -- add your button handler code here..
+        //[/UserButtonCode_button_toggle_morph_buttons_2]
+    }
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_3)
+    {
+        //[UserButtonCode_button_toggle_morph_buttons_3] -- add your button handler code here..
+        //[/UserButtonCode_button_toggle_morph_buttons_3]
+    }
+    else if (buttonThatWasClicked == button_toggle_morph_buttons_4)
+    {
+        //[UserButtonCode_button_toggle_morph_buttons_4] -- add your button handler code here..
+        //[/UserButtonCode_button_toggle_morph_buttons_4]
+    }
+    else if (buttonThatWasClicked == button_edit_mfo_1)
+    {
+        //[UserButtonCode_button_edit_mfo_1] -- add your button handler code here..
+        open_mfo_popup( synth_data->mfo_datas[0], button_edit_mfo_1, morpher_1, COLOUR_THEMES::MORPH_THEME );
+        //[/UserButtonCode_button_edit_mfo_1]
+    }
+    else if (buttonThatWasClicked == button_edit_mfo_2)
+    {
+        //[UserButtonCode_button_edit_mfo_2] -- add your button handler code here..
+        open_mfo_popup( synth_data->mfo_datas[1], button_edit_mfo_2, morpher_2, COLOUR_THEMES::MORPH_THEME );
+        //[/UserButtonCode_button_edit_mfo_2]
+    }
+    else if (buttonThatWasClicked == button_edit_mfo_3)
+    {
+        //[UserButtonCode_button_edit_mfo_3] -- add your button handler code here..
+        open_mfo_popup( synth_data->mfo_datas[3], button_edit_mfo_3, morpher_4, COLOUR_THEMES::MORPH_THEME );
+        //[/UserButtonCode_button_edit_mfo_3]
+    }
+    else if (buttonThatWasClicked == button_edit_mfo_4)
+    {
+        //[UserButtonCode_button_edit_mfo_4] -- add your button handler code here..
+        open_mfo_popup( synth_data->mfo_datas[2], button_edit_mfo_4, morpher_3, COLOUR_THEMES::MORPH_THEME );
+        //[/UserButtonCode_button_edit_mfo_4]
+    }
+    else if (buttonThatWasClicked == button_edit_lfo_3)
+    {
+        //[UserButtonCode_button_edit_lfo_3] -- add your button handler code here..
+        open_mfo_popup( synth_data->lfo_datas[2], button_edit_lfo_3, lfo_3, COLOUR_THEMES::FILTER_THEME );
+        //[/UserButtonCode_button_edit_lfo_3]
+    }
+    else if (buttonThatWasClicked == button_edit_lfo_2)
+    {
+        //[UserButtonCode_button_edit_lfo_2] -- add your button handler code here..
+        open_mfo_popup( synth_data->lfo_datas[1], button_edit_lfo_2, lfo_2, COLOUR_THEMES::FILTER_THEME );
+        //[/UserButtonCode_button_edit_lfo_2]
+    }
+    else if (buttonThatWasClicked == button_edit_lfo_1)
+    {
+        //[UserButtonCode_button_edit_lfo_1] -- add your button handler code here..
+        open_mfo_popup( synth_data->lfo_datas[0], button_edit_lfo_1, lfo_1, COLOUR_THEMES::FILTER_THEME );
+        //[/UserButtonCode_button_edit_lfo_1]
+    }
+    else if (buttonThatWasClicked == filter_type_bg_button_3)
     {
         //[UserButtonCode_filter_type_bg_button_3] -- add your button handler code here..
         //[/UserButtonCode_filter_type_bg_button_3]
@@ -3129,42 +3172,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_filter_type_bg_button_1] -- add your button handler code here..
         //[/UserButtonCode_filter_type_bg_button_1]
-    }
-    else if (buttonThatWasClicked == lfo_minus_3)
-    {
-        //[UserButtonCode_lfo_minus_3] -- add your button handler code here..
-        synth_data->lfo_datas[2]->speed.set_value( int( synth_data->lfo_datas[2]->speed.get_value() - 1 ) );
-        //[/UserButtonCode_lfo_minus_3]
-    }
-    else if (buttonThatWasClicked == lfo_plus_3)
-    {
-        //[UserButtonCode_lfo_plus_3] -- add your button handler code here..
-        synth_data->lfo_datas[2]->speed.set_value( int( synth_data->lfo_datas[2]->speed.get_value() + 1 ) );
-        //[/UserButtonCode_lfo_plus_3]
-    }
-    else if (buttonThatWasClicked == lfo_plus_2)
-    {
-        //[UserButtonCode_lfo_plus_2] -- add your button handler code here..
-        synth_data->lfo_datas[1]->speed.set_value( int( synth_data->lfo_datas[1]->speed.get_value() + 1 ) );
-        //[/UserButtonCode_lfo_plus_2]
-    }
-    else if (buttonThatWasClicked == lfo_minus_2)
-    {
-        //[UserButtonCode_lfo_minus_2] -- add your button handler code here..
-        synth_data->lfo_datas[1]->speed.set_value( int( synth_data->lfo_datas[1]->speed.get_value() - 1 ) );
-        //[/UserButtonCode_lfo_minus_2]
-    }
-    else if (buttonThatWasClicked == lfo_plus_1)
-    {
-        //[UserButtonCode_lfo_plus_1] -- add your button handler code here..
-        synth_data->lfo_datas[0]->speed.set_value( int( synth_data->lfo_datas[0]->speed.get_value() + 1 ) );
-        //[/UserButtonCode_lfo_plus_1]
-    }
-    else if (buttonThatWasClicked == lfo_minus_1)
-    {
-        //[UserButtonCode_lfo_minus_1] -- add your button handler code here..
-        synth_data->lfo_datas[0]->speed.set_value( int( synth_data->lfo_datas[0]->speed.get_value() - 1 ) );
-        //[/UserButtonCode_lfo_minus_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
@@ -3911,30 +3918,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         switch_finalizer_tab(false);
         //[/UserButtonCode_effect_finalizer_switch2]
     }
-    else if (buttonThatWasClicked == button_edit_mfo_1)
-    {
-        //[UserButtonCode_button_edit_mfo_1] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[0], button_edit_mfo_1, morpher_1 );
-        //[/UserButtonCode_button_edit_mfo_1]
-    }
-    else if (buttonThatWasClicked == button_edit_mfo_2)
-    {
-        //[UserButtonCode_button_edit_mfo_2] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[1], button_edit_mfo_2, morpher_2 );
-        //[/UserButtonCode_button_edit_mfo_2]
-    }
-    else if (buttonThatWasClicked == button_edit_mfo_3)
-    {
-        //[UserButtonCode_button_edit_mfo_3] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[3], button_edit_mfo_3, morpher_4 );
-        //[/UserButtonCode_button_edit_mfo_3]
-    }
-    else if (buttonThatWasClicked == button_edit_mfo_4)
-    {
-        //[UserButtonCode_button_edit_mfo_4] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[2], button_edit_mfo_4, morpher_3 );
-        //[/UserButtonCode_button_edit_mfo_4]
-    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -4157,12 +4140,15 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
     }
 }
 
-void Monique_Ui_Mainwindow::open_mfo_popup( MFOData*const mfo_data_, Button*const for_comp_, Monique_Ui_DualSlider*slider_ ) noexcept
+void Monique_Ui_Mainwindow::open_mfo_popup( LFOData*const mfo_data_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, COLOUR_THEMES theme_ ) noexcept
 {
     TURN_BUTTON_OFF( button_edit_mfo_1 )
     TURN_BUTTON_OFF( button_edit_mfo_2 )
     TURN_BUTTON_OFF( button_edit_mfo_3 )
     TURN_BUTTON_OFF( button_edit_mfo_4 )
+    TURN_BUTTON_OFF( button_edit_lfo_1 )
+    TURN_BUTTON_OFF( button_edit_lfo_2 )
+    TURN_BUTTON_OFF( button_edit_lfo_3 )
 
     if( ! mfo_popup  )
     {
@@ -4220,7 +4206,7 @@ void Monique_Ui_Mainwindow::open_mfo_popup( MFOData*const mfo_data_, Button*cons
                 addChildComponent(env_popup);
             }
 
-            addChildComponent( mfo_popup = new Monique_Ui_MFOPopup( ui_refresher, this, mfo_data_ ) );
+            addChildComponent( mfo_popup = new Monique_Ui_MFOPopup( ui_refresher, this, mfo_data_, theme_ ) );
             mfo_popup->set_element_to_show( for_comp_,slider_);
             mfo_popup->set_clickable_components( comps_to_observe );
             if( for_comp_ )
@@ -4253,7 +4239,7 @@ void Monique_Ui_Mainwindow::open_mfo_popup( MFOData*const mfo_data_, Button*cons
         else
         {
             mfo_popup = nullptr;
-            open_mfo_popup( mfo_data_, for_comp_, slider_ );
+            open_mfo_popup( mfo_data_, for_comp_, slider_, theme_ );
         }
     }
 }
@@ -4385,6 +4371,18 @@ void Monique_Ui_Mainwindow::open_mfo_popup( Monique_Ui_DualSlider*dual_slider_ )
     {
         buttonClicked(button_edit_mfo_3);
     }
+    else if( dual_slider_ == lfo_1 )
+    {
+        buttonClicked(button_edit_lfo_1);
+    }
+    else if( dual_slider_ == lfo_2 )
+    {
+        buttonClicked(button_edit_lfo_2);
+    }
+    else if( dual_slider_ == lfo_3 )
+    {
+        buttonClicked(button_edit_lfo_3);
+    }
 }
 void Monique_Ui_Mainwindow::open_env_popup( Monique_Ui_DualSlider*dual_slider_ ) noexcept
 {
@@ -4509,7 +4507,7 @@ bool Monique_Ui_Mainwindow::handle_keep_mfo_open( ModulationSliderConfigBase*con
         {
             if( synth_data->auto_close_env_popup )
             {
-                open_mfo_popup(nullptr,nullptr,nullptr);
+                open_mfo_popup(nullptr,nullptr,nullptr,COLOUR_THEMES::DUMMY_THEME);
             }
         }
         else
@@ -4729,6 +4727,113 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
+  <LABEL name="" id="205fd7cb7eabe6d3" memberName="label_lfo_1" virtualName=""
+         explicitFocusOrder="0" pos="900 120 60 30" textCol="ff050505"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 1" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="5fdd521f76fef95d" memberName="label_lfo_2" virtualName=""
+         explicitFocusOrder="0" pos="900 300 60 30" textCol="ff050505"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 2" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <LABEL name="" id="e5adef150f6a349b" memberName="label_lfo_3" virtualName=""
+         explicitFocusOrder="0" pos="900 480 60 30" textCol="ff050505"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="LFO 3" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
+  <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
+                    explicitFocusOrder="0" pos="260r 680 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,0)"/>
+  <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
+                    explicitFocusOrder="0" pos="320r 680 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,1)"/>
+  <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
+                    explicitFocusOrder="0" pos="380r 680 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,3)"/>
+  <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
+                    explicitFocusOrder="0" pos="440r 680 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,2)"/>
+  <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
+                    explicitFocusOrder="0" pos="900 250r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,0)"/>
+  <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
+                    explicitFocusOrder="0" pos="900 430r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,1)"/>
+  <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
+                    explicitFocusOrder="0" pos="900 610r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,2)"/>
+  <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
+                    explicitFocusOrder="0" pos="260r 610r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,0)"/>
+  <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
+                    explicitFocusOrder="0" pos="320r 610r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,1)"/>
+  <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
+                    explicitFocusOrder="0" pos="380r 610r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,2)"/>
+  <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
+                    explicitFocusOrder="0" pos="380r 430r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,2)"/>
+  <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
+                    explicitFocusOrder="0" pos="320r 430r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,1)"/>
+  <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
+                    explicitFocusOrder="0" pos="200 300 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,0)"/>
+  <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
+                    explicitFocusOrder="0" pos="200 120 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,0)"/>
+  <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
+                    explicitFocusOrder="0" pos="320 250r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,2)"/>
+  <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
+                    explicitFocusOrder="0" pos="320r 250r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,1)"/>
+  <TEXTBUTTON name="" id="47ae14bae130124a" memberName="button_toggle_morph_buttons_1"
+              virtualName="" explicitFocusOrder="0" pos="260r 810 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="OSC-T" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="fbd7e42d8c2cdede" memberName="button_toggle_morph_buttons_2"
+              virtualName="" explicitFocusOrder="0" pos="320r 810 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="FLT-T" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b52d35686740fb7e" memberName="button_toggle_morph_buttons_3"
+              virtualName="" explicitFocusOrder="0" pos="380r 810 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="ARP-T" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="8f9c476f5a07fa21" memberName="button_toggle_morph_buttons_4"
+              virtualName="" explicitFocusOrder="0" pos="440r 810 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="FX-T" connectedEdges="0"
+              needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="ebfbc2e7bb21bbdc" memberName="button_edit_mfo_1"
+              virtualName="" explicitFocusOrder="0" pos="260r 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b0af912df34ced45" memberName="button_edit_mfo_2"
+              virtualName="" explicitFocusOrder="0" pos="320r 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="bc837211a67f57ac" memberName="button_edit_mfo_3"
+              virtualName="" explicitFocusOrder="0" pos="380r 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="971beb8b5ba3cae1" memberName="button_edit_mfo_4"
+              virtualName="" explicitFocusOrder="0" pos="440r 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="7363964abd478946" memberName="button_edit_lfo_3"
+              virtualName="" explicitFocusOrder="0" pos="960r 580 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="d7419bd08a298b54" memberName="button_edit_lfo_2"
+              virtualName="" explicitFocusOrder="0" pos="960r 400 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="4b37bf0a7963b5f6" memberName="button_edit_lfo_1"
+              virtualName="" explicitFocusOrder="0" pos="960r 220 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="6e6e54760ba17ed8" memberName="filter_type_bg_button_3"
               virtualName="" explicitFocusOrder="0" pos="1010 480 60 130" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
@@ -4740,30 +4845,6 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="" id="40809d639d290176" memberName="filter_type_bg_button_1"
               virtualName="" explicitFocusOrder="0" pos="1010 120 60 130" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="8c39ab7393370d86" memberName="lfo_minus_3" virtualName=""
-              explicitFocusOrder="0" pos="900 480 30 30" tooltip="Decrease the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="-"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="28468341a9b0ce40" memberName="lfo_plus_3" virtualName=""
-              explicitFocusOrder="0" pos="930 480 30 30" tooltip="Increase the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="+"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="a57c998e83ac1511" memberName="lfo_plus_2" virtualName=""
-              explicitFocusOrder="0" pos="930 300 30 30" tooltip="Increase the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="+"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="82bb010a8b22d92" memberName="lfo_minus_2" virtualName=""
-              explicitFocusOrder="0" pos="900 300 30 30" tooltip="Decrease the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="-"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b9c09c85829baa4c" memberName="lfo_plus_1" virtualName=""
-              explicitFocusOrder="0" pos="930 120 30 30" tooltip="Increase the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="+"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ff7ac483f2e2c468" memberName="lfo_minus_1" virtualName=""
-              explicitFocusOrder="0" pos="900 120 30 30" tooltip="Decrease the LFO speed in steps."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="-"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="DL" id="89a933c800933b8f" memberName="label_band_hz_5"
          virtualName="" explicitFocusOrder="0" pos="1085 636 50 30" textCol="ff050505"
@@ -4862,18 +4943,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
                     explicitFocusOrder="0" pos="1340r 1010r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new SpeedMultiSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="f1f5ea6816f11113" memberName="morpher_4" virtualName=""
-                    explicitFocusOrder="0" pos="380r 680 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,3)"/>
-  <GENERICCOMPONENT name="" id="6319f13308da05dc" memberName="morpher_3" virtualName=""
-                    explicitFocusOrder="0" pos="440r 680 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="d7bed13dc76b014a" memberName="morpher_2" virtualName=""
-                    explicitFocusOrder="0" pos="320r 680 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="ab7bfe937e5ada83" memberName="morpher_1" virtualName=""
-                    explicitFocusOrder="0" pos="260r 680 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new MorphSLConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
                     explicitFocusOrder="0" pos="90r 610r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new WAVESlConfig(synth_data,2)"/>
@@ -5120,18 +5189,9 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="17d8341f811bcb5a" memberName="osc_3" virtualName=""
                     explicitFocusOrder="0" pos="160r 610r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new OSCSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="2a31f2713e80bed3" memberName="lfo_1" virtualName=""
-                    explicitFocusOrder="0" pos="900 250r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="ffb8076636239778" memberName="flt_cutoff_1" virtualName=""
                     explicitFocusOrder="0" pos="1080 250r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="e36ec1f3ea5f1edf" memberName="lfo_2" virtualName=""
-                    explicitFocusOrder="0" pos="900 430r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,1)"/>
-  <GENERICCOMPONENT name="" id="10b142e0e3bd1edf" memberName="lfo_3" virtualName=""
-                    explicitFocusOrder="0" pos="900 610r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new LFOSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="9eb8d35cf54eee3" memberName="flt_cutoff_2" virtualName=""
                     explicitFocusOrder="0" pos="1140r 430r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FCutoffSLConfig(synth_data,1)"/>
@@ -5231,26 +5291,6 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="810 819 120 30" tooltip="Switch to the FX section."
               bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FX"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
-  <LABEL name="" id="af640d06672c6a96" memberName="label_morph_osc" virtualName=""
-         explicitFocusOrder="0" pos="200 810 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="OSC" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="6cf55c2697d84492" memberName="label_morph_flt" virtualName=""
-         explicitFocusOrder="0" pos="260 810 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FLT" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="31349ce13448848e" memberName="label_morph_fx" virtualName=""
-         explicitFocusOrder="0" pos="380 810 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="FX" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="1e86fc07c2fe9e40" memberName="label_morph_arp" virtualName=""
-         explicitFocusOrder="0" pos="320 810 60 30" textCol="ffff3b00"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="ARP" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
               virtualName="" explicitFocusOrder="0" pos="30 10 60 30" tooltip="Turns the CTRL mode on or off.&#10;&#10;In CTRL mode are all values visble.&#10;&#10;Hold down CTRL/CMD on your keyboard and drag a slider to control it in velocity mode.&#10;&#10;Hold down CTRL/CMD on your keyboard and press + or - to resize the user interface. Press F11 to toggle fullscreen mode."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
@@ -5472,22 +5512,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="M  O  N  O  P  L  U  G  S"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
-  <TEXTBUTTON name="" id="ebfbc2e7bb21bbdc" memberName="button_edit_mfo_1"
-              virtualName="" explicitFocusOrder="0" pos="260r 780 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="b0af912df34ced45" memberName="button_edit_mfo_2"
-              virtualName="" explicitFocusOrder="0" pos="320r 780 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="bc837211a67f57ac" memberName="button_edit_mfo_3"
-              virtualName="" explicitFocusOrder="0" pos="380r 780 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="971beb8b5ba3cae1" memberName="button_edit_mfo_4"
-              virtualName="" explicitFocusOrder="0" pos="440r 780 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
-              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="" id="879633575acf68ee" memberName="label_reverb" virtualName=""
          explicitFocusOrder="0" pos="1090 680 180 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
@@ -5498,33 +5522,6 @@ BEGIN_JUCER_METADATA
          edTextCol="ffff3b00" edBkgCol="0" labelText="FX SECTION" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
-  <GENERICCOMPONENT name="" id="d2e2be5869047a2e" memberName="flt_input_13" virtualName=""
-                    explicitFocusOrder="0" pos="380r 610r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,2)"/>
-  <GENERICCOMPONENT name="" id="7371ee7afd1877b4" memberName="flt_input_12" virtualName=""
-                    explicitFocusOrder="0" pos="320r 610r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,1)"/>
-  <GENERICCOMPONENT name="" id="f3d6d4daa7867cda" memberName="flt_input_11" virtualName=""
-                    explicitFocusOrder="0" pos="260r 610r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,2,0)"/>
-  <GENERICCOMPONENT name="" id="cc59ad897708e932" memberName="flt_input_6" virtualName=""
-                    explicitFocusOrder="0" pos="200 300 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,0)"/>
-  <GENERICCOMPONENT name="" id="30402f9a5bf56bfb" memberName="flt_input_7" virtualName=""
-                    explicitFocusOrder="0" pos="320r 430r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,1)"/>
-  <GENERICCOMPONENT name="" id="e54fd10f87874627" memberName="flt_input_8" virtualName=""
-                    explicitFocusOrder="0" pos="380r 430r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,1,2)"/>
-  <GENERICCOMPONENT name="" id="9abcdbe824977dbc" memberName="flt_input_3" virtualName=""
-                    explicitFocusOrder="0" pos="320 250r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,2)"/>
-  <GENERICCOMPONENT name="" id="6af45f57190e5260" memberName="flt_input_2" virtualName=""
-                    explicitFocusOrder="0" pos="320r 250r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,1)"/>
-  <GENERICCOMPONENT name="" id="ecbcc81adebe9850" memberName="flt_input_1" virtualName=""
-                    explicitFocusOrder="0" pos="200 120 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new InputSlConfig(synth_data,0,0)"/>
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
                     explicitFocusOrder="0" pos="1010r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new EQSlConfig(synth_data,2)"/>

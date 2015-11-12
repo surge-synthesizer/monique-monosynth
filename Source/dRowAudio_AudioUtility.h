@@ -81,9 +81,13 @@ forcedinline static int64 msToSamples (double timeMs, double sampleRate) noexcep
 {
     return (int64) (timeMs * 0.001 * sampleRate);
 }
-forcedinline static int64 msToSamplesFast (float timeMs, float sampleRate) noexcept
+forcedinline static int64 msToSamplesFast64 (float timeMs, float sampleRate) noexcept
 {
     return (int64) (timeMs * 0.001f * sampleRate);
+}
+forcedinline static int msToSamplesFast (float timeMs, float sampleRate) noexcept
+{
+    return timeMs * 0.001f * sampleRate;
 }
 
 /** Converts a number of samples to a time in ms for a given sample rate.

@@ -155,7 +155,7 @@ private:
     friend class RuntimeNotifyer;
     COLD virtual void set_sample_rate( double sr_ ) noexcept;
 public:
-    inline double get_sample_rate() const noexcept 
+    inline double get_sample_rate() const noexcept
     {
         return sample_rate;
     }
@@ -281,9 +281,9 @@ struct RuntimeInfo
             const int samples_per_clock;
 
             SyncPosPair(int pos_in_buffer_, int samples_per_clock_) noexcept
-                :
-                pos_in_buffer(pos_in_buffer_),
-                samples_per_clock(samples_per_clock_)
+:
+            pos_in_buffer(pos_in_buffer_),
+                          samples_per_clock(samples_per_clock_)
             {}
             ~SyncPosPair() noexcept {}
         };
@@ -312,8 +312,8 @@ struct RuntimeInfo
         }
         bool has_clocks_inside() const noexcept
         {
-	  return clock_informations.size();
-	}
+            return clock_informations.size();
+        }
         int get_last_samples_per_clock() const noexcept
         {
             return last_samples_per_clock;
@@ -324,7 +324,7 @@ struct RuntimeInfo
         }
         void clear() noexcept
         {
-	    const int size = clock_informations.size();
+            const int size = clock_informations.size();
             if( size )
             {
                 last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
@@ -332,7 +332,8 @@ struct RuntimeInfo
             clock_informations.clearQuick();
         }
 
-        inline ClockSync() noexcept : last_samples_per_clock(0)  {}
+    inline ClockSync() noexcept :
+        last_samples_per_clock(0)  {}
         inline ~ClockSync() noexcept {}
     } clock_sync_information;
 
@@ -370,23 +371,16 @@ class SmoothManager : public RuntimeListener, DeletedAtShutdown
     //==========================================================================
     friend class MoniqueSynthData;
     friend class ContainerDeletePolicy< SmoothManager >;
-    COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept;
-    COLD ~SmoothManager() noexcept;
-public:
-    int morph_glide_time[SUM_MORPHER_GROUPS];
-    int morph_glide_counter[SUM_MORPHER_GROUPS];
-    bool last_morph_was_automated[SUM_MORPHER_GROUPS];
-    float last_power_of_right[SUM_MORPHER_GROUPS];
-    float from_power_of_right[SUM_MORPHER_GROUPS];
-    mono_AudioSampleBuffer<SUM_MORPHER_GROUPS> glided_power_of_right_buffer;
-    void sample_rate_or_block_changed() noexcept override
-    {
-        glided_power_of_right_buffer.setSize( block_size );
-    }
+COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
+    RuntimeListener(notifyer_), notifyer(notifyer_) {}
+    COLD ~SmoothManager() noexcept {}
+
+    void sample_rate_or_block_changed() noexcept override {}
 
 public:
-    void smooth( int num_samples_, int glide_motor_time_in_ms_ ) noexcept;
-    void automated_morph( bool do_really_morph_, int id_, const float* morph_amount_, int num_samples_, int morph_motor_time_in_ms_, MorphGroup*morph_group_ ) noexcept;
+    void smooth_and_morph( bool do_really_morph_, const float* morph_amount_, int num_samples_,
+                           int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
+                           MorphGroup*morph_group_ ) noexcept;
     void reset() noexcept;
 
 public:
@@ -397,78 +391,222 @@ public:
 //==============================================================================
 //==============================================================================
 class ENV;
+class LinearSmoother
+{
+protected:
+    float currentValue, target, step, lastValue;
+    int countdown, stepsToTarget;
+    bool option;
+
+public:
+    //==========================================================================
+    inline float tick() noexcept
+    {
+        if( countdown > 0 )
+        {
+            if( --countdown < 1 )
+            {
+                currentValue = target;
+                lastValue = currentValue;
+            }
+            else
+            {
+                currentValue += step;
+                lastValue = currentValue;
+            }
+        }
+
+        return lastValue;
+    }
+    inline bool is_up_to_date() const noexcept
+    {
+        return countdown == 0;
+    }
+    //==========================================================================
+    inline float get_last_value() noexcept
+    {
+        return lastValue;
+    }
+    //==========================================================================
+    inline void set_value (float newValue) noexcept
+    {
+        if (target != newValue)
+        {
+            target = newValue;
+            countdown = stepsToTarget;
+            step = (target - currentValue) / countdown;
+        }
+    }
+
+    //==============================================================================
+    inline void reset (float sampleRate, float fade_in_ms_) noexcept
+    {
+        stepsToTarget = jmax(10,int(msToSamplesFast(fade_in_ms_,sampleRate)));
+        currentValue = target;
+        countdown = 0;
+    }
+    inline void reset_coefficients(float sampleRate, float fade_in_ms_) noexcept
+    {
+        stepsToTarget = jmax(10,int(msToSamplesFast(fade_in_ms_,sampleRate)));
+    }
+    
+    //==============================================================================
+    inline void set_info_flag( bool state_ ) noexcept
+    {
+        option = state_;
+    }
+    inline bool get_info_flag() const noexcept
+    {
+        return option;
+    }
+public:
+    //==============================================================================
+    COLD LinearSmoother() noexcept
+:
+    currentValue(0),
+                 target(0),
+                 step(0),
+                 countdown(-1),
+                 stepsToTarget(0),
+                 lastValue(0),
+                 option(false)
+    {}
+
+    COLD ~LinearSmoother() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoother)
+};
+class LinearSmootherZeroToOne : public LinearSmoother
+{
+    int glide_countdown;
+public:
+    //==============================================================================
+    inline float tick() noexcept
+    {
+        if( countdown > 0 )
+        {
+            if( --countdown < 1 )
+            {
+                currentValue = target;
+                lastValue = currentValue;
+            }
+            else
+            {
+                currentValue += step;
+                lastValue = currentValue;
+            }
+
+            if( lastValue > 1 )
+            {
+                lastValue = 1;
+            }
+            else if( lastValue < 0 )
+            {
+                lastValue = 0;
+            }
+        }
+
+        return lastValue;
+    }
+
+    inline float glide_tick(float to_value) noexcept
+    {
+        if(glide_countdown > 0)
+        {
+            if( stepsToTarget == glide_countdown )
+            {
+                countdown = glide_countdown;
+            }
+
+            target = to_value;
+            step = (target - currentValue) / countdown;
+
+            --glide_countdown;
+            LinearSmootherZeroToOne::tick();
+        }
+        else
+        {
+            currentValue = to_value;
+            lastValue = currentValue;
+        }
+
+        return lastValue;
+    }
+
+    inline void reset_glide_countdown() noexcept
+    {
+        glide_countdown = stepsToTarget;
+    }
+
+    //==============================================================================
+COLD LinearSmootherZeroToOne() noexcept :
+    glide_countdown(-1) {}
+    COLD ~LinearSmootherZeroToOne() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmootherZeroToOne)
+};
+
 class SmoothedParameter : public RuntimeListener
 {
-    friend class SmoothManager;
-
     SmoothManager*const smooth_manager;
 
     mono_AudioSampleBuffer<1> values;
-    mono_AudioSampleBuffer<1> values_modulated;
+    mono_AudioSampleBuffer<1> modulation_power;
 
+public:
     Parameter*const param_to_smooth;
     float const max_value;
     float const min_value;
 
-    float last_value;
-    float last_target;
-    float difference_per_sample;
-    int samples_left;
-    bool buffer_is_linear_up_to_date_filled;
-
-    class ModulatorSignalSmoother
-    {
-        float samples_left_max;
-        int samples_left;
-
-    public:
-        void reset( float sample_rate_ ) noexcept;
-        float attack( float current_modulator_signal_ ) noexcept;
-        float release_amount() noexcept;
-        bool is_released() const noexcept;
-
-        COLD ModulatorSignalSmoother() noexcept;
-        COLD ~ModulatorSignalSmoother() noexcept;
-    } modulator_smoother;
-    float last_modulator;
-    bool was_modulated_last_time;
-
-    float amp_switch_samples_left_max;
-    int amp_switch_samples_left;
-    float last_amp_automated;
-    float last_amp_valued;
-    bool was_automated_last_time;
-    bool is_smoothable;
-
+private:
+    //==========================================================================
     COLD void sample_rate_or_block_changed() noexcept override;
-
+    
+private:
+    //==========================================================================
+    LinearSmoother simple_smoother;
 public:
-    bool is_ready_for_smooth() const noexcept 
-    {
-      return is_smoothable;
-    }
-    void smooth( int glide_motor_time_in_samples, int num_samples_ ) noexcept;
+    void simple_smooth( int smooth_motor_time_in_ms_, int num_samples_ ) noexcept;
+			   
+private:
+    //==========================================================================
+    LinearSmoother left_morph_smoother;
+    LinearSmoother right_morph_smoother;
+    LinearSmoother left_modulation_morph_smoother;
+    LinearSmoother right_modulation_morph_smoother;
+
+    LinearSmootherZeroToOne morph_power_smoother;
+public:
+    void smooth_and_morph( bool is_automated_morph_,
+                           int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
+                           const float* morph_amp_buffer_, float morph_slider_state_,
+                           const Parameter*left_source_param_, const Parameter*right_source_param_, int num_samples_ ) noexcept;
+private:
+    //==========================================================================
+    LinearSmootherZeroToOne modulation_power_smoother;
+public:
     void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
+
+private:
+    //==========================================================================
+    LinearSmootherZeroToOne amp_power_smoother;
+public:
     void process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
 
-    inline const float* get_smoothed_buffer() const noexcept
+public:
+    //==========================================================================
+    inline const float* get_smoothed_value_buffer() const noexcept
     {
         return values.getReadPointer();
     }
-    inline const float* get_smoothed_modulated_buffer() const noexcept
+    void reset() noexcept
     {
-        return values_modulated.getReadPointer();
+        // TODO
     }
-    inline float operator[] ( int sid ) const noexcept
-    {
-        return values.getReadPointer()[sid];
-    }
-    void reset() noexcept {}
 
+    //==========================================================================
     COLD SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept;
     COLD virtual ~SmoothedParameter() noexcept;
-
-    COLD void do_smooth( bool state_ ) noexcept;
     COLD void set_offline() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
@@ -488,12 +626,25 @@ struct LFOData
 {
     Parameter speed;
 
+    Parameter wave;
+    SmoothedParameter wave_smoother;
+
+    Parameter phase_shift;
+    SmoothedParameter phase_shift_smoother;
+
     //==========================================================================
-    COLD LFOData( SmoothManager*smooth_manager_, int id_ ) noexcept;
+    COLD LFOData( SmoothManager*smooth_manager_, int id_, const char*name_ ) noexcept;
     COLD ~LFOData() noexcept;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOData)
 };
+static inline void copy( LFOData* dest_, const LFOData* src_ ) noexcept
+{
+    dest_->speed = src_->speed;
+    dest_->wave = src_->wave;
+    dest_->phase_shift = src_->phase_shift;
+}
+
 static inline bool is_integer( float value_ ) noexcept
 {
     return value_ == int(value_);
@@ -696,32 +847,6 @@ static inline String get_lfo_speed_multi_as_text( float speed_, RuntimeInfo*info
 //==============================================================================
 //==============================================================================
 //==============================================================================
-struct MFOData
-{
-    Parameter speed;
-
-    Parameter wave;
-    SmoothedParameter wave_smoother;
-
-    Parameter phase_shift;
-    SmoothedParameter phase_shift_smoother;
-
-    //==========================================================================
-    COLD MFOData( SmoothManager*const smooth_manager_, int id_ ) noexcept;
-    COLD ~MFOData() noexcept;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MFOData)
-};
-static inline void copy( MFOData* dest_, const MFOData* src_ ) noexcept
-{
-    dest_->speed = src_->speed;
-    dest_->wave = src_->wave;
-    dest_->phase_shift = src_->phase_shift;
-}
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -820,7 +945,7 @@ static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
 static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
 {
     // exp(3)-1 19.0855
-    // exp(4)-1 
+    // exp(4)-1
     return MAX_CUTOFF * ((exp(cutoff_slider_value_*4)-1)/53.5982) + MIN_CUTOFF;
 }
 struct FilterData
@@ -851,7 +976,7 @@ struct FilterData
     ArrayOfParameters input_sustains;
     OwnedArray<SmoothedParameter> input_smoothers;
     ArrayOfBoolParameters input_holds;
-    
+
     OwnedArray<ENVData> input_envs;
 
     ENVData*const env_data;
@@ -1113,9 +1238,9 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
         return "6/8";
     case 15 :
         return "7/8";
-    //case 16 :
+        //case 16 :
     default :
-	return "1/1";
+        return "1/1";
     }
 }
 
@@ -1248,15 +1373,18 @@ class MorphGroup : public Timer, ParameterListener
 
 public:
     //==========================================================================
+    inline int indexOf( const Parameter*param_ ) const noexcept {
+        return params.indexOf( const_cast<Parameter*>(param_) );
+    }
+    inline const Parameter* get_left_param( int index_ ) const noexcept {
+        return left_morph_source->params.getUnchecked(index_);
+    }
+    inline const Parameter* get_right_param( int index_ ) const noexcept {
+        return right_morph_source->params.getUnchecked(index_);
+    }
+
     inline void morph( float morph_amount_ ) noexcept;
     inline void morph_switchs( bool left_right_ ) noexcept;
-
-    // return the last last_power_of_right
-    inline void morph( const Parameter* original_param_,
-                       float* value_target_buffer_,
-                       float* mod_target_buffer_,
-                       const float* morph_amount_,
-                       int num_samples_ ) noexcept;
 
 private:
     //==========================================================================
@@ -1300,7 +1428,7 @@ public:
 //==============================================================================
 //==============================================================================
 #ifdef IS_STANDALONE
-#define THREAD_LIMIT 4
+#define THREAD_LIMIT 3
 #else
 #define THREAD_LIMIT 0
 #endif
@@ -1391,7 +1519,7 @@ struct MoniqueSynthData : ParameterListener
     ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;
-    OwnedArray< MFOData > mfo_datas;
+    OwnedArray< LFOData > mfo_datas;
     OwnedArray< OSCData > osc_datas;
     ScopedPointer<FMOscData> fm_osc_data;
     OwnedArray< FilterData > filter_datas;
@@ -1403,6 +1531,7 @@ struct MoniqueSynthData : ParameterListener
 private:
     // ==============================================================================
     Array< Parameter* > saveable_parameters;
+    Array< Parameter* > automateable_parameters;
     Array< float > saveable_backups;
     Array< Parameter* > global_parameters;
     Array< Parameter* > all_parameters;
@@ -1413,7 +1542,7 @@ public:
     // TODO
     inline Array< Parameter* >& get_atomateable_parameters() noexcept
     {
-        return saveable_parameters;
+        return automateable_parameters;
     }
     inline Array< Parameter* >& get_global_parameters() noexcept
     {
@@ -1575,7 +1704,7 @@ public:
 public:
     // ==============================================================================
     void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
-    void get_full_mfo( MFOData&mfo_data_,Array< float >& curve ) noexcept;
+    void get_full_mfo( LFOData&mfo_data_,Array< float >& curve ) noexcept;
 };
 
 //==============================================================================
@@ -1589,16 +1718,17 @@ public:
 //==============================================================================
 class SHARED
 #ifdef IS_STANDALONE
-	: public DeletedAtShutdown
+    : public DeletedAtShutdown
 #endif
 {
 public:
     int num_instances ;
     ENVData* env_clipboard;
-    MFOData* mfo_clipboard;
+    LFOData* mfo_clipboard;
     juce_DeclareSingleton( SHARED, true );
 
     SHARED() : num_instances(0), env_clipboard(nullptr),mfo_clipboard(nullptr) {}
 };
 
 #endif
+

@@ -933,7 +933,7 @@ static inline float get_percent_default_modulation_value( const Parameter* param
 }
 
 //==============================================================================
-static inline float get_last_modulation_amount( const ModulatedParameter* param_ ) noexcept
+static inline float get_last_modulation_amount( const Parameter* param_ ) noexcept
 {
     return param_->get_runtime_info().get_last_modulation_amount();
 }

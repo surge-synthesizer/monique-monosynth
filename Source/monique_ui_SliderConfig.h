@@ -1038,7 +1038,7 @@ class InputSlConfig : public ModulationSliderConfigBase
         {
             if( is_on )
             {
-                value = synth_data->voice->get_flt_input_env_amp(filter_id,input_id);
+                value = get_last_modulation_amount(input_sustain);
             }
             else
             {
@@ -2282,6 +2282,8 @@ public:
 class EnvLfoSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const adsr_lfo_mix;
+    
+    MoniqueSynthData*const synth_data;
 
     bool is_opaque() const noexcept override
     {
@@ -2290,6 +2292,10 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override
     {
         return true;
+    }
+    bool action_keep_env_pop_open_for( const LFOData*const lfo_data_ ) const noexcept override
+    {
+        return lfo_data_ == synth_data->mfo_datas[0] or lfo_data_ == synth_data->mfo_datas[1] or lfo_data_ == synth_data->mfo_datas[2];
     }
 
     //==============================================================================
@@ -2407,7 +2413,8 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
 public:
     EnvLfoSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        adsr_lfo_mix( &synth_data_->filter_datas[id_]->adsr_lfo_mix )
+        adsr_lfo_mix( &synth_data_->filter_datas[id_]->adsr_lfo_mix ),
+        synth_data( synth_data_ )
     {}
 
     JUCE_LEAK_DETECTOR (EnvLfoSlConfig)
@@ -2492,10 +2499,12 @@ class LFOSlConfig : public ModulationSliderConfigBase
     {
     return sync;
     }
+    */
     StringRef get_top_button_text() const noexcept override
     {
-    return "IN-SYNC";
+    return bottom_text;
     }
+    /*
     float get_top_button_amp() const noexcept override
     {
     return NO_TOP_BUTTON_AMP;
@@ -2504,11 +2513,11 @@ class LFOSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return bottom_text;
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
     return "";
@@ -5396,7 +5405,7 @@ class EQSlConfig : public ModulationSliderConfigBase
         {
             if( is_on )
             {
-                value = synth_data->voice->get_band_env_amp(id);
+                value = get_last_modulation_amount( velocity );
             }
             else
             {
@@ -5677,13 +5686,17 @@ class MorphSLConfig : public ModulationSliderConfigBase
     return false;
     }
     */
-    bool action_keep_env_pop_open_for( const MFOData*const  ) const noexcept override
+    bool action_keep_env_pop_open_for( const LFOData*const lfo_data_ ) const noexcept override
     {
-        return true;
+        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or lfo_data_ == synth_data->lfo_datas[2];
     }
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::MORPH_THEME;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
     }
 
     //==============================================================================
@@ -5767,11 +5780,11 @@ class MorphSLConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BOTTOM BUTTON
+    /*
     StringRef get_bottom_button_text() const noexcept override
     {
         return "MORPH";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
         return "LFO";

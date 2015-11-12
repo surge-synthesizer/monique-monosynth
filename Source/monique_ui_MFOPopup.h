@@ -25,7 +25,7 @@
 
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;
-class MFOData;
+class LFOData;
 //[/Headers]
 
 
@@ -47,11 +47,13 @@ class Monique_Ui_MFOPopup  : public Component,
 {
 public:
     //==============================================================================
-    Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, MFOData*const mfo_data_);
+    Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, LFOData*const mfo_data_, COLOUR_THEMES theme_);
     ~Monique_Ui_MFOPopup();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+    COLOUR_THEMES theme;
+    
     Component* related_to_comp;
     Monique_Ui_DualSlider*owner_slider;
     void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);
@@ -60,7 +62,7 @@ public:
     void timerCallback() override;
     int callbacks;
 
-    const MFOData*const is_open_for() const noexcept
+    const LFOData*const is_open_for() const noexcept
     {
       return mfo_data;
     }
@@ -76,7 +78,7 @@ private:
 
     Array< float > curve;
     Monique_Ui_Mainwindow*const parent;
-    MFOData*const mfo_data;
+    LFOData*const mfo_data;
     Array< Component* > observed_comps;
 
     void mouseDown (const MouseEvent& event) override;

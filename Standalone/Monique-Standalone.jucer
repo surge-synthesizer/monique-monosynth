@@ -254,6 +254,6 @@
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"
                JUCE_USE_XSHM="enabled" JUCE_USE_XRENDER="enabled" JUCE_USE_XCURSOR="enabled"
-               DROWAUDIO_USE_CURL="disabled" JUCE_FORCE_DEBUG="enabled" JUCE_LOG_ASSERTIONS="enabled"
-               JUCE_CHECK_MEMORY_LEAKS="enabled"/>
+               DROWAUDIO_USE_CURL="disabled" JUCE_FORCE_DEBUG="disabled" JUCE_LOG_ASSERTIONS="disabled"
+               JUCE_CHECK_MEMORY_LEAKS="disabled"/>
 </JUCERPROJECT>
