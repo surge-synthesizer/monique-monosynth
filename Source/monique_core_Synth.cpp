@@ -2717,7 +2717,7 @@ class AnalogFilter : public RuntimeListener
     float oldx;
     float oldy1,oldy2,oldy3;
 
-    float cutoff, res;
+    float cutoff, res, res_original;
 
     bool force_update;
     int zero_counter;
@@ -2728,11 +2728,11 @@ public:
     inline bool update(float resonance_, float cutoff_) noexcept
     {
         bool success = false;
-        resonance_ = jmax(0.00001f, resonance_*=0.99999);
-        if( force_update or ( cutoff != cutoff_ || res != resonance_ ) )
+        if( force_update or ( cutoff != cutoff_ || res_original != resonance_ ) )
         {
             cutoff = cutoff_;
-            res = resonance_;
+            res_original = resonance_;
+            res = jmax(0.00001f, resonance_*=0.99999);
             success = true;
 
             force_update = false;
@@ -2741,9 +2741,10 @@ public:
     }
     inline void update_with_fixed_cutoff(float resonance_, float cutoff_) noexcept
     {
-        if( force_update or ( cutoff != cutoff_ || res != resonance_ ) )
+        if( force_update or ( cutoff != cutoff_ || res_original != resonance_ ) )
         {
             cutoff = cutoff_;
+            res_original = resonance_;
             res = resonance_;
             calc_coefficients(cutoff);
 
@@ -2771,90 +2772,131 @@ public:
         y3 = other_.y3;
         y4 = other_.y4;
     }
-#define MONO_UNDENORMALISE(x)   x += 1.0f; x -= 1.0f;
+#define MONO_UNDENORMALISE(x)
+
+///x += 1.0f; x -= 1.0f;
     //==========================================================================
     inline float processLow(float input_and_worker_) noexcept
     {
-        input_and_worker_ -= r*y4;
+        if( input_and_worker_ != 0 )
+        {
+            zero_counter = 0;
+        }
+        else
+        {
+            ++zero_counter;
+        }
 
-        //Four cascaded onepole filters (bilinear transform)
-        y1= input_and_worker_*p + oldx*p - k*y1;
-        MONO_UNDENORMALISE (y1);
-        y2=y1*p + oldy1*p - k*y2;
-        MONO_UNDENORMALISE (y2);
-        y3=y2*p + oldy2*p - k*y3;
-        MONO_UNDENORMALISE (y3);
-        y4=y3*p + oldy3*p - k*y4;
-        MONO_UNDENORMALISE (y4);
+        if( zero_counter < 50 )
+        {
+            input_and_worker_ -= r*y4;
+            MONO_UNDENORMALISE (input_and_worker_);
 
-        //Clipper band limited sigmoid
-        y4 -= (y4*y4*y4) /6;
-        MONO_UNDENORMALISE (y4);
+            //Four cascaded onepole filters (bilinear transform)
+            y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
+            y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
+            y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
+            y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
-        oldx = input_and_worker_;
-        oldy1 = y1;
-        oldy2 = y2;
-        oldy3 = y3;
+            //Clipper band limited sigmoid
+            y4 -= (y4*y4*y4) /6;
+            MONO_UNDENORMALISE (y4);
 
-        input_and_worker_ = y4;
+            oldx = input_and_worker_;
+            oldy1 = y1;
+            oldy2 = y2;
+            oldy3 = y3;
 
-        return soft_clipp_greater_1_2(input_and_worker_);
+            input_and_worker_ = soft_clipp_greater_1_2(y4);
+        }
+
+        return input_and_worker_;
     }
     inline float processLowResonance(float input_and_worker_) noexcept
     {
-        // process input
-        input_and_worker_ -= r*y4;
+        if( input_and_worker_ != 0 )
+        {
+            zero_counter = 0;
+        }
+        else
+        {
+            ++zero_counter;
+        }
 
-        //Four cascaded onepole filters (bilinear transform)
-        y1= input_and_worker_*p + oldx*p - k*y1;
-        MONO_UNDENORMALISE (y1);
-        y2=y1*p + oldy1*p - k*y2;
-        MONO_UNDENORMALISE (y2);
-        y3=y2*p + oldy2*p - k*y3;
-        MONO_UNDENORMALISE (y3);
-        y4=y3*p + oldy3*p - k*y4;
-        MONO_UNDENORMALISE (y4);
+        if( zero_counter < 50 )
+        {
+            // process input
+            input_and_worker_ -= r*y4;
+            MONO_UNDENORMALISE (input_and_worker_);
 
-        //Clipper band limited sigmoid
-        y4 -= (y4*y4*y4) /6;
-        MONO_UNDENORMALISE (y4);
+            //Four cascaded onepole filters (bilinear transform)
+            y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
+            y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
+            y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
+            y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
-        oldx = input_and_worker_;
-        oldy1 = y1;
-        oldy2 = y2;
-        oldy3 = y3;
+            //Clipper band limited sigmoid
+            y4 -= (y4*y4*y4) /6;
+            MONO_UNDENORMALISE (y4);
 
-        input_and_worker_ = y4;
+            oldx = input_and_worker_;
+            oldy1 = y1;
+            oldy2 = y2;
+            oldy3 = y3;
 
-        return soft_clipp_greater_1_2(sample_mix( input_and_worker_ , y3 * res ));
+            input_and_worker_ = soft_clipp_greater_1_2(sample_mix( y4 , y3 * res ));
+        }
+
+        return input_and_worker_;
     }
     inline float processHighResonance(float input_and_worker_) noexcept
     {
-        // process input
-        input_and_worker_ -= r*y4;
+        if( input_and_worker_ != 0 )
+        {
+            zero_counter = 0;
+        }
+        else
+        {
+            ++zero_counter;
+        }
 
-        //Four cascaded onepole filters (bilinear transform)
-        y1= input_and_worker_*p + oldx*p - k*y1;
-        MONO_UNDENORMALISE (y1);
-        y2=y1*p + oldy1*p - k*y2;
-        MONO_UNDENORMALISE (y2);
-        y3=y2*p + oldy2*p - k*y3;
-        MONO_UNDENORMALISE (y3);
-        y4=y3*p + oldy3*p - k*y4;
-        MONO_UNDENORMALISE (y4);
+        if( zero_counter < 50 )
+        {
+            // process input
+            input_and_worker_ -= r*y4;
+            MONO_UNDENORMALISE (input_and_worker_);
 
-        //Clipper band limited sigmoid
-        y4 -= (y4*y4*y4) /6;
-        MONO_UNDENORMALISE (y4);
+            //Four cascaded onepole filters (bilinear transform)
+            y1= input_and_worker_*p + oldx*p - k*y1;
+            MONO_UNDENORMALISE (y1);
+            y2=y1*p + oldy1*p - k*y2;
+            MONO_UNDENORMALISE (y2);
+            y3=y2*p + oldy2*p - k*y3;
+            MONO_UNDENORMALISE (y3);
+            y4=y3*p + oldy3*p - k*y4;
+            MONO_UNDENORMALISE (y4);
 
-        oldx = input_and_worker_;
-        oldy1 = y1;
-        oldy2 = y2;
-        oldy3 = y3;
+            //Clipper band limited sigmoid
+            y4 -= (y4*y4*y4) /6;
+            MONO_UNDENORMALISE (y4);
 
-        input_and_worker_ = input_and_worker_-y4;
+            oldx = input_and_worker_;
+            oldy1 = y1;
+            oldy2 = y2;
+            oldy3 = y3;
 
-        return hard_clipper_1(input_and_worker_);
+            input_and_worker_ = hard_clipper_1( input_and_worker_-y4 );
+        }
+
+        return input_and_worker_;
     }
 
     //==========================================================================
@@ -2903,7 +2945,7 @@ public:
                      y1(0),y2(0),y3(0),y4(0),
                      oldx(0),oldy1(0),oldy2(0),oldy3(0),
 
-                     cutoff(1000), res(1),
+                     cutoff(1000), res(1), res_original(0.99999),
 
                      force_update(true),
                      zero_counter(0)
