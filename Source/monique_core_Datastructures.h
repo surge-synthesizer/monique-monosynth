@@ -1486,6 +1486,8 @@ struct MoniqueSynthData : ParameterListener
     SmoothedParameter delay_smoother;
     Parameter delay_pan;
     SmoothedParameter delay_pan_smoother;
+    Parameter delay_refexion;
+    SmoothedParameter delay_refexion_smoother;
     Parameter effect_bypass;
     SmoothedParameter effect_bypass_smoother;
     Parameter shape;

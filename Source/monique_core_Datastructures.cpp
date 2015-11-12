@@ -1617,6 +1617,15 @@ master_data( master_data_ ),
                  generate_short_human_name("FX","delay")
              ),
              delay_smoother(smooth_manager,&delay),
+             delay_refexion
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
+                 generate_short_human_name("FX","delay_refexion")
+             ),
+             delay_refexion_smoother(smooth_manager,&delay_refexion),
              delay_pan
              (
                  MIN_MAX( -1, 1 ),
