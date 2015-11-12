@@ -32,7 +32,9 @@ CHANGES 0.9.8
 - fix: env shape was not morphable
 - fix: sustain input was a bit buggy
 - add: popup for lfo, add square and offset option to the lfo (same like the mfo)
-- add back: morph button toggles
+- add: back: morph button toggles
+->>> not converter build -> load an old program and store it again-> converted
+- fix: stops motor morphs on program change
 
 NOTES:
 
@@ -61,25 +63,25 @@ UI
 
 ENGINE
 ****************************************************************************
-- static noise on plugin startup
-- if you switch to another program and a "motor" morph is currently running -> the "motor" morph does not stop
-- add: panic
-- midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
-- add midi support for some for some buttons
-- improve: reverb: stereo effects
-- improve: delay: stereo effects
-- share global setting over plugin instances
 - delay time reflexion, sync to beat, bis 500ms, triolisch
-- eq's kratzen beim morphen / fx morph crackls, also mehr ein parameter
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
-- midi allow notes to control buttons
-- osc sync
+- osc sync checken (+24)
 - env speed not only ms sondern auch teiler
 - add back sub-steps lfo
 - leak context menu popup
-- speedänderung stanadlon mit eigener clock sollte nicht syncen!
+- speedänderung stanadlone mit eigener clock sollte nicht syncen!
+- static noise on plugin startup
+- improve: reverb: stereo effects
+- improve: delay: stereo effects
+- share global setting over plugin instances
+
+MIDI 
+****************************************************************************
+- midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
+- add midi support for some for some buttons
+- midi allow notes to control buttons
 
 PROGRAMS
 ****************************************************************************
@@ -146,6 +148,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- add: panic
 - 128 morph preset per slider or 128 mesurement points
 - add: for morph: option toggle buttons on absolutely left or right
 - trigger lfo by lfo
