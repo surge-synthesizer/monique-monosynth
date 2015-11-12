@@ -64,6 +64,7 @@ UI
 ENGINE
 ****************************************************************************
 - delay time reflexion, sync to beat, bis 500ms, triolisch
+
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step

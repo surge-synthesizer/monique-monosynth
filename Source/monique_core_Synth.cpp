@@ -3592,13 +3592,14 @@ public:
             if( id != FILTER_3 )
             {
                 executer_1->try_run_paralel();
-                executer_2->exec();
-                delete executer_2;
+                executer_2->try_run_paralel();
                 executer_3->exec();
                 delete executer_3;
 
                 while( executer_1->isWorking() ) {}
                 delete executer_1;
+                while( executer_2->isWorking() ) {}
+                delete executer_2;
             }
             else
             {
