@@ -69,12 +69,11 @@
       </MODULEPATHS>
     </VS2008>
     <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" bigIcon="rVgowdy"
-                extraCompilerFlags="-std=gnu++0x&#10;-Wreorder -Wuninitialized -Wunused-parameter -Wstrict-aliasing -Wshadow -Wsign-compare">
+                extraCompilerFlags="-std=gnu++0x&#10;-Wreorder -Wuninitialized -Wunused-parameter -Wstrict-aliasing -Wshadow -Wsign-compare"
+                cppLanguageStandard="-std=c++11">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Introjucer"
-                       libraryPath="/usr/X11R6/lib/" linuxArchitecture=""/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="Introjucer"
-                       libraryPath="/usr/X11R6/lib/" linuxArchitecture=""/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="6" targetName="Introjucer"
+                       libraryPath="/usr/X11R6/lib/" linuxArchitecture="-m64"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../../modules"/>
