@@ -144,10 +144,6 @@ enum
 
 struct ModulationSliderConfigBase
 {
-    // TODO remove
-    int bg_colour_code;
-
-    //
     virtual bool is_opaque() const noexcept
     {
         return true;
@@ -321,7 +317,7 @@ struct ModulationSliderConfigBase
     }
 
 protected:
-    ModulationSliderConfigBase( int bg_colour_code_ = 0 ) : bg_colour_code(bg_colour_code_) {}
+    ModulationSliderConfigBase() {}
 
 public:
     virtual ~ModulationSliderConfigBase() {}

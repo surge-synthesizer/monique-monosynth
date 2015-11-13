@@ -57,6 +57,8 @@ noexcept
         has_bottom_label = false;
     }
 
+    bool is_linear = slider_config_->get_is_linear();
+    
     front_slider_->setOpaque(true);
     back_slider_->setVisible(false);
     back_slider_->setEnabled(false);
@@ -71,9 +73,11 @@ noexcept
     top_label_->setEnabled(true);
     top_label_->setOpaque(true);
     top_label_->setEditable(true);
+    top_label_->setInterceptsMouseClicks( is_linear, is_linear );
     bottom_label_->setVisible(has_bottom_label);
     bottom_label_->setEnabled(has_bottom_label);
     bottom_label_->setOpaque(true);
+    bottom_label_->setInterceptsMouseClicks( false, false );
 
     // FRONT
     if( front_parameter )
@@ -754,9 +758,13 @@ Monique_Ui_DualSlider::Monique_Ui_DualSlider (Monique_Ui_Refresher*ui_refresher_
     //if( not label_top->isVisible() )
     //  label_top = nullptr;
     if( not label->isVisible() )
+    {
         label = nullptr;
+    }
     if( not label_top->isVisible() )
+    {
         label_top = nullptr;
+    }
 
     front_parameter = _config->get_front_parameter_base();
     back_parameter = _config->get_back_parameter_base();

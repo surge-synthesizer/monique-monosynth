@@ -3334,10 +3334,10 @@ private:
             //x_ = ((1.0f+distortion_add_on)*x_) - (x_*x_*x_)*distortion_add_on;
             // (std::atan(input_and_worker_)*(1.0f/float_Pi))*
             //x_ = x_*(1.0f-distortion_power_) + 0.5f*soft_clipping( x_*10 )*(distortion_power_);
-            
-	  x_ = x_*(1.0f-distortion_power_) + (std::atan( x_*20 )/6.66)*distortion_power_;
-	  
-	  //x_ = x_*(1.0f-distortion_power_) + std::atan( x_*150 )*(1.0f/1.55)*distortion_power_;
+
+            x_ = x_*(1.0f-distortion_power_) + (std::atan( x_*20 )/6.66)*distortion_power_;
+
+            //x_ = x_*(1.0f-distortion_power_) + std::atan( x_*150 )*(1.0f/1.55)*distortion_power_;
         }
 
         return x_;
@@ -4248,93 +4248,228 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+
 class mono_Delay : public RuntimeListener
 {
-    int buffer_size;
+    RuntimeInfo*info;
 
-    int write_index;
+    double last_bmp_in;
+    
+    int reflexion_write_index;
+    int last_in_reflexion_size;
+    int reflexion;
+    int current_reflexion;
+    int reflexion_buffer_size;
+    mono_AudioSampleBuffer<2> reflexion_buffer;
+    float*active_left_reflexion_buffer;
+    float*active_right_reflexion_buffer;
 
-    float process_size_in_percent;
-    int read_offset;
+    int record_index;
+    int last_in_record_size;
+    int record_buffer_size;
+    mono_AudioSampleBuffer<2> record_buffer;
+    float*active_left_record_buffer;
+    float*active_right_record_buffer;
 
-    int last_size_update;
-
-    float* buffer;
+    LinearSmootherZeroToOne record_switch_smoother;
 
 public:
     //==============================================================================
-#define DELAY_GLIDE 0.01f
-    inline float tick( float in, float power_, float process_size_in_percent_ ) noexcept
+    inline void set_reflexion_size( int reflexion_in_size_, int record_buffer_size_, int glide_time_in_ms_, double bpm_ ) noexcept
     {
-        if( process_size_in_percent != process_size_in_percent_ )
+        // SETUP THE REFLEXION BUFFER
+        bool bpm_changed = last_bmp_in != bpm_;
+	last_bmp_in = bpm_;
+      
+        if( bpm_changed or last_in_reflexion_size != reflexion_in_size_ )
         {
-            if( process_size_in_percent_ < process_size_in_percent - DELAY_GLIDE)
-            {
-                process_size_in_percent_ = process_size_in_percent - DELAY_GLIDE;
-            }
-            else if( process_size_in_percent_ > process_size_in_percent + DELAY_GLIDE )
-            {
-                process_size_in_percent_ = process_size_in_percent + DELAY_GLIDE;
-            }
-
-            process_size_in_percent = process_size_in_percent_;
-            read_offset = jmax(1,int((buffer_size-1)*process_size_in_percent));
+            last_in_reflexion_size = reflexion_in_size_;
+            update_reflexion_stuff( bpm_ );
+        }
+        if( bpm_changed or last_in_record_size != record_buffer_size_ )
+        {
+            last_in_record_size = record_buffer_size_;
+            update_record_stuff( bpm_ );
         }
 
-        int read_index = write_index-read_offset;
-        if( read_index < 0 )
-        {
-            read_index += buffer_size;
-        }
-
-        const float result = sample_mix( buffer[read_index] , in );
-        //const float result = buffer[read_index] + in;
-        buffer[write_index] = result * power_;
-        if( ++write_index >= buffer_size )
-        {
-            write_index = 0;
-        }
-
-        return result;
+        record_switch_smoother.reset_coefficients( sample_rate, glide_time_in_ms_ );
     }
+
+    //==============================================================================
+private:
+    inline void update_reflexion_stuff( double bpm_ ) noexcept
+    {
+        // CALCULATE THE NEEDED SIZE
+        {
+            const double speed_multi = delay_multi( last_in_reflexion_size );
+            const double bars_per_sec = bpm_/4/60;
+            const double samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
+            reflexion_buffer_size = floor(samples_per_bar);
+            reflexion = samples_per_bar * speed_multi;
+        }
+        if( reflexion_buffer.get_size() < reflexion_buffer_size )
+        {
+            reflexion_buffer.setSize( reflexion_buffer_size, true );
+            active_left_reflexion_buffer = reflexion_buffer.getWritePointer(LEFT);
+            active_right_reflexion_buffer = reflexion_buffer.getWritePointer(RIGHT);
+        }
+    }
+    inline void update_record_stuff( double bpm_ ) noexcept
+    {
+        // CALCULATE THE NEEDED SIZE
+        {
+            const double speed_multi = delay_multi( last_in_record_size );
+            const double bars_per_sec = bpm_/4/60;
+            const double samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
+            record_buffer_size = samples_per_bar * speed_multi;
+        }
+        if( record_buffer.get_size() < record_buffer_size )
+        {
+            record_buffer.setSize( reflexion_buffer_size, true );
+            active_left_record_buffer = record_buffer.getWritePointer(LEFT);
+            active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
+        }
+    }
+
+private:
+    //==============================================================================
+    inline int update_get_reflexion_read_index() noexcept
+    {
+        if( current_reflexion < reflexion )
+        {
+            current_reflexion += 2;
+            if( current_reflexion > reflexion )
+            {
+                current_reflexion = reflexion;
+            }
+        }
+        else if( current_reflexion > reflexion )
+        {
+            --current_reflexion;
+        }
+
+        const int read_index = reflexion_write_index - current_reflexion;
+        return read_index < 0 ? read_index + reflexion_buffer_size : read_index;
+    }
+
+public:
+    //==============================================================================
+    inline void process
+    (
+        float*const io_l, float*const io_r,
+        const float* smoothed_power_, const float*smoothed_pan_buffer_,
+        const float* record_release_buffer_, const bool record_,
+        const int num_samples_
+    ) noexcept
+    {
+        // PREPARE RECORDING
+        if( not record_ )
+        {
+            record_switch_smoother.set_value( false );
+            record_switch_smoother.reset_glide_countdown();
+        }
+
+        // CURRENT INPUT AND REFLEXION OF USER SIZE
+        for( int sid = 0 ; sid != num_samples_ ; ++ sid )
+        {
+            // REFLEXION AND INPUT
+            const int reflexion_read_index = update_get_reflexion_read_index();
+	    
+            const float left_reflexion_and_input_mix = sample_mix( active_left_reflexion_buffer[reflexion_read_index], io_l[sid] );
+            const float right_reflexion_and_input_mix = sample_mix( active_right_reflexion_buffer[reflexion_read_index], io_r[sid] );
+            {
+                const float pan = smoothed_pan_buffer_[sid];
+                const float power = smoothed_power_[sid];
+
+                const float left = jmin(1.0f,pan+1);
+                const float right = jmin(1.0f,pan*-1+1);
+                active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * left;
+                active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * right;
+            }
+
+            // RECORD AND MIX BEFORE
+            {
+                float record_power = 0;
+                if( record_ )
+                {
+                    record_power = record_switch_smoother.glide_tick( true );
+                }
+                else if( not record_switch_smoother.is_up_to_date() )
+                {
+                    record_power = record_switch_smoother.tick();
+                }
+
+                const float left_record = active_left_record_buffer[record_index];
+                const float right_record = active_right_record_buffer[record_index];
+                if( record_power > 0 )
+                {
+                    const float record_release = record_release_buffer_[sid];
+                    active_left_record_buffer[record_index] = sample_mix( left_record, left_reflexion_and_input_mix*record_power ) * record_release;
+                    active_right_record_buffer[record_index] = sample_mix( right_record, right_reflexion_and_input_mix*record_power ) * record_release;
+                }
+
+                io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
+                io_r[sid] = sample_mix( right_record, right_reflexion_and_input_mix );
+            }
+
+            // UPDATE INDEX
+            {
+                if( ++reflexion_write_index >= reflexion_buffer_size )
+                {
+                    reflexion_write_index = 0;
+                }
+                if( ++record_index >= record_buffer_size )
+                {
+                    record_index = 0;
+                }
+            }
+        }
+    }
+
+    //==============================================================================
     inline void reset() noexcept
     {
-        write_index = 0;
         sample_rate_or_block_changed();
     }
+
+private:
     //==============================================================================
     COLD void sample_rate_or_block_changed() noexcept override
     {
-        if( buffer_size != int(sample_rate*0.5) )
-        {
-            buffer_size = int(sample_rate*0.5);
-            if( buffer )
-            {
-                delete[] buffer;
-            }
-            buffer = new float[buffer_size];
-        }
-        FloatVectorOperations::clear( buffer, buffer_size );
-
-        read_offset = (buffer_size-1)*process_size_in_percent;
+        update_record_stuff( last_bmp_in );
+        update_reflexion_stuff( last_bmp_in );
     }
 
 public:
     //==============================================================================
-    COLD mono_Delay( RuntimeNotifyer*const notifyer_ ) noexcept
+    COLD mono_Delay( RuntimeNotifyer* notifyer_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
-                     buffer(nullptr),
-                     buffer_size(0),
-                     write_index(0),
-                     read_offset(0),
-                     process_size_in_percent(-1)
+
+                     last_bmp_in(20),
+    
+                     reflexion_write_index(0),
+                     last_in_reflexion_size(0),
+                     reflexion(0),
+                     current_reflexion(0),
+                     reflexion_buffer_size(1),
+                     reflexion_buffer(reflexion_buffer_size),
+                     active_left_reflexion_buffer(reflexion_buffer.getWritePointer(LEFT)),
+                     active_right_reflexion_buffer(reflexion_buffer.getWritePointer(RIGHT)),
+
+                     record_index(0),
+                     last_in_record_size(0),
+                     record_buffer_size(1),
+                     record_buffer(record_buffer_size),
+                     active_left_record_buffer(record_buffer.getWritePointer(LEFT)),
+                     active_right_record_buffer(record_buffer.getWritePointer(RIGHT)),
+
+                     record_switch_smoother()
     {
         sample_rate_or_block_changed();
     }
     COLD ~mono_Delay() noexcept
     {
-        delete [] buffer;
     }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Delay)
@@ -4706,13 +4841,12 @@ COLD ZeroInCounter() noexcept :
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ZeroInCounter)
 };
-class FXProcessor : RuntimeListener
+class FXProcessor
 {
     mono_ThreadManager*const thread_manager;
 
     // DELAY
-    mono_Delay delay_l;
-    mono_Delay delay_r;
+    mono_Delay delay;
 
     // REVERB
     mono_Reverb reverb_l;
@@ -4723,11 +4857,6 @@ class FXProcessor : RuntimeListener
     Chorus chorus_l;
     Chorus chorus_r;
     friend class mono_ParameterOwnerStore;
-
-    // DELAY
-    int delayPosition;
-    int delaySize;
-    mono_AudioSampleBuffer<2> delayBuffer;
 
     // FINAL ENV
     friend class MoniqueSynthesiserVoice;
@@ -4802,22 +4931,14 @@ public:
 
         // DELAY
         {
-            const float* const smoothed_pan_buffer = synth_data->delay_pan_smoother.get_smoothed_value_buffer();
-            float*const left_delay_data = delayBuffer.getWritePointer (LEFT);
-            float*const right_delay_data = delayBuffer.getWritePointer (RIGHT);
-            const float* const smoothed_delay_buffer = synth_data->delay_smoother.get_smoothed_value_buffer();
-            const float* const smoothed_delay_reflexion_buffer = synth_data->delay_refexion_smoother.get_smoothed_value_buffer();
-
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float delay_power = smoothed_delay_buffer[sid];
-                const float delay_reflexion_size = smoothed_delay_reflexion_buffer[sid];
-                const float pan = smoothed_pan_buffer[sid];
-                const float left = jmax(0.0f,jmin(1.0f,pan+1));
-                const float right = jmax(0.0f,jmin(1.0f,pan*-1+1));
-                left_out_buffer[sid] = delay_l.tick( left_out_buffer[sid], delay_power*left, delay_reflexion_size );
-                right_out_buffer[sid] = delay_r.tick( right_out_buffer[sid], delay_power*right, delay_reflexion_size );
-            }
+            delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
+            delay.process
+            (
+                left_out_buffer, right_out_buffer,
+                synth_data->delay_smoother.get_smoothed_value_buffer(), synth_data->delay_pan_smoother.get_smoothed_value_buffer(),
+                synth_data->delay_record_release_smoother.get_smoothed_value_buffer(), synth_data->delay_record,
+                num_samples_
+            );
         }
 
 
@@ -4951,21 +5072,16 @@ public:
     //==========================================================================
     void reset() noexcept
     {
+        delay.reset();
         reverb_l.reset();
         reverb_r.reset();
         chorus_l.reset();
         chorus_r.reset();
-        delayPosition = 0;
-        FloatVectorOperations::clear(delayBuffer.getWritePointer(), delayBuffer.get_size());
+
         final_env->reset();
 
         last_output_smoother.reset();
         velocity_smoother.reset(0);
-    }
-    void sample_rate_or_block_changed() noexcept override
-    {
-        delayBuffer.setSize( DELAY_BUFFER_SIZE );
-        delaySize = delayBuffer.get_size();
     }
 
 public:
@@ -4977,34 +5093,27 @@ public:
                       const float*const cos_lookup_,
                       const float*const exp_lookup_ ) noexcept
 :
-    RuntimeListener( notifyer_ ),
-                     thread_manager(thread_manager_),
+    thread_manager(thread_manager_),
 
-                     delay_l(notifyer_),
-                     delay_r(notifyer_),
+                   delay( notifyer_ ),
 
-                     reverb_l(notifyer_),
-                     reverb_r(notifyer_),
+                   reverb_l(notifyer_),
+                   reverb_r(notifyer_),
 
-                     chorus_l(notifyer_),
-                     chorus_r(notifyer_),
+                   chorus_l(notifyer_),
+                   chorus_r(notifyer_),
 
-                     delayPosition( 0 ),
-                     delaySize(0),
-                     delayBuffer ( DELAY_BUFFER_SIZE ),
+                   final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
-                     final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
+                   velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
+                   last_output_smoother(),
 
-                     velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
-                     last_output_smoother(),
-
-                     synth_data( synth_data_ ),
-                     data_buffer( synth_data_->data_buffer ),
-                     reverb_data( synth_data_->reverb_data ),
-                     chorus_data( synth_data_->chorus_data )
+                   synth_data( synth_data_ ),
+                   data_buffer( synth_data_->data_buffer ),
+                   reverb_data( synth_data_->reverb_data ),
+                   chorus_data( synth_data_->chorus_data )
     {
         std::cout << "MONIQUE: init FX" << std::endl;
-        sample_rate_or_block_changed();
     }
 
     COLD ~FXProcessor() noexcept {}
@@ -5847,6 +5956,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         const int glide_motor_time = synth_data->glide_motor_time;
         const int morph_motor_time = synth_data->morph_motor_time;
 
+        synth_data->delay_record_release_smoother.simple_smooth( glide_motor_time, num_samples );
+
         {
             struct SmoothExecuter : public mono_Thread
             {
@@ -6370,4 +6481,5 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
 

@@ -380,7 +380,7 @@ class WAVESlConfig : public ModulationSliderConfigBase
 public:
     WAVESlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(6),
+        ModulationSliderConfigBase(),
         id(id_),
         wave( &synth_data_->osc_datas[id_]->wave ),
         fm_amount( &synth_data_->osc_datas[id_]->fm_amount ),
@@ -615,7 +615,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(6),
+        ModulationSliderConfigBase(),
         id(id_),
         front_param( id == 0 ? &synth_data_->fm_osc_data->master_shift : &synth_data_->osc_datas[id_]->tune ),
         is_lfo_modulated( &synth_data_->osc_datas[id_]->is_lfo_modulated ),
@@ -783,7 +783,7 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig(MoniqueSynthData*const synth_data_)
         :
-        ModulationSliderConfigBase( 1 ),
+        ModulationSliderConfigBase(),
         fm_freq( &synth_data_->fm_osc_data->fm_freq ),
         sync( &synth_data_->fm_osc_data->sync ),
         fm_shape( &synth_data_->fm_osc_data->fm_shape )
@@ -925,7 +925,7 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig(MoniqueSynthData*const synth_data_)
         :
-        ModulationSliderConfigBase( 1 ),
+        ModulationSliderConfigBase(),
         fm_swing( &synth_data_->fm_osc_data->fm_swing )
     {}
 
@@ -1437,7 +1437,7 @@ public:
     {}
     FAttackSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         attack( &synth_data_->env_data->attack ),
         is_main_adsr(true)
     {}
@@ -1617,7 +1617,7 @@ public:
     {}
     FDecaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         decay( &synth_data_->env_data->decay ),
         is_main_adsr(true)
     {}
@@ -1776,7 +1776,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
 
 public:
     FSustainSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain( &synth_data_->filter_datas[id_]->env_data->sustain ), is_main_adsr(false) {}
-    FSustainSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), sustain( &synth_data_->env_data->sustain ), is_main_adsr(true) {}
+    FSustainSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase(), sustain( &synth_data_->env_data->sustain ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainSlConfig)
 };
@@ -1947,7 +1947,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
 
 public:
     FSustainTimeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : sustain_time( &synth_data_->filter_datas[id_]->env_data->sustain_time ), is_main_adsr(false) {}
-    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), sustain_time( &synth_data_->env_data->sustain_time ), is_main_adsr(true) {}
+    FSustainTimeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase(), sustain_time( &synth_data_->env_data->sustain_time ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FSustainTimeSlConfig)
 };
@@ -2111,7 +2111,7 @@ public:
 
     FReleaseSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         release( &synth_data_->env_data->release ),
         is_main_adsr(true)
     {}
@@ -2266,7 +2266,7 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
 public:
     FShapeSlConfig( MoniqueSynthData*const synth_data_, int id_ ) : shape( &synth_data_->filter_datas[id_]->env_data->shape ), is_main_adsr(false) {}
-    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase( 2 ), shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
+    FShapeSlConfig( MoniqueSynthData*const synth_data_ ) : ModulationSliderConfigBase(), shape( &synth_data_->env_data->shape ), is_main_adsr(true) {}
 
     JUCE_LEAK_DETECTOR (FShapeSlConfig)
 };
@@ -3331,7 +3331,7 @@ class BPMSlConfig : public ModulationSliderConfigBase
 public:
     BPMSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         speed( &synth_data_->speed ),
         sync( &synth_data_->sync ),
         runtime_info( synth_data_->runtime_info )
@@ -3466,7 +3466,7 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 public:
     SpeedMultiSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         speed_multi( &synth_data_->arp_sequencer_data->speed_multi ),
         speed( &synth_data_->speed )
     {}
@@ -3628,7 +3628,7 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 public:
     OctaveOffsetSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         octave_offset( &synth_data_->octave_offset ),
         note_offset( &synth_data_->note_offset )
     {}
@@ -3762,7 +3762,7 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
 public:
     FXDistortionSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         distortion( &synth_data_->distortion )
     {}
 
@@ -3906,7 +3906,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         shape( &synth_data_->shape ),
         bypass( &synth_data_->eq_data->bypass )
     {}
@@ -3925,6 +3925,7 @@ public:
 class RRoomSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const room;
+    Parameter*const width;
 
     //==============================================================================
     // BASIC SLIDER TYPE
@@ -3962,17 +3963,15 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return clipping;
+        return width;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -4001,11 +4000,11 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     {
         return "ROOM";
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "WIDTH";
     }
+    /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
     return false;
@@ -4031,153 +4030,29 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
+    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the room of the reverb effect.\n"
         "(Has no effect if FX MIX is set to zero)"
     )
 
-public:
-    RRoomSlConfig( MoniqueSynthData*const synth_data_ )
-        :
-        ModulationSliderConfigBase( 2 ),
-        room( &synth_data_->reverb_data->room )
-    {}
-
-    JUCE_LEAK_DETECTOR (RRoomSlConfig)
-};
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class RWidthSlConfig : public ModulationSliderConfigBase
-{
-    Parameter*const width;
-
-    //==============================================================================
-    // BASIC SLIDER TYPE
     /*
-    bool get_is_linear() const noexcept override
-    {
-    return false;
-    }
-    */
-    COLOUR_THEMES get_colour_theme() const noexcept override
-    {
-        return COLOUR_THEMES::FX_THEME;
-    }
-
-    //==============================================================================
-    // FRONT SLIDER
-    SLIDER_STYLES get_front_slider_style() const noexcept override
-    {
-        return VALUE_SLIDER;
-    }
-    Parameter* get_front_parameter_base() const noexcept override
-    {
-        return width;
-    }
-    /*
-    int get_override_front_min_value() const noexcept override
-    {
-    return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    int get_override_front_max_value() const noexcept override
-    {
-    return DONT_OVERRIDE_SLIDER_VALUE;
-    }
-    */
-
-    //==============================================================================
-    // BACK SLIDER
-    /*
-    SLIDER_STYLES get_back_slider_style() const noexcept override
-    {
-    return VALUE_SLIDER_2;
-    }
-    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
-    Parameter* get_back_parameter_base() const noexcept override
-    {
-    return clipping;
-    }
-    */
-
-    //==============================================================================
-    // TOP BUTTON
-    /*
-    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
-    {
-    return TOP_BUTTON_TYPE_IS_UNKNOWN;
-    }
-    BoolParameter* get_top_button_parameter_base() const noexcept override
-    {
-    return nullptr;
-    }
-    StringRef get_top_button_text() const noexcept override
-    {
-    return "";
-    }
-    float get_top_button_amp() const noexcept override
-    {
-    return NO_TOP_BUTTON_AMP;
-    }
-    */
-
-    //==============================================================================
-    // BOTTOM BUTTON
-    StringRef get_bottom_button_text() const noexcept override
-    {
-        return "WIDTH";
-    }
-    /*
-    StringRef get_bottom_button_switch_text() const noexcept override
-    {
-    return "";
-    }
-    bool get_is_bottom_button_text_dynamic() const noexcept override
-    {
-    return false;
-    }
-    */
-
-    //==============================================================================
-    // CENTER LABEL
-    /*
-    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
-    {
-    return DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE;
-    }
-    String get_center_value() const noexcept override
-    {
-    return "";
-    }
-    StringRef get_center_suffix() const noexcept override
-    {
-    return "";
-    }
-    */
-
-    //==============================================================================
-    // TOOLTIP
     TOP_SLIDER_DESCIPTION
     (
         "Define the width of the reverb effect.\n"
         "(Has no effect if FX MIX is set to zero)"
     )
-
+    */
 public:
-    RWidthSlConfig( MoniqueSynthData*const synth_data_ )
+    RRoomSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
+        room( &synth_data_->reverb_data->room ),
         width( &synth_data_->reverb_data->width )
     {}
 
-    JUCE_LEAK_DETECTOR (RWidthSlConfig)
+    JUCE_LEAK_DETECTOR (RRoomSlConfig)
 };
 //==============================================================================
 //==============================================================================
@@ -4321,7 +4196,7 @@ class RDrySlConfig : public ModulationSliderConfigBase
 public:
     RDrySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         dry_wet_mix( &synth_data_->reverb_data->dry_wet_mix ),
         pan( &synth_data_->reverb_data->pan )
     {}
@@ -4393,15 +4268,15 @@ class DelaySlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-    return TOP_BUTTON_TYPE_IS_UNKNOWN;
+    return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-    return nullptr;
+    return delay_record;
     }
     StringRef get_top_button_text() const noexcept override
     {
-    return "";
+    return "REC";
     }
     float get_top_button_amp() const noexcept override
     {
@@ -4461,6 +4336,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     //==============================================================================
     // TOOLTIP
     // TODO
+    // TODO RECORD
     TOP_SLIDER_DESCIPTION
     (
         "Define the delay time of the delay effect.\n"
@@ -4470,7 +4346,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
 public:
     DelaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         delay( &synth_data_->delay ),
         pan( &synth_data_->delay_pan )
     {}
@@ -4536,7 +4412,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return pan;
+        return delay_record_size;
     }
     */
 
@@ -4545,15 +4421,15 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     /*
     TOP_BUTTON_TYPE get_top_button_type() const noexcept override
     {
-    return TOP_BUTTON_TYPE_IS_UNKNOWN;
+        return TOP_BUTTON_IS_ON_OFF;
     }
     BoolParameter* get_top_button_parameter_base() const noexcept override
     {
-    return nullptr;
+        return delay_record;
     }
     StringRef get_top_button_text() const noexcept override
     {
-    return "";
+        return "FILL";
     }
     float get_top_button_amp() const noexcept override
     {
@@ -4565,12 +4441,12 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "SIZE";
+        return "RFLEX";
     }
     /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "PAN";
+        return "SIZE";
     }
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
@@ -4586,16 +4462,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float ms = samplesToMsFast(delay_reflexion->get_value()*runtime_notifyer->get_sample_rate()*0.5,runtime_notifyer->get_sample_rate());
-        if( ms < 50 )
-        {
-            ms = round01(ms);
-        }
-        else
-        {
-            ms = round01(ms);
-        }
-        return String(ms);
+            return delay_to_text(delay_reflexion->get_value(), runtime_notifyer->get_sample_rate());
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -4614,7 +4481,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
 public:
     DelayReflexSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         delay_reflexion( &synth_data_->delay_refexion ),
 
         runtime_notifyer( synth_data_->runtime_notifyer )
@@ -4622,7 +4489,151 @@ public:
 
     JUCE_LEAK_DETECTOR (DelayReflexSlConfig)
 };
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+class DelayRecordSlConfig : public ModulationSliderConfigBase
+{
+    Parameter*const record_release;
+    IntParameter*const record_size;
+    BoolParameter*const delay_record;
 
+    RuntimeNotifyer*const runtime_notifyer;
+
+    //==============================================================================
+    // BASIC SLIDER TYPE
+    /*
+    bool get_is_linear() const noexcept override
+    {
+    return false;
+    }
+    */
+    COLOUR_THEMES get_colour_theme() const noexcept override
+    {
+        return COLOUR_THEMES::FX_THEME;
+    }
+
+    //==============================================================================
+    // FRONT SLIDER
+    SLIDER_STYLES get_front_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER;
+    }
+    Parameter* get_front_parameter_base() const noexcept override
+    {
+        return record_release;
+    }
+    /*
+    int get_override_front_min_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    int get_override_front_max_value() const noexcept override
+    {
+    return DONT_OVERRIDE_SLIDER_VALUE;
+    }
+    */
+
+    //==============================================================================
+    // BACK SLIDER
+    SLIDER_STYLES get_back_slider_style() const noexcept override
+    {
+        return VALUE_SLIDER_2;
+    }
+    // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
+    Parameter* get_back_parameter_base() const noexcept override
+    {
+        return record_size;
+    }
+
+    //==============================================================================
+    // TOP BUTTON
+    TOP_BUTTON_TYPE get_top_button_type() const noexcept override
+    {
+        return TOP_BUTTON_IS_ON_OFF;
+    }
+    BoolParameter* get_top_button_parameter_base() const noexcept override
+    {
+        return delay_record;
+    }
+    StringRef get_top_button_text() const noexcept override
+    {
+        return "FILL";
+    }
+    /*
+    float get_top_button_amp() const noexcept override
+    {
+    return NO_TOP_BUTTON_AMP;
+    }
+    */
+
+    //==============================================================================
+    // BOTTOM BUTTON
+    StringRef get_bottom_button_text() const noexcept override
+    {
+        return "REL";
+    }
+    StringRef get_bottom_button_switch_text() const noexcept override
+    {
+        return "SIZE";
+    }
+    /*
+    bool get_is_bottom_button_text_dynamic() const noexcept override
+    {
+    return false;
+    }
+    */
+
+    //==============================================================================
+    // CENTER LABEL
+    SHOW_TYPES show_slider_value_on_top_on_change() const noexcept override
+    {
+        return SHOW_OWN_VALUE;
+    }
+    String get_center_value() const noexcept override
+    {
+        if( record_release->midi_control->get_ctrl_mode() )
+        {
+            return delay_to_text(record_size->get_value(), runtime_notifyer->get_sample_rate());
+        }
+        else
+        {
+            return String(auto_round( record_release->get_value()*100 ));
+        }
+    }
+    StringRef get_center_suffix() const noexcept override
+    {
+        return "";
+    }
+
+    //==============================================================================
+    // TOOLTIP
+    // TODO
+    TOP_SLIDER_DESCIPTION
+    (
+        "Define the delay time of the delay effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
+
+public:
+    DelayRecordSlConfig( MoniqueSynthData*const synth_data_ )
+        :
+        ModulationSliderConfigBase(),
+        record_size( &synth_data_->delay_record_size ),
+        record_release( &synth_data_->delay_record_release ),
+        delay_record( &synth_data_->delay_record ),
+
+        runtime_notifyer( synth_data_->runtime_notifyer )
+    {}
+
+    JUCE_LEAK_DETECTOR (DelayRecordSlConfig)
+};
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -4755,7 +4766,7 @@ class BypassConfig : public ModulationSliderConfigBase
 public:
     BypassConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         effect_bypass( &synth_data_->effect_bypass )
     {}
 
@@ -4885,7 +4896,7 @@ class VolumeConfig : public ModulationSliderConfigBase
 public:
     VolumeConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 5 ),
+        ModulationSliderConfigBase(),
         volume( &synth_data_->volume )
     {}
 
@@ -5069,7 +5080,7 @@ class CModSlConfig : public ModulationSliderConfigBase
 public:
     CModSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         modulation( &synth_data_->chorus_data->modulation ),
         pan( &synth_data_->chorus_data->pan ),
 
@@ -5243,7 +5254,7 @@ class GlideConfig : public ModulationSliderConfigBase
 public:
     GlideConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         glide( &synth_data_->glide ),
         velocity_glide_time( &synth_data_->velocity_glide_time ),
         connect( &synth_data_->arp_sequencer_data->connect ),
@@ -5431,7 +5442,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
 public:
     ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
         is_on( &synth_data_->arp_sequencer_data->is_on ),
 
@@ -5627,7 +5638,7 @@ class EQSlConfig : public ModulationSliderConfigBase
 public:
     EQSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase( 2 ),
+        ModulationSliderConfigBase(),
         id( id_ ),
         velocity( &synth_data_->eq_data->velocity[id_] ),
         hold( &synth_data_->eq_data->hold[id_] ),
@@ -5794,7 +5805,7 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 public:
     ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase( 3 ),
+        ModulationSliderConfigBase(),
         octave_offset( &synth_data_->octave_offset ),
         tune( &synth_data_->arp_sequencer_data->tune[id_] ),
         velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
@@ -6002,7 +6013,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
 public:
     MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase( 4 ),
+        ModulationSliderConfigBase(),
         id(id_),
         morhp_state( &synth_data_->morhp_states[id_] ),
         is_morph_modulated( &synth_data_->is_morph_modulated[id_] ),
@@ -6014,6 +6025,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

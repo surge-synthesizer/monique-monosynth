@@ -748,9 +748,9 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 
     reverb_room->setVisible( fx_ );
     reverb_dry->setVisible( fx_ );
-    reverb_width->setVisible( fx_ );
     delay2->setVisible( fx_ );
     delay3->setVisible( fx_ );
+    delay4->setVisible( fx_ );
     chorus_modulation->setVisible( fx_ );
     bypass->setVisible( fx_ );
     label_reverb->setVisible( fx_ );
@@ -1253,8 +1253,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (reverb_room = new Monique_Ui_DualSlider (ui_refresher,
                                                                 new RRoomSlConfig(synth_data)));
 
-    addAndMakeVisible (reverb_width = new Monique_Ui_DualSlider (ui_refresher,
-                                                                 new RWidthSlConfig(synth_data)));
+    addAndMakeVisible (delay4 = new Monique_Ui_DualSlider (ui_refresher,
+                                                           new DelayRecordSlConfig(synth_data)));
 
     addAndMakeVisible (bypass = new Monique_Ui_DualSlider (ui_refresher,
                                                            new BypassConfig(synth_data)));
@@ -1263,7 +1263,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
                                                            new FColourSlConfig(synth_data)));
 
     addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (ui_refresher,
-                                                           new DelaySlConfig(synth_data)));
+                                                           new DelayReflexSlConfig(synth_data)));
 
     addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (ui_refresher,
                                                                       new CModSlConfig(synth_data)));
@@ -2060,7 +2060,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_monoplugs->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (delay3 = new Monique_Ui_DualSlider (ui_refresher,
-                                                           new DelayReflexSlConfig(synth_data)));
+                                                           new DelaySlConfig(synth_data)));
 
     addAndMakeVisible (label_fx_distortion = new Label (String::empty,
                                                         TRANS("DESTROY")));
@@ -2498,7 +2498,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_programm_replace = nullptr;
     button_programm_new = nullptr;
     reverb_room = nullptr;
-    reverb_width = nullptr;
+    delay4 = nullptr;
     bypass = nullptr;
     colour = nullptr;
     delay2 = nullptr;
@@ -3009,8 +3009,8 @@ void Monique_Ui_Mainwindow::resized()
     label_monique->setBounds (1220 - 180, 0, 180, 50);
     button_programm_replace->setBounds (850 - 60, 10, 60, 30);
     button_programm_new->setBounds (910 - 60, 10, 60, 30);
-    reverb_room->setBounds (1150 - 60, 810 - 130, 60, 130);
-    reverb_width->setBounds (1210 - 60, 810 - 130, 60, 130);
+    reverb_room->setBounds (1210 - 60, 810 - 130, 60, 130);
+    delay4->setBounds (1140 - 60, 810 - 130, 60, 130);
     bypass->setBounds (1345 - 60, 810 - 130, 60, 130);
     colour->setBounds (1345 - 60, 810 - 130, 60, 130);
     delay2->setBounds (1080 - 60, 810 - 130, 60, 130);
@@ -3161,7 +3161,7 @@ void Monique_Ui_Mainwindow::resized()
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     delay3->setBounds (1020 - 60, 810 - 130, 60, 130);
     label_fx_distortion->setBounds (815, 680, 70, 30);
-    label_reverb->setBounds (1090, 680, 180, 30);
+    label_reverb->setBounds (1150, 680, 120, 30);
     label_fx_chorus->setBounds (885, 680, 70, 30);
     label_fx_delay->setBounds (960, 680, 120, 30);
     //[UserResized] Add your own custom resize handling here..
@@ -5067,11 +5067,11 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="SAVE AS"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="19311f1c6e549e68" memberName="reverb_room" virtualName=""
-                    explicitFocusOrder="0" pos="1150r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new RRoomSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="reverb_width" virtualName=""
                     explicitFocusOrder="0" pos="1210r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new RWidthSlConfig(synth_data)"/>
+                    params="ui_refresher, &#10;new RRoomSlConfig(synth_data)"/>
+  <GENERICCOMPONENT name="" id="1e7a797188cff129" memberName="delay4" virtualName=""
+                    explicitFocusOrder="0" pos="1140r 810r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new DelayRecordSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="83c667b94dd3ef45" memberName="bypass" virtualName=""
                     explicitFocusOrder="0" pos="1345r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new BypassConfig(synth_data)"/>
@@ -5080,7 +5080,7 @@ BEGIN_JUCER_METADATA
                     params="ui_refresher, &#10;new FColourSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
                     explicitFocusOrder="0" pos="1080r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new DelaySlConfig(synth_data)"/>
+                    params="ui_refresher, &#10;new DelayReflexSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
                     virtualName="" explicitFocusOrder="0" pos="890 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new CModSlConfig(synth_data)"/>
@@ -5604,14 +5604,14 @@ BEGIN_JUCER_METADATA
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="563dffc9e556e1d7" memberName="delay3" virtualName=""
                     explicitFocusOrder="0" pos="1020r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new DelayReflexSlConfig(synth_data)"/>
+                    params="ui_refresher, &#10;new DelaySlConfig(synth_data)"/>
   <LABEL name="" id="798798be2a99287c" memberName="label_fx_distortion"
          virtualName="" explicitFocusOrder="0" pos="815 680 70 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="DESTROY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="879633575acf68ee" memberName="label_reverb" virtualName=""
-         explicitFocusOrder="0" pos="1090 680 180 30" textCol="ff050505"
+         explicitFocusOrder="0" pos="1150 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>

@@ -450,7 +450,7 @@ public:
     {
         stepsToTarget = jmax(10,int(msToSamplesFast(fade_in_ms_,sampleRate)));
     }
-    
+
     //==============================================================================
     inline void set_info_flag( bool state_ ) noexcept
     {
@@ -462,14 +462,14 @@ public:
     }
 public:
     //==============================================================================
-    COLD LinearSmoother() noexcept
+    COLD LinearSmoother( float init_state_ = 0 ) noexcept
 :
-    currentValue(0),
-                 target(0),
+    currentValue(init_state_),
+                 target(init_state_),
                  step(0),
                  countdown(-1),
                  stepsToTarget(0),
-                 lastValue(0),
+                 lastValue(init_state_),
                  option(false)
     {}
 
@@ -540,8 +540,12 @@ public:
     }
 
     //==============================================================================
-COLD LinearSmootherZeroToOne() noexcept :
-    glide_countdown(-1) {}
+    COLD LinearSmootherZeroToOne( float init_state_ = 0 ) noexcept
+:
+    LinearSmoother( init_state_ ),
+                    glide_countdown(-1)
+    {
+    }
     COLD ~LinearSmootherZeroToOne() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmootherZeroToOne)
@@ -562,13 +566,13 @@ public:
 private:
     //==========================================================================
     COLD void sample_rate_or_block_changed() noexcept override;
-    
+
 private:
     //==========================================================================
     LinearSmoother simple_smoother;
 public:
     void simple_smooth( int smooth_motor_time_in_ms_, int num_samples_ ) noexcept;
-			   
+
 private:
     //==========================================================================
     LinearSmoother left_morph_smoother;
@@ -1374,35 +1378,35 @@ class MorphGroup : public Timer, ParameterListener
 
 public:
     //==========================================================================
-    inline int indexOf( const Parameter*param_ ) const noexcept 
+    inline int indexOf( const Parameter*param_ ) const noexcept
     {
         return params.indexOf( const_cast<Parameter*>(param_) );
     }
     // NOT FOR HIGH PERFORMANCE
-    inline int indexOfBools( const Parameter*param_ ) const noexcept 
+    inline int indexOfBools( const Parameter*param_ ) const noexcept
     {
         if( type_of( param_ ) == IS_BOOL )
-	{
-	  return switch_bool_params.indexOf( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
-	}
-        
+        {
+            return switch_bool_params.indexOf( reinterpret_cast<BoolParameter*>( const_cast<Parameter*>(param_) ) );
+        }
+
         return -1;
     }
     // NOT FOR HIGH PERFORMANCE
-    inline int indexOfInts( const Parameter*param_ ) const noexcept 
+    inline int indexOfInts( const Parameter*param_ ) const noexcept
     {
         if( type_of( param_ ) == IS_INT )
-	{
-	  return switch_int_params.indexOf( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
-	}
-        
+        {
+            return switch_int_params.indexOf( reinterpret_cast<IntParameter*>( const_cast<Parameter*>(param_) ) );
+        }
+
         return -1;
     }
-    inline const Parameter* get_left_param( int index_ ) const noexcept 
+    inline const Parameter* get_left_param( int index_ ) const noexcept
     {
         return left_morph_source->params.getUnchecked(index_);
     }
-    inline const Parameter* get_right_param( int index_ ) const noexcept 
+    inline const Parameter* get_right_param( int index_ ) const noexcept
     {
         return right_morph_source->params.getUnchecked(index_);
     }
@@ -1461,7 +1465,7 @@ class MoniqueSynthesiserVoice;
 struct MoniqueSynthData : ParameterListener
 {
     MoniqueSynthData*const master_data;
-  
+
     UiLookAndFeel*const ui_look_and_feel; // WILL BE NULL FOR MORPH DATA
     MoniqueAudioProcessor*const audio_processor; // WILL BE NULL FOR MORPH DATA
 
@@ -1486,8 +1490,11 @@ struct MoniqueSynthData : ParameterListener
     SmoothedParameter delay_smoother;
     Parameter delay_pan;
     SmoothedParameter delay_pan_smoother;
-    Parameter delay_refexion;
-    SmoothedParameter delay_refexion_smoother;
+    IntParameter delay_refexion;
+    IntParameter delay_record_size;
+    Parameter delay_record_release;
+    SmoothedParameter delay_record_release_smoother;
+    BoolParameter delay_record;
     Parameter effect_bypass;
     SmoothedParameter effect_bypass_smoother;
     Parameter shape;
@@ -1735,6 +1742,122 @@ public:
     void get_full_adstr( ENVData&env_data_,Array< float >& curve ) noexcept;
     void get_full_mfo( LFOData&mfo_data_,Array< float >& curve ) noexcept;
 };
+
+//==============================================================================
+static inline double delay_multi( int delay_ ) noexcept
+{
+    switch( delay_ )
+    {
+    case 0 :
+        return 1.0/1024;
+    case 1 :
+        return 1.0/512;
+    case 2 :
+        return 1.0/256;
+    case 3 :
+        return 1.0/128;
+    case 4 :
+        return 1.0/64;
+    case 5 :
+        return 1.0/48;
+    case 6 :
+        return 1.0/32;
+    case 7 :
+        return 1.0/24;
+    case 8 :
+        return 1.0/16;
+    case 9 :
+        return 1.0/12;
+    case 10 :
+        return 1.0/8;
+    case 11 :
+        return 1.0/4;
+    case 12 :
+        return 3.0/8;
+    case 13 :
+        return 4.0/8;
+    case 14 :
+        return 5.0/8;
+    case 15 :
+        return 6.0/8;
+    case 16 :
+        return 7.0/8;
+    case 17 :
+        return 1;
+    case 18 :
+        return 2;
+    case 19 :
+        return 3;
+    default :
+        return 4;
+    }
+}
+static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
+{
+    float multi;
+    switch( delay_ )
+    {
+    case 0 :
+        return "/1024";
+        break;
+    case 1 :
+        return  "/512";
+        break;
+    case 2 :
+        return  "/256";
+        break;
+    case 3 :
+        return  "/128";
+        break;
+    case 4 :
+        return  "1/64";
+        break;
+    case 5 :
+        return  "1/48";
+        break;
+    case 6 :
+        return  "1/32";
+        break;
+    case 7 :
+        return  "1/24";
+        break;
+    case 8 :
+        return  "1/16";
+        break;
+    case 9 :
+        return  "1/12";
+        break;
+    case 10 :
+        return  "1/8";
+        break;
+    case 11 :
+        return  "2/8";
+        break;
+    case 12 :
+        return  "3/8";
+        break;
+    case 13 :
+        return  "4/8";
+        break;
+    case 14 :
+        return  "5/8";
+        break;
+    case 15 :
+        return  "6/8";
+        break;
+    case 16 :
+        return  "7/8";
+        break;
+    case 17 :
+        return  "1/1";
+    case 18 :
+        return "2/1";
+    case 19 :
+        return "3/1";
+    default :
+        return "4/1";
+    }
+}
 
 //==============================================================================
 //==============================================================================

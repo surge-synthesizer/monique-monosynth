@@ -2,6 +2,14 @@ lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten
 bleibt im ctrl hängen, wenn ein popup offen 
 check close handlin mfo
 
+does not store slider settings
+
+is changed backup depends now on the morph groups -> change this
+
+remove chorus fill method and add it to tick
+
+delay: // TODO was passiert bei bpm änderungen?
+
 4.0.1
 
 -touch screen

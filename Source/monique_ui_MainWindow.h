@@ -242,7 +242,7 @@ private:
     ScopedPointer<TextButton> button_programm_replace;
     ScopedPointer<TextButton> button_programm_new;
     ScopedPointer<Monique_Ui_DualSlider> reverb_room;
-    ScopedPointer<Monique_Ui_DualSlider> reverb_width;
+    ScopedPointer<Monique_Ui_DualSlider> delay4;
     ScopedPointer<Monique_Ui_DualSlider> bypass;
     ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Monique_Ui_DualSlider> delay2;

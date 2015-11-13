@@ -115,12 +115,9 @@ public:
 	
     }
     inline void setSize (int newNumSamples, bool keep_existing_content_ = false ) noexcept
-    {
-        buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, keep_existing_content_ );
+    {    
+        buffer.setSize( num_channels, newNumSamples+DEBUG_BUFFER_SIDE_OFFSET, keep_existing_content_, true, false );
         size = newNumSamples;
-#ifdef JUCE_DEBUG
-	buffer.clear();
-#endif
     }
 
     inline int get_size() const noexcept

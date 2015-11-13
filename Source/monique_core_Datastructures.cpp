@@ -1083,12 +1083,17 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
     TYPES_DEF type = type_of( param_ );
     if( type == IS_BOOL )
     {
-        if( current_switch != LEFT )
+
+        const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
+        if( param_id != -1 )
         {
-            const int param_id = switch_bool_params.indexOf( reinterpret_cast< BoolParameter* >( param_ ) );
-            if( param_id != -1 )
+            if( current_switch == RIGHT )
             {
                 right_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
+            else
+            {
+                left_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
             }
         }
     }
@@ -1097,9 +1102,13 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
         if( current_switch != LEFT )
         {
             const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
-            if( param_id != -1 )
+            if( current_switch == RIGHT )
             {
                 right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+            }
+            else
+            {
+                left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
             }
         }
     }
@@ -1619,13 +1628,35 @@ master_data( master_data_ ),
              delay_smoother(smooth_manager,&delay),
              delay_refexion
              (
-                 MIN_MAX( 0, 1 ),
-                 0.5,
-                 1000,
+                 MIN_MAX( 0, 20 ),
+                 11,
+
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
                  generate_short_human_name("FX","delay_refexion")
              ),
-             delay_refexion_smoother(smooth_manager,&delay_refexion),
+	     delay_record_size
+	     (
+                 MIN_MAX( 17, 20 ),
+                 17,
+
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"record_size"),
+                 generate_short_human_name("FX","record_size")
+             ),
+	     delay_record_release
+	     (
+                 MIN_MAX( 0, 1 ),
+                 1,
+                 1000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"record_release"),
+                 generate_short_human_name("FX","record_release")
+             ),
+	     delay_record_release_smoother( smooth_manager, &delay_record_release ),
+	     delay_record
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"record"),
+                 generate_short_human_name("FX","record")
+             ),
              delay_pan
              (
                  MIN_MAX( -1, 1 ),
@@ -2134,6 +2165,8 @@ static inline void copy( MoniqueSynthData* dest_, const MoniqueSynthData* src_ )
     dest_->delay = src_->delay_refexion;
     dest_->delay = src_->delay;
     dest_->delay_pan = src_->delay_pan;
+    dest_->delay_pan = src_->delay_record_size;
+    dest_->delay_pan = src_->delay_record_release;
     dest_->effect_bypass = src_->effect_bypass;
     dest_->speed = src_->speed;
     dest_->glide_motor_time = src_->glide_motor_time;
@@ -2208,6 +2241,8 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->delay_refexion );
     saveable_parameters.add( &this->delay );
     saveable_parameters.add( &this->delay_pan );
+    saveable_parameters.add( &this->delay_record_size );
+    saveable_parameters.add( &this->delay_record_release );
     collect_saveable_parameters( reverb_data, saveable_parameters );
     collect_saveable_parameters( chorus_data, saveable_parameters );
     saveable_parameters.add( &this->effect_bypass );
@@ -3674,6 +3709,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 
