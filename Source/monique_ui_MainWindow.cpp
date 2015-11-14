@@ -739,10 +739,12 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons()
 }
 void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 {
-    if( effect_finalizer_switch2->getProperties().set( VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) {
+    if( effect_finalizer_switch2->getProperties().set( VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) 
+    {
         effect_finalizer_switch2->repaint();
     }
-    if( effect_finalizer_switch->getProperties().set( VAR_INDEX_BUTTON_AMP, fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) {
+    if( effect_finalizer_switch->getProperties().set( VAR_INDEX_BUTTON_AMP, fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) 
+    {
         effect_finalizer_switch->repaint();
     }
 
@@ -825,6 +827,15 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     ui_refresher_->editor = this;
     look_and_feel->mainwindow = this;
     //[/Constructor_pre]
+
+    addAndMakeVisible (effect_finalizer_switch2 = new TextButton (String::empty));
+    effect_finalizer_switch2->setTooltip (TRANS("Switch to the EQ bank."));
+    effect_finalizer_switch2->setButtonText (TRANS("EQ"));
+    effect_finalizer_switch2->setConnectedEdges (Button::ConnectedOnTop);
+    effect_finalizer_switch2->addListener (this);
+    effect_finalizer_switch2->setColour (TextButton::buttonColourId, Colour (0xffff11ff));
+    effect_finalizer_switch2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    effect_finalizer_switch2->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (button_edit_input_env_1_3 = new TextButton (String::empty));
     button_edit_input_env_1_3->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
@@ -2039,15 +2050,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     button_programm_scratch->setColour (TextButton::textColourOnId, Colour (0xffbcff00));
     button_programm_scratch->setColour (TextButton::textColourOffId, Colour (0xffd0ff00));
 
-    addAndMakeVisible (effect_finalizer_switch2 = new TextButton (String::empty));
-    effect_finalizer_switch2->setTooltip (TRANS("Switch to the EQ bank."));
-    effect_finalizer_switch2->setButtonText (TRANS("EQ"));
-    effect_finalizer_switch2->setConnectedEdges (Button::ConnectedOnTop);
-    effect_finalizer_switch2->addListener (this);
-    effect_finalizer_switch2->setColour (TextButton::buttonColourId, Colour (0xffff11ff));
-    effect_finalizer_switch2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    effect_finalizer_switch2->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (flt_shape_4 = new Monique_Ui_DualSlider (ui_refresher, new FShapeSlConfig(synth_data)));
 
     addAndMakeVisible (label_monoplugs = new Label ("TOP",
@@ -2426,6 +2428,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    effect_finalizer_switch2 = nullptr;
     button_edit_input_env_1_3 = nullptr;
     button_edit_input_env_1_2 = nullptr;
     button_edit_input_env_1_1 = nullptr;
@@ -2644,7 +2647,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     flt_shape_2 = nullptr;
     flt_shape_3 = nullptr;
     button_programm_scratch = nullptr;
-    effect_finalizer_switch2 = nullptr;
     flt_shape_4 = nullptr;
     label_monoplugs = nullptr;
     delay3 = nullptr;
@@ -2938,6 +2940,7 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    effect_finalizer_switch2->setBounds (810, 819, 120, 30);
     button_edit_input_env_1_3->setBounds (320, 220, 60, 30);
     button_edit_input_env_1_2->setBounds (260, 220, 60, 30);
     button_edit_input_env_1_1->setBounds (200, 220, 60, 30);
@@ -3117,7 +3120,7 @@ void Monique_Ui_Mainwindow::resized()
     button_ctrl_toggle->setBounds (100, 10, 60, 30);
     speed->setBounds (1280 - 60, 1010 - 130, 60, 130);
     button_open_morph->setBounds (440 - 60, 645, 60, 30);
-    effect_finalizer_switch->setBounds (810, 819, 120, 30);
+    effect_finalizer_switch->setBounds (930, 819, 120, 30);
     button_values_toggle->setBounds (30, 10, 60, 30);
     octave_offset->setBounds (1435 - 60, 880, 60, 130);
     label_filter_inputs->setBounds (210, 75, 170, 30);
@@ -3156,7 +3159,6 @@ void Monique_Ui_Mainwindow::resized()
     flt_shape_2->setBounds (790 - 60, 430 - 130, 60, 130);
     flt_shape_3->setBounds (790 - 60, 610 - 130, 60, 130);
     button_programm_scratch->setBounds (780 - 60, 10, 60, 30);
-    effect_finalizer_switch2->setBounds (930, 819, 120, 30);
     flt_shape_4->setBounds (790 - 60, 810 - 130, 60, 130);
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     delay3->setBounds (1020 - 60, 810 - 130, 60, 130);
@@ -3176,7 +3178,13 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == button_edit_input_env_1_3)
+    if (buttonThatWasClicked == effect_finalizer_switch2)
+    {
+        //[UserButtonCode_effect_finalizer_switch2] -- add your button handler code here..
+        switch_finalizer_tab(false);
+        //[/UserButtonCode_effect_finalizer_switch2]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
         open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_3, false );
@@ -3980,12 +3988,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         synth_data->load_default();
         show_programs_and_select(true);
         //[/UserButtonCode_button_programm_scratch]
-    }
-    else if (buttonThatWasClicked == effect_finalizer_switch2)
-    {
-        //[UserButtonCode_effect_finalizer_switch2] -- add your button handler code here..
-        switch_finalizer_tab(false);
-        //[/UserButtonCode_effect_finalizer_switch2]
     }
 
     //[UserbuttonClicked_Post]
@@ -4796,6 +4798,10 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
+  <TEXTBUTTON name="" id="ec6e85c0b9db24e4" memberName="effect_finalizer_switch2"
+              virtualName="" explicitFocusOrder="0" pos="810 819 120 30" tooltip="Switch to the EQ bank."
+              bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="EQ"
+              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f7dd0a8e5d005547" memberName="button_edit_input_env_1_3"
               virtualName="" explicitFocusOrder="0" pos="320 220 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
@@ -5430,7 +5436,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="EDIT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="f57674183a67085" memberName="effect_finalizer_switch"
-              virtualName="" explicitFocusOrder="0" pos="810 819 120 30" tooltip="Switch to the FX section."
+              virtualName="" explicitFocusOrder="0" pos="930 819 120 30" tooltip="Switch to the FX section."
               bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="FX"
               connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="8b8fa534e67fede0" memberName="button_values_toggle"
@@ -5590,10 +5596,6 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="780r 10 60 30" tooltip="Load the factory defaults to start from scratch."
               bgColOff="ff000000" textCol="ffbcff00" textColOn="ffd0ff00" buttonText="INIT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <TEXTBUTTON name="" id="ec6e85c0b9db24e4" memberName="effect_finalizer_switch2"
-              virtualName="" explicitFocusOrder="0" pos="930 819 120 30" tooltip="Switch to the EQ bank."
-              bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="EQ"
-              connectedEdges="4" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="7cfc16f7f0064a2d" memberName="flt_shape_4" virtualName=""
                     explicitFocusOrder="0" pos="790r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, new FShapeSlConfig(synth_data)"/>

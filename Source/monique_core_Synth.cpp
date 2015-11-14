@@ -4248,13 +4248,12 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-
 class mono_Delay : public RuntimeListener
 {
     RuntimeInfo*info;
 
     double last_bmp_in;
-    
+
     int reflexion_write_index;
     int last_in_reflexion_size;
     int reflexion;
@@ -4267,6 +4266,8 @@ class mono_Delay : public RuntimeListener
     int record_index;
     int last_in_record_size;
     int record_buffer_size;
+    int real_record_buffer_size;
+    int num_records_to_write;
     mono_AudioSampleBuffer<2> record_buffer;
     float*active_left_record_buffer;
     float*active_right_record_buffer;
@@ -4279,8 +4280,8 @@ public:
     {
         // SETUP THE REFLEXION BUFFER
         bool bpm_changed = last_bmp_in != bpm_;
-	last_bmp_in = bpm_;
-      
+        last_bmp_in = bpm_;
+
         if( bpm_changed or last_in_reflexion_size != reflexion_in_size_ )
         {
             last_in_reflexion_size = reflexion_in_size_;
@@ -4318,14 +4319,16 @@ private:
     {
         // CALCULATE THE NEEDED SIZE
         {
-            const double speed_multi = delay_multi( last_in_record_size );
+            num_records_to_write = delay_multi( last_in_record_size ); // 1, 2 or 4
             const double bars_per_sec = bpm_/4/60;
             const double samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
-            record_buffer_size = samples_per_bar * speed_multi;
+            real_record_buffer_size = samples_per_bar * 4;
+            record_buffer_size = samples_per_bar;
+            // TODO change the record index only on zero
         }
-        if( record_buffer.get_size() < record_buffer_size )
+        if( record_buffer.get_size() < real_record_buffer_size )
         {
-            record_buffer.setSize( reflexion_buffer_size, true );
+            record_buffer.setSize( real_record_buffer_size, true );
             active_left_record_buffer = record_buffer.getWritePointer(LEFT);
             active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
         }
@@ -4374,7 +4377,7 @@ public:
         {
             // REFLEXION AND INPUT
             const int reflexion_read_index = update_get_reflexion_read_index();
-	    
+
             const float left_reflexion_and_input_mix = sample_mix( active_left_reflexion_buffer[reflexion_read_index], io_l[sid] );
             const float right_reflexion_and_input_mix = sample_mix( active_right_reflexion_buffer[reflexion_read_index], io_r[sid] );
             {
@@ -4404,8 +4407,54 @@ public:
                 if( record_power > 0 )
                 {
                     const float record_release = record_release_buffer_[sid];
-                    active_left_record_buffer[record_index] = sample_mix( left_record, left_reflexion_and_input_mix*record_power ) * record_release;
-                    active_right_record_buffer[record_index] = sample_mix( right_record, right_reflexion_and_input_mix*record_power ) * record_release;
+                    const float left_record_feedback = left_reflexion_and_input_mix*record_power;
+                    const float right_record_feedback = right_reflexion_and_input_mix*record_power;
+		    if( num_records_to_write > 2 )
+		    {
+                        active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
+		    }
+                    else if( num_records_to_write == 1 )
+                    {
+                        const int record_index_1 = record_index;
+                        int record_index_2 = record_index_1+record_buffer_size;
+                        if( record_index_2 > real_record_buffer_size )
+                        {
+                            record_index_2 -= real_record_buffer_size;
+                        }
+                        int record_index_3 = record_index_2+record_buffer_size;
+                        if( record_index_3 > real_record_buffer_size )
+                        {
+                            record_index_3 -= real_record_buffer_size;
+                        }
+                        int record_index_4 = record_index_3+record_buffer_size;
+                        if( record_index_4 > real_record_buffer_size )
+                        {
+                            record_index_4 -= real_record_buffer_size;
+                        }
+
+                        active_left_record_buffer[record_index_1] = sample_mix( left_record, left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index_1] = sample_mix( right_record, right_record_feedback ) * record_release;
+                        active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
+                        active_left_record_buffer[record_index_3] = sample_mix( active_left_record_buffer[record_index_3], left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index_3] = sample_mix( active_right_record_buffer[record_index_3], right_record_feedback ) * record_release;
+                        active_left_record_buffer[record_index_4] = sample_mix( active_left_record_buffer[record_index_4], left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index_4] = sample_mix( active_right_record_buffer[record_index_4], right_record_feedback ) * record_release;
+                    }
+                    else // if( num_records_to_write == 2 )
+                    {
+                        int record_index_2 = record_index + record_buffer_size*2;
+                        if( record_index_2 > real_record_buffer_size )
+                        {
+                            record_index_2 -= real_record_buffer_size;
+                        }
+
+                        active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
+                        active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
+                        active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
+                    }
                 }
 
                 io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
@@ -4418,7 +4467,7 @@ public:
                 {
                     reflexion_write_index = 0;
                 }
-                if( ++record_index >= record_buffer_size )
+                if( ++record_index >= real_record_buffer_size )
                 {
                     record_index = 0;
                 }
@@ -4447,7 +4496,7 @@ public:
     RuntimeListener( notifyer_ ),
 
                      last_bmp_in(20),
-    
+
                      reflexion_write_index(0),
                      last_in_reflexion_size(0),
                      reflexion(0),
@@ -4460,7 +4509,9 @@ public:
                      record_index(0),
                      last_in_record_size(0),
                      record_buffer_size(1),
-                     record_buffer(record_buffer_size),
+                     real_record_buffer_size(record_buffer_size),
+                     record_buffer(real_record_buffer_size),
+                     num_records_to_write(1),
                      active_left_record_buffer(record_buffer.getWritePointer(LEFT)),
                      active_right_record_buffer(record_buffer.getWritePointer(RIGHT)),
 

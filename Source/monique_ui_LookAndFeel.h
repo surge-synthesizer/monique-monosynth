@@ -43,6 +43,7 @@
 #define VAR_INDEX_BUTTON_AMP "5"
 #define VAR_INDEX_STATE_VAR "6"
 #define VAR_INDEX_VALUE_TO_SHOW "7"
+#define VAR_INDEX_BUTTON_TEXT "8"
 
 #define TURN_BUTTON_OFF( button ) \
 if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, TURN_OFF ) ) { \

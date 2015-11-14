@@ -501,8 +501,19 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
     const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
 
     const bool is_toggled = amp != 0;
-    const Colour color_1 = override_theme_colour ? button.findColour(TextButton::buttonColourId).contrasting(1) : is_toggled ? theme.button_on_font_colour : theme.button_off_font_colour;
-
+    Colour color_1;
+    if( amp == COLOR_REPLACEMENTS::USE_AREA_COLOUR )
+    {
+        color_1 = theme.button_off_font_colour;
+    }
+    else if( amp == COLOR_REPLACEMENTS::USE_AREA_TRANSCULENT )
+    {
+        color_1 = theme.button_off_font_colour;
+    }
+    else
+    {
+        color_1 = override_theme_colour ? button.findColour(TextButton::buttonColourId).contrasting(1) : is_toggled ? theme.button_on_font_colour : theme.button_off_font_colour;
+    }
     g.setFont (defaultFont.withHeight(fontHeight));
     g.setColour(color_1);
     g.drawText (button.getButtonText(),   Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),   Justification::centred, false);

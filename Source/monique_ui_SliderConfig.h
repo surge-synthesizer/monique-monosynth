@@ -965,8 +965,12 @@ class InputSlConfig : public ModulationSliderConfigBase
     bool action_keep_env_pop_open_for( const ENVData*const env_ ) const noexcept override
     {
         bool success = false;
-        FilterData*filter_data = synth_data->filter_datas[filter_id];
-        if( env_ == filter_data->input_envs[0] or env_ == filter_data->input_envs[1] or env_ == filter_data->input_envs[2] )
+        if
+        (
+            env_ == synth_data->filter_datas[0]->input_envs[0] or env_ == synth_data->filter_datas[0]->input_envs[1] or env_ == synth_data->filter_datas[0]->input_envs[2]
+            or env_ == synth_data->filter_datas[1]->input_envs[0] or env_ == synth_data->filter_datas[1]->input_envs[1] or env_ == synth_data->filter_datas[1]->input_envs[2]
+            or env_ == synth_data->filter_datas[2]->input_envs[0] or env_ == synth_data->filter_datas[2]->input_envs[1] or env_ == synth_data->filter_datas[2]->input_envs[2]
+        )
         {
             success = true;
         }
@@ -2295,7 +2299,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
     }
     bool action_keep_env_pop_open_for( const LFOData*const lfo_data_ ) const noexcept override
     {
-        return lfo_data_ == synth_data->mfo_datas[0] or lfo_data_ == synth_data->mfo_datas[1] or lfo_data_ == synth_data->mfo_datas[2];
+        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or lfo_data_ == synth_data->lfo_datas[2];
     }
 
     //==============================================================================
@@ -2451,6 +2455,10 @@ class LFOSlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override
     {
         return true;
+    }
+    bool action_keep_env_pop_open_for( const LFOData*const lfo_data_ ) const noexcept override
+    {
+        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or lfo_data_ == synth_data->lfo_datas[2];
     }
 
     //==============================================================================
@@ -4462,7 +4470,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-            return delay_to_text(delay_reflexion->get_value(), runtime_notifyer->get_sample_rate());
+        return delay_to_text(delay_reflexion->get_value(), runtime_notifyer->get_sample_rate());
     }
     StringRef get_center_suffix() const noexcept override
     {
@@ -5845,7 +5853,7 @@ class MorphSLConfig : public ModulationSliderConfigBase
     */
     bool action_keep_env_pop_open_for( const LFOData*const lfo_data_ ) const noexcept override
     {
-        return lfo_data_ == synth_data->lfo_datas[0] or lfo_data_ == synth_data->lfo_datas[1] or lfo_data_ == synth_data->lfo_datas[2];
+        return lfo_data_ == synth_data->mfo_datas[0] or lfo_data_ == synth_data->mfo_datas[1] or lfo_data_ == synth_data->mfo_datas[2] or lfo_data_ == synth_data->mfo_datas[3];
     }
     COLOUR_THEMES get_colour_theme() const noexcept override
     {

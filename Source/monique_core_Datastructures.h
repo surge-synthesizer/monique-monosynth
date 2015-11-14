@@ -1786,8 +1786,6 @@ static inline double delay_multi( int delay_ ) noexcept
         return 1;
     case 18 :
         return 2;
-    case 19 :
-        return 3;
     default :
         return 4;
     }
@@ -1852,8 +1850,6 @@ static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
         return  "1/1";
     case 18 :
         return "2/1";
-    case 19 :
-        return "3/1";
     default :
         return "4/1";
     }

@@ -170,6 +170,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> effect_finalizer_switch2;
     ScopedPointer<TextButton> button_edit_input_env_1_3;
     ScopedPointer<TextButton> button_edit_input_env_1_2;
     ScopedPointer<TextButton> button_edit_input_env_1_1;
@@ -388,7 +389,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_2;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_3;
     ScopedPointer<TextButton> button_programm_scratch;
-    ScopedPointer<TextButton> effect_finalizer_switch2;
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Monique_Ui_DualSlider> delay3;

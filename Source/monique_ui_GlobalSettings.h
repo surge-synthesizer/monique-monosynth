@@ -40,7 +40,8 @@ class Monique_Ui_GlobalSettings  : public Component,
                                    public Monique_Ui_Refreshable,
                                    public AsyncUpdater,
                                    public ComboBoxListener,
-                                   public ButtonListener
+                                   public ButtonListener,
+                                   public LabelListener
 {
 public:
     //==============================================================================
@@ -114,6 +115,7 @@ private:
     void resized();
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged);
     void buttonClicked (Button* buttonThatWasClicked);
+    void labelTextChanged (Label* labelThatHasChanged);
 
     // Binary resources:
     static const char* vst_logo_100x_png;
@@ -189,6 +191,7 @@ private:
     ScopedPointer<Label> label_colour2;
     ScopedPointer<Label> label_section2;
     ScopedPointer<ComboBox> combo_theme;
+    ScopedPointer<Label> label;
 
 
     //==============================================================================

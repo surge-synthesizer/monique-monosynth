@@ -10,6 +10,8 @@ remove chorus fill method and add it to tick
 
 delay: // TODO was passiert bei bpm änderungen?
 
+resize does not work in plugin
+
 4.0.1
 
 -touch screen
@@ -43,6 +45,8 @@ CHANGES 0.9.8
 - add: back: morph button toggles
 ->>> not converter build -> load an old program and store it again-> converted
 - fix: stops motor morphs on program change
+- swap: fx and eq button
+- improved keep popup open handling
 
 NOTES:
 

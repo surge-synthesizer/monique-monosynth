@@ -450,7 +450,7 @@ cutoff
 cutoff_smoother(smooth_manager_,&cutoff),
 modulate_cutoff
 (
-    true,
+    false,
     generate_param_name(FILTER_NAME,id_,"modulate_cutoff"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_cutoff_ON")
 ),
@@ -468,7 +468,7 @@ resonance
 resonance_smoother(smooth_manager_,&resonance),
 modulate_resonance
 (
-    true,
+    false,
     generate_param_name(FILTER_NAME,id_,"modulate_resonance"),
     generate_short_human_name(FILTER_NAME_SHORT,id_,"mod_resonance_ON")
 ),
@@ -1628,7 +1628,7 @@ master_data( master_data_ ),
              delay_smoother(smooth_manager,&delay),
              delay_refexion
              (
-                 MIN_MAX( 0, 20 ),
+                 MIN_MAX( 0, 19 ),
                  11,
 
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
@@ -1636,7 +1636,7 @@ master_data( master_data_ ),
              ),
 	     delay_record_size
 	     (
-                 MIN_MAX( 17, 20 ),
+                 MIN_MAX( 17, 19 ),
                  17,
 
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"record_size"),
@@ -2313,8 +2313,6 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
     right_morph_source_names.add( "UNDEFINED" );
     right_morph_source_names.add( "UNDEFINED" );
     right_morph_source_names.add( "UNDEFINED" );
-
-    MoniqueSynthData* switch_data_ = this;
     {
         // OSC'S
         {
@@ -2323,24 +2321,24 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_1->register_parameter( fm_osc_data->master_shift.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[0]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[0]->sync.bool_ptr(), data_type == MASTER );
             }
             {
                 morph_group_1->register_parameter( osc_datas[1]->wave.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->tune.ptr(), data_type == MASTER );
                 morph_group_1->register_parameter( osc_datas[1]->fm_amount.ptr(), data_type == MASTER );
 
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->is_lfo_modulated.bool_ptr(), data_type == MASTER );
+                morph_group_1->register_switch_parameter( osc_datas[1]->sync.bool_ptr(), data_type == MASTER );
             }
             {
                 morph_group_1->register_parameter( osc_datas[2]->wave.ptr() , data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->tune.ptr(), data_type == MASTER  );
                 morph_group_1->register_parameter( osc_datas[2]->fm_amount.ptr(), data_type == MASTER  );
 
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
-                morph_group_1->register_switch_parameter( switch_data_->osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( osc_datas[2]->is_lfo_modulated.bool_ptr(), data_type == MASTER  );
+                morph_group_1->register_switch_parameter( osc_datas[2]->sync.bool_ptr(), data_type == MASTER  );
             }
         }
 
@@ -2372,15 +2370,15 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                     morph_group_2->register_parameter( filter_datas[0]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_pan.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[0]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[0]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
 
                 // LFO
@@ -2416,15 +2414,15 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                     morph_group_2->register_parameter( filter_datas[1]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_pan.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[1]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[1]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
 
                 // LFO
@@ -2460,15 +2458,15 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                     morph_group_2->register_parameter( filter_datas[2]->input_sustains[input_id].ptr(), data_type == MASTER  );
                 }
 
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_pan.bool_ptr(), data_type == MASTER  );
-                morph_group_2->register_switch_parameter( switch_data_->filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->filter_type.int_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_distortion.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_cutoff.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_resonance.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_pan.bool_ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( filter_datas[2]->modulate_output.bool_ptr(), data_type == MASTER  );
                 for( int input_id = 0 ; input_id != SUM_INPUTS_PER_FILTER ; ++input_id )
                 {
-                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( switch_data_->filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
+                    morph_group_2->register_switch_parameter( reinterpret_cast< BoolParameter* >( filter_datas[2]->input_holds[input_id].ptr() ), data_type == MASTER  );
                 }
 
                 // LFO
@@ -2511,7 +2509,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 morph_group_3->register_parameter( eq_data->envs[band_id]->release.ptr(), data_type == MASTER  );
                 morph_group_3->register_parameter( eq_data->envs[band_id]->shape.ptr(), data_type == MASTER  );
 
-                morph_group_3->register_switch_parameter( switch_data_->eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
+                morph_group_3->register_switch_parameter( eq_data->hold[band_id].bool_ptr(), data_type == MASTER  );
             }
 
             morph_group_3->register_parameter( eq_data->bypass.ptr(), data_type == MASTER  );
@@ -2543,9 +2541,9 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             {
                 morph_group_4->register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
                 morph_group_4->register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
-                morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
             }
-            morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
+            morph_group_4->register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
 
             {
                 morph_group_4->register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
@@ -2555,11 +2553,11 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             {
                 // is_on
                 // speed_multi
-                morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
-                //morph_group_arp_switchs->register_switch_parameter( switch_data_->arp_sequencer_data.connect.ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
+                //morph_group_arp_switchs->register_switch_parameter( arp_sequencer_data.connect.ptr(), data_type == MASTER  );
                 for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
                 {
-                    morph_group_4->register_switch_parameter( switch_data_->arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
+                    morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
                 }
             }
 
