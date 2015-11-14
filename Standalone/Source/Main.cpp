@@ -120,9 +120,9 @@ COLD void MoniqueSynthesizerApp::initialise (const String&)
         standaloneFilterWindow->setDropShadowEnabled( true );
 
 #if JUCE_MAC
-        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, true );
+        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::maximiseButton | DocumentWindow::closeButton, true );
 #else
-        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false );
+        standaloneFilterWindow->setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::maximiseButton | DocumentWindow::closeButton, false );
 #endif
         standaloneFilterWindow->setResizable(true,true);
 

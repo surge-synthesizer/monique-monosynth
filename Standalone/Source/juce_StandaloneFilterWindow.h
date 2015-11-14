@@ -51,6 +51,8 @@ private:
     //==========================================================================
     ScopedPointer<MoniqueAudioProcessor> filter;
     Monique_Ui_Mainwindow* main_window;
+    float last_scale_factor;
+    float aspect_ratio;
 
     COLD void deleteFilter() noexcept;
 
@@ -60,7 +62,7 @@ private:
 //==============================================================================
 COLD StandaloneFilterWindow::StandaloneFilterWindow(const String& title) noexcept
 :
-DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false )
+DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | DocumentWindow::closeButton, false ), last_scale_factor(0), aspect_ratio(0.5)
 {
     setOpaque(true);
     createFilter();
@@ -69,10 +71,11 @@ DocumentWindow(title, Colour(0xff000000), DocumentWindow::minimiseButton | Docum
     {
         JUCEApplicationBase::quit();
     }
-    
+
     main_window = reinterpret_cast<Monique_Ui_Mainwindow*>(filter->createEditorIfNeeded());
     setContentOwned( main_window, true );
-    getConstrainer()->setFixedAspectRatio((main_window->original_w+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight()));
+    aspect_ratio = (main_window->original_w+getBorderThickness().getLeft()+getBorderThickness().getRight())/(main_window->original_h+getBorderThickness().getTop()+getBorderThickness().getBottom()+getTitleBarHeight());
+    getConstrainer()->setFixedAspectRatio(aspect_ratio);
 }
 COLD StandaloneFilterWindow::~StandaloneFilterWindow() noexcept
 {
@@ -185,21 +188,46 @@ COLD void StandaloneFilterWindow::closeButtonPressed()
         filter->removeAudioCallback (&filter->player);
         filter->audio_is_successful_initalized = false;
     }
-    
+
     filter->synth_data->ask_and_save_if_changed();
     JUCEApplicationBase::quit();
 }
 COLD void StandaloneFilterWindow::maximiseButtonPressed()
 {
-    if( isResizable() )
+    if( last_scale_factor == 0 )
     {
-        setResizable(false,false);
-        DocumentWindow::maximiseButtonPressed();
+        last_scale_factor = main_window->synth_data->ui_scale_factor;
+	
+        const Desktop::Displays& displays = Desktop::getInstance().getDisplays();
+        const Desktop::Displays::Display& display = displays.getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) );
+	
+        const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) ) );
+        const int main_display_h = main_display.userArea.getHeight();
+        const int main_display_w = main_display.userArea.getWidth();
+        int use_height = main_display_h;
+        int use_width = main_display_h * aspect_ratio;
+
+        /*
+            if( use_width > main_display_w )
+            {
+                use_height = main_display_w * aspect_ratio;
+                float new_scale = 1.0f/original_h*use_height;
+                use_width = original_w*new_scale;
+            }
+            if( main_display_w < use_width )
+            {
+                use_width = main_display_w * 0.9;
+                float new_scale = 1.0f/original_w*use_width;
+                use_height = original_h*new_scale;
+            }
+            */
+        setSize(use_width,use_height);
     }
     else
     {
-        setResizable(true,true);
-        DocumentWindow::maximiseButtonPressed();
+	main_window->synth_data->ui_scale_factor = last_scale_factor;
+	last_scale_factor = 0;
+	main_window->update_size();
     }
 }
 COLD void StandaloneFilterWindow::resized()

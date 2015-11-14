@@ -1,17 +1,12 @@
 lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 bleibt im ctrl hängen, wenn ein popup offen 
-check close handlin mfo
+
 
 does not store slider settings
-
 is changed backup depends now on the morph groups -> change this
-
 remove chorus fill method and add it to tick
-
 delay: // TODO was passiert bei bpm änderungen?
-
 resize does not work in plugin
-colours for all does not work if the bg is selected
 
 4.0.1
 
@@ -48,6 +43,8 @@ CHANGES 0.9.8
 - fix: stops motor morphs on program change
 - swap: fx and eq button
 - improved keep popup open handling
+- add back maximize button, but keep fixed aspect ratio
+- fix bugs in slider context menu
 
 NOTES:
 

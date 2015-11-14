@@ -74,7 +74,7 @@ void Monique_Ui_GlobalSettings::refresh() noexcept
             {
                 colour_selector->setColour( ColourSelector::backgroundColourId, editable_theme->area_colour );
                 last_repainted_colour = *current_edited_colour;
-                if( toggle_for_all->getToggleState() and editable_theme != &look_and_feel->colours.get_theme( COLOUR_THEMES::BG_THEME ) )
+                if( toggle_for_all->getToggleState() ) // and editable_theme != &look_and_feel->colours.get_theme( COLOUR_THEMES::BG_THEME ) )
                 {
                     for( int i = 0 ; i != COLOUR_THEMES::SUM_OF ; ++i )
                     {

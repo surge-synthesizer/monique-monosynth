@@ -788,7 +788,7 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 void Monique_Ui_Mainwindow::update_size()
 {
     float ui_scale_factor = synth_data->ui_scale_factor;
-    const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getMainDisplay() );
+    const Desktop::Displays::Display& main_display( Desktop::getInstance().getDisplays().getDisplayContaining( Point<int>( getBounds().getX(), getBounds().getY() ) ) );
     const int main_display_h = main_display.userArea.getHeight();
     const int main_display_w = main_display.userArea.getWidth();
     int use_height = original_h*ui_scale_factor;

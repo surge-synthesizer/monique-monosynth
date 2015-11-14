@@ -1634,24 +1634,24 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_reflexion"),
                  generate_short_human_name("FX","delay_refexion")
              ),
-	     delay_record_size
-	     (
+             delay_record_size
+             (
                  MIN_MAX( 17, 19 ),
                  17,
 
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"record_size"),
                  generate_short_human_name("FX","record_size")
              ),
-	     delay_record_release
-	     (
+             delay_record_release
+             (
                  MIN_MAX( 0, 1 ),
                  1,
                  1000,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"record_release"),
                  generate_short_human_name("FX","record_release")
              ),
-	     delay_record_release_smoother( smooth_manager, &delay_record_release ),
-	     delay_record
+             delay_record_release_smoother( smooth_manager, &delay_record_release ),
+             delay_record
              (
                  false,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"record"),
@@ -2060,22 +2060,13 @@ master_data( master_data_ ),
     // FILE HANDLING (MUST BE AFTER SAVEABLE PARAMS)
     colect_saveable_parameters();
 
-    if( data_type == MASTER )
-    {
-        colect_global_parameters();
-        all_parameters.addArray( saveable_parameters );
-        all_parameters.addArray( global_parameters );
-        all_parameters.add( &ctrl );
-
-        refresh_banks_and_programms( *this );
-        set_default_midi_assignments( *this, audio_processor_ );
-    }
 
 
     // REMOVE UNNEDED PARAMETERS FROM THE SAVABLES (COZ THEY HAVE MORPH DATA)
     saveable_parameters.minimiseStorageOverheads();
     if( id == MASTER )
     {
+        all_parameters.addArray( saveable_parameters );
         automateable_parameters.addArray( saveable_parameters );
         automateable_parameters.minimiseStorageOverheads();
 
@@ -2106,6 +2097,16 @@ master_data( master_data_ ),
             }
         }
         saveable_parameters.minimiseStorageOverheads();
+    }
+
+    if( data_type == MASTER )
+    {
+        colect_global_parameters();
+        all_parameters.addArray( global_parameters );
+        all_parameters.add( &ctrl );
+
+        refresh_banks_and_programms( *this );
+        set_default_midi_assignments( *this, audio_processor_ );
     }
 }
 COLD MoniqueSynthData::~MoniqueSynthData() noexcept
@@ -2288,7 +2289,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &is_rotary_sliders_velocity_mode );
     global_parameters.add( &is_linear_sliders_velocity_mode );
     global_parameters.add( &sliders_linear_sensitivity );
-
+    
     global_parameters.add( &ui_scale_factor );
 
     global_parameters.add( &midi_pickup_offset );

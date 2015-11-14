@@ -19,7 +19,9 @@ protected:
     Monique_Ui_Refresher*const ui_refresher;
     UiLookAndFeel*const look_and_feel;
     MIDIControlHandler*const midi_control_handler;
+public:
     MoniqueSynthData*const synth_data;
+protected:
     MoniqueSynthesiserVoice*const voice;
 
     Monique_Ui_Mainwindow*get_editor() noexcept;

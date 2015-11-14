@@ -428,7 +428,6 @@ public:
     ScopedPointer<Slider> popup_linear_sensi_slider;
     ScopedPointer<Slider> popup_rotary_sensi_slider;
     ScopedPointer<Slider> popup_midi_snap_slider;
-    ScopedPointer<Slider> popup_test_slider;
     PopupMenu* getCustomPopupMenu (Slider*) /*override*/;
     bool sliderMenuCallback (const int result, Slider* slider) /*override*/;
     bool sliderDoubleClicked ( Slider* slider) /*override*/;

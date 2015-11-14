@@ -162,7 +162,6 @@ mainwindow(nullptr),
            popup_smooth_Slider(new Slider("")),
            popup_linear_sensi_slider(new Slider("")),
            popup_rotary_sensi_slider(new Slider("")),
-           popup_test_slider(new Slider("")),
            popup_midi_snap_slider(new Slider(""))
 {
     std::cout << "MONIQUE: init style" << std::endl;
@@ -1506,7 +1505,6 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
     PopupMenu* menu = new PopupMenu();
     menu->setLookAndFeel (this);
 
-
     {
         // TODO TOOLTIP - > maybe you can add a button for tooltips or just hack the class
 
@@ -1549,7 +1547,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         popup_smooth_Slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
         if( synth_data )
         {
-            popup_linear_sensi_slider->setValue( int(synth_data->glide_motor_time), dontSendNotification );
+            popup_smooth_Slider->setValue( int(synth_data->glide_motor_time), dontSendNotification );
         }
 
         menu->addCustomItem (10,
@@ -1557,7 +1555,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                              150, 30,
                              false );
 
-        if( slider_->isHorizontal() or slider_->isVertical() )
+        // LINEAR
         {
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL LINEAR SLIDER HANDLING");
@@ -1568,23 +1566,20 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             popup_linear_sensi_slider->setRange (100, 2000, 1);
             popup_linear_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
             popup_linear_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
-            popup_test_slider->setMouseDragSensitivity(synth_data->sliders_linear_sensitivity);
-            popup_test_slider->setSliderStyle (Slider::LinearVertical);
             if( synth_data )
             {
                 popup_linear_sensi_slider->setValue( int(synth_data->sliders_linear_sensitivity), dontSendNotification );
-                popup_test_slider->setMouseDragSensitivity(synth_data->sliders_linear_sensitivity);
             }
             menu->addCustomItem (17,
                                  popup_linear_sensi_slider,
                                  150, 30,
                                  false );
         }
-        else
+        // ROTARY
         {
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL ROTARY SLIDER HANDLING");
-            menu->addItem (12, TRANS ("Velocity Based Mode"), true, synth_data->is_rotary_sliders_velocity_mode );
+            menu->addItem (12, TRANS ("Velocity-sensitive Mode"), true, synth_data->is_rotary_sliders_velocity_mode );
             menu->addItem (13, TRANS ("Use circular dragging (ignored in velocity mode)"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
             //menu->addItem (14, TRANS ("Use left-right dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
             //menu->addItem (15, TRANS ("Use up-down dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
@@ -1596,26 +1591,11 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             popup_rotary_sensi_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
             popup_rotary_sensi_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
             popup_rotary_sensi_slider->setValue( int(synth_data->sliders_sensitivity), dontSendNotification );
-            popup_test_slider->setMouseDragSensitivity(synth_data->sliders_sensitivity);
-            popup_test_slider->setSliderStyle (synth_data->sliders_in_rotary_mode ? Slider::Rotary : Slider::RotaryHorizontalVerticalDrag );
             menu->addCustomItem (18,
                                  popup_rotary_sensi_slider,
                                  150, 30,
                                  false );
         }
-
-        /*
-        menu->addSectionHeader("TEST SENSITIVITY and HANDLING");
-        popup_test_slider->setRange (0, 1000, 1);
-        popup_test_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
-        popup_test_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
-        popup_test_slider->setOpaque(true);
-        popup_test_slider->setValue(500,dontSendNotification);
-        menu->addCustomItem (19,
-                             popup_test_slider,
-                             60, 60,
-                             false );
-                             */
 
         menu->addSeparator();
         menu->addSectionHeader("MIDI");
@@ -1625,7 +1605,6 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         popup_midi_snap_slider->setRange (0, 1, 0.001);
         popup_midi_snap_slider->setTextBoxStyle (Slider::NoTextBox, true, 70, 20);
         popup_midi_snap_slider->getProperties().set( VAR_INDEX_COLOUR_THEME, BG_THEME );
-        popup_test_slider->setValue(500,dontSendNotification);
         if( synth_data )
         {
             popup_midi_snap_slider->setValue( synth_data->midi_pickup_offset, dontSendNotification );
@@ -1798,7 +1777,6 @@ void UiLookAndFeel::sliderValueChanged (Slider* sliderThatWasMoved)
         if( synth_data )
         {
             synth_data->sliders_linear_sensitivity = sliderThatWasMoved->getValue();
-            popup_test_slider->setMouseDragSensitivity(sliderThatWasMoved->getValue());
         }
         if( mainwindow )
         {
@@ -1810,7 +1788,6 @@ void UiLookAndFeel::sliderValueChanged (Slider* sliderThatWasMoved)
         if( synth_data )
         {
             synth_data->sliders_sensitivity = sliderThatWasMoved->getValue();
-            popup_test_slider->setMouseDragSensitivity(sliderThatWasMoved->getValue());
         }
         if( mainwindow )
         {
