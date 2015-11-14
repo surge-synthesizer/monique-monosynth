@@ -11,6 +11,7 @@ remove chorus fill method and add it to tick
 delay: // TODO was passiert bei bpm änderungen?
 
 resize does not work in plugin
+colours for all does not work if the bg is selected
 
 4.0.1
 
