@@ -817,28 +817,63 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button( Button*button_ 
         struct ChorusCleaner : Timer, AsyncUpdater
         {
             Button*const button_down;
+            String button_text;
             Monique_Ui_Mainwindow*const parent;
+            int counter;
             void timerCallback() override
             {
-                if( Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() == button_down )
+                if( ++counter > 31 )
                 {
-                    parent->clear_record_buffer();
-		    // TODO flash
+                    if( Desktop::getInstance().getMainMouseSource().getComponentUnderMouse() == button_down )
+                    {
+                        parent->clear_record_buffer();
+                        // TODO flash
+                    }
+                    stopTimer();
+                    triggerAsyncUpdate();
                 }
-
-                stopTimer();
-                triggerAsyncUpdate();
+                else
+                {
+                    if( counter % 2 == 0)
+                    {
+		        String value( 3.2f - (float(counter)/10) );
+			if( value == "3" )
+			{
+			  value = "3.0";
+			}
+			else if( value == "2" )
+			{
+			  value = "2.0";
+			}
+			else if( value == "1" )
+			{
+			  value = "1.0";
+			}
+                        button_down->setButtonText( String("CLR ") + value );
+                    }
+                    else
+                    {
+                        button_down->setButtonText( String("") );
+                    }
+                }
             }
             void handleAsyncUpdate() override
             {
-               parent->clear_record_timer = nullptr;
+                parent->clear_record_timer = nullptr;
             }
 
-            ChorusCleaner( Button*button__, Monique_Ui_Mainwindow*const parent_ ) : button_down( button__ ), parent(parent_) {}
+            ChorusCleaner( Button*button__, Monique_Ui_Mainwindow*const parent_ ) : button_down( button__ ), parent(parent_), counter(0)
+            {
+                button_text = button_down->getButtonText();
+            }
+            ~ChorusCleaner()
+            {
+                button_down->setButtonText( button_text );
+            }
         };
 
         clear_record_timer = new ChorusCleaner(button_,this);
-        clear_record_timer->startTimer(4000);
+        clear_record_timer->startTimer(100);
     }
     else
     {
