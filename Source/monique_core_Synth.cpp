@@ -32,16 +32,8 @@ static inline float sample_mix( float s1_, float s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline float left_pan( float pan_, const float* sin_lookup_ ) noexcept
-{
-    // return jmin(1.0f,pan_*-1+1);
-    return jmax((float)std::sin( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f);
-}
-static inline float right_pan( float pan_, const float* cos_lookup_  ) noexcept
-{
-    return jmax((float)std::cos( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f);
-    // return jmin(1.0f,pan_+1);
-}
+#define left_pan( pan_, sin_lookup_ ) jmax((float)std::sin( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
+#define right_pan( pan_, cos_lookup_  ) jmax((float)std::cos( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f)
 
 //==============================================================================
 //==============================================================================
@@ -5040,7 +5032,12 @@ public:
 
         // DELAY
         {
+#ifdef IS_STANDALONE
+	    // NOT POSSIBLE TO SYNC
+            delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
+#else
             delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
+#endif
             delay.process
             (
                 left_out_buffer, right_out_buffer,
