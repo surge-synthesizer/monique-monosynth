@@ -1375,6 +1375,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         else
                             wave_path.lineTo( x, y );
                     }
+                    wave_path.lineTo( label_x_ident+label_w, label_y_ident+label_h*0.5 );
                 }
                 else if( value_as_float <= 2 and value_as_float >= 1 )
                 {
@@ -1416,6 +1417,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         else
                             wave_path.lineTo( x, y );
                     }
+                    wave_path.lineTo( label_x_ident+label_w, label_y_ident+label_h*0.5 );
                 }
                 else if( value_as_float <= 3 and value_as_float >= 2 )
                 {
@@ -1444,6 +1446,7 @@ void UiLookAndFeel::drawRotarySlider (Graphics& g,
                         else
                             wave_path.lineTo( x, y );
                     }
+                    wave_path.lineTo( label_x_ident+label_w, label_y_ident+label_h*0.5 );
                 }
 
                 g.setColour( SliderCol );
@@ -2171,6 +2174,7 @@ void UiLookAndFeel::drawGlassLozenge (Graphics& g,
         g.fillPath (outline);
     }
 }
+
 
 
 

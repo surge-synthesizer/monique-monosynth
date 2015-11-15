@@ -1,5 +1,3 @@
-wenn arp an, dann nimmt er kein note off vom keyboard an
-
 bleibt im ctrl hängen, wenn ein popup offen 
 is changed backup depends now on the morph groups -> change this
 delay: // TODO was passiert bei bpm änderungen?
@@ -42,6 +40,7 @@ CHANGES 0.9.8
 - reworked/new implementation: chorus (build out of 5 delay lines modulated by 5 oscillators)
 - improved reverb performance
 - add: input for colour codes
+- improved slider wave drawings
 
 NOTES:
 
