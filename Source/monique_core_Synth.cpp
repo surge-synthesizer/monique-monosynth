@@ -940,6 +940,10 @@ public:
 
         return last_tick_value = lookup( sine_lookup, angle );
     }
+    inline float lastOut_with_phase_offset( float offset_ ) noexcept
+    {
+        return lookup( sine_lookup, angle + offset_*(double_Pi+double_Pi) );
+    }
     inline float lastOut() const noexcept
     {
         return last_tick_value;
@@ -4129,6 +4133,55 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+class AllPassFilter
+{
+    HeapBlock<float> buffer;
+    int bufferSize, bufferIndex;
+public:
+    //==============================================================================
+    inline float process (const float input) noexcept
+    {
+        const float bufferedValue = buffer [bufferIndex];
+        float temp = input + (bufferedValue * 0.5f);
+        JUCE_UNDENORMALISE (temp);
+        buffer[bufferIndex] = temp;
+        bufferIndex = (bufferIndex + 1) % bufferSize;
+
+        return bufferedValue - input;
+    }
+
+    //==============================================================================
+    COLD void setSize (const int size)
+    {
+        if (size != bufferSize)
+        {
+            bufferIndex = 0;
+            buffer.malloc ((size_t) size);
+            bufferSize = size;
+        }
+
+        clear();
+    }
+    COLD void clear() noexcept
+    {
+        buffer.clear ((size_t) bufferSize);
+    }
+
+public:
+    //==============================================================================
+    COLD AllPassFilter() noexcept
+:
+    bufferSize(0),
+               bufferIndex(0)
+    {}
+    COLD ~AllPassFilter() noexcept {}
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
+};
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -4138,102 +4191,146 @@ public:
 //==============================================================================
 class Chorus : public RuntimeListener
 {
+    ChorusData*const chorus_data;
+
+    mono_SineWaveAutonom osc_1;
+    mono_SineWaveAutonom osc_2;
+    mono_SineWaveAutonom osc_3;
+    mono_SineWaveAutonom osc_4;
+    mono_SineWaveAutonom osc_5;
+    
     int buffer_size;
     int index;
-    float last_delay;
-    float* buffer;
+    mono_AudioSampleBuffer<2> data_buffer;
+    float* current_left_buffer;
+    float* current_right_buffer;
 
 public:
-    //==============================================================================
-    inline void fill(float sample_) noexcept
+#define SUM_DELAY_LINES 4
+    inline void process( float* left_in_, float* right_in_,
+                         float* left_out_, float* right_out_,
+                         int num_samples_ ) noexcept
     {
-        buffer[index] = sample_;
-        if( ++index >= buffer_size )
+        const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_value_buffer() );
+        const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_value_buffer() );
+
+        const float e_samples = sample_rate/164.81; //82.41;
+        const float e2_samples = sample_rate/165.91;
+        for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
-            index = 0;
+            const float power = chorus_env_buffer[sid] *0.75f;
+            const float amps[ SUM_DELAY_LINES ] =
+            {
+                ((osc_1.tick()*0.7f  + osc_2.tick()*0.3f) + 1)*0.5f,
+                ((osc_1.lastOut_with_phase_offset( 0.25f )*0.3f + osc_3.tick()*0.6f) + 1) *0.5f,
+                ((osc_1.lastOut_with_phase_offset( 0.5f )*0.4f + osc_4.tick()*0.5f) + 1) * 0.5f,
+                ((osc_1.lastOut_with_phase_offset( 0.75f )*0.6f + osc_5.tick()*0.4f) + 1) * 0.5f
+            };
+
+#define CHECK_MAKE_INDEX_VALID( floated_index_, size_ ) \
+  if(floated_index_ >= size_) \
+  { \
+    floated_index_ -= size_; \
+  } \
+  else if(floated_index_ < 0) \
+  { \
+    floated_index_ += size_; \
+  }
+#define CHECK_MAKE_INDEX_VALID_upper_only( floated_index_, size_ ) \
+  if(floated_index_ >= size_) \
+  { \
+    floated_index_ -= size_; \
+  }
+            // L
+            {
+                float result = 0;
+                for( int i = 0 ; i != SUM_DELAY_LINES ; ++i )
+                {
+                    float delay = power * e_samples * amps[i];
+                    float float_index = float(index) - delay +1;
+                    CHECK_MAKE_INDEX_VALID( float_index, buffer_size )
+
+                    const int index_1 = std::floor(float_index);
+                    int index_2 = index_1 + 1;
+                    CHECK_MAKE_INDEX_VALID_upper_only( index_2, buffer_size )
+                    const float delta = float_index-index_1;
+
+                    result += ( current_left_buffer[index_2]*delta + current_left_buffer[index_1]*(1.0f-delta)) / (i+2);
+                }
+                left_out_[sid] = result;
+            }
+            // R
+            {
+                float result = 0;
+                for( int i = 0 ; i != SUM_DELAY_LINES; ++i )
+                {
+                    float delay = power * e2_samples * amps[i] ;
+                    float float_index = float(index) - delay + 1;
+                    CHECK_MAKE_INDEX_VALID( float_index, buffer_size )
+
+                    const int index_1 = std::floor(float_index);
+                    int index_2 = index_1 + 1;
+                    CHECK_MAKE_INDEX_VALID_upper_only( index_2, buffer_size )
+                    const float delta = float_index-index_1;
+
+                    result += ( current_right_buffer[index_2]*delta + current_right_buffer[index_1]*(1.0f-delta)) / (i+2);
+                }
+                right_out_[sid] = result;
+            }
+
+            {
+                const float pan = smoothed_pan_buffer[sid];
+                const float left = jmin(1.0f,pan+1)+0.0001f;
+                const float right = jmin(1.0f,pan*-1+1)+0.0001f;
+                current_left_buffer[index] = sample_mix(left_in_[sid], left_out_[sid] * power*left );
+                current_right_buffer[index] = sample_mix(right_in_[sid], right_out_[sid] * power*right );
+            }
+
+            index = (index + 1) % buffer_size;
         }
     }
-#define FEEDBACK_GLIDE 0.01f
-    inline float tick( float delay_ ) noexcept
-    {
-        if( delay_ != last_delay )
-        {
-            if( delay_ < last_delay - FEEDBACK_GLIDE)
-            {
-                delay_ = last_delay - FEEDBACK_GLIDE;
-            }
-            else if( delay_ > last_delay + FEEDBACK_GLIDE )
-            {
-                delay_ = last_delay + FEEDBACK_GLIDE;
-            }
-            last_delay = delay_;
-        }
 
-        float i = float(index) - last_delay;
-        if(i >= buffer_size)
-        {
-            i -= buffer_size;
-        }
-        else if(i < 0)
-        {
-            i += buffer_size;
-        }
-
-        // will be same as i or less
-        int ia = std::floor(i);
-        if (ia >= buffer_size)
-        {
-            ia = 0;
-        }
-        const float delta = i-ia;
-        // will be same as i or one more
-        int ib = ia + 1;
-        if (ib >= buffer_size)
-        {
-            ib = 0;
-        }
-
-        return buffer[ib]*delta + buffer[ia]*(1.0f-delta);
-    }
     inline void reset() noexcept
     {
-        index = 0;
-        sample_rate_or_block_changed();
+        data_buffer.clear();
     }
     //==============================================================================
     COLD void sample_rate_or_block_changed() noexcept override
     {
-        if( buffer_size != int(sample_rate/10) )
-        {
-            buffer_size = int(sample_rate/10);
-            if( buffer )
-            {
-                delete[] buffer;
-            }
-            buffer = new float[buffer_size];
-        }
-        FloatVectorOperations::clear( buffer, buffer_size );
+        buffer_size = sample_rate / 82.41;
+        data_buffer.setSize( buffer_size, false );
+        data_buffer.clear();
+
+        current_left_buffer = data_buffer.getWritePointer(LEFT);
+        current_right_buffer = data_buffer.getWritePointer(RIGHT);
     }
 
 public:
     //==============================================================================
-    COLD Chorus( RuntimeNotifyer*const notifyer_ ) noexcept
+    COLD Chorus( RuntimeNotifyer*const notifyer_, MoniqueSynthData*const synth_data_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
 
-                     buffer_size(0)
+                     osc_1( notifyer_, synth_data_->sine_lookup ),
+                     osc_2( notifyer_, synth_data_->sine_lookup ),
+                     osc_3( notifyer_, synth_data_->sine_lookup ),
+                     osc_4( notifyer_, synth_data_->sine_lookup ),
+                     osc_5( notifyer_, synth_data_->sine_lookup ),
+
+                     buffer_size(1),
+                     data_buffer(buffer_size),
+                     index(0),
+
+                     chorus_data(synth_data_->chorus_data)
     {
-        index = 0;
-        last_delay = 210;
-
-        buffer = nullptr;
-
         sample_rate_or_block_changed();
+        osc_1.set_frequency( 0.4 );
+        osc_2.set_frequency( 0.6 );
+        osc_3.set_frequency( 0.55 );
+        osc_4.set_frequency( 0.5 );
+        osc_5.set_frequency( 0.45 );
     }
-    COLD ~Chorus() noexcept
-    {
-        delete [] buffer;
-    }
+    COLD ~Chorus() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
 };
@@ -4409,11 +4506,11 @@ public:
                     const float record_release = record_release_buffer_[sid];
                     const float left_record_feedback = left_reflexion_and_input_mix*record_power;
                     const float right_record_feedback = right_reflexion_and_input_mix*record_power;
-		    if( num_records_to_write > 2 )
-		    {
+                    if( num_records_to_write > 2 )
+                    {
                         active_left_record_buffer[record_index] = sample_mix( left_record, left_record_feedback ) * record_release;
                         active_right_record_buffer[record_index] = sample_mix( right_record, right_record_feedback ) * record_release;
-		    }
+                    }
                     else if( num_records_to_write == 1 )
                     {
                         const int record_index_1 = record_index;
@@ -4463,14 +4560,8 @@ public:
 
             // UPDATE INDEX
             {
-                if( ++reflexion_write_index >= reflexion_buffer_size )
-                {
-                    reflexion_write_index = 0;
-                }
-                if( ++record_index >= real_record_buffer_size )
-                {
-                    record_index = 0;
-                }
+                reflexion_write_index = (reflexion_write_index + 1) % reflexion_buffer_size;
+                record_index = (record_index + 1) % real_record_buffer_size;
             }
         }
     }
@@ -4588,55 +4679,6 @@ public:
     COLD ~CombFilter() noexcept {}
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CombFilter)
-};
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-class AllPassFilter
-{
-    HeapBlock<float> buffer;
-    int bufferSize, bufferIndex;
-public:
-    //==============================================================================
-    inline float process (const float input) noexcept
-    {
-        const float bufferedValue = buffer [bufferIndex];
-        float temp = input + (bufferedValue * 0.5f);
-        JUCE_UNDENORMALISE (temp);
-        buffer[bufferIndex] = temp;
-        bufferIndex = (bufferIndex + 1) % bufferSize;
-
-        return bufferedValue - input;
-    }
-
-    //==============================================================================
-    COLD void setSize (const int size)
-    {
-        if (size != bufferSize)
-        {
-            bufferIndex = 0;
-            buffer.malloc ((size_t) size);
-            bufferSize = size;
-        }
-
-        clear();
-    }
-    COLD void clear() noexcept
-    {
-        buffer.clear ((size_t) bufferSize);
-    }
-
-public:
-    //==============================================================================
-    COLD AllPassFilter() noexcept
-:
-    bufferSize(0),
-               bufferIndex(0)
-    {}
-    COLD ~AllPassFilter() noexcept {}
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AllPassFilter)
 };
 
 //==============================================================================
@@ -4904,9 +4946,7 @@ class FXProcessor
     mono_Reverb reverb_r;
 
     // CHORUS
-#define DELAY_BUFFER_SIZE (sample_rate*0.25)
-    Chorus chorus_l;
-    Chorus chorus_r;
+    Chorus chorus;
     friend class mono_ParameterOwnerStore;
 
     // FINAL ENV
@@ -4951,33 +4991,7 @@ public:
 
         // STEREO CHORUS
         {
-            // CHORUS
-            const float* const chorus_env_buffer( chorus_data->modulation_smoother.get_smoothed_value_buffer() );
-            const float* const smoothed_pan_buffer( chorus_data->pan_smoother.get_smoothed_value_buffer() );
-            const float max_chorus_delay_power_left = chorus_l.get_sample_rate() * (1.0f/200.454545455f);
-            const float max_chorus_delay_power_right  = chorus_l.get_sample_rate() * (1.0f/220.5f);
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                const float in_l = left_input_buffer[sid];
-                const float in_r = right_input_buffer[sid];
-
-                const float modulation_amp = chorus_env_buffer[sid];
-                const float feedback = modulation_amp*0.85f;
-
-                float tmp_sample_l  = chorus_l.tick((modulation_amp * max_chorus_delay_power_left) + 1.51f);
-                float tmp_sample_r = chorus_r.tick((modulation_amp * max_chorus_delay_power_right) + 1.56f);
-                chorus_l.fill( sample_mix (in_l, tmp_sample_r * feedback ) );
-                chorus_r.fill( sample_mix (in_r, tmp_sample_l * feedback ) );
-
-                //chorus_l.fill( in_l, tmp_sample_r * feedback ) );
-                //chorus_r.fill( in_r, tmp_sample_l * feedback ) );
-
-                const float pan = smoothed_pan_buffer[sid];
-                const float left = jmin(1.0f,pan+1);
-                const float right = jmin(1.0f,pan*-1+1);
-                left_out_buffer[sid] = tmp_sample_l*left + in_l*(1.0f-left);
-                right_out_buffer[sid] = tmp_sample_r*right + in_r*(1.0f-right);
-            }
+            chorus.process( left_input_buffer, right_input_buffer, left_out_buffer, right_out_buffer, num_samples_ );
         }
 
         // DELAY
@@ -5126,8 +5140,7 @@ public:
         delay.reset();
         reverb_l.reset();
         reverb_r.reset();
-        chorus_l.reset();
-        chorus_r.reset();
+        chorus.reset();
 
         final_env->reset();
 
@@ -5151,8 +5164,7 @@ public:
                    reverb_l(notifyer_),
                    reverb_r(notifyer_),
 
-                   chorus_l(notifyer_),
-                   chorus_r(notifyer_),
+                   chorus(notifyer_, synth_data_),
 
                    final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 

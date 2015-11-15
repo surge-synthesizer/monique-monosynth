@@ -1,8 +1,10 @@
-lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
+
+
 bleibt im ctrl hängen, wenn ein popup offen 
 
 
-does not store slider settings
+reverb anschauen, das prozessiert zu viel.
+
 is changed backup depends now on the morph groups -> change this
 remove chorus fill method and add it to tick
 delay: // TODO was passiert bei bpm änderungen?
@@ -45,6 +47,7 @@ CHANGES 0.9.8
 - improved keep popup open handling
 - add back maximize button, but keep fixed aspect ratio
 - fix bugs in slider context menu
+- reworked/new implementation: chorus (build out of 5 delay lines modulated by 5 oscillators)
 
 NOTES:
 
@@ -73,8 +76,7 @@ UI
 
 ENGINE
 ****************************************************************************
-- delay time reflexion, sync to beat, bis 500ms, triolisch
-
+- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
@@ -204,3 +206,9 @@ automate fm frequency
 - record to file standalone
 - osc open sound control
 - wind support
+
+
+/// SNIPPETS
+leftgain = cos(pan*(PI/2.0f));
+rightgain = sin((pan)*(PI/2.0f));
+bufferIndex = (bufferIndex + 1) % bufferSize;
