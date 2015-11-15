@@ -32,6 +32,20 @@ static inline float sample_mix( float s1_, float s2_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
+static inline float left_pan( float pan_, const float* sin_lookup_ ) noexcept
+{
+    // return jmin(1.0f,pan_*-1+1);
+    return jmax((float)std::sin( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f);
+}
+static inline float right_pan( float pan_, const float* cos_lookup_  ) noexcept
+{
+    return jmax((float)std::cos( ((pan_+1)*0.5) * (float_Pi*0.5f) ),0.00001f);
+    // return jmin(1.0f,pan_+1);
+}
+
+//==============================================================================
+//==============================================================================
+//==============================================================================
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -3199,6 +3213,9 @@ private:
     FilterData*const filter_data;
     DataBuffer*const data_buffer;
 
+    const float*const sin_lookup;
+    const float*const cos_lookup;
+
 public:
     //==========================================================================
     inline void start_attack() noexcept
@@ -3709,8 +3726,8 @@ public:
             {
                 const float pan = pan_buffer[sid];
                 const float output_sample = left_and_input_output_buffer[sid];
-                right_output_buffer[sid] = output_sample*jmin(1.0f,pan+1);
-                left_and_input_output_buffer[sid] = output_sample*jmin(1.0f,pan*-1+1);
+                right_output_buffer[sid] = output_sample*left_pan(pan,sin_lookup);
+                left_and_input_output_buffer[sid] = output_sample*right_pan(pan,cos_lookup);
             }
 
             // VISUALIZE
@@ -3766,7 +3783,10 @@ public:
 
                    synth_data( synth_data_ ),
                    filter_data( synth_data_->filter_datas[id_] ),
-                   data_buffer( synth_data_->data_buffer )
+                   data_buffer( synth_data_->data_buffer ),
+
+                   sin_lookup( synth_data->sine_lookup ),
+                   cos_lookup( synth_data->cos_lookup )
     {
         for( int i = 0 ; i != SUM_INPUTS_PER_FILTER ; ++i )
         {
@@ -4000,7 +4020,7 @@ public:
                         buffer_1[sid]*-1
                     );
 
-                    MONO_SNAP_TO_ZERO(sum)
+                    //MONO_SNAP_TO_ZERO(sum)
                     float mix = sum*bypass + io_buffer_[sid]*(1.0f-bypass);
                     io_buffer_[sid] = soft_clipp_greater_1_2(mix*(1.0f-distortion) + (std::atan( mix*10 )*0.7f)*distortion);
                     //io_buffer_[sid] = soft_clipp_greater_1_2(sample_mix(mix*(1.0f-distortion), sample_mix( mix, mix )*distortion));
@@ -4205,6 +4225,9 @@ class mono_Chorus : public RuntimeListener
     float* current_left_buffer;
     float* current_right_buffer;
 
+    const float*const sin_lookup;
+    const float*const cos_lookup;
+
 public:
 #define SUM_DELAY_LINES 4
     inline void process( float* left_in_, float* right_in_,
@@ -4262,8 +4285,7 @@ public:
                     result_l += ( current_left_buffer[index_1]*(1.0f-delta) + current_left_buffer[index_2]*delta ) / (i+2);
                 }
                 {
-                    const float left = jmin(1.0f,pan+1);
-		    current_left_buffer[index] = sample_mix(left_in_[sid], result_l * power*left );
+                    current_left_buffer[index] = sample_mix(left_in_[sid], result_l * power * left_pan(pan,sin_lookup) );
                     left_out_[sid] = left_in_[sid]*fade_in + result_l*fade_effect;
                 }
             }
@@ -4284,8 +4306,7 @@ public:
                     result_r += ( current_right_buffer[index_1]*(1.0f-delta) + current_right_buffer[index_2]*delta ) / (i+2);
                 }
                 {
-                    const float right = jmin(1.0f,pan*-1+1);
-		    current_right_buffer[index] = sample_mix(right_in_[sid], result_r * power*right );;
+                    current_right_buffer[index] = sample_mix(right_in_[sid], result_r * power*right_pan(pan,cos_lookup) );
                     right_out_[sid] = right_in_[sid]*fade_in + result_r*fade_effect;
                 }
             }
@@ -4325,7 +4346,10 @@ public:
                      data_buffer(buffer_size),
                      index(0),
 
-                     chorus_data(synth_data_->chorus_data)
+                     chorus_data(synth_data_->chorus_data),
+
+                     sin_lookup(synth_data_->sine_lookup),
+                     cos_lookup(synth_data_->cos_lookup)
     {
         sample_rate_or_block_changed();
         osc_1.set_frequency( 0.4 );
@@ -4374,6 +4398,9 @@ class mono_Delay : public RuntimeListener
     float*active_right_record_buffer;
 
     LinearSmootherZeroToOne record_switch_smoother;
+
+    const float*const sin_lookup;
+    const float*const cos_lookup;
 
 public:
     //==============================================================================
@@ -4485,8 +4512,8 @@ public:
                 const float pan = smoothed_pan_buffer_[sid];
                 const float power = smoothed_power_[sid];
 
-                const float left = jmin(1.0f,pan+1);
-                const float right = jmin(1.0f,pan*-1+1);
+                const float left = left_pan(pan,sin_lookup);
+                const float right = right_pan(pan,cos_lookup);
                 active_left_reflexion_buffer[reflexion_write_index] = left_reflexion_and_input_mix * power * left;
                 active_right_reflexion_buffer[reflexion_write_index] = right_reflexion_and_input_mix * power * right;
             }
@@ -4586,7 +4613,7 @@ private:
 
 public:
     //==============================================================================
-    COLD mono_Delay( RuntimeNotifyer* notifyer_ ) noexcept
+    COLD mono_Delay( RuntimeNotifyer* notifyer_, MoniqueSynthData*synth_data_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
 
@@ -4610,7 +4637,10 @@ public:
                      active_left_record_buffer(record_buffer.getWritePointer(LEFT)),
                      active_right_record_buffer(record_buffer.getWritePointer(RIGHT)),
 
-                     record_switch_smoother()
+                     record_switch_smoother(),
+
+                     sin_lookup( synth_data_->sine_lookup ),
+                     cos_lookup( synth_data_->sine_lookup )
     {
         sample_rate_or_block_changed();
     }
@@ -4974,6 +5004,9 @@ private:
     const ReverbData*const reverb_data;
     ChorusData*const chorus_data;
 
+    const float*const sin_lookup;
+    const float*const cos_lookup;
+
 public:
     //==========================================================================
     inline void process( AudioSampleBuffer& output_buffer_, float velocity_, const int start_sample_final_out_, const int num_samples_ ) noexcept
@@ -5061,8 +5094,8 @@ public:
                     float sample_r = reverb_r.processSingleSampleRaw( in_r );
 
                     const float pan = smoothed_pan_buffer[sid];
-                    const float left = jmin(1.0f,pan+1);
-                    const float right = jmin(1.0f,pan*-1+1);
+                    const float left = left_pan(pan,sin_lookup);
+                    const float right = right_pan(pan,cos_lookup);
                     const float bypass = smoothed_bypass_buffer[sid];
                     left_out_buffer[sid] = sample_mix( (sample_l*left + in_l*(1.0f-left))*bypass, left_input_buffer[sid]*(1.0f-bypass));
                     right_out_buffer[sid] = sample_mix( (sample_r*right + in_r*(1.0f-right) )*bypass, right_input_buffer[sid]*(1.0f-bypass));
@@ -5170,7 +5203,7 @@ public:
 :
     thread_manager(thread_manager_),
 
-                   delay( notifyer_ ),
+                   delay( notifyer_, synth_data_ ),
 
                    reverb_l(notifyer_,LEFT),
                    reverb_r(notifyer_,RIGHT),
@@ -5185,7 +5218,10 @@ public:
                    synth_data( synth_data_ ),
                    data_buffer( synth_data_->data_buffer ),
                    reverb_data( synth_data_->reverb_data ),
-                   chorus_data( synth_data_->chorus_data )
+                   chorus_data( synth_data_->chorus_data ),
+
+                   sin_lookup( synth_data_->sine_lookup ),
+                   cos_lookup( synth_data_->cos_lookup )
     {
         std::cout << "MONIQUE: init FX" << std::endl;
     }

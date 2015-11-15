@@ -42,6 +42,7 @@ CHANGES 0.9.8
 - add: input for colour codes
 - improved slider wave drawings
 - updated factory default program
+- fix: filter pan was inverted
 
 NOTES:
 
