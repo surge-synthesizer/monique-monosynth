@@ -4314,7 +4314,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "DELAY";
+        return "F-BACK";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
@@ -5057,7 +5057,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "CHOR";
+        return "CHORUS";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {

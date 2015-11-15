@@ -5523,7 +5523,20 @@ void MoniqueSynthesiserVoice::start_internal( int midi_note_number_, float veloc
 void MoniqueSynthesiserVoice::stopNote( float, bool allowTailOff )
 {
     bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
-    if( synth_data->keep_arp_always_off )
+    bool has_steps_enabled = false;
+    for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
+    {
+        if( synth_data->arp_sequencer_data->step[i] )
+        {
+            has_steps_enabled = true;
+            break;
+        }
+    }
+    if( not has_steps_enabled )
+    {
+        is_arp_on = false;
+    }
+    else if( synth_data->keep_arp_always_off )
     {
         is_arp_on = false;
     }

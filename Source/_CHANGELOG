@@ -1,4 +1,4 @@
-
+wenn arp an, dann nimmt er kein note off vom keyboard an
 
 bleibt im ctrl hängen, wenn ein popup offen 
 is changed backup depends now on the morph groups -> change this
@@ -6,12 +6,9 @@ delay: // TODO was passiert bei bpm änderungen?
 resize does not work in plugin
 
 4.0.1
-
 -touch screen
 
 - linear slider velocity -> on ctrl on or of
-- zahleneingabe für colours
-- toogle buttons unter popup knopf
 - resonance modulaion lässt sich nicht mit einem klick deaktivieren
 
 
@@ -44,6 +41,7 @@ CHANGES 0.9.8
 - fix bugs in slider context menu
 - reworked/new implementation: chorus (build out of 5 delay lines modulated by 5 oscillators)
 - improved reverb performance
+- add: input for colour codes
 
 NOTES:
 
