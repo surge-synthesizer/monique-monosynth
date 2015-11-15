@@ -1,12 +1,7 @@
 
 
 bleibt im ctrl hängen, wenn ein popup offen 
-
-
-reverb anschauen, das prozessiert zu viel.
-
 is changed backup depends now on the morph groups -> change this
-remove chorus fill method and add it to tick
 delay: // TODO was passiert bei bpm änderungen?
 resize does not work in plugin
 
@@ -48,6 +43,7 @@ CHANGES 0.9.8
 - add back maximize button, but keep fixed aspect ratio
 - fix bugs in slider context menu
 - reworked/new implementation: chorus (build out of 5 delay lines modulated by 5 oscillators)
+- improved reverb performance
 
 NOTES:
 

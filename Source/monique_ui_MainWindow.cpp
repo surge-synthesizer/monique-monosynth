@@ -739,11 +739,11 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons()
 }
 void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 {
-    if( effect_finalizer_switch2->getProperties().set( VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) 
+    if( effect_finalizer_switch2->getProperties().set( VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) )
     {
         effect_finalizer_switch2->repaint();
     }
-    if( effect_finalizer_switch->getProperties().set( VAR_INDEX_BUTTON_AMP, fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) ) 
+    if( effect_finalizer_switch->getProperties().set( VAR_INDEX_BUTTON_AMP, fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) )
     {
         effect_finalizer_switch->repaint();
     }
@@ -757,8 +757,6 @@ void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
     bypass->setVisible( fx_ );
     label_reverb->setVisible( fx_ );
     label_fx_delay->setVisible( fx_ );
-    label_fx_chorus->setVisible( fx_ );
-    label_fx_distortion->setVisible( fx_ );
     distortion->setVisible( fx_ );
 
     //eg
@@ -827,6 +825,41 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     ui_refresher_->editor = this;
     look_and_feel->mainwindow = this;
     //[/Constructor_pre]
+
+    addAndMakeVisible (button_edit_input_env_band_1 = new TextButton (String::empty));
+    button_edit_input_env_band_1->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_input_env_band_1->addListener (this);
+    button_edit_input_env_band_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_1->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,0)));
+
+    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (ui_refresher,
+                                                               new FXDistortionSlConfig(synth_data)));
+
+    addAndMakeVisible (button_edit_input_env_band_2 = new TextButton (String::empty));
+    button_edit_input_env_band_2->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
+    button_edit_input_env_band_2->addListener (this);
+    button_edit_input_env_band_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_edit_input_env_band_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_edit_input_env_band_2->setColour (TextButton::textColourOffId, Colours::yellow);
+
+    addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (ui_refresher,
+                                                         new EQSlConfig(synth_data,1)));
+
+    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (ui_refresher,
+                                                                      new CModSlConfig(synth_data)));
+
+    addAndMakeVisible (label_fx_delay = new Label (String::empty,
+                                                   TRANS("DELAY")));
+    label_fx_delay->setFont (Font (30.00f, Font::plain));
+    label_fx_delay->setJustificationType (Justification::centred);
+    label_fx_delay->setEditable (false, false, false);
+    label_fx_delay->setColour (Label::textColourId, Colour (0xff050505));
+    label_fx_delay->setColour (TextEditor::textColourId, Colour (0xffff3b00));
+    label_fx_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (effect_finalizer_switch2 = new TextButton (String::empty));
     effect_finalizer_switch2->setTooltip (TRANS("Switch to the EQ bank."));
@@ -962,26 +995,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (reverb_dry = new Monique_Ui_DualSlider (ui_refresher,
                                                                new RDrySlConfig(synth_data)));
 
-    addAndMakeVisible (button_edit_input_env_band_1 = new TextButton (String::empty));
-    button_edit_input_env_band_1->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_input_env_band_1->addListener (this);
-    button_edit_input_env_band_1->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_input_env_band_1->setColour (TextButton::textColourOffId, Colours::yellow);
-
-    addAndMakeVisible (eq_1 = new Monique_Ui_DualSlider (ui_refresher,
-                                                         new EQSlConfig(synth_data,0)));
-
-    addAndMakeVisible (distortion = new Monique_Ui_DualSlider (ui_refresher,
-                                                               new FXDistortionSlConfig(synth_data)));
-
-    addAndMakeVisible (button_edit_input_env_band_2 = new TextButton (String::empty));
-    button_edit_input_env_band_2->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
-    button_edit_input_env_band_2->addListener (this);
-    button_edit_input_env_band_2->setColour (TextButton::buttonColourId, Colours::black);
-    button_edit_input_env_band_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
-    button_edit_input_env_band_2->setColour (TextButton::textColourOffId, Colours::yellow);
-
     addAndMakeVisible (button_edit_input_env_band_3 = new TextButton (String::empty));
     button_edit_input_env_band_3->setButtonText (CharPointer_UTF8 ("\xe2\x97\x8b"));
     button_edit_input_env_band_3->addListener (this);
@@ -1021,9 +1034,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (eq_3 = new Monique_Ui_DualSlider (ui_refresher,
                                                          new EQSlConfig(synth_data,2)));
-
-    addAndMakeVisible (eq_2 = new Monique_Ui_DualSlider (ui_refresher,
-                                                         new EQSlConfig(synth_data,1)));
 
     addAndMakeVisible (filter_type_bg_button_3 = new TextButton (String::empty));
     filter_type_bg_button_3->setTooltip (TRANS("Set the filter type to LOW PASS."));
@@ -1275,9 +1285,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
     addAndMakeVisible (delay2 = new Monique_Ui_DualSlider (ui_refresher,
                                                            new DelayReflexSlConfig(synth_data)));
-
-    addAndMakeVisible (chorus_modulation = new Monique_Ui_DualSlider (ui_refresher,
-                                                                      new CModSlConfig(synth_data)));
 
     addAndMakeVisible (label_band_hz_2 = new Label ("DL",
                                                     TRANS("160Hz")));
@@ -2064,15 +2071,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     addAndMakeVisible (delay3 = new Monique_Ui_DualSlider (ui_refresher,
                                                            new DelaySlConfig(synth_data)));
 
-    addAndMakeVisible (label_fx_distortion = new Label (String::empty,
-                                                        TRANS("DESTROY")));
-    label_fx_distortion->setFont (Font (30.00f, Font::plain));
-    label_fx_distortion->setJustificationType (Justification::centred);
-    label_fx_distortion->setEditable (false, false, false);
-    label_fx_distortion->setColour (Label::textColourId, Colour (0xff050505));
-    label_fx_distortion->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_fx_distortion->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
     addAndMakeVisible (label_reverb = new Label (String::empty,
                                                  TRANS("REVERB")));
     label_reverb->setFont (Font (30.00f, Font::plain));
@@ -2081,24 +2079,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     label_reverb->setColour (Label::textColourId, Colour (0xff050505));
     label_reverb->setColour (TextEditor::textColourId, Colour (0xffff3b00));
     label_reverb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_fx_chorus = new Label (String::empty,
-                                                    TRANS("CHORUS")));
-    label_fx_chorus->setFont (Font (30.00f, Font::plain));
-    label_fx_chorus->setJustificationType (Justification::centred);
-    label_fx_chorus->setEditable (false, false, false);
-    label_fx_chorus->setColour (Label::textColourId, Colour (0xff050505));
-    label_fx_chorus->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_fx_chorus->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    addAndMakeVisible (label_fx_delay = new Label (String::empty,
-                                                   TRANS("DELAY")));
-    label_fx_delay->setFont (Font (30.00f, Font::plain));
-    label_fx_delay->setJustificationType (Justification::centred);
-    label_fx_delay->setEditable (false, false, false);
-    label_fx_delay->setColour (Label::textColourId, Colour (0xff050505));
-    label_fx_delay->setColour (TextEditor::textColourId, Colour (0xffff3b00));
-    label_fx_delay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
 
     //[UserPreSize]
@@ -2165,8 +2145,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
         lfo_opt_2->setOpaque(false);
         lfo_opt_3->setOpaque(false);
         label_fx_delay->setOpaque(false);
-        label_fx_chorus->setOpaque(false);
-        label_fx_distortion->setOpaque(false);
         label_reverb->setOpaque(false);
         effect_finalizer_switch->setOpaque(false);
         effect_finalizer_switch2->setOpaque(false);
@@ -2313,8 +2291,6 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
 
         label_amp_envelope->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         label_fx_delay->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
-        label_fx_chorus->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
-        label_fx_distortion->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         label_reverb->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         label_band_hz_1->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
         label_band_hz_2->getProperties().set( VAR_INDEX_COLOUR_THEME, COLOUR_THEMES::FX_THEME );
@@ -2428,6 +2404,13 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     audio_processor->clear_preak_meter();
     //[/Destructor_pre]
 
+    button_edit_input_env_band_1 = nullptr;
+    eq_1 = nullptr;
+    distortion = nullptr;
+    button_edit_input_env_band_2 = nullptr;
+    eq_2 = nullptr;
+    chorus_modulation = nullptr;
+    label_fx_delay = nullptr;
     effect_finalizer_switch2 = nullptr;
     button_edit_input_env_1_3 = nullptr;
     button_edit_input_env_1_2 = nullptr;
@@ -2448,10 +2431,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     button_edit_input_env_band_7 = nullptr;
     eq_7 = nullptr;
     reverb_dry = nullptr;
-    button_edit_input_env_band_1 = nullptr;
-    eq_1 = nullptr;
-    distortion = nullptr;
-    button_edit_input_env_band_2 = nullptr;
     button_edit_input_env_band_3 = nullptr;
     button_edit_input_env_band_4 = nullptr;
     button_edit_input_env_band_5 = nullptr;
@@ -2460,7 +2439,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     eq_5 = nullptr;
     eq_4 = nullptr;
     eq_3 = nullptr;
-    eq_2 = nullptr;
     filter_type_bg_button_3 = nullptr;
     filter_type_2_3 = nullptr;
     filter_type_bg_button_2 = nullptr;
@@ -2505,7 +2483,6 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     bypass = nullptr;
     colour = nullptr;
     delay2 = nullptr;
-    chorus_modulation = nullptr;
     label_band_hz_2 = nullptr;
     label_band_hz_3 = nullptr;
     speed_multi = nullptr;
@@ -2650,10 +2627,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     flt_shape_4 = nullptr;
     label_monoplugs = nullptr;
     delay3 = nullptr;
-    label_fx_distortion = nullptr;
     label_reverb = nullptr;
-    label_fx_chorus = nullptr;
-    label_fx_delay = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -2940,6 +2914,13 @@ void Monique_Ui_Mainwindow::resized()
     WIDTH_AND_HIGHT_FACTORS
     //[/UserPreResize]
 
+    button_edit_input_env_band_1->setBounds (820, 780, 60, 30);
+    eq_1->setBounds (880 - 60, 810 - 130, 60, 130);
+    distortion->setBounds (880 - 60, 810 - 130, 60, 130);
+    button_edit_input_env_band_2->setBounds (880, 780, 60, 30);
+    eq_2->setBounds (940 - 60, 810 - 130, 60, 130);
+    chorus_modulation->setBounds (890, 810 - 130, 60, 130);
+    label_fx_delay->setBounds (960, 680, 120, 30);
     effect_finalizer_switch2->setBounds (810, 819, 120, 30);
     button_edit_input_env_1_3->setBounds (320, 220, 60, 30);
     button_edit_input_env_1_2->setBounds (260, 220, 60, 30);
@@ -2960,10 +2941,6 @@ void Monique_Ui_Mainwindow::resized()
     button_edit_input_env_band_7->setBounds (1210, 780, 60, 30);
     eq_7->setBounds (1270 - 60, 810 - 130, 60, 130);
     reverb_dry->setBounds (1270 - 60, 810 - 130, 60, 130);
-    button_edit_input_env_band_1->setBounds (820, 780, 60, 30);
-    eq_1->setBounds (880 - 60, 810 - 130, 60, 130);
-    distortion->setBounds (880 - 60, 810 - 130, 60, 130);
-    button_edit_input_env_band_2->setBounds (880, 780, 60, 30);
     button_edit_input_env_band_3->setBounds (950, 780, 60, 30);
     button_edit_input_env_band_4->setBounds (1010, 780, 60, 30);
     button_edit_input_env_band_5->setBounds (1080, 780, 60, 30);
@@ -2972,7 +2949,6 @@ void Monique_Ui_Mainwindow::resized()
     eq_5->setBounds (1140 - 60, 810 - 130, 60, 130);
     eq_4->setBounds (1070 - 60, 810 - 130, 60, 130);
     eq_3->setBounds (1010 - 60, 810 - 130, 60, 130);
-    eq_2->setBounds (940 - 60, 810 - 130, 60, 130);
     filter_type_bg_button_3->setBounds (1010, 480, 60, 130);
     filter_type_2_3->setBounds (1070 - 60, 513, 60, 30);
     filter_type_bg_button_2->setBounds (1010, 300, 60, 130);
@@ -3017,7 +2993,6 @@ void Monique_Ui_Mainwindow::resized()
     bypass->setBounds (1345 - 60, 810 - 130, 60, 130);
     colour->setBounds (1345 - 60, 810 - 130, 60, 130);
     delay2->setBounds (1080 - 60, 810 - 130, 60, 130);
-    chorus_modulation->setBounds (890, 810 - 130, 60, 130);
     label_band_hz_2->setBounds (885, 636, 50, 30);
     label_band_hz_3->setBounds (955, 636, 50, 30);
     speed_multi->setBounds (1340 - 60, 1010 - 130, 60, 130);
@@ -3162,10 +3137,7 @@ void Monique_Ui_Mainwindow::resized()
     flt_shape_4->setBounds (790 - 60, 810 - 130, 60, 130);
     label_monoplugs->setBounds (1220 - 180, 40, 180, 30);
     delay3->setBounds (1020 - 60, 810 - 130, 60, 130);
-    label_fx_distortion->setBounds (815, 680, 70, 30);
     label_reverb->setBounds (1150, 680, 120, 30);
-    label_fx_chorus->setBounds (885, 680, 70, 30);
-    label_fx_delay->setBounds (960, 680, 120, 30);
     //[UserResized] Add your own custom resize handling here..
 
 #include "mono_ui_includeHacks_END.h"
@@ -3178,7 +3150,19 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     //[UserbuttonClicked_Pre]
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == effect_finalizer_switch2)
+    if (buttonThatWasClicked == button_edit_input_env_band_1)
+    {
+        //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
+        open_env_popup( synth_data->eq_data->envs[0], &synth_data->eq_data->envs[0]->sustain, buttonThatWasClicked, eq_1, true );
+        //[/UserButtonCode_button_edit_input_env_band_1]
+    }
+    else if (buttonThatWasClicked == button_edit_input_env_band_2)
+    {
+        //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
+        open_env_popup( synth_data->eq_data->envs[1], &synth_data->eq_data->envs[1]->sustain, buttonThatWasClicked, eq_2, true );
+        //[/UserButtonCode_button_edit_input_env_band_2]
+    }
+    else if (buttonThatWasClicked == effect_finalizer_switch2)
     {
         //[UserButtonCode_effect_finalizer_switch2] -- add your button handler code here..
         switch_finalizer_tab(false);
@@ -3286,18 +3270,6 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_button_edit_input_env_band_7] -- add your button handler code here..
         open_env_popup( synth_data->eq_data->envs[6], &synth_data->eq_data->envs[6]->sustain, buttonThatWasClicked, eq_7, true );
         //[/UserButtonCode_button_edit_input_env_band_7]
-    }
-    else if (buttonThatWasClicked == button_edit_input_env_band_1)
-    {
-        //[UserButtonCode_button_edit_input_env_band_1] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[0], &synth_data->eq_data->envs[0]->sustain, buttonThatWasClicked, eq_1, true );
-        //[/UserButtonCode_button_edit_input_env_band_1]
-    }
-    else if (buttonThatWasClicked == button_edit_input_env_band_2)
-    {
-        //[UserButtonCode_button_edit_input_env_band_2] -- add your button handler code here..
-        open_env_popup( synth_data->eq_data->envs[1], &synth_data->eq_data->envs[1]->sustain, buttonThatWasClicked, eq_2, true );
-        //[/UserButtonCode_button_edit_input_env_band_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_3)
     {
@@ -4798,6 +4770,31 @@ BEGIN_JUCER_METADATA
     <ROUNDRECT pos="20 880 1420 130" cornerSize="10" fill="solid: ffffff11"
                hasStroke="0"/>
   </BACKGROUND>
+  <TEXTBUTTON name="" id="972bb72707bb206b" memberName="button_edit_input_env_band_1"
+              virtualName="" explicitFocusOrder="0" pos="820 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
+                    explicitFocusOrder="0" pos="880r 810r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,0)"/>
+  <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
+                    explicitFocusOrder="0" pos="880r 810r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new FXDistortionSlConfig(synth_data)"/>
+  <TEXTBUTTON name="" id="e4790e6c91bf6fec" memberName="button_edit_input_env_band_2"
+              virtualName="" explicitFocusOrder="0" pos="880 780 60 30" bgColOff="ff000000"
+              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
+                    explicitFocusOrder="0" pos="940r 810r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new EQSlConfig(synth_data,1)"/>
+  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
+                    virtualName="" explicitFocusOrder="0" pos="890 810r 60 130" class="Monique_Ui_DualSlider"
+                    params="ui_refresher, &#10;new CModSlConfig(synth_data)"/>
+  <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
+         explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
+         edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="30" bold="0" italic="0" justification="36"/>
   <TEXTBUTTON name="" id="ec6e85c0b9db24e4" memberName="effect_finalizer_switch2"
               virtualName="" explicitFocusOrder="0" pos="810 819 120 30" tooltip="Switch to the EQ bank."
               bgColOff="ffff11ff" textCol="ffff3b00" textColOn="ffffff00" buttonText="EQ"
@@ -4876,20 +4873,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="9d2507984890a079" memberName="reverb_dry" virtualName=""
                     explicitFocusOrder="0" pos="1270r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new RDrySlConfig(synth_data)"/>
-  <TEXTBUTTON name="" id="972bb72707bb206b" memberName="button_edit_input_env_band_1"
-              virtualName="" explicitFocusOrder="0" pos="820 780 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="" id="5d07e2bb48e90cc6" memberName="eq_1" virtualName=""
-                    explicitFocusOrder="0" pos="880r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,0)"/>
-  <GENERICCOMPONENT name="" id="b482d3e604966296" memberName="distortion" virtualName=""
-                    explicitFocusOrder="0" pos="880r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new FXDistortionSlConfig(synth_data)"/>
-  <TEXTBUTTON name="" id="e4790e6c91bf6fec" memberName="button_edit_input_env_band_2"
-              virtualName="" explicitFocusOrder="0" pos="880 780 60 30" bgColOff="ff000000"
-              textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="c5b44a8882d48b9" memberName="button_edit_input_env_band_3"
               virtualName="" explicitFocusOrder="0" pos="950 780 60 30" bgColOff="ff000000"
               textCol="ffff3b00" textColOn="ffffff00" buttonText="&#9675;"
@@ -4918,9 +4901,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="1dbf561cd93cbd59" memberName="eq_3" virtualName=""
                     explicitFocusOrder="0" pos="1010r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new EQSlConfig(synth_data,2)"/>
-  <GENERICCOMPONENT name="" id="30a759af59bc090b" memberName="eq_2" virtualName=""
-                    explicitFocusOrder="0" pos="940r 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new EQSlConfig(synth_data,1)"/>
   <TEXTBUTTON name="" id="6e6e54760ba17ed8" memberName="filter_type_bg_button_3"
               virtualName="" explicitFocusOrder="0" pos="1010 480 60 130" tooltip="Set the filter type to LOW PASS."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText=""
@@ -5087,9 +5067,6 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="49d3d717347ff877" memberName="delay2" virtualName=""
                     explicitFocusOrder="0" pos="1080r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new DelayReflexSlConfig(synth_data)"/>
-  <GENERICCOMPONENT name="" id="9378cae1ce589256" memberName="chorus_modulation"
-                    virtualName="" explicitFocusOrder="0" pos="890 810r 60 130" class="Monique_Ui_DualSlider"
-                    params="ui_refresher, &#10;new CModSlConfig(synth_data)"/>
   <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
          virtualName="" explicitFocusOrder="0" pos="885 636 50 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="160Hz" editableSingleClick="0"
@@ -5607,24 +5584,9 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="563dffc9e556e1d7" memberName="delay3" virtualName=""
                     explicitFocusOrder="0" pos="1020r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new DelaySlConfig(synth_data)"/>
-  <LABEL name="" id="798798be2a99287c" memberName="label_fx_distortion"
-         virtualName="" explicitFocusOrder="0" pos="815 680 70 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="DESTROY" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="879633575acf68ee" memberName="label_reverb" virtualName=""
          explicitFocusOrder="0" pos="1150 680 120 30" textCol="ff050505"
          edTextCol="ffff3b00" edBkgCol="0" labelText="REVERB" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="f084ba8b8cf92d8d" memberName="label_fx_chorus" virtualName=""
-         explicitFocusOrder="0" pos="885 680 70 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="CHORUS" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="30" bold="0" italic="0" justification="36"/>
-  <LABEL name="" id="e42bec80710ce3bc" memberName="label_fx_delay" virtualName=""
-         explicitFocusOrder="0" pos="960 680 120 30" textCol="ff050505"
-         edTextCol="ffff3b00" edBkgCol="0" labelText="DELAY" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
 </JUCER_COMPONENT>

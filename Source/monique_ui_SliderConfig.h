@@ -3669,6 +3669,16 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
     {
         return COLOUR_THEMES::FX_THEME;
     }
+    /*
+    bool is_opaque() const noexcept override
+    {
+        return false;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
+    }
+    */
 
     //==============================================================================
     // FRONT SLIDER
@@ -4237,7 +4247,15 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return COLOUR_THEMES::FX_THEME;
     }
-
+    bool is_opaque() const noexcept override
+    {
+        return false;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
+    }
+    
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -4387,6 +4405,14 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }
+        bool is_opaque() const noexcept override
+    {
+        return false;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
     }
 
     //==============================================================================
@@ -4938,6 +4964,14 @@ class CModSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }    
+    bool is_opaque() const noexcept override
+    {
+        return false;
+    }
+    bool use_click_through_hack() const noexcept override
+    {
+        return true;
     }
 
     //==============================================================================
@@ -6033,6 +6067,7 @@ public:
 };
 
 #endif  // Monique_Ui_MainwindowCONFIG_H_INCLUDED
+
 
 
 

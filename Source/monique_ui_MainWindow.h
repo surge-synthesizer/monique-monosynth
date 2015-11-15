@@ -170,6 +170,13 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    ScopedPointer<TextButton> button_edit_input_env_band_1;
+    ScopedPointer<Monique_Ui_DualSlider> eq_1;
+    ScopedPointer<Monique_Ui_DualSlider> distortion;
+    ScopedPointer<TextButton> button_edit_input_env_band_2;
+    ScopedPointer<Monique_Ui_DualSlider> eq_2;
+    ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
+    ScopedPointer<Label> label_fx_delay;
     ScopedPointer<TextButton> effect_finalizer_switch2;
     ScopedPointer<TextButton> button_edit_input_env_1_3;
     ScopedPointer<TextButton> button_edit_input_env_1_2;
@@ -190,10 +197,6 @@ private:
     ScopedPointer<TextButton> button_edit_input_env_band_7;
     ScopedPointer<Monique_Ui_DualSlider> eq_7;
     ScopedPointer<Monique_Ui_DualSlider> reverb_dry;
-    ScopedPointer<TextButton> button_edit_input_env_band_1;
-    ScopedPointer<Monique_Ui_DualSlider> eq_1;
-    ScopedPointer<Monique_Ui_DualSlider> distortion;
-    ScopedPointer<TextButton> button_edit_input_env_band_2;
     ScopedPointer<TextButton> button_edit_input_env_band_3;
     ScopedPointer<TextButton> button_edit_input_env_band_4;
     ScopedPointer<TextButton> button_edit_input_env_band_5;
@@ -202,7 +205,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> eq_5;
     ScopedPointer<Monique_Ui_DualSlider> eq_4;
     ScopedPointer<Monique_Ui_DualSlider> eq_3;
-    ScopedPointer<Monique_Ui_DualSlider> eq_2;
     ScopedPointer<TextButton> filter_type_bg_button_3;
     ScopedPointer<TextButton> filter_type_2_3;
     ScopedPointer<TextButton> filter_type_bg_button_2;
@@ -247,7 +249,6 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> bypass;
     ScopedPointer<Monique_Ui_DualSlider> colour;
     ScopedPointer<Monique_Ui_DualSlider> delay2;
-    ScopedPointer<Monique_Ui_DualSlider> chorus_modulation;
     ScopedPointer<Label> label_band_hz_2;
     ScopedPointer<Label> label_band_hz_3;
     ScopedPointer<Monique_Ui_DualSlider> speed_multi;
@@ -392,10 +393,7 @@ private:
     ScopedPointer<Monique_Ui_DualSlider> flt_shape_4;
     ScopedPointer<Label> label_monoplugs;
     ScopedPointer<Monique_Ui_DualSlider> delay3;
-    ScopedPointer<Label> label_fx_distortion;
     ScopedPointer<Label> label_reverb;
-    ScopedPointer<Label> label_fx_chorus;
-    ScopedPointer<Label> label_fx_delay;
 
 
     //==============================================================================

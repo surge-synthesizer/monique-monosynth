@@ -4189,7 +4189,7 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
-class Chorus : public RuntimeListener
+class mono_Chorus : public RuntimeListener
 {
     ChorusData*const chorus_data;
 
@@ -4198,7 +4198,7 @@ class Chorus : public RuntimeListener
     mono_SineWaveAutonom osc_3;
     mono_SineWaveAutonom osc_4;
     mono_SineWaveAutonom osc_5;
-    
+
     int buffer_size;
     int index;
     mono_AudioSampleBuffer<2> data_buffer;
@@ -4280,8 +4280,8 @@ public:
 
             {
                 const float pan = smoothed_pan_buffer[sid];
-                const float left = jmin(1.0f,pan+1)+0.0001f;
-                const float right = jmin(1.0f,pan*-1+1)+0.0001f;
+                const float left = jmin(1.0f,pan+1);
+                const float right = jmin(1.0f,pan*-1+1);
                 current_left_buffer[index] = sample_mix(left_in_[sid], left_out_[sid] * power*left );
                 current_right_buffer[index] = sample_mix(right_in_[sid], right_out_[sid] * power*right );
             }
@@ -4307,7 +4307,7 @@ public:
 
 public:
     //==============================================================================
-    COLD Chorus( RuntimeNotifyer*const notifyer_, MoniqueSynthData*const synth_data_ ) noexcept
+    COLD mono_Chorus( RuntimeNotifyer*const notifyer_, MoniqueSynthData*const synth_data_ ) noexcept
 :
     RuntimeListener( notifyer_ ),
 
@@ -4330,9 +4330,9 @@ public:
         osc_4.set_frequency( 0.5 );
         osc_5.set_frequency( 0.45 );
     }
-    COLD ~Chorus() noexcept {}
+    COLD ~mono_Chorus() noexcept {}
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Chorus)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (mono_Chorus)
 };
 
 //==============================================================================
@@ -4637,17 +4637,17 @@ public:
     //==============================================================================
     inline float process (const float input, const float feedbackLevel) noexcept
     {
-#define REVERB_DAMP 0.0f
-        const float output = buffer[bufferIndex];
-        last = (output * (1.0f - REVERB_DAMP)) + (last * REVERB_DAMP);
-        JUCE_UNDENORMALISE (last);
+#define REVERB_DAMP 0
+        last = buffer[bufferIndex];
+        //last = (output * (1.0f - REVERB_DAMP)) + (last * REVERB_DAMP);
+        //JUCE_UNDENORMALISE (last);
 
         float temp = input + (last * feedbackLevel);
         JUCE_UNDENORMALISE (temp);
         buffer[bufferIndex] = temp;
         bufferIndex = (bufferIndex + 1) % bufferSize;
 
-        return output;
+        return last;
     }
 
     //==============================================================================
@@ -4787,6 +4787,8 @@ private:
 //==============================================================================
 class mono_Reverb : RuntimeListener
 {
+    const bool left_or_right;
+
     enum { numCombs = 8, numAllPasses = 4 };
 
     CombFilter comb[numCombs];
@@ -4795,7 +4797,7 @@ class mono_Reverb : RuntimeListener
     ReverbParameters parameters;
 #define REVERB_GAIN 0.013f
 
-    LinearSmoothedValue feedback, dryGain, wetGain1, wetGain2;
+    float wetGain1, wetGain2, feedback; // dryGain,  feedback
 
 public:
     //==========================================================================
@@ -4804,10 +4806,9 @@ public:
         float out = 0;
         {
             const float input = in * REVERB_GAIN;
-            const float feedbck = feedback.getNextValue();
             for (int j = 0; j != numCombs; ++j)  // accumulate the comb filters in parallel
             {
-                out += comb[j].process (input, feedbck);
+                out += comb[j].process (input, feedback);
             }
         }
         for (int j = 0; j != numAllPasses; ++j)  // run the allpass filters in series
@@ -4815,7 +4816,7 @@ public:
             out = allPass[j].process (out);
         }
 
-        return out * wetGain1.getNextValue() + out * wetGain2.getNextValue() + in * dryGain.getNextValue();
+        return out * wetGain1 + out * wetGain2 + in * parameters.dryLevel;
     }
 
     //==========================================================================
@@ -4831,10 +4832,10 @@ public:
 #define ROOM_SCALE_FACTOR (0.28f*ROOM_SCALE)
 #define ROOM_OFFSET (1.0f - 0.28f*ROOM_SCALE -0.02f)
         const float wet = parameters.wetLevel * WET_SCALE_FACTOR;
-        dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
-        wetGain1.setValue (0.5f * wet * (1.0f + parameters.width));
-        wetGain2.setValue (0.5f * wet * (1.0f - parameters.width));
-        feedback.setValue (parameters.roomSize * ROOM_SCALE_FACTOR + ROOM_OFFSET);
+        //dryGain.setValue (parameters.dryLevel * DRY_SCALE_FACTOR);
+        wetGain1 = 0.5f * wet * (1.0f + parameters.width);
+        wetGain2 = 0.5f * wet * (1.0f - parameters.width);
+        feedback = parameters.roomSize * ROOM_SCALE_FACTOR + ROOM_OFFSET;
     }
 
     //==============================================================================
@@ -4847,20 +4848,26 @@ public:
 
         for (int i = 0; i < numCombs; ++i)
         {
-            comb[i].setSize ((intSampleRate * combTunings[i]*ROOM_SCALE) / 44100);
-            comb[i].setSize ((intSampleRate * (combTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
+            if( left_or_right == LEFT )
+            {
+                comb[i].setSize ((intSampleRate * combTunings[i]*ROOM_SCALE) / 44100);
+            }
+            else
+            {
+                comb[i].setSize ((intSampleRate * (combTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
+            }
         }
         for (int i = 0; i < numAllPasses; ++i)
         {
-            allPass[i].setSize ((intSampleRate * allPassTunings[i]*ROOM_SCALE) / 44100);
-            allPass[i].setSize ((intSampleRate * (allPassTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
+            if( left_or_right == LEFT )
+            {
+                allPass[i].setSize ((intSampleRate * allPassTunings[i]*ROOM_SCALE) / 44100);
+            }
+            else
+            {
+                allPass[i].setSize ((intSampleRate * (allPassTunings[i]*ROOM_SCALE + stereoSpread*ROOM_SCALE)) / 44100);
+            }
         }
-
-        const float smoothTime = 0.01f;
-        feedback.reset (sample_rate, smoothTime);
-        dryGain.reset (sample_rate, smoothTime);
-        wetGain1.reset (sample_rate, smoothTime);
-        wetGain2.reset (sample_rate, smoothTime);
     }
     COLD void reset() noexcept
     {
@@ -4877,8 +4884,8 @@ public:
 
 public:
     //==========================================================================
-COLD mono_Reverb( RuntimeNotifyer*const notifyer_ ) noexcept :
-    RuntimeListener( notifyer_ )
+COLD mono_Reverb( RuntimeNotifyer*const notifyer_, bool left_or_right_ ) noexcept :
+    RuntimeListener( notifyer_ ), left_or_right(left_or_right_), wetGain1(0), wetGain2(0), feedback(0)
     {
         update_parameters();
         sample_rate_or_block_changed();
@@ -4946,7 +4953,7 @@ class FXProcessor
     mono_Reverb reverb_r;
 
     // CHORUS
-    Chorus chorus;
+    mono_Chorus chorus;
     friend class mono_ParameterOwnerStore;
 
     // FINAL ENV
@@ -5161,8 +5168,8 @@ public:
 
                    delay( notifyer_ ),
 
-                   reverb_l(notifyer_),
-                   reverb_r(notifyer_),
+                   reverb_l(notifyer_,LEFT),
+                   reverb_r(notifyer_,RIGHT),
 
                    chorus(notifyer_, synth_data_),
 
