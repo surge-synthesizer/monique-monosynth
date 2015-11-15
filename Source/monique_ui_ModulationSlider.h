@@ -107,12 +107,17 @@ public:
 class EventButton : public TextButton
 {
     friend class Monique_Ui_DualSlider;
+    friend class Monique_Ui_Mainwindow;
     Monique_Ui_DualSlider* owner;
+    Monique_Ui_Mainwindow*main_window;
 
+    void mouseDown (const MouseEvent& event) override;
+    void mouseUp (const MouseEvent& event) override;
+    
     void mouseEnter (const MouseEvent& event) override;
     void mouseExit (const MouseEvent& event) override;
 public:
-    EventButton( const String& name_ ) : TextButton( name_ ) { }
+    EventButton( const String& name_ ) : TextButton( name_ ), main_window(nullptr) { }
 };
 class BottomButton : public TextButton
 {
@@ -278,7 +283,7 @@ struct ModulationSliderConfigBase
     {
         DEFAULT_SHOW_SLIDER_VAL_ON_CHANGE,
         SHOW_OWN_VALUE,
-	SHOW_OWN_VALUE_ALWAYS
+        SHOW_OWN_VALUE_ALWAYS
     };
     virtual SHOW_TYPES show_slider_value_on_top_on_change() const noexcept
     {
@@ -380,6 +385,10 @@ public:
     ModulationSliderConfigBase*const _config;
     SectionTheme*theme;
 
+    EventButton* get_top_button() noexcept
+    {
+        return button_top;
+    }
 private:
     Parameter* front_parameter;
     Parameter* modulation_parameter;

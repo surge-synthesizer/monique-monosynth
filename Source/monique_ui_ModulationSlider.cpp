@@ -58,7 +58,7 @@ noexcept
     }
 
     bool is_linear = slider_config_->get_is_linear();
-    
+
     front_slider_->setOpaque(true);
     back_slider_->setVisible(false);
     back_slider_->setEnabled(false);
@@ -1076,6 +1076,33 @@ void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 //==============================================================================
 //==============================================================================
 //==============================================================================
+void EventButton::mouseDown (const MouseEvent& event)
+{
+    if( main_window )
+    {
+        main_window->toggle_modulation_slider_top_button(this);
+    }
+    else
+    {
+        TextButton::mouseDown(event);
+    }
+}
+void EventButton::mouseUp (const MouseEvent& event)
+{
+    if( main_window )
+    {
+        if( main_window->clear_record_timer )
+        {
+            main_window->stop_clear_chorus();
+            TextButton::triggerClick();
+        }
+    }
+    else
+    {
+        TextButton::mouseUp(event);
+    }
+}
+
 void EventButton::mouseEnter(const MouseEvent& event)
 {
     owner->topButtonEnter(event.eventComponent);
@@ -1106,15 +1133,15 @@ void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
     runtime_show_value_popup = true;
     if( opt_a_parameter != nullptr )
     {
-      if( opt_b_parameter != nullptr )
-      {
-        get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter,
-                                         _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
-                                         _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
-                                       );
-	
-	std::cout<< "enter"<<std::endl;
-      }
+        if( opt_b_parameter != nullptr )
+        {
+            get_editor()->open_option_popup( button_top, opt_a_parameter, opt_b_parameter,
+                                             _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
+                                             _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
+                                           );
+
+            std::cout<< "enter"<<std::endl;
+        }
     }
 }
 void Monique_Ui_DualSlider::topButtonExit (Component*b_)
@@ -1145,15 +1172,15 @@ void Monique_Ui_DualSlider::mouseDown (const MouseEvent& event)
             if( Button* button = dynamic_cast< Button* >( ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) ) )
             {
                 button->triggerClick();
-	std::cout<< "use_click_through_hack inner 2"<<std::endl;
+                std::cout<< "use_click_through_hack inner 2"<<std::endl;
             }
             toFront(false);
-	std::cout<< "use_click_through_hack inner 1"<<std::endl;
+            std::cout<< "use_click_through_hack inner 1"<<std::endl;
         }
-        
-	std::cout<< "use_click_through_hack"<<std::endl;
+
+        std::cout<< "use_click_through_hack"<<std::endl;
     }
-	std::cout<< "use_click_through_hack exit"<<std::endl;
+    std::cout<< "use_click_through_hack exit"<<std::endl;
 }
 //[/MiscUserCode]
 

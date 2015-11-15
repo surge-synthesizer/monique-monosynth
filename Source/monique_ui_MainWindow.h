@@ -61,10 +61,10 @@ enum COLOUR_THEMES;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-                               public Monique_Ui_Refreshable,
-                               public AsyncUpdater,
-                               public ButtonListener,
-                               public ComboBoxListener
+    public Monique_Ui_Refreshable,
+    public AsyncUpdater,
+    public ButtonListener,
+    public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -161,9 +161,15 @@ public:
     static const char* _01hintergrundalles_svg;
     static const int _01hintergrundalles_svgSize;
 
+    // CLEAR CHORUS
+    ScopedPointer<Timer>clear_record_timer;
+    void toggle_modulation_slider_top_button( Button*button_ ) noexcept;
+    void clear_record_buffer() noexcept;
+    void stop_clear_chorus() noexcept;
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+
     ScopedPointer<ResizableCornerComponent> resizer;
     ComponentBoundsConstrainer resizeLimits;
     ScopedPointer< TooltipWindow > tooltipWindow;

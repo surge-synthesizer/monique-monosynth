@@ -4649,6 +4649,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     //==============================================================================
     // TOOLTIP
     // TODO
+     // TODO hold button to clear
     TOP_SLIDER_DESCIPTION
     (
         "Define the delay time of the delay effect.\n"

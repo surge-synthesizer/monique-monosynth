@@ -116,7 +116,8 @@ public:
     void handle_sustain_pedal( bool down_ ) noexcept;
     void handle_sostueno_pedal( bool down_ ) noexcept;
     void handle_soft_pedal( bool down_ ) noexcept;
-
+    void clear_record_buffer() noexcept;
+    
 public:
     //==============================================================================
     // UI INFOS

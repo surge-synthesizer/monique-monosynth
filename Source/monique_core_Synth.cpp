@@ -4631,6 +4631,12 @@ public:
     {
         sample_rate_or_block_changed();
     }
+    
+    //==============================================================================
+    inline void clear_record_buffer() noexcept
+    {
+        record_buffer.clear();
+    }
 
 private:
     //==============================================================================
@@ -6457,6 +6463,10 @@ void MoniqueSynthesiserVoice::handle_soft_pedal( bool down_ ) noexcept
 }
 
 //==============================================================================
+void MoniqueSynthesiserVoice::clear_record_buffer() noexcept
+{
+    fx_processor->delay.clear_record_buffer();
+}
 float MoniqueSynthesiserVoice::get_filter_env_amp( int filter_id_ ) const noexcept
 {
     return filter_processors[filter_id_]->env->get_amp();
