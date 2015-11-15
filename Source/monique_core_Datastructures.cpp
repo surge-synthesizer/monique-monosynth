@@ -2060,45 +2060,6 @@ master_data( master_data_ ),
     // FILE HANDLING (MUST BE AFTER SAVEABLE PARAMS)
     colect_saveable_parameters();
 
-
-
-    // REMOVE UNNEDED PARAMETERS FROM THE SAVABLES (COZ THEY HAVE MORPH DATA)
-    saveable_parameters.minimiseStorageOverheads();
-    if( id == MASTER )
-    {
-        all_parameters.addArray( saveable_parameters );
-        automateable_parameters.addArray( saveable_parameters );
-        automateable_parameters.minimiseStorageOverheads();
-
-        for( int i = 0 ; i != automateable_parameters.size() ; ++i )
-        {
-            Parameter*param = automateable_parameters.getUnchecked(i);
-            bool success = false;
-            if( morph_group_1->indexOf( param ) != -1 or morph_group_1->indexOfBools( param ) != -1 or morph_group_1->indexOfInts( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_2->indexOf( param ) != -1 or morph_group_2->indexOfBools( param ) != -1 or morph_group_2->indexOfInts( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_3->indexOf( param ) != -1 or morph_group_3->indexOfBools( param ) != -1 or morph_group_3->indexOfInts( param ) != -1 )
-            {
-                success = true;
-            }
-            else if( morph_group_4->indexOf( param ) != -1 or morph_group_4->indexOfBools( param ) != -1 or morph_group_4->indexOfInts( param ) != -1 )
-            {
-                success = true;
-            }
-
-            if( success )
-            {
-                saveable_parameters.removeFirstMatchingValue( param );
-            }
-        }
-        saveable_parameters.minimiseStorageOverheads();
-    }
-
     if( data_type == MASTER )
     {
         colect_global_parameters();
@@ -2258,6 +2219,8 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
+    
+    saveable_parameters.minimiseStorageOverheads();
 }
 
 COLD void MoniqueSynthData::colect_global_parameters() noexcept
@@ -3486,9 +3449,12 @@ void MoniqueSynthData::load_default() noexcept
         factory_default = XmlDocument::parse( BinaryData::FACTORTY_DEFAULT_mlprog );
     }
     read_from( factory_default );
-    for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+    if( id == MASTER )
     {
-        read_parameter_factory_default_from_file( *factory_default, saveable_parameters.getUnchecked(i) );
+        for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+        {
+            read_parameter_factory_default_from_file( *factory_default, saveable_parameters.getUnchecked(i) );
+        }
     }
     alternative_program_name = FACTORY_NAME;
     current_program = -1;
@@ -3573,8 +3539,8 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 Parameter*param = saveable_parameters.getUnchecked(i);
-               const_cast<ParameterInfo&>( param ->get_info() ).program_on_load_value = param->get_value();
-               const_cast<ParameterInfo&>( param ->get_info() ).program_on_load_modulation_amount = param->get_modulation_amount();
+                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_value = param->get_value();
+                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );

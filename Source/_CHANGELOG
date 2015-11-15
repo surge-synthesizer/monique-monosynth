@@ -3,8 +3,6 @@ is changed backup depends now on the morph groups -> change this
 delay: // TODO was passiert bei bpm änderungen?
 resize does not work in plugin
 
-factory defaul return does not work
-
 ok: we need a volume info at the filter output
 
 adjust frequencies on load
