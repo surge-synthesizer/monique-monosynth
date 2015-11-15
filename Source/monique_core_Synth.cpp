@@ -4218,6 +4218,7 @@ public:
         const float e2_samples = sample_rate/165.91;
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
+            //const float power = (exp( (chorus_env_buffer[sid] *0.85f) *2)-1)/6.38906;
             const float power = chorus_env_buffer[sid] *0.75f;
             const float amps[ SUM_DELAY_LINES ] =
             {
@@ -4226,6 +4227,7 @@ public:
                 ((osc_1.lastOut_with_phase_offset( 0.5f )*0.4f + osc_4.tick()*0.5f) + 1) * 0.5f,
                 ((osc_1.lastOut_with_phase_offset( 0.75f )*0.6f + osc_5.tick()*0.4f) + 1) * 0.5f
             };
+            const float pan = smoothed_pan_buffer[sid];
 
 #define CHECK_MAKE_INDEX_VALID( floated_index_, size_ ) \
   if(floated_index_ >= size_) \
@@ -4242,11 +4244,13 @@ public:
     floated_index_ -= size_; \
   }
             // L
+            const float fade_in = 1.0f-(jmin(1.0f,power*10));
+            const float fade_effect = (jmin(1.0f,power*10));
             {
-                float result = 0;
+                float result_l = 0;
                 for( int i = 0 ; i != SUM_DELAY_LINES ; ++i )
                 {
-                    float delay = power * e_samples * amps[i];
+                    float delay = (power*0.9+0.1) * e_samples * amps[i];
                     float float_index = float(index) - delay +1;
                     CHECK_MAKE_INDEX_VALID( float_index, buffer_size )
 
@@ -4255,16 +4259,20 @@ public:
                     CHECK_MAKE_INDEX_VALID_upper_only( index_2, buffer_size )
                     const float delta = float_index-index_1;
 
-                    result += ( current_left_buffer[index_2]*delta + current_left_buffer[index_1]*(1.0f-delta)) / (i+2);
+                    result_l += ( current_left_buffer[index_1]*(1.0f-delta) + current_left_buffer[index_2]*delta ) / (i+2);
                 }
-                left_out_[sid] = result;
+                {
+                    const float left = jmin(1.0f,pan+1);
+		    current_left_buffer[index] = sample_mix(left_in_[sid], result_l * power*left );
+                    left_out_[sid] = left_in_[sid]*fade_in + result_l*fade_effect;
+                }
             }
             // R
             {
-                float result = 0;
+                float result_r = 0;
                 for( int i = 0 ; i != SUM_DELAY_LINES; ++i )
                 {
-                    float delay = power * e2_samples * amps[i] ;
+                    float delay = (power*0.9+0.1) * e2_samples * amps[i];
                     float float_index = float(index) - delay + 1;
                     CHECK_MAKE_INDEX_VALID( float_index, buffer_size )
 
@@ -4273,17 +4281,13 @@ public:
                     CHECK_MAKE_INDEX_VALID_upper_only( index_2, buffer_size )
                     const float delta = float_index-index_1;
 
-                    result += ( current_right_buffer[index_2]*delta + current_right_buffer[index_1]*(1.0f-delta)) / (i+2);
+                    result_r += ( current_right_buffer[index_1]*(1.0f-delta) + current_right_buffer[index_2]*delta ) / (i+2);
                 }
-                right_out_[sid] = result;
-            }
-
-            {
-                const float pan = smoothed_pan_buffer[sid];
-                const float left = jmin(1.0f,pan+1);
-                const float right = jmin(1.0f,pan*-1+1);
-                current_left_buffer[index] = sample_mix(left_in_[sid], left_out_[sid] * power*left );
-                current_right_buffer[index] = sample_mix(right_in_[sid], right_out_[sid] * power*right );
+                {
+                    const float right = jmin(1.0f,pan*-1+1);
+		    current_right_buffer[index] = sample_mix(right_in_[sid], result_r * power*right );;
+                    right_out_[sid] = right_in_[sid]*fade_in + result_r*fade_effect;
+                }
             }
 
             index = (index + 1) % buffer_size;
