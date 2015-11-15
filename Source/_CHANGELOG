@@ -45,6 +45,7 @@ CHANGES 0.9.8
 - fix: filter pan was inverted
 - improved pan (calculated by sine and cosine)
 - set delay reflexion size in sync with internal clock (standalone - not syncable for performance reasons)
+- swapped eq bank mix and resoance
 
 NOTES:
 

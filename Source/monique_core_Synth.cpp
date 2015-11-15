@@ -55,13 +55,24 @@ RuntimeListener( smooth_manager_ ? smooth_manager_->notifyer : nullptr ),
                  param_to_smooth(param_to_smooth_),
 
                  max_value( param_to_smooth_->get_info().max_value ),
-                 min_value( param_to_smooth_->get_info().min_value )
+                 min_value( param_to_smooth_->get_info().min_value ),
+
+                 simple_smoother(0.001),
+                 left_morph_smoother(0.001),
+                 right_morph_smoother(0.001),
+                 left_modulation_morph_smoother(0.001),
+                 right_modulation_morph_smoother(0.001),
+                 morph_power_smoother(0.001),
+                 modulation_power_smoother(0.001),
+                 amp_power_smoother(0.001)
 {
     if( smooth_manager )
     {
         smooth_manager->smoothers.add(this);
         param_to_smooth_->get_runtime_info().my_smoother = this;
     }
+
+    sample_rate_or_block_changed();
 }
 COLD SmoothedParameter::~SmoothedParameter() noexcept
 {
@@ -84,6 +95,30 @@ COLD void SmoothedParameter::sample_rate_or_block_changed() noexcept
 {
     values.setSize( block_size );
     modulation_power.setSize( block_size );
+
+    simple_smoother.set_value(morph_power_smoother.get_last_value());
+    simple_smoother.reset_coefficients( sample_rate,0 );
+
+    left_morph_smoother.set_value(morph_power_smoother.get_last_value());
+    left_morph_smoother.reset_coefficients( sample_rate,0 );
+
+    right_morph_smoother.set_value(morph_power_smoother.get_last_value());
+    right_morph_smoother.reset_coefficients( sample_rate,0 );
+
+    left_modulation_morph_smoother.set_value(morph_power_smoother.get_last_value());
+    left_modulation_morph_smoother.reset_coefficients( sample_rate,0 );
+
+    right_modulation_morph_smoother.set_value(morph_power_smoother.get_last_value());
+    right_modulation_morph_smoother.reset_coefficients( sample_rate,0 );
+
+    morph_power_smoother.set_value(morph_power_smoother.get_last_value());
+    morph_power_smoother.reset_coefficients( sample_rate,0 );
+
+    modulation_power_smoother.set_value(morph_power_smoother.get_last_value());
+    modulation_power_smoother.reset_coefficients( sample_rate,0 );
+
+    amp_power_smoother.set_value(morph_power_smoother.get_last_value());
+    amp_power_smoother.reset_coefficients( sample_rate,0 );
 }
 
 //==============================================================================
@@ -4234,7 +4269,7 @@ public:
         for( int sid = 0 ; sid != num_samples_ ; ++sid )
         {
             //const float power = (exp( (chorus_env_buffer[sid] *0.85f) *2)-1)/6.38906;
-            const float power = chorus_env_buffer[sid] *0.75f;
+            const float power = chorus_env_buffer[sid] *0.8f;
             const float amps[ SUM_DELAY_LINES ] =
             {
                 ((osc_1.tick()*0.7f  + osc_2.tick()*0.3f) + 1)*0.5f,
@@ -4259,8 +4294,8 @@ public:
     floated_index_ -= size_; \
   }
             // L
-            const float fade_in = 1.0f-(jmin(1.0f,power*10));
-            const float fade_effect = (jmin(1.0f,power*10));
+            const float fade_in = 1.0f-(jmin(1.0f,power*2));
+            const float fade_effect = (jmin(1.0f,power*2));
             {
                 float result_l = 0;
                 for( int i = 0 ; i != SUM_DELAY_LINES ; ++i )
@@ -4389,7 +4424,7 @@ class mono_Delay : public RuntimeListener
     float*active_left_record_buffer;
     float*active_right_record_buffer;
 
-    LinearSmootherZeroToOne record_switch_smoother;
+    LinearSmootherMinMax<0,1> record_switch_smoother;
 
     const float*const sin_lookup;
     const float*const cos_lookup;
@@ -4635,6 +4670,7 @@ public:
                      cos_lookup( synth_data_->sine_lookup )
     {
         sample_rate_or_block_changed();
+        record_switch_smoother.set_value(0);
     }
     COLD ~mono_Delay() noexcept
     {
@@ -5033,7 +5069,7 @@ public:
         // DELAY
         {
 #ifdef IS_STANDALONE
-	    // NOT POSSIBLE TO SYNC
+            // NOT POSSIBLE TO SYNC
             delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->speed );
 #else
             delay.set_reflexion_size( synth_data->delay_refexion, synth_data->delay_record_size, synth_data->glide_motor_time, synth_data->runtime_info->bpm );
@@ -5980,14 +6016,14 @@ inline void SmoothedParameter::process_modulation( const bool is_modulated_, con
             {
                 current_modulation_power = modulation[sid]*modulation_power_smoother.tick();
                 const float in = source_and_target[sid];
-                if( current_modulation_power > 0 )
+                if( current_modulation_power < 0 )
                 {
-                    source_and_target[sid] = in + (max_value-in) * current_modulation_power;
+                    source_and_target[sid] = in + (in-min_value) * current_modulation_power;
                     DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
                 }
                 else
                 {
-                    source_and_target[sid] = in + (in-min_value) * current_modulation_power;
+                    source_and_target[sid] = in + (max_value-in) * current_modulation_power;
                     DEBUG_CHECK_MIN_MAX( source_and_target[sid] );
                 }
             }

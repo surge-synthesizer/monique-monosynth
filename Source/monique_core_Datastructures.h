@@ -376,13 +376,13 @@ COLD SmoothManager(RuntimeNotifyer*const notifyer_) noexcept :
     RuntimeListener(notifyer_), notifyer(notifyer_) {}
     COLD ~SmoothManager() noexcept {}
 
-    void sample_rate_or_block_changed() noexcept override {}
+    void sample_rate_or_block_changed() noexcept override {};
 
 public:
     void smooth_and_morph( bool do_really_morph_, const float* morph_amount_, int num_samples_,
                            int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
                            MorphGroup*morph_group_ ) noexcept;
-    void reset() noexcept;
+
 
 public:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothManager)
@@ -442,13 +442,13 @@ public:
     //==============================================================================
     inline void reset (float sampleRate, float fade_in_ms_) noexcept
     {
-        stepsToTarget = jmax(10,int(msToSamplesFast(fade_in_ms_,sampleRate)));
+        stepsToTarget = int(msToSamplesFast(fade_in_ms_,sampleRate));
         currentValue = target;
         countdown = 0;
     }
     inline void reset_coefficients(float sampleRate, float fade_in_ms_) noexcept
     {
-        stepsToTarget = jmax(10,int(msToSamplesFast(fade_in_ms_,sampleRate)));
+        stepsToTarget = int(msToSamplesFast(fade_in_ms_,sampleRate));
     }
 
     //==============================================================================
@@ -477,7 +477,8 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmoother)
 };
-class LinearSmootherZeroToOne : public LinearSmoother
+template<int min = 0, int max = 1>
+class LinearSmootherMinMax : public LinearSmoother
 {
     int glide_countdown;
 public:
@@ -497,13 +498,13 @@ public:
                 lastValue = currentValue;
             }
 
-            if( lastValue > 1 )
+            if( lastValue > max )
             {
-                lastValue = 1;
+                lastValue = max;
             }
-            else if( lastValue < 0 )
+            else if( lastValue < min )
             {
-                lastValue = 0;
+                lastValue = min;
             }
         }
 
@@ -523,7 +524,7 @@ public:
             step = (target - currentValue) / countdown;
 
             --glide_countdown;
-            LinearSmootherZeroToOne::tick();
+            LinearSmootherMinMax::tick();
         }
         else
         {
@@ -540,18 +541,18 @@ public:
     }
 
     //==============================================================================
-    COLD LinearSmootherZeroToOne( float init_state_ = 0 ) noexcept
+    COLD LinearSmootherMinMax( float init_state_ = 0 ) noexcept
 :
     LinearSmoother( init_state_ ),
                     glide_countdown(-1)
     {
     }
-    COLD ~LinearSmootherZeroToOne() noexcept {}
+    COLD ~LinearSmootherMinMax() noexcept {}
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmootherZeroToOne)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LinearSmootherMinMax)
 };
 
-class SmoothedParameter : public RuntimeListener
+class SmoothedParameter : RuntimeListener
 {
     SmoothManager*const smooth_manager;
 
@@ -562,10 +563,6 @@ public:
     Parameter*const param_to_smooth;
     float const max_value;
     float const min_value;
-
-private:
-    //==========================================================================
-    COLD void sample_rate_or_block_changed() noexcept override;
 
 private:
     //==========================================================================
@@ -580,7 +577,7 @@ private:
     LinearSmoother left_modulation_morph_smoother;
     LinearSmoother right_modulation_morph_smoother;
 
-    LinearSmootherZeroToOne morph_power_smoother;
+    LinearSmootherMinMax<0,1> morph_power_smoother;
 public:
     void smooth_and_morph( bool is_automated_morph_,
                            int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
@@ -588,13 +585,13 @@ public:
                            const Parameter*left_source_param_, const Parameter*right_source_param_, int num_samples_ ) noexcept;
 private:
     //==========================================================================
-    LinearSmootherZeroToOne modulation_power_smoother;
+    LinearSmootherMinMax<0,1> modulation_power_smoother;
 public:
     void process_modulation( const bool is_modulated_, const float*modulator_buffer_, int num_samples_ ) noexcept;
 
 private:
     //==========================================================================
-    LinearSmootherZeroToOne amp_power_smoother;
+    LinearSmootherMinMax<0,1> amp_power_smoother;
 public:
     void process_amp( bool use_env_, int glide_time_in_ms_, ENV*env_, float*amp_buffer_, int num_samples_ ) noexcept;
 
@@ -604,10 +601,7 @@ public:
     {
         return values.getReadPointer();
     }
-    void reset() noexcept
-    {
-        // TODO
-    }
+    inline void sample_rate_or_block_changed() noexcept override;
 
     //==========================================================================
     COLD SmoothedParameter( SmoothManager*const smooth_manager_, Parameter*const param_to_smooth_ ) noexcept;
@@ -616,6 +610,7 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothedParameter)
 };
+
 
 //==============================================================================
 //==============================================================================

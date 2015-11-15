@@ -3821,7 +3821,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     }
     Parameter* get_front_parameter_base() const noexcept override
     {
-        return shape;
+        return bypass;
     }
 
     /*
@@ -3844,7 +3844,7 @@ class FColourSlConfig : public ModulationSliderConfigBase
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-        return bypass;
+        return shape;
     }
 
     //==============================================================================
@@ -3872,11 +3872,11 @@ class FColourSlConfig : public ModulationSliderConfigBase
     // BOTTOM BUTTON
     StringRef get_bottom_button_text() const noexcept override
     {
-        return "RESO";
+        return "MIX";
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-        return "MIX";
+        return "RESO";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -3904,16 +3904,16 @@ class FColourSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    TOP_SLIDER_DESCIPTION
+    BACK_SLIDER_DESCRIPTION
     (
         "Define the resonance of all band filters."
     )
     BOTTOM_BUTTON_DIALS
     (
-        "BAND RESONANCE",
-        "EQ MIX"
+        "EQ MIX",
+        "BAND RESONANCE"
     )
-    BACK_SLIDER_DESCRIPTION
+    TOP_SLIDER_DESCIPTION
     (
         "Define the mix of EQ output and EQ input.\n"
         "\n"
