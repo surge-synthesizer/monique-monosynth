@@ -2289,7 +2289,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &is_rotary_sliders_velocity_mode );
     global_parameters.add( &is_linear_sliders_velocity_mode );
     global_parameters.add( &sliders_linear_sensitivity );
-    
+
     global_parameters.add( &ui_scale_factor );
 
     global_parameters.add( &midi_pickup_offset );
@@ -3576,6 +3576,13 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             {
                 morph( morpher_id, morhp_states[morpher_id], true );
                 morph_switch_buttons( morpher_id, false );
+            }
+
+            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+            {
+                Parameter*param = saveable_parameters.getUnchecked(i);
+               const_cast<ParameterInfo&>( param ->get_info() ).program_on_load_value = param->get_value();
+               const_cast<ParameterInfo&>( param ->get_info() ).program_on_load_modulation_amount = param->get_modulation_amount();
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );

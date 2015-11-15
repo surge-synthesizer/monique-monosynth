@@ -3,6 +3,8 @@ is changed backup depends now on the morph groups -> change this
 delay: // TODO was passiert bei bpm änderungen?
 resize does not work in plugin
 
+factory defaul return does not work
+
 4.0.1
 -touch screen
 
@@ -46,6 +48,7 @@ CHANGES 0.9.8
 - improved pan (calculated by sine and cosine)
 - set delay reflexion size in sync with internal clock (standalone - not syncable for performance reasons)
 - swapped eq bank mix and resoance
+- increased max cutoff to 22000
 
 NOTES:
 

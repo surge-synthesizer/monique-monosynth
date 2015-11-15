@@ -1078,7 +1078,6 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
                 new_value = info.min_value;
             }
 
-            const_cast<ParameterInfo&>(param_->get_info()).program_on_load_value = new_value;
             param_->set_value_on_load( new_value );
             success = true;
         }
@@ -1087,8 +1086,6 @@ static inline void read_parameter_from_file( const XmlElement& xml_, Parameter* 
     if( has_modulation( param_ ) )
     {
         float new_modulation_amount = xml_.getDoubleAttribute( info.name + String("_mod"), info.init_modulation_amount );
-
-        const_cast<ParameterInfo&>(param_->get_info()).program_on_load_modulation_amount = new_modulation_amount;
         param_->set_modulation_amount_without_notification( new_modulation_amount );
         success = true;
     }

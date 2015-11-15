@@ -80,7 +80,7 @@ enum MONIQUE_SETUP
 };
 
 #define MIN_CUTOFF 35.0f
-#define MAX_CUTOFF 7965.0f
+#define MAX_CUTOFF 21965.0f
 
 //==============================================================================
 //==============================================================================
@@ -1247,7 +1247,7 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
 //==============================================================================
 //==============================================================================
 //==============================================================================
-static inline int get_low_pass_band_frequency( int band_id_ ) noexcept
+static inline int get_low_pass_band_frequency( int band_id_, double sample_rate_ ) noexcept
 {
     switch(band_id_)
     {
@@ -1264,7 +1264,7 @@ static inline int get_low_pass_band_frequency( int band_id_ ) noexcept
     case 5 :
         return 2660;
     default :
-        return 22000;
+        return sample_rate_/2;
     }
 }
 static inline int get_high_pass_band_frequency( int band_id_ ) noexcept

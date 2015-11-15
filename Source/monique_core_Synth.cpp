@@ -3870,8 +3870,10 @@ public:
 
     void sample_rate_or_block_changed() noexcept override
     {
+        reset();
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
+            frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id, sample_rate );
             high_pass_filters[band_id].setCoefficients( IIRCoefficients::makeHighPass( sample_rate, frequency_high_pass[band_id] ) );
         }
     }
@@ -4072,14 +4074,14 @@ public:
                     data_buffer( synth_data_->data_buffer )
     {
         std::cout << "MONIQUE: init EQ L OR R" << std::endl;
+
         for( int band_id = 0 ; band_id != SUM_EQ_BANDS ; ++band_id )
         {
             filters.add( new AnalogFilter(notifyer_) );
 
-            frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id );
+            frequency_low_pass[band_id] = get_low_pass_band_frequency( band_id, sample_rate );
             frequency_high_pass[band_id] = get_high_pass_band_frequency( band_id );
         }
-
         sample_rate_or_block_changed();
     }
     COLD ~EQProcessor() noexcept {}
