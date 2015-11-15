@@ -3550,14 +3550,6 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             {
                 read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
             }
-
-            if( ui_look_and_feel )
-            {
-                if( ui_look_and_feel->mainwindow )
-                {
-                    ui_look_and_feel->mainwindow->update_slider_return_values();
-                }
-            }
         }
 
 
@@ -3586,6 +3578,14 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
+
+            if( ui_look_and_feel )
+            {
+                if( ui_look_and_feel->mainwindow )
+                {
+                    ui_look_and_feel->mainwindow->triggerAsyncUpdate();
+                }
+            }
         }
     }
 }
@@ -3715,6 +3715,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

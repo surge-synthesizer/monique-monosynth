@@ -1074,10 +1074,6 @@ void MoniqueAudioProcessor::setCurrentProgram ( int id_ )
 
     synth_data->set_current_program_abs(id_);
     synth_data->load(true,true);
-    if( get_editor() )
-    {
-        get_editor()->triggerAsyncUpdate();
-    }
 }
 const String MoniqueAudioProcessor::getProgramName ( int id_ )
 {

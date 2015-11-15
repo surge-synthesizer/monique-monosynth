@@ -91,6 +91,7 @@ void Monique_Ui_Mainwindow::update_tooltip_handling( bool is_help_key_down_ ) no
 void Monique_Ui_Mainwindow::handleAsyncUpdate()
 {
     show_programs_and_select(true);
+    update_slider_return_values();
 }
 void Monique_Ui_Mainwindow::update_slider_return_values() noexcept
 {

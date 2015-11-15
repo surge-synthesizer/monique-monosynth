@@ -3719,7 +3719,7 @@ public:
                         {
                             const float amp = smoothed_output_buffer[sid];
                             float shape_power = smoothed_distortion_buffer[sid];
-                            const float result = sample_mix(sample_mix(out_buffer_1[sid], out_buffer_2[sid]), out_buffer_3[sid]) * amp;
+                            const float result = sample_mix(sample_mix(out_buffer_1[sid], out_buffer_2[sid]), out_buffer_3[sid]) * amp * 2;
 
                             this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5*(shape_power) );
                         }
@@ -3734,7 +3734,7 @@ public:
                         {
                             const float amp = smoothed_output_buffer[sid];
                             float shape_power = smoothed_distortion_buffer[sid];
-                            const float result = out_buffer[sid] * amp;
+                            const float result = out_buffer[sid] * amp * 2;
 
                             this_filter_output_buffer[sid] = sample_mix( result*(1.0f-shape_power), soft_clipping( result*5 )*1.5*(shape_power) );
                         }
