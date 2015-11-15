@@ -108,13 +108,13 @@
             file="../Source/mono_AudioDeviceManager.h"/>
     </GROUP>
     <GROUP id="{EB7317D8-6735-8E02-CF97-4D8FE341778C}" name="FILES">
+      <FILE id="viCc01" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
+            file="../../../Documents/Monoplugs/Monique/A/FACTORTY DEFAULT.mlprog"/>
       <FILE id="yrI1SB" name="DARK.mcol" compile="0" resource="1" file="../Files/DARK.mcol"/>
       <FILE id="VDKaUf" name="SourceCodePro-Medium.otf" compile="0" resource="1"
             file="../Fonts/SourceCodePro-Medium.otf"/>
       <FILE id="Bubcit" name="Lato-Semibold.ttf" compile="0" resource="1"
             file="../Fonts/lato/Lato-Semibold.ttf"/>
-      <FILE id="KeQDOj" name="FACTORTY DEFAULT.mlprog" compile="0" resource="1"
-            file="../Files/FACTORTY DEFAULT.mlprog"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
@@ -128,19 +128,19 @@
                        cppLibType="libc++" headerPath=""/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_gui_extra" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_graphics" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_events" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_core" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../JUCE-3.1.1/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../JUCE-3.1.1/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE-4.0.1/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE-4.0.1/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
