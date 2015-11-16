@@ -3215,14 +3215,14 @@ void Monique_Ui_Mainwindow::resized()
     flt_resonance_2->setBounds (1200 - 60, 430 - 130, 60, 130);
     flt_resonance_3->setBounds (1200 - 60, 610 - 130, 60, 130);
     flt_volume_1->setBounds (1380, 120, 60, 130);
-    flt_volume_2->setBounds (1440 - 60, 430 - 130, 60, 130);
-    flt_volume_3->setBounds (1440 - 60, 610 - 130, 60, 130);
+    flt_volume_2->setBounds (1380, 300, 60, 130);
+    flt_volume_3->setBounds (1380, 480, 60, 130);
     adsr_lfo_mix->setBounds (818, 120, 60, 130);
     lfo_opt_2->setBounds (818, 300, 60, 130);
     lfo_opt_3->setBounds (818, 480, 60, 130);
     button_sequence_1->setBounds (255 - 60, 880, 60, 30);
     flt_release_4->setBounds (720 - 60, 810 - 130, 60, 130);
-    volume->setBounds (1440 - 60, 810 - 130, 60, 130);
+    volume->setBounds (1380, 680, 60, 130);
     flt_distortion_2->setBounds (1290 - 60, 430 - 130, 60, 130);
     flt_distortion_3->setBounds (1290 - 60, 610 - 130, 60, 130);
     button_arp_speed_XNORM->setBounds (1280, 880, 60, 30);
@@ -5491,10 +5491,10 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1380 120 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,0)"/>
   <GENERICCOMPONENT name="" id="32dd3f586d1d81eb" memberName="flt_volume_2" virtualName=""
-                    explicitFocusOrder="0" pos="1440r 430r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1380 300 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,1)"/>
   <GENERICCOMPONENT name="" id="18f72cc654c99917" memberName="flt_volume_3" virtualName=""
-                    explicitFocusOrder="0" pos="1440r 610r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1380 480 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FVolumeSlConfig(synth_data,2)"/>
   <GENERICCOMPONENT name="" id="68cebc996c492894" memberName="adsr_lfo_mix" virtualName=""
                     explicitFocusOrder="0" pos="818 120 60 130" class="Monique_Ui_DualSlider"
@@ -5513,7 +5513,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="720r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, new FReleaseSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="94c6b03ecc4d4642" memberName="volume" virtualName=""
-                    explicitFocusOrder="0" pos="1440r 810r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1380 680 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new VolumeConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="9771b840efca92c2" memberName="flt_distortion_2" virtualName=""
                     explicitFocusOrder="0" pos="1290r 430r 60 130" class="Monique_Ui_DualSlider"

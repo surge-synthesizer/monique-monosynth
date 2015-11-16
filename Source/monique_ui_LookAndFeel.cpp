@@ -1816,7 +1816,7 @@ Rectangle<int> UiLookAndFeel::getTooltipBounds (const String& tipText, Point<int
     return Rectangle<int> (screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
                            screenPos.y > parentArea.getCentreY() ? screenPos.y - (h + 6)  : screenPos.y + 6,
                            w, h)
-           .constrainedWithin (parentArea);
+    .constrainedWithin (parentArea);
 }
 
 void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int height)
@@ -1828,8 +1828,11 @@ void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int
     g.drawRect (0, 0, width, height, 1);
 //#endif
 
-    LookAndFeelHelpers::layoutTooltipText (text, findColour (TooltipWindow::textColourId), defaultFont)
-    .draw (g, Rectangle<float> ((float) width, (float) height));
+    Rectangle<float> rect = Rectangle<float> ((float) width, (float) height);
+    TextLayout tl = LookAndFeelHelpers::layoutTooltipText (text, findColour (TooltipWindow::textColourId), defaultFont);
+    int center_rest = rect.getWidth() - tl.getWidth();
+    rect.setX( center_rest/2 );
+    tl.draw (g, rect);
 }
 
 //==============================================================================

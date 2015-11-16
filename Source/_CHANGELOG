@@ -1,7 +1,6 @@
 MO:
-- linear slider velocity -> on ctrl on or of ->geht?
-- resonance modulaion lässt sich nicht mit einem klick deaktivieren
-- add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
+- tool tips are not updated and may be incorrect for changed features or new features
+- Schrift - nicht alles gross schreiben
 
 DI:
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
@@ -25,10 +24,8 @@ MI:
 - aax
 
 DO:
-- tool tips are not updated and may be incorrect for changed features or new features
-- Schrift - nicht alles gross schreiben
-
 delay: // TODO was passiert bei bpm änderungen?
+
 
 FR:
 4.0.1
@@ -98,11 +95,11 @@ CHANGES 0.9.8
 - improve: sluggish linear slider handling
 - fix: mfo pop slider values repainting
 - fix: context menu leak
+- fix: resoancance was not setable by on click
 
 MANUAL:
 - resizer -> shortcut
 - context menu items
-
 
 ****************************************************************************
 ****************************************************************************
@@ -159,6 +156,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
 - env speed not only ms sondern auch teiler
 - option: pitch arp only or trigger notes (second one is current)
 - add: panic

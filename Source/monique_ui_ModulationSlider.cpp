@@ -924,7 +924,7 @@ void Monique_Ui_DualSlider::buttonClicked (Button* buttonThatWasClicked)
         )
         else
         {
-            top_parameter->set_value( top_parameter->get_value() == 1 ? false : true );
+            top_parameter->set_value( not top_parameter->get_value() );
         }
         get_editor()->show_info_popup( buttonThatWasClicked, top_parameter->midi_control );
         //[/UserButtonCode_button_top]
