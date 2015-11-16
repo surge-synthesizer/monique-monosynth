@@ -4,7 +4,7 @@ NEW:
 - set to current does not update buttons
 - sounds like we have a short attack on binded notes.
 - undo geht erst nach dem zweiten drehen
-update state on program on save program
+- update state on program on save program
 
 DI:
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
@@ -113,6 +113,7 @@ CHANGES 0.9.8
 - updated: tool tips main window
 - fix/improve: use consequent big letters for captions and standard (Letter not LETTTER) for dynamic texts
 - improve: font button contrast in the colour theme section
+- fix filter was going offline also if it was self osccillating
 
 MANUAL:
 - resizer -> shortcut

@@ -2827,10 +2827,14 @@ public:
         {
             zero_counter = 0;
         }
-        else
+        else if( y4 == 0 )
         {
             ++zero_counter;
         }
+        else
+	{
+            zero_counter = 0;
+	}
 
         if( zero_counter < 50 )
         {
@@ -2867,10 +2871,14 @@ public:
         {
             zero_counter = 0;
         }
-        else
+        else if( y4 == 0 )
         {
             ++zero_counter;
         }
+        else
+	{
+            zero_counter = 0;
+	}
 
         if( zero_counter < 50 )
         {
@@ -2908,10 +2916,14 @@ public:
         {
             zero_counter = 0;
         }
-        else
+        else if( y4 == 0 )
         {
             ++zero_counter;
         }
+        else
+	{
+            zero_counter = 0;
+	}
 
         if( zero_counter < 50 )
         {
