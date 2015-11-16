@@ -1,6 +1,4 @@
 MO:
-- tooltip for resizer
-- tooltip for context menu items
 - the circle around the mod mix slider is not always in centre
 - add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
 - disable shift mode if an text editor has focus and is enabled
@@ -100,7 +98,9 @@ CHANGES 0.9.8
 - add feedback for buttons and grey it out again if disabled
 - fix ctrl handling (mouse over sliders bug)
 
-
+MANUAL:
+- resizer -> shortcut
+- context menu items
 
 
 ****************************************************************************

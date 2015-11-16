@@ -56,7 +56,7 @@ if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, TURN_ON ) ) { \
     }
 
 #define IS_BUTTON_ON( button ) ( button->getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, false ) )
-    
+
 #define TURN_BUTTON_ON_OR_OFF( button, state ) \
  if(state) { TURN_BUTTON_ON(button); } else { TURN_BUTTON_OFF(button); }
 
@@ -434,10 +434,9 @@ public:
     bool sliderMenuCallback (const int result, Slider* slider) /*override*/;
     bool sliderDoubleClicked ( Slider* slider) /*override*/;
     void sliderValueChanged (Slider* sliderThatWasMoved) /*override*/;
-
     //==============================================================================
     Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) override;
-    
+
     void drawTooltip (Graphics&, const String& text, int width, int height) override;
 
     //==============================================================================

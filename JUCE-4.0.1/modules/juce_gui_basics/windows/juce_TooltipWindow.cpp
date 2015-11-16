@@ -152,7 +152,7 @@ void TooltipWindow::timerCallback()
     {
         // if a tip is currently visible (or has just disappeared), update to a new one
         // immediately if needed..
-        if (newComp == nullptr || mouseWasClicked || newTip.isEmpty())
+        if ((newComp == nullptr || mouseWasClicked || newTip.isEmpty()) and not lastComponentUnderMouse->getProperties().getWithDefault("99",false) )
         {
             if (isVisible())
             {

@@ -1770,3 +1770,5 @@ void PopupMenu::MenuItemIterator::addItemTo (PopupMenu& targetMenu)
                                     customColour != nullptr ? *customColour : Colours::black,
                                     customColour != nullptr, nullptr, subMenu, commandManager));
 }
+
+
