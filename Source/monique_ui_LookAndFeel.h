@@ -55,6 +55,8 @@ if( button->getProperties().set( VAR_INDEX_BUTTON_AMP, TURN_ON ) ) { \
         button->repaint(); \
     }
 
+#define IS_BUTTON_ON( button ) ( button->getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, false ) )
+    
 #define TURN_BUTTON_ON_OR_OFF( button, state ) \
  if(state) { TURN_BUTTON_ON(button); } else { TURN_BUTTON_OFF(button); }
 

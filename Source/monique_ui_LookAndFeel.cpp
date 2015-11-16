@@ -337,6 +337,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
     const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
     const bool is_toggled = button.getToggleState();
+    const bool is_enabled = button.isEnabled();
     if( button.isOpaque() )
     {
         g.fillAll( theme.area_colour );
@@ -462,7 +463,7 @@ void UiLookAndFeel::drawButtonBackground (Graphics& g,
     */
 
     {
-        g.setColour (color_1) ;
+        g.setColour (is_enabled ? color_1 : color_1.interpolatedWith( Colour(0x55333333), 0.3f ));
 
         const bool flatOnLeft = button.isConnectedOnLeft();
         const float flatOnRight = button.isConnectedOnRight();
@@ -497,6 +498,7 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
 
     const SectionTheme& theme = colours.get_theme( static_cast<COLOUR_THEMES>( int(button.getProperties().getWithDefault(VAR_INDEX_COLOUR_THEME,COLOUR_THEMES::DUMMY_THEME) ) ) );
     const bool override_theme_colour = button.getProperties().getWithDefault(VAR_INDEX_OVERRIDE_BUTTON_COLOUR,false);
+    const bool is_enabled = button.isEnabled();
     const float amp( button.getProperties().getWithDefault( VAR_INDEX_BUTTON_AMP, 0.0f ) );
 
     const bool is_toggled = amp != 0;
@@ -514,7 +516,7 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
         color_1 = override_theme_colour ? button.findColour(TextButton::buttonColourId).contrasting(1) : is_toggled ? theme.button_on_font_colour : theme.button_off_font_colour;
     }
     g.setFont (defaultFont.withHeight(fontHeight));
-    g.setColour(color_1);
+    g.setColour (is_enabled ? color_1 : color_1.interpolatedWith( Colour(0x55333333), 0.3f ));
     g.drawText (button.getButtonText(),   Rectangle<float>(leftIndent, yIndent, (width - leftIndent - rightIndent), fontHeight),   Justification::centred, false);
 }
 

@@ -45,6 +45,58 @@
 
 //==============================================================================
 //==============================================================================
+class ButtonFlasher : public Timer, AsyncUpdater
+{
+    Button*const button;
+    int counter;
+    const bool button_state;
+    const bool success;
+    const int num_flashs;
+
+    void timerCallback() override
+    {
+        if( ++counter >= num_flashs*2 )
+        {
+            stopTimer();
+            triggerAsyncUpdate();
+            return;
+        }
+        else
+        {
+            if( success )
+            {
+                button->setColour( TextButton::buttonColourId, Colours::lightgreen );
+            }
+            else
+            {
+                button->setColour( TextButton::buttonColourId, Colours::red );
+            }
+            button->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, counter%2 );
+            button->repaint();
+        }
+    }
+    void handleAsyncUpdate() override
+    {
+        delete this;
+    }
+
+public:
+ButtonFlasher( Button*button_, bool success_, int num_flashs_ = 2 ) noexcept :
+    button(button_), counter(0), button_state( IS_BUTTON_ON( button ) ), success( success_ ), num_flashs( num_flashs_ )
+    {
+        button->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+        timerCallback();
+        startTimer(400);
+    }
+    ~ButtonFlasher() noexcept
+    {
+        TURN_BUTTON_ON_OR_OFF( button, button_state );
+        button->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, false );
+        button->repaint();
+    }
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ButtonFlasher)
+};
 
 void Monique_Ui_Mainwindow::refresh() noexcept
 {
@@ -836,19 +888,19 @@ void Monique_Ui_Mainwindow::toggle_modulation_slider_top_button( Button*button_ 
                 {
                     if( counter % 2 == 0)
                     {
-		        String value( 3.2f - (float(counter)/10) );
-			if( value == "3" )
-			{
-			  value = "3.0";
-			}
-			else if( value == "2" )
-			{
-			  value = "2.0";
-			}
-			else if( value == "1" )
-			{
-			  value = "1.0";
-			}
+                        String value( 3.2f - (float(counter)/10) );
+                        if( value == "3" )
+                        {
+                            value = "3.0";
+                        }
+                        else if( value == "2" )
+                        {
+                            value = "2.0";
+                        }
+                        else if( value == "1" )
+                        {
+                            value = "1.0";
+                        }
                         button_down->setButtonText( String("CLR ") + value );
                     }
                     else
@@ -3460,8 +3512,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_programm_replace] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REPLACE;
-        synth_data->replace();
+        const bool success = synth_data->replace();
         show_programs_and_select(true);
+        new ButtonFlasher(buttonThatWasClicked,success);
         //[/UserButtonCode_button_programm_replace]
     }
     else if (buttonThatWasClicked == button_programm_new)
@@ -3813,8 +3866,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
 #endif
-        synth_data->load_prev();
+        const bool success = synth_data->load_prev();
         show_programs_and_select(true);
+        //new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_left]
     }
     else if (buttonThatWasClicked == button_programm_right)
@@ -3824,8 +3878,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
 #endif
-        synth_data->load_next();
+        const bool success = synth_data->load_next();
         show_programs_and_select(true);
+        //new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_right]
     }
     else if (buttonThatWasClicked == button_open_oszi)
@@ -3875,8 +3930,9 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_programm_load] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::LOAD;
-        synth_data->load();
+        const bool success = synth_data->load();
         show_programs_and_select(true);
+        new ButtonFlasher(button_programm_load,success);
         //[/UserButtonCode_button_programm_load]
     }
     else if (buttonThatWasClicked == button_sequence_1)
@@ -3913,10 +3969,12 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_button_programm_delete] -- add your button handler code here..
         program_edit_type = EDIT_TYPES::REMOVE;
+        const bool success = synth_data->remove();
         if( synth_data->remove() )
         {
             show_programs_and_select(true);
         }
+        new ButtonFlasher(button_programm_delete,success);
         //[/UserButtonCode_button_programm_delete]
     }
     else if (buttonThatWasClicked == filter_type_6_1)
@@ -4048,6 +4106,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #endif
         synth_data->load_default();
         show_programs_and_select(true);
+        new ButtonFlasher(buttonThatWasClicked,true);
         //[/UserButtonCode_button_programm_scratch]
     }
 
@@ -4071,11 +4130,13 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         {
             if( program_edit_type == CREATE )
             {
-                synth_data->create_new(new_name);
+                const bool success = synth_data->create_new(new_name);
+                new ButtonFlasher(button_programm_new,success);
             }
             else if( program_edit_type == RENAME )
             {
-                synth_data->rename(new_name);
+                const bool success = synth_data->rename(new_name);
+                new ButtonFlasher(button_programm_rename,success);
             }
             show_programs_and_select(true);
         }
@@ -4087,7 +4148,8 @@ void Monique_Ui_Mainwindow::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 #endif
             int new_index = synth_data->get_current_bank_programms().indexOf(program_to_load);
             synth_data->set_current_program( new_index );
-            synth_data->load();
+            const bool success = synth_data->load();
+            new ButtonFlasher(button_programm_load,success,1);
         }
         program_edit_type = NOT_SET;
         //[/UserComboBoxCode_combo_programm]

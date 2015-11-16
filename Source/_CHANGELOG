@@ -1,6 +1,4 @@
 MO:
-- button flasher class -> invert from toggled to not toggled
-- feedback if you have stored a program, like a green flashing button
 - bleibt im ctrl hängen, wenn ein popup offen 
 - tooltip for resizer
 - tooltip for context menu items
@@ -100,6 +98,7 @@ CHANGES 0.9.8
 - set delay reflexion size in sync with internal clock (standalone - not syncable for performance reasons)
 - swapped eq bank mix and resoance
 - increased max cutoff to 22000
+- add feedback for buttons and grey it out again if disabled
 
 
 
