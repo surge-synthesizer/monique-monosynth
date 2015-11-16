@@ -1585,7 +1585,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL ROTARY SLIDER HANDLING");
             menu->addItem (12, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true, synth_data->is_rotary_sliders_velocity_mode );
-            menu->addItem (13, TRANS ("Use circular dragging (ignored in velocity mode)"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
+            menu->addItem (13, TRANS ("Use circular dragging"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
             //menu->addItem (14, TRANS ("Use left-right dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
             //menu->addItem (15, TRANS ("Use up-down dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
             menu->addItem (16, TRANS ("Use left-right/up-down dragging"), true, not synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
@@ -1604,7 +1604,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
 
         menu->addSeparator();
         menu->addSectionHeader("MIDI");
-        menu->addItem (20, TRANS ("Map MIDI controller"), true, false );
+        menu->addItem (20, TRANS ("Map MIDI controller (shortcut: CTRL+M)"), true, false );
 
         menu->addSectionHeader("SNAP TO MIDI INPUT");
         popup_midi_snap_slider->setRange (0, 1, 0.001);
