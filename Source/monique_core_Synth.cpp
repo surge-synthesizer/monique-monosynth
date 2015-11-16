@@ -5896,22 +5896,22 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
 void SmoothedParameter::smooth_and_morph
 (
     bool is_automated_morph_,
-    int smooth_motor_time_in_ms_, int glide_motor_time_in_ms_,
+    int smooth_motor_time_in_ms_, int morph_motor_time_in_ms_,
     const float* morph_amp_buffer_, float morph_slider_state_,
     const Parameter*left_source_param_, const Parameter*right_source_param_,
     int num_samples_
 ) noexcept
 {
-    left_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-    right_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-    morph_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    left_morph_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+    right_morph_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+    morph_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
 
-    left_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-    right_modulation_morph_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    left_modulation_morph_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+    right_modulation_morph_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
 
     // LOOKING FORWART TO PROCESS MODUALATION AND AMP MODUALATION
-    modulation_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
-    amp_power_smoother.reset_coefficients( sample_rate, glide_motor_time_in_ms_ );
+    modulation_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
+    amp_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
 
     const bool is_modulateable = has_modulation( param_to_smooth );
     if( not is_modulateable )
