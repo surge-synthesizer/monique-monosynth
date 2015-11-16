@@ -1096,20 +1096,35 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 left_morph_source->switch_bool_params[param_id]->set_value_without_notification( param_->get_value() );
             }
         }
+#ifdef JUCE_DEBUG
+        else
+        {
+            std::cout<< "bool MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
+        }
+#endif
     }
     else if( type == IS_INT )
     {
         if( current_switch != LEFT )
         {
             const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
-            if( current_switch == RIGHT )
+            if( param_id != -1 )
             {
-                right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+                if( current_switch == RIGHT )
+                {
+                    right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+                }
+                else
+                {
+                    left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+                }
             }
+#ifdef JUCE_DEBUG
             else
             {
-                left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
+                std::cout<< "int MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
             }
+#endif
         }
     }
     else if( type == IS_FLOAT)
@@ -1198,6 +1213,12 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
                 jassert( current_value != left_power*left_source_param->get_value() + right_power*right_source_param->get_value() );
             }
         }
+#ifdef JUCE_DEBUG
+        else
+        {
+            std::cout<< "float MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
+        }
+#endif
     }
 }
 void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcept
@@ -2219,7 +2240,7 @@ COLD void MoniqueSynthData::colect_saveable_parameters() noexcept
     saveable_parameters.add( &this->speed );
     saveable_parameters.add( &this->octave_offset );
     saveable_parameters.add( &this->note_offset );
-    
+
     saveable_parameters.minimiseStorageOverheads();
 }
 
@@ -2503,14 +2524,14 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
         {
             for( int step_id = 0 ; step_id != SUM_ENV_ARP_STEPS ; ++step_id )
             {
-                morph_group_4->register_parameter( arp_sequencer_data->tune[step_id].ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->tune[step_id].int_ptr(), data_type == MASTER  );
                 morph_group_4->register_parameter( arp_sequencer_data->velocity[step_id].ptr(), data_type == MASTER  );
                 morph_group_4->register_switch_parameter( arp_sequencer_data->step[step_id].bool_ptr(), data_type == MASTER  );
             }
             morph_group_4->register_switch_parameter( arp_sequencer_data->connect.bool_ptr(), data_type == MASTER  );
 
             {
-                morph_group_4->register_parameter( arp_sequencer_data->shuffle.ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->shuffle.int_ptr(), data_type == MASTER  );
                 morph_group_4->register_parameter( glide.ptr(), data_type == MASTER  );
             }
 
