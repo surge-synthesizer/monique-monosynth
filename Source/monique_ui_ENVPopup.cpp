@@ -31,9 +31,13 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_ENVPopup::timerCallback()
 {
+    if( is_repainting )
+        return;
+
     if( ++callbacks > 9 )
         stopTimer();
-    repaint();
+
+    repaint( plotter->getBounds().getX()-1, plotter->getBounds().getY()-1, plotter->getBounds().getWidth()+2, plotter->getBounds().getHeight()+2 );
 }
 void Monique_Ui_ENVPopup::refresh() noexcept
 {
@@ -63,6 +67,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         sustain_time = sustain_time__;
         last_shape = shape__;
         last_release = release__;
+
 
         slider_attack->setValue( last_attack, dontSendNotification );
         label_attack->setText(String( last_attack*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
@@ -98,8 +103,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
         stopTimer();
         callbacks = 0;
-        repaint();
-        startTimer( synth_data->glide_motor_time.get_value()/10 + 5 );
+        startTimer(synth_data->glide_motor_time.get_value()/10 + 5);
     }
 
     {
@@ -235,7 +239,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     //[/Constructor_pre]
 
     addAndMakeVisible (label_attack_bottom = new Label (String::empty,
-                                                        TRANS("ATT")));
+            TRANS("ATT")));
     label_attack_bottom->setFont (Font (15.00f, Font::plain));
     label_attack_bottom->setJustificationType (Justification::centred);
     label_attack_bottom->setEditable (false, false, false);
@@ -254,7 +258,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_attack->addListener (this);
 
     addAndMakeVisible (label_decay_bottom = new Label (String::empty,
-                                                       TRANS("DEC")));
+            TRANS("DEC")));
     label_decay_bottom->setFont (Font (15.00f, Font::plain));
     label_decay_bottom->setJustificationType (Justification::centred);
     label_decay_bottom->setEditable (false, false, false);
@@ -273,7 +277,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_decay->addListener (this);
 
     addAndMakeVisible (label_release_bottom = new Label (String::empty,
-                                                         TRANS("REL")));
+            TRANS("REL")));
     label_release_bottom->setFont (Font (15.00f, Font::plain));
     label_release_bottom->setJustificationType (Justification::centred);
     label_release_bottom->setEditable (false, false, false);
@@ -302,7 +306,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain_time->addListener (this);
 
     addAndMakeVisible (label_sustain_time_bottom = new Label (String::empty,
-                                                              TRANS("HOLD")));
+            TRANS("HOLD")));
     label_sustain_time_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType (Justification::centred);
     label_sustain_time_bottom->setEditable (false, false, false);
@@ -311,7 +315,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack = new Label ("VL",
-                                                 TRANS("x\n")));
+            TRANS("x\n")));
     label_attack->setFont (Font (15.00f, Font::plain));
     label_attack->setJustificationType (Justification::centred);
     label_attack->setEditable (true, true, false);
@@ -321,7 +325,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_attack->addListener (this);
 
     addAndMakeVisible (label_decay = new Label ("VL",
-                                                TRANS("x\n")));
+            TRANS("x\n")));
     label_decay->setFont (Font (15.00f, Font::plain));
     label_decay->setJustificationType (Justification::centred);
     label_decay->setEditable (true, true, false);
@@ -331,7 +335,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_decay->addListener (this);
 
     addAndMakeVisible (label_sustain_time = new Label ("VL",
-                                                       TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time->setFont (Font (15.00f, Font::plain));
     label_sustain_time->setJustificationType (Justification::centred);
     label_sustain_time->setEditable (true, true, false);
@@ -341,7 +345,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time->addListener (this);
 
     addAndMakeVisible (label_release = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_release->setFont (Font (15.00f, Font::plain));
     label_release->setJustificationType (Justification::centred);
     label_release->setEditable (true, true, false);
@@ -361,7 +365,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain->addListener (this);
 
     addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
-                                                         TRANS("SUS")));
+            TRANS("SUS")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
     label_sustain_bottom->setEditable (false, false, false);
@@ -370,7 +374,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain->setFont (Font (15.00f, Font::plain));
     label_sustain->setJustificationType (Justification::centred);
     label_sustain->setEditable (true, true, false);
@@ -393,7 +397,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+            TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -403,7 +407,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (close = new TextButton (String::empty));
     close->setTooltip (TRANS("Close this pop up. \n"
-    "(ESC is your friend)"));
+                             "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -413,7 +417,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (keep = new TextButton (String::empty));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
-    "(e.g. from one OSC input to another one of the same filter)"));
+                            "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
     keep->addListener (this);
     keep->setColour (TextButton::buttonColourId, Colours::green);
@@ -423,7 +427,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (auto_close = new TextButton (String::empty));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
-    "(e.g. click the main user interface)"));
+                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
     auto_close->addListener (this);
     auto_close->setColour (TextButton::buttonColourId, Colours::yellow);
@@ -455,9 +459,11 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     for( int i = 0 ; i != getNumChildComponents() ; ++i )
     {
         Component*child = getChildComponent(i);
-	child->setWantsKeyboardFocus(false);
+        child->setWantsKeyboardFocus(false);
         child->setOpaque(true);
     }
+    plotter->setRepaintsOnMouseActivity(false);
+    this->setRepaintsOnMouseActivity(false);
     plotter->setOpaque(false);
 
     close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
@@ -526,7 +532,7 @@ void Monique_Ui_ENVPopup::paint (Graphics& g)
 
 #include "mono_ui_includeHacks_BEGIN.h"
     WIDTH_AND_HIGHT_FACTORS
-    
+
     g.setColour (colours.get_theme( theme  ).area_colour);
     g.fillRoundedRectangle (1.0f, 10.0f, 708.0f, 179.0f, 10.000f);
 

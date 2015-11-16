@@ -31,9 +31,13 @@
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 void Monique_Ui_MFOPopup::timerCallback()
 {
+    if( is_repainting )
+        return;
+  
     if( ++callbacks > 9 )
         stopTimer();
-    repaint();
+    
+    repaint( plotter->getBounds().getX()-1, plotter->getBounds().getY()-1, plotter->getBounds().getWidth()+2, plotter->getBounds().getHeight()+2 );
 }
 void Monique_Ui_MFOPopup::refresh() noexcept
 {
@@ -46,9 +50,18 @@ void Monique_Ui_MFOPopup::refresh() noexcept
         last_offset = mfo_data->phase_shift.get_value();
 
         String speed_label(get_lfo_speed_multi_as_text(last_speed, synth_data->runtime_info, synth_data->runtime_notifyer->get_sample_rate() ));
-        slider_speed->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, speed_label + String("@") + String( is_integer(last_speed) ? "th" : "Hz") );
-        slider_wave->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->wave.get_value() )) );
-        slider_offset->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->phase_shift.get_value() )) );
+        if( slider_speed->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, speed_label + String("@") + String( is_integer(last_speed) ? "th" : "Hz") ) )
+	{
+	  slider_speed->repaint();
+	}
+        if( slider_wave->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->wave.get_value() )) ) )
+	{
+	  slider_wave->repaint();
+	}
+        if( slider_offset->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->phase_shift.get_value() )) ) )
+	{
+	   slider_offset->repaint();
+	}
 
         slider_wave->setValue( last_wave, dontSendNotification );
         slider_speed->setValue( last_speed, dontSendNotification );
@@ -56,7 +69,6 @@ void Monique_Ui_MFOPopup::refresh() noexcept
 
         stopTimer();
         callbacks = 0;
-        repaint();
         startTimer( synth_data->glide_motor_time.get_value()/10 + 5 );
     }
     {
@@ -176,6 +188,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     owner_slider = nullptr;
     setOwner(this);
     theme = theme_;
+    is_repainting = false;
     //[/Constructor_pre]
 
     addAndMakeVisible (slider_wave = new Slider ("0"));
@@ -314,7 +327,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
         child->setOpaque(true);
         child->getProperties().set( VAR_INDEX_COLOUR_THEME, theme_ );
     }
-    this->setRepaintsOnMouseActivity(false);
+    //this->setRepaintsOnMouseActivity(false);
+    plotter->setRepaintsOnMouseActivity(false);
     plotter->setOpaque(false);
 
     slider_speed->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
@@ -369,6 +383,8 @@ Monique_Ui_MFOPopup::~Monique_Ui_MFOPopup()
 void Monique_Ui_MFOPopup::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
+    is_repainting = true;
+  
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 
@@ -445,6 +461,8 @@ void Monique_Ui_MFOPopup::paint (Graphics& g)
             }
         }
     }
+    
+    is_repainting = false;
     //[/UserPaint]
 }
 

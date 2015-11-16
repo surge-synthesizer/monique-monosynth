@@ -1,5 +1,4 @@
 MO:
-- maus bug on velocitybased track
 - leak context menu popup
 - linear slider velocity -> on ctrl on or of ->geht?
 - resonance modulaion lässt sich nicht mit einem klick deaktivieren
@@ -96,7 +95,9 @@ CHANGES 0.9.8
 - add feedback for buttons and grey it out again if disabled
 - fix ctrl handling (mouse over sliders bug)
 - fix: center the cycle around the mod mix slider
-- fix: dont enter the shift mode if a text editor is beeing edited
+- fix: dont enter the shift or ctrl mode if a text editor is beeing edited
+- improve: sluggish linear slider handling
+- fix: mfo pop slider values repainting
 
 MANUAL:
 - resizer -> shortcut

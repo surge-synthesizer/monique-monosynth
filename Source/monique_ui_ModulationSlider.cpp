@@ -417,7 +417,10 @@ void Monique_Ui_DualSlider::refresh() noexcept
     //==============================================================================
     // UPDATE SLIDERS
     float front_value = front_parameter->get_value();
-    slider_value->setValue( front_value, dontSendNotification );
+    if( getCurrentlyFocusedComponent() != slider_value )
+    {
+        slider_value->setValue( front_value, dontSendNotification );
+    }
     if( is_linear and front_value != last_value )
     {
         //slider_value->setMouseDragSensitivity( 2000.0f*exp(1.0f-front_value) + 100 );

@@ -26,6 +26,7 @@
 class Monique_Ui_Mainwindow;
 class Monique_Ui_DualSlider;
 class ENVData;
+
 //[/Headers]
 
 
@@ -39,12 +40,12 @@ class ENVData;
                                                                     //[/Comments]
 */
 class Monique_Ui_ENVPopup  : public Component,
-                             public Monique_Ui_Refreshable,
-                             public DropShadower,
-                             public Timer,
-                             public SliderListener,
-                             public LabelListener,
-                             public ButtonListener
+    public Monique_Ui_Refreshable,
+    public DropShadower,
+    public Timer,
+    public SliderListener,
+    public LabelListener,
+    public ButtonListener
 {
 public:
     //==============================================================================
@@ -65,7 +66,7 @@ public:
 
     const ENVData*const is_open_for() const noexcept
     {
-      return env_data;
+        return env_data;
     }
     void set_clickable_components( Array<Component*>& comps_ ) noexcept;
 
@@ -73,7 +74,7 @@ public:
     const float original_h;
 
 private:
-  bool is_repainting;
+    bool is_repainting;
     const bool left;
     Array< float > curve;
     Monique_Ui_Mainwindow*const parent;
