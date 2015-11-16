@@ -505,11 +505,51 @@ void UiLookAndFeel::drawButtonText (Graphics& g, TextButton& button, bool /*isMo
     Colour color_1;
     if( amp == COLOR_REPLACEMENTS::USE_AREA_COLOUR )
     {
-        color_1 = theme.button_off_font_colour;
+        color_1 = theme.area_font_colour;
     }
     else if( amp == COLOR_REPLACEMENTS::USE_AREA_TRANSCULENT )
     {
+        color_1 =  theme.area_font_colour;
+    }
+    else if( amp == COLOUR_CODES::AREA_COLOUR )
+    {
+        color_1 = theme.area_font_colour;
+    }
+    else if( amp == COLOUR_CODES::AREA_FONT_COLOUR )
+    {
+        color_1 = theme.area_colour;
+    }
+    else if( amp == COLOUR_CODES::BUTTON_OFF_COLOUR )
+    {
         color_1 = theme.button_off_font_colour;
+    }
+    else if( amp == COLOUR_CODES::BUTTON_ON_FONT_COLOUR )
+    {
+        color_1 = theme.button_on_colour;
+    }
+    else if( amp == COLOUR_CODES::BUTTON_OFF_FONT_COLOUR )
+    {
+        color_1 = theme.button_off_colour;
+    }
+    else if( amp == COLOUR_CODES::VALUE_SLIDER_COLOUR )
+    {
+        color_1 = theme.slider_bg_colour;
+    }
+    else if( amp == COLOUR_CODES::VALUE_SLIDER_2_COLOUR )
+    {
+        color_1 = theme.slider_bg_colour;
+    }
+    else if( amp == COLOUR_CODES::MOD_SLIDER_COLOUR )
+    {
+        color_1 = theme.slider_bg_colour;
+    }
+    else if( amp == COLOUR_CODES::DISABLED_SLIDER_COLOUR )
+    {
+        color_1 = theme.slider_bg_colour;
+    }
+    else if( amp == COLOUR_CODES::SLIDER_BACKGROUND_COLOUR )
+    {
+        color_1 = theme.value_slider_track_colour;
     }
     else
     {

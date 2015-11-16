@@ -1,24 +1,16 @@
-MO:
-- tool tips are not updated and may be incorrect for changed features or new features
-- Schrift - nicht alles gross schreiben
-- shift disabled wave view!
-- about: mouse over monique
-- popup can not show in to small windows
-- tool tip looper effect
 
 DI:
-- buffersize overwrite on shutdown if you select the factory init programm
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
 - add midi support for some for some buttons
 - midi allow notes to control buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
-- update sync slider button tooltip
 - canot store mapping for parameters which are not stored
 - speedänderung stanadlone mit eigener clock sollte nicht syncen!
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
 - osc sync checken (+24)
 - add back sub-steps lfo
 - init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
+- buffersize overwrite on shutdown if you select the factory init programm
 
 MI:
 - resize does not work in plugin
@@ -28,11 +20,14 @@ MI:
 - static noise on plugin startup
 - change: on mac hide osx audio devices
 - Farben werden nicht alle angezeit (im Ordner Themes sind die drin, aber nicht im Auswahlmenu) Der letzte den ich bearbeitet hatte wird aber als Default angezeigt
-- aax
 
 DO:
-delay: // TODO was passiert bei bpm änderungen?
+- delay: // TODO was passiert bei bpm änderungen?
 
+- popup can not show in to small windows
+- update sync slider button tooltip
+- tool tip looper effect
+- tool tips sub editors
 
 FR:
 4.0.1
@@ -44,6 +39,11 @@ SON:
 - link to project webpage in programs to download more programs which are released after app release
 - add factory programs to the binary
 - adjust: factory defaults
+- about: mouse over monique
+- aax
+
+MINOR PROBLEMS
+- shift disabled wave view
 
 BUILD
 ****************************************************************************
@@ -103,6 +103,9 @@ CHANGES 0.9.8
 - fix: mfo pop slider values repainting
 - fix: context menu leak
 - fix: resoancance was not setable by on click
+- updated: tool tips main window
+- fix/improve: use consequent big letters for captions and standard (Letter not LETTTER) for dynamic texts
+- improve: font button contrast in the colour theme section
 
 MANUAL:
 - resizer -> shortcut

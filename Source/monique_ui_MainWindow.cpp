@@ -3212,10 +3212,10 @@ void Monique_Ui_Mainwindow::resized()
     button_programm_replace->setBounds (850 - 60, 10, 60, 30);
     button_programm_new->setBounds (910 - 60, 10, 60, 30);
     bypass->setBounds (1345 - 60, 810 - 130, 60, 130);
-    colour->setBounds (1345 - 60, 810 - 130, 60, 130);
+    colour->setBounds (1285, 810 - 130, 60, 130);
     label_band_hz_2->setBounds (885, 636, 50, 30);
     label_band_hz_3->setBounds (955, 636, 50, 30);
-    speed_multi->setBounds (1340 - 60, 1010 - 130, 60, 130);
+    speed_multi->setBounds (1285, 1010 - 130, 60, 130);
     osc_wave_3->setBounds (90 - 60, 610 - 130, 60, 130);
     keyboard->setBounds (0, 1050, 1465, 185);
     glide2->setBounds (100, 880, 60, 130);
@@ -3303,7 +3303,7 @@ void Monique_Ui_Mainwindow::resized()
     volume->setBounds (1380, 680, 60, 130);
     flt_distortion_2->setBounds (1290 - 60, 430 - 130, 60, 130);
     flt_distortion_3->setBounds (1290 - 60, 610 - 130, 60, 130);
-    button_arp_speed_XNORM->setBounds (1280, 880, 60, 30);
+    button_arp_speed_XNORM->setBounds (1285, 880, 60, 30);
     flt_attack_5->setBounds (90 - 60, 680, 60, 130);
     flt_attack_6->setBounds (160 - 60, 680, 60, 130);
     osc_wave_1->setBounds (30, 120, 60, 130);
@@ -3313,11 +3313,11 @@ void Monique_Ui_Mainwindow::resized()
     filter_type_6_2->setBounds (1070 - 60, 300, 60, 30);
     filter_type_6_3->setBounds (1070 - 60, 480, 60, 30);
     button_ctrl_toggle->setBounds (100, 10, 60, 30);
-    speed->setBounds (1280 - 60, 1010 - 130, 60, 130);
+    speed->setBounds (1275 - 60, 1010 - 130, 60, 130);
     button_open_morph->setBounds (440 - 60, 645, 60, 30);
     effect_finalizer_switch->setBounds (930, 819, 120, 30);
     button_values_toggle->setBounds (30, 10, 60, 30);
-    octave_offset->setBounds (1435 - 60, 880, 60, 130);
+    octave_offset->setBounds (1380, 880, 60, 130);
     label_filter_inputs->setBounds (210, 75, 170, 30);
     label_oscillators->setBounds (30, 75, 130, 30);
     label_filter_envelope->setBounds (420, 75, 370, 30);
@@ -3327,8 +3327,8 @@ void Monique_Ui_Mainwindow::resized()
     label_out->setBounds (1370, 75, 80, 30);
     label_amp_envelope->setBounds (480, 645, 310, 30);
     label_glide->setBounds (100, 835, 60, 30);
-    label_speed->setBounds (1220, 835, 120, 30);
-    label_tune->setBounds (1370, 835, 70, 30);
+    label_speed->setBounds (1225, 835, 120, 30);
+    label_tune->setBounds (1380, 835, 60, 30);
     label_fm->setBounds (30, 645, 130, 30);
     volume_master_meter->setBounds (1380, 680, 60, 27);
     button_open_config2->setBounds (1350 - 60, 40 - 30, 60, 30);
@@ -3336,7 +3336,7 @@ void Monique_Ui_Mainwindow::resized()
     flt_pan_3->setBounds (1350 - 60, 610 - 130, 60, 130);
     flt_pan_2->setBounds (1350 - 60, 430 - 130, 60, 130);
     flt_pan_1->setBounds (1350 - 60, 250 - 130, 60, 130);
-    button_reset_arp_tune->setBounds (1435 - 60, 880, 60, 30);
+    button_reset_arp_tune->setBounds (1380, 880, 60, 30);
     button_show_active_input_r_2_3->setBounds (361, 289, 10, 10);
     button_show_active_input_l_2_3->setBounds (331, 289, 10, 10);
     button_show_active_input_r_2_2->setBounds (301, 289, 10, 10);
@@ -5299,7 +5299,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1345r 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new BypassConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="1f9f546ceacaa4b2" memberName="colour" virtualName=""
-                    explicitFocusOrder="0" pos="1345r 810r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1285 810r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FColourSlConfig(synth_data)"/>
   <LABEL name="DL" id="4c9a611da59481e8" memberName="label_band_hz_2"
          virtualName="" explicitFocusOrder="0" pos="885 636 50 30" textCol="ff050505"
@@ -5312,7 +5312,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <GENERICCOMPONENT name="" id="8916123bb68766dc" memberName="speed_multi" virtualName=""
-                    explicitFocusOrder="0" pos="1340r 1010r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1285 1010r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new SpeedMultiSlConfig(synth_data)"/>
   <GENERICCOMPONENT name="" id="92e86ca444a56d1e" memberName="osc_wave_3" virtualName=""
                     explicitFocusOrder="0" pos="90r 610r 60 130" class="Monique_Ui_DualSlider"
@@ -5604,7 +5604,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1290r 610r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new GForceSlConfig(synth_data,2)"/>
   <TEXTBUTTON name="" id="28379674f941d830" memberName="button_arp_speed_XNORM"
-              virtualName="" explicitFocusOrder="0" pos="1280 880 60 30" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
+              virtualName="" explicitFocusOrder="0" pos="1285 880 60 30" tooltip="Shortcut to set the speed multiplier back to 1x (in sync)."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="x1"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="9f8319dda0065826" memberName="flt_attack_5" virtualName=""
@@ -5640,7 +5640,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="SHIFT"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="ca562cfd2b6999c4" memberName="speed" virtualName=""
-                    explicitFocusOrder="0" pos="1280r 1010r 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1275r 1010r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new BPMSlConfig(synth_data)"/>
   <TEXTBUTTON name="" id="8f0b48518cbff149" memberName="button_open_morph"
               virtualName="" explicitFocusOrder="0" pos="440r 645 60 30" tooltip="Open/Close the morph editor.&#10;&#10;Note: press ESC to close editors."
@@ -5655,7 +5655,7 @@ BEGIN_JUCER_METADATA
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="CTRL"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="" id="6c9f41765f0f3e8a" memberName="octave_offset" virtualName=""
-                    explicitFocusOrder="0" pos="1435r 880 60 130" class="Monique_Ui_DualSlider"
+                    explicitFocusOrder="0" pos="1380 880 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new OctaveOffsetSlConfig(synth_data)"/>
   <LABEL name="" id="b59f286362d58d43" memberName="label_filter_inputs"
          virtualName="" explicitFocusOrder="0" pos="210 75 170 30" textCol="ff1111ff"
@@ -5703,12 +5703,12 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="9b0c123898785ff8" memberName="label_speed" virtualName=""
-         explicitFocusOrder="0" pos="1220 835 120 30" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="1225 835 120 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="SPEED" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
   <LABEL name="" id="de3bbc3ac23fc36a" memberName="label_tune" virtualName=""
-         explicitFocusOrder="0" pos="1370 835 70 30" textCol="ff1111ff"
+         explicitFocusOrder="0" pos="1380 835 60 30" textCol="ff1111ff"
          edTextCol="ffff3b00" edBkgCol="0" labelText="TUNE" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="30" bold="0" italic="0" justification="36"/>
@@ -5739,7 +5739,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="1350r 250r 60 130" class="Monique_Ui_DualSlider"
                     params="ui_refresher, &#10;new FPanSlConfig(synth_data,0)"/>
   <TEXTBUTTON name="" id="db06e124f1fcbf4d" memberName="button_reset_arp_tune"
-              virtualName="" explicitFocusOrder="0" pos="1435r 880 60 30" tooltip="Resets the arpeggiator to the defined program note.&#10;(Triggers a note which is defineable by the note dial (back dial))"
+              virtualName="" explicitFocusOrder="0" pos="1380 880 60 30" tooltip="Resets the arpeggiator to the defined program note.&#10;(Triggers a note which is defineable by the note dial (back dial))"
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="RESET"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="bcf2554ab289ccda" memberName="button_show_active_input_r_2_3"
