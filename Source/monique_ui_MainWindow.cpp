@@ -4297,7 +4297,7 @@ void Monique_Ui_Mainwindow::modifierKeysChanged (const ModifierKeys& modifiers)
 {
     //[UserCode_modifierKeysChanged] -- Add your code here...
     is_ctrl_down = modifiers.isCtrlDown();
-    if( not combo_programm->isTextEditable() )
+    if( not dynamic_cast< TextEditor* >( getCurrentlyFocusedComponent() ) ) // not combo_programm->isTextEditable() )
     {
         if( not is_ctrl_down )
         {
