@@ -1564,7 +1564,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         {
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL LINEAR SLIDER HANDLING");
-            menu->addItem (11, TRANS ("Velocity-sensitive Mode"), true, synth_data->is_linear_sliders_velocity_mode );
+            menu->addItem (11, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true, synth_data->is_linear_sliders_velocity_mode );
 
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL LINEAR VELOCITY ACCELERATION");
@@ -1584,7 +1584,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         {
             menu->addSeparator();
             menu->addSectionHeader("GLOBAL ROTARY SLIDER HANDLING");
-            menu->addItem (12, TRANS ("Velocity-sensitive Mode"), true, synth_data->is_rotary_sliders_velocity_mode );
+            menu->addItem (12, TRANS ("Velocity-sensitive Mode (shortcut: CTRL+drag)"), true, synth_data->is_rotary_sliders_velocity_mode );
             menu->addItem (13, TRANS ("Use circular dragging (ignored in velocity mode)"), true, synth_data->sliders_in_rotary_mode and not synth_data->is_rotary_sliders_velocity_mode );
             //menu->addItem (14, TRANS ("Use left-right dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryHorizontalDrag );
             //menu->addItem (15, TRANS ("Use up-down dragging"), true, slider_->getSliderStyle() == Slider::SliderStyle::RotaryVerticalDrag );
