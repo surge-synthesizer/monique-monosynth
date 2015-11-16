@@ -166,6 +166,8 @@ public:
     void toggle_modulation_slider_top_button( Button*button_ ) noexcept;
     void clear_record_buffer() noexcept;
     void stop_clear_chorus() noexcept;
+    
+    ScopedPointer<Timer> button_flasher;
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
