@@ -643,9 +643,10 @@ public:
     }
 
     // HACK 'ED FUNCTION
+    ScopedPointer<PopupMenu> menu;
     void showPopupMenu()
     {
-        if( PopupMenu* menu = owner.getLookAndFeel().getCustomPopupMenu( &owner ) )
+        if( menu = owner.getLookAndFeel().getCustomPopupMenu( &owner ) )
         {
             menu->showMenuAsync (PopupMenu::Options(), ModalCallbackFunction::forComponent (sliderMenuCallback, &owner));
         }

@@ -1175,15 +1175,10 @@ void Monique_Ui_DualSlider::mouseDown (const MouseEvent& event)
             if( Button* button = dynamic_cast< Button* >( ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) ) )
             {
                 button->triggerClick();
-                std::cout<< "use_click_through_hack inner 2"<<std::endl;
             }
             toFront(false);
-            std::cout<< "use_click_through_hack inner 1"<<std::endl;
         }
-
-        std::cout<< "use_click_through_hack"<<std::endl;
     }
-    std::cout<< "use_click_through_hack exit"<<std::endl;
 }
 //[/MiscUserCode]
 

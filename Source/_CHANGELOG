@@ -1,5 +1,4 @@
 MO:
-- leak context menu popup
 - linear slider velocity -> on ctrl on or of ->geht?
 - resonance modulaion lässt sich nicht mit einem klick deaktivieren
 - add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
@@ -98,6 +97,7 @@ CHANGES 0.9.8
 - fix: dont enter the shift or ctrl mode if a text editor is beeing edited
 - improve: sluggish linear slider handling
 - fix: mfo pop slider values repainting
+- fix: context menu leak
 
 MANUAL:
 - resizer -> shortcut
