@@ -2,6 +2,9 @@ NEW:
 - adjustable tooltip popup time in contex menu
 - step duration slider will be cool
 - set to current does not update buttons
+- sounds like we have a short attack on binded notes.
+- undo geht erst nach dem zweiten drehen
+update state on program on save program
 
 DI:
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices

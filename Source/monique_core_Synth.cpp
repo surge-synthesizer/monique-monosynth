@@ -6385,8 +6385,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         amp_painter->add_master_osc( data_buffer->osc_samples.getReadPointer(0), data_buffer->osc_switchs.getReadPointer(0), num_samples_ );
         amp_painter->add_osc( 1, data_buffer->osc_samples.getReadPointer(1), num_samples_ );
-        // amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
-        amp_painter->add_osc( 2, data_buffer->band_env_buffers.getReadPointer(0), num_samples_ );
+        amp_painter->add_osc( 2, data_buffer->osc_samples.getReadPointer(2), num_samples_ );
+        //amp_painter->add_osc( 2, data_buffer->band_env_buffers.getReadPointer(0), num_samples_ );
     }
 
     // UI INFORMATIONS
