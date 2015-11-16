@@ -430,10 +430,10 @@ public:
     ScopedPointer<Slider> popup_linear_sensi_slider;
     ScopedPointer<Slider> popup_rotary_sensi_slider;
     ScopedPointer<Slider> popup_midi_snap_slider;
-    PopupMenu* getCustomPopupMenu (Slider*) /*override*/;
-    bool sliderMenuCallback (const int result, Slider* slider) /*override*/;
-    bool sliderDoubleClicked ( Slider* slider) /*override*/;
-    void sliderValueChanged (Slider* sliderThatWasMoved) /*override*/;
+    PopupMenu* getCustomPopupMenu (Slider*) override;
+    bool sliderMenuCallback (const int result, Slider* slider) override;
+    bool sliderDoubleClicked ( Slider* slider) override;
+    void sliderValueChanged (Slider* sliderThatWasMoved) override;
     //==============================================================================
     Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) override;
 

@@ -634,3 +634,4 @@ private:
 };
 
 #endif   // JUCE_POPUPMENU_H_INCLUDED
+

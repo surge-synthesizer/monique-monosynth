@@ -61,10 +61,10 @@ enum COLOUR_THEMES;
                                                                     //[/Comments]
 */
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
-    public Monique_Ui_Refreshable,
-    public AsyncUpdater,
-    public ButtonListener,
-    public ComboBoxListener
+                               public Monique_Ui_Refreshable,
+                               public AsyncUpdater,
+                               public ButtonListener,
+                               public ComboBoxListener
 {
 public:
     //==============================================================================
@@ -94,6 +94,9 @@ public:
     void show_current_voice_data();
     void handleAsyncUpdate() override;
     void show_programs_and_select(bool force);
+    void toggle_modulation_slider_top_button( Button*button_ ) noexcept;
+    void clear_record_buffer() noexcept;
+    void stop_clear_chorus() noexcept;
     void update_slider_return_values() noexcept;
     void restore_slider_value( Component*slider_, int type_ /* 0 = user, 1 = factory, 2, program */ ) noexcept;
     void global_slider_settings_changed( Component*parent_ ) noexcept;
@@ -145,6 +148,9 @@ public:
     bool is_ctrl_down;
 
     void mouseEnter (const MouseEvent& event) override;
+
+    ScopedPointer<Timer> clear_record_timer;
+    ScopedPointer<Timer> button_flasher;
     //[/UserMethods]
 
     void paint (Graphics& g);
@@ -161,13 +167,6 @@ public:
     static const char* _01hintergrundalles_svg;
     static const int _01hintergrundalles_svgSize;
 
-    // CLEAR CHORUS
-    ScopedPointer<Timer>clear_record_timer;
-    void toggle_modulation_slider_top_button( Button*button_ ) noexcept;
-    void clear_record_buffer() noexcept;
-    void stop_clear_chorus() noexcept;
-    
-    ScopedPointer<Timer> button_flasher;
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.

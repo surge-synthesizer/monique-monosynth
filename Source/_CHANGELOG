@@ -1,11 +1,10 @@
 MO:
-- the circle around the mod mix slider is not always in centre
-- add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
 - disable shift mode if an text editor has focus and is enabled
 - maus bug on velocitybased track
 - leak context menu popup
 - linear slider velocity -> on ctrl on or of ->geht?
 - resonance modulaion lässt sich nicht mit einem klick deaktivieren
+- add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
 
 DI:
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
@@ -97,6 +96,7 @@ CHANGES 0.9.8
 - increased max cutoff to 22000
 - add feedback for buttons and grey it out again if disabled
 - fix ctrl handling (mouse over sliders bug)
+- fix: center the cycle around the mod mix slider
 
 MANUAL:
 - resizer -> shortcut
@@ -189,8 +189,6 @@ automate fm frequency
 - channel pressure, after touch
 - pithch detect output option to assign the synt back to the keyboard
 - lfo sync as note offset to the current root note
-- add-back set from current for all
-- add-back: morph toggles
 - midi option (channel, note support)
 - advanced settings: osci, adsr presets
 - advanced settings: morph
