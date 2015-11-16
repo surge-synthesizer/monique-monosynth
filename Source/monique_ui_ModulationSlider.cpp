@@ -1142,8 +1142,6 @@ void Monique_Ui_DualSlider::topButtonEnter (Component*a_)
                                              _config->get_top_button_option_param_a_text(), _config->get_top_button_option_param_b_text(),
                                              _config->get_top_button_option_param_a_tool_tip(), _config->get_top_button_option_param_b_tool_tip()
                                            );
-
-            std::cout<< "enter"<<std::endl;
         }
     }
 }
@@ -1167,6 +1165,7 @@ void Monique_Ui_DualSlider::mouseExit (const MouseEvent& event)
 
 void Monique_Ui_DualSlider::mouseDown (const MouseEvent& event)
 {
+  /*
     if( _config->use_click_through_hack() )
     {
         if( this == ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) )
@@ -1179,6 +1178,7 @@ void Monique_Ui_DualSlider::mouseDown (const MouseEvent& event)
             toFront(false);
         }
     }
+ */
 }
 //[/MiscUserCode]
 

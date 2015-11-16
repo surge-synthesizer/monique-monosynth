@@ -122,6 +122,7 @@ StringRef get_tootip_top() const noexcept override \
   : \
   text_2_1 "\n" GERNERAL_TOP_BUTTON_INFORMATION; \
 }
+
 //==============================================================================
 //==============================================================================
 //==============================================================================
@@ -349,14 +350,20 @@ class WAVESlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Define the wave form of this oscillator.\n"
-        "(Sine (LEFT), Square, Saw, Noise (RIGHT))"
+        "(Sine (LEFT), Square, Saw, Noise (RIGHT))\n"
+	"\n"
+	"Note: use the mouse wheel to snap to the next clean waveform."
     )
     TOP_BUTTON_DESCRIPTION_2_CASE
     (
-        "Turns Key Sync for all oscillators on or off."
+        "Turns Key Sync for all oscillators on or off.\n"
         "\n"
         "If Key Sync is enabled all oscillators will be hard reseted to a new cycle at each note on.\n"
-        "\n",
+        "If Key Sync is disabled all oscillators run nonstop.\n"
+	"\n"
+        "Affected: OSC 1, 2 & 3, FM."
+	
+	,
 
         "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
         "\n"
@@ -557,7 +564,7 @@ class OSCSlConfig : public ModulationSliderConfigBase
         "Turns phase modulation by LFO 1 (See: FILTER 1) on or off.",
 
         "Turns tune modulation by LFO on or off.\n"
-        "(OSC 2 will be modulated by LFO 2 (See: FILTER 2), OSC 3 by LFO 3... .)",
+        "(OSC 2 will be modulated by LFO 2 (See: FILTER 2), OSC 3 by LFO 3.)",
 
         id == 0
     )
@@ -757,9 +764,10 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Detune the FM oscillator relative, upwards to the tune of OSC 1.\n"
-        "(1 = same frequency as OSC 1)\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0."
+        "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0.\n"
+	"\n"
+	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
     TOP_BUTTON_DESCRIPTION
     (
@@ -767,7 +775,9 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "\n"
         "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one cycle of OSC 1).\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
+	"\n"
+	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -777,7 +787,9 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
     (
         "Define the shape of the FM oscillator\n"
         "\n"
-        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0."
+        "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
+	"\n"
+	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
 
 public:

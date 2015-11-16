@@ -1,8 +1,11 @@
 MO:
 - tool tips are not updated and may be incorrect for changed features or new features
 - Schrift - nicht alles gross schreiben
+- shift disabled wave view!
+about: mouse over monique
 
 DI:
+- buffersize overwrite on shutdown if you select the factory init programm
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
 - add midi support for some for some buttons
 - midi allow notes to control buttons
