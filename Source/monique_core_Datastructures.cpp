@@ -1105,27 +1105,24 @@ void MorphGroup::parameter_value_changed( Parameter* param_ ) noexcept
     }
     else if( type == IS_INT )
     {
-        if( current_switch != LEFT )
+        const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
+        if( param_id != -1 )
         {
-            const int param_id = switch_int_params.indexOf( reinterpret_cast< IntParameter* >( param_ ) );
-            if( param_id != -1 )
+            if( current_switch == RIGHT )
             {
-                if( current_switch == RIGHT )
-                {
-                    right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
-                }
-                else
-                {
-                    left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
-                }
+                right_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
             }
-#ifdef JUCE_DEBUG
             else
             {
-                std::cout<< "int MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
+                left_morph_source->switch_int_params[param_id]->set_value_without_notification( param_->get_value() );
             }
-#endif
         }
+#ifdef JUCE_DEBUG
+        else
+        {
+            std::cout<< "int MORPH ERROR parameter_value_changed: " <<  param_->get_info().name << std::endl;
+        }
+#endif
     }
     else if( type == IS_FLOAT)
     {
@@ -2837,13 +2834,13 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
     }
     for( int i = 0 ; i != morph_group_to_update->switch_bool_params.size() ; ++i )
     {
-        Parameter*param( morph_group_to_update->switch_bool_params.getUnchecked(i) );
+        BoolParameter*param( morph_group_to_update->switch_bool_params.getUnchecked(i) );
         BoolParameter*source_param( morph_group_source->switch_bool_params.getUnchecked(i) );
         param->set_value_without_notification( source_param->get_value() );
     }
     for( int i = 0 ; i != morph_group_to_update->switch_int_params.size() ; ++i )
     {
-        Parameter*param( morph_group_to_update->switch_int_params.getUnchecked(i) );
+        IntParameter*param( morph_group_to_update->switch_int_params.getUnchecked(i) );
         IntParameter*source_param( morph_group_source->switch_int_params.getUnchecked(i) );
         param->set_value_without_notification( source_param->get_value() );
     }
