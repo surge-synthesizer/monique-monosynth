@@ -98,17 +98,17 @@ Monique_Ui_AmpPainter::Monique_Ui_AmpPainter (MoniqueSynthData* synth_data_, UiL
 
     addAndMakeVisible (f_env_1 = new TextButton ("new button"));
     f_env_1->setTooltip (TRANS("Turns visualisation for the FILTER 1 MOD MIX on or off."));
-    f_env_1->setButtonText (TRANS("F1 - MOD MIX"));
+    f_env_1->setButtonText (TRANS("F1 X-MOD"));
     f_env_1->addListener (this);
 
     addAndMakeVisible (f_env_2 = new TextButton ("new button"));
     f_env_2->setTooltip (TRANS("Turns visualisation for the FILTER 2 MOD MIX on or off."));
-    f_env_2->setButtonText (TRANS("F2 - MOD MIX"));
+    f_env_2->setButtonText (TRANS("F2 X-MOD"));
     f_env_2->addListener (this);
 
     addAndMakeVisible (f_env_3 = new TextButton ("new button"));
     f_env_3->setTooltip (TRANS("Turns visualisation for the FILTER 3 MOD MIX on or off."));
-    f_env_3->setButtonText (TRANS("F3 - MOD MIX"));
+    f_env_3->setButtonText (TRANS("F3 X-MOD"));
     f_env_3->addListener (this);
 
     addAndMakeVisible (out_env = new TextButton ("new button"));
@@ -936,16 +936,13 @@ BEGIN_JUCER_METADATA
               buttonText="F3 OUT" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="3aa1b921ef4aea49" memberName="f_env_1"
               virtualName="" explicitFocusOrder="0" pos="1375 90 60 20" tooltip="Turns visualisation for the FILTER 1 MOD MIX on or off."
-              buttonText="F1 - MOD MIX" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
+              buttonText="F1 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="68fc0bbd2cf58e73" memberName="f_env_2"
               virtualName="" explicitFocusOrder="0" pos="1375 110 60 20" tooltip="Turns visualisation for the FILTER 2 MOD MIX on or off."
-              buttonText="F2 - MOD MIX" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
+              buttonText="F2 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="1d48bab8b4aaf7c9" memberName="f_env_3"
               virtualName="" explicitFocusOrder="0" pos="1375 130 60 20" tooltip="Turns visualisation for the FILTER 3 MOD MIX on or off."
-              buttonText="F3 - MOD MIX" connectedEdges="0" needsCallback="1"
-              radioGroupId="0"/>
+              buttonText="F3 X-MOD" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="new button" id="733cb649c95fb68" memberName="out_env" virtualName=""
               explicitFocusOrder="0" pos="30 130 60 20" tooltip="Turns visualisation for the FINAL/MAIN ADSR on or off."
               buttonText="AMP ENV" connectedEdges="0" needsCallback="1" radioGroupId="0"/>

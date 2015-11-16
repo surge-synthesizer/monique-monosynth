@@ -46,8 +46,8 @@
                                      "GENERAL SLIDER/DIAL INFO:\n" \
                                      "-------------------------\n" \
                                      "To edit the value in velocity mode: press CTRL & drag the slider.\n" \
-                                     "Double click the slider to return to the factory default value.\n" \
-				     "To set the current state as return value: click the right mouse button and select 'set current value as new return'."
+                                     "Right click to open the slider settings.\n" \
+                                     "Double click to return to a value of your choice.\n"
 
 //==============================================================================
 //==============================================================================
@@ -1771,7 +1771,7 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the main envelope sustain level.\n"
+        "Define the amp envelope sustain level.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
@@ -1938,7 +1938,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the main envelope sustain time in ms.\n"
+        "Define the amp envelope sustain time in ms.\n"
         "\n"
         "If the slider is set to max, the sustain time is unlimited (until note off).\n"
         "\n"
@@ -2099,7 +2099,7 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        "Define the main envelope release time in ms.\n"
+        "Define the amp envelope release time in ms.\n"
         "\n"
         "Controls the output gain (processed after EQ bank and before FX).\n"
         "\n"
@@ -2266,14 +2266,19 @@ class FShapeSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION_2_CASE
     (
-        ""
+        "Define the amp envelope shape.\n"
+        "\n"
+        "Suggestion: open the oscilloscope, select amp env and play with the shape parameter."
 
         ,
 
-        ""
+        "Define the filter envelope shape.\n"
+        "\n"
+        "Possible targets: MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME \n"
+        "\n"
+        "Suggestion: open the oscilloscope, select x-mod for your filter and play with the shape parameter."
 
         ,
 
@@ -2423,7 +2428,7 @@ class EnvLfoSlConfig : public ModulationSliderConfigBase
         "On the right side: only the LFO amplitude will be uesd as modulation signal.\n"
         "In the middle: 50% of the envelope and 50% of the LFO will be used as modulator.\n"
         "\n"
-        "Possible targets: CUTOFF, RESONANCE, GAIN, DESTROY, PAN, FILTER VOLUME"
+        "Possible targets: CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME"
     )
 
 public:
@@ -2583,10 +2588,9 @@ class LFOSlConfig : public ModulationSliderConfigBase
     (
         "Define the LFO speed.\n"
         "\n"
-        "If the LFO speed is slow (note durations) the LFO is always synced to the current speed (BPM).\n"
-        "If the LFO speed is fast (note values) the LFO is not synced to anything.\n"
+        "Possible targets: OSC, MOD-MIX -> CUTOFF, RESONANCE, GAIN, DISTORTION, PAN, FILTER VOLUME\n"
         "\n"
-        "Possible targets: OSC, MOD-MIX -> CUTOFF, RESONANCE, GAIN, DESTROY, PAN, FILTER VOLUME"
+        "Note: LFO's are synced to the song position."
     )
 
 public:
@@ -3171,7 +3175,7 @@ class FVolumeSlConfig : public ModulationSliderConfigBase
     TOP_SLIDER_DESCIPTION
     (
         "Define the filter output volume.\n"
-        "(Also processed if 'PASS' as filter type is selected)"
+        "(Also processed if 'PASS' as filter type is selected)\n"
         "\n"
         "Output target: EQ bank"
     )
@@ -4060,20 +4064,22 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the width of the reverb effect.\n"
+        "(Has no effect if FX MIX is set to zero)"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "REVERB ROOM",
+        "REVERB WIDTH"
+    )
     TOP_SLIDER_DESCIPTION
     (
         "Define the room of the reverb effect.\n"
         "(Has no effect if FX MIX is set to zero)"
     )
 
-    /*
-    TOP_SLIDER_DESCIPTION
-    (
-        "Define the width of the reverb effect.\n"
-        "(Has no effect if FX MIX is set to zero)"
-    )
-    */
 public:
     RRoomSlConfig( MoniqueSynthData*const synth_data_ )
         :
@@ -4216,11 +4222,19 @@ class RDrySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the wet/dry mix of the reverb effect.\n"
         "(Has no effect if FX MIX is set to zero)"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "REVERB DRY / WET",
+        "REVERB PAN"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the reverb panorama (left and right)."
     )
 
 public:
@@ -4373,12 +4387,19 @@ class DelaySlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
-    // TODO RECORD
     TOP_SLIDER_DESCIPTION
     (
-        "Define the delay time of the delay effect.\n"
+        "Define the delay feedback.\n"
         "(Has no effect if FX MIX is set to zero)"
+    )
+    BACK_SLIDER_DESCRIPTION
+    (
+        "Define the delay panorama (left and right)."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "DELAY",
+        "DELAY PAN"
     )
 
 public:
@@ -4517,10 +4538,9 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
-        "Define the delay time of the delay effect.\n"
+        "Define the delay reflexion time.\n"
         "(Has no effect if FX MIX is set to zero)"
     )
 
@@ -4661,13 +4681,26 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     //==============================================================================
     // TOOLTIP
     // TODO
-     // TODO hold button to clear
+    TOP_BUTTON_DESCRIPTION
+    (
+	"TODO"
+    )
     TOP_SLIDER_DESCIPTION
     (
-        "Define the delay time of the delay effect.\n"
-        "(Has no effect if FX MIX is set to zero)"
+        "Define the release time of the record effect.\n"
+        "(Has no effect if FILL is turned of)\n"
     )
-
+    BACK_SLIDER_DESCRIPTION
+    (
+        "TODO"
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "TODO",
+        "TODO"
+    )
+    
+    
 public:
     DelayRecordSlConfig( MoniqueSynthData*const synth_data_ )
         :
@@ -4806,7 +4839,7 @@ class BypassConfig : public ModulationSliderConfigBase
         "Values greater than 0 add more and more of the FX section output to the not FX processed signal (EQ output).\n"
         "(If the value is zero the FX section is bypassed)\n"
         "\n"
-        "Affected:     REVERB, DELAY, CHORUS\n"
+        "Affected:     CHORUS, DELAY, LOOPER, REVERB\n"
         "NOT Affected: DESTROY"
     )
 
@@ -5117,19 +5150,19 @@ class CModSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // TOOLTIP
-    // TODO
     TOP_SLIDER_DESCIPTION
     (
         "Define the chorus amount.\n"
-        "(Will be a fixed amount if ENV is turned off)\n"
         "(Has no effect if FX MIX is set to zero)"
     )
-    TOP_BUTTON_DESCRIPTION
+    BACK_SLIDER_DESCRIPTION
     (
-        "Turns modulation by an envelope for the chorus amount on or off.\n"
-        "(Has no effect if ENV is turned off)\n"
-        "\n"
-        "If ENV is disabled the chorus dial defines a fixed amount level and the envelope will be ignored."
+        "Define the chorus panorama (left and right)."
+    )
+    BOTTOM_BUTTON_DIALS
+    (
+        "CHORUS",
+        "CHORUS PAN"
     )
 
 public:
@@ -5677,17 +5710,15 @@ class EQSlConfig : public ModulationSliderConfigBase
     // TOOLTIP
     TOP_SLIDER_DESCIPTION
     (
-        "Define the band boost amount for this frequency (bottom caption).\n"
+        "Define the band gain for this frequency (top caption).\n"
         "(Has no effect if EQ MIX is set to zero)\n"
-        "(Will be a fixed gain level if ENV is turned off)\n"
-        "\n"
-        "Values greater than 0 will boost this band and values less than 0 will reduce it."
+        "(Will be a fixed gain level if ENV is turned off)"
     )
     TOP_BUTTON_DESCRIPTION
     (
-        "Turns modulation by an envelope for this band boost on or off.\n"
+        "Turns modulation by an envelope for this band gain on or off.\n"
         "\n"
-        "If ENV is disabled the band boost dial defines a fixed boost level and the envelope will be ignored."
+        "If ENV is disabled the band boost dial defines a fixed gain level and the envelope will be ignored."
     )
 
 public:
@@ -6064,6 +6095,16 @@ class MorphSLConfig : public ModulationSliderConfigBase
         "Morphs: (ARPEGGIATOR), SHUFFLE, NOTE-G, VELO-G, STEP NOTE, STEP VELOCITY\n"
         "Except: BUTTONS\n"
     )
+    TOP_BUTTON_DESCRIPTION
+    (
+        "Turns modulation by MFO (morph oscillator) on or off.\n"
+	"\n"
+        "If MFO is disabled the morph dial defines a fixed morph state and the mfo will be ignored.\n"
+	"\n"
+	"Affected: all morphable params of this morph group.\n"
+	"Not affected: BUTTONS (manual toggle only), ENVELOPE Parameters (exclude sustain)"
+    )
+    
 
 public:
     MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )

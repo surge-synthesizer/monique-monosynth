@@ -239,7 +239,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     //[/Constructor_pre]
 
     addAndMakeVisible (label_attack_bottom = new Label (String::empty,
-            TRANS("ATT")));
+                                                        TRANS("ATT")));
     label_attack_bottom->setFont (Font (15.00f, Font::plain));
     label_attack_bottom->setJustificationType (Justification::centred);
     label_attack_bottom->setEditable (false, false, false);
@@ -248,6 +248,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_attack_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_attack = new Slider ("0"));
+    slider_attack->setTooltip (TRANS("Define the curve attack in ms."));
     slider_attack->setRange (0, 1, 0.0002);
     slider_attack->setSliderStyle (Slider::LinearVertical);
     slider_attack->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -258,7 +259,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_attack->addListener (this);
 
     addAndMakeVisible (label_decay_bottom = new Label (String::empty,
-            TRANS("DEC")));
+                                                       TRANS("DEC")));
     label_decay_bottom->setFont (Font (15.00f, Font::plain));
     label_decay_bottom->setJustificationType (Justification::centred);
     label_decay_bottom->setEditable (false, false, false);
@@ -267,6 +268,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_decay_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_decay = new Slider ("0"));
+    slider_decay->setTooltip (TRANS("Define the curve decay in ms."));
     slider_decay->setRange (0, 1, 0.0002);
     slider_decay->setSliderStyle (Slider::LinearVertical);
     slider_decay->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -277,7 +279,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_decay->addListener (this);
 
     addAndMakeVisible (label_release_bottom = new Label (String::empty,
-            TRANS("REL")));
+                                                         TRANS("REL")));
     label_release_bottom->setFont (Font (15.00f, Font::plain));
     label_release_bottom->setJustificationType (Justification::centred);
     label_release_bottom->setEditable (false, false, false);
@@ -286,6 +288,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_release_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_release = new Slider ("0"));
+    slider_release->setTooltip (TRANS("Define the curve release in ms."));
     slider_release->setRange (0, 1, 0.0002);
     slider_release->setSliderStyle (Slider::LinearVertical);
     slider_release->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -296,6 +299,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_release->addListener (this);
 
     addAndMakeVisible (slider_sustain_time = new Slider ("0"));
+    slider_sustain_time->setTooltip (TRANS("Define the sustain time in ms."));
     slider_sustain_time->setRange (0, 1, 0.0002);
     slider_sustain_time->setSliderStyle (Slider::LinearVertical);
     slider_sustain_time->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -306,7 +310,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain_time->addListener (this);
 
     addAndMakeVisible (label_sustain_time_bottom = new Label (String::empty,
-            TRANS("HOLD")));
+                                                              TRANS("HOLD")));
     label_sustain_time_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType (Justification::centred);
     label_sustain_time_bottom->setEditable (false, false, false);
@@ -315,7 +319,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack = new Label ("VL",
-            TRANS("x\n")));
+                                                 TRANS("x\n")));
     label_attack->setFont (Font (15.00f, Font::plain));
     label_attack->setJustificationType (Justification::centred);
     label_attack->setEditable (true, true, false);
@@ -325,7 +329,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_attack->addListener (this);
 
     addAndMakeVisible (label_decay = new Label ("VL",
-            TRANS("x\n")));
+                                                TRANS("x\n")));
     label_decay->setFont (Font (15.00f, Font::plain));
     label_decay->setJustificationType (Justification::centred);
     label_decay->setEditable (true, true, false);
@@ -335,7 +339,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_decay->addListener (this);
 
     addAndMakeVisible (label_sustain_time = new Label ("VL",
-            TRANS("x\n")));
+                                                       TRANS("x\n")));
     label_sustain_time->setFont (Font (15.00f, Font::plain));
     label_sustain_time->setJustificationType (Justification::centred);
     label_sustain_time->setEditable (true, true, false);
@@ -345,7 +349,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time->addListener (this);
 
     addAndMakeVisible (label_release = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_release->setFont (Font (15.00f, Font::plain));
     label_release->setJustificationType (Justification::centred);
     label_release->setEditable (true, true, false);
@@ -355,6 +359,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_release->addListener (this);
 
     addAndMakeVisible (slider_sustain = new Slider ("0"));
+    slider_sustain->setTooltip (TRANS("Define the curve sustain in ms."));
     slider_sustain->setRange (0, 1, 0.001);
     slider_sustain->setSliderStyle (Slider::LinearVertical);
     slider_sustain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -365,7 +370,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain->addListener (this);
 
     addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
-            TRANS("SUS")));
+                                                         TRANS("SUS")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
     label_sustain_bottom->setEditable (false, false, false);
@@ -374,7 +379,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain = new Label ("VL",
-            TRANS("x\n")));
+                                                  TRANS("x\n")));
     label_sustain->setFont (Font (15.00f, Font::plain));
     label_sustain->setJustificationType (Justification::centred);
     label_sustain->setEditable (true, true, false);
@@ -397,7 +402,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-            TRANS("SHAPE")));
+                                                TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -407,7 +412,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (close = new TextButton (String::empty));
     close->setTooltip (TRANS("Close this pop up. \n"
-                             "(ESC is your friend)"));
+    "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -417,7 +422,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (keep = new TextButton (String::empty));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
-                            "(e.g. from one OSC input to another one of the same filter)"));
+    "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
     keep->addListener (this);
     keep->setColour (TextButton::buttonColourId, Colours::green);
@@ -427,7 +432,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (auto_close = new TextButton (String::empty));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
-                                  "(e.g. click the main user interface)"));
+    "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
     auto_close->addListener (this);
     auto_close->setColour (TextButton::buttonColourId, Colours::yellow);
@@ -849,39 +854,40 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="65a4c85262fddcd2" memberName="slider_attack" virtualName="Slider"
-          explicitFocusOrder="0" pos="20 60 60 80" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+          explicitFocusOrder="0" pos="20 60 60 80" tooltip="Define the curve attack in ms."
+          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
+          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
+          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="5269c763f2d5a37b" memberName="label_decay_bottom"
          virtualName="" explicitFocusOrder="0" pos="80 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="DEC" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="b62502f225e4fe3a" memberName="slider_decay" virtualName="Slider"
-          explicitFocusOrder="0" pos="80 60 60 80" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+          explicitFocusOrder="0" pos="80 60 60 80" tooltip="Define the curve decay in ms."
+          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
+          textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
+          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="d001c80859e5b7cb" memberName="label_release_bottom"
          virtualName="" explicitFocusOrder="0" pos="260 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="REL" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="e8c91a0aabc505e" memberName="slider_release" virtualName="Slider"
-          explicitFocusOrder="0" pos="260 60 60 80" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
-  <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time"
-          virtualName="Slider" explicitFocusOrder="0" pos="200 60 60 80"
+          explicitFocusOrder="0" pos="260 60 60 80" tooltip="Define the curve release in ms."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.00020000000000000000958"
           style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <SLIDER name="0" id="76a391a494643c63" memberName="slider_sustain_time"
+          virtualName="Slider" explicitFocusOrder="0" pos="200 60 60 80"
+          tooltip="Define the sustain time in ms." rotarysliderfill="ffffff00"
+          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
+          min="0" max="1" int="0.00020000000000000000958" style="LinearVertical"
+          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
+          textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ffcf23120599c6e5" memberName="label_sustain_time_bottom"
          virtualName="" explicitFocusOrder="0" pos="200 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="HOLD" editableSingleClick="0"
@@ -908,11 +914,11 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="1" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="b7e5d3f5d3dbf47a" memberName="slider_sustain" virtualName="Slider"
-          explicitFocusOrder="0" pos="140 60 60 80" rotarysliderfill="ffffff00"
-          rotaryslideroutline="ff161616" textboxtext="ffffff00" textboxbkgd="ff161616"
-          min="0" max="1" int="0.0010000000000000000208" style="LinearVertical"
-          textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
-          textBoxHeight="20" skewFactor="1"/>
+          explicitFocusOrder="0" pos="140 60 60 80" tooltip="Define the curve sustain in ms."
+          rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
+          textboxbkgd="ff161616" min="0" max="1" int="0.0010000000000000000208"
+          style="LinearVertical" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="" id="ee00adc332943fc6" memberName="label_sustain_bottom"
          virtualName="" explicitFocusOrder="0" pos="140 140 60 30" textCol="ffffff00"
          edTextCol="ff000000" edBkgCol="0" labelText="SUS" editableSingleClick="0"

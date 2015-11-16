@@ -2,7 +2,9 @@ MO:
 - tool tips are not updated and may be incorrect for changed features or new features
 - Schrift - nicht alles gross schreiben
 - shift disabled wave view!
-about: mouse over monique
+- about: mouse over monique
+- popup can not show in to small windows
+- tool tip looper effect
 
 DI:
 - buffersize overwrite on shutdown if you select the factory init programm
@@ -10,11 +12,13 @@ DI:
 - add midi support for some for some buttons
 - midi allow notes to control buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
+- update sync slider button tooltip
 - canot store mapping for parameters which are not stored
 - speedänderung stanadlone mit eigener clock sollte nicht syncen!
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
 - osc sync checken (+24)
 - add back sub-steps lfo
+- init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
 
 MI:
 - resize does not work in plugin

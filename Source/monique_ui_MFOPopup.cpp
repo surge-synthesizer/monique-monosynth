@@ -33,10 +33,10 @@ void Monique_Ui_MFOPopup::timerCallback()
 {
     if( is_repainting )
         return;
-  
+
     if( ++callbacks > 9 )
         stopTimer();
-    
+
     repaint( plotter->getBounds().getX()-1, plotter->getBounds().getY()-1, plotter->getBounds().getWidth()+2, plotter->getBounds().getHeight()+2 );
 }
 void Monique_Ui_MFOPopup::refresh() noexcept
@@ -192,7 +192,8 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     //[/Constructor_pre]
 
     addAndMakeVisible (slider_wave = new Slider ("0"));
-    slider_wave->setTooltip (TRANS("Define the curve shape type."));
+    slider_wave->setTooltip (TRANS("Define the wave.\n"
+    "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange (0, 1, 0.01);
     slider_wave->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_wave->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -221,7 +222,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_speed = new Slider ("0"));
-    slider_speed->setTooltip (TRANS("Define the curve shape type."));
+    slider_speed->setTooltip (TRANS("Define the oscillator speed."));
     slider_speed->setRange (0, 16, 1);
     slider_speed->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_speed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -264,7 +265,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (copy = new TextButton (String::empty));
-    copy->setTooltip (TRANS("Copy this envelop settings to the clipboard."));
+    copy->setTooltip (TRANS("Copy this settings to the clipboard."));
     copy->setButtonText (TRANS("COPY"));
     copy->addListener (this);
     copy->setColour (TextButton::buttonColourId, Colours::cornflowerblue);
@@ -273,7 +274,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (past = new TextButton (String::empty));
-    past->setTooltip (TRANS("Past envelop settings from the clipboard."));
+    past->setTooltip (TRANS("Past settings from the clipboard."));
     past->setButtonText (TRANS("PAST"));
     past->addListener (this);
     past->setColour (TextButton::buttonColourId, Colours::blueviolet);
@@ -291,7 +292,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (slider_offset = new Slider ("0"));
-    slider_offset->setTooltip (TRANS("Define the curve shape type."));
+    slider_offset->setTooltip (TRANS("Define the phase offset."));
     slider_offset->setRange (0, 1, 0.01);
     slider_offset->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_offset->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -302,7 +303,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_offset->addListener (this);
 
     addAndMakeVisible (mfo_minus = new TextButton (String::empty));
-    mfo_minus->setTooltip (TRANS("Decrease the LFO speed in steps."));
+    mfo_minus->setTooltip (TRANS("Decrease the speed in steps."));
     mfo_minus->setButtonText (TRANS("-"));
     mfo_minus->addListener (this);
     mfo_minus->setColour (TextButton::buttonColourId, Colours::black);
@@ -310,7 +311,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     mfo_minus->setColour (TextButton::textColourOffId, Colours::yellow);
 
     addAndMakeVisible (mfo_plus = new TextButton (String::empty));
-    mfo_plus->setTooltip (TRANS("Increase the LFO speed in steps."));
+    mfo_plus->setTooltip (TRANS("Increase the speed in steps."));
     mfo_plus->setButtonText (TRANS("+"));
     mfo_plus->addListener (this);
     mfo_plus->setColour (TextButton::buttonColourId, Colours::black);
@@ -384,7 +385,7 @@ void Monique_Ui_MFOPopup::paint (Graphics& g)
 {
     //[UserPrePaint] Add your own custom painting code here..
     is_repainting = true;
-  
+
     g.setColour(Colours::black.withAlpha(0.8f));
     g.fillRect( getWidth()-10, getHeight()-10, 10,10);
 
@@ -461,7 +462,7 @@ void Monique_Ui_MFOPopup::paint (Graphics& g)
             }
         }
     }
-    
+
     is_repainting = false;
     //[/UserPaint]
 }
@@ -614,7 +615,7 @@ BEGIN_JUCER_METADATA
     <PATH pos="0 0 100 100" fill="solid: ffff0000" hasStroke="0" nonZeroWinding="1">s 40 0 l 50 10 l 30 10 x</PATH>
   </BACKGROUND>
   <SLIDER name="0" id="1c3ffdc4ff28773b" memberName="slider_wave" virtualName="Slider"
-          explicitFocusOrder="0" pos="20 70 60 60" tooltip="Define the curve shape type."
+          explicitFocusOrder="0" pos="20 70 60 60" tooltip="Define the wave.&#10;&quot;(Sine (LEFT), close to Square (RIGHT))&quot;"
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
@@ -630,7 +631,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="e7a1c7c979888f2f" memberName="slider_speed" virtualName="Slider"
-          explicitFocusOrder="0" pos="90 70 60 60" tooltip="Define the curve shape type."
+          explicitFocusOrder="0" pos="90 70 60 60" tooltip="Define the oscillator speed."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="16" int="1" style="RotaryHorizontalVerticalDrag"
           textBoxPos="NoTextBox" textBoxEditable="1" textBoxWidth="80"
@@ -651,11 +652,11 @@ BEGIN_JUCER_METADATA
               bgColOff="ffffff00" bgColOn="ffffff00" textCol="ff000000" textColOn="ff000000"
               buttonText="aCL" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b19da151b3279272" memberName="copy" virtualName=""
-              explicitFocusOrder="0" pos="490 135 40 20" tooltip="Copy this envelop settings to the clipboard."
+              explicitFocusOrder="0" pos="490 135 40 20" tooltip="Copy this settings to the clipboard."
               bgColOff="ff6495ed" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="COPY" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b0118ea77c7b965a" memberName="past" virtualName=""
-              explicitFocusOrder="0" pos="490 155 40 20" tooltip="Past envelop settings from the clipboard."
+              explicitFocusOrder="0" pos="490 155 40 20" tooltip="Past settings from the clipboard."
               bgColOff="ff8a2be2" bgColOn="ff008000" textCol="ff000000" textColOn="ff000000"
               buttonText="PAST" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <LABEL name="new label" id="f482661fb32d75cc" memberName="label_shape3"
@@ -664,17 +665,17 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="36"/>
   <SLIDER name="0" id="65508bcbaa0e7b8b" memberName="slider_offset" virtualName="Slider"
-          explicitFocusOrder="0" pos="160 70 60 60" tooltip="Define the curve shape type."
+          explicitFocusOrder="0" pos="160 70 60 60" tooltip="Define the phase offset."
           rotarysliderfill="ffffff00" rotaryslideroutline="ff161616" textboxtext="ffffff00"
           textboxbkgd="ff161616" min="0" max="1" int="0.010000000000000000208"
           style="RotaryHorizontalVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <TEXTBUTTON name="" id="ff7ac483f2e2c468" memberName="mfo_minus" virtualName=""
-              explicitFocusOrder="0" pos="90 20 30 30" tooltip="Decrease the LFO speed in steps."
+              explicitFocusOrder="0" pos="90 20 30 30" tooltip="Decrease the speed in steps."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="-"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="" id="b9c09c85829baa4c" memberName="mfo_plus" virtualName=""
-              explicitFocusOrder="0" pos="120 20 30 30" tooltip="Increase the LFO speed in steps."
+              explicitFocusOrder="0" pos="120 20 30 30" tooltip="Increase the speed in steps."
               bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff00" buttonText="+"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>

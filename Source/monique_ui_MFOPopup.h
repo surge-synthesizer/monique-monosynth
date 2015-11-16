@@ -54,7 +54,7 @@ public:
     //[UserMethods]     -- You can add your own custom methods in this section.
     COLOUR_THEMES theme;
     bool is_repainting;
-    
+
     Component* related_to_comp;
     Monique_Ui_DualSlider*owner_slider;
     void set_element_to_show(Component*const, Monique_Ui_DualSlider*owner_);

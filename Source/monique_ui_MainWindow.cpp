@@ -4166,6 +4166,8 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
         //[UserButtonCode_button_reset_arp_tune] -- add your button handler code here..
         audio_processor->noteOn( 1, 60+synth_data->note_offset.get_value()-24, 1.0f );
         audio_processor->noteOff( 1, 60+synth_data->note_offset.get_value()-24, 0 );
+
+        button_flasher = new ButtonFlasher(this,buttonThatWasClicked,true,1);
         //[/UserButtonCode_button_reset_arp_tune]
     }
     else if (buttonThatWasClicked == button_programm_rename)
