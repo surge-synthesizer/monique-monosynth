@@ -1,5 +1,4 @@
 MO:
-- bleibt im ctrl hängen, wenn ein popup offen 
 - tooltip for resizer
 - tooltip for context menu items
 - the circle around the mod mix slider is not always in centre
@@ -99,6 +98,7 @@ CHANGES 0.9.8
 - swapped eq bank mix and resoance
 - increased max cutoff to 22000
 - add feedback for buttons and grey it out again if disabled
+- fix ctrl handling (mouse over sliders bug)
 
 
 

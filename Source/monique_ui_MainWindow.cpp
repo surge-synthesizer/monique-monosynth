@@ -2520,6 +2520,7 @@ Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
     //[Destructor_pre]. You can add your own custom destruction code here..
     PopupMenu::dismissAllActiveMenus();
 
+    button_flasher = nullptr;
     clear_record_timer = nullptr;
 
     look_and_feel->mainwindow = nullptr;

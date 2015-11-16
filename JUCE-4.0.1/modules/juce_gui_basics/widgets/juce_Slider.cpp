@@ -1653,10 +1653,19 @@ void Slider::mouseUp (const MouseEvent&)        {
     pimpl->mouseUp();
 }
 
+// HACK 'ed function
 void Slider::modifierKeysChanged (const ModifierKeys& modifiers)
 {
-    if (isEnabled())
-        pimpl->modifierKeysChanged (modifiers);
+    Component*parent = this;
+    while( parent )
+    {
+        Component* last = parent;
+        parent = parent->getParentComponent();
+        if( not parent )
+        {
+            last->modifierKeysChanged(modifiers);
+        }
+    }
 }
 
 void Slider::mouseDrag (const MouseEvent& e)
