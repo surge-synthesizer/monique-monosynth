@@ -4342,46 +4342,57 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                     if( button == button_programm_left )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_right )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_load )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_scratch )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_replace )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_new )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_rename )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_programm_delete )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_open_midi_io_settings )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_open_config2 )
                     {
                         trigger_click = false;
+			found = true;
                     }
                     else if( button == button_open_oszi )
                     {
                         trigger_click = false;
+			found = true;
                     }
 
                     if( trigger_click)
