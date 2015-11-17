@@ -88,7 +88,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         label_sustain->setText(String( slider_sustain->getValue()*100 ), dontSendNotification);
 
         slider_sustain_time->setValue( sustain_time, dontSendNotification );
-        if( slider_sustain_time->getValue()*MAX_ENV_TIMES < MAX_ENV_TIMES )
+        if( slider_sustain_time->getValue() < 1 )
         {
             label_sustain_time->setText(String( sustain_time*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
         }
@@ -216,30 +216,47 @@ void Monique_Ui_ENVPopup::mouseMagnify (const MouseEvent& event, float )
 }
 void Monique_Ui_ENVPopup::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    if( param_ == &ui_refresher->synth_data->midi_env_attack )
+    struct Executer : AsyncUpdater
     {
-        env_data->attack = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_env_decay )
-    {
-        env_data->decay = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_env_sustain )
-    {
-        env_data->sustain = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_env_sustain_time )
-    {
-        env_data->sustain_time = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_env_release )
-    {
-        env_data->release = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_env_shape )
-    {
-        env_data->shape = param_->get_value();
-    }
+        Parameter*const param;
+        Monique_Ui_ENVPopup*const parent;
+        void handleAsyncUpdate() noexcept
+        {
+            if( param == &parent->ui_refresher->synth_data->midi_env_attack )
+            {
+                parent->env_data->attack = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_env_decay )
+            {
+                parent->env_data->decay = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_env_sustain )
+            {
+                parent->env_data->sustain = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_env_sustain_time )
+            {
+                parent->env_data->sustain_time = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_env_release )
+            {
+                parent->env_data->release = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_env_shape )
+            {
+                parent->env_data->shape = param->get_value();
+            }
+
+            delete this;
+        }
+
+        Executer( Parameter*const param_, Monique_Ui_ENVPopup*const parent_ ) : param(param_), parent( parent_ )
+        {
+            triggerAsyncUpdate();
+        }
+    };
+
+    new Executer( param_, this );
 }
 void Monique_Ui_ENVPopup::sliderClicked (Slider*s_)
 {

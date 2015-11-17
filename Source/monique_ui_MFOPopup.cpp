@@ -174,18 +174,35 @@ void Monique_Ui_MFOPopup::mouseMagnify (const MouseEvent& event, float )
 }
 void Monique_Ui_MFOPopup::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    if( param_ == &ui_refresher->synth_data->midi_lfo_wave )
+    struct Executer : AsyncUpdater
     {
-        mfo_data->wave = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_lfo_speed )
-    {
-        mfo_data->speed = param_->get_value();
-    }
-    else if( param_ == &ui_refresher->synth_data->midi_lfo_offset )
-    {
-        mfo_data->phase_shift = param_->get_value();
-    }
+        Parameter*const param;
+        Monique_Ui_MFOPopup*const parent;
+        void handleAsyncUpdate() noexcept
+        {
+            if( param == &parent->ui_refresher->synth_data->midi_lfo_wave )
+            {
+                parent->mfo_data->wave = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_lfo_speed )
+            {
+                parent->mfo_data->speed = param->get_value();
+            }
+            else if( param == &parent->ui_refresher->synth_data->midi_lfo_offset )
+            {
+                parent->mfo_data->phase_shift = param->get_value();
+            }
+
+            delete this;
+        }
+
+        Executer( Parameter*const param_, Monique_Ui_MFOPopup*const parent_ ) : param(param_), parent( parent_ )
+        {
+            triggerAsyncUpdate();
+        }
+    };
+
+    new Executer( param_, this );
 }
 void Monique_Ui_MFOPopup::sliderClicked (Slider*s_)
 {

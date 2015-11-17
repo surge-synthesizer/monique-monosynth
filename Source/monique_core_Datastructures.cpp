@@ -330,7 +330,7 @@ attack
 (
     MIN_MAX( 0, 1 ),
     0.05,
-    5000,
+    10000,
     generate_param_name(ENV_NAME,id,"attack"),
     generate_short_human_name(ENV_NAME,id_,"attack")
 ),
@@ -338,7 +338,7 @@ decay
 (
     MIN_MAX( 0, 1 ),
     0.02,
-    5000,
+    10000,
     generate_param_name(ENV_NAME,id,"decay"),
     generate_short_human_name(ENV_NAME,id_,"decay")
 ),
@@ -355,7 +355,7 @@ sustain_time
 (
     MIN_MAX( 0, 1 ),
     1,
-    MAX_ENV_TIMES,
+    10000,
     generate_param_name(ENV_NAME,id,"sustain_time"),
     generate_short_human_name(ENV_NAME,id_,"sus_time")),
 
@@ -363,7 +363,7 @@ release
 (
     MIN_MAX( 0, 1 ),
     0.2,
-    5000,
+    10000,
     generate_param_name(ENV_NAME,id,"release"),
     generate_short_human_name(ENV_NAME,id_,"release")
 ),

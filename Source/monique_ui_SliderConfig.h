@@ -1898,8 +1898,8 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        float value = sustain_time->get_value() * 5000;
-        if( value < 5000 )
+        float value = sustain_time->get_value();
+        if( value < 1 )
         {
             return String( auto_round(get_env_ms(value)) );
         }

@@ -1397,7 +1397,7 @@ public:
 
         // TO MIDI CLOCK SYNC
         int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
-#ifdef IS_STANDALONE
+#ifdef IS_STANDALONE__
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
         {
@@ -1423,9 +1423,50 @@ public:
             const float bars_per_sec = runtime_info->bpm/4/60;
             const float samples_per_bar = (1.0f/bars_per_sec)*sample_rate;
             const float samples_per_cylce = samples_per_bar * speed_multi;
-            delta = (1.0/samples_per_cylce);
-        }
+            const float cycles_per_sample = (1.0/samples_per_cylce);
 
+            // PROCESS
+            {
+                const float* smoothed_wave_buffer( lfo_data->wave_smoother.get_smoothed_value_buffer() );
+                const float* smoothed_offset_buffer( lfo_data->phase_shift_smoother.get_smoothed_value_buffer() );
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    float amp;
+                    {
+                        angle = cycles_per_sample*sync_sample_pos;
+			angle = angle - floor(angle);
+
+                        // AMP
+                        {
+                            const float sine_amp = lookup( sine_lookup, angle*double_Pi*2 + smoothed_offset_buffer[sid]*double_Pi*2 );
+                            const float wave = smoothed_wave_buffer[sid];
+                            amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
+                            if( amp > 1 )
+                            {
+                                amp = 1;
+                            }
+                            else if( amp < -1 )
+                            {
+                                amp = -1;
+                            }
+                            amp = lfo2amp(amp);
+                        }
+                    }
+
+                    if( --glide_counter > 0 )
+                    {
+                        float glide = (1.0f/glide_samples*glide_counter);
+                        amp = amp*(1.0f-glide) + glide_value*glide;
+                    }
+
+                    dest_[sid] = amp;
+		    
+		    ++sync_sample_pos;
+                }
+                last_out = dest_[num_samples_-1];
+            }
+        }
+/*
         // FORCE SYNC
         if( step_number_ == 0 )
         {
@@ -1505,6 +1546,7 @@ public:
             }
             last_out = dest_[num_samples_-1];
         }
+        */
     }
 
     void sample_rate_or_block_changed() noexcept override
