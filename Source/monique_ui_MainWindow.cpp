@@ -3565,25 +3565,61 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_toggle_morph_buttons_1)
     {
         //[UserButtonCode_button_toggle_morph_buttons_1] -- add your button handler code here..
-        synth_data->morph_switch_buttons(0,true);
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->morhp_switch_states[0],
+            buttonThatWasClicked
+        )
+        else
+        {
+            synth_data->morhp_switch_states[0] ^= true;
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->morhp_switch_states[0].midi_control );
         //[/UserButtonCode_button_toggle_morph_buttons_1]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_2)
     {
         //[UserButtonCode_button_toggle_morph_buttons_2] -- add your button handler code here..
-        synth_data->morph_switch_buttons(1,true);
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->morhp_switch_states[1],
+            buttonThatWasClicked
+        )
+        else
+        {
+            synth_data->morhp_switch_states[1] ^= true;
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->morhp_switch_states[1].midi_control );
         //[/UserButtonCode_button_toggle_morph_buttons_2]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_3)
     {
         //[UserButtonCode_button_toggle_morph_buttons_3] -- add your button handler code here..
-        synth_data->morph_switch_buttons(3,true);
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->morhp_switch_states[3],
+            buttonThatWasClicked
+        )
+        else
+        {
+            synth_data->morhp_switch_states[3] ^= true;
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->morhp_switch_states[3].midi_control );
         //[/UserButtonCode_button_toggle_morph_buttons_3]
     }
     else if (buttonThatWasClicked == button_toggle_morph_buttons_4)
     {
         //[UserButtonCode_button_toggle_morph_buttons_4] -- add your button handler code here..
-        synth_data->morph_switch_buttons(2,true);
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->morhp_switch_states[2],
+            buttonThatWasClicked
+        )
+        else
+        {
+            synth_data->morhp_switch_states[2] ^= true;
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->morhp_switch_states[2].midi_control );
         //[/UserButtonCode_button_toggle_morph_buttons_4]
     }
     else if (buttonThatWasClicked == button_programm_replace)
@@ -4143,7 +4179,16 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     else if (buttonThatWasClicked == button_values_toggle)
     {
         //[UserButtonCode_button_values_toggle] -- add your button handler code here..
-        look_and_feel->show_values_always ^= true;
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &look_and_feel->show_values_always,
+            buttonThatWasClicked
+        )
+        else
+        {
+            look_and_feel->show_values_always ^= true;
+        }
+        show_info_popup( buttonThatWasClicked, look_and_feel->show_values_always.midi_control );
         //[/UserButtonCode_button_values_toggle]
     }
     else if (buttonThatWasClicked == button_open_config2)
@@ -4298,14 +4343,27 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                 bool success = false;
                 if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( c ) )
                 {
+                    Parameter*back_parameter = slider->get_back_parameter();
+                    Parameter*front_parameter = slider->get_front_parameter();
+                    if( back_parameter )
+                    {
+                        IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
+                        (
+                            front_parameter,
+                            back_parameter,
+                            c
+                        )
+                        show_info_popup(c,slider->get_front_parameter()->midi_control);
+                    }
+                    else
                     {
                         IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
                         (
-                            slider->get_front_parameter(),
+                            front_parameter,
                             c
                         )
+                        show_info_popup(c,front_parameter->midi_control);
                     }
-                    show_info_popup(c,slider->get_front_parameter()->midi_control);
                     found = true;
                     break;
                 }
@@ -4318,15 +4376,40 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                         {
                             if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
                             {
+                                if( TextButton* button = dynamic_cast< TextButton* >( c ) )
                                 {
                                     IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
                                     (
-                                        slider->get_front_parameter(),
+                                        slider->get_top_parameter(),
                                         c
                                     )
+                                    show_info_popup(c,slider->get_top_parameter()->midi_control);
+                                }
+                                else
+                                {
+                                    Parameter*back_parameter = slider->get_back_parameter();
+                                    Parameter*front_parameter = slider->get_front_parameter();
+                                    if( back_parameter )
+                                    {
+                                        IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
+                                        (
+                                            front_parameter,
+                                            back_parameter,
+                                            c
+                                        )
+                                        show_info_popup(c,slider->get_front_parameter()->midi_control);
+                                    }
+                                    else
+                                    {
+                                        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+                                        (
+                                            front_parameter,
+                                            c
+                                        )
+                                        show_info_popup(c,front_parameter->midi_control);
+                                    }
                                 }
 
-                                show_info_popup(c,slider->get_front_parameter()->midi_control);
                                 found = true;
                                 break;
                             }
@@ -4342,63 +4425,63 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                     if( button == button_programm_left )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_right )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_load )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_scratch )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_replace )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_new )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_rename )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_programm_delete )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_open_midi_io_settings )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_open_config2 )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
                     else if( button == button_open_oszi )
                     {
                         trigger_click = false;
-			found = true;
+                        found = true;
                     }
 
                     if( trigger_click)
                     {
                         buttonClicked( button );
-			found = true;
+                        found = true;
                     }
                 }
             }

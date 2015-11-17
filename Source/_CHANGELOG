@@ -1,7 +1,9 @@
 NEW:
+- env for bands are inverted by midi control
+- buffersize overwritten if you change velocity glide time
 
 DI:
-- store paramteres like ctrl and shift to store its midi setup and reset to default on startup
+- midi for popups
 - add midi support for some for some buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
@@ -25,7 +27,7 @@ MI:
 
 DO:
 - delay: // TODO was passiert bei bpm änderungen?
-
+- zeiteingaben exp (envs)
 - add: morph sensitivit to the context menu
 - update state on program on save program
 - undo geht erst nach dem zweiten drehen
@@ -34,6 +36,7 @@ DO:
 - update sync slider button tooltip
 - tool tip looper effect
 - tool tips sub editors
+- run in debug: ASSERT_MESSAGE_MANAGER_IS_LOCKED (assert juce_comp.cpp 1913
 
 FR:
 4.0.1

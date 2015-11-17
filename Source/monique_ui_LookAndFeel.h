@@ -329,7 +329,7 @@ public:
 
     ComponentColours colours;
     Component* midi_learn_comp;
-    bool show_values_always;
+    BoolParameter show_values_always;
 
     Font defaultFont;
 

@@ -37,6 +37,7 @@ void Monique_Ui_MFOPopup::timerCallback()
     if( ++callbacks > 9 )
         stopTimer();
 
+    MessageManagerLock mmLock;
     repaint( plotter->getBounds().getX()-1, plotter->getBounds().getY()-1, plotter->getBounds().getWidth()+2, plotter->getBounds().getHeight()+2 );
 }
 void Monique_Ui_MFOPopup::refresh() noexcept

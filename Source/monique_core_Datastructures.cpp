@@ -2089,8 +2089,14 @@ master_data( master_data_ ),
     if( data_type == MASTER )
     {
         colect_global_parameters();
+        all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
         all_parameters.add( &ctrl );
+
+        morhp_switch_states[0].register_listener(this);
+        morhp_switch_states[1].register_listener(this);
+        morhp_switch_states[2].register_listener(this);
+        morhp_switch_states[3].register_listener(this);
 
         refresh_banks_and_programms( *this );
         set_default_midi_assignments( *this, audio_processor_ );
@@ -2286,6 +2292,9 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
 
     global_parameters.add( &glide_motor_time );
     global_parameters.add( &morph_motor_time );
+
+    global_parameters.add( &ui_look_and_feel->show_values_always );
+    global_parameters.add( &delay_record );
 
     global_parameters.minimiseStorageOverheads();
 }
@@ -2552,7 +2561,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             }
 
             {
-                morph_group_4->register_parameter( velocity_glide_time.ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( velocity_glide_time.int_ptr(), data_type == MASTER  );
             }
         }
     }
@@ -2676,8 +2685,27 @@ void MoniqueSynthData::run_sync_morph() noexcept
 //==============================================================================
 void MoniqueSynthData::parameter_value_changed( Parameter* param_ ) noexcept
 {
-    param_->get_runtime_info().stop_time_change();
-    parameter_value_changed_by_automation( param_ );
+    if( param_ == &morhp_switch_states[0] )
+    {
+        morph_switch_buttons(0,false);
+    }
+    else if( param_ == &morhp_switch_states[1] )
+    {
+        morph_switch_buttons(1,false);
+    }
+    else if( param_ == &morhp_switch_states[2] )
+    {
+        morph_switch_buttons(2,false);
+    }
+    else if( param_ == &morhp_switch_states[3] )
+    {
+        morph_switch_buttons(3,false);
+    }
+    else
+    {
+        param_->get_runtime_info().stop_time_change();
+        parameter_value_changed_by_automation( param_ );
+    }
 }
 void MoniqueSynthData::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
 {
@@ -3606,6 +3634,7 @@ void MoniqueSynthData::save_settings() const noexcept
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
 
+
 #ifdef IS_STANDALONE
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );
@@ -3672,6 +3701,7 @@ void MoniqueSynthData::load_settings() noexcept
             {
                 read_parameter_from_file( *xml, global_parameters.getUnchecked(i) );
             }
+            delay_record = false;
         }
 #ifdef IS_STANDALONE
         current_bank = xml->getIntAttribute( "BANK", 0 );
@@ -3697,6 +3727,10 @@ void MoniqueSynthData::save_midi() const noexcept
         {
             write_midi_to( xml, saveable_parameters.getUnchecked(i) );
         }
+        for( int i = 0 ; i != global_parameters.size() ; ++i )
+        {
+            write_midi_to( xml, global_parameters.getUnchecked(i) );
+        }
 
         xml.writeToFile(midi_file,"");
     }
@@ -3713,6 +3747,10 @@ void MoniqueSynthData::read_midi() noexcept
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 read_midi_from( *xml, saveable_parameters.getUnchecked(i), audio_processor );
+            }
+            for( int i = 0 ; i != global_parameters.size() ; ++i )
+            {
+                read_midi_from( *xml, global_parameters.getUnchecked(i), audio_processor );
             }
         }
     }

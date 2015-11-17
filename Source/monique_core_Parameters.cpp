@@ -413,8 +413,6 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                 {
                     if( is_ctrl_version_of_name != "" )
                     {
-                        std::cout << "in cc" << std::endl;
-
                         if( MIDIControl* midi_control = audio_processor->midi_control_handler->get_trained( is_ctrl_version_of_name ) )
                         {
                             float current_value = get_percent_value( midi_control->owner );
@@ -677,12 +675,10 @@ bool MIDIControlHandler::handle_incoming_message( int controller_number_ ) noexc
     {
         if( learning_param->midi_control->train( controller_number_, nullptr, audio_processor ) )
         {
-	  std::cout<<"train learning_param"<<std::endl;
             success = true;
         }
         if( learning_ctrl_param )
         {
-	  std::cout<<"train learning_ctrl_param"<<std::endl;
             learning_ctrl_param->midi_control->train( controller_number_, learning_param, audio_processor );
         }
 

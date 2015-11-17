@@ -363,6 +363,7 @@ public:
     bool force_repaint;
     bool force_show_center_value;
 
+    BoolParameter* get_top_parameter() noexcept { return top_parameter; }
     Parameter* get_front_parameter() noexcept { return front_parameter; }
     Parameter* get_back_parameter() noexcept { return back_parameter; }
     Parameter* get_parameter( const Slider*slider_ ) noexcept

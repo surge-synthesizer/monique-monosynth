@@ -162,8 +162,16 @@ mainwindow(nullptr),
            popup_smooth_Slider(new Slider("")),
            popup_linear_sensi_slider(new Slider("")),
            popup_rotary_sensi_slider(new Slider("")),
-           popup_midi_snap_slider(new Slider(""))
+           popup_midi_snap_slider(new Slider("")),
+
+           show_values_always
+           (
+               false,
+               generate_param_name("LF",1,"show_values_always"),
+               generate_short_human_name("LF","show_values_always")
+           )
 {
+  
     std::cout << "MONIQUE: init style" << std::endl;
 
     popup_smooth_Slider->addListener( this );
@@ -1856,7 +1864,7 @@ Rectangle<int> UiLookAndFeel::getTooltipBounds (const String& tipText, Point<int
     return Rectangle<int> (screenPos.x > parentArea.getCentreX() ? screenPos.x - (w + 12) : screenPos.x + 24,
                            screenPos.y > parentArea.getCentreY() ? screenPos.y - (h + 6)  : screenPos.y + 6,
                            w, h)
-    .constrainedWithin (parentArea);
+           .constrainedWithin (parentArea);
 }
 
 void UiLookAndFeel::drawTooltip (Graphics& g, const String& text, int width, int height)
