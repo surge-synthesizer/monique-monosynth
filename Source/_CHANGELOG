@@ -1,25 +1,19 @@
 NEW:
-- adjustable tooltip popup time in contex menu
-- step duration slider will be cool
-- set to current does not update buttons
-- sounds like we have a short attack on binded notes.
-- undo geht erst nach dem zweiten drehen
-- update state on program on save program
 
 DI:
-- midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
 - add midi support for some for some buttons
-- midi allow notes to control buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
 - speedänderung stanadlone mit eigener clock sollte nicht syncen!
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
 - osc sync checken (+24)
 - add back sub-steps lfo
-- init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
-- buffersize overwrite on shutdown if you select the factory init programm
 
 MI:
+- init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
+- buffersize overwrite on shutdown if you select the factory init programm
+- load morph program only supports 4 banks
+
 - resize does not work in plugin
 - share global setting over plugin instances
 - lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
@@ -31,7 +25,11 @@ MI:
 DO:
 - delay: // TODO was passiert bei bpm änderungen?
 
+- add: morph sensitivit to the context menu
+- update state on program on save program
+- undo geht erst nach dem zweiten drehen
 - popup can not show in to small windows
+- adjustable tooltip popup time in contex menu
 - update sync slider button tooltip
 - tool tip looper effect
 - tool tips sub editors
@@ -51,6 +49,7 @@ SON:
 
 MINOR PROBLEMS
 - shift disabled wave view
+- sounds like we have a short attack on binded notes.
 
 BUILD
 ****************************************************************************
@@ -174,6 +173,9 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
+- midi allow notes to control buttons
+- step duration slider will be cool
 - add: output meter filter 1 bis 3 -> ok: we need a volume info at the filter output
 - env speed not only ms sondern auch teiler
 - option: pitch arp only or trigger notes (second one is current)

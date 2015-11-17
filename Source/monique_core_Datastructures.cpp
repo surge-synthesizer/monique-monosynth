@@ -976,16 +976,24 @@ void MorphGroup::morph_switchs( bool left_right_ ) noexcept
     for( int i = 0 ; i != switch_bool_params.size() ; ++i )
     {
         if( current_switch == RIGHT )
+        {
             switch_bool_params[i]->set_value_without_notification( right_morph_source->switch_bool_params[i]->get_value() );
+        }
         else
+        {
             switch_bool_params[i]->set_value_without_notification( left_morph_source->switch_bool_params[i]->get_value() );
+        }
     }
     for( int i = 0 ; i != switch_int_params.size() ; ++i )
     {
         if( current_switch == RIGHT )
+        {
             switch_int_params[i]->set_value_without_notification( right_morph_source->switch_int_params[i]->get_value() );
+        }
         else
+        {
             switch_int_params[i]->set_value_without_notification( left_morph_source->switch_int_params[i]->get_value() );
+        }
     }
 }
 #define SYNC_MORPH_STEPS 100
@@ -2880,6 +2888,7 @@ bool MoniqueSynthData::try_to_load_programm_to_left_side( int morpher_id_, int b
     if( success )
     {
         run_sync_morph();
+        morph_switch_buttons( morpher_id_, false );
         left_morph_source_names.getReference(morpher_id_) = synth_data->get_current_program_name_abs();
     }
 
@@ -3539,15 +3548,12 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
     if( xml_ )
     {
         // PARAMS
-        // TODO, this is not really required. coz the morph groubs will set this values
-        //if( id != MASTER )
         {
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
             }
         }
-
 
         // MORPH STUFF
         if( id == MASTER )
