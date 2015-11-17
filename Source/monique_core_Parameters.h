@@ -215,7 +215,7 @@ public:
 public:
     // ==============================================================================
     // SETTER
-    inline void set_value( float value_ ) noexcept
+    virtual inline void set_value( float value_ ) noexcept
     {
         value_ = snap_to_min(snap_to_max(snap_to_zero(value_),info->max_value),info->min_value);
         if( value != value_ )
@@ -245,7 +245,7 @@ public:
         }
         return value;
     }
-    inline void set_value_without_notification( float value_ ) noexcept
+    virtual inline void set_value_without_notification( float value_ ) noexcept
     {
         value_ = snap_to_zero(value_);
         if( value != value_ )
@@ -262,7 +262,7 @@ public:
             notify_always_value_listeners();
         }
     }
-    inline void set_value_by_automation( float value_ ) noexcept
+    virtual inline void set_value_by_automation( float value_ ) noexcept
     {
         value_ = snap_to_zero(value_);
         if( value != value_ )
@@ -279,7 +279,7 @@ public:
             notify_value_listeners_by_automation();
         }
     }
-    inline void set_value_on_load( float value_ ) noexcept
+    virtual inline void set_value_on_load( float value_ ) noexcept
     {
         value_ = snap_to_zero(value_);
         //if( value != value_ )
@@ -521,6 +521,23 @@ public:
 public:
     // ==============================================================================
     // SETTER
+    inline void set_value( float value_ ) noexcept override
+    {
+        Parameter::set_value( bool(value_) );
+    }
+    inline void set_value_without_notification( float value_ ) noexcept override
+    {
+        Parameter::set_value_without_notification( bool(value_) );
+    }
+    inline void set_value_by_automation( float value_ ) noexcept override
+    {
+        Parameter::set_value_by_automation( bool(value_) );
+    }
+    inline void set_value_on_load( float value_ ) noexcept override
+    {
+        Parameter::set_value_on_load( bool(value_) );
+    }
+
     inline bool operator= ( const bool value_ ) noexcept
     {
         Parameter::set_value(value_);
@@ -535,6 +552,9 @@ private:
     // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
     inline operator float() const noexcept = delete;
     inline operator int() const noexcept = delete;
+    
+    // ASSIGN FLOAT TO BOOL?
+    inline bool operator= ( const Parameter& other_ ) noexcept = delete;
 
 public:
     COLD BoolParameter( const bool init_value_, const String& name_, const String& short_name_ ) noexcept;
@@ -579,6 +599,23 @@ public:
 public:
     // ==============================================================================
     // SETTER
+    inline void set_value( float value_ ) noexcept override
+    {
+        Parameter::set_value( int(value_) );
+    }
+    inline void set_value_without_notification( float value_ ) noexcept override
+    {
+        Parameter::set_value_without_notification( int(value_) );
+    }
+    inline void set_value_by_automation( float value_ ) noexcept override
+    {
+        Parameter::set_value_by_automation( int(value_) );
+    }
+    inline void set_value_on_load( float value_ ) noexcept override
+    {
+        Parameter::set_value_on_load( int(value_) );
+    }
+    
     inline int operator= ( int value_ ) noexcept
     {
         Parameter::set_value( value_ );
@@ -593,6 +630,9 @@ private:
     // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
     inline operator float() const noexcept = delete;
     //inline operator bool() const noexcept = delete;
+    
+    // ASSIGN FLOAT TO INT?
+    inline bool operator= ( const Parameter& other_ ) noexcept = delete;
 
 public:
     COLD IntParameter( const int min_value_, const int max_value_, const int init_value_,
