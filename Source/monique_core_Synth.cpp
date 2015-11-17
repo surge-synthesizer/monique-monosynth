@@ -6654,16 +6654,15 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
     {
         mfo.process( buffer, 1, 1 + i*blocksize, blocksize );
         if( i > 10 )
+        {
             for( int sid = 0 ; sid != blocksize ; ++sid )
             {
                 curve.add( buffer[sid] );
             }
+        }
         i++;
     }
     delete [] buffer;
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
-
-
-
