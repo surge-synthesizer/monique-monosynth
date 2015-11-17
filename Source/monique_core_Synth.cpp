@@ -1352,7 +1352,6 @@ class LFO : public RuntimeListener
     float delta;
     float angle;
     int last_samples_per_clock;
-    int count_first_steps;
 
     float last_speed;
     float last_out;
@@ -1381,23 +1380,21 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( float*dest_, int step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
+    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
     {
         // USER SPEED
         const float speed( lfo_data->speed );
         const float speed_multi( get_lfo_speed_multi( speed ) );
         if( speed != last_speed )
         {
-            glide_samples = glide_counter = sample_rate/10;
+            glide_samples = glide_counter = sample_rate/1000;
             glide_value = last_out;
             last_speed = speed;
-
-            count_first_steps = 0;
         }
 
         // TO MIDI CLOCK SYNC
         int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
-#ifdef IS_STANDALONE__
+#ifdef IS_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
         {
@@ -1414,6 +1411,76 @@ public:
             if( runtime_info->samples_since_start <= 0 )
             {
                 angle = 0;
+            }
+
+            // FORCE SYNC
+            if( step_number_ != -1 )
+            {
+                bool should_smooth = false;
+                if( fmod(absoloute_step_number_, speed_multi*16) == 0 )
+                {
+                    should_smooth = angle != 0;
+                    angle = 0;
+                }
+
+                if( should_smooth and glide_counter <= 0 )
+                {
+                    glide_samples = glide_counter = jmax(10.0,sample_rate/1000);
+                    glide_value = last_out;
+                }
+            }
+
+            // PROCESS
+            {
+                const float* smoothed_wave_buffer( lfo_data->wave_smoother.get_smoothed_value_buffer() );
+                const float* smoothed_offset_buffer( lfo_data->phase_shift_smoother.get_smoothed_value_buffer() );
+                for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                {
+                    if( ++sync_sample_pos < 0 )
+                    {
+                        continue;
+                    }
+
+                    {
+                        float amp;
+                        {
+                            // CURRENT ANGLE
+                            {
+                                if( not same_samples_per_block_for_buffer )
+                                {
+                                    calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid ), speed_multi, sync_sample_pos );
+                                }
+                                angle += delta;
+                                angle = angle - floor(angle);
+                            }
+
+                            // AMP
+                            {
+                                const float sine_amp = lookup( sine_lookup, angle*double_Pi*2 + smoothed_offset_buffer[sid]*double_Pi*2 );
+                                const float wave = smoothed_wave_buffer[sid];
+                                amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*250*jmax(speed_multi,1.0f) )*(1.0f/1.55))*wave;
+                                if( amp > 1 )
+                                {
+                                    amp = 1;
+                                }
+                                else if( amp < -1 )
+                                {
+                                    amp = -1;
+                                }
+                                amp = lfo2amp(amp);
+                            }
+                        }
+
+                        if( --glide_counter > 0 )
+                        {
+                            float glide = (1.0f/glide_samples*glide_counter);
+                            amp = amp*(1.0f-glide) + glide_value*glide;
+                        }
+
+                        dest_[sid] = amp;
+                    }
+                }
+                last_out = dest_[num_samples_-1];
             }
         }
         else
@@ -1434,7 +1501,7 @@ public:
                     float amp;
                     {
                         angle = cycles_per_sample*sync_sample_pos;
-			angle = angle - floor(angle);
+                        angle = angle - floor(angle);
 
                         // AMP
                         {
@@ -1453,100 +1520,20 @@ public:
                         }
                     }
 
-                    if( --glide_counter > 0 )
+                    if( glide_counter > 0 )
                     {
+                        --glide_counter;
                         float glide = (1.0f/glide_samples*glide_counter);
                         amp = amp*(1.0f-glide) + glide_value*glide;
                     }
 
                     dest_[sid] = amp;
-		    
-		    ++sync_sample_pos;
+
+                    ++sync_sample_pos;
                 }
                 last_out = dest_[num_samples_-1];
             }
         }
-/*
-        // FORCE SYNC
-        if( step_number_ == 0 )
-        {
-            ++count_first_steps;
-            bool should_smooth = false;
-            //const bool is_syncable = speed_multi > 1 ? true : is_integer(speed);
-            //if( is_syncable )
-            {
-                if( fmod(count_first_steps, speed_multi) == 0 )
-                {
-                    //if( is_syncable )
-                    {
-                        should_smooth = angle != 0;
-                        angle = 0;
-                    }
-                    count_first_steps = 0;
-                }
-            }
-
-            if( should_smooth and glide_counter <= 0 )
-            {
-                glide_samples = glide_counter = jmax(10.0,sample_rate/100);
-                glide_value = last_out;
-            }
-        }
-
-        // PROCESS
-        {
-            const float* smoothed_wave_buffer( lfo_data->wave_smoother.get_smoothed_value_buffer() );
-            const float* smoothed_offset_buffer( lfo_data->phase_shift_smoother.get_smoothed_value_buffer() );
-            for( int sid = 0 ; sid != num_samples_ ; ++sid )
-            {
-                if( ++sync_sample_pos < 0 )
-                {
-                    continue;
-                }
-
-                {
-                    float amp;
-                    {
-                        // CURRENT ANGLE
-                        {
-#ifdef IS_STANDALONE
-                            if( not same_samples_per_block_for_buffer )
-                            {
-                                calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid ), speed_multi, sync_sample_pos );
-                            }
-#endif
-                            angle += delta;
-                        }
-
-                        // AMP
-                        {
-                            const float sine_amp = lookup( sine_lookup, angle*double_Pi*2 + smoothed_offset_buffer[sid]*double_Pi*2 );
-                            const float wave = smoothed_wave_buffer[sid];
-                            amp = sine_amp*(1.0f-wave) + (std::atan( sine_amp*150 )*(1.0f/1.55))*wave; // sine_amp*(1.0f-wave) + (sine_amp < 0 ? 0 : 1)*(wave*power_of_sine);
-                            if( amp > 1 )
-                            {
-                                amp = 1;
-                            }
-                            else if( amp < -1 )
-                            {
-                                amp = -1;
-                            }
-                            amp = lfo2amp(amp);
-                        }
-                    }
-
-                    if( --glide_counter > 0 )
-                    {
-                        float glide = (1.0f/glide_samples*glide_counter);
-                        amp = amp*(1.0f-glide) + glide_value*glide;
-                    }
-
-                    dest_[sid] = amp;
-                }
-            }
-            last_out = dest_[num_samples_-1];
-        }
-        */
     }
 
     void sample_rate_or_block_changed() noexcept override
@@ -1571,7 +1558,6 @@ public:
                     delta(0),
                     angle(0),
                     last_samples_per_clock(-1),
-                    count_first_steps(0),
 
                     last_speed(0),
                     last_out(0),
@@ -5437,6 +5423,10 @@ public:
     {
         return current_step % SUM_ENV_ARP_STEPS;
     }
+    inline int get_current_absolute_step() const noexcept
+    {
+        return current_step;
+    }
     inline int get_step_before() const noexcept
     {
         if( current_step > 0 )
@@ -5853,7 +5843,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
 
         if( samples_to_next_arp_step_in_this_buffer > 0 )
         {
-            render_block( output_buffer_, is_a_step ? step_id : -1, count_start_sample, samples_to_next_arp_step_in_this_buffer );
+            render_block( output_buffer_, is_a_step ? step_id : -1, arp_sequencer->get_current_absolute_step(), count_start_sample, samples_to_next_arp_step_in_this_buffer );
         }
         count_start_sample += samples_to_next_arp_step_in_this_buffer;
 
@@ -6148,7 +6138,7 @@ void SmoothedParameter::process_amp( bool use_env_, int glide_time_in_ms_, ENV*e
         amp_power_smoother.reset_glide_countdown();
     }
 }
-void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, int step_number_, int start_sample_, int num_samples_) noexcept
+void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_,  int step_number_, int absolute_step_number_, int start_sample_, int num_samples_) noexcept
 {
     const bool render_anything = current_note != -1 or synth_data->audio_processor->amp_painter;
 
@@ -6200,6 +6190,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                 const bool is_modulated;
 
                 const int step_number;
+                const int absolute_step_number;
                 const int start_sample;
                 const int num_samples;
 
@@ -6211,7 +6202,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                     mfo_data->wave_smoother.simple_smooth( glide_motor_time, num_samples );
                     mfo_data->phase_shift_smoother.simple_smooth( glide_motor_time, num_samples );
 
-                    mfo->process( mfo_buffer, step_number, start_sample, num_samples );
+                    mfo->process( mfo_buffer, step_number, absolute_step_number, start_sample, num_samples );
                     synth_data->smooth_manager->smooth_and_morph
                     (
                         is_modulated, mfo_buffer,
@@ -6221,7 +6212,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
                     if( lfo )
                     {
-                        lfo->process( lfo_buffer, step_number, start_sample, num_samples );
+                        lfo->process( lfo_buffer, step_number, absolute_step_number, start_sample, num_samples );
                     }
                     if( master_osc )
                     {
@@ -6256,6 +6247,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                     const bool is_modulated_,
 
                     int step_number_,
+                    int absolute_step_number_,
                     int start_sample_,
                     int num_samples_,
 
@@ -6284,6 +6276,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                              is_modulated(is_modulated_),
 
                              step_number(step_number_),
+                             absolute_step_number( absolute_step_number_ ),
                              start_sample(start_sample_),
                              num_samples(num_samples_),
 
@@ -6315,6 +6308,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        synth_data->is_morph_modulated[0],
 
                                        step_number_,
+                                       absolute_step_number_,
                                        start_sample_,
                                        num_samples,
 
@@ -6343,6 +6337,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        synth_data->is_morph_modulated[1],
 
                                        step_number_,
+                                       absolute_step_number_,
                                        start_sample_,
                                        num_samples,
 
@@ -6372,6 +6367,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        synth_data->is_morph_modulated[2],
 
                                        step_number_,
+                                       absolute_step_number_,
                                        start_sample_,
                                        num_samples,
 
@@ -6401,6 +6397,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
                                        synth_data->is_morph_modulated[3],
 
                                        step_number_,
+                                       absolute_step_number_,
                                        start_sample_,
                                        num_samples,
 
@@ -6694,7 +6691,7 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
     curve.ensureStorageAllocated(count_time+blocksize);
     while(i*blocksize<count_time)
     {
-        mfo.process( buffer, 1, 1 + i*blocksize, blocksize );
+        mfo.process( buffer, 1, 1, 1 + i*blocksize, blocksize );
         if( i > 10 )
         {
             for( int sid = 0 ; sid != blocksize ; ++sid )

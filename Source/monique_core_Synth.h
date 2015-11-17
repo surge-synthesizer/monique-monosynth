@@ -103,7 +103,7 @@ private:
     void release_if_inactive() noexcept;
 
     void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
-    void render_block( AudioSampleBuffer&, int step_number_, int startSample, int numSamples) noexcept;
+    void render_block( AudioSampleBuffer&, int step_number_, int absolute_step_number_, int startSample, int numSamples) noexcept;
 
     void pitchWheelMoved (int newPitchWheelValue) override;
     void controllerMoved (int controllerNumber, int newControllerValue) override { } // see synthesizer

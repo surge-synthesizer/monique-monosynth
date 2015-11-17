@@ -3,6 +3,8 @@ NEW:
 - buffersize overwritten if you change velocity glide time
 - midi learn geht erst beim zeiten versuch über shortcut + m
 - envs anpassen in allen programmen
+- change bpm massively crash -> mono_Delay reader poristions 
+- arp step shines through the popup
 
 DI:
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
@@ -117,6 +119,8 @@ CHANGES 0.9.8
 - improve: font button contrast in the colour theme section
 - fix filter was going offline also if it was self osccillating
 - fix midi learn support, add missing elements
+- add midi learn support for popups
+- sync the lfo and mfo perfect in the plugin and standalone (if master), only a compromise sync for the stanadlone in slave mode
 
 MANUAL:
 - resizer -> shortcut
@@ -177,6 +181,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- send master clock
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
 - midi allow notes to control buttons
 - step duration slider will be cool
