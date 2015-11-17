@@ -1,6 +1,7 @@
 NEW:
 
 DI:
+- store paramteres like ctrl and shift to store its midi setup and reset to default on startup
 - add midi support for some for some buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
 - canot store mapping for parameters which are not stored
