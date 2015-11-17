@@ -1967,6 +1967,94 @@ master_data( master_data_ ),
                  generate_short_human_name("CONF","ui_scale_factor")
              ),
 
+// -------------------------------------------------------------
+             midi_lfo_wave
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"lfo_wave"),
+                 generate_short_human_name("MIDI","lfo_wave")
+             ),
+             midi_lfo_speed
+             (
+                 MIN_MAX( 0, 17 ),
+                 4,
+                 generate_param_name("MIDI",0,"lfo_speed"),
+                 generate_short_human_name("MIDI","lfo_speed")
+             ),
+             midi_lfo_offset
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"lfo_offset"),
+                 generate_short_human_name("MIDI","lfo_offset")
+             ),
+             midi_lfo_popup
+             (
+                 MIN_MAX( 0, 1 + SUM_LFOS + 1 + SUM_MORPHER_GROUPS + 1 ),
+                 0,
+                 generate_param_name("MIDI",0,"lfo_popup"),
+                 generate_short_human_name("MIDI","lfo_popup")
+             ),
+
+             midi_env_attack
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_attack"),
+                 generate_short_human_name("MIDI","env_attack")
+             ),
+             midi_env_decay
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_decay"),
+                 generate_short_human_name("MIDI","env_decay")
+             ),
+             midi_env_sustain
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_sustain"),
+                 generate_short_human_name("MIDI","env_sustain")
+             ),
+             midi_env_sustain_time
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_sustain_time"),
+                 generate_short_human_name("MIDI","env_sustain_time")
+             ),
+             midi_env_release
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_release"),
+                 generate_short_human_name("MIDI","env_release")
+             ),
+             midi_env_shape
+             (
+                 MIN_MAX( 0, 1 ),
+                 0,
+                 1000,
+                 generate_param_name("MIDI",0,"env_shape"),
+                 generate_short_human_name("MIDI","env_shape")
+             ),
+             midi_env_popup
+             (
+                 MIN_MAX( 0, 1+ SUM_INPUTS_PER_FILTER*SUM_FILTERS + 1 + SUM_EQ_BANDS + 1 ),
+                 0,
+                 generate_param_name("MIDI",0,"env_popup"),
+                 generate_short_human_name("MIDI","env_popup")
+             ),
+
 // ----
              env_data( new ENVData( smooth_manager, MAIN_ENV ) ),
              eq_data(new EQData( smooth_manager, MASTER )),
@@ -2296,6 +2384,20 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &ui_look_and_feel->show_values_always );
     global_parameters.add( &delay_record );
 
+
+    global_parameters.add( &midi_lfo_wave );
+    global_parameters.add( &midi_lfo_speed );
+    global_parameters.add( &midi_lfo_offset );
+    global_parameters.add( &midi_lfo_popup );
+    
+    global_parameters.add( &midi_env_attack );
+    global_parameters.add( &midi_env_decay );
+    global_parameters.add( &midi_env_sustain );
+    global_parameters.add( &midi_env_sustain_time );
+    global_parameters.add( &midi_env_release );
+    global_parameters.add( &midi_env_shape );
+    global_parameters.add( &midi_env_popup );
+    
     global_parameters.minimiseStorageOverheads();
 }
 

@@ -1546,6 +1546,20 @@ struct MoniqueSynthData : ParameterListener
     BoolParameter is_linear_sliders_velocity_mode;
     Parameter ui_scale_factor;
 
+    // MIDI HACKS
+    Parameter midi_lfo_wave;
+    IntParameter midi_lfo_speed;
+    Parameter midi_lfo_offset;
+    IntParameter midi_lfo_popup;
+    
+    Parameter midi_env_attack;
+    Parameter midi_env_decay;
+    Parameter midi_env_sustain;
+    Parameter midi_env_sustain_time;
+    Parameter midi_env_release;
+    Parameter midi_env_shape;
+    IntParameter midi_env_popup;
+    
     ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;

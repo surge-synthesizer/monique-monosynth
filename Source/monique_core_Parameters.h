@@ -1305,18 +1305,20 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
 }
 
 #include "monique_ui_LookAndFeel.h"
+#define IS_MIDI_LEARN midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning()
+
 #define IF_MIDI_LEARN__HANDLE( param ) \
-        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
+        if( IS_MIDI_LEARN ) \
         { \
             midi_control_handler->set_learn_param( param ); \
         }
 #define IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT( param, component_ ) \
-        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
+        if( IS_MIDI_LEARN ) \
         { \
             midi_control_handler->set_learn_param( param, component_ ); \
         }
 #define IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT( param, param_ctrl, component_ ) \
-        if( midi_control_handler->is_waiting_for_param() || midi_control_handler->is_learning() ) \
+        if( IS_MIDI_LEARN ) \
         { \
             midi_control_handler->set_learn_width_ctrl_param( param, param_ctrl, component_ ); \
         }

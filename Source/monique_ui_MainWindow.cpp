@@ -793,6 +793,11 @@ void Monique_Ui_Mainwindow::resize_sequence_buttons()
 }
 void Monique_Ui_Mainwindow::switch_finalizer_tab( bool fx_ )
 {
+    if( fx_ )
+    {
+        open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
+    }
+
     if( effect_finalizer_switch2->getProperties().set( VAR_INDEX_BUTTON_AMP, not fx_ ? USE_AREA_COLOUR : USE_AREA_TRANSCULENT ) )
     {
         effect_finalizer_switch2->repaint();
@@ -2586,12 +2591,18 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
     //look_and_feel->colours.edit();
     delay4->get_top_button()->main_window = this;
+
+    synth_data->midi_lfo_popup.register_listener(this);
+    synth_data->midi_env_popup.register_listener(this);
     //[/Constructor]
 }
 
 Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    synth_data->midi_lfo_popup.remove_listener(this);
+    synth_data->midi_env_popup.register_listener(this);
+
     PopupMenu::dismissAllActiveMenus();
 
     std::cout<<"1"<<std::endl;
@@ -3372,98 +3383,242 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == button_edit_lfo_1)
     {
         //[UserButtonCode_button_edit_lfo_1] -- add your button handler code here..
-        open_mfo_popup( synth_data->lfo_datas[0], button_edit_lfo_1, lfo_1, COLOUR_THEMES::FILTER_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->lfo_datas[0], button_edit_lfo_1, lfo_1, COLOUR_THEMES::FILTER_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_lfo_1]
     }
     else if (buttonThatWasClicked == button_edit_lfo_2)
     {
         //[UserButtonCode_button_edit_lfo_2] -- add your button handler code here..
-        open_mfo_popup( synth_data->lfo_datas[1], button_edit_lfo_2, lfo_2, COLOUR_THEMES::FILTER_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->lfo_datas[1], button_edit_lfo_2, lfo_2, COLOUR_THEMES::FILTER_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_lfo_2]
     }
     else if (buttonThatWasClicked == button_edit_lfo_3)
     {
         //[UserButtonCode_button_edit_lfo_3] -- add your button handler code here..
-        open_mfo_popup( synth_data->lfo_datas[2], button_edit_lfo_3, lfo_3, COLOUR_THEMES::FILTER_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->lfo_datas[2], button_edit_lfo_3, lfo_3, COLOUR_THEMES::FILTER_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_lfo_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_3)
     {
         //[UserButtonCode_button_edit_input_env_3_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[2], &synth_data->filter_datas[2]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_13, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[2]->input_envs[2], &synth_data->filter_datas[2]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_13, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_3_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_2)
     {
         //[UserButtonCode_button_edit_input_env_3_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[1], &synth_data->filter_datas[2]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_12, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[2]->input_envs[1], &synth_data->filter_datas[2]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_12, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_3_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_3_1)
     {
         //[UserButtonCode_button_edit_input_env_3_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[2]->input_envs[0], &synth_data->filter_datas[2]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_11, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[2]->input_envs[0], &synth_data->filter_datas[2]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_11, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_3_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_1)
     {
         //[UserButtonCode_button_edit_input_env_2_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[0], &synth_data->filter_datas[1]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_6, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[1]->input_envs[0], &synth_data->filter_datas[1]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_6, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_2_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_2)
     {
         //[UserButtonCode_button_edit_input_env_2_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[1], &synth_data->filter_datas[1]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_7, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[1]->input_envs[1], &synth_data->filter_datas[1]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_7, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_2_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_2_3)
     {
         //[UserButtonCode_button_edit_input_env_2_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[1]->input_envs[2], &synth_data->filter_datas[1]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_8, true );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[1]->input_envs[2], &synth_data->filter_datas[1]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_8, true );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_1_3]
         //[/UserButtonCode_button_edit_input_env_2_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_3)
     {
         //[UserButtonCode_button_edit_input_env_1_3] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_3, false );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[0]->input_envs[2], &synth_data->filter_datas[0]->input_envs[2]->sustain, buttonThatWasClicked, flt_input_3, false );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_1_3]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_2)
     {
         //[UserButtonCode_button_edit_input_env_1_2] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[1], &synth_data->filter_datas[0]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_2, false );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[0]->input_envs[1], &synth_data->filter_datas[0]->input_envs[1]->sustain, buttonThatWasClicked, flt_input_2, false );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_1_2]
     }
     else if (buttonThatWasClicked == button_edit_input_env_1_1)
     {
         //[UserButtonCode_button_edit_input_env_1_1] -- add your button handler code here..
-        open_env_popup( synth_data->filter_datas[0]->input_envs[0], &synth_data->filter_datas[0]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_1, false );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_env_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_env_popup( synth_data->filter_datas[0]->input_envs[0], &synth_data->filter_datas[0]->input_envs[0]->sustain, buttonThatWasClicked, flt_input_1, false );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_env_popup.midi_control );
         //[/UserButtonCode_button_edit_input_env_1_1]
     }
     else if (buttonThatWasClicked == button_edit_mfo_4)
     {
         //[UserButtonCode_button_edit_mfo_4] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[2], button_edit_mfo_4, morpher_3, COLOUR_THEMES::MORPH_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->mfo_datas[2], button_edit_mfo_4, morpher_3, COLOUR_THEMES::MORPH_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_mfo_4]
     }
     else if (buttonThatWasClicked == button_edit_mfo_3)
     {
         //[UserButtonCode_button_edit_mfo_3] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[3], button_edit_mfo_3, morpher_4, COLOUR_THEMES::MORPH_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->mfo_datas[3], button_edit_mfo_3, morpher_4, COLOUR_THEMES::MORPH_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_mfo_3]
     }
     else if (buttonThatWasClicked == button_edit_mfo_2)
     {
         //[UserButtonCode_button_edit_mfo_2] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[1], button_edit_mfo_2, morpher_2, COLOUR_THEMES::MORPH_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->mfo_datas[1], button_edit_mfo_2, morpher_2, COLOUR_THEMES::MORPH_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_mfo_2]
     }
     else if (buttonThatWasClicked == button_edit_mfo_1)
     {
         //[UserButtonCode_button_edit_mfo_1] -- add your button handler code here..
-        open_mfo_popup( synth_data->mfo_datas[0], button_edit_mfo_1, morpher_1, COLOUR_THEMES::MORPH_THEME );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &synth_data->midi_lfo_popup,
+            buttonThatWasClicked
+        )
+        else
+        {
+            open_mfo_popup( synth_data->mfo_datas[0], button_edit_mfo_1, morpher_1, COLOUR_THEMES::MORPH_THEME );
+        }
+        show_info_popup( buttonThatWasClicked, synth_data->midi_lfo_popup.midi_control );
         //[/UserButtonCode_button_edit_mfo_1]
     }
     else if (buttonThatWasClicked == button_edit_input_env_band_1)
@@ -4567,6 +4722,14 @@ void Monique_Ui_Mainwindow::close_all_subeditors()
 
 void Monique_Ui_Mainwindow::open_mfo_popup( LFOData*const mfo_data_, Button*const for_comp_, Monique_Ui_DualSlider*slider_, COLOUR_THEMES theme_ ) noexcept
 {
+    if( mfo_popup )
+    {
+        if( mfo_popup->is_open_for() == mfo_data_ )
+        {
+            return;
+        }
+    }
+
     TURN_BUTTON_OFF( button_edit_mfo_1 )
     TURN_BUTTON_OFF( button_edit_mfo_2 )
     TURN_BUTTON_OFF( button_edit_mfo_3 )
@@ -4675,6 +4838,14 @@ void Monique_Ui_Mainwindow::open_env_popup( ENVData*const env_data_,
         Monique_Ui_DualSlider*slider_,
         bool has_negative_sustain_ ) noexcept
 {
+    if( env_popup )
+    {
+        if( env_popup->is_open_for() == env_data_ )
+        {
+            return;
+        }
+    }
+
     TURN_BUTTON_OFF( button_edit_input_env_1_1 )
     TURN_BUTTON_OFF( button_edit_input_env_1_2 )
     TURN_BUTTON_OFF( button_edit_input_env_1_3 )
@@ -5032,6 +5203,115 @@ void Monique_Ui_Mainwindow::mouseEnter (const MouseEvent& event)
         open_option_popup(nullptr,nullptr,nullptr,"","","","");
     }
 }
+
+void Monique_Ui_Mainwindow::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    if( IS_MIDI_LEARN )
+    {
+        return;
+    }
+
+    if( param_ == &synth_data->midi_lfo_popup )
+    {
+        MessageManagerLock mmLock;
+        switch( synth_data->midi_lfo_popup )
+        {
+        case 9 :
+        case 5 :
+        case 0 :
+            open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
+            break;
+        case 1 :
+            buttonClicked( button_edit_mfo_1 );
+            break;
+        case 2 :
+            buttonClicked( button_edit_mfo_2 );
+            break;
+        case 3 :
+            buttonClicked( button_edit_mfo_3 );
+            break;
+        case 4 :
+            buttonClicked( button_edit_mfo_4 );
+            break;
+        case 6 :
+            buttonClicked( button_edit_lfo_1 );
+            break;
+        case 7 :
+            buttonClicked( button_edit_lfo_2 );
+            break;
+        case 8 :
+            buttonClicked( button_edit_lfo_3 );
+            break;
+        }
+    }
+    if( param_ == &synth_data->midi_env_popup )
+    {
+        MessageManagerLock mmLock;
+        switch( synth_data->midi_env_popup )
+        {
+        case 10 :
+        case 18 :
+        case 0 :
+            open_env_popup( nullptr, nullptr, nullptr, nullptr, nullptr );
+            break;
+        case 1 :
+            buttonClicked( button_edit_input_env_1_1 );
+            break;
+        case 2 :
+            buttonClicked( button_edit_input_env_1_2 );
+            break;
+        case 3 :
+            buttonClicked( button_edit_input_env_1_3 );
+            break;
+        case 4 :
+            buttonClicked( button_edit_input_env_2_1 );
+            break;
+        case 5 :
+            buttonClicked( button_edit_input_env_2_2 );
+            break;
+        case 6 :
+            buttonClicked( button_edit_input_env_2_3 );
+            break;
+        case 7 :
+            buttonClicked( button_edit_input_env_3_1 );
+            break;
+        case 8 :
+            buttonClicked( button_edit_input_env_3_2 );
+            break;
+        case 9 :
+            buttonClicked( button_edit_input_env_3_3 );
+            break;
+        case 11 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_1 );
+            break;
+        case 12 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_2 );
+            break;
+        case 13 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_3 );
+            break;
+        case 14 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_4 );
+            break;
+        case 15 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_5 );
+            break;
+        case 16 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_6 );
+            break;
+        case 17 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_7 );
+            break;
+        }
+    }
+}
 //[/MiscUserCode]
 
 
@@ -5045,7 +5325,7 @@ void Monique_Ui_Mainwindow::mouseEnter (const MouseEvent& event)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_Mainwindow" componentName=""
-                 parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable, public AsyncUpdater"
+                 parentClasses="public AudioProcessorEditor, public Monique_Ui_Refreshable, public AsyncUpdater, public ParameterListener"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_" variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;AudioProcessorEditor(ui_refresher_-&gt;audio_processor),&#10;original_w(1465), original_h(1235)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="1" initialWidth="1465" initialHeight="1235">

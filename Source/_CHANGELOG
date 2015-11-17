@@ -1,6 +1,7 @@
 NEW:
 - env for bands are inverted by midi control
 - buffersize overwritten if you change velocity glide time
+- midi learn geht erst beim zeiten versuch über shortcut + m
 
 DI:
 - midi for popups
@@ -117,6 +118,7 @@ CHANGES 0.9.8
 - fix/improve: use consequent big letters for captions and standard (Letter not LETTTER) for dynamic texts
 - improve: font button contrast in the colour theme section
 - fix filter was going offline also if it was self osccillating
+- fix midi learn support, add missing elements
 
 MANUAL:
 - resizer -> shortcut

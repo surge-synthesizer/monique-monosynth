@@ -42,6 +42,7 @@ class Monique_Ui_MFOPopup  : public Component,
                              public Monique_Ui_Refreshable,
                              public DropShadower,
                              public Timer,
+                             public ParameterListener,
                              public SliderListener,
                              public ButtonListener
 {
@@ -88,6 +89,9 @@ private:
     void mouseDoubleClick (const MouseEvent& event) override;
     void mouseWheelMove (const MouseEvent& event, const MouseWheelDetails& ) override;
     void mouseMagnify (const MouseEvent& event, float ) override;
+
+    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void sliderClicked (Slider*s_) override;
     //[/UserMethods]
 
     void paint (Graphics& g);

@@ -52,17 +52,17 @@ void Monique_Ui_MFOPopup::refresh() noexcept
 
         String speed_label(get_lfo_speed_multi_as_text(last_speed, synth_data->runtime_info, synth_data->runtime_notifyer->get_sample_rate() ));
         if( slider_speed->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, speed_label + String("@") + String( is_integer(last_speed) ? "th" : "Hz") ) )
-	{
-	  slider_speed->repaint();
-	}
+        {
+            slider_speed->repaint();
+        }
         if( slider_wave->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->wave.get_value() )) ) )
-	{
-	  slider_wave->repaint();
-	}
+        {
+            slider_wave->repaint();
+        }
         if( slider_offset->getProperties().set( VAR_INDEX_VALUE_TO_SHOW, String(auto_round( mfo_data->phase_shift.get_value() )) ) )
-	{
-	   slider_offset->repaint();
-	}
+        {
+            slider_offset->repaint();
+        }
 
         slider_wave->setValue( last_wave, dontSendNotification );
         slider_speed->setValue( last_speed, dontSendNotification );
@@ -172,6 +172,28 @@ void Monique_Ui_MFOPopup::mouseMagnify (const MouseEvent& event, float )
 {
     mouseDown(event);
 }
+void Monique_Ui_MFOPopup::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    if( param_ == &ui_refresher->synth_data->midi_lfo_wave )
+    {
+        mfo_data->wave = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_lfo_speed )
+    {
+        mfo_data->speed = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_lfo_offset )
+    {
+        mfo_data->phase_shift = param_->get_value();
+    }
+}
+void Monique_Ui_MFOPopup::sliderClicked (Slider*s_)
+{
+    if(IS_MIDI_LEARN)
+    {
+        sliderValueChanged( s_ );
+    }
+}
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -183,6 +205,13 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
       mfo_data(mfo_data_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    ui_refresher_->synth_data->midi_lfo_wave.set_value_without_notification(mfo_data_->wave);
+    ui_refresher_->synth_data->midi_lfo_speed.set_value_without_notification(mfo_data_->speed);
+    ui_refresher_->synth_data->midi_lfo_offset.set_value_without_notification(mfo_data_->phase_shift);
+    ui_refresher_->synth_data->midi_lfo_wave.register_listener(this);
+    ui_refresher_->synth_data->midi_lfo_speed.register_listener(this);
+    ui_refresher_->synth_data->midi_lfo_offset.register_listener(this);
+
     last_wave = 999;
     last_speed = 999;
     last_offset = 999;
@@ -194,7 +223,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (slider_wave = new Slider ("0"));
     slider_wave->setTooltip (TRANS("Define the wave.\n"
-    "\"(Sine (LEFT), close to Square (RIGHT))\""));
+                                   "\"(Sine (LEFT), close to Square (RIGHT))\""));
     slider_wave->setRange (0, 1, 0.01);
     slider_wave->setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
     slider_wave->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
@@ -205,7 +234,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_wave->addListener (this);
 
     addAndMakeVisible (label_shape2 = new Label ("new label",
-                                                 TRANS("WAVE")));
+            TRANS("WAVE")));
     label_shape2->setFont (Font (15.00f, Font::plain));
     label_shape2->setJustificationType (Justification::centred);
     label_shape2->setEditable (false, false, false);
@@ -214,7 +243,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_shape2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SPEED")));
+            TRANS("SPEED")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -237,7 +266,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (close = new TextButton (String::empty));
     close->setTooltip (TRANS("Close this pop up. \n"
-    "(ESC is your friend)"));
+                             "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -247,7 +276,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (keep = new TextButton (String::empty));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
-    "(e.g. from one OSC input to another one of the same filter)"));
+                            "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
     keep->addListener (this);
     keep->setColour (TextButton::buttonColourId, Colours::green);
@@ -257,7 +286,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (auto_close = new TextButton (String::empty));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
-    "(e.g. click the main user interface)"));
+                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
     auto_close->addListener (this);
     auto_close->setColour (TextButton::buttonColourId, Colours::yellow);
@@ -284,7 +313,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     past->setColour (TextButton::textColourOffId, Colours::black);
 
     addAndMakeVisible (label_shape3 = new Label ("new label",
-                                                 TRANS("OFFSET")));
+            TRANS("OFFSET")));
     label_shape3->setFont (Font (15.00f, Font::plain));
     label_shape3->setJustificationType (Justification::centred);
     label_shape3->setEditable (false, false, false);
@@ -336,6 +365,11 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_speed->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
     slider_offset->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
     slider_wave->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
+    /*
+    slider_speed->setPopupMenuEnabled( true );
+    slider_offset->setPopupMenuEnabled( true );
+    slider_wave->setPopupMenuEnabled( true );
+    */
 
     close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     keep->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
@@ -354,6 +388,12 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 Monique_Ui_MFOPopup::~Monique_Ui_MFOPopup()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    ui_refresher->synth_data->midi_lfo_wave.remove_listener(this);
+    ui_refresher->synth_data->midi_lfo_speed.remove_listener(this);
+    ui_refresher->synth_data->midi_lfo_offset.remove_listener(this);
+
+    parent->show_info_popup( nullptr, nullptr );
+
     for( int i = 0 ; i != observed_comps.size() ; ++i )
     {
         Component*comp = observed_comps.getUnchecked(i);
@@ -508,19 +548,49 @@ void Monique_Ui_MFOPopup::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_wave)
     {
         //[UserSliderCode_slider_wave] -- add your slider handling code here..
-        mfo_data->wave.set_value( sliderThatWasMoved->getValue() );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_lfo_wave,
+            sliderThatWasMoved
+        )
+        else
+        {
+            mfo_data->wave.set_value( sliderThatWasMoved->getValue() );
+            ui_refresher->synth_data->midi_lfo_wave.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_lfo_wave.midi_control );
         //[/UserSliderCode_slider_wave]
     }
     else if (sliderThatWasMoved == slider_speed)
     {
         //[UserSliderCode_slider_speed] -- add your slider handling code here..
-        mfo_data->speed.set_value( sliderThatWasMoved->getValue() );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_lfo_speed,
+            sliderThatWasMoved
+        )
+        else
+        {
+            mfo_data->speed.set_value( sliderThatWasMoved->getValue() );
+            ui_refresher->synth_data->midi_lfo_speed.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_lfo_speed.midi_control );
         //[/UserSliderCode_slider_speed]
     }
     else if (sliderThatWasMoved == slider_offset)
     {
         //[UserSliderCode_slider_offset] -- add your slider handling code here..
-        mfo_data->phase_shift.set_value( sliderThatWasMoved->getValue() );
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_lfo_offset,
+            sliderThatWasMoved
+        )
+        else
+        {
+            mfo_data->phase_shift.set_value( sliderThatWasMoved->getValue() );
+            ui_refresher->synth_data->midi_lfo_offset.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_lfo_offset.midi_control );
         //[/UserSliderCode_slider_offset]
     }
 
@@ -605,7 +675,7 @@ void Monique_Ui_MFOPopup::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_MFOPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer"
+                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer, public ParameterListener"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, LFOData*const mfo_data_, COLOUR_THEMES theme_"
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;original_w(540), original_h(190),&#10;parent(parent_),&#10;mfo_data(mfo_data_)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"

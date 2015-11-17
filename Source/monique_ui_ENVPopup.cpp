@@ -214,6 +214,40 @@ void Monique_Ui_ENVPopup::mouseMagnify (const MouseEvent& event, float )
 {
     mouseDown(event);
 }
+void Monique_Ui_ENVPopup::parameter_value_changed( Parameter* param_ ) noexcept
+{
+    if( param_ == &ui_refresher->synth_data->midi_env_attack )
+    {
+        env_data->attack = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_env_decay )
+    {
+        env_data->decay = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_env_sustain )
+    {
+        env_data->sustain = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_env_sustain_time )
+    {
+        env_data->sustain_time = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_env_release )
+    {
+        env_data->release = param_->get_value();
+    }
+    else if( param_ == &ui_refresher->synth_data->midi_env_shape )
+    {
+        env_data->shape = param_->get_value();
+    }
+}
+void Monique_Ui_ENVPopup::sliderClicked (Slider*s_)
+{
+    if(IS_MIDI_LEARN)
+    {
+        sliderValueChanged( s_ );
+    }
+}
 //[/MiscUserDefs]
 
 //==============================================================================
@@ -227,6 +261,19 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
       left(left_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+    ui_refresher_->synth_data->midi_env_attack.set_value_without_notification(env_data_->attack);
+    ui_refresher_->synth_data->midi_env_decay.set_value_without_notification(env_data_->decay);
+    ui_refresher_->synth_data->midi_env_sustain.set_value_without_notification(env_data_->sustain);
+    ui_refresher_->synth_data->midi_env_sustain_time.set_value_without_notification(env_data_->sustain_time);
+    ui_refresher_->synth_data->midi_env_release.set_value_without_notification(env_data_->release);
+    ui_refresher_->synth_data->midi_env_shape.set_value_without_notification(env_data_->release);
+    ui_refresher_->synth_data->midi_env_attack.register_listener(this);
+    ui_refresher_->synth_data->midi_env_decay.register_listener(this);
+    ui_refresher_->synth_data->midi_env_sustain.register_listener(this);
+    ui_refresher_->synth_data->midi_env_sustain_time.register_listener(this);
+    ui_refresher_->synth_data->midi_env_release.register_listener(this);
+    ui_refresher_->synth_data->midi_env_shape.register_listener(this);
+
     last_attack = 0;
     last_sustain= 0;
     last_decay= 0;
@@ -240,7 +287,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     //[/Constructor_pre]
 
     addAndMakeVisible (label_attack_bottom = new Label (String::empty,
-                                                        TRANS("ATT")));
+            TRANS("ATT")));
     label_attack_bottom->setFont (Font (15.00f, Font::plain));
     label_attack_bottom->setJustificationType (Justification::centred);
     label_attack_bottom->setEditable (false, false, false);
@@ -260,7 +307,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_attack->addListener (this);
 
     addAndMakeVisible (label_decay_bottom = new Label (String::empty,
-                                                       TRANS("DEC")));
+            TRANS("DEC")));
     label_decay_bottom->setFont (Font (15.00f, Font::plain));
     label_decay_bottom->setJustificationType (Justification::centred);
     label_decay_bottom->setEditable (false, false, false);
@@ -280,7 +327,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_decay->addListener (this);
 
     addAndMakeVisible (label_release_bottom = new Label (String::empty,
-                                                         TRANS("REL")));
+            TRANS("REL")));
     label_release_bottom->setFont (Font (15.00f, Font::plain));
     label_release_bottom->setJustificationType (Justification::centred);
     label_release_bottom->setEditable (false, false, false);
@@ -311,7 +358,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain_time->addListener (this);
 
     addAndMakeVisible (label_sustain_time_bottom = new Label (String::empty,
-                                                              TRANS("HOLD")));
+            TRANS("HOLD")));
     label_sustain_time_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_time_bottom->setJustificationType (Justification::centred);
     label_sustain_time_bottom->setEditable (false, false, false);
@@ -320,7 +367,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_attack = new Label ("VL",
-                                                 TRANS("x\n")));
+            TRANS("x\n")));
     label_attack->setFont (Font (15.00f, Font::plain));
     label_attack->setJustificationType (Justification::centred);
     label_attack->setEditable (true, true, false);
@@ -330,7 +377,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_attack->addListener (this);
 
     addAndMakeVisible (label_decay = new Label ("VL",
-                                                TRANS("x\n")));
+            TRANS("x\n")));
     label_decay->setFont (Font (15.00f, Font::plain));
     label_decay->setJustificationType (Justification::centred);
     label_decay->setEditable (true, true, false);
@@ -340,7 +387,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_decay->addListener (this);
 
     addAndMakeVisible (label_sustain_time = new Label ("VL",
-                                                       TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain_time->setFont (Font (15.00f, Font::plain));
     label_sustain_time->setJustificationType (Justification::centred);
     label_sustain_time->setEditable (true, true, false);
@@ -350,7 +397,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_time->addListener (this);
 
     addAndMakeVisible (label_release = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_release->setFont (Font (15.00f, Font::plain));
     label_release->setJustificationType (Justification::centred);
     label_release->setEditable (true, true, false);
@@ -371,7 +418,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_sustain->addListener (this);
 
     addAndMakeVisible (label_sustain_bottom = new Label (String::empty,
-                                                         TRANS("SUS")));
+            TRANS("SUS")));
     label_sustain_bottom->setFont (Font (15.00f, Font::plain));
     label_sustain_bottom->setJustificationType (Justification::centred);
     label_sustain_bottom->setEditable (false, false, false);
@@ -380,7 +427,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     label_sustain_bottom->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label_sustain = new Label ("VL",
-                                                  TRANS("x\n")));
+            TRANS("x\n")));
     label_sustain->setFont (Font (15.00f, Font::plain));
     label_sustain->setJustificationType (Justification::centred);
     label_sustain->setEditable (true, true, false);
@@ -403,7 +450,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_env_shape->addListener (this);
 
     addAndMakeVisible (label_shape = new Label ("new label",
-                                                TRANS("SHAPE")));
+            TRANS("SHAPE")));
     label_shape->setFont (Font (15.00f, Font::plain));
     label_shape->setJustificationType (Justification::centred);
     label_shape->setEditable (false, false, false);
@@ -413,7 +460,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (close = new TextButton (String::empty));
     close->setTooltip (TRANS("Close this pop up. \n"
-    "(ESC is your friend)"));
+                             "(ESC is your friend)"));
     close->setButtonText (TRANS("X"));
     close->addListener (this);
     close->setColour (TextButton::buttonColourId, Colours::red);
@@ -423,7 +470,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (keep = new TextButton (String::empty));
     keep->setTooltip (TRANS("OPTION: auto switch this pop up to its siblings on any mouse action at a sibling.\n"
-    "(e.g. from one OSC input to another one of the same filter)"));
+                            "(e.g. from one OSC input to another one of the same filter)"));
     keep->setButtonText (TRANS("aSW"));
     keep->addListener (this);
     keep->setColour (TextButton::buttonColourId, Colours::green);
@@ -433,7 +480,7 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
     addAndMakeVisible (auto_close = new TextButton (String::empty));
     auto_close->setTooltip (TRANS("OPTION: auto close this popup on any unrelated mouse action.\n"
-    "(e.g. click the main user interface)"));
+                                  "(e.g. click the main user interface)"));
     auto_close->setButtonText (TRANS("aCL"));
     auto_close->addListener (this);
     auto_close->setColour (TextButton::buttonColourId, Colours::yellow);
@@ -491,6 +538,13 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+    ui_refresher->synth_data->midi_env_attack.remove_listener(this);
+    ui_refresher->synth_data->midi_env_decay.remove_listener(this);
+    ui_refresher->synth_data->midi_env_sustain.remove_listener(this);
+    ui_refresher->synth_data->midi_env_sustain_time.remove_listener(this);
+    ui_refresher->synth_data->midi_env_release.remove_listener(this);
+    ui_refresher->synth_data->midi_env_shape.remove_listener(this);
+
     for( int i = 0 ; i != observed_comps.size() ; ++i )
     {
         Component*comp = observed_comps.getUnchecked(i);
@@ -696,37 +750,97 @@ void Monique_Ui_ENVPopup::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == slider_attack)
     {
         //[UserSliderCode_slider_attack] -- add your slider handling code here..
-        env_data->attack = sliderThatWasMoved->getValue();
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_attack,
+            sliderThatWasMoved
+        )
+        else
+        {
+            env_data->attack = sliderThatWasMoved->getValue();
+            ui_refresher->synth_data->midi_env_attack.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_attack.midi_control );
         //[/UserSliderCode_slider_attack]
     }
     else if (sliderThatWasMoved == slider_decay)
     {
         //[UserSliderCode_slider_decay] -- add your slider handling code here..
-        env_data->decay = sliderThatWasMoved->getValue();
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_decay,
+            sliderThatWasMoved
+        )
+        else
+        {
+            env_data->decay = sliderThatWasMoved->getValue();
+            ui_refresher->synth_data->midi_env_decay.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_decay.midi_control );
         //[/UserSliderCode_slider_decay]
     }
     else if (sliderThatWasMoved == slider_release)
     {
         //[UserSliderCode_slider_release] -- add your slider handling code here..
-        env_data->release = sliderThatWasMoved->getValue();
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_release,
+            sliderThatWasMoved
+        )
+        else
+        {
+            env_data->release = sliderThatWasMoved->getValue();
+            ui_refresher->synth_data->midi_env_release.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_release.midi_control );
         //[/UserSliderCode_slider_release]
     }
     else if (sliderThatWasMoved == slider_sustain_time)
     {
         //[UserSliderCode_slider_sustain_time] -- add your slider handling code here..
-        env_data->sustain_time = sliderThatWasMoved->getValue();
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_sustain_time,
+            sliderThatWasMoved
+        )
+        else
+        {
+            env_data->sustain_time = sliderThatWasMoved->getValue();
+            ui_refresher->synth_data->midi_env_sustain_time.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_sustain_time.midi_control );
         //[/UserSliderCode_slider_sustain_time]
     }
     else if (sliderThatWasMoved == slider_sustain)
     {
         //[UserSliderCode_slider_sustain] -- add your slider handling code here..
-        sustain->set_value(sliderThatWasMoved->getValue());
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_sustain,
+            sliderThatWasMoved
+        )
+        else
+        {
+            sustain->set_value(sliderThatWasMoved->getValue());
+            ui_refresher->synth_data->midi_env_sustain.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_sustain.midi_control );
         //[/UserSliderCode_slider_sustain]
     }
     else if (sliderThatWasMoved == slider_env_shape)
     {
         //[UserSliderCode_slider_env_shape] -- add your slider handling code here..
-        env_data->shape = sliderThatWasMoved->getValue();
+        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
+        (
+            &ui_refresher->synth_data->midi_env_shape,
+            sliderThatWasMoved
+        )
+        else
+        {
+            env_data->shape = sliderThatWasMoved->getValue();
+            ui_refresher->synth_data->midi_env_shape.set_value_without_notification( sliderThatWasMoved->getValue() );
+        }
+        parent->show_info_popup( sliderThatWasMoved, ui_refresher->synth_data->midi_env_shape.midi_control );
         //[/UserSliderCode_slider_env_shape]
     }
 
@@ -839,7 +953,7 @@ void Monique_Ui_ENVPopup::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="Monique_Ui_ENVPopup" componentName=""
-                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer"
+                 parentClasses="public Component, public Monique_Ui_Refreshable, public DropShadower, public Timer, public ParameterListener"
                  constructorParams="Monique_Ui_Refresher*ui_refresher_, Monique_Ui_Mainwindow*const parent_, ENVData*const env_data_, Parameter*const sustain_, bool left_, bool has_negative_sustain_"
                  variableInitialisers="Monique_Ui_Refreshable(ui_refresher_),&#10;DropShadower(DropShadow(Colours::black.withAlpha(0.8f),10,Point&lt;int&gt;(10,10))),&#10;parent(parent_),&#10;env_data(env_data_),&#10;sustain(sustain_),&#10;original_w(710), original_h(190),&#10;left(left_)"
                  snapPixels="10" snapActive="1" snapShown="1" overlayOpacity="0.330"
