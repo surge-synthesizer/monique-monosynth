@@ -387,7 +387,6 @@ class WAVESlConfig : public ModulationSliderConfigBase
 public:
     WAVESlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(),
         id(id_),
         wave( &synth_data_->osc_datas[id_]->wave ),
         fm_amount( &synth_data_->osc_datas[id_]->fm_amount ),
@@ -622,7 +621,6 @@ class OSCSlConfig : public ModulationSliderConfigBase
 public:
     OSCSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(),
         id(id_),
         front_param( id == 0 ? &synth_data_->fm_osc_data->master_shift : &synth_data_->osc_datas[id_]->tune ),
         is_lfo_modulated( &synth_data_->osc_datas[id_]->is_lfo_modulated ),
@@ -795,7 +793,6 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
 public:
     FMFreqSlConfig(MoniqueSynthData*const synth_data_)
         :
-        ModulationSliderConfigBase(),
         fm_freq( &synth_data_->fm_osc_data->fm_freq ),
         sync( &synth_data_->fm_osc_data->sync ),
         fm_shape( &synth_data_->fm_osc_data->fm_shape )
@@ -937,7 +934,6 @@ class FMAmountSlConfig : public ModulationSliderConfigBase
 public:
     FMAmountSlConfig(MoniqueSynthData*const synth_data_)
         :
-        ModulationSliderConfigBase(),
         fm_swing( &synth_data_->fm_osc_data->fm_swing )
     {}
 
@@ -1409,18 +1405,16 @@ class FAttackSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String( auto_round( MIN_ENV_TIMES + attack->get_value() * MAX_ENV_TIMES ) );
+        return String( auto_round( get_env_ms(attack->get_value()) ) );
     }
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
     }
-    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return (entered_value_-MIN_ENV_TIMES)/max_attack_time->get_value();
+        return reverse_ms_to_slider_value(entered_value_);
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -1453,7 +1447,6 @@ public:
     {}
     FAttackSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         attack( &synth_data_->env_data->attack ),
         is_main_adsr(true)
     {}
@@ -1577,7 +1570,7 @@ class FDecaySlConfig : public ModulationSliderConfigBase
         float value = decay->get_value();
         if( value > 0 )
         {
-            return String( auto_round( value * (MAX_ENV_TIMES+MIN_ENV_TIMES) ));
+            return String( auto_round( get_env_ms(value) ));
         }
         else
         {
@@ -1595,12 +1588,10 @@ class FDecaySlConfig : public ModulationSliderConfigBase
             return "";
         }
     }
-    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return (entered_value_)/max_decay_time->get_value();
+        return reverse_ms_to_slider_value(entered_value_);
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -1633,7 +1624,6 @@ public:
     {}
     FDecaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         decay( &synth_data_->env_data->decay ),
         is_main_adsr(true)
     {}
@@ -1760,12 +1750,10 @@ class FSustainSlConfig : public ModulationSliderConfigBase
     {
         return "%";
     }
-    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return entered_value_/100;
+        return entered_value_/1000;
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -1913,7 +1901,7 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         float value = sustain_time->get_value() * 5000;
         if( value < 5000 )
         {
-            return String(auto_round(value));
+            return String( auto_round(get_env_ms(value)) );
         }
         else
         {
@@ -1927,12 +1915,10 @@ class FSustainTimeSlConfig : public ModulationSliderConfigBase
         else
             return "ms";
     }
-    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return entered_value_/10000;
+        return reverse_ms_to_slider_value(entered_value_);
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -2082,18 +2068,16 @@ class FReleaseSlConfig : public ModulationSliderConfigBase
 
     String get_center_value() const noexcept override
     {
-        return String( auto_round( MIN_ENV_TIMES + release->get_value() * MAX_ENV_TIMES ) );
+        return String( auto_round( get_env_ms(release->get_value())) );
     }
     StringRef get_center_suffix() const noexcept override
     {
         return "ms";
     }
-    /*
     float get_label_edit_value( float entered_value_ ) const noexcept override
     {
-        return (entered_value_-MIN_ENV_TIMES)/max_release_time->get_value();
+        return reverse_ms_to_slider_value(entered_value_);
     }
-    */
 
     //==============================================================================
     // TOOLTIP
@@ -2127,7 +2111,6 @@ public:
 
     FReleaseSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         release( &synth_data_->env_data->release ),
         is_main_adsr(true)
     {}
@@ -3355,7 +3338,6 @@ class BPMSlConfig : public ModulationSliderConfigBase
 public:
     BPMSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         speed( &synth_data_->speed ),
         sync( &synth_data_->sync ),
         runtime_info( synth_data_->runtime_info )
@@ -3490,7 +3472,6 @@ class SpeedMultiSlConfig : public ModulationSliderConfigBase
 public:
     SpeedMultiSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         speed_multi( &synth_data_->arp_sequencer_data->speed_multi ),
         speed( &synth_data_->speed )
     {}
@@ -3652,7 +3633,6 @@ class OctaveOffsetSlConfig : public ModulationSliderConfigBase
 public:
     OctaveOffsetSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         octave_offset( &synth_data_->octave_offset ),
         note_offset( &synth_data_->note_offset )
     {}
@@ -3796,7 +3776,6 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
 public:
     FXDistortionSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         distortion( &synth_data_->distortion )
     {}
 
@@ -3940,7 +3919,6 @@ class FColourSlConfig : public ModulationSliderConfigBase
 public:
     FColourSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         shape( &synth_data_->shape ),
         bypass( &synth_data_->eq_data->bypass )
     {}
@@ -4083,7 +4061,6 @@ class RRoomSlConfig : public ModulationSliderConfigBase
 public:
     RRoomSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         room( &synth_data_->reverb_data->room ),
         width( &synth_data_->reverb_data->width )
     {}
@@ -4240,7 +4217,6 @@ class RDrySlConfig : public ModulationSliderConfigBase
 public:
     RDrySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         dry_wet_mix( &synth_data_->reverb_data->dry_wet_mix ),
         pan( &synth_data_->reverb_data->pan )
     {}
@@ -4405,7 +4381,6 @@ class DelaySlConfig : public ModulationSliderConfigBase
 public:
     DelaySlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         delay( &synth_data_->delay ),
         pan( &synth_data_->delay_pan )
     {}
@@ -4547,7 +4522,6 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
 public:
     DelayReflexSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         delay_reflexion( &synth_data_->delay_refexion ),
 
         runtime_notifyer( synth_data_->runtime_notifyer )
@@ -4704,7 +4678,6 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
 public:
     DelayRecordSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         record_size( &synth_data_->delay_record_size ),
         record_release( &synth_data_->delay_record_release ),
         delay_record( &synth_data_->delay_record ),
@@ -4846,7 +4819,6 @@ class BypassConfig : public ModulationSliderConfigBase
 public:
     BypassConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         effect_bypass( &synth_data_->effect_bypass )
     {}
 
@@ -4976,7 +4948,6 @@ class VolumeConfig : public ModulationSliderConfigBase
 public:
     VolumeConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         volume( &synth_data_->volume )
     {}
 
@@ -5168,7 +5139,6 @@ class CModSlConfig : public ModulationSliderConfigBase
 public:
     CModSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         modulation( &synth_data_->chorus_data->modulation ),
         pan( &synth_data_->chorus_data->pan ),
 
@@ -5342,7 +5312,6 @@ class GlideConfig : public ModulationSliderConfigBase
 public:
     GlideConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         glide( &synth_data_->glide ),
         velocity_glide_time( &synth_data_->velocity_glide_time ),
         connect( &synth_data_->arp_sequencer_data->connect ),
@@ -5530,7 +5499,6 @@ class ShuffleConfig : public ModulationSliderConfigBase
 public:
     ShuffleConfig( MoniqueSynthData*const synth_data_ )
         :
-        ModulationSliderConfigBase(),
         shuffle( &synth_data_->arp_sequencer_data->shuffle ),
         is_on( &synth_data_->arp_sequencer_data->is_on ),
 
@@ -5724,7 +5692,6 @@ class EQSlConfig : public ModulationSliderConfigBase
 public:
     EQSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(),
         id( id_ ),
         velocity( &synth_data_->eq_data->velocity[id_] ),
         hold( &synth_data_->eq_data->hold[id_] ),
@@ -5891,7 +5858,6 @@ class ArpStepSlConfig : public ModulationSliderConfigBase
 public:
     ArpStepSlConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(),
         octave_offset( &synth_data_->octave_offset ),
         tune( &synth_data_->arp_sequencer_data->tune[id_] ),
         velocity( &synth_data_->arp_sequencer_data->velocity[id_] ),
@@ -6109,7 +6075,6 @@ class MorphSLConfig : public ModulationSliderConfigBase
 public:
     MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )
         :
-        ModulationSliderConfigBase(),
         id(id_),
         morhp_state( &synth_data_->morhp_states[id_] ),
         is_morph_modulated( &synth_data_->is_morph_modulated[id_] ),

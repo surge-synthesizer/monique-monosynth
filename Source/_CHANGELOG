@@ -2,12 +2,10 @@ NEW:
 - env for bands are inverted by midi control
 - buffersize overwritten if you change velocity glide time
 - midi learn geht erst beim zeiten versuch über shortcut + m
+#moving the env popiup makes crackls
 
 DI:
-- midi for popups
-- add midi support for some for some buttons
 - der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
-- canot store mapping for parameters which are not stored
 - speedänderung stanadlone mit eigener clock sollte nicht syncen!
 - mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
 - osc sync checken (+24)

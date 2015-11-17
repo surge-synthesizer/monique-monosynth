@@ -906,8 +906,8 @@ struct OSCData
 //==============================================================================
 //==============================================================================
 //==============================================================================
-#define MIN_ENV_TIMES 1 // 15
-#define MAX_ENV_TIMES 5000-1 // 15
+#define MIN_ENV_TIMES 1.0f // 15
+#define MAX_ENV_TIMES 4999.0f // 15
 struct ENVData
 {
     const int id;
@@ -938,16 +938,36 @@ static inline void copy( ENVData* dest_, const ENVData* src_ ) noexcept
 
     dest_->shape = src_->shape;
 }
-
-//==============================================================================
-//==============================================================================
-//==============================================================================
-static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
+// exp(1)-1 1.71828
+// exp(2)-1 6.38906
+// exp(3)-1 19.0855
+// exp(4)-1
+static inline float get_env_samples( float time_, double sample_rate_ ) noexcept
 {
-    // exp(3)-1 19.0855
-    // exp(4)-1
-    return MAX_CUTOFF * ((exp(cutoff_slider_value_*4)-1)/53.5982) + MIN_CUTOFF;
+    const float exp_time_ms = (float(exp(time_*4))-1) / 53.5982f;
+    return  jmax(10,msToSamplesFast( exp_time_ms*MAX_ENV_TIMES+MIN_ENV_TIMES, sample_rate_ ));
 }
+static inline float get_env_ms( float time_ ) noexcept
+{
+    return ((float(exp(time_*4))-1) / 53.5982f) * MAX_ENV_TIMES + MIN_ENV_TIMES;
+}
+static inline float reverse_ms_to_slider_value( float time_in_ms_ ) noexcept
+{
+    float result = time_in_ms_ - MIN_ENV_TIMES;
+    if( result < 0 )
+    {
+      result = 0.000000001;
+    }
+    result = result / MAX_ENV_TIMES;
+    result *= 53.5982f;
+    result += 1;
+    result = log( result );
+    return result / 4;
+   // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1); 
+}
+//==============================================================================
+//==============================================================================
+//==============================================================================
 struct FilterData
 {
     IntParameter filter_type;
@@ -988,6 +1008,12 @@ public:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR( FilterData )
 };
+static inline float get_cutoff( float cutoff_slider_value_ ) noexcept
+{
+    // exp(3)-1 19.0855
+    // exp(4)-1
+    return MAX_CUTOFF * ((exp(cutoff_slider_value_*4)-1)/53.5982) + MIN_CUTOFF;
+}
 
 //==============================================================================
 //==============================================================================
@@ -1551,7 +1577,7 @@ struct MoniqueSynthData : ParameterListener
     IntParameter midi_lfo_speed;
     Parameter midi_lfo_offset;
     IntParameter midi_lfo_popup;
-    
+
     Parameter midi_env_attack;
     Parameter midi_env_decay;
     Parameter midi_env_sustain;
@@ -1559,7 +1585,7 @@ struct MoniqueSynthData : ParameterListener
     Parameter midi_env_release;
     Parameter midi_env_shape;
     IntParameter midi_env_popup;
-    
+
     ScopedPointer< ENVData > env_data;
 
     OwnedArray< LFOData > lfo_datas;

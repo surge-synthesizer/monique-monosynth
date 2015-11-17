@@ -856,25 +856,29 @@ void Monique_Ui_ENVPopup::labelTextChanged (Label* labelThatHasChanged)
     if (labelThatHasChanged == label_attack)
     {
         //[UserLabelCode_label_attack] -- add your label text handling code here..
-        slider_attack->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->attack.get_info().num_steps, sendNotification );
+        float value_percent = labelThatHasChanged->getText().getFloatValue();
+        slider_attack->setValue( reverse_ms_to_slider_value(value_percent), sendNotification );
         //[/UserLabelCode_label_attack]
     }
     else if (labelThatHasChanged == label_decay)
     {
         //[UserLabelCode_label_decay] -- add your label text handling code here..
-        slider_decay->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->decay.get_info().num_steps, sendNotification );
+        float value_percent = labelThatHasChanged->getText().getFloatValue();
+        slider_decay->setValue( reverse_ms_to_slider_value(value_percent), sendNotification );
         //[/UserLabelCode_label_decay]
     }
     else if (labelThatHasChanged == label_sustain_time)
     {
         //[UserLabelCode_label_sustain_time] -- add your label text handling code here..
-        slider_sustain_time->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->sustain_time.get_info().num_steps, sendNotification );
+        float value_percent = labelThatHasChanged->getText().getFloatValue();
+        slider_sustain_time->setValue( reverse_ms_to_slider_value(value_percent), sendNotification );
         //[/UserLabelCode_label_sustain_time]
     }
     else if (labelThatHasChanged == label_release)
     {
         //[UserLabelCode_label_release] -- add your label text handling code here..
-        slider_release->setValue( labelThatHasChanged->getText().getFloatValue()/env_data->release.get_info().num_steps, sendNotification );
+        float value_percent = labelThatHasChanged->getText().getFloatValue();
+        slider_release->setValue( reverse_ms_to_slider_value(value_percent), sendNotification );
         //[/UserLabelCode_label_release]
     }
     else if (labelThatHasChanged == label_sustain)

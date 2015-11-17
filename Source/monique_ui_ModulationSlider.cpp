@@ -1018,7 +1018,8 @@ void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
         //[UserLabelCode_label_top] -- add your label text handling code here..
         if( slider_value->isEnabled() )
         {
-            slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue()/front_parameter->get_info().num_steps ), sendNotification );
+	    front_parameter->set_value( _config->get_label_edit_value( label_top->getText().getFloatValue() ) );
+            //slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue()/front_parameter->get_info().num_steps ), sendNotification );
         }
         /*
             else if( slider_modulation )

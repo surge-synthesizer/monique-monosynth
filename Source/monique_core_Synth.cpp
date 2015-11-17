@@ -2210,12 +2210,12 @@ class mono_ENVOsccilator : public RuntimeListener
 public:
     //==========================================================================
     // SHAPE 0 - sine-, 1 - linear, 2 - sine+
-    inline void set_process_values( float start_value_, float end_value_, float shape_, float time_in_ms_ ) noexcept
+    inline void set_process_values( float start_value_, float end_value_, float shape_, float time_in_samples_ ) noexcept
     {
         start_amp = start_value_;
         target_amp = end_value_;
         shape = shape_*0.9+0.1;
-        time_in_samples = jmax(10,msToSamplesFast( time_in_ms_+1, sample_rate ));
+        time_in_samples = time_in_samples_;
     }
     inline void calculate_attack_coeffecients() noexcept
     {
@@ -2376,7 +2376,7 @@ enum STAGES
     RELEASE,
     TRIGGER_START
 };
-class ENV
+class ENV : RuntimeListener
 {
     mono_ENVOsccilator env_osc;
 
@@ -2428,14 +2428,13 @@ private:
         {
         case TRIGGER_START : // --> ATTACK
         {
-            const float attack_time = env_data->attack*MAX_ENV_TIMES+MIN_ENV_TIMES;
             if( env_data->decay > 0 )
             {
                 env_osc.set_process_values
                 (
                     env_osc.last_out(), 1,
                     smoothed_shape_buffer[sid_],
-                    attack_time
+                    get_env_samples(env_data->attack,sample_rate)
                 );
                 goes_to_sustain = false;
                 is_sustain = false;
@@ -2446,7 +2445,7 @@ private:
                 (
                     env_osc.last_out(), smoothed_sustain_buffer[sid_],
                     smoothed_shape_buffer[sid_],
-                    attack_time
+                    get_env_samples(env_data->attack,sample_rate)
                 );
                 goes_to_sustain = true;
                 is_sustain = false;
@@ -2466,7 +2465,7 @@ private:
                 (
                     env_osc.last_out(), smoothed_sustain_buffer[sid_],
                     smoothed_shape_buffer[sid_],
-                    decay*MAX_ENV_TIMES+MIN_ENV_TIMES
+                    get_env_samples(decay,sample_rate)
                 );
                 goes_to_sustain = true;
                 is_sustain = false;
@@ -2488,7 +2487,7 @@ private:
                 (
                     env_osc.last_out(), sustain_level,
                     smoothed_shape_buffer[sid_],
-                    sustain_time*10000
+                    get_env_samples(sustain_time,sample_rate)
                 );
                 env_osc.calculate_unlimited_coeffecients();
                 is_sustain = true;
@@ -2500,7 +2499,7 @@ private:
                 (
                     env_osc.last_out(), 0,
                     smoothed_shape_buffer[sid_],
-                    sustain_time*10000
+                    get_env_samples(sustain_time,sample_rate)
                 );
                 env_osc.calculate_release_coeffecients();
                 is_sustain = false;
@@ -2516,7 +2515,7 @@ private:
             (
                 env_osc.last_out(), 0,
                 smoothed_shape_buffer[sid_],
-                env_data->release*MAX_ENV_TIMES+MIN_ENV_TIMES
+                get_env_samples(env_data->release,sample_rate)
             );
             goes_to_sustain = false;
             is_sustain = false;
@@ -2590,6 +2589,9 @@ public:
         return env_osc.last_out();
     }
 
+    //==============================================================================
+    void sample_rate_or_block_changed() noexcept override {}
+
 public:
     //==============================================================================
     inline ENV( RuntimeNotifyer*const notifyer_,
@@ -2599,17 +2601,18 @@ public:
                 const float*const cos_lookup_,
                 const float*const exp_lookup_ ) noexcept
 :
-    env_osc( notifyer_, sine_lookup_, cos_lookup_, exp_lookup_ ),
+    RuntimeListener( notifyer_ ),
+                     env_osc( notifyer_, sine_lookup_, cos_lookup_, exp_lookup_ ),
 
-             current_stage(END_ENV),
+                     current_stage(END_ENV),
 
-             synth_data( synth_data_ ),
+                     synth_data( synth_data_ ),
 
-             last_sustain(0),
-             goes_to_sustain(false),
-             is_sustain(false),
+                     last_sustain(0),
+                     goes_to_sustain(false),
+                     is_sustain(false),
 
-             env_data( env_data_ )
+                     env_data( env_data_ )
     {
     }
     inline ~ENV() noexcept {}
@@ -2832,9 +2835,9 @@ public:
             ++zero_counter;
         }
         else
-	{
+        {
             zero_counter = 0;
-	}
+        }
 
         if( zero_counter < 50 )
         {
@@ -2876,9 +2879,9 @@ public:
             ++zero_counter;
         }
         else
-	{
+        {
             zero_counter = 0;
-	}
+        }
 
         if( zero_counter < 50 )
         {
@@ -2921,9 +2924,9 @@ public:
             ++zero_counter;
         }
         else
-	{
+        {
             zero_counter = 0;
-	}
+        }
 
         if( zero_counter < 50 )
         {
@@ -4643,7 +4646,7 @@ public:
     {
         sample_rate_or_block_changed();
     }
-    
+
     //==============================================================================
     inline void clear_record_buffer() noexcept
     {
@@ -6661,5 +6664,6 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
 
 
