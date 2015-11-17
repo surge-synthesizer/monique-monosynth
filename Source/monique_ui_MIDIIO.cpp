@@ -42,7 +42,7 @@ void Monique_Ui_MidiIO::refresh() noexcept
         last_state_change = state_change_counter;
         update_combo_boxed();
     }
-    
+
     TURN_BUTTON_ON_OR_OFF( button_midi_learn, midi_control_handler->is_waiting_for_param() ? true : midi_control_handler->is_learning() ? true : false );
 }
 void Monique_Ui_MidiIO::update_combo_boxed()
@@ -469,11 +469,11 @@ void Monique_Ui_MidiIO::resized()
     label_7->setBounds (545, 15, 35, 30);
     combo_input_main->setBounds (35, 50, 430, 30);
     combo_input_main_channel->setBounds (475, 50, 60, 30);
-    label_3->setBounds (35, 15, 430, 30);
+    label_3->setBounds (35, 15, 405, 30);
     toggle_input_main_thru->setBounds (595, 50, 60, 30);
     label_5->setBounds (975, 15, 430, 30);
     combo_output_thru->setBounds (975, 50, 465, 30);
-    label_6->setBounds (35, 95, 430, 30);
+    label_6->setBounds (35, 95, 405, 30);
     combo_input_cc->setBounds (35, 130, 430, 30);
     toggle_input_main_cc->setBounds (545, 50, 35, 35);
     toggle_input_cc_thru->setBounds (595, 130, 60, 30);
@@ -628,7 +628,7 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="475 50 60 30" tooltip="Select a the MIDI channel there you like to listen to notes.&#10;(Kepp OMNI if you are not familiar with MIDI)"
             editable="0" layout="33" items="" textWhenNonSelected="CH" textWhenNoItems="OMNI"/>
   <LABEL name="" id="af53a5122473eec4" memberName="label_3" virtualName=""
-         explicitFocusOrder="0" pos="35 15 430 30" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="35 15 405 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="INPUT (Notes, CC optional, Clock)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
@@ -645,7 +645,7 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="975 50 465 30" tooltip="Select a MIDI device there you like to forward incoming MIDI messages.&#10;&#10;PLUGIN: normaly you should keep &quot;Send to host&quot; here."
             editable="0" layout="33" items="" textWhenNonSelected="" textWhenNoItems=""/>
   <LABEL name="" id="9e4ab2352c294adf" memberName="label_6" virtualName=""
-         explicitFocusOrder="0" pos="35 95 430 30" textCol="ffff3b00"
+         explicitFocusOrder="0" pos="35 95 405 30" textCol="ffff3b00"
          edTextCol="ffff3b00" edBkgCol="0" labelText="Controller INPUT (CC only)"
          editableSingleClick="0" editableDoubleClick="0" focusDiscardsChanges="0"
          fontname="Default font" fontsize="30" bold="0" italic="0" justification="33"/>
