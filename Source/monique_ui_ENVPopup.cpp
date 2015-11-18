@@ -568,6 +568,8 @@ Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
     ui_refresher->synth_data->midi_env_sustain_time.remove_listener(this);
     ui_refresher->synth_data->midi_env_release.remove_listener(this);
     ui_refresher->synth_data->midi_env_shape.remove_listener(this);
+    
+    parent->show_info_popup(nullptr,nullptr);
 
     for( int i = 0 ; i != observed_comps.size() ; ++i )
     {

@@ -1364,11 +1364,13 @@ inline bool MIDIControlHandler::is_waiting_for_param() const noexcept
         }
 #define SET_COMPONENT_TO_MIDI_LEARN( comp, ui_look_and_feel_ ) \
         { \
+          MessageManagerLock mmLock; \
 	  ui_look_and_feel_->midi_learn_comp = comp; \
 	  comp->repaint(); \
 	}
 #define UNSET_COMPONENT_MIDI_LEARN( comp, ui_look_and_feel_ ) \
         { \
+          MessageManagerLock mmLock; \
 	  ui_look_and_feel_->midi_learn_comp = nullptr; \
 	  comp->repaint(); \
 	}

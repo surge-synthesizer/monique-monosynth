@@ -408,7 +408,7 @@ Monique_Ui_MFOPopup::~Monique_Ui_MFOPopup()
     ui_refresher->synth_data->midi_lfo_speed.remove_listener(this);
     ui_refresher->synth_data->midi_lfo_offset.remove_listener(this);
 
-    parent->show_info_popup( nullptr, nullptr );
+    parent->show_info_popup(nullptr,nullptr);
 
     for( int i = 0 ; i != observed_comps.size() ; ++i )
     {

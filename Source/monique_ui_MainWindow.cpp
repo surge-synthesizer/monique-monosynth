@@ -328,7 +328,7 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
             else if( Slider*slider = dynamic_cast< Slider* >( comp_ ) )
             {
                 slider->triggerClick();
-		return;
+                return;
             }
         }
     }
@@ -339,6 +339,10 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
         popup->set_element_to_show( comp_ );
         resize_subeditors();
         popup->setVisible(true);
+    }
+    else
+    {
+        midi_control_handler->clear();
     }
 }
 void Monique_Ui_Mainwindow::show_current_voice_data()
