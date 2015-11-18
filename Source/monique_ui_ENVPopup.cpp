@@ -284,12 +284,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     ui_refresher_->synth_data->midi_env_sustain_time.set_value_without_notification(env_data_->sustain_time);
     ui_refresher_->synth_data->midi_env_release.set_value_without_notification(env_data_->release);
     ui_refresher_->synth_data->midi_env_shape.set_value_without_notification(env_data_->release);
-    ui_refresher_->synth_data->midi_env_attack.register_listener(this);
-    ui_refresher_->synth_data->midi_env_decay.register_listener(this);
-    ui_refresher_->synth_data->midi_env_sustain.register_listener(this);
-    ui_refresher_->synth_data->midi_env_sustain_time.register_listener(this);
-    ui_refresher_->synth_data->midi_env_release.register_listener(this);
-    ui_refresher_->synth_data->midi_env_shape.register_listener(this);
 
     last_attack = 0;
     last_sustain= 0;
@@ -556,6 +550,12 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 
 
     //[Constructor] You can add your own custom stuff here..
+    ui_refresher_->synth_data->midi_env_attack.register_listener(this);
+    ui_refresher_->synth_data->midi_env_decay.register_listener(this);
+    ui_refresher_->synth_data->midi_env_sustain.register_listener(this);
+    ui_refresher_->synth_data->midi_env_sustain_time.register_listener(this);
+    ui_refresher_->synth_data->midi_env_release.register_listener(this);
+    ui_refresher_->synth_data->midi_env_shape.register_listener(this);
     //[/Constructor]
 }
 
