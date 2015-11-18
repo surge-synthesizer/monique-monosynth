@@ -3629,7 +3629,7 @@ void MoniqueSynthData::load_default() noexcept
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
-	    Parameter*param =  saveable_parameters.getUnchecked(i);
+            Parameter*param =  saveable_parameters.getUnchecked(i);
             read_parameter_factory_default_from_file( *factory_default, param );
         }
     }
@@ -3674,7 +3674,7 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
                 const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_value = param->get_value();
                 const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
             }
-            
+
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
         }
     }
@@ -3696,7 +3696,21 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
         {
             for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
-                read_parameter_from_file( *xml_, saveable_parameters.getUnchecked(i) );
+                Parameter*param = saveable_parameters.getUnchecked(i);
+                read_parameter_from_file( *xml_, param );
+
+		/*
+                if( (param->get_info().name.contains("attack")
+                or param->get_info().name.contains("decay")
+                or param->get_info().name.contains("sustain")
+                or param->get_info().name.contains("release")
+                or param->get_info().name.contains("shape") )
+                and param->get_info().name.contains("ENV")
+                  )
+                {
+                    param->set_value( reverse_ms_to_slider_value( param->get_value()*MAX_ENV_TIMES+1 ) );
+                }
+                */
             }
         }
 

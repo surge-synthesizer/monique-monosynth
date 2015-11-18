@@ -5523,8 +5523,6 @@ class EQSlConfig : public ModulationSliderConfigBase
     Parameter*const velocity;
     BoolParameter*const hold;
 
-    String bottom_text;
-
     MoniqueSynthData*const synth_data;
 
     //==============================================================================
@@ -5698,8 +5696,6 @@ public:
 
         synth_data( synth_data_ )
     {
-        const float frequency_high_pass = get_high_pass_band_frequency( id_ );
-        bottom_text = String( frequency_high_pass ) + String("Hz");
     }
 
     JUCE_LEAK_DETECTOR (EQSlConfig)

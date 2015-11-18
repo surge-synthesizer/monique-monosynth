@@ -1299,52 +1299,6 @@ inline StringRef ArpSequencerData::shuffle_to_text( int suffle_ ) noexcept
 }
 
 //==============================================================================
-//==============================================================================
-//==============================================================================
-static inline float get_low_pass_band_frequency( int band_id_, double sample_rate_ ) noexcept
-{
-    switch(band_id_)
-    {
-    case 0 :
-        return 82.41;
-    case 1 :
-        return 164.81;
-    case 2 :
-        return 329.63;
-    case 3 :
-        return 659.25;
-    case 4 :
-        return 1318.51;
-    case 5 :
-        return 2637.02;
-    //default :
-    //    return sample_rate_/2;
-    default :
-        return 2637.02;
-    }
-}
-static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
-{
-    switch(band_id_)
-    {
-    case 0 :
-        return 20.60;
-    case 1 :
-        return 82.41;
-    case 2 :
-        return 164.81;
-    case 3 :
-        return 329.63;
-    case 4 :
-        return 659.25;
-    case 5 :
-        return 1318.51;
-    default :
-        return 2637.02;
-    }
-}
-
-//==============================================================================
 struct EQData
 {
     ArrayOfParameters velocity;

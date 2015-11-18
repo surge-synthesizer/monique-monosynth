@@ -817,16 +817,17 @@ public:
         {
             const double temp = lastBlitOutput_;
             {
-                const double working_phase_ = (phase_ + phase_offset) - phase_correction;
+               const double current_phase = (phase_ + phase_offset) - phase_correction;
 
                 // Avoid a divide by zero, or use of a denomralized divisor
                 // at the sinc peak, which has a limiting value of 1.0.
                 {
-                    const double denominator = std::sin( working_phase_ );
+		  
+                    const double denominator = std::sin( current_phase );
                     if ( std::fabs( denominator ) < std::numeric_limits<double>::epsilon() )
                     {
                         // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-                        if( working_phase_ < 0.0001 or working_phase_ > (double_Pi+double_Pi) -0.0001 )
+                        if( current_phase < 0.001 or current_phase > (double_Pi+double_Pi) -0.001 )
                         {
                             lastBlitOutput_ = a_;
                         }
@@ -837,7 +838,7 @@ public:
                     }
                     else
                     {
-                        lastBlitOutput_ = std::sin( working_phase_*m_ ) / (p_ * denominator);
+                        lastBlitOutput_ = std::sin( current_phase*m_ ) / (p_ * denominator);
                     }
                 }
             }
@@ -1833,7 +1834,7 @@ public:
             root_note_ = jmax( 1.0f, jmin(127.0f,root_note_) );
 
             const float rest_glide = freq_glide_delta*freq_glide_samples_left;
-            freq_glide_samples_left = (sample_rate*0.5) * glide;
+            freq_glide_samples_left = jmax(10.0f,float(sample_rate*0.5) * glide);
             const float glide_notes_diverence = root_note - root_note_;
             if( freq_glide_samples_left > 0 )
             {
@@ -3890,6 +3891,51 @@ public:
 //==============================================================================
 //==============================================================================
 //==============================================================================
+//==============================================================================
+//==============================================================================
+//==============================================================================
+static inline float get_low_pass_band_frequency( int band_id_, double sample_rate_ ) noexcept
+{
+    switch(band_id_)
+    {
+    case 0 :
+        return 82.41;
+    case 1 :
+        return 164.81;
+    case 2 :
+        return 329.63;
+    case 3 :
+        return 659.25;
+    case 4 :
+        return 1318.51;
+    case 5 :
+        return 2637.02;
+    //default :
+    //    return sample_rate_/2;
+    default :
+        return 2637.02;
+    }
+}
+static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
+{
+    switch(band_id_)
+    {
+    case 0 :
+        return 20.60;
+    case 1 :
+        return 82.41;
+    case 2 :
+        return 164.81;
+    case 3 :
+        return 329.63;
+    case 4 :
+        return 659.25;
+    case 5 :
+        return 1318.51;
+    default :
+        return 2637.02;
+    }
+}
 class EQProcessor : public RuntimeListener
 {
     mono_ThreadManager*const thread_manager;
@@ -3949,33 +3995,6 @@ public:
                 float* const band_out_buffer;
                 const float* const env_buffer;
 
-                /*
-                inline void exec() noexcept override
-                {
-                    if( band_id == 0 )
-                    {
-                        exec_first_band();
-                    }
-                    else
-                    {
-                        exec_middle_bands();
-                    }
-                }
-                inline void exec_first_band() noexcept
-                {
-                    // PROCESS
-                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
-                    {
-                        const float shape = smoothed_shape_buffer[sid];
-                        const float amp = env_buffer[sid];
-                        const float in = filter_in_samples[sid] * amp;
-                        filter.update_with_calc( shape*0.8f, filter_frequency, 0 );
-                        float output = filter.processLow(in);
-                        band_out_buffer[sid] = output*5;
-                    }
-                }
-                inline void exec_middle_bands() noexcept
-                */
                 inline void exec() noexcept override
                 {
                     // PROCESS
@@ -4010,8 +4029,8 @@ public:
                         const float amp = env_buffer[sid];
                         const float in = filter_in_samples[sid] * amp;
                         filter.update_with_fixed_cutoff( shape*0.8f, filter_frequency );
-                        float output = filter.processHighResonance(in);
-                        band_out_buffer[sid] = output;
+                        float output = high_pass_filter.processSingleSampleRaw ( filter.processHighResonance(in) );
+                        band_out_buffer[sid] = output*1.5;
                     }
                 }
 

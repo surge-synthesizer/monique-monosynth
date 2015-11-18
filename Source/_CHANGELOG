@@ -122,6 +122,7 @@ CHANGES 0.9.8
 - fix set program value on any file actions
 - fix undo handling (first value wasnt set)
 - chnaged: the last band is not open (not limited to 20kHz)
+- changed band frequencies to E frequencies
 
 MANUAL:
 - resizer -> shortcut
