@@ -1,5 +1,4 @@
 NEW:
-- reset the delay buffer on sample rate changes isnt a good idea - what heppens if the daw runs in slave?
 
 MI:
 
@@ -47,6 +46,7 @@ MINOR PROBLEMS
 - sounds like we have a short attack on binded notes.
 - env for bands are inverted by midi control
 - precalculate clock in buffer just one time, so wie do it for all lfo and mfos
+- reset the delay buffer on sample rate changes isnt a good idea - what heppens if the daw runs in slave? -> try to improve the smootinhg
 
 BUILD
 ****************************************************************************

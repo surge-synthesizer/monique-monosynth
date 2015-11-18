@@ -66,7 +66,34 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
         box->clear(dontSendNotification);
         for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
         {
-            String bank = bank_id == 0 ? "A" : bank_id == 1 ? "B" : bank_id == 2 ? "C" : "D";
+            String bank 
+            = bank_id == 0 ? "A" 
+	    : bank_id == 1 ? "B" 
+	    : bank_id == 2 ? "C" 
+	    : bank_id == 3 ? "D" 
+	    : bank_id == 4 ? "E" 
+	    : bank_id == 5 ? "F" 
+	    : bank_id == 6 ? "G" 
+	    : bank_id == 7 ? "H" 
+	    : bank_id == 8 ? "I" 
+	    : bank_id == 9 ? "J" 
+	    : bank_id == 10 ? "K" 
+	    : bank_id == 11 ? "L" 
+	    : bank_id == 12 ? "M" 
+	    : bank_id == 13 ? "N" 
+	    : bank_id == 14 ? "O" 
+	    : bank_id == 15 ? "P" 
+	    : bank_id == 16 ? "Q" 
+	    : bank_id == 17 ? "R" 
+	    : bank_id == 18 ? "S" 
+	    : bank_id == 19 ? "T" 
+	    : bank_id == 20 ? "U" 
+	    : bank_id == 21 ? "V" 
+	    : bank_id == 22 ? "W" 
+	    : bank_id == 23 ? "X" 
+	    : bank_id == 24 ? "Y" 
+	    : "Z";
+	    
             if( i > 3 )
             {
                 box->addSectionHeading(String("Load preset to LEFT from bank: ")+bank);
