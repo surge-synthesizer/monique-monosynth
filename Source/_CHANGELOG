@@ -2,8 +2,6 @@ NEW:
 
 
 MI:
-- share global setting over plugin instances
-- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - static noise on plugin startup
 
 - midi popup closes if you go to midi settings and keep the midi learn mode
@@ -17,6 +15,8 @@ DEMO:
 - resave project with new factory program
 
 DO:
+- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
+- share global setting over plugin instances
 - load morph program only supports 4 banks
 - bypass
 - change: on mac hide osx audio devices

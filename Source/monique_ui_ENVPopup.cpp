@@ -98,7 +98,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         }
 
         slider_release->setValue( last_release, dontSendNotification );
-        label_release->setText(String( auto_round( get_env_ms(sustain_time) ) )+String("ms"), dontSendNotification);
+        label_release->setText(String( auto_round( get_env_ms(last_release) ) )+String("ms"), dontSendNotification);
 
         slider_env_shape->setValue( last_shape, dontSendNotification );
 
