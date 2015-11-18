@@ -1935,14 +1935,14 @@ master_data( master_data_ ),
              sliders_sensitivity
              (
                  MIN_MAX( 100, 2000 ),
-                 500,
+                 800,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
                  generate_short_human_name("CONF","rotary_sensitivity")
              ),
              sliders_linear_sensitivity
              (
                  MIN_MAX( 100, 2000 ),
-                 500,
+                 300,
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_linear_sensitivity"),
                  generate_short_human_name("CONF","linear_sensitivity")
              ),
