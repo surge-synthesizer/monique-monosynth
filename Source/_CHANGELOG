@@ -1,7 +1,7 @@
 NEW:
+- reset the delay buffer on sample rate changes isnt a good idea - what heppens if the daw runs in slave?
 
 MI:
-mfo popup closes not on esc
 
 DEMO:
 - envs anpassen in allen programmen
@@ -118,6 +118,8 @@ CHANGES 0.9.8
 - fix: colour themes are not loaded in plugin
 - add: context menu entry to store and load global settings (useful if you use more than one instance at the same time and you have changed settings like slider speed and like to have it in another instance)
 - add: context menue to sliders in popups
+- add: support for midi notes to control buttons
+- fix: close mfo popup on esc
 
 MANUAL:
 - resizer -> shortcut

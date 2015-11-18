@@ -1228,14 +1228,14 @@ public:
 private:
     friend class MIDIControlHandler;
     friend class Parameter;
-    int8 midi_number; // NOTES OR CC
+    int midi_number; // NOTES OR CC
     String is_ctrl_version_of_name;
     bool is_in_ctrl_mode;
     Parameter*const owner;
     MoniqueAudioProcessor*audio_processor;
 
 public:
-    int8 get_midi_number() const noexcept
+    int get_midi_number() const noexcept
     {
         return midi_number;
     }
@@ -1268,6 +1268,7 @@ private:
     void start_listen_for_feedback() noexcept;
     void stop_listen_for_feedback() noexcept;
     void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void parameter_value_changed_by_automation( Parameter* param_ ) noexcept override;
     void parameter_value_on_load_changed( Parameter* param_ ) noexcept override;
     void parameter_modulation_value_changed( Parameter* param_ ) noexcept override;
 

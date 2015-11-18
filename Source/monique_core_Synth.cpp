@@ -4464,6 +4464,7 @@ class mono_Delay : public RuntimeListener
     int reflexion;
     int current_reflexion;
     int reflexion_buffer_size;
+    int current_reflexion_buffer_size;
     mono_AudioSampleBuffer<2> reflexion_buffer;
     float*active_left_reflexion_buffer;
     float*active_right_reflexion_buffer;
@@ -4501,6 +4502,8 @@ public:
             update_record_stuff( bpm_ );
         }
 
+        // TODO ATTENTION FIX, do not clear! -> but if not crash on sample rate changes
+        /*
         if( bpm_changed )
         {
             reflexion_write_index = 0;
@@ -4511,6 +4514,7 @@ public:
             record_switch_smoother.reset_glide_countdown();
             record_switch_smoother.reset(sample_rate,glide_time_in_ms_);
         }
+        */
 
         record_switch_smoother.reset_coefficients( sample_rate, glide_time_in_ms_ );
     }
@@ -4570,8 +4574,25 @@ private:
             --current_reflexion;
         }
 
-        const int read_index = reflexion_write_index - current_reflexion;
-        return read_index < 0 ? read_index + reflexion_buffer_size : read_index;
+        if( current_reflexion_buffer_size < reflexion_buffer_size )
+        {
+            current_reflexion_buffer_size += 2;
+            if( current_reflexion_buffer_size > reflexion_buffer_size )
+            {
+                current_reflexion_buffer_size = reflexion_buffer_size;
+            }
+        }
+        else if( current_reflexion_buffer_size > reflexion_buffer_size )
+        {
+            --current_reflexion_buffer_size;
+        }
+
+        int read_index = reflexion_write_index - current_reflexion;
+        while( read_index < 0 )
+        {
+            read_index += current_reflexion_buffer_size;
+        }
+        return read_index;
     }
 
 public:
@@ -4682,7 +4703,7 @@ public:
 
             // UPDATE INDEX
             {
-                reflexion_write_index = (reflexion_write_index + 1) % reflexion_buffer_size;
+                reflexion_write_index = (reflexion_write_index + 1) % current_reflexion_buffer_size;
                 record_index = (record_index + 1) % real_record_buffer_size;
             }
         }
@@ -4721,6 +4742,7 @@ public:
                      reflexion(0),
                      current_reflexion(0),
                      reflexion_buffer_size(1),
+                     current_reflexion_buffer_size(1),
                      reflexion_buffer(reflexion_buffer_size),
                      active_left_reflexion_buffer(reflexion_buffer.getWritePointer(LEFT)),
                      active_right_reflexion_buffer(reflexion_buffer.getWritePointer(RIGHT)),
@@ -6625,7 +6647,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
             for( int i = 0 ; i != paramters.size() ; ++ i )
             {
                 Parameter*const param = paramters.getUnchecked(i);
-                if( param->midi_control->read_from_if_you_listen( cc_number_, cc_value_, synth_data->midi_pickup_offset ) )
+                if( param->midi_control->read_from_if_you_listen( midiChannel == 2 ? cc_number_+128 : cc_number_, cc_value_, synth_data->midi_pickup_offset ) )
                 {
                     break;
                 }
@@ -6634,7 +6656,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
         // TRAIN
         else
         {
-            if( midi_control_handler->handle_incoming_message( cc_number_ ) )
+            if( midi_control_handler->handle_incoming_message( midiChannel == 2 ? cc_number_+128 : cc_number_ ) )
             {
                 // CLEAR SIBLINGS IF WE HAVE SOMETHING SUCCESSFUL TRAINED
                 String learning_param_name = learing_param->get_info().name;
@@ -6645,7 +6667,7 @@ void MoniqueSynthesizer::handleController (int midiChannel, int cc_number_, int 
                     {
                         if( param->midi_control->get_is_ctrl_version_of_name() != learning_param_name )
                         {
-                            if( param->midi_control->is_listen_to( cc_number_ ) )
+                            if( param->midi_control->is_listen_to( midiChannel == 2 ? cc_number_+128 : cc_number_ ) )
                             {
                                 param->midi_control->clear();
                             }

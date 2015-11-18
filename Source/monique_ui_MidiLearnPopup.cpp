@@ -104,7 +104,11 @@ Monique_Ui_MainwindowPopup::Monique_Ui_MainwindowPopup (Monique_Ui_Refresher*ui_
 
     for( int i = 0 ; i != 128 ; ++i )
     {
-        combo_midi_number->addItem( String(i), i+1 );
+        combo_midi_number->addItem( String(i+1) + String("-C") , i+1 );
+    }
+    for( int i = 0 ; i != 128 ; ++i )
+    {
+        combo_midi_number->addItem( String(i+1) + String("-N"), i+1+128 );
     }
 
     /*

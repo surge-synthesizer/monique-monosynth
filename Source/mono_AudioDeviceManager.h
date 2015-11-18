@@ -19,7 +19,7 @@ class mono_AudioDeviceManager : public AudioDeviceManager, public RuntimeListene
 {
 public:
     RuntimeNotifyer*const runtime_notifyer;
-  
+
 private:
     bool restored_all_devices;
     bool restored_audio_devices;
@@ -195,7 +195,7 @@ private:
     friend class OpenStateChecker;
 
     int state_change_counter;
-    
+
     virtual Monique_Ui_Mainwindow*get_editor() noexcept = 0;
     virtual MoniqueSynthData*get_synth_data() noexcept = 0;
 
@@ -228,7 +228,15 @@ inline void mono_AudioDeviceManager::send_feedback_message( int cc_number_, int 
 {
     if( midi_feedback_output )
     {
-        MidiMessage message = MidiMessage::controllerEvent( 1, cc_number_, cc_value_ );
+        MidiMessage message;
+        if( cc_number_ < 128 )
+        {
+            message = MidiMessage::controllerEvent( 1, cc_number_, cc_value_ );
+        }
+        else
+        {
+            message = MidiMessage::noteOn( 1, cc_number_-128, uint8(cc_value_) );
+        }
         message.setTimeStamp( Time::getMillisecondCounterHiRes() );
         cc_feedback_collector.addMessageToQueue( message );
     }
@@ -237,7 +245,16 @@ inline void mono_AudioDeviceManager::clear_feedback_message( int cc_number_ ) no
 {
     if( midi_feedback_output )
     {
-        midi_feedback_output->sendMessageNow( MidiMessage::controllerEvent( 1, cc_number_, 0 ) );
+        MidiMessage message;
+        if( cc_number_ < 128 )
+        {
+            message = MidiMessage::controllerEvent( 1, cc_number_, 0 );
+        }
+        else
+        {
+            message = MidiMessage::noteOn( 1, cc_number_-128, uint8(0) );
+        }
+        midi_feedback_output->sendMessageNow( message );
     }
 }
 
@@ -272,7 +289,7 @@ class mono_AudioDeviceManager : public RuntimeListener
 {
 public:
     RuntimeNotifyer*const runtime_notifyer;
-    
+
 public:
     // SEND
     inline void send_feedback_message( int cc_number_, int cc_value_ ) noexcept;
@@ -292,7 +309,7 @@ protected:
     COLD mono_AudioDeviceManager( RuntimeNotifyer*const runtime_notifyer_ ) noexcept;
     COLD ~mono_AudioDeviceManager() noexcept;
     COLD void clear_feedback_and_shutdown() noexcept;
-    
+
     virtual Monique_Ui_Mainwindow*get_editor() noexcept = 0;
     virtual MoniqueSynthData*get_synth_data() noexcept = 0;
 

@@ -4473,6 +4473,10 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
         {
             open_env_popup( nullptr, nullptr, nullptr, nullptr, false );
         }
+        else if( mfo_popup )
+	{
+	  open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
+	}
         else
         {
             close_all_subeditors();

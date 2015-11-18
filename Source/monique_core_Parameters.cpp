@@ -391,7 +391,7 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 {
     bool success = false;
     {
-        if( midi_number == controller_number_ )
+        if( midi_number == controller_number_ and controller_number_ < 128 )
         {
             float value = 1.0f/127.0f*controller_value_;
             if( type_of( owner ) == IS_BOOL )
@@ -451,6 +451,19 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
                 }
             }
         }
+        else if( midi_number == controller_number_  )
+        {
+            if( type_of( owner ) == IS_BOOL )
+            {
+                owner->set_value(not owner->get_value());
+                success = true;
+            }
+        }
+    }
+
+    if( success )
+    {
+        send_standard_feedback();
     }
 
     return success;
@@ -541,6 +554,9 @@ void MIDIControl::parameter_value_changed( Parameter* param_ ) noexcept
             send_standard_feedback();
         }
     }
+}
+void MIDIControl::parameter_value_changed_by_automation( Parameter* param_ ) noexcept
+{
 }
 void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {

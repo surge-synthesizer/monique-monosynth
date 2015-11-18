@@ -417,7 +417,15 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
     {
         if( midi_message_.isController() )
         {
-            cc_input_collector.addMessageToQueue( midi_message_ );
+            MidiMessage message = MidiMessage::controllerEvent( 1, midi_message_.getControllerNumber(), midi_message_.getControllerValue() );
+            message.setTimeStamp( midi_message_.getTimeStamp() );
+            cc_input_collector.addMessageToQueue( message );
+        }
+        if( midi_message_.isNoteOn() )
+        {
+            MidiMessage message = MidiMessage::controllerEvent( 2, midi_message_.getNoteNumber(), 0 );
+            message.setTimeStamp( midi_message_.getTimeStamp() );
+            cc_input_collector.addMessageToQueue( message );
         }
 
         // THRU
@@ -447,6 +455,12 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
         }
         else if( input_channel == 0 or midi_message_.getChannel() == input_channel.get_value() ) // 0 = OMNI
         {
+            if( midi_message_.isController() )
+            {
+                MidiMessage message = MidiMessage::controllerEvent( 1, midi_message_.getControllerNumber(), midi_message_.getControllerValue() );
+                message.setTimeStamp( midi_message_.getTimeStamp() );
+            }
+
             // ELSE IF!!!!
             if( midi_message_.isNoteOnOrOff() )
             {
@@ -466,7 +480,9 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 // BIND PEDALS OPTION
                 if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
                 {
-                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
+		    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
+		    message.setTimeStamp( midi_message_.getTimeStamp() );
+                    note_input_collector.addMessageToQueue( message );
                 }
             }
             else if( midi_message_.isSustainPedalOff() )
@@ -475,7 +491,9 @@ void mono_AudioDeviceManager::collect_incoming_midi_messages(mono_AudioDeviceMan
                 // BIND PEDALS OPTION
                 if( get_synth_data()->bind_sustain_and_sostenuto_pedal )
                 {
-                    note_input_collector.addMessageToQueue( MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() ) );
+		    MidiMessage message = MidiMessage::controllerEvent( 1, 66, midi_message_.getControllerValue() );
+		    message.setTimeStamp( midi_message_.getTimeStamp() );
+                    note_input_collector.addMessageToQueue( message );
                 }
             }
             else if( midi_message_.isSostenutoPedalOn() )
