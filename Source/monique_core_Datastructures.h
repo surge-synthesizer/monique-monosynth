@@ -652,7 +652,7 @@ public:
 //==============================================================================
 struct LFOData
 {
-    Parameter speed;
+    IntParameter speed;
 
     Parameter wave;
     SmoothedParameter wave_smoother;

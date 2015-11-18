@@ -1,4 +1,7 @@
 NEW:
+- midi learn crackls in popup
+do not morph lfos!!!!
+ - swing in 1/1024 and so on
 
 MI:
 
@@ -123,6 +126,7 @@ CHANGES 0.9.8
 - fix undo handling (first value wasnt set)
 - chnaged: the last band is not open (not limited to 20kHz)
 - changed band frequencies to E frequencies
+- remove lfo from morphing, can be done with toggle
 
 MANUAL:
 - resizer -> shortcut

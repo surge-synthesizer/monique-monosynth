@@ -827,7 +827,7 @@ public:
                     if ( std::fabs( denominator ) < std::numeric_limits<double>::epsilon() )
                     {
                         // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-                        if( current_phase < 0.001 or current_phase > (double_Pi+double_Pi) -0.001 )
+                        if( current_phase < 0.0001 or current_phase > (double_Pi+double_Pi) -0.0001 )
                         {
                             lastBlitOutput_ = a_;
                         }
@@ -3910,10 +3910,9 @@ static inline float get_low_pass_band_frequency( int band_id_, double sample_rat
         return 1318.51;
     case 5 :
         return 2637.02;
-    //default :
-    //    return sample_rate_/2;
     default :
-        return 2637.02;
+       // return 2637.02;
+        return sample_rate_/2;
     }
 }
 static inline int get_high_pass_band_frequency( int band_id_ ) noexcept
@@ -3998,7 +3997,7 @@ public:
                 inline void exec() noexcept override
                 {
                     // PROCESS
-                    if( band_id < SUM_EQ_BANDS - 1 )
+                    if( band_id < SUM_EQ_BANDS ) // - 1 )
 		    {
 		      exec_default();
 		    }

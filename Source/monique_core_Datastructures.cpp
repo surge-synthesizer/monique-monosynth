@@ -128,8 +128,6 @@ speed
 (
     MIN_MAX( 0, 17 ),
     4,
-    17,
-
     generate_param_name(name_,id_,"speed"),
     generate_short_human_name(name_,id_,"speed")
 ),
@@ -2484,7 +2482,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 }
 
                 // LFO
-                morph_group_2->register_parameter( lfo_datas[0]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( lfo_datas[0]->speed.int_ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[0]->wave.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[0]->phase_shift.ptr(), data_type == MASTER  );
 
@@ -2528,7 +2526,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 }
 
                 // LFO
-                morph_group_2->register_parameter( lfo_datas[1]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( lfo_datas[1]->speed.int_ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[1]->wave.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[1]->phase_shift.ptr(), data_type == MASTER  );
 
@@ -2572,7 +2570,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
                 }
 
                 // LFO
-                morph_group_2->register_parameter( lfo_datas[2]->speed.ptr(), data_type == MASTER  );
+                morph_group_2->register_switch_parameter( lfo_datas[2]->speed.int_ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[2]->wave.ptr(), data_type == MASTER  );
                 morph_group_2->register_parameter( lfo_datas[2]->phase_shift.ptr(), data_type == MASTER  );
 
