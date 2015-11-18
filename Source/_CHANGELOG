@@ -7,9 +7,6 @@ NEW:
 - close midi learn popup if a popup closes which has be trained
 
 MI:
-- change bpm massively crash -> mono_Delay reader poristions -> reset on change sample rate
-- delay: // TODO was passiert bei bpm änderungen?
-- init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
 - osc sync checken (+24)
 - buffersize overwrite on shutdown if you select the factory init programm
 - buffersize overwritten if you change velocity glide time

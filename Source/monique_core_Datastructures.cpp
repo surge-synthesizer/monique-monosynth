@@ -2629,7 +2629,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             morph_group_3->register_parameter( reverb_data->pan.ptr(), data_type == MASTER  );
             // DELAY
             morph_group_3->register_parameter( delay.ptr(), data_type == MASTER  );
-            morph_group_3->register_parameter( delay_refexion.ptr(), data_type == MASTER  );
+            morph_group_3->register_switch_parameter( delay_refexion.int_ptr(), data_type == MASTER  );
             morph_group_3->register_parameter( delay_pan.ptr(), data_type == MASTER  );
             // CHORUS
             morph_group_3->register_parameter( chorus_data->modulation.ptr(), data_type == MASTER  );
