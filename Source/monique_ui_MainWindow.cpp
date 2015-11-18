@@ -312,23 +312,32 @@ void Monique_Ui_Mainwindow::show_info_popup( Component* comp_, MIDIControl* midi
 
         if( not midi_conrtrol_ )
         {
-            if( Parameter* param = find_parameter_in_dual_sliders( comp_ ) )
+            if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( comp_ ) )
             {
-                midi_conrtrol_ = param->midi_control;
-                Parameter*back_paramerter = find_back_parameter_in_dual_sliders( comp_ );
-                if( not back_paramerter )
-                {
-                    midi_control_handler->set_learn_param( param );
-                }
-                else
-                {
-                    midi_control_handler->set_learn_width_ctrl_param( param, back_paramerter, comp_ );
-                }
+                slider->slider_value->triggerClick();
+                return;
             }
-            else if( Slider*slider = dynamic_cast< Slider* >( comp_ ) )
+            else if( Slider* slider = dynamic_cast< Slider* >( comp_ ) )
             {
                 slider->triggerClick();
                 return;
+            }
+            else
+            {
+                Component*parent = comp_->getParentComponent();
+                if( parent )
+                {
+                    do
+                    {
+                        if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
+                        {
+                            slider->slider_value->triggerClick();
+
+                            return;
+                        }
+                    }
+                    while( (parent = parent->getParentComponent()) );
+                }
             }
         }
     }
@@ -4474,9 +4483,9 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             open_env_popup( nullptr, nullptr, nullptr, nullptr, false );
         }
         else if( mfo_popup )
-	{
-	  open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
-	}
+        {
+            open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
+        }
         else
         {
             close_all_subeditors();
@@ -4514,83 +4523,13 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             {
                 if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( c ) )
                 {
-                    Parameter*back_parameter = slider->get_back_parameter();
-                    Parameter*front_parameter = slider->get_front_parameter();
-                    if( back_parameter )
-                    {
-                        IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
-                        (
-                            front_parameter,
-                            back_parameter,
-                            c
-                        )
-                        show_info_popup(c,slider->get_front_parameter()->midi_control);
-                    }
-                    else
-                    {
-                        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-                        (
-                            front_parameter,
-                            c
-                        )
-                        show_info_popup(c,front_parameter->midi_control);
-                    }
+                    slider->slider_value->triggerClick();
+
                     found = true;
                     break;
                 }
-                else
-                {
-                    Component*parent = c->getParentComponent();
-                    if( parent )
-                    {
-                        do
-                        {
-                            if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
-                            {
-                                if( dynamic_cast< TextButton* >( c ) )
-                                {
-                                    IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-                                    (
-                                        slider->get_top_parameter(),
-                                        c
-                                    )
-                                    show_info_popup(c,slider->get_top_parameter()->midi_control);
-                                }
-                                else
-                                {
-                                    Parameter*back_parameter = slider->get_back_parameter();
-                                    Parameter*front_parameter = slider->get_front_parameter();
-                                    if( back_parameter )
-                                    {
-                                        IF_MIDI_LEARN__HANDLE_TWO_PARAMS__AND_UPDATE_COMPONENT
-                                        (
-                                            front_parameter,
-                                            back_parameter,
-                                            c
-                                        )
-                                        show_info_popup(c,slider->get_front_parameter()->midi_control);
-                                    }
-                                    else
-                                    {
-                                        IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
-                                        (
-                                            front_parameter,
-                                            c
-                                        )
-                                        show_info_popup(c,front_parameter->midi_control);
-                                    }
-                                }
-
-                                found = true;
-                                break;
-                            }
-                        }
-                        while( (parent = parent->getParentComponent()) );
-                    }
-                }
-
                 // SUPPORT FOR SINGLE BUTTONS
-                if( TextButton* button = dynamic_cast< TextButton* >( c ) )
+                else if( TextButton* button = dynamic_cast< TextButton* >( c ) )
                 {
                     bool trigger_click = true;
                     if( button == button_programm_left )
@@ -4655,15 +4594,38 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                         found = true;
                     }
                 }
+                else if( Slider* slider = dynamic_cast< Slider* >( c ) )
+                {
+                    slider->triggerClick();
+                    found = true;
+                }
+                else
+                {
+                    Component*parent = c->getParentComponent();
+                    if( parent )
+                    {
+                        do
+                        {
+                            if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
+                            {
+                                slider->slider_value->triggerClick();
+
+                                found = true;
+                                break;
+                            }
+                        }
+                        while( (parent = parent->getParentComponent()) );
+                    }
+                }
+
+                if( found )
+                {
+                    break;
+                }
             }
 
-            if( found )
-            {
-                break;
-            }
+            success = true;
         }
-
-        success = true;
     }
 #ifdef IS_PLUGIN
     else if( key.getTextDescription() == "F11" )
@@ -6678,3 +6640,4 @@ const int Monique_Ui_Mainwindow::_01hintergrundalles_svgSize = 23727;
 
 //[EndFile] You can add extra defines here...
 //[/EndFile]
+

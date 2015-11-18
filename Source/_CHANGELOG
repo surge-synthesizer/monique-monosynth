@@ -8,29 +8,25 @@ DEMO:
 
 DO:
 - share global setting over plugin instances
-- bypass
 - change: on mac hide osx audio devices
 - arp step shines through the popup
 - popup can not show in to small windows
-
-
-
-
-
-
-- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - adjustable tooltip popup time in contex menu
 - add: morph sensitivit to the context menu
-- update sync slider button tooltip
 - tool tip looper effect
 - tool tips sub editors
+- update sync slider button tooltip
 - add back sub-steps lfo
+
+- bypass
+- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
+
+- buffersize overwrite on shutdown if you select the factory init programm
+- buffersize overwritten if you change velocity glide time
+-touch screen
 
 FR:
 4.0.1
--touch screen
-- buffersize overwrite on shutdown if you select the factory init programm
-- buffersize overwritten if you change velocity glide time
 
 SA:
 
