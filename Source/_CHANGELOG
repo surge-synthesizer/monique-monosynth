@@ -9,7 +9,6 @@ DEMO:
 DO:
 - lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - share global setting over plugin instances
-- load morph program only supports 4 banks
 - bypass
 - change: on mac hide osx audio devices
 - arp step shines through the popup
@@ -120,6 +119,7 @@ CHANGES 0.9.8
 - add: context menue to sliders in popups
 - add: support for midi notes to control buttons
 - fix: close mfo popup on esc
+- fix support up to bank z for the morph sources
 
 MANUAL:
 - resizer -> shortcut

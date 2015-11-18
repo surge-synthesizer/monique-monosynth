@@ -1,6 +1,7 @@
 #include "monique_core_Datastructures.h"
 #include "monique_core_Parameters.h"
 #include "monique_core_Synth.h"
+#include "monique_ui_MainWindow.h"
 
 //==============================================================================
 //==============================================================================
@@ -2389,7 +2390,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &midi_lfo_speed );
     global_parameters.add( &midi_lfo_offset );
     global_parameters.add( &midi_lfo_popup );
-    
+
     global_parameters.add( &midi_env_attack );
     global_parameters.add( &midi_env_decay );
     global_parameters.add( &midi_env_sustain );
@@ -2397,7 +2398,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &midi_env_release );
     global_parameters.add( &midi_env_shape );
     global_parameters.add( &midi_env_popup );
-    
+
     global_parameters.minimiseStorageOverheads();
 }
 
@@ -3417,8 +3418,16 @@ void MoniqueSynthData::create_internal_backup( const String& programm_name_, con
         saveable_backups.add( saveable_parameters.getUnchecked(i)->get_value() );
     }
 
-
     alternative_program_name = last_program;
+
+
+    if( ui_look_and_feel )
+    {
+        if( ui_look_and_feel->mainwindow )
+        {
+            ui_look_and_feel->mainwindow->triggerAsyncUpdate();
+        }
+    }
 }
 bool MoniqueSynthData::create_new( const String& new_name_ ) noexcept
 {
@@ -3579,7 +3588,6 @@ bool MoniqueSynthData::load_next() noexcept
 
     return success;
 }
-#include "monique_ui_MainWindow.h"
 bool MoniqueSynthData::load( const String bank_name_, const String program_name_, bool load_morph_groups, bool ignore_warnings_ ) noexcept
 {
     bool success = false;
@@ -3710,14 +3718,6 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
-
-            if( ui_look_and_feel )
-            {
-                if( ui_look_and_feel->mainwindow )
-                {
-                    ui_look_and_feel->mainwindow->triggerAsyncUpdate();
-                }
-            }
         }
     }
 }
