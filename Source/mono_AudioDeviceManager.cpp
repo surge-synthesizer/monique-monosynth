@@ -143,8 +143,6 @@ COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
     cc_input_collector.reset(sample_rate);
     note_input_collector.reset(sample_rate);
     sync_input_collector.reset(sample_rate);
-    std::cout << "reset "<< sample_rate << std::endl;
-    std::cout << "reset "<< block_size << std::endl;
 }
 
 //==============================================================================
@@ -1233,7 +1231,7 @@ COLD mono_AudioDeviceManager::mono_AudioDeviceManager( RuntimeNotifyer*const run
 RuntimeListener( runtime_notifyer_ ),
                  runtime_notifyer( runtime_notifyer_ )
 {
-    sample_rate_changed(0);
+    sample_rate_or_block_changed();
 }
 
 COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
@@ -1241,7 +1239,7 @@ COLD mono_AudioDeviceManager::~mono_AudioDeviceManager() noexcept
 }
 
 //==============================================================================
-COLD void mono_AudioDeviceManager::sample_rate_changed( double /* old_sr_ */ ) noexcept
+COLD void mono_AudioDeviceManager::sample_rate_or_block_changed() noexcept
 {
     cc_feedback_collector.reset(sample_rate);
 }

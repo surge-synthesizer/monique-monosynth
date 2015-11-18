@@ -495,9 +495,9 @@ public:
     currentValue(init_state_),
                  target(init_state_),
                  step(0),
+                 lastValue(init_state_),
                  countdown(-1),
                  stepsToTarget(0),
-                 lastValue(init_state_),
                  option(false)
     {}
 
@@ -1855,7 +1855,6 @@ static inline double delay_multi( int delay_ ) noexcept
 }
 static inline StringRef delay_to_text( int delay_, int sample_rate_ ) noexcept
 {
-    float multi;
     switch( delay_ )
     {
     case 0 :

@@ -280,8 +280,8 @@ public:
     inline void send_feedback_messages( MidiBuffer& midi_messages, int num_samples_ ) noexcept;
 
     //==========================================================================
-private:
-    COLD void sample_rate_changed( double /* old_sr_ */ ) noexcept override;
+protected:
+    void sample_rate_or_block_changed() noexcept override;
 
     //==========================================================================
     // OUTPUT

@@ -41,7 +41,9 @@
 
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
-
+#ifdef IS_PLUGIN
+class Monique_Ui_MidiIO {};
+#endif
 
 //==============================================================================
 //==============================================================================
@@ -955,8 +957,8 @@ void Monique_Ui_Mainwindow::stop_clear_chorus() noexcept
 
 //==============================================================================
 Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_)
-    : Monique_Ui_Refreshable(ui_refresher_),
-      AudioProcessorEditor(ui_refresher_->audio_processor),
+    : AudioProcessorEditor(ui_refresher_->audio_processor),
+      Monique_Ui_Refreshable(ui_refresher_),
       original_w(1465), original_h(1235)
 {
     //[Constructor_pre] You can add your own custom stuff here..
@@ -2559,7 +2561,7 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     //[Constructor] You can add your own custom stuff here..
     */
 
-#if IS_STANDALONE
+#ifdef IS_STANDALONE
     addChildComponent (resizer = new ResizableCornerComponent (this, &resizeLimits));
 #else
     resizeLimits.setFixedAspectRatio(original_w/original_h);
@@ -3372,6 +3374,8 @@ void Monique_Ui_Mainwindow::resized()
 
 #include "mono_ui_includeHacks_END.h"
     resize_subeditors();
+    
+    resizer->setBounds( getWidth()-16, getHeight()-16, 16,16 );
     //[/UserResized]
 }
 
@@ -4135,7 +4139,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
 #endif
-        const bool success = synth_data->load_prev();
+        synth_data->load_prev();
         show_programs_and_select(true);
         //button_flasher = new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_left]
@@ -4147,7 +4151,7 @@ void Monique_Ui_Mainwindow::buttonClicked (Button* buttonThatWasClicked)
 #if ASK_FOR_SAVE
         synth_data->ask_and_save_if_changed();
 #endif
-        const bool success = synth_data->load_next();
+        synth_data->load_next();
         show_programs_and_select(true);
         //button_flasher = new ButtonFlasher(button_programm_load,success,1);
         //[/UserButtonCode_button_programm_right]
@@ -4495,7 +4499,6 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
             Component* const c = mi->getComponentUnderMouse();
             if( c )
             {
-                bool success = false;
                 if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( c ) )
                 {
                     Parameter*back_parameter = slider->get_back_parameter();
@@ -4531,7 +4534,7 @@ bool Monique_Ui_Mainwindow::keyPressed (const KeyPress& key)
                         {
                             if( Monique_Ui_DualSlider* slider = dynamic_cast< Monique_Ui_DualSlider* >( parent ) )
                             {
-                                if( TextButton* button = dynamic_cast< TextButton* >( c ) )
+                                if( dynamic_cast< TextButton* >( c ) )
                                 {
                                     IF_MIDI_LEARN__HANDLE__AND_UPDATE_COMPONENT
                                     (

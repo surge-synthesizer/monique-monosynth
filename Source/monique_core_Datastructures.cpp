@@ -1319,6 +1319,7 @@ void MorphGroup::parameter_modulation_value_changed( Parameter* param_ ) noexcep
 //==============================================================================
 COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAudioProcessor*const midi_device_manager_ ) noexcept
 {
+    /*
     MIDIControl* midi_control;
 
     OSCData& master_osc_data( *synth_data.osc_datas[MASTER_OSC] );
@@ -1335,7 +1336,6 @@ COLD void set_default_midi_assignments( MoniqueSynthData& synth_data, MoniqueAud
     ReverbData& reverb_data( *synth_data.reverb_data );
     ChorusData& chorus_data( *synth_data.chorus_data );
 
-    /*
     // 0 Bank Select // FIX!
     // 1
     synth_data.glide.midi_control->train( 1, nullptr, midi_device_manager_ );
@@ -1652,6 +1652,15 @@ master_data( master_data_ ),
                  generate_short_human_name("FX","delay")
              ),
              delay_smoother(smooth_manager,&delay),
+             delay_pan
+             (
+                 MIN_MAX( -1, 1 ),
+                 0,
+                 2000,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_pan"),
+                 generate_short_human_name("FX","delay_pan")
+             ),
+             delay_pan_smoother(smooth_manager,&delay_pan),
              delay_refexion
              (
                  MIN_MAX( 0, 19 ),
@@ -1683,15 +1692,6 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"record"),
                  generate_short_human_name("FX","record")
              ),
-             delay_pan
-             (
-                 MIN_MAX( -1, 1 ),
-                 0,
-                 2000,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"delay_pan"),
-                 generate_short_human_name("FX","delay_pan")
-             ),
-             delay_pan_smoother(smooth_manager,&delay_pan),
              effect_bypass
              (
                  MIN_MAX( 0, 1 ),

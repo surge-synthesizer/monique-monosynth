@@ -4678,8 +4678,8 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
 public:
     DelayRecordSlConfig( MoniqueSynthData*const synth_data_ )
         :
-        record_size( &synth_data_->delay_record_size ),
         record_release( &synth_data_->delay_record_release ),
+        record_size( &synth_data_->delay_record_size ),
         delay_record( &synth_data_->delay_record ),
 
         runtime_notifyer( synth_data_->runtime_notifyer )

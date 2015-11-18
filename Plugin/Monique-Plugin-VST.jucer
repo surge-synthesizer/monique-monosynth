@@ -118,7 +118,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4/" extraCompilerFlags="-std=c++11&#10;-Wall"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" vstFolder="../vstsdk2.4/" extraCompilerFlags="-std=c++11&#10;-Wall&#10;-Wno-delete-non-virtual-dtor"
                 extraDefs="DEBUG&#10;&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
                 extraLinkerFlags="" userNotes="" vst3Folder="~/SDKs/VST3 SDK">
       <CONFIGURATIONS>

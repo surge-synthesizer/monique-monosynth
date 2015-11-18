@@ -71,12 +71,12 @@ void Monique_Ui_ENVPopup::refresh() noexcept
 
 
         slider_attack->setValue( last_attack, dontSendNotification );
-        label_attack->setText(String( last_attack*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
+        label_attack->setText(String( auto_round( get_env_ms(last_attack) ) )+String("ms"), dontSendNotification);
 
         if( last_decay > 0 )
         {
             slider_decay->setValue( last_decay, dontSendNotification );
-            label_decay->setText(String( last_decay*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
+            label_decay->setText(String( auto_round( get_env_ms(last_decay) ) )+String("ms"), dontSendNotification);
         }
         else
         {
@@ -90,7 +90,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         slider_sustain_time->setValue( sustain_time, dontSendNotification );
         if( slider_sustain_time->getValue() < 1 )
         {
-            label_sustain_time->setText(String( sustain_time*MAX_ENV_TIMES + MIN_ENV_TIMES )+String("ms"), dontSendNotification);
+            label_sustain_time->setText(String( auto_round( get_env_ms(sustain_time) ) )+String("ms"), dontSendNotification);
         }
         else
         {
@@ -98,7 +98,7 @@ void Monique_Ui_ENVPopup::refresh() noexcept
         }
 
         slider_release->setValue( last_release, dontSendNotification );
-        label_release->setText(String( last_release*MAX_ENV_TIMES + MIN_ENV_TIMES)+String("ms"), dontSendNotification);
+        label_release->setText(String( auto_round( get_env_ms(sustain_time) ) )+String("ms"), dontSendNotification);
 
         slider_env_shape->setValue( last_shape, dontSendNotification );
 

@@ -98,7 +98,10 @@ public:
 #ifdef JUCE_DEBUG
 	if( buffer.getReadPointer( channelNumber )[size] != 0 )
 	{
-	    std::cout<< "buffer size overwriten " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+	  if( true )
+	  {
+	    std::cout<< "buffer size overwriten getReadPointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+	  }
 	}
 #endif
         return buffer.getReadPointer( channelNumber );
@@ -108,7 +111,7 @@ public:
 #ifdef JUCE_DEBUG
 	if( buffer.getReadPointer( channelNumber )[size] != 0 )
 	{
-	    std::cout<< "buffer size overwriten " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
+	    std::cout<< "buffer size overwriten getWritePointer " << buffer.getReadPointer( channelNumber )[size] << " size:" << size << std::endl;
 	}
 #endif
         return buffer.getWritePointer( channelNumber );

@@ -45,11 +45,11 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-    Monique_Ui_Refresher*const ui_refresher;
-    UiLookAndFeel* look_and_feel;
-
     const float original_w;
     const float original_h;
+    
+    Monique_Ui_Refresher*const ui_refresher;
+    UiLookAndFeel* look_and_feel;
 
     void set_left_to_right_states( float left2right_state_, float top2bottom_state_ );
 

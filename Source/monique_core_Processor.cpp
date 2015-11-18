@@ -266,9 +266,9 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #ifdef IS_PLUGIN
                          restore_time(-1),
 #endif
-                         amp_painter(nullptr),
-                         
-                         force_sample_rate_update(true)
+                         force_sample_rate_update(true),
+			   
+                         amp_painter(nullptr)
 {
     SHARED::getInstance()->num_instances++;
 #ifdef IS_STANDALONE
@@ -369,8 +369,9 @@ COLD MoniqueAudioProcessor::~MoniqueAudioProcessor() noexcept
     data_buffer = nullptr;
     info = nullptr;
     note_down_store = nullptr;
-
+#ifdef IS_STANDALONE
     set_audio_online();
+#endif
 }
 
 //==============================================================================
@@ -422,11 +423,12 @@ void MoniqueAudioProcessor::timerCallback()
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
+#ifdef IS_STANDALONE
     if( not block_lock.tryEnter() )
     {
         return;
     }
-
+#endif
     if( buffer_.getNumChannels() < 1 )
     {
         return;
@@ -710,9 +712,8 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 
 #ifdef IS_STANDALONE
     current_pos_info.timeInSamples += buffer_.getNumSamples();
-#endif
-
     block_lock.exit();
+#endif
 }
 
 //==============================================================================

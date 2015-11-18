@@ -19,7 +19,7 @@ ifeq ($(CONFIG),DEVEL)
   endif
 
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "IS_STANDALONE" -D "JUCE_CHECK_MEMORY_LEAKS=1" -D "JUCE_FORCE_DEBUG=1" -D "_GLIBCXX_DEBUG" -D "_GLIBXX_DEBUG_PEDANTIC" -D "JUCER_LINUX_MAKE_848BFB6F=1" -D "JUCE_APP_VERSION=0.9.7" -D "JUCE_APP_VERSION_HEX=0x907" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I ../../../JUCE-4.0.1/modules
-  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
+  CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0 -Wall -Wno-delete-non-virtual-dtor
   CXXFLAGS += $(CFLAGS) -std=c++11
   LDFLAGS += $(TARGET_ARCH) -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
 

@@ -116,7 +116,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
+    <LINUX_MAKE targetFolder="Builds/LINUX_D" extraCompilerFlags="-Wall&#10;-Wno-delete-non-virtual-dtor"
+                extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;&#10;_GLIBCXX_DEBUG&#10;_GLIBXX_DEBUG_PEDANTIC"
                 userNotes="&#10;&#10;&#10;&#10;-Wall&#10;-Wpedantic&#10;-Wextra&#10;-Weffc++&#10;&#10;-ggdb&#10;-fsanitize=thread&#10;-fsanitize=leak&#10;-fsanitize=undefined&#10;-fsanitize=shift&#10;-fsanitize=integer-divide-by-zero&#10;-fsanitize=null&#10;-fsanitize=return&#10;-fsanitize=signed-integer-overflow&#10;&#10;-fcompare-debug-second"
                 extraLinkerFlags="" externalLibraries="" bigIcon="mbIIgb" smallIcon="nxFR9Z">
       <CONFIGURATIONS>

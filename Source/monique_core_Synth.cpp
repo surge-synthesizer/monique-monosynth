@@ -1380,7 +1380,11 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true, Array< RuntimeInfo::ClockSync::SyncPosPair >* clock_infos_ = nullptr ) noexcept
+    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true
+#ifdef IS_STANDALONE
+                         , Array< RuntimeInfo::ClockSync::SyncPosPair >* clock_infos_ = nullptr
+#endif
+                       ) noexcept
     {
         // USER SPEED
         const float speed( lfo_data->speed );
@@ -1845,8 +1849,6 @@ public:
     }
     inline void reset() noexcept
     {
-        float last_phase = cycle_counter.get_last_phase();
-
         cycle_counter.reset();
         saw_generator.reset();
         square_generator.reset();
@@ -4421,8 +4423,8 @@ public:
                      osc_5( notifyer_, synth_data_->sine_lookup ),
 
                      buffer_size(1),
-                     data_buffer(buffer_size),
                      index(0),
+                     data_buffer(buffer_size),
 
                      chorus_data(synth_data_->chorus_data),
 
@@ -4727,8 +4729,8 @@ public:
                      last_in_record_size(0),
                      record_buffer_size(1),
                      real_record_buffer_size(record_buffer_size),
-                     record_buffer(real_record_buffer_size),
                      num_records_to_write(1),
+                     record_buffer(real_record_buffer_size),
                      active_left_record_buffer(record_buffer.getWritePointer(LEFT)),
                      active_right_record_buffer(record_buffer.getWritePointer(RIGHT)),
 
@@ -4876,9 +4878,9 @@ public:
     currentValue(0),
                  target(0),
                  step(0),
+                 lastValue(0),
                  countdown(0),
-                 stepsToTarget(0),
-                 lastValue(0)
+                 stepsToTarget(0)
     {}
 
     COLD ~LinearSmoothedValue() noexcept {}
@@ -6706,11 +6708,16 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
     const int blocksize = runtime_notifyer->get_block_size();
     float* buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time+blocksize);
-
+#ifdef IS_STANDALONE
     Array< RuntimeInfo::ClockSync::SyncPosPair > clock_sync_information = runtime_info->clock_sync_information.get_a_working_copy();
+#endif
     while(i*blocksize<count_time)
     {
-        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false, &clock_sync_information );
+        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false
+#ifdef IS_STANDALONE
+        , &clock_sync_information
+#endif
+                   );
         if( i > 10 )
         {
             for( int sid = 0 ; sid != blocksize ; ++sid )
