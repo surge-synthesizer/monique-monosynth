@@ -676,6 +676,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 #ifdef IS_STANDALONE
                     get_cc_input_messages( midi_messages_, num_samples );
                     get_note_input_messages( midi_messages_, num_samples );
+		    info->clock_sync_information.create_a_working_copy();
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
                     note_down_store->handle_midi_messages( midi_messages_ );

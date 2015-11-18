@@ -1380,7 +1380,7 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true ) noexcept
+    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true, Array< RuntimeInfo::ClockSync::SyncPosPair >* clock_infos_ = nullptr ) noexcept
     {
         // USER SPEED
         const float speed( lfo_data->speed );
@@ -1394,14 +1394,16 @@ public:
 
         // TO MIDI CLOCK SYNC
         int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
-	if( not use_process_sample )
-	{
-	   sync_sample_pos = start_pos_in_buffer_;
-	}
+        if( not use_process_sample )
+        {
+            sync_sample_pos = start_pos_in_buffer_;
+        }
 #ifdef IS_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
         {
+            Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations = clock_infos_ ? *clock_infos_ : runtime_info->clock_sync_information.get_a_working_copy();
+
             if( not runtime_info->clock_sync_information.has_clocks_inside() )
             {
                 same_samples_per_block_for_buffer = true;
@@ -1452,7 +1454,7 @@ public:
                             {
                                 if( not same_samples_per_block_for_buffer )
                                 {
-                                    calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid ), speed_multi, sync_sample_pos );
+                                    calculate_delta( runtime_info->clock_sync_information.get_samples_per_clock( start_pos_in_buffer_+sid, clock_informations ), speed_multi, sync_sample_pos );
                                 }
                                 angle += delta;
                                 angle = angle - floor(angle);
@@ -4497,6 +4499,17 @@ public:
             update_record_stuff( bpm_ );
         }
 
+        if( bpm_changed )
+        {
+            reflexion_write_index = 0;
+            current_reflexion = reflexion;
+            reflexion_buffer.clear();
+            record_buffer.clear();
+            record_switch_smoother.set_value(0);
+            record_switch_smoother.reset_glide_countdown();
+            record_switch_smoother.reset(sample_rate,glide_time_in_ms_);
+        }
+
         record_switch_smoother.reset_coefficients( sample_rate, glide_time_in_ms_ );
     }
 
@@ -6693,9 +6706,11 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
     const int blocksize = runtime_notifyer->get_block_size();
     float* buffer = new float[blocksize];
     curve.ensureStorageAllocated(count_time+blocksize);
+
+    Array< RuntimeInfo::ClockSync::SyncPosPair > clock_sync_information = runtime_info->clock_sync_information.get_a_working_copy();
     while(i*blocksize<count_time)
     {
-        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false );
+        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false, &clock_sync_information );
         if( i > 10 )
         {
             for( int sid = 0 ; sid != blocksize ; ++sid )

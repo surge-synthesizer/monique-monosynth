@@ -274,7 +274,7 @@ struct RuntimeInfo
         inline ~Step() noexcept {}
     };
 
-    class ClockSync
+    struct ClockSync
     {
         struct SyncPosPair
         {
@@ -289,7 +289,9 @@ struct RuntimeInfo
             ~SyncPosPair() noexcept {}
         };
 
+    private:
         Array< SyncPosPair > clock_informations;
+        Array< SyncPosPair > clock_informations_for_current_process_block;
 
         int last_samples_per_clock;
 
@@ -297,10 +299,9 @@ struct RuntimeInfo
         int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
         {
             int samples_per_clock = last_samples_per_clock;
-//hier haben wir ein paar probleme, wir müssen eigentlich vor jedem prozessblock wissen wieviele samples da eine clock hat
-            for( int i = 0 ; i < clock_informations.size() ; ++i )
+            for( int i = 0 ; i < clock_informations_for_current_process_block.size() ; ++i )
             {
-                const SyncPosPair& pair = clock_informations.getReference(i);
+                const SyncPosPair pair = clock_informations_for_current_process_block.getUnchecked(i);
                 if( pos_in_buffer_ >= pair.pos_in_buffer  )
                 {
                     samples_per_clock = pair.samples_per_clock;
@@ -311,6 +312,32 @@ struct RuntimeInfo
                 }
             }
             return samples_per_clock;
+        }
+        int get_samples_per_clock( int pos_in_buffer_, Array< RuntimeInfo::ClockSync::SyncPosPair > clock_informations_copy_ ) const noexcept
+        {
+            int samples_per_clock = last_samples_per_clock;
+            for( int i = 0 ; i < clock_informations_copy_.size() ; ++i )
+            {
+                const SyncPosPair pair = clock_informations_copy_.getUnchecked(i);
+                if( pos_in_buffer_ >= pair.pos_in_buffer  )
+                {
+                    samples_per_clock = pair.samples_per_clock;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return samples_per_clock;
+        }
+        void create_a_working_copy() noexcept
+        {
+            clock_informations_for_current_process_block.clearQuick();
+            clock_informations_for_current_process_block.addArray( clock_informations );
+        }
+        Array< RuntimeInfo::ClockSync::SyncPosPair > get_a_working_copy() const noexcept
+        {
+            return clock_informations;
         }
         bool has_clocks_inside() const noexcept
         {
@@ -327,7 +354,7 @@ struct RuntimeInfo
         void clear() noexcept
         {
             const int size = clock_informations.size();
-            if( size )
+            if( size > 0 )
             {
                 last_samples_per_clock = clock_informations.getReference(size-1).samples_per_clock;
             }
@@ -335,7 +362,7 @@ struct RuntimeInfo
         }
 
     inline ClockSync() noexcept :
-        last_samples_per_clock(0)  {}
+        last_samples_per_clock(500)  {}
         inline ~ClockSync() noexcept {}
     } clock_sync_information;
 
@@ -957,14 +984,14 @@ static inline float reverse_ms_to_slider_value( float time_in_ms_ ) noexcept
     float result = time_in_ms_ - MIN_ENV_TIMES;
     if( result < 0 )
     {
-      result = 0.000000001;
+        result = 0.000000001;
     }
     result = result / MAX_ENV_TIMES;
     result *= 53.5982f;
     result += 1;
     result = log( result );
     return result / 4;
-   // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1); 
+    // return log(((( ( time_in_ms_-MIN_ENV_TIMES ) /MAX_ENV_TIMES ) * 53.5982f) /4) +1);
 }
 //==============================================================================
 //==============================================================================

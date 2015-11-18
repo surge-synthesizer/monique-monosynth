@@ -7,9 +7,7 @@ NEW:
 - close midi learn popup if a popup closes which has be trained
 
 MI:
-- clock sync hat probleme
-- speedänderung stanadlone mit eigener clock sollte nicht syncen! -> meint den delay und den chorus
-- change bpm massively crash -> mono_Delay reader poristions 
+- change bpm massively crash -> mono_Delay reader poristions -> reset on change sample rate
 - delay: // TODO was passiert bei bpm änderungen?
 - init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
 - osc sync checken (+24)
@@ -58,6 +56,7 @@ MINOR PROBLEMS
 - shift disabled wave view
 - sounds like we have a short attack on binded notes.
 - env for bands are inverted by midi control
+- precalculate clock in buffer just one time, so wie do it for all lfo and mfos
 
 BUILD
 ****************************************************************************
@@ -124,10 +123,12 @@ CHANGES 0.9.8
 - fix midi learn support, add missing elements
 - add midi learn support for popups
 - sync the lfo and mfo perfect in the plugin and standalone (if master), only a compromise sync for the stanadlone in slave mode
+- adjusted default mouse speeds
 
 MANUAL:
 - resizer -> shortcut
 - context menu items
+- delay und recorder basieren auf internal clock!
 
 ****************************************************************************
 ****************************************************************************

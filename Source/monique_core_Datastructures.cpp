@@ -1935,15 +1935,15 @@ master_data( master_data_ ),
              sliders_sensitivity
              (
                  MIN_MAX( 100, 2000 ),
-                 800,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensitivity"),
+                 300,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensi_rotary"),
                  generate_short_human_name("CONF","rotary_sensitivity")
              ),
              sliders_linear_sensitivity
              (
                  MIN_MAX( 100, 2000 ),
-                 300,
-                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_linear_sensitivity"),
+                 800,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"slider_sensi_linear"),
                  generate_short_human_name("CONF","linear_sensitivity")
              ),
              is_rotary_sliders_velocity_mode
