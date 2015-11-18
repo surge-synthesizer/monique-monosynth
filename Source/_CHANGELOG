@@ -1,7 +1,6 @@
 NEW:
 
 MI:
-- open the bands to the left and right side
 
 DEMO:
 - envs anpassen in allen programmen
@@ -122,6 +121,7 @@ CHANGES 0.9.8
 - fix support up to bank z for the morph sources
 - fix set program value on any file actions
 - fix undo handling (first value wasnt set)
+- chnaged: the last band is not open (not limited to 20kHz)
 
 MANUAL:
 - resizer -> shortcut

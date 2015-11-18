@@ -4011,7 +4011,7 @@ public:
                         const float in = filter_in_samples[sid] * amp;
                         filter.update_with_fixed_cutoff( shape*0.8f, filter_frequency );
                         float output = filter.processHighResonance(in);
-                        band_out_buffer[sid] = output / 2;
+                        band_out_buffer[sid] = output;
                     }
                 }
 
