@@ -1666,6 +1666,12 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                              popup_midi_snap_slider,
                              150, 30,
                              false );
+	
+        menu->addSeparator();
+        menu->addSectionHeader("GLOBAL SETTINGS");
+        menu->addSectionHeader("(keep settings & colours over multiple instances up to date)");
+        menu->addItem (30, TRANS ("Save Global Settings"), true, false );
+        menu->addItem (31, TRANS ("Load Global Settings"), true, false );
     }
     /*
         bool isHorizontal() const noexcept;
@@ -1781,6 +1787,12 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
             {
                 mainwindow->show_info_popup( slider, nullptr, true );
             }
+            break;
+        case 30:
+	  synth_data->save_settings();
+            break;
+        case 31:
+	  synth_data->load_settings();
             break;
         default:
             break;

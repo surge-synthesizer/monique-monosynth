@@ -1935,9 +1935,15 @@ public:
     int num_instances ;
     ENVData* env_clipboard;
     LFOData* mfo_clipboard;
+    
     juce_DeclareSingleton( SHARED, true );
 
-    SHARED() : num_instances(0), env_clipboard(nullptr),mfo_clipboard(nullptr) {}
+    SHARED() : 
+    num_instances(0), 
+    env_clipboard(nullptr),
+    mfo_clipboard(nullptr) 
+    
+    {}
 };
 
 #endif

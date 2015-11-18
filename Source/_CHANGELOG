@@ -1,6 +1,5 @@
 NEW:
 
-
 MI:
 - static noise on plugin startup
 
@@ -121,6 +120,7 @@ CHANGES 0.9.8
 - adjusted default mouse speeds
 - fix: plugin was not resizeable since 0.9.7
 - fix: colour themes are not loaded in plugin
+- add: context menu entry to store and load global settings (useful if you use more than one instance at the same time and you have changed settings like slider speed and like to have it in another instance)
 
 MANUAL:
 - resizer -> shortcut

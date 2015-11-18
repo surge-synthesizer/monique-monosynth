@@ -3736,7 +3736,6 @@ void MoniqueSynthData::save_settings() const noexcept
             write_parameter_to_file( xml, global_parameters.getUnchecked(i) );
         }
 
-
 #ifdef IS_STANDALONE
         xml.setAttribute( "BANK", current_bank );
         xml.setAttribute( "PROG", current_program );

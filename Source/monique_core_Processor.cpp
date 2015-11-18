@@ -68,10 +68,10 @@ public:
             sum += value_;
         }
     }
-    
-    void sample_rate_or_block_changed() noexcept override 
+
+    void sample_rate_or_block_changed() noexcept override
     {
-      // TODO
+        // TODO
     }
 
 public:
@@ -267,7 +267,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
                          restore_time(-1),
 #endif
                          force_sample_rate_update(true),
-			   
+
                          amp_painter(nullptr)
 {
     SHARED::getInstance()->num_instances++;
@@ -293,11 +293,15 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 
     std::cout << "MONIQUE: init load last project and settings" << std::endl;
     {
+#ifdef IS_STANDALONE
         synth_data->load_default();
+#endif
         synth_data->load_settings();
         synth_data->read_midi();
 #ifdef IS_STANDALONE
         synth_data->load(true);
+#else
+        synth_data->load_default();
 #endif
     }
 #ifdef IS_PLUGIN
@@ -678,7 +682,7 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
 #ifdef IS_STANDALONE
                     get_cc_input_messages( midi_messages_, num_samples );
                     get_note_input_messages( midi_messages_, num_samples );
-		    info->clock_sync_information.create_a_working_copy();
+                    info->clock_sync_information.create_a_working_copy();
 #endif
                     MidiKeyboardState::processNextMidiBuffer( midi_messages_, 0, num_samples, true );
                     note_down_store->handle_midi_messages( midi_messages_ );
@@ -1090,4 +1094,5 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
         get_editor()->triggerAsyncUpdate();
     }
 }
+
 
