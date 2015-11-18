@@ -156,7 +156,6 @@ public:
     void open_env_or_lfo_popup_by_midi( Parameter* param_ ) noexcept;
     int last_env_popup_open;
     int last_lfo_popup_open;
-    ScopedPointer<AsyncUpdater> midi_in_runner;
     //[/UserMethods]
 
     void paint (Graphics& g);

@@ -1000,6 +1000,8 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     ui_refresher_->editor = this;
     look_and_feel->mainwindow = this;
     clear_record_timer = nullptr;
+    last_lfo_popup_open = synth_data->midi_lfo_popup;
+    last_env_popup_open = synth_data->midi_env_popup;
     //[/Constructor_pre]
 
     addAndMakeVisible (label_fx_delay = new Label (String::empty,
@@ -5185,124 +5187,103 @@ void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi( Parameter* param_ ) n
         return;
     }
 
-    struct Executer : AsyncUpdater
+    if( param_ == &synth_data->midi_lfo_popup )
     {
-        const float start_value;
-        Parameter*const param;
-        Monique_Ui_Mainwindow*const parent;
-        void handleAsyncUpdate() noexcept
+        switch( synth_data->midi_lfo_popup )
         {
-            if( param == &parent->synth_data->midi_lfo_popup )
-            {
-                switch( parent->synth_data->midi_lfo_popup )
-                {
-                case 9 :
-                case 5 :
-                case 0 :
-                    parent->open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
-                    break;
-                case 1 :
-                    parent->buttonClicked( parent->button_edit_mfo_1 );
-                    break;
-                case 2 :
-                    parent->buttonClicked( parent->button_edit_mfo_2 );
-                    break;
-                case 3 :
-                    parent->buttonClicked( parent->button_edit_mfo_3 );
-                    break;
-                case 4 :
-                    parent->buttonClicked( parent->button_edit_mfo_4 );
-                    break;
-                case 6 :
-                    parent->buttonClicked( parent->button_edit_lfo_1 );
-                    break;
-                case 7 :
-                    parent->buttonClicked( parent->button_edit_lfo_2 );
-                    break;
-                case 8 :
-                    parent->buttonClicked( parent->button_edit_lfo_3 );
-                    break;
-                }
-            }
-            if( param == &parent->synth_data->midi_env_popup )
-            {
-                switch( parent->synth_data->midi_env_popup )
-                {
-                case 10 :
-                case 18 :
-                case 0 :
-                    parent->open_env_popup( nullptr, nullptr, nullptr, nullptr, nullptr );
-                    break;
-                case 1 :
-                    parent->buttonClicked( parent->button_edit_input_env_1_1 );
-                    break;
-                case 2 :
-                    parent->buttonClicked( parent->button_edit_input_env_1_2 );
-                    break;
-                case 3 :
-                    parent->buttonClicked( parent->button_edit_input_env_1_3 );
-                    break;
-                case 4 :
-                    parent->buttonClicked( parent->button_edit_input_env_2_1 );
-                    break;
-                case 5 :
-                    parent->buttonClicked( parent->button_edit_input_env_2_2 );
-                    break;
-                case 6 :
-                    parent->buttonClicked( parent->button_edit_input_env_2_3 );
-                    break;
-                case 7 :
-                    parent->buttonClicked( parent->button_edit_input_env_3_1 );
-                    break;
-                case 8 :
-                    parent->buttonClicked( parent->button_edit_input_env_3_2 );
-                    break;
-                case 9 :
-                    parent->buttonClicked( parent->button_edit_input_env_3_3 );
-                    break;
-                case 11 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_1 );
-                    break;
-                case 12 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_2 );
-                    break;
-                case 13 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_3 );
-                    break;
-                case 14 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_4 );
-                    break;
-                case 15 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_5 );
-                    break;
-                case 16 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_6 );
-                    break;
-                case 17 :
-                    parent->switch_finalizer_tab(false);
-                    parent->buttonClicked( parent->button_edit_input_env_band_7 );
-                    break;
-                }
-            }
-
-            parent->midi_in_runner = nullptr;
+        case 9 :
+        case 5 :
+        case 0 :
+            open_mfo_popup( nullptr, nullptr, nullptr, COLOUR_THEMES::DUMMY_THEME );
+            break;
+        case 1 :
+            buttonClicked( button_edit_mfo_1 );
+            break;
+        case 2 :
+            buttonClicked( button_edit_mfo_2 );
+            break;
+        case 3 :
+            buttonClicked( button_edit_mfo_3 );
+            break;
+        case 4 :
+            buttonClicked( button_edit_mfo_4 );
+            break;
+        case 6 :
+            buttonClicked( button_edit_lfo_1 );
+            break;
+        case 7 :
+            buttonClicked( button_edit_lfo_2 );
+            break;
+        case 8 :
+            buttonClicked( button_edit_lfo_3 );
+            break;
         }
-
-        Executer( Parameter*const param_, Monique_Ui_Mainwindow*const parent_ ) : param(param_), parent( parent_ ), start_value(param_->get_value())
-        {
-            triggerAsyncUpdate();
-        }
-    };
-
-    if( not midi_in_runner )
+    }
+    if( param_ == &synth_data->midi_env_popup )
     {
-        midi_in_runner = new Executer( param_, this );
+        switch( synth_data->midi_env_popup )
+        {
+        case 10 :
+        case 18 :
+        case 0 :
+            open_env_popup( nullptr, nullptr, nullptr, nullptr, nullptr );
+            break;
+        case 1 :
+            buttonClicked( button_edit_input_env_1_1 );
+            break;
+        case 2 :
+            buttonClicked( button_edit_input_env_1_2 );
+            break;
+        case 3 :
+            buttonClicked( button_edit_input_env_1_3 );
+            break;
+        case 4 :
+            buttonClicked( button_edit_input_env_2_1 );
+            break;
+        case 5 :
+            buttonClicked( button_edit_input_env_2_2 );
+            break;
+        case 6 :
+            buttonClicked( button_edit_input_env_2_3 );
+            break;
+        case 7 :
+            buttonClicked( button_edit_input_env_3_1 );
+            break;
+        case 8 :
+            buttonClicked( button_edit_input_env_3_2 );
+            break;
+        case 9 :
+            buttonClicked( button_edit_input_env_3_3 );
+            break;
+        case 11 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_1 );
+            break;
+        case 12 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_2 );
+            break;
+        case 13 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_3 );
+            break;
+        case 14 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_4 );
+            break;
+        case 15 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_5 );
+            break;
+        case 16 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_6 );
+            break;
+        case 17 :
+            switch_finalizer_tab(false);
+            buttonClicked( button_edit_input_env_band_7 );
+            break;
+        }
     }
 }
 //[/MiscUserCode]
