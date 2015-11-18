@@ -815,7 +815,12 @@ public:
             e.source.enableUnboundedMouseMovement (true, false);
         }
     }
-
+    void triggerClick() noexcept
+    {
+        Component::BailOutChecker checker (&owner);
+        Slider* slider = &owner; // (must use an intermediate variable here to avoid a VS2005 compiler bug)
+        listeners.callChecked (checker, &SliderListener::sliderClicked, slider );
+    }
     void mouseDown (const MouseEvent& e)
     {
         incDecDragged = false;
@@ -1647,6 +1652,10 @@ void Slider::focusOfChildComponentChanged (FocusChangeType)     {
     repaint();
 }
 
+void Slider::triggerClick() noexcept
+{
+    pimpl->triggerClick();
+}
 void Slider::mouseDown (const MouseEvent& e)    {
     pimpl->mouseDown (e);
 }
@@ -1686,3 +1695,4 @@ void Slider::mouseWheelMove (const MouseEvent& e, const MouseWheelDetails& wheel
     if (! (isEnabled() && pimpl->mouseWheelMove (e, wheel)))
         Component::mouseWheelMove (e, wheel);
 }
+

@@ -863,6 +863,9 @@ public:
        #endif
     };
 
+    // HACK 
+    void triggerClick() noexcept;
+    
     //==============================================================================
     /** @internal */
     void paint (Graphics&) override;
