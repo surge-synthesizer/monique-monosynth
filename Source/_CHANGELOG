@@ -7,14 +7,18 @@ DEMO:
 - resave project with new factory program
 
 DO:
-- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - share global setting over plugin instances
 - bypass
 - change: on mac hide osx audio devices
 - arp step shines through the popup
-- update state on program on save program
-- undo geht erst nach dem zweiten drehen
 - popup can not show in to small windows
+
+
+
+
+
+
+- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
 - adjustable tooltip popup time in contex menu
 - add: morph sensitivit to the context menu
 - update sync slider button tooltip
@@ -120,6 +124,8 @@ CHANGES 0.9.8
 - add: support for midi notes to control buttons
 - fix: close mfo popup on esc
 - fix support up to bank z for the morph sources
+- fix set program value on any file actions
+- fix undo handling (first value wasnt set)
 
 MANUAL:
 - resizer -> shortcut

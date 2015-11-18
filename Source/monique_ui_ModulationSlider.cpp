@@ -273,6 +273,11 @@ void Monique_Ui_DualSlider::update_return_values() noexcept
     {
         slider_value->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_value );
         slider_value->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_value );
+
+        if( int(slider_value->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 ) ) == -999 )
+        {
+            slider_value->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info().factory_default_value );
+        }
     }
     if( slider_modulation )
     {
@@ -280,11 +285,21 @@ void Monique_Ui_DualSlider::update_return_values() noexcept
         {
             slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, front_parameter->get_info().factory_default_modulation_amount );
             slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, front_parameter->get_info().program_on_load_modulation_amount );
+
+            if( int(slider_modulation->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 )) == -999 )
+            {
+                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, front_parameter->get_info().factory_default_modulation_amount );
+            }
         }
         else if( back_parameter )
         {
             slider_modulation->getProperties().set( RETURN_VALUE_FACTORY, back_parameter->get_info().factory_default_value );
             slider_modulation->getProperties().set( RETURN_VALUE_PROGRAM, back_parameter->get_info().program_on_load_value );
+
+            if( int(slider_modulation->getProperties().getWithDefault( RETURN_VALUE_UNDO, -999 )) == -999 )
+            {
+                slider_modulation->getProperties().set( RETURN_VALUE_UNDO, back_parameter->get_info().factory_default_modulation_amount );
+            }
         }
     }
 }
@@ -1018,7 +1033,7 @@ void Monique_Ui_DualSlider::labelTextChanged (Label* labelThatHasChanged)
         //[UserLabelCode_label_top] -- add your label text handling code here..
         if( slider_value->isEnabled() )
         {
-	    front_parameter->set_value( _config->get_label_edit_value( label_top->getText().getFloatValue() ) );
+            front_parameter->set_value( _config->get_label_edit_value( label_top->getText().getFloatValue() ) );
             //slider_value->setValue( _config->get_label_edit_value( label_top->getText().getFloatValue()/front_parameter->get_info().num_steps ), sendNotification );
         }
         /*
@@ -1166,20 +1181,20 @@ void Monique_Ui_DualSlider::mouseExit (const MouseEvent& event)
 
 void Monique_Ui_DualSlider::mouseDown (const MouseEvent& event)
 {
-  /*
-    if( _config->use_click_through_hack() )
-    {
-        if( this == ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) )
-        {
-            toBack();
-            if( Button* button = dynamic_cast< Button* >( ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) ) )
-            {
-                button->triggerClick();
-            }
-            toFront(false);
-        }
-    }
- */
+    /*
+      if( _config->use_click_through_hack() )
+      {
+          if( this == ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) )
+          {
+              toBack();
+              if( Button* button = dynamic_cast< Button* >( ui_refresher->editor->getComponentAt( event.x + getX(), event.y + getY() ) ) )
+              {
+                  button->triggerClick();
+              }
+              toFront(false);
+          }
+      }
+    */
 }
 //[/MiscUserCode]
 

@@ -1588,7 +1588,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
         menu->addItem (6, TRANS ("User"), true, is_global_user_return );
         menu->addItem (7, TRANS ("Factory Default"), true, is_global_factory_return );
         menu->addItem (8, TRANS ("State On Program"), true, is_global_program_return );
-        menu->addItem (9, TRANS ("Undo (toggle last and current)"), true, is_global_undo_return );
+        menu->addItem (9, TRANS ("Swap (toggle last double click value and current value)"), true, is_global_undo_return );
 
         menu->addSeparator();
         menu->addSeparator();

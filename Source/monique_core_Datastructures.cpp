@@ -3420,7 +3420,6 @@ void MoniqueSynthData::create_internal_backup( const String& programm_name_, con
 
     alternative_program_name = last_program;
 
-
     if( ui_look_and_feel )
     {
         if( ui_look_and_feel->mainwindow )
@@ -3630,7 +3629,8 @@ void MoniqueSynthData::load_default() noexcept
     {
         for( int i = 0 ; i != saveable_parameters.size() ; ++i )
         {
-            read_parameter_factory_default_from_file( *factory_default, saveable_parameters.getUnchecked(i) );
+	    Parameter*param =  saveable_parameters.getUnchecked(i);
+            read_parameter_factory_default_from_file( *factory_default, param );
         }
     }
     alternative_program_name = FACTORY_NAME;
@@ -3668,6 +3668,13 @@ void MoniqueSynthData::save_to( XmlElement* xml_ ) noexcept
                 right_morph_sources[morpher_id]->save_to(xml_->createNewChildElement(String("RightMorphData_")+String(morpher_id)));
             }
 
+            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+            {
+                Parameter*param = saveable_parameters.getUnchecked(i);
+                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_value = param->get_value();
+                const_cast<ParameterInfo*>( &param ->get_info() )->program_on_load_modulation_amount = param->get_modulation_amount();
+            }
+            
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
         }
     }
@@ -3856,6 +3863,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 
