@@ -542,6 +542,13 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
 
+    slider_attack->setPopupMenuEnabled( true );
+    slider_decay->setPopupMenuEnabled( true );
+    slider_sustain->setPopupMenuEnabled( true );
+    slider_sustain_time->setPopupMenuEnabled( true );
+    slider_release->setPopupMenuEnabled( true );
+    slider_env_shape->setPopupMenuEnabled( true );
+
     //setOpaque(true);
     //[/UserPreSize]
 

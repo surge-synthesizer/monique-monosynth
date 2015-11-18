@@ -382,11 +382,10 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_speed->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
     slider_offset->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
     slider_wave->getProperties().set( VAR_INDEX_SLIDER_LABEL_STYLE, SLIDER_LABEL_STYLES::SHOW_MIDDLE_TEXT_BOX );
-    /*
     slider_speed->setPopupMenuEnabled( true );
     slider_offset->setPopupMenuEnabled( true );
     slider_wave->setPopupMenuEnabled( true );
-    */
+
 
     close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     keep->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
