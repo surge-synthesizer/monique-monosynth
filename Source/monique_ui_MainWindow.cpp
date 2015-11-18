@@ -103,6 +103,17 @@ ButtonFlasher( Monique_Ui_Mainwindow*parent_, Button*button_, bool success_, int
 
 void Monique_Ui_Mainwindow::refresh() noexcept
 {
+    if( last_env_popup_open != synth_data->midi_env_popup.get_value() )
+    {
+        last_env_popup_open = synth_data->midi_env_popup;
+        open_env_or_lfo_popup_by_midi( &synth_data->midi_env_popup );
+    }
+    else if( last_lfo_popup_open != synth_data->midi_lfo_popup.get_value() )
+    {
+        last_lfo_popup_open = synth_data->midi_lfo_popup;
+        open_env_or_lfo_popup_by_midi( &synth_data->midi_lfo_popup );
+    }
+
     if( not combo_programm->hasKeyboardFocus (false) and combo_programm->isTextEditable() )
     {
         combo_programm->setEditableText(false);
@@ -2611,17 +2622,14 @@ Monique_Ui_Mainwindow::Monique_Ui_Mainwindow (Monique_Ui_Refresher*ui_refresher_
     // resizer->setTooltip( "Global shortcut: CTRL + PLUS or CTRL + MINUS" );
     //look_and_feel->colours.edit();
     delay4->get_top_button()->main_window = this;
-
-    synth_data->midi_lfo_popup.register_listener(this);
-    synth_data->midi_env_popup.register_listener(this);
     //[/Constructor]
 }
 
 Monique_Ui_Mainwindow::~Monique_Ui_Mainwindow()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
-    synth_data->midi_lfo_popup.remove_listener(this);
-    synth_data->midi_env_popup.register_listener(this);
+    //synth_data->midi_lfo_popup.remove_listener(this);
+    //synth_data->midi_env_popup.register_listener(this);
 
     PopupMenu::dismissAllActiveMenus();
 
@@ -5170,7 +5178,7 @@ void Monique_Ui_Mainwindow::mouseEnter (const MouseEvent& event)
     }
 }
 
-void Monique_Ui_Mainwindow::parameter_value_changed( Parameter* param_ ) noexcept
+void Monique_Ui_Mainwindow::open_env_or_lfo_popup_by_midi( Parameter* param_ ) noexcept
 {
     if( IS_MIDI_LEARN )
     {
@@ -5283,14 +5291,7 @@ void Monique_Ui_Mainwindow::parameter_value_changed( Parameter* param_ ) noexcep
                 }
             }
 
-            if( param->get_value() == start_value )
-            {
-                parent->midi_in_runner = nullptr;
-            }
-            else
-            {
-                triggerAsyncUpdate();
-            }
+            parent->midi_in_runner = nullptr;
         }
 
         Executer( Parameter*const param_, Monique_Ui_Mainwindow*const parent_ ) : param(param_), parent( parent_ ), start_value(param_->get_value())

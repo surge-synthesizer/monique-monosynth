@@ -247,7 +247,7 @@ void Monique_Ui_ENVPopup::parameter_value_changed( Parameter* param_ ) noexcept
                 parent->env_data->shape = param->get_value();
             }
 
-            delete this;
+            parent->midi_in_runner = nullptr;
         }
 
         Executer( Parameter*const param_, Monique_Ui_ENVPopup*const parent_ ) : param(param_), parent( parent_ )
@@ -256,7 +256,10 @@ void Monique_Ui_ENVPopup::parameter_value_changed( Parameter* param_ ) noexcept
         }
     };
 
-    new Executer( param_, this );
+    if( not midi_in_runner )
+    {
+        midi_in_runner = new Executer( param_, this );
+    }
 }
 void Monique_Ui_ENVPopup::sliderClicked (Slider*s_)
 {
@@ -278,12 +281,6 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
       left(left_)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-    ui_refresher_->synth_data->midi_env_attack.set_value_without_notification(env_data_->attack);
-    ui_refresher_->synth_data->midi_env_decay.set_value_without_notification(env_data_->decay);
-    ui_refresher_->synth_data->midi_env_sustain.set_value_without_notification(env_data_->sustain);
-    ui_refresher_->synth_data->midi_env_sustain_time.set_value_without_notification(env_data_->sustain_time);
-    ui_refresher_->synth_data->midi_env_release.set_value_without_notification(env_data_->release);
-    ui_refresher_->synth_data->midi_env_shape.set_value_without_notification(env_data_->release);
 
     last_attack = 0;
     last_sustain= 0;
@@ -546,10 +543,16 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     //setOpaque(true);
     //[/UserPreSize]
 
-    setSize (710, 190);
+    //setSize (710, 190);
 
 
     //[Constructor] You can add your own custom stuff here..
+    ui_refresher_->synth_data->midi_env_attack.set_value_without_notification(env_data_->attack);
+    ui_refresher_->synth_data->midi_env_decay.set_value_without_notification(env_data_->decay);
+    ui_refresher_->synth_data->midi_env_sustain.set_value_without_notification(env_data_->sustain);
+    ui_refresher_->synth_data->midi_env_sustain_time.set_value_without_notification(env_data_->sustain_time);
+    ui_refresher_->synth_data->midi_env_release.set_value_without_notification(env_data_->release);
+    ui_refresher_->synth_data->midi_env_shape.set_value_without_notification(env_data_->release);
     ui_refresher_->synth_data->midi_env_attack.register_listener(this);
     ui_refresher_->synth_data->midi_env_decay.register_listener(this);
     ui_refresher_->synth_data->midi_env_sustain.register_listener(this);
@@ -568,7 +571,7 @@ Monique_Ui_ENVPopup::~Monique_Ui_ENVPopup()
     ui_refresher->synth_data->midi_env_sustain_time.remove_listener(this);
     ui_refresher->synth_data->midi_env_release.remove_listener(this);
     ui_refresher->synth_data->midi_env_shape.remove_listener(this);
-    
+
     parent->show_info_popup(nullptr,nullptr);
 
     for( int i = 0 ; i != observed_comps.size() ; ++i )

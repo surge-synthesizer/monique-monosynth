@@ -63,7 +63,7 @@ enum COLOUR_THEMES;
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
                                public Monique_Ui_Refreshable,
                                public AsyncUpdater,
-                               public ParameterListener,
+                               //public ParameterListener,
                                public ButtonListener,
                                public ComboBoxListener
 {
@@ -153,7 +153,9 @@ public:
     ScopedPointer<Timer> clear_record_timer;
     ScopedPointer<Timer> button_flasher;
 
-    void parameter_value_changed( Parameter* param_ ) noexcept override;
+    void open_env_or_lfo_popup_by_midi( Parameter* param_ ) noexcept;
+    int last_env_popup_open;
+    int last_lfo_popup_open;
     ScopedPointer<AsyncUpdater> midi_in_runner;
     //[/UserMethods]
 

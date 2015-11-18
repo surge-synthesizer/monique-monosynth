@@ -99,6 +99,7 @@ private:
 
     void parameter_value_changed( Parameter* param_ ) noexcept override;
     void sliderClicked (Slider*s_) override;
+    ScopedPointer<AsyncUpdater> midi_in_runner;
     //[/UserMethods]
 
     void paint (Graphics& g);

@@ -523,19 +523,34 @@ public:
     // SETTER
     inline void set_value( float value_ ) noexcept override
     {
-        Parameter::set_value( bool(value_) );
+        value_ = bool(value_);
+        if( value != value_ )
+        {
+            value = value_;
+            notify_value_listeners();
+        }
     }
     inline void set_value_without_notification( float value_ ) noexcept override
     {
-        Parameter::set_value_without_notification( bool(value_) );
+        value_ = bool(value_);
+        if( value != value_ )
+        {
+            value = value_;
+            notify_always_value_listeners();
+        }
     }
     inline void set_value_by_automation( float value_ ) noexcept override
     {
-        Parameter::set_value_by_automation( bool(value_) );
+        value_ = bool(value_);
+        if( value != value_ )
+        {
+            value = value_;
+            notify_value_listeners_by_automation();
+        }
     }
     inline void set_value_on_load( float value_ ) noexcept override
     {
-        Parameter::set_value_on_load( bool(value_) );
+        value = int(value_);
     }
 
     inline bool operator= ( const bool value_ ) noexcept
@@ -552,7 +567,7 @@ private:
     // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
     inline operator float() const noexcept = delete;
     inline operator int() const noexcept = delete;
-    
+
     // ASSIGN FLOAT TO BOOL?
     inline bool operator= ( const Parameter& other_ ) noexcept = delete;
 
@@ -601,36 +616,88 @@ public:
     // SETTER
     inline void set_value( float value_ ) noexcept override
     {
-        Parameter::set_value( int(value_) );
+        value_ = int(value_);
+        if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+            notify_value_listeners();
+        }
     }
     inline void set_value_without_notification( float value_ ) noexcept override
     {
-        Parameter::set_value_without_notification( int(value_) );
+        value_ = int(value_);
+        if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+            notify_always_value_listeners();
+        }
     }
     inline void set_value_by_automation( float value_ ) noexcept override
     {
-        Parameter::set_value_by_automation( int(value_) );
+        value_ = int(value_);
+        if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+            notify_value_listeners_by_automation();
+        }
     }
     inline void set_value_on_load( float value_ ) noexcept override
     {
-        Parameter::set_value_on_load( int(value_) );
+        value_ = int(value_);
+        //if( value != value_ )
+        {
+            if( value_ > info->max_value )
+            {
+                value_ = info->max_value;
+            }
+            else if( value_ < info->min_value )
+            {
+                value_ = info->min_value;
+            }
+            value = value_;
+        }
     }
-    
+
     inline int operator= ( int value_ ) noexcept
     {
-        Parameter::set_value( value_ );
+        set_value( value_ );
         return int(value);
     }
     inline int operator= ( const IntParameter& other_ ) noexcept
     {
-        return Parameter::operator=(other_.value);
+        set_value( other_.value );
+        return int(value);
     }
 
 private:
     // IF YOU GET AN COMPILE ERROR, YOU HAVE USED THE WRONG PARAM
     inline operator float() const noexcept = delete;
     //inline operator bool() const noexcept = delete;
-    
+
     // ASSIGN FLOAT TO INT?
     inline bool operator= ( const Parameter& other_ ) noexcept = delete;
 

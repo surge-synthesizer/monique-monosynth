@@ -193,7 +193,7 @@ void Monique_Ui_MFOPopup::parameter_value_changed( Parameter* param_ ) noexcept
                 parent->mfo_data->phase_shift = param->get_value();
             }
 
-            delete this;
+            parent->midi_in_runner = nullptr;
         }
 
         Executer( Parameter*const param_, Monique_Ui_MFOPopup*const parent_ ) : param(param_), parent( parent_ )
@@ -202,7 +202,10 @@ void Monique_Ui_MFOPopup::parameter_value_changed( Parameter* param_ ) noexcept
         }
     };
 
-    new Executer( param_, this );
+    if( not midi_in_runner )
+    {
+        midi_in_runner = new Executer( param_, this );
+    }
 }
 void Monique_Ui_MFOPopup::sliderClicked (Slider*s_)
 {
@@ -391,7 +394,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     //[/UserPreSize]
 
-    setSize (540, 190);
+   // setSize (540, 190);
 
 
     //[Constructor] You can add your own custom stuff here..
