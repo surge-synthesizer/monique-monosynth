@@ -1317,8 +1317,10 @@ static inline int get_low_pass_band_frequency( int band_id_, double sample_rate_
         return 1280;
     case 5 :
         return 2660;
+    //default :
+    //    return sample_rate_/2;
     default :
-        return sample_rate_/2;
+        return 2660;
     }
 }
 static inline int get_high_pass_band_frequency( int band_id_ ) noexcept

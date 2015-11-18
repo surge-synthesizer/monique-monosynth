@@ -1,6 +1,7 @@
 NEW:
 
 MI:
+- open the bands to the left and right side
 
 DEMO:
 - envs anpassen in allen programmen
@@ -40,7 +41,6 @@ SON:
 MINOR PROBLEMS
 - swich to fx if a value changes there? but what happens on massive controlls?
 - from midi you can not set tune to the center
-- midi learn geht erst beim zeiten versuch über shortcut + m
 - shift disabled wave view
 - sounds like we have a short attack on binded notes.
 - env for bands are inverted by midi control

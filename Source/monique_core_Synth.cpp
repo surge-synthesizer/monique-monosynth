@@ -3979,14 +3979,39 @@ public:
                 inline void exec() noexcept override
                 {
                     // PROCESS
+                    if( band_id < SUM_EQ_BANDS - 1 )
+		    {
+		      exec_default();
+		    }
+		    else
+		    {
+		      exec_last();
+		    }
+                }
+                inline void exec_default() noexcept 
+                {
+                    // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
                         const float shape = smoothed_shape_buffer[sid];
                         const float amp = env_buffer[sid];
                         const float in = filter_in_samples[sid] * amp;
                         filter.update_with_fixed_cutoff( shape*0.8f, filter_frequency );
-                        float output = high_pass_filter.processSingleSampleRaw ( filter.processLow(in) );
+                        float output = high_pass_filter.processSingleSampleRaw ( filter.processLowResonance(in) );
                         band_out_buffer[sid] = output*4;
+                    }
+                }
+                inline void exec_last() noexcept 
+                {
+                    // PROCESS
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        const float shape = smoothed_shape_buffer[sid];
+                        const float amp = env_buffer[sid];
+                        const float in = filter_in_samples[sid] * amp;
+                        filter.update_with_fixed_cutoff( shape*0.8f, filter_frequency );
+                        float output = filter.processHighResonance(in);
+                        band_out_buffer[sid] = output / 2;
                     }
                 }
 
@@ -6753,3 +6778,4 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
