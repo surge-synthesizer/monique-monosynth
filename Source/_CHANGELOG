@@ -1,18 +1,20 @@
 NEW:
+
+
+MI:
+- share global setting over plugin instances
+- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
+- static noise on plugin startup
+
 - midi popup closes if you go to midi settings and keep the midi learn mode
 - from midi you can not set tune to the center
 - midi mapping must working in popups 
 - swich to fx if a value changes there? but what happens on massive controlls?
 - close midi learn popup if a popup closes which has be trained
 
-MI:
-- share global setting over plugin instances
-- lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
-- static noise on plugin startup
-- Farben werden nicht alle angezeit (im Ordner Themes sind die drin, aber nicht im Auswahlmenu) Der letzte den ich bearbeitet hatte wird aber als Default angezeigt
-
 DEMO:
 - envs anpassen in allen programmen
+- resave project with new factory program
 
 DO:
 - load morph program only supports 4 banks
@@ -118,6 +120,7 @@ CHANGES 0.9.8
 - sync the lfo and mfo perfect in the plugin and standalone (if master), only a compromise sync for the stanadlone in slave mode
 - adjusted default mouse speeds
 - fix: plugin was not resizeable since 0.9.7
+- fix: colour themes are not loaded in plugin
 
 MANUAL:
 - resizer -> shortcut

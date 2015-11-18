@@ -993,6 +993,8 @@ Monique_Ui_GlobalSettings::Monique_Ui_GlobalSettings (Monique_Ui_Refresher*ui_re
     combo_block_size->setEnabled(false);
     //label_9->setVisible(false);
     label_9->setEnabled(false);
+    
+    update_colour_presets();
 #else
     triggerAsyncUpdate();
 #endif
