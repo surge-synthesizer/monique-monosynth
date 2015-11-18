@@ -5179,6 +5179,7 @@ void Monique_Ui_Mainwindow::parameter_value_changed( Parameter* param_ ) noexcep
 
     struct Executer : AsyncUpdater
     {
+        const float start_value;
         Parameter*const param;
         Monique_Ui_Mainwindow*const parent;
         void handleAsyncUpdate() noexcept
@@ -5282,16 +5283,26 @@ void Monique_Ui_Mainwindow::parameter_value_changed( Parameter* param_ ) noexcep
                 }
             }
 
-            delete this;
+            if( param->get_value() == start_value )
+            {
+                parent->midi_in_runner = nullptr;
+            }
+            else
+            {
+                triggerAsyncUpdate();
+            }
         }
 
-        Executer( Parameter*const param_, Monique_Ui_Mainwindow*const parent_ ) : param(param_), parent( parent_ )
+        Executer( Parameter*const param_, Monique_Ui_Mainwindow*const parent_ ) : param(param_), parent( parent_ ), start_value(param_->get_value())
         {
             triggerAsyncUpdate();
         }
     };
 
-    new Executer( param_, this );
+    if( not midi_in_runner )
+    {
+        midi_in_runner = new Executer( param_, this );
+    }
 }
 //[/MiscUserCode]
 

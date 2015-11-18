@@ -154,6 +154,7 @@ public:
     ScopedPointer<Timer> button_flasher;
 
     void parameter_value_changed( Parameter* param_ ) noexcept override;
+    ScopedPointer<AsyncUpdater> midi_in_runner;
     //[/UserMethods]
 
     void paint (Graphics& g);

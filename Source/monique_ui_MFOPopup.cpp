@@ -223,7 +223,7 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
 {
     //[Constructor_pre] You can add your own custom stuff here..
     ui_refresher_->synth_data->midi_lfo_wave.set_value_without_notification(mfo_data_->wave);
-    ui_refresher_->synth_data->midi_lfo_speed.set_value_without_notification(mfo_data_->speed);
+    ui_refresher_->synth_data->midi_lfo_speed.set_value_without_notification(mfo_data_->speed.get_value());
     ui_refresher_->synth_data->midi_lfo_offset.set_value_without_notification(mfo_data_->phase_shift);
     ui_refresher_->synth_data->midi_lfo_wave.register_listener(this);
     ui_refresher_->synth_data->midi_lfo_speed.register_listener(this);

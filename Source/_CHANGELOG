@@ -1,12 +1,9 @@
 NEW:
 - midi learn crackls in popup
-do not morph lfos!!!!
- - swing in 1/1024 and so on
 
-MI:
+
 
 DEMO:
-- envs anpassen in allen programmen
 - resave project with new factory program
 
 DO:
@@ -188,6 +185,8 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- swing in 1/1024 and so on
+- multi channel support cc
 - send master clock
 - midi: the standard midi assignments are not complete -> ask ag alesis for testdevices
 - midi allow notes to control buttons

@@ -1354,7 +1354,7 @@ class LFO : public RuntimeListener
     float angle;
     int last_samples_per_clock;
 
-    float last_speed;
+    int last_speed;
     float last_out;
 
     float glide_samples;
@@ -1388,7 +1388,7 @@ public:
                        ) noexcept
     {
         // USER SPEED
-        const float speed( lfo_data->speed );
+        const int speed( lfo_data->speed );
         const float speed_multi( get_lfo_speed_multi( speed ) );
         if( speed != last_speed )
         {
