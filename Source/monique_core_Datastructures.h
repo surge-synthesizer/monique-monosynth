@@ -297,6 +297,7 @@ struct RuntimeInfo
         int get_samples_per_clock( int pos_in_buffer_ ) const noexcept
         {
             int samples_per_clock = last_samples_per_clock;
+//hier haben wir ein paar probleme, wir müssen eigentlich vor jedem prozessblock wissen wieviele samples da eine clock hat
             for( int i = 0 ; i < clock_informations.size() ; ++i )
             {
                 const SyncPosPair& pair = clock_informations.getReference(i);

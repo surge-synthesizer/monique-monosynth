@@ -1,43 +1,44 @@
 NEW:
-- env for bands are inverted by midi control
-- buffersize overwritten if you change velocity glide time
-- midi learn geht erst beim zeiten versuch über shortcut + m
-- envs anpassen in allen programmen
-- change bpm massively crash -> mono_Delay reader poristions 
-- arp step shines through the popup
-
-DI:
-- der lfo sync ist noch nicht perfekt. dauert sehr lang bis kline frequencen gesingt werden
-- speedänderung stanadlone mit eigener clock sollte nicht syncen!
-- mfos gehen out of sync wenn man den speed ändert, also zueinander. müssen also gesynct werden über absolut step
-- osc sync checken (+24)
-- add back sub-steps lfo
+- midi popup closes if you go to midi settings and keep the midi learn mode
+- from midi you can not set tune to the center
+- use the current slider sensi as factory default
+- midi mapping must working in popups 
+- swich to fx if a value changes there? but what happens on massive controlls?
+- close midi learn popup if a popup closes which has be trained
 
 MI:
+- clock sync hat probleme
+- speedänderung stanadlone mit eigener clock sollte nicht syncen! -> meint den delay und den chorus
+- change bpm massively crash -> mono_Delay reader poristions 
+- delay: // TODO was passiert bei bpm änderungen?
 - init program change delay reflexion > grrrrrrrrrrrrrrrrrrrr 
+- osc sync checken (+24)
 - buffersize overwrite on shutdown if you select the factory init programm
-- load morph program only supports 4 banks
+- buffersize overwritten if you change velocity glide time
 
 - resize does not work in plugin
 - share global setting over plugin instances
 - lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
-- bypass
 - static noise on plugin startup
-- change: on mac hide osx audio devices
 - Farben werden nicht alle angezeit (im Ordner Themes sind die drin, aber nicht im Auswahlmenu) Der letzte den ich bearbeitet hatte wird aber als Default angezeigt
 
+DEMO:
+- envs anpassen in allen programmen
+
 DO:
-- delay: // TODO was passiert bei bpm änderungen?
-- zeiteingaben exp (envs)
-- add: morph sensitivit to the context menu
+- load morph program only supports 4 banks
+- bypass
+- change: on mac hide osx audio devices
+- arp step shines through the popup
 - update state on program on save program
 - undo geht erst nach dem zweiten drehen
 - popup can not show in to small windows
 - adjustable tooltip popup time in contex menu
+- add: morph sensitivit to the context menu
 - update sync slider button tooltip
 - tool tip looper effect
 - tool tips sub editors
-- run in debug: ASSERT_MESSAGE_MANAGER_IS_LOCKED (assert juce_comp.cpp 1913
+- add back sub-steps lfo
 
 FR:
 4.0.1
@@ -53,8 +54,10 @@ SON:
 - aax
 
 MINOR PROBLEMS
+- midi learn geht erst beim zeiten versuch über shortcut + m
 - shift disabled wave view
 - sounds like we have a short attack on binded notes.
+- env for bands are inverted by midi control
 
 BUILD
 ****************************************************************************

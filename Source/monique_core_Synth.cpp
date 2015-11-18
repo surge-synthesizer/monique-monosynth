@@ -1380,7 +1380,7 @@ class LFO : public RuntimeListener
     }
 
 public:
-    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_ ) noexcept
+    inline void process( float*dest_, int step_number_, int absoloute_step_number_, int start_pos_in_buffer_, int num_samples_, bool use_process_sample = true ) noexcept
     {
         // USER SPEED
         const float speed( lfo_data->speed );
@@ -1394,6 +1394,10 @@ public:
 
         // TO MIDI CLOCK SYNC
         int64 sync_sample_pos = (runtime_info->samples_since_start+start_pos_in_buffer_);
+	if( not use_process_sample )
+	{
+	   sync_sample_pos = start_pos_in_buffer_;
+	}
 #ifdef IS_STANDALONE
         bool same_samples_per_block_for_buffer = true;
         if( runtime_info->is_extern_synced )
@@ -6691,7 +6695,7 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
     curve.ensureStorageAllocated(count_time+blocksize);
     while(i*blocksize<count_time)
     {
-        mfo.process( buffer, 1, 1, 1 + i*blocksize, blocksize );
+        mfo.process( buffer, -1, 1, 1 + i*blocksize, blocksize, false );
         if( i > 10 )
         {
             for( int sid = 0 ; sid != blocksize ; ++sid )
