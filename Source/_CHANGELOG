@@ -1,12 +1,22 @@
 NEW:
-- midi learn crackls in popup
-
+ - remote for midi from params
 
 
 DEMO:
 - resave project with new factory program
 
 DO:
+ - if daw is looping you can not sync the lfo absolutely
+ 
+ - train button in plugin geht nicht
+
+ - modwheel bug
+ - factory default should be zero for some sliders
+
+- we need set from current für die linke und rechte seite auch
+- time für midi pickup, hält sich fest für x sekunden
+ - der morper morpht gleiche oscillator tunes!
+
 - share global setting over plugin instances
 - change: on mac hide osx audio devices
 - arp step shines through the popup

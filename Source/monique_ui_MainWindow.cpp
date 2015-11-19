@@ -5144,7 +5144,7 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
 #ifdef IS_STANDALONE
     if( not editor_midiio )
     {
-        close_all_subeditors();
+        //close_all_subeditors();
 
         addChildComponent( editor_midiio = new Monique_Ui_MidiIO( ui_refresher, audio_processor ) );
         resize_subeditors();
@@ -5152,7 +5152,7 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
     }
 #else
     midi_control_handler->toggle_midi_learn();
-    show_info_popup(nullptr,nullptr);
+    //show_info_popup(nullptr,nullptr);
 #endif
 }
 void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
