@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.7"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.8"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -170,7 +170,7 @@
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
                        targetName="Monique" customXcodeFlags="VALID_ARCHS=&quot;i386 x86_64&quot;"
-                       headerPath="" fastMath="0" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
+                       headerPath="" fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_basics" path="../JUCE-4.0.1/modules"/>
@@ -192,7 +192,7 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="PROFILE" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitIntel" isDebug="0" optimisation="6" targetName="Monique"
-                       fastMath="0" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
+                       fastMath="1" linkTimeOptimisation="1" binaryPath="Builds/MAC_PROFILE"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
@@ -209,14 +209,14 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2015 targetFolder="Builds/WINDOWS" extraLinkerFlags="" toolset="v140_xp"
-            userNotes="" extraCompilerFlags="" extraDefs="&quot;JUCE_CHECK_MEMORY_LEAKS=1&quot;&#10;&quot;JUCE_FORCE_DEBUG=1&quot;">
+            userNotes="" extraCompilerFlags="" extraDefs="">
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="0" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
+                       useRuntimeLibDLL="0" fastMath="1" headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
-                       isDebug="1" optimisation="1" targetName="Monique_64" binaryPath="Builds/WINDOWS"
-                       useRuntimeLibDLL="0" fastMath="0" alwaysGenerateDebugSymbols="1"
+                       isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
+                       useRuntimeLibDLL="0" fastMath="1" alwaysGenerateDebugSymbols="0"
                        headerPath="D:\PROJECTS-DEVELOPMENT-OWN\PROJECT-Monique\ASIOSDK2.3\common"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

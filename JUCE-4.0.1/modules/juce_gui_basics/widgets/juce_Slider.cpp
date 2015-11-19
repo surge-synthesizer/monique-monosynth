@@ -1671,7 +1671,7 @@ void Slider::modifierKeysChanged (const ModifierKeys& modifiers)
     {
         Component* last = parent;
         parent = parent->getParentComponent();
-        if( not parent )
+        if( ! parent )
         {
             last->modifierKeysChanged(modifiers);
         }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="MhT8v8" name="Monique" projectType="audioplug" version="0.9.7"
+<JUCERPROJECT id="MhT8v8" name="Monique" projectType="audioplug" version="0.9.8"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               buildVST="1" buildAU="0" pluginName="Monique" pluginDesc="Monophonic Lead and Bass Synthesizer"
               pluginManufacturer="Monoplugs" pluginManufacturerCode="MoPl"
-              pluginCode="mPlg" pluginChannelConfigs="{0,2},{0,2}" pluginIsSynth="1"
+              pluginCode="moni" pluginChannelConfigs="{0,2},{0,2}" pluginIsSynth="1"
               pluginWantsMidiIn="1" pluginProducesMidiOut="1" pluginSilenceInIsSilenceOut="0"
               pluginEditorRequiresKeys="1" pluginAUExportPrefix="moniAU" pluginRTASCategory=""
               aaxIdentifier="com.monoplugs.monique-synthesizer" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
@@ -173,7 +173,7 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="UNIVERSAL" osxSDK="10.6 SDK" osxCompatibility="10.6 SDK"
                        osxArchitecture="64BitUniversal" isDebug="0" optimisation="6"
-                       targetName="Monique" defines="" customXcodeFlags="" fastMath="0"
+                       targetName="Monique" defines="" customXcodeFlags="" fastMath="1"
                        linkTimeOptimisation="1" binaryPath="Builds/MAC"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -197,11 +197,11 @@
       <CONFIGURATIONS>
         <CONFIGURATION name="x32" winWarningLevel="2" generateManifest="1" winArchitecture="32-bit"
                        isDebug="0" optimisation="3" targetName="Monique_32" headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       binaryPath="Builds/WINDOWS" useRuntimeLibDLL="0" fastMath="0"/>
+                       binaryPath="Builds/WINDOWS" useRuntimeLibDLL="0" fastMath="1"/>
         <CONFIGURATION name="x64" winWarningLevel="2" generateManifest="1" winArchitecture="x64"
                        isDebug="0" optimisation="3" targetName="Monique_64" binaryPath="Builds/WINDOWS"
                        headerPath="../vstsdk2.4/&#10;../../../vstsdk2.4/&#10;C:\Users\tommy\Desktop\BSTEP\vstsdk2.4\public.sdk\source\vst2.x\"
-                       useRuntimeLibDLL="0" fastMath="0"/>
+                       useRuntimeLibDLL="0" fastMath="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE-4.0.1/modules"/>
