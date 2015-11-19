@@ -8,7 +8,6 @@ DEMO:
 DO:
  - if daw is looping you can not sync the lfo absolutely
  
- - train button in plugin geht nicht
 
  - modwheel bug
  - factory default should be zero for some sliders

@@ -5151,8 +5151,14 @@ void Monique_Ui_Mainwindow::open_midi_editor_if_closed() noexcept
         editor_midiio->setVisible(true);
     }
 #else
-    midi_control_handler->toggle_midi_learn();
-    //show_info_popup(nullptr,nullptr);
+    if( popup )
+    {
+        show_info_popup(nullptr,nullptr);
+    }
+    else
+    {
+        midi_control_handler->toggle_midi_learn();
+    }
 #endif
 }
 void Monique_Ui_Mainwindow::open_setup_editor_if_closed() noexcept
