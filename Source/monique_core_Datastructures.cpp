@@ -2901,12 +2901,12 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         if( left_or_right_ == LEFT )
         {
             morph_group_to_update = left_morph_sources[0]->morph_group_1;
-            left_morph_source_names.getReference(0) = "UPDATED FROM CURRENT";
+            left_morph_source_names.getReference(0) = "USER";
         }
         else
         {
             morph_group_to_update = right_morph_sources[0]->morph_group_1;
-            right_morph_source_names.getReference(0) = "UPDATED FROM CURRENT";
+            right_morph_source_names.getReference(0) = "USER";
         }
 
         morph_group_source = morph_group_1;
@@ -2917,12 +2917,12 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         if( left_or_right_ == LEFT )
         {
             morph_group_to_update = left_morph_sources[1]->morph_group_2;
-            left_morph_source_names.getReference(1) = "UPDATED FROM CURRENT";
+            left_morph_source_names.getReference(1) = "USER";
         }
         else
         {
             morph_group_to_update = right_morph_sources[1]->morph_group_2;
-            right_morph_source_names.getReference(1) = "UPDATED FROM CURRENT";
+            right_morph_source_names.getReference(1) = "USER";
         }
 
         morph_group_source = morph_group_2;
@@ -2933,12 +2933,12 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         if( left_or_right_ == LEFT )
         {
             morph_group_to_update = left_morph_sources[2]->morph_group_3;
-            left_morph_source_names.getReference(2) = "UPDATED FROM CURRENT";
+            left_morph_source_names.getReference(2) = "USER";
         }
         else
         {
             morph_group_to_update = right_morph_sources[2]->morph_group_3;
-            right_morph_source_names.getReference(2) = "UPDATED FROM CURRENT";
+            right_morph_source_names.getReference(2) = "USER";
         }
 
         morph_group_source = morph_group_3;
@@ -2949,12 +2949,12 @@ void MoniqueSynthData::set_morph_source_data_from_current( int morpher_id_, bool
         if( left_or_right_ == LEFT )
         {
             morph_group_to_update = left_morph_sources[3]->morph_group_4;
-            left_morph_source_names.getReference(3) = "UPDATED FROM CURRENT";
+            left_morph_source_names.getReference(3) = "USER";
         }
         else
         {
             morph_group_to_update = right_morph_sources[3]->morph_group_4;
-            right_morph_source_names.getReference(3) = "UPDATED FROM CURRENT";
+            right_morph_source_names.getReference(3) = "USER";
         }
 
         morph_group_source = morph_group_4;

@@ -372,12 +372,15 @@ Monique_Ui_MFOPopup::Monique_Ui_MFOPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     auto_close->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     copy->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
     past->getProperties().set( VAR_INDEX_OVERRIDE_BUTTON_COLOUR, true );
+    
+    /*
     //[/UserPreSize]
 
     // setSize (540, 190);
 
 
     //[Constructor] You can add your own custom stuff here..
+    */
     ui_refresher_->synth_data->midi_lfo_wave.register_listener(this);
     ui_refresher_->synth_data->midi_lfo_speed.register_listener(this);
     ui_refresher_->synth_data->midi_lfo_offset.register_listener(this);

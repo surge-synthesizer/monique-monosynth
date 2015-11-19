@@ -1,18 +1,13 @@
 NEW:
- - remote for midi from params
-
 
 DEMO:
 - resave project with new factory program
 
 DO:
  - if daw is looping you can not sync the lfo absolutely
- 
-
- - modwheel bug
+ - remote for midi from params
  - factory default should be zero for some sliders
 
-- we need set from current für die linke und rechte seite auch
 - time für midi pickup, hält sich fest für x sekunden
  - der morper morpht gleiche oscillator tunes!
 
@@ -26,6 +21,7 @@ DO:
 - tool tips sub editors
 - update sync slider button tooltip
 - add back sub-steps lfo
+- modwheel bug (diabled now)
 
 - bypass
 - lfos und mfo müssen nicht immer berechnet werden, da sie sich auf die absoluten samples beziehen
@@ -133,6 +129,7 @@ CHANGES 0.9.8
 - chnaged: the last band is not open (not limited to 20kHz)
 - changed band frequencies to E frequencies
 - remove lfo from morphing, can be done with toggle
+- add set from current button for the left and right morph side
 
 MANUAL:
 - resizer -> shortcut

@@ -521,12 +521,14 @@ Monique_Ui_ENVPopup::Monique_Ui_ENVPopup (Monique_Ui_Refresher*ui_refresher_, Mo
     slider_env_shape->setPopupMenuEnabled( true );
 
     //setOpaque(true);
+    /*
     //[/UserPreSize]
 
     //setSize (710, 190);
 
 
     //[Constructor] You can add your own custom stuff here..
+    */
     ui_refresher_->synth_data->midi_env_attack.set_value_without_notification(env_data_->attack);
     ui_refresher_->synth_data->midi_env_decay.set_value_without_notification(env_data_->decay);
     ui_refresher_->synth_data->midi_env_sustain.set_value_without_notification(env_data_->sustain);

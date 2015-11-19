@@ -66,34 +66,34 @@ void Monique_Ui_MorphConfig::refresh_combos() noexcept
         box->clear(dontSendNotification);
         for( int bank_id = 0 ; bank_id != 4 ; ++bank_id )
         {
-            String bank 
-            = bank_id == 0 ? "A" 
-	    : bank_id == 1 ? "B" 
-	    : bank_id == 2 ? "C" 
-	    : bank_id == 3 ? "D" 
-	    : bank_id == 4 ? "E" 
-	    : bank_id == 5 ? "F" 
-	    : bank_id == 6 ? "G" 
-	    : bank_id == 7 ? "H" 
-	    : bank_id == 8 ? "I" 
-	    : bank_id == 9 ? "J" 
-	    : bank_id == 10 ? "K" 
-	    : bank_id == 11 ? "L" 
-	    : bank_id == 12 ? "M" 
-	    : bank_id == 13 ? "N" 
-	    : bank_id == 14 ? "O" 
-	    : bank_id == 15 ? "P" 
-	    : bank_id == 16 ? "Q" 
-	    : bank_id == 17 ? "R" 
-	    : bank_id == 18 ? "S" 
-	    : bank_id == 19 ? "T" 
-	    : bank_id == 20 ? "U" 
-	    : bank_id == 21 ? "V" 
-	    : bank_id == 22 ? "W" 
-	    : bank_id == 23 ? "X" 
-	    : bank_id == 24 ? "Y" 
+            String bank
+            = bank_id == 0 ? "A"
+	    : bank_id == 1 ? "B"
+	    : bank_id == 2 ? "C"
+	    : bank_id == 3 ? "D"
+	    : bank_id == 4 ? "E"
+	    : bank_id == 5 ? "F"
+	    : bank_id == 6 ? "G"
+	    : bank_id == 7 ? "H"
+	    : bank_id == 8 ? "I"
+	    : bank_id == 9 ? "J"
+	    : bank_id == 10 ? "K"
+	    : bank_id == 11 ? "L"
+	    : bank_id == 12 ? "M"
+	    : bank_id == 13 ? "N"
+	    : bank_id == 14 ? "O"
+	    : bank_id == 15 ? "P"
+	    : bank_id == 16 ? "Q"
+	    : bank_id == 17 ? "R"
+	    : bank_id == 18 ? "S"
+	    : bank_id == 19 ? "T"
+	    : bank_id == 20 ? "U"
+	    : bank_id == 21 ? "V"
+	    : bank_id == 22 ? "W"
+	    : bank_id == 23 ? "X"
+	    : bank_id == 24 ? "Y"
 	    : "Z";
-	    
+
             if( i > 3 )
             {
                 box->addSectionHeading(String("Load preset to LEFT from bank: ")+bank);
@@ -479,6 +479,86 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
 
     addAndMakeVisible (drag_pad = new Monique_Ui_DragPad (ui_refresher));
 
+    addAndMakeVisible (button_set_r_1 = new TextButton (String::empty));
+    button_set_r_1->setTooltip (TRANS("Set the current state as the RIGHT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_r_1->setButtonText (TRANS("SET"));
+    button_set_r_1->addListener (this);
+    button_set_r_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_r_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_r_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_l_1 = new TextButton (String::empty));
+    button_set_l_1->setTooltip (TRANS("Set the current state as the LEFT side of the OSC morph group.\n"
+    "\n"
+    "Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_l_1->setButtonText (TRANS("SET"));
+    button_set_l_1->addListener (this);
+    button_set_l_1->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_l_1->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_l_1->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_r_2 = new TextButton (String::empty));
+    button_set_r_2->setTooltip (TRANS("Set the current state as the RIGHT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_r_2->setButtonText (TRANS("SET"));
+    button_set_r_2->addListener (this);
+    button_set_r_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_r_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_r_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_l_2 = new TextButton (String::empty));
+    button_set_l_2->setTooltip (TRANS("Set the current state as the LEFT side of the FILTER morph group.\n"
+    "\n"
+    "Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_l_2->setButtonText (TRANS("SET"));
+    button_set_l_2->addListener (this);
+    button_set_l_2->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_l_2->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_l_2->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_r_3 = new TextButton (String::empty));
+    button_set_r_3->setTooltip (TRANS("Set the current state as the RIGHT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_r_3->setButtonText (TRANS("SET"));
+    button_set_r_3->addListener (this);
+    button_set_r_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_r_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_r_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_l_3 = new TextButton (String::empty));
+    button_set_l_3->setTooltip (TRANS("Set the current state as the LEFT side of the FX morph group.\n"
+    "\n"
+    "Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_l_3->setButtonText (TRANS("SET"));
+    button_set_l_3->addListener (this);
+    button_set_l_3->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_l_3->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_l_3->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_r_4 = new TextButton (String::empty));
+    button_set_r_4->setTooltip (TRANS("Set the current state as the RIGHT side of the ARP morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_r_4->setButtonText (TRANS("SET"));
+    button_set_r_4->addListener (this);
+    button_set_r_4->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_r_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_r_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
+    addAndMakeVisible (button_set_l_4 = new TextButton (String::empty));
+    button_set_l_4->setTooltip (TRANS("Set the current state as the LEFT side of the ARP morph group.\n"
+    "\n"
+    "Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "));
+    button_set_l_4->setButtonText (TRANS("SET"));
+    button_set_l_4->addListener (this);
+    button_set_l_4->setColour (TextButton::buttonColourId, Colours::black);
+    button_set_l_4->setColour (TextButton::textColourOnId, Colour (0xffff3b00));
+    button_set_l_4->setColour (TextButton::textColourOffId, Colour (0xffffff11));
+
 
     //[UserPreSize]
     morph_combos.add( combo_morph_group_1 );
@@ -527,6 +607,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_4->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
     label_2->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
     label_30->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    button_set_l_1->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
+    button_set_r_1->getProperties().set( VAR_INDEX_COLOUR_THEME, OSC_THEME );
 
     label_ui_headline_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
     combo_morph_group_6->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
@@ -536,6 +618,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_5->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
     label_6->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
     label_31->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    button_set_l_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
+    button_set_r_2->getProperties().set( VAR_INDEX_COLOUR_THEME, FILTER_THEME );
 
     label_ui_headline_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
     combo_morph_group_8->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
@@ -545,6 +629,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_11->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
     label_12->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
     label_32->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    button_set_l_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
+    button_set_r_4->getProperties().set( VAR_INDEX_COLOUR_THEME, ARP_THEME );
 
     label_ui_headline_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
     combo_morph_group_7->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
@@ -554,6 +640,8 @@ Monique_Ui_MorphConfig::Monique_Ui_MorphConfig (Monique_Ui_Refresher*const ui_re
     label_8->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
     label_9->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
     label_33->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    button_set_l_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
+    button_set_r_3->getProperties().set( VAR_INDEX_COLOUR_THEME, FX_THEME );
     /*
     //[/UserPreSize]
 
@@ -608,6 +696,14 @@ Monique_Ui_MorphConfig::~Monique_Ui_MorphConfig()
     slider_morph_motor_time = nullptr;
     label_ui_headline_6 = nullptr;
     drag_pad = nullptr;
+    button_set_r_1 = nullptr;
+    button_set_l_1 = nullptr;
+    button_set_r_2 = nullptr;
+    button_set_l_2 = nullptr;
+    button_set_r_3 = nullptr;
+    button_set_l_3 = nullptr;
+    button_set_r_4 = nullptr;
+    button_set_l_4 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -685,14 +781,14 @@ void Monique_Ui_MorphConfig::resized()
     label_33->setBounds (1070, 130, 80, 30);
     label_30->setBounds (1070, 30, 80, 30);
     label_34->setBounds (1050 + 309 / 2 - (80 / 2), 0 + 180 / 2 + -13 - (30 / 2), 80, 30);
-    combo_morph_group_1->setBounds (70, 90, 180, 30);
-    combo_morph_group_2->setBounds (330, 90, 180, 30);
-    combo_morph_group_3->setBounds (850, 90, 180, 30);
-    combo_morph_group_4->setBounds (590, 90, 180, 30);
-    combo_morph_group_5->setBounds (70, 50, 180, 30);
-    combo_morph_group_6->setBounds (330, 50, 180, 30);
-    combo_morph_group_7->setBounds (850, 50, 180, 30);
-    combo_morph_group_8->setBounds (590, 50, 180, 30);
+    combo_morph_group_1->setBounds (70, 90, 130, 30);
+    combo_morph_group_2->setBounds (330, 90, 130, 30);
+    combo_morph_group_3->setBounds (850, 90, 130, 30);
+    combo_morph_group_4->setBounds (590, 90, 130, 30);
+    combo_morph_group_5->setBounds (70, 50, 130, 30);
+    combo_morph_group_6->setBounds (330, 50, 130, 30);
+    combo_morph_group_7->setBounds (850, 50, 130, 30);
+    combo_morph_group_8->setBounds (590, 50, 130, 30);
     label_19->setBounds (20, 50, 50, 30);
     button_set_1->setBounds (70, 130, 180, 30);
     label_ui_headline_1->setBounds (10, 0, 260, 30);
@@ -718,6 +814,14 @@ void Monique_Ui_MorphConfig::resized()
     slider_morph_motor_time->setBounds (1370, 60, 70, 60);
     label_ui_headline_6->setBounds (1050 + 311, 0, 89, 30);
     drag_pad->setBounds (1050, 0, 309, 180);
+    button_set_r_1->setBounds (200, 90, 50, 30);
+    button_set_l_1->setBounds (200, 50, 50, 30);
+    button_set_r_2->setBounds (460, 90, 50, 30);
+    button_set_l_2->setBounds (460, 50, 50, 30);
+    button_set_r_3->setBounds (980, 90, 50, 30);
+    button_set_l_3->setBounds (980, 50, 50, 30);
+    button_set_r_4->setBounds (720, 90, 50, 30);
+    button_set_l_4->setBounds (720, 50, 50, 30);
     //[UserResized] Add your own custom resize handling here..
 #include "mono_ui_includeHacks_END.h"
     //[/UserResized]
@@ -823,6 +927,54 @@ void Monique_Ui_MorphConfig::buttonClicked (Button* buttonThatWasClicked)
         synth_data->set_morph_source_data_from_current( 3, RIGHT, true );
         //[/UserButtonCode_button_set_4]
     }
+    else if (buttonThatWasClicked == button_set_r_1)
+    {
+        //[UserButtonCode_button_set_r_1] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 0, RIGHT, true );
+        //[/UserButtonCode_button_set_r_1]
+    }
+    else if (buttonThatWasClicked == button_set_l_1)
+    {
+        //[UserButtonCode_button_set_l_1] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 0, LEFT, true );
+        //[/UserButtonCode_button_set_l_1]
+    }
+    else if (buttonThatWasClicked == button_set_r_2)
+    {
+        //[UserButtonCode_button_set_r_2] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 1, RIGHT, true );
+        //[/UserButtonCode_button_set_r_2]
+    }
+    else if (buttonThatWasClicked == button_set_l_2)
+    {
+        //[UserButtonCode_button_set_l_2] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 1, LEFT, true );
+        //[/UserButtonCode_button_set_l_2]
+    }
+    else if (buttonThatWasClicked == button_set_r_3)
+    {
+        //[UserButtonCode_button_set_r_3] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 2, RIGHT, true );
+        //[/UserButtonCode_button_set_r_3]
+    }
+    else if (buttonThatWasClicked == button_set_l_3)
+    {
+        //[UserButtonCode_button_set_l_3] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 2, LEFT, true );
+        //[/UserButtonCode_button_set_l_3]
+    }
+    else if (buttonThatWasClicked == button_set_r_4)
+    {
+        //[UserButtonCode_button_set_r_4] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 3, RIGHT, true );
+        //[/UserButtonCode_button_set_r_4]
+    }
+    else if (buttonThatWasClicked == button_set_l_4)
+    {
+        //[UserButtonCode_button_set_l_4] -- add your button handler code here..
+        synth_data->set_morph_source_data_from_current( 3, LEFT, true );
+        //[/UserButtonCode_button_set_l_4]
+    }
 
     //[UserbuttonClicked_Post]
     refresh_combos();
@@ -909,35 +1061,35 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="30"
          bold="0" italic="0" justification="36"/>
   <COMBOBOX name="" id="6b20aebfc73aac49" memberName="combo_morph_group_1"
-            virtualName="" explicitFocusOrder="0" pos="70 90 180 30" tooltip="Load a program to the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="70 90 130 30" tooltip="Load a program to the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="feb2297e12b64ba2" memberName="combo_morph_group_2"
-            virtualName="" explicitFocusOrder="0" pos="330 90 180 30" tooltip="Load a program to the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="330 90 130 30" tooltip="Load a program to the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="308668407147eb6a" memberName="combo_morph_group_3"
-            virtualName="" explicitFocusOrder="0" pos="850 90 180 30" tooltip="Load a program to the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="850 90 130 30" tooltip="Load a program to the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="6f35e1d484c7ec07" memberName="combo_morph_group_4"
-            virtualName="" explicitFocusOrder="0" pos="590 90 180 30" tooltip="Load a program to the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="590 90 130 30" tooltip="Load a program to the RIGHT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="bc6993231c0c71b4" memberName="combo_morph_group_5"
-            virtualName="" explicitFocusOrder="0" pos="70 50 180 30" tooltip="Load a program to the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="70 50 130 30" tooltip="Load a program to the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="bd00414d21da9940" memberName="combo_morph_group_6"
-            virtualName="" explicitFocusOrder="0" pos="330 50 180 30" tooltip="Load a program to the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="330 50 130 30" tooltip="Load a program to the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="dc620a04b2f3c235" memberName="combo_morph_group_7"
-            virtualName="" explicitFocusOrder="0" pos="850 50 180 30" tooltip="Load a program to the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="850 50 130 30" tooltip="Load a program to the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <COMBOBOX name="" id="97e42362463feae7" memberName="combo_morph_group_8"
-            virtualName="" explicitFocusOrder="0" pos="590 50 180 30" tooltip="Load a program to the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+            virtualName="" explicitFocusOrder="0" pos="590 50 130 30" tooltip="Load a program to the LEFT side of the ARPEGGIATOR morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
             editable="0" layout="33" items="" textWhenNonSelected="PRESET"
             textWhenNoItems="-"/>
   <LABEL name="" id="2d5427059e8d821" memberName="label_19" virtualName=""
@@ -1062,6 +1214,38 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="" id="c1f9aa7ebccd3843" memberName="drag_pad" virtualName="Monique_Ui_DragPad"
                     explicitFocusOrder="0" pos="1050 0 309 180" class="Component"
                     params="ui_refresher"/>
+  <TEXTBUTTON name="" id="39052bdb22d9bad6" memberName="button_set_r_1" virtualName=""
+              explicitFocusOrder="0" pos="200 90 50 30" tooltip="Set the current state as the RIGHT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="cebc52e075e6b92c" memberName="button_set_l_1" virtualName=""
+              explicitFocusOrder="0" pos="200 50 50 30" tooltip="Set the current state as the LEFT side of the OSC morph group.&#10;&#10;Use the OSC morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="86d4a1c061cce496" memberName="button_set_r_2" virtualName=""
+              explicitFocusOrder="0" pos="460 90 50 30" tooltip="Set the current state as the RIGHT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="245ba45edf84fd01" memberName="button_set_l_2" virtualName=""
+              explicitFocusOrder="0" pos="460 50 50 30" tooltip="Set the current state as the LEFT side of the FILTER morph group.&#10;&#10;Use the FLT morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="453268e472f190a8" memberName="button_set_r_3" virtualName=""
+              explicitFocusOrder="0" pos="980 90 50 30" tooltip="Set the current state as the RIGHT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="b2ec547147233fac" memberName="button_set_l_3" virtualName=""
+              explicitFocusOrder="0" pos="980 50 50 30" tooltip="Set the current state as the LEFT side of the FX morph group.&#10;&#10;Use the FX morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="5c4ac52f664df246" memberName="button_set_r_4" virtualName=""
+              explicitFocusOrder="0" pos="720 90 50 30" tooltip="Set the current state as the RIGHT side of the ARP morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <TEXTBUTTON name="" id="f5a4adbd3b946c2d" memberName="button_set_l_4" virtualName=""
+              explicitFocusOrder="0" pos="720 50 50 30" tooltip="Set the current state as the LEFT side of the ARP morph group.&#10;&#10;Use the ARP morph slider on the main user interface to morph between the LEFT and RIGHT side. "
+              bgColOff="ff000000" textCol="ffff3b00" textColOn="ffffff11" buttonText="SET"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

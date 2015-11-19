@@ -111,6 +111,14 @@ private:
     ScopedPointer<Slider> slider_morph_motor_time;
     ScopedPointer<Label> label_ui_headline_6;
     ScopedPointer<Monique_Ui_DragPad> drag_pad;
+    ScopedPointer<TextButton> button_set_r_1;
+    ScopedPointer<TextButton> button_set_l_1;
+    ScopedPointer<TextButton> button_set_r_2;
+    ScopedPointer<TextButton> button_set_l_2;
+    ScopedPointer<TextButton> button_set_r_3;
+    ScopedPointer<TextButton> button_set_l_3;
+    ScopedPointer<TextButton> button_set_r_4;
+    ScopedPointer<TextButton> button_set_l_4;
 
 
     //==============================================================================
