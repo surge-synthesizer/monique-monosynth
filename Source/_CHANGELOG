@@ -6,7 +6,6 @@ NEW:
 - try a bit with programs, seems not to sound all the time 100 identically
 
 FR:
-- help popup does not pop if the ui is to small
 - adjustable tooltip popup time in context menu
 - add: morph sensitivity to the context menu
 - add: bypass
@@ -39,6 +38,7 @@ SO:
 - fix: missing automation params
 - improved: clean up automation params
 - add: some more automation params to ctrl popups
+- fix: show tooltips also if they are to small for the ui (it only must match to the desktop size)
 
 MINOR PROBLEMS
 - linkt to static c++ (older linux)
