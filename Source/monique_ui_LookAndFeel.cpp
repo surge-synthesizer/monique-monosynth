@@ -1694,6 +1694,7 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
 {
     if (slider != nullptr)
     {
+                const Point<int> force_mouse_pos_point = Point<int>(slider->getScreenX() + slider->getWidth()*0.5, slider->getScreenY() + slider->getHeight()*0.5);
         switch (result)
         {
         case 1:
@@ -1790,6 +1791,7 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
         case 20:
             if( mainwindow )
             {
+                Desktop::getInstance().setMousePosition( force_mouse_pos_point );
                 mainwindow->show_info_popup( slider, nullptr, true );
             }
             break;
@@ -1800,10 +1802,9 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
                 {
                     force_tip = new TooltipWindow( nullptr, 5 );
                 }
-                Point<int> point = Point<int>(slider->getScreenX() + slider->getWidth()*0.5, slider->getScreenY() + slider->getHeight()*0.5);
-                Desktop::getInstance().setMousePosition( Point<int>(slider->getScreenX() + slider->getWidth()*0.5, slider->getScreenY() + slider->getHeight()*0.5) );
+                Desktop::getInstance().setMousePosition( force_mouse_pos_point );
 		force_tip->force_for_component( slider );
-                force_tip->displayTip( Point<int>(slider->getScreenX(), slider->getScreenY()), slider->getTooltip() );
+                force_tip->displayTip( force_mouse_pos_point, slider->getTooltip() );
             }
             break;
         case 26:

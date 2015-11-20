@@ -276,7 +276,7 @@ tune
 (
     MIN_MAX( -24, 24 ),
     0,
-    1000*48,
+    100*48,
     generate_param_name(OSC_NAME,id_,"octave"),
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave

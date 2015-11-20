@@ -394,6 +394,16 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
         if( midi_number == controller_number_ and controller_number_ < 128 )
         {
             float value = 1.0f/127.0f*controller_value_;
+	    if( controller_value_ == 63 )
+	    {
+	      value = 0.5;
+	    }
+	    if( controller_value_ == 62 )
+	    {
+	      value = 1.0f/125.66f*controller_value_;
+	    }
+	    std::cout << value <<std::endl;
+	    
             if( type_of( owner ) == IS_BOOL )
             {
                 if( value > 0.5 )
