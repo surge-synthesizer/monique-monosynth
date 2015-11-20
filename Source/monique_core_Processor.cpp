@@ -740,9 +740,16 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     current_pos_info.timeInSamples += buffer_.getNumSamples();
     block_lock.exit();
 #else
-    if( current_pos_info.isLooping and (current_pos_info.isPlaying or current_pos_info.isRecording) )
+    if( current_pos_info.isLooping )
     {
-        current_pos_info.timeInSamples += buffer_.getNumSamples();
+        if( current_pos_info.isPlaying or current_pos_info.isRecording)
+        {
+            current_pos_info.timeInSamples += buffer_.getNumSamples();
+        }
+        else
+        {
+            current_pos_info.timeInSamples = 0;
+        }
     }
 #endif
 }
@@ -767,7 +774,7 @@ COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_si
         runtime_notifyer->set_block_size(block_size_);
         data_buffer->resize_buffer_if_required(block_size_);
     }
-
+    
     voice->reset_internal();
 }
 COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
@@ -783,10 +790,14 @@ COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
 }
 COLD void MoniqueAudioProcessor::releaseResources()
 {
+    current_pos_info.timeInSamples = 0;
     voice->bypass_smoother.set_value( false );
+
+    voice->stop_internal();
 }
 COLD void MoniqueAudioProcessor::reset()
 {
+    current_pos_info.timeInSamples = 0;
     voice->bypass_smoother.set_value( false );
 }
 

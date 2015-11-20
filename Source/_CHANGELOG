@@ -1,9 +1,9 @@
 NEW:
 - save global settings should store midi too
 - try a bit with programs, seems not to sound all the time 100 identically
+- does not always load the feedback correctly
 
 FR:
-- loop problem
 - morphing osc's can make little sync problems (if osc is in sync)
 
 SA:
@@ -32,6 +32,7 @@ SO:
 - fix: always show current value on sliders (problems in toggle shift and ctrl mode)
 - fix: send correct midi feedback for env on and off
 - add: auto bypass implementation
+- fix: lfo und mfo sync problem if looping
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)

@@ -3774,6 +3774,13 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
+	    
+	    // UPDATE MIDI
+	    for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+            {
+                Parameter*param = saveable_parameters.getUnchecked(i);
+                param->midi_control->send_feedback_only();
+            }
         }
     }
 }

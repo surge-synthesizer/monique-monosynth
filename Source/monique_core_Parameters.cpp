@@ -569,7 +569,7 @@ void MIDIControl::parameter_value_changed_by_automation( Parameter* param_ ) noe
 }
 void MIDIControl::parameter_value_on_load_changed( Parameter* param_ ) noexcept
 {
-    parameter_value_changed( param_ );
+    //parameter_value_changed( param_ );
 }
 void MIDIControl::parameter_modulation_value_changed( Parameter* param_ ) noexcept
 {

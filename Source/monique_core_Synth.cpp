@@ -5591,6 +5591,7 @@ public:
     inline void reset() noexcept
     {
         current_step = 0;
+        next_step_on_hold = 15;
     }
 
     void sample_rate_or_block_changed() noexcept override {}
@@ -5967,12 +5968,6 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
             current_velocity = 1;
         }
 
-        if( samples_to_next_arp_step_in_this_buffer > 0 )
-        {
-            render_block( output_buffer_, is_a_step ? step_id : -1, arp_sequencer->get_current_absolute_step(), count_start_sample, samples_to_next_arp_step_in_this_buffer );
-        }
-        count_start_sample += samples_to_next_arp_step_in_this_buffer;
-
         // HANDLE RETIGGERS
         is_a_step = arp_sequencer->found_last_process_a_step();
         bool is_step_enabled = arp_sequencer->last_found_step_is_enabled();
@@ -5988,6 +5983,12 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
             start_internal( current_note, current_velocity, counted_samples+start_sample_ );
             an_arp_note_is_already_running = true;
         }
+
+        if( samples_to_next_arp_step_in_this_buffer > 0 )
+        {
+            render_block( output_buffer_, is_a_step ? step_id : -1, arp_sequencer->get_current_absolute_step(), count_start_sample, samples_to_next_arp_step_in_this_buffer );
+        }
+        count_start_sample += samples_to_next_arp_step_in_this_buffer;
     }
 
     // FREE IT
@@ -6633,6 +6634,7 @@ void MoniqueSynthesiserVoice::reset() noexcept
 }
 void MoniqueSynthesiserVoice::reset_internal() noexcept
 {
+    arp_sequencer->reset();
     for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
     {
         filter_processors[voice_id]->reset();

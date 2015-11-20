@@ -102,8 +102,9 @@ public:
     void stopNote(float, bool allowTailOff) override;
     void stop_arp() noexcept;
     void restart_arp( int sample_pos_in_buffer_ ) noexcept;
-private:
+public:
     void stop_internal() noexcept;
+    private:
     void release_if_inactive() noexcept;
 
 public:
