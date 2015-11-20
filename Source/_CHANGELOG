@@ -3,9 +3,7 @@ NEW:
 - try a bit with programs, seems not to sound all the time 100 identically
 
 FR:
-- add: bypass
 - loop problem
-
 - morphing osc's can make little sync problems (if osc is in sync)
 
 SA:
@@ -33,6 +31,7 @@ SO:
 - fix: midi 63 is always the center of an slider (0.5 or 50%, on sliders with negative range 0)
 - fix: always show current value on sliders (problems in toggle shift and ctrl mode)
 - fix: send correct midi feedback for env on and off
+- add: auto bypass implementation
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)

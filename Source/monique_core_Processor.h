@@ -56,6 +56,7 @@ private:
 
     int stored_note;
     float stored_velocity;
+    int loop_counter;
 
 
     // ==============================================================================

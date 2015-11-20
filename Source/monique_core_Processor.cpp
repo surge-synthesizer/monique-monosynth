@@ -261,6 +261,7 @@ mono_AudioDeviceManager( new RuntimeNotifyer() ),
 #endif
                          stored_note(-1),
                          stored_velocity(0),
+                         loop_counter(0),
 
                          peak_meter(nullptr),
 #ifdef IS_PLUGIN
@@ -456,6 +457,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
     const int num_samples = buffer_.getNumSamples();
     buffer_.clear();
 
+    const int64 last_samples_since_start = current_pos_info.timeInSamples;
     const bool was_playing = current_pos_info.isPlaying or current_pos_info.isRecording;
 
 #ifdef IS_STANDALONE
@@ -478,6 +480,14 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         if( getPlayHead()->getCurrentPosition ( current_pos_info ) )
         {
 #endif
+            if( current_pos_info.isLooping )
+            {
+                if( last_samples_since_start != 0 ) // DO NOT USE AT THE START
+                {
+                    current_pos_info.timeInSamples = last_samples_since_start;
+                }
+            }
+
             //if( current_pos_info.timeInSamples + num_samples >= 0 ) //&& current_pos_info.isPlaying )
             {
 #ifdef IS_STANDALONE
@@ -724,9 +734,16 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
         }
     }
 
+
+
 #ifdef IS_STANDALONE
     current_pos_info.timeInSamples += buffer_.getNumSamples();
     block_lock.exit();
+#else
+    if( current_pos_info.isLooping and (current_pos_info.isPlaying or current_pos_info.isRecording) )
+    {
+        current_pos_info.timeInSamples += buffer_.getNumSamples();
+    }
 #endif
 }
 //==============================================================================
@@ -734,6 +751,7 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
 //==============================================================================
 COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
 {
+    current_pos_info.timeInSamples = 0;
 
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??

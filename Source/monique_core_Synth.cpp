@@ -6568,9 +6568,6 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
     {
         if( not bypass_smoother.get_info_flag() )
         {
-
-            std::cout<< "bypass" <<std::endl;;
-
             master_osc->reset();
             second_osc->reset();
             third_osc->reset();
