@@ -255,6 +255,12 @@ void Monique_Ui_DualSlider::show_view_mode()
         }
     }
 
+    runtime_show_value_popup = runtime_show_value_popup or look_and_feel->show_values_always or force_show_center_value or _config->show_slider_value_on_top_on_change() == ModulationSliderConfigBase::SHOW_OWN_VALUE_ALWAYS or runtime_show_value_popup;
+    if( runtime_show_value_popup )
+    {
+        refresh();
+    }
+
     /*
     if( label_top )
     {

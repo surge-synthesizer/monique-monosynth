@@ -402,7 +402,6 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
 	    {
 	      value = 1.0f/125.66f*controller_value_;
 	    }
-	    std::cout << value <<std::endl;
 	    
             if( type_of( owner ) == IS_BOOL )
             {

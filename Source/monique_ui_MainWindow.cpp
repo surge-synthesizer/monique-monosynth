@@ -264,6 +264,7 @@ void Monique_Ui_Mainwindow::show_ctrl_state()
     {
         ui_refresher->pause();
         last_ctrl_mode = synth_data->ctrl;
+	MessageManagerLock mmLock;
         for( int i = 0 ; i < dual_sliders.size() ; ++i )
         {
             if( Monique_Ui_DualSlider* mod_slider = dual_sliders.getUnchecked(i) )
