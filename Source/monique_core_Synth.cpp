@@ -356,7 +356,7 @@ public:
 
             size_in_ms = size_in_ms_;
             size = jmax(3,msToSamplesFast(size_in_ms_,sample_rate));
-            buffer.setSize( size, true );
+            buffer.setSize( size, false );
             ptr_to_buffer = buffer.getWritePointer();
 
             if( pos > size )
@@ -817,12 +817,12 @@ public:
         {
             const double temp = lastBlitOutput_;
             {
-               const double current_phase = (phase_ + phase_offset) - phase_correction;
+                const double current_phase = (phase_ + phase_offset) - phase_correction;
 
                 // Avoid a divide by zero, or use of a denomralized divisor
                 // at the sinc peak, which has a limiting value of 1.0.
                 {
-		  
+
                     const double denominator = std::sin( current_phase );
                     if ( std::fabs( denominator ) < std::numeric_limits<double>::epsilon() )
                     {
@@ -1556,6 +1556,12 @@ public:
     float get_current_amp() const noexcept
     {
         return last_out;
+    }
+
+    //==========================================================================
+    void reset()  noexcept
+    {
+        last_out = 0;
     }
 
 public:
@@ -3903,7 +3909,7 @@ static inline float get_low_pass_band_frequency( int band_id_, double sample_rat
     case 5 :
         return 2637.02;
     default :
-       // return 2637.02;
+        // return 2637.02;
         return sample_rate_/2;
     }
 }
@@ -3988,21 +3994,21 @@ public:
 
                 inline void exec() noexcept override
                 {
-		    exec_default();
-		  
-		    /*
-                    // PROCESS
-                    if( band_id == 0 ) // - 1 )
-		    {
-		      exec_default();
-		    }
-		    else
-		    {
-		      exec_default();
-		    }
-		    */
+                    exec_default();
+
+                    /*
+                            // PROCESS
+                            if( band_id == 0 ) // - 1 )
+                    {
+                      exec_default();
+                    }
+                    else
+                    {
+                      exec_default();
+                    }
+                    */
                 }
-                inline void exec_first() noexcept 
+                inline void exec_first() noexcept
                 {
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -4015,7 +4021,7 @@ public:
                         band_out_buffer[sid] = output*4;
                     }
                 }
-                inline void exec_default() noexcept 
+                inline void exec_default() noexcept
                 {
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -4028,7 +4034,7 @@ public:
                         band_out_buffer[sid] = output*4;
                     }
                 }
-                inline void exec_last() noexcept 
+                inline void exec_last() noexcept
                 {
                     // PROCESS
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -4773,6 +4779,11 @@ public:
         record_buffer.clear();
     }
 
+    inline int get_max_duration() const noexcept
+    {
+        return real_record_buffer_size;
+    }
+
 private:
     //==============================================================================
     COLD void sample_rate_or_block_changed() noexcept override
@@ -5168,7 +5179,8 @@ class FXProcessor
 
 public:
     Smoother velocity_smoother;
-    ZeroInCounter last_output_smoother;
+    int zero_samples_counter;
+    LinearSmootherMinMax<false,true>*const bypass_smoother;
 
 private:
     const MoniqueSynthData*const synth_data;
@@ -5289,8 +5301,22 @@ public:
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        last_output_smoother.add( left_out_buffer[sid]*right_out_buffer[sid] );
-                        const float volume = smoothed_volume_buffer[sid];
+                        float left_in = left_out_buffer[sid];
+                        float right_in = right_out_buffer[sid];
+#define MONO_UNDENORMALISE_OUTPUT(n) if (! (n < -1.0e-3f || n > 1.0e-3f)) n = 0;
+                        MONO_UNDENORMALISE_OUTPUT(left_in);
+                        MONO_UNDENORMALISE_OUTPUT(right_in);
+                        if( left_in != 0 or right_in != 0 )
+                        {
+                            zero_samples_counter = 0;
+                        }
+                        else
+                        {
+                            zero_samples_counter++;
+                        }
+
+
+                        const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
                         left_out_buffer[sid] *= volume*2;
                         right_out_buffer[sid] *= volume*2;
                     }
@@ -5299,8 +5325,20 @@ public:
                 {
                     for( int sid = 0 ; sid != num_samples_ ; ++sid )
                     {
-                        last_output_smoother.add( left_out_buffer[sid]*right_out_buffer[sid] );
-                        const float volume = smoothed_volume_buffer[sid];
+                        float left_in = left_out_buffer[sid];
+                        float right_in = right_out_buffer[sid];
+                        MONO_UNDENORMALISE_OUTPUT(left_in);
+                        MONO_UNDENORMALISE_OUTPUT(right_in);
+                        if( left_in != 0 or right_in != 0 )
+                        {
+                            zero_samples_counter = 0;
+                        }
+                        else
+                        {
+                            zero_samples_counter++;
+                        }
+
+                        const float volume = smoothed_volume_buffer[sid] * bypass_smoother->tick();
                         left_out_buffer[sid] *= sample_mix(left_out_buffer[sid]* volume*2, right_out_buffer[sid]* volume*2);
                     }
                 }
@@ -5340,7 +5378,7 @@ public:
     //==========================================================================
     void start_attack() noexcept
     {
-        last_output_smoother.reset();
+        zero_samples_counter = 0;
         final_env->start_attack();
     }
     void start_release( bool is_sustain_pedal_down_, bool is_sostenuto_pedal_down_ ) noexcept
@@ -5365,7 +5403,7 @@ public:
 
         final_env->reset();
 
-        last_output_smoother.reset();
+        zero_samples_counter = 0;
         velocity_smoother.reset(0);
     }
 
@@ -5374,6 +5412,7 @@ public:
     COLD FXProcessor( RuntimeNotifyer*const notifyer_,
                       MoniqueSynthData* synth_data_,
                       mono_ThreadManager*const thread_manager_,
+                      LinearSmootherMinMax<false,true>*bypass_smoother_,
                       const float*const sine_lookup_,
                       const float*const cos_lookup_,
                       const float*const exp_lookup_ ) noexcept
@@ -5390,7 +5429,8 @@ public:
                    final_env( new ENV( notifyer_, synth_data_, synth_data_->env_data, sine_lookup_, cos_lookup_, exp_lookup_ ) ),
 
                    velocity_smoother( notifyer_, synth_data_->velocity_glide_time ),
-                   last_output_smoother(),
+                   zero_samples_counter(0),
+                   bypass_smoother( bypass_smoother_ ),
 
                    synth_data( synth_data_ ),
                    data_buffer( synth_data_->data_buffer ),
@@ -5603,7 +5643,8 @@ audio_processor( audio_processor_ ),
 
                  arp_sequencer( new ArpSequencer( notifyer_, info, synth_data_->arp_sequencer_data ) ),
                  eq_processor( new EQProcessorStereo( notifyer_, synth_data_, thread_manager, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
-                 fx_processor( new FXProcessor( notifyer_, synth_data_, thread_manager, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
+                 bypass_smoother(0),
+                 fx_processor( new FXProcessor( notifyer_, synth_data_, thread_manager, &bypass_smoother, synth_data_->sine_lookup, synth_data_->cos_lookup, synth_data_->exp_lookup ) ),
 
                  current_note(-1),
                  pitch_offset(0),
@@ -5831,35 +5872,27 @@ void MoniqueSynthesiserVoice::release_if_inactive() noexcept
 
     if( fx_processor->final_env->get_current_stage() == END_ENV and not synth_data->audio_processor->amp_painter )
     {
-        if( current_note != -1 and not is_arp_on )
+        bool has_steps_enabled = false;
+        for( int i = 0 ; i != SUM_ENV_ARP_STEPS ; ++i )
         {
-            if( fx_processor->last_output_smoother.get_num_zeros() > master_osc->get_sample_rate()*1.5 )
+            if( synth_data->arp_sequencer_data->step[i] )
             {
-                for( int voice_id = 0 ; voice_id != SUM_FILTERS ; ++voice_id )
-                {
-                    filter_processors[voice_id]->reset();
-                }
-                eq_processor->reset();
-                fx_processor->reset();
-
-                //arp_info.current_note = current_note;
-                //arp_info.current_velocity = current_velocity;
-
+                has_steps_enabled = true;
+                break;
+            }
+        }
+        if( is_arp_on and not has_steps_enabled or not is_arp_on )
+        {
+            if( fx_processor->zero_samples_counter > fx_processor->delay.get_max_duration()+10 )
+            {
                 current_note = -1;
                 clearCurrentNote();
-
-                /*
-                        if( Monique_Ui_AmpPainter* amp_painter = synth_data->audio_processor->amp_painter )
-                        {
-                            amp_painter->clear_and_keep_minimum();
-                        }
-                        */
             }
         }
     }
     else
     {
-        fx_processor->last_output_smoother.reset();
+        fx_processor->zero_samples_counter = 0;
     }
 }
 
@@ -6251,11 +6284,17 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         amp_painter->calc_new_cycle();
     }
 
-    // MFOS
-
-    // SMOOTH PARAMETERS
-    // TODO MULTITHREADED
-    if( render_anything )
+    // CHECK POSSIBLE BYPASS
+    bool must_process = not bypass_smoother.is_up_to_date();
+    if( not must_process )
+    {
+        must_process = fx_processor->zero_samples_counter < fx_processor->delay.get_max_duration()+10;
+    }
+    if( not must_process )
+    {
+        must_process = fx_processor->final_env->get_current_stage() != END_ENV;
+    }
+    if( must_process )
     {
         const int glide_motor_time = synth_data->glide_motor_time;
         const int morph_motor_time = synth_data->morph_motor_time;
@@ -6509,10 +6548,8 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
 
             eq_processor->process( num_samples );
         }
-    }
 
-    if( render_anything )
-    {
+
         float velocity_to_use = current_velocity;
         bool is_arp_on = synth_data->arp_sequencer_data->is_on or synth_data->keep_arp_always_on;
         if( synth_data->keep_arp_always_off )
@@ -6524,7 +6561,34 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
             velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_step];
         }
         fx_processor->process( output_buffer_, velocity_to_use, start_sample_, num_samples_ );
-        // OSCs - THREAD 1 ?
+
+        bypass_smoother.set_info_flag( false );
+    }
+    else
+    {
+        if( not bypass_smoother.get_info_flag() )
+        {
+
+            std::cout<< "bypass" <<std::endl;;
+
+            master_osc->reset();
+            second_osc->reset();
+            third_osc->reset();
+            for( int i = 0 ; i != SUM_LFOS ; ++i )
+            {
+                lfos[i]->reset();
+            }
+            for( int i = 0 ; i != SUM_MORPHER_GROUPS ; ++i )
+            {
+                mfos[i]->reset();
+            }
+            for( int i = 0 ; i != SUM_FILTERS ; ++i )
+            {
+                filter_processors[i]->reset();
+            }
+
+            bypass_smoother.set_info_flag( true );
+        }
     }
 
     // VISUALIZE
@@ -6807,4 +6871,5 @@ void MoniqueSynthData::get_full_mfo( LFOData&mfo_data_, Array< float >& curve ) 
 }
 //==============================================================================
 juce_ImplementSingleton(SHARED);
+
 

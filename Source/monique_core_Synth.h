@@ -55,6 +55,10 @@ class MoniqueSynthesiserVoice : public SynthesiserVoice
     friend class mono_ParameterOwnerStore;
     ArpSequencer*const arp_sequencer;
     EQProcessorStereo*const eq_processor;
+public:
+    int samples_must_be_zero_before_bypass;
+    LinearSmootherMinMax<false,true> bypass_smoother;
+private:
     FXProcessor*const fx_processor;
 
     //==============================================================================
@@ -102,6 +106,8 @@ private:
     void stop_internal() noexcept;
     void release_if_inactive() noexcept;
 
+public:
+private:
     void renderNextBlock( AudioSampleBuffer&, int startSample, int numSamples) override;
     void render_block( AudioSampleBuffer&, int step_number_, int absolute_step_number_, int startSample, int numSamples) noexcept;
 
@@ -169,6 +175,7 @@ class MoniqueSynthesizer : public Synthesiser
     void handleBankSelect (int controllerValue) noexcept;
     void handleProgramChange (int midiChannel, int programNumber) override;
     void handleController (int midiChannel, int controllerNumber, int controllerValue) override;
+    
 public:
     COLD SynthesiserVoice* addVoice( SynthesiserVoice* newVoice ) noexcept;
     COLD SynthesiserSound* addSound( const SynthesiserSound::Ptr& sound_ ) noexcept;

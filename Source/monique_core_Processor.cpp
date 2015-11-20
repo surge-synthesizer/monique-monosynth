@@ -427,6 +427,16 @@ void MoniqueAudioProcessor::timerCallback()
 //==============================================================================
 void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
 {
+    voice->bypass_smoother.set_value( true );
+    process( buffer_, midi_messages_, false );
+}
+void MoniqueAudioProcessor::processBlockBypassed( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ )
+{
+    voice->bypass_smoother.set_value( false );
+    process( buffer_, midi_messages_, true );
+}
+void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ )
+{
 #ifdef IS_STANDALONE
     if( not block_lock.tryEnter() )
     {
@@ -719,16 +729,18 @@ void MoniqueAudioProcessor::processBlock ( AudioSampleBuffer& buffer_, MidiBuffe
     block_lock.exit();
 #endif
 }
-
 //==============================================================================
 //==============================================================================
 //==============================================================================
 COLD void MoniqueAudioProcessor::prepareToPlay ( double sampleRate, int block_size_ )
 {
+
     // TODO optimize functions without sample rate and block size
     // TODO replace audio sample buffer??
     if( sampleRate > 0 )
     {
+        voice->bypass_smoother.reset( sampleRate, 30 );
+
         synth->setCurrentPlaybackSampleRate (sampleRate);
         runtime_notifyer->set_sample_rate( sampleRate );
     }
@@ -753,10 +765,11 @@ COLD void MoniqueAudioProcessor::sample_rate_or_block_changed() noexcept
 }
 COLD void MoniqueAudioProcessor::releaseResources()
 {
-    // TODO reset all
+    voice->bypass_smoother.set_value( false );
 }
 COLD void MoniqueAudioProcessor::reset()
 {
+    voice->bypass_smoother.set_value( false );
 }
 
 //==============================================================================

@@ -145,7 +145,7 @@ public:
 	if( buffer.getReadPointer( 0 )[size] != 0 )
 	{
 	    std::cout<< "buffer size overwriten" << std::endl;
-	  jassert( false );
+	  //jassert( false );
 	}
 #endif
        // delete buffer;

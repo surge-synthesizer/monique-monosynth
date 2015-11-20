@@ -546,8 +546,8 @@ env_data( new ENVData( smooth_manager_, id_ ) )
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
         input_envs.add( env_data );
-	
-	const_cast< ParameterInfo* >( &input_holds[i].get_info() )->is_inverted = true;
+
+        const_cast< ParameterInfo* >( &input_holds[i].get_info() )->is_inverted = true;
     }
 }
 
@@ -764,8 +764,8 @@ bypass_smoother(smooth_manager_,&bypass)
 
         ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
         envs.add( env_data );
-	
-	const_cast< ParameterInfo* >( &hold[band_id].get_info() )->is_inverted = true;
+
+        const_cast< ParameterInfo* >( &hold[band_id].get_info() )->is_inverted = true;
     }
 }
 COLD EQData::~EQData() noexcept {}
@@ -2186,13 +2186,13 @@ master_data( master_data_ ),
         colect_global_parameters();
         all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
-	
-	
+
+        saveable_parameters.removeFirstMatchingValue( &ctrl );
         automateable_parameters.addArray( saveable_parameters );
 
-	automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
-	automateable_parameters.insert( automateable_parameters.indexOf(&osc_datas[0]->is_lfo_modulated), &fm_osc_data->master_shift );
-	
+        automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
+        automateable_parameters.insert( automateable_parameters.indexOf(&osc_datas[0]->is_lfo_modulated), &fm_osc_data->master_shift );
+
         automateable_parameters.add( &bind_sustain_and_sostenuto_pedal );
         automateable_parameters.add( &midi_pickup_offset );
 
@@ -2412,7 +2412,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &ui_scale_factor );
 
     global_parameters.add( &midi_pickup_offset );
-    global_parameters.add( &ctrl );
+    //global_parameters.add( &ctrl );
 
     global_parameters.add( &glide_motor_time );
     global_parameters.add( &morph_motor_time );

@@ -1,18 +1,17 @@
 NEW:
-- buffersize overwrite on shutdown if you select the factory init programm
-- buffersize overwritten if you change velocity glide time
 - save global settings should store midi too
-- force a center value repaint on switch to the back slider
 - try a bit with programs, seems not to sound all the time 100 identically
 
 FR:
 - add: bypass
+- loop problem
+
+- morphing osc's can make little sync problems (if osc is in sync)
 
 SA:
 
 SO:
 - add about: mouse over monique label
-- add factory programs to the binary
 - add factory programs to the binary
 - check: touch screen support (windows)
 - check: tool tips sub editors

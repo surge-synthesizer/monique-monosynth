@@ -98,6 +98,8 @@ public:
 private:
     bool force_sample_rate_update;
     void processBlock ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
+    void processBlockBypassed( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_ ) override;
+    void process ( AudioSampleBuffer& buffer_, MidiBuffer& midi_messages_, bool bypassed_ );
     COLD void sample_rate_or_block_changed() noexcept override;
     COLD void prepareToPlay ( double sampleRate, int samplesPerBlock ) override;
     COLD void releaseResources() override;
