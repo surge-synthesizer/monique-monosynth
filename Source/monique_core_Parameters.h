@@ -75,6 +75,9 @@ struct ParameterInfo
 #ifdef IS_PLUGIN
     int parameter_host_id;
 #endif
+    
+    // HACK
+    bool is_inverted;
 
 private:
     // ==============================================================================

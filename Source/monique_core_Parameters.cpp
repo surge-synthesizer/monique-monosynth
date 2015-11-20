@@ -54,11 +54,11 @@ type( type_ ),
       num_steps(num_steps_),
 
       name(name_),
-      short_name(short_name_)
+      short_name(short_name_),
 #ifdef IS_PLUGIN
-      ,
-      parameter_host_id( -1 )
+      parameter_host_id( -1 ),
 #endif
+      is_inverted(false)
 {}
 
 COLD ParameterInfo::~ParameterInfo() noexcept {}
@@ -394,15 +394,15 @@ bool MIDIControl::read_from_if_you_listen( int controller_number_, int controlle
         if( midi_number == controller_number_ and controller_number_ < 128 )
         {
             float value = 1.0f/127.0f*controller_value_;
-	    if( controller_value_ == 63 )
-	    {
-	      value = 0.5;
-	    }
-	    if( controller_value_ == 62 )
-	    {
-	      value = 1.0f/125.66f*controller_value_;
-	    }
-	    
+            if( controller_value_ == 63 )
+            {
+                value = 0.5;
+            }
+            if( controller_value_ == 62 )
+            {
+                value = 1.0f/125.66f*controller_value_;
+            }
+
             if( type_of( owner ) == IS_BOOL )
             {
                 if( value > 0.5 )
@@ -617,7 +617,21 @@ inline void MIDIControl::send_standard_feedback(  ) const noexcept
 {
     if( is_valid_trained() )
     {
-        audio_processor->send_feedback_message( midi_number, std::floor(127.0f*get_percent_value( owner )) );
+        if( type_of( owner ) == IS_BOOL )
+        {
+            if( owner->get_info().is_inverted )
+            {
+                audio_processor->send_feedback_message( midi_number, owner->get_value() ? 0 : 127 );
+            }
+            else
+            {
+                audio_processor->send_feedback_message( midi_number, owner->get_value() * 127 );
+            }
+        }
+        else
+        {
+            audio_processor->send_feedback_message( midi_number, std::floor(127.0f*get_percent_value( owner )) );
+        }
     }
 }
 inline void MIDIControl::send_modulation_feedback() const noexcept

@@ -546,6 +546,8 @@ env_data( new ENVData( smooth_manager_, id_ ) )
 
         ENVData* env_data = new ENVData( smooth_manager_, i+id_*SUM_INPUTS_PER_FILTER+FILTER_INPUT_ENV_ID_OFFSET );
         input_envs.add( env_data );
+	
+	const_cast< ParameterInfo* >( &input_holds[i].get_info() )->is_inverted = true;
     }
 }
 
@@ -762,6 +764,8 @@ bypass_smoother(smooth_manager_,&bypass)
 
         ENVData* env_data = new ENVData( smooth_manager_, band_id+EQ_ENV_ID_OFFSET );
         envs.add( env_data );
+	
+	const_cast< ParameterInfo* >( &hold[band_id].get_info() )->is_inverted = true;
     }
 }
 COLD EQData::~EQData() noexcept {}

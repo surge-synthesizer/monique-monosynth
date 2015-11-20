@@ -6,8 +6,6 @@ NEW:
 - try a bit with programs, seems not to sound all the time 100 identically
 
 FR:
-- sounds like we have a short attack on binded notes (have to check this again)
-- env on/off for bands are inverted by midi control
 - add: bypass
 
 SA:
@@ -25,10 +23,7 @@ SO:
 - improve: factory default program (INIT)
 - on mac hide osx audio devices
 - arp step shines through the mfo popup
-- aax / rtas builds
-- select audio channels (standalone)
 - add: wiring diagram as ui overlay
-- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
 
 0.9.9
 - fix: missing automation params
@@ -37,9 +32,16 @@ SO:
 - fix: show tooltips also if they are to small for the ui (it only must match to the desktop size)
 - add: show tooltip to the context menu
 - fix: midi 63 is always the center of an slider (0.5 or 50%, on sliders with negative range 0)
+- fix: always show current value on sliders (problems in toggle shift and ctrl mode)
+- fix: send correct midi feedback for env on and off
 
 MINOR PROBLEMS
+- sounds like we have a short attack on binded notes (have to check this again)
+- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
+
+BUILD:
 - linkt to static c++ (older linux)
+- aax, rtas, au
 
 MANUAL:
 - context menu items
@@ -100,6 +102,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- select audio channels (standalone)
 - add: morph sensitivity to the context menu
 - improve: midi pickup a bit
 - switch to fx if a value changes there? but what happens on massive controls?
