@@ -171,7 +171,7 @@ mainwindow(nullptr),
                generate_short_human_name("LF","show_values_always")
            )
 {
-  
+
     std::cout << "MONIQUE: init style" << std::endl;
 
     popup_smooth_Slider->addListener( this );
@@ -1666,7 +1666,12 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
                              popup_midi_snap_slider,
                              150, 30,
                              false );
-	
+
+        menu->addSeparator();
+        menu->addSectionHeader("HELP");
+        menu->addItem (25, TRANS ("Force Show ToolTip (shortcut: CTRL+H)"), true, false );
+        menu->addItem (26, TRANS ("Show ToolTips automatically (after 1000ms)"), true, synth_data->show_tooltips );
+
         menu->addSeparator();
         menu->addSectionHeader("GLOBAL SETTINGS");
         menu->addSectionHeader("(keep settings & colours over multiple instances up to date)");
@@ -1788,11 +1793,27 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
                 mainwindow->show_info_popup( slider, nullptr, true );
             }
             break;
+        case 25:
+            if( mainwindow )
+            {
+                if( not force_tip )
+                {
+                    force_tip = new TooltipWindow( nullptr, 5 );
+                }
+                Point<int> point = Point<int>(slider->getScreenX() + slider->getWidth()*0.5, slider->getScreenY() + slider->getHeight()*0.5);
+                Desktop::getInstance().setMousePosition( Point<int>(slider->getScreenX() + slider->getWidth()*0.5, slider->getScreenY() + slider->getHeight()*0.5) );
+		force_tip->force_for_component( slider );
+                force_tip->displayTip( Point<int>(slider->getScreenX(), slider->getScreenY()), slider->getTooltip() );
+            }
+            break;
+        case 26:
+            synth_data->show_tooltips ^= true;
+            break;
         case 30:
-	  synth_data->save_settings();
+            synth_data->save_settings();
             break;
         case 31:
-	  synth_data->load_settings();
+            synth_data->load_settings();
             break;
         default:
             break;

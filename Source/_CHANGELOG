@@ -6,13 +6,11 @@ NEW:
 - try a bit with programs, seems not to sound all the time 100 identically
 
 FR:
-- adjustable tooltip popup time in context menu
-- add: morph sensitivity to the context menu
-- add: bypass
 - from midi you can not set the osc tune to the 0
 - shift disabled wave view
 - sounds like we have a short attack on binded notes (have to check this again)
 - env on/off for bands are inverted by midi control
+- add: bypass
 
 SA:
 
@@ -39,6 +37,7 @@ SO:
 - improved: clean up automation params
 - add: some more automation params to ctrl popups
 - fix: show tooltips also if they are to small for the ui (it only must match to the desktop size)
+- add: show tooltip to the context menu
 
 MINOR PROBLEMS
 - linkt to static c++ (older linux)
@@ -102,6 +101,7 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- add: morph sensitivity to the context menu
 - improve: midi pickup a bit
 - switch to fx if a value changes there? but what happens on massive controls?
 - swing in 1/1024 and so on

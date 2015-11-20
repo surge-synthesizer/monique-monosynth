@@ -28,7 +28,9 @@ TooltipWindow::TooltipWindow (Component* const parentComp, const int delayMs)
       millisecondsBeforeTipAppears (delayMs),
       mouseClicks (0), mouseWheelMoves (0),
       lastCompChangeTime (0), lastHideTime (0),
-      reentrant (false)
+      reentrant (false),
+      force_only_for(nullptr),
+      was_up(false)
 {
     if (Desktop::getInstance().getMainMouseSource().canHover())
         startTimer (123);
@@ -70,6 +72,13 @@ void TooltipWindow::displayTip (Point<int> screenPos, const String& tip)
 {
     jassert (tip.isNotEmpty());
 
+    /*
+    if( force_only_for and was_up)
+    {
+        return;
+    }
+    */
+
     if (! reentrant)
     {
         ScopedValueSetter<bool> setter (reentrant, true, false);
@@ -88,11 +97,11 @@ void TooltipWindow::displayTip (Point<int> screenPos, const String& tip)
         else
         {
             updatePosition (tip, screenPos, Desktop::getInstance().getDisplays()
-                                                .getDisplayContaining (screenPos).userArea);
+                            .getDisplayContaining (screenPos).userArea);
 
             addToDesktop (ComponentPeer::windowHasDropShadow
-                            | ComponentPeer::windowIsTemporary
-                            | ComponentPeer::windowIgnoresKeyPresses);
+                          | ComponentPeer::windowIsTemporary
+                          | ComponentPeer::windowIgnoresKeyPresses);
         }
 
         toFront (false);
@@ -102,8 +111,8 @@ void TooltipWindow::displayTip (Point<int> screenPos, const String& tip)
 String TooltipWindow::getTipFor (Component* const c)
 {
     if (c != nullptr
-         && Process::isForegroundProcess()
-         && ! ModifierKeys::getCurrentModifiers().isAnyMouseButtonDown())
+            && Process::isForegroundProcess()
+            && ! ModifierKeys::getCurrentModifiers().isAnyMouseButtonDown())
     {
         if (TooltipClient* const ttc = dynamic_cast<TooltipClient*> (c))
             if (! c->isCurrentlyBlockedByAnotherModalComponent())
@@ -160,7 +169,7 @@ void TooltipWindow::timerCallback()
                 hideTip();
             }
         }
-        else if (tipChanged)
+        else if (tipChanged and not force_only_for or ( force_only_for == newComp ) )
         {
             displayTip (mousePos.roundToInt(), newTip);
         }
@@ -170,10 +179,16 @@ void TooltipWindow::timerCallback()
         // if there isn't currently a tip, but one is needed, only let it
         // appear after a timeout..
         if (newTip.isNotEmpty()
-             && newTip != tipShowing
-             && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears)
+                && newTip != tipShowing
+                && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears
+           )
         {
-            displayTip (mousePos.roundToInt(), newTip);
+            if( not force_only_for or ( force_only_for and not was_up) )
+            {
+                displayTip (mousePos.roundToInt(), newTip);
+                was_up = true;
+            }
         }
     }
 }
+

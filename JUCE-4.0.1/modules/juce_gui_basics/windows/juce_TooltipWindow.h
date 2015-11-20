@@ -45,7 +45,7 @@
     @see TooltipClient, SettableTooltipClient, SharedResourcePointer
 */
 class JUCE_API  TooltipWindow  : public Component,
-                                 private Timer
+    private Timer
 {
 public:
     //==============================================================================
@@ -84,6 +84,13 @@ public:
     /** Can be called to manually hide the tip if it's showing. */
     void hideTip();
 
+    // HACK
+    void force_for_component( Component* comp_ ) noexcept
+    {
+        was_up = false;
+        force_only_for = comp_;
+    }
+
     //==============================================================================
     /** A set of colour IDs to use to change the colour of various aspects of the tooltip.
 
@@ -111,14 +118,20 @@ public:
         virtual Rectangle<int> getTooltipBounds (const String& tipText, Point<int> screenPos, Rectangle<int> parentArea) = 0;
         virtual void drawTooltip (Graphics&, const String& text, int width, int height) = 0;
 
-       #if JUCE_CATCH_DEPRECATED_CODE_MISUSE
+#if JUCE_CATCH_DEPRECATED_CODE_MISUSE
         // This method has been replaced by getTooltipBounds()
-        virtual int getTooltipSize (const String&, int&, int&) { return 0; }
-       #endif
+        virtual int getTooltipSize (const String&, int&, int&) {
+            return 0;
+        }
+#endif
     };
 
 private:
     //==============================================================================
+    // HACK
+    bool was_up;
+    Component* force_only_for;
+
     Point<float> lastMousePos;
     Component* lastComponentUnderMouse;
     String tipShowing, lastTipUnderMouse;

@@ -2182,6 +2182,8 @@ master_data( master_data_ ),
         colect_global_parameters();
         all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
+	
+	
         automateable_parameters.addArray( saveable_parameters );
 
 	automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
