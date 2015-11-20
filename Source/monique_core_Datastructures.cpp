@@ -276,7 +276,7 @@ tune
 (
     MIN_MAX( -24, 24 ),
     0,
-    100*48,
+    1000*48,
     generate_param_name(OSC_NAME,id_,"octave"),
     generate_short_human_name(OSC_NAME,id_,"tune"),
     0.5 // one octave
@@ -2187,7 +2187,6 @@ master_data( master_data_ ),
         all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
 
-        saveable_parameters.removeFirstMatchingValue( &ctrl );
         automateable_parameters.addArray( saveable_parameters );
 
         automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
@@ -2215,6 +2214,7 @@ master_data( master_data_ ),
         automateable_parameters.add( &midi_env_shape );
         automateable_parameters.add( &midi_env_popup );
 
+        automateable_parameters.removeFirstMatchingValue( &ctrl );
         automateable_parameters.insert( automateable_parameters.indexOf( &this->delay_record_size ), &ctrl );
 
         morhp_switch_states[0].register_listener(this);
@@ -2432,7 +2432,8 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &midi_env_sustain_time );
     global_parameters.add( &midi_env_release );
     global_parameters.add( &midi_env_shape );
-    global_parameters.add( &midi_env_popup );
+
+    global_parameters.add( &ctrl );
 
     global_parameters.minimiseStorageOverheads();
 }
@@ -3774,9 +3775,9 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
             }
 
             create_internal_backup( program_names_per_bank.getReference(current_bank)[current_program], banks[current_bank] );
-	    
-	    // UPDATE MIDI
-	    for( int i = 0 ; i != saveable_parameters.size() ; ++i )
+
+            // UPDATE MIDI
+            for( int i = 0 ; i != saveable_parameters.size() ; ++i )
             {
                 Parameter*param = saveable_parameters.getUnchecked(i);
                 param->midi_control->send_feedback_only();

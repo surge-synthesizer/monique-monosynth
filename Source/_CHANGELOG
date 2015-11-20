@@ -1,14 +1,14 @@
 NEW:
-- save global settings should store midi too
-- try a bit with programs, seems not to sound all the time 100 identically
-- does not always load the feedback correctly
+midi clock sync checken
 
-FR:
-- morphing osc's can make little sync problems (if osc is in sync)
 
 SA:
 
 SO:
+- morphing osc's can make little sync problems (if osc is in sync)
+- save global settings should store midi too
+- try a bit with programs, seems not to sound all the time 100 identically
+
 - add about: mouse over monique label
 - add factory programs to the binary
 - check: touch screen support (windows)
@@ -33,6 +33,7 @@ SO:
 - fix: send correct midi feedback for env on and off
 - add: auto bypass implementation
 - fix: lfo und mfo sync problem if looping
+- fix: load feedback correctly on program change
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)
