@@ -211,7 +211,7 @@ master_shift
     0,
     1000,
     generate_param_name(OSC_NAME,MASTER_OSC,"master_shift"),
-    generate_short_human_name(OSC_NAME,"phase"),
+    generate_short_human_name(OSC_NAME,MASTER_OSC,"phase"),
     0
 ),
 master_shift_smoother(smooth_manager_,&master_shift)
@@ -222,18 +222,18 @@ COLD FMOscData::~FMOscData() noexcept {}
 //==============================================================================
 static inline void copy( FMOscData* dest_, const FMOscData* src_ ) noexcept
 {
+    dest_->master_shift = src_->master_shift;
     dest_->fm_freq = src_->fm_freq;
     dest_->sync = src_->sync;
     dest_->fm_swing = src_->fm_swing;
-    dest_->master_shift = src_->master_shift;
     dest_->fm_shape = src_->fm_shape;
 }
 static inline void collect_saveable_parameters( FMOscData* osc_data_, Array< Parameter* >& params_ ) noexcept
 {
+    params_.add( &osc_data_->master_shift );
     params_.add( &osc_data_->fm_freq );
     params_.add( &osc_data_->sync );
     params_.add( &osc_data_->fm_swing );
-    params_.add( &osc_data_->master_shift );
     params_.add( &osc_data_->fm_shape );
 }
 
@@ -251,7 +251,7 @@ sync
     (
         OSC_NAME,
         id_,
-        id_ == MASTER_OSC ? "key-sync" : "sync"
+        id_ == MASTER_OSC ? "key_sync" : "sync"
     )
 ),
 wave
@@ -302,9 +302,11 @@ static inline void copy( OSCData* dest_, const OSCData* src_ ) noexcept
 {
     dest_->wave = src_->wave;
     dest_->fm_amount = src_->fm_amount;
-    dest_->is_lfo_modulated = src_->is_lfo_modulated;
     if( dest_->id != MASTER_OSC )
+    {
         dest_->tune = src_->tune;
+    }
+    dest_->is_lfo_modulated = src_->is_lfo_modulated;
     dest_->sync = src_->sync;
 }
 static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Parameter* >& params_ ) noexcept
@@ -313,7 +315,9 @@ static inline void collect_saveable_parameters( OSCData* osc_data_, Array< Param
     params_.add( &osc_data_->wave );
     params_.add( &osc_data_->fm_amount );
     if( osc_data_->id != MASTER_OSC )
+    {
         params_.add( &osc_data_->tune );
+    }
     params_.add( &osc_data_->is_lfo_modulated );
 }
 
@@ -1973,14 +1977,14 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"lfo_wave"),
-                 generate_short_human_name("MIDI","lfo_wave")
+                 generate_short_human_name("POPUP","lfo_wave")
              ),
              midi_lfo_speed
              (
                  MIN_MAX( 0, 17 ),
                  4,
                  generate_param_name("MIDI",0,"lfo_speed"),
-                 generate_short_human_name("MIDI","lfo_speed")
+                 generate_short_human_name("POPUP","lfo_speed")
              ),
              midi_lfo_offset
              (
@@ -1988,14 +1992,14 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"lfo_offset"),
-                 generate_short_human_name("MIDI","lfo_offset")
+                 generate_short_human_name("POPUP","lfo_offset")
              ),
              midi_lfo_popup
              (
                  MIN_MAX( 0, 1 + SUM_LFOS + 1 + SUM_MORPHER_GROUPS + 1 ),
                  0,
                  generate_param_name("MIDI",0,"lfo_popup"),
-                 generate_short_human_name("MIDI","lfo_popup")
+                 generate_short_human_name("POPUP","open_LFO")
              ),
 
              midi_env_attack
@@ -2004,7 +2008,7 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_attack"),
-                 generate_short_human_name("MIDI","env_attack")
+                 generate_short_human_name("POPUP","env_attack")
              ),
              midi_env_decay
              (
@@ -2012,7 +2016,7 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_decay"),
-                 generate_short_human_name("MIDI","env_decay")
+                 generate_short_human_name("POPUP","env_decay")
              ),
              midi_env_sustain
              (
@@ -2020,7 +2024,7 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_sustain"),
-                 generate_short_human_name("MIDI","env_sustain")
+                 generate_short_human_name("POPUP","env_sustain")
              ),
              midi_env_sustain_time
              (
@@ -2028,7 +2032,7 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_sustain_time"),
-                 generate_short_human_name("MIDI","env_sustain_time")
+                 generate_short_human_name("POPUP","env_sustain_time")
              ),
              midi_env_release
              (
@@ -2036,7 +2040,7 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_release"),
-                 generate_short_human_name("MIDI","env_release")
+                 generate_short_human_name("POPUP","env_release")
              ),
              midi_env_shape
              (
@@ -2044,14 +2048,14 @@ master_data( master_data_ ),
                  0,
                  1000,
                  generate_param_name("MIDI",0,"env_shape"),
-                 generate_short_human_name("MIDI","env_shape")
+                 generate_short_human_name("POPUP","env_shape")
              ),
              midi_env_popup
              (
                  MIN_MAX( 0, 1+ SUM_INPUTS_PER_FILTER*SUM_FILTERS + 1 + SUM_EQ_BANDS + 1 ),
                  0,
                  generate_param_name("MIDI",0,"env_popup"),
-                 generate_short_human_name("MIDI","env_popup")
+                 generate_short_human_name("POPUP","open_ENV")
              ),
 
 // ----
@@ -2081,7 +2085,7 @@ master_data( master_data_ ),
 
                  false,
 
-                 SYNTH_DATA_NAME,SYNTH_DATA_NAME,
+                 SYNTH_DATA_NAME,"MFO",
                  MASTER,
                  "is_morph_modulated","is_morph_mod",false
              ),
@@ -2178,7 +2182,34 @@ master_data( master_data_ ),
         colect_global_parameters();
         all_parameters.addArray( saveable_parameters );
         all_parameters.addArray( global_parameters );
-        all_parameters.add( &ctrl );
+        automateable_parameters.addArray( saveable_parameters );
+
+	automateable_parameters.removeFirstMatchingValue( &fm_osc_data->master_shift );
+	automateable_parameters.insert( automateable_parameters.indexOf(&osc_datas[0]->is_lfo_modulated), &fm_osc_data->master_shift );
+	
+        automateable_parameters.add( &bind_sustain_and_sostenuto_pedal );
+        automateable_parameters.add( &midi_pickup_offset );
+
+        automateable_parameters.add( &glide_motor_time );
+        automateable_parameters.add( &morph_motor_time );
+        automateable_parameters.add( &delay_record );
+
+        automateable_parameters.add( &midi_lfo_popup );
+        automateable_parameters.add( &midi_lfo_wave );
+        automateable_parameters.add( &midi_lfo_speed );
+        automateable_parameters.add( &midi_lfo_offset );
+        automateable_parameters.add( &midi_lfo_popup );
+
+        automateable_parameters.add( &midi_env_popup );
+        automateable_parameters.add( &midi_env_attack );
+        automateable_parameters.add( &midi_env_decay );
+        automateable_parameters.add( &midi_env_sustain );
+        automateable_parameters.add( &midi_env_sustain_time );
+        automateable_parameters.add( &midi_env_release );
+        automateable_parameters.add( &midi_env_shape );
+        automateable_parameters.add( &midi_env_popup );
+
+        automateable_parameters.insert( automateable_parameters.indexOf( &this->delay_record_size ), &ctrl );
 
         morhp_switch_states[0].register_listener(this);
         morhp_switch_states[1].register_listener(this);
@@ -3697,18 +3728,18 @@ void MoniqueSynthData::read_from( const XmlElement* xml_ ) noexcept
                 Parameter*param = saveable_parameters.getUnchecked(i);
                 read_parameter_from_file( *xml_, param );
 
-		/*
-                if( (param->get_info().name.contains("attack")
-                or param->get_info().name.contains("decay")
-                or param->get_info().name.contains("sustain")
-                or param->get_info().name.contains("release")
-                or param->get_info().name.contains("shape") )
-                and param->get_info().name.contains("ENV")
-                  )
-                {
-                    param->set_value( reverse_ms_to_slider_value( param->get_value()*MAX_ENV_TIMES+1 ) );
-                }
-                */
+                /*
+                        if( (param->get_info().name.contains("attack")
+                        or param->get_info().name.contains("decay")
+                        or param->get_info().name.contains("sustain")
+                        or param->get_info().name.contains("release")
+                        or param->get_info().name.contains("shape") )
+                        and param->get_info().name.contains("ENV")
+                          )
+                        {
+                            param->set_value( reverse_ms_to_slider_value( param->get_value()*MAX_ENV_TIMES+1 ) );
+                        }
+                        */
             }
         }
 
@@ -3875,6 +3906,7 @@ void MoniqueSynthData::read_midi() noexcept
         }
     }
 }
+
 
 
 

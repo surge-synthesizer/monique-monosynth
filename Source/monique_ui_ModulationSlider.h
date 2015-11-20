@@ -176,6 +176,16 @@ struct ModulationSliderConfigBase
     {
         return COLOUR_THEMES::FILTER_THEME;
     }
+    enum SWITCHES
+    {
+        DONT_SWITCH,
+        SWITCH_TO_FX,
+	SWITCH_TO_EQ
+    };
+    virtual SWITCHES get_switch_info() const noexcept
+    {
+        return SWITCHES::DONT_SWITCH;
+    }
 
     //==============================================================================
     // OPTION POPUP

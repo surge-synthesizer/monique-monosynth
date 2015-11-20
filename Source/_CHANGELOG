@@ -1,8 +1,51 @@
+NEW:
 - buffersize overwrite on shutdown if you select the factory init programm
 - buffersize overwritten if you change velocity glide time
-
-
 - save global settings should store midi too
+- force a center value repaint on switch to the back slider
+- try a bit with programs, seems not to sound all the time 100 identically
+
+FR:
+- help popup does not pop if the ui is to small
+- adjustable tooltip popup time in context menu
+- add: morph sensitivity to the context menu
+- add: bypass
+- from midi you can not set the osc tune to the 0
+- shift disabled wave view
+- sounds like we have a short attack on binded notes (have to check this again)
+- env on/off for bands are inverted by midi control
+
+SA:
+
+SO:
+- add about: mouse over monique label
+- add factory programs to the binary
+- add factory programs to the binary
+- check: touch screen support (windows)
+- check: tool tips sub editors
+- add: tool tip looper effect
+- update: sync slider button tooltip
+- modwheel bug (diabled modwheel for now)
+
+- improve: factory default program (INIT)
+- on mac hide osx audio devices
+- arp step shines through the mfo popup
+- aax / rtas builds
+- select audio channels (standalone)
+- add: wiring diagram as ui overlay
+- precalculate clock in buffer just one time, so we do it for all lfo and mfos (internal)
+
+0.9.9
+- fix: missing automation params
+- improved: clean up automation params
+- add: some more automation params to ctrl popups
+
+MINOR PROBLEMS
+- linkt to static c++ (older linux)
+
+MANUAL:
+- context menu items
+- delay and looper based to internal clock (standalone slave)
 
 ****************************************************************************
 ****************************************************************************
@@ -59,6 +102,8 @@ bücher
 
 
 PRRRRRROOOOOOOOOOOOOOO
+- improve: midi pickup a bit
+- switch to fx if a value changes there? but what happens on massive controls?
 - swing in 1/1024 and so on
 - multi channel support cc
 - send master clock

@@ -3988,15 +3988,32 @@ public:
 
                 inline void exec() noexcept override
                 {
+		    exec_default();
+		  
+		    /*
                     // PROCESS
-                    if( band_id < SUM_EQ_BANDS ) // - 1 )
+                    if( band_id == 0 ) // - 1 )
 		    {
 		      exec_default();
 		    }
 		    else
 		    {
-		      exec_last();
+		      exec_default();
 		    }
+		    */
+                }
+                inline void exec_first() noexcept 
+                {
+                    // PROCESS
+                    for( int sid = 0 ; sid != num_samples_ ; ++sid )
+                    {
+                        const float shape = smoothed_shape_buffer[sid];
+                        const float amp = env_buffer[sid];
+                        const float in = filter_in_samples[sid] * amp;
+                        filter.update_with_fixed_cutoff( shape*0.8f, filter_frequency );
+                        float output = filter.processLowResonance(in);
+                        band_out_buffer[sid] = output*4;
+                    }
                 }
                 inline void exec_default() noexcept 
                 {

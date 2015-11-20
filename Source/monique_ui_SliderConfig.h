@@ -3675,6 +3675,10 @@ class FXDistortionSlConfig : public ModulationSliderConfigBase
         return true;
     }
     */
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -3806,6 +3810,10 @@ class FColourSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
     }
 
     //==============================================================================
@@ -3972,6 +3980,10 @@ class RRoomSlConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
+    }
 
     //==============================================================================
     // BACK SLIDER
@@ -4092,6 +4104,10 @@ class RDrySlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
     }
 
     //==============================================================================
@@ -4256,6 +4272,10 @@ class DelaySlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override
     {
         return true;
+    }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
     }
     
     //==============================================================================
@@ -4422,6 +4442,10 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     {
         return true;
     }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
+    }
 
     //==============================================================================
     // FRONT SLIDER
@@ -4557,6 +4581,10 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
+    }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
     }
 
     //==============================================================================
@@ -4733,6 +4761,10 @@ class BypassConfig : public ModulationSliderConfigBase
     return DONT_OVERRIDE_SLIDER_VALUE;
     }
     */
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_EQ;
+    }
 
     //==============================================================================
     // BACK SLIDER
@@ -4990,7 +5022,11 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return true;
     }
-
+SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_FX;
+    }
+    
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -5557,6 +5593,10 @@ class EQSlConfig : public ModulationSliderConfigBase
     bool use_click_through_hack() const noexcept override
     {
         return true;
+    }
+    SWITCHES get_switch_info() const noexcept override
+    {
+        return SWITCHES::SWITCH_TO_EQ;
     }
 
     //==============================================================================
