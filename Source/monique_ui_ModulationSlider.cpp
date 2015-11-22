@@ -1105,7 +1105,7 @@ void EventButton::mouseDown (const MouseEvent& event)
 {
     if( main_window )
     {
-        main_window->toggle_modulation_slider_top_button(this);
+        main_window->toggle_modulation_slider_top_button(this,false);
     }
     else
     {

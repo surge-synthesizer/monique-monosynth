@@ -2432,6 +2432,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &midi_env_sustain_time );
     global_parameters.add( &midi_env_release );
     global_parameters.add( &midi_env_shape );
+    global_parameters.add( &midi_env_popup );
 
     global_parameters.add( &ctrl );
 

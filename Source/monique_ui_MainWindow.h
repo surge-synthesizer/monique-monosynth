@@ -63,7 +63,7 @@ enum COLOUR_THEMES;
 class Monique_Ui_Mainwindow  : public AudioProcessorEditor,
                                public Monique_Ui_Refreshable,
                                public AsyncUpdater,
-                               //public ParameterListener,
+                               public ParameterListener,
                                public ButtonListener,
                                public ComboBoxListener
 {
@@ -95,7 +95,7 @@ public:
     void show_current_voice_data();
     void handleAsyncUpdate() override;
     void show_programs_and_select(bool force);
-    void toggle_modulation_slider_top_button( Button*button_ ) noexcept;
+    void toggle_modulation_slider_top_button( Button*button_, bool by_force_ ) noexcept;
     void clear_record_buffer() noexcept;
     void stop_clear_chorus() noexcept;
     void update_slider_return_values() noexcept;

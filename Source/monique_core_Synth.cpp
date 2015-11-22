@@ -4535,6 +4535,7 @@ class mono_Delay : public RuntimeListener
     mono_AudioSampleBuffer<2> record_buffer;
     float*active_left_record_buffer;
     float*active_right_record_buffer;
+    bool force_clear;
 
     LinearSmootherMinMax<0,1> record_switch_smoother;
 
@@ -4574,7 +4575,7 @@ public:
         }
         */
 
-        record_switch_smoother.reset_coefficients( sample_rate, glide_time_in_ms_ );
+        record_switch_smoother.reset_coefficients( sample_rate, jmax(200,glide_time_in_ms_));
     }
 
     //==============================================================================
@@ -4659,11 +4660,12 @@ public:
     (
         float*const io_l, float*const io_r,
         const float* smoothed_power_, const float*smoothed_pan_buffer_,
-        const float* record_release_buffer_, const bool record_,
+        const float* record_release_buffer_, bool record_,
         const int num_samples_
     ) noexcept
     {
         // PREPARE RECORDING
+        record_ = force_clear ? false : record_;
         if( not record_ )
         {
             record_switch_smoother.set_value( false );
@@ -4716,17 +4718,17 @@ public:
                     {
                         const int record_index_1 = record_index;
                         int record_index_2 = record_index_1+record_buffer_size;
-                        if( record_index_2 > real_record_buffer_size )
+                        if( record_index_2 >= real_record_buffer_size )
                         {
                             record_index_2 -= real_record_buffer_size;
                         }
                         int record_index_3 = record_index_2+record_buffer_size;
-                        if( record_index_3 > real_record_buffer_size )
+                        if( record_index_3 >= real_record_buffer_size )
                         {
                             record_index_3 -= real_record_buffer_size;
                         }
                         int record_index_4 = record_index_3+record_buffer_size;
-                        if( record_index_4 > real_record_buffer_size )
+                        if( record_index_4 >= real_record_buffer_size )
                         {
                             record_index_4 -= real_record_buffer_size;
                         }
@@ -4743,7 +4745,7 @@ public:
                     else // if( num_records_to_write == 2 )
                     {
                         int record_index_2 = record_index + record_buffer_size*2;
-                        if( record_index_2 > real_record_buffer_size )
+                        if( record_index_2 >= real_record_buffer_size )
                         {
                             record_index_2 -= real_record_buffer_size;
                         }
@@ -4753,6 +4755,13 @@ public:
                         active_left_record_buffer[record_index_2] = sample_mix( active_left_record_buffer[record_index_2], left_record_feedback ) * record_release;
                         active_right_record_buffer[record_index_2] = sample_mix( active_right_record_buffer[record_index_2], right_record_feedback ) * record_release;
                     }
+                }
+                else if( force_clear )
+                {
+                    record_buffer.clear();
+                    active_left_record_buffer = record_buffer.getWritePointer(LEFT);
+                    active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
+                    force_clear = false;
                 }
 
                 io_l[sid] = sample_mix( left_record, left_reflexion_and_input_mix );
@@ -4776,7 +4785,9 @@ public:
     //==============================================================================
     inline void clear_record_buffer() noexcept
     {
-        record_buffer.clear();
+        force_clear = true;
+        active_left_record_buffer = record_buffer.getWritePointer(LEFT);
+        active_right_record_buffer = record_buffer.getWritePointer(RIGHT);
     }
 
     inline int get_max_duration() const noexcept
@@ -4818,6 +4829,7 @@ public:
                      record_buffer(real_record_buffer_size),
                      active_left_record_buffer(record_buffer.getWritePointer(LEFT)),
                      active_right_record_buffer(record_buffer.getWritePointer(RIGHT)),
+                     force_clear(false),
 
                      record_switch_smoother(),
 
