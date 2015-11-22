@@ -568,13 +568,13 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                     {
                                         if( clock_in_bar % clocks_per_step == 0 )
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples, abs_event_time_in_samples-last_clock_sample ) );
+                                            info->steps_in_block.add( new RuntimeInfo::Step( clock_in_bar/clocks_per_step, abs_event_time_in_samples+1, abs_event_time_in_samples-last_clock_sample ) );
                                             success = true;
                                         }
                                     }
                                     else
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
+                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
                                         success = true;
                                     }
                                 }
@@ -591,14 +591,14 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                             int tmp_clock_id = ((clock_id+i)%96);
                                             if( tmp_clock_id % clocks_per_step == 0 )
                                             {
-                                                info->steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i, current_samples_per_clock ) );
+                                                info->steps_in_block.add( new RuntimeInfo::Step( tmp_clock_id/clocks_per_step, abs_event_time_in_samples+current_samples_per_clock*i +1, current_samples_per_clock ) );
 
                                                 success = true;
                                             }
                                         }
                                         else
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
+                                            info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
                                             success = true;
                                         }
                                     }
@@ -615,14 +615,14 @@ void MoniqueAudioProcessor::process ( AudioSampleBuffer& buffer_, MidiBuffer& mi
                                         const double faster_clocks_semi_absolut = fmod(clock_absolute, faster_clocks_per_bar);
                                         if( fmod(faster_clocks_semi_absolut, factor) == 0 )
                                         {
-                                            info->steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
+                                            info->steps_in_block.add( new RuntimeInfo::Step( faster_clocks_semi_absolut/factor, abs_event_time_in_samples+1, (abs_event_time_in_samples-last_clock_sample)*speed_multiplyer__ ) );
 
                                             success = true;
                                         }
                                     }
                                     else
                                     {
-                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples, 0 ) );
+                                        info->steps_in_block.add( new RuntimeInfo::Step( 0, abs_event_time_in_samples+1, 0 ) );
                                     }
                                 }
 
@@ -1136,5 +1136,8 @@ void MoniqueAudioProcessor::changeProgramName ( int id_, const String& name_ )
         get_editor()->triggerAsyncUpdate();
     }
 }
+
+
+
 
 
