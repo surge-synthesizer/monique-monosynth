@@ -1,5 +1,4 @@
 NEW:
-midi clock sync checken
 --> sync the record buffer on samples rate changes
 
 SA:
@@ -36,6 +35,8 @@ SO:
 - fix: load feedback correctly on program change
 - fix: problem in clearing record buffer
 - fix: record smoothings
+- fix: record crackl
+- fix: sync via midi was missing a step sometimes
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)
