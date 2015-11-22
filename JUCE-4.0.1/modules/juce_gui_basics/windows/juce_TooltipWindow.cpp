@@ -169,7 +169,7 @@ void TooltipWindow::timerCallback()
                 hideTip();
             }
         }
-        else if (tipChanged and not force_only_for or ( force_only_for == newComp ) )
+        else if (tipChanged && !force_only_for || ( force_only_for == newComp ) )
         {
             displayTip (mousePos.roundToInt(), newTip);
         }
@@ -183,7 +183,7 @@ void TooltipWindow::timerCallback()
                 && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears
            )
         {
-            if( not force_only_for or ( force_only_for and not was_up) )
+            if( ! force_only_for || ( force_only_for && ! was_up) )
             {
                 displayTip (mousePos.roundToInt(), newTip);
                 was_up = true;

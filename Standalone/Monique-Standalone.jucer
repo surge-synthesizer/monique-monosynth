@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.8"
+<JUCERPROJECT id="ZbRPsf" name="Monique" projectType="guiapp" version="0.9.9"
               bundleIdentifier="com.monoplugs.monique-synthesizer" includeBinaryInAppConfig="1"
               jucerVersion="3.2.0" defines="IS_STANDALONE" companyWebsite="http://monique-synthesizer.monoplugs.com"
               companyEmail="info@monoplugs.com" companyName="Monoplugs">
@@ -255,5 +255,5 @@
                JUCE_PLUGINHOST_AU="disabled" JUCE_WEB_BROWSER="disabled" JUCE_PLUGINHOST_VST3="disabled"
                JUCE_ENABLE_LIVE_CONSTANT_EDITOR="disabled" JUCE_USE_ANDROID_OPENSLES="disabled"
                JUCE_USE_XSHM="enabled" JUCE_USE_XRENDER="enabled" JUCE_USE_XCURSOR="enabled"
-               DROWAUDIO_USE_CURL="disabled" JUCE_LOG_ASSERTIONS="enabled"/>
+               DROWAUDIO_USE_CURL="disabled"/>
 </JUCERPROJECT>
