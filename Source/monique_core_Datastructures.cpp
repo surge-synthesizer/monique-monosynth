@@ -691,6 +691,13 @@ step_offset
     0,
     generate_param_name(ARP_NAME,id_,"step_offset"),
     generate_short_human_name(ARP_NAME,"step_offset")
+),
+fine_offset
+(
+    MIN_MAX( -5, 5 ),
+    0,
+    generate_param_name(ARP_NAME,id_,"fine_offset"),
+    generate_short_human_name(ARP_NAME,"fine_offset")
 )
 
 {}
@@ -714,6 +721,7 @@ static inline void copy( ArpSequencerData* dest_, const ArpSequencerData* src_ )
     dest_->connect = src_->connect;
     dest_->speed_multi = src_->speed_multi;
     dest_->step_offset = src_->step_offset;
+    dest_->fine_offset = src_->fine_offset;
 }
 static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< Parameter* >& params_ ) noexcept
 {
@@ -730,6 +738,8 @@ static inline void collect_saveable_parameters( ArpSequencerData* data_, Array< 
     params_.add( &data_->step_offset );
 
     params_.add( &data_->connect );
+    
+    params_.add( &data_->fine_offset );
 
     params_.add( &data_->speed_multi );
 }
@@ -2702,6 +2712,7 @@ COLD void MoniqueSynthData::init_morph_groups( DATA_TYPES data_type, MoniqueSynt
             {
                 morph_group_4->register_switch_parameter( arp_sequencer_data->shuffle.int_ptr(), data_type == MASTER  );
                 morph_group_4->register_switch_parameter( arp_sequencer_data->step_offset.int_ptr(), data_type == MASTER  );
+                morph_group_4->register_switch_parameter( arp_sequencer_data->fine_offset.int_ptr(), data_type == MASTER  );
                 morph_group_4->register_parameter( glide.ptr(), data_type == MASTER  );
             }
 

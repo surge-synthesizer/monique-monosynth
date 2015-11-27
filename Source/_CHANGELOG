@@ -15,6 +15,7 @@ FR:
 - try a bit with programs, seems not to sound all the time 100 identically
 - sounds like we have a short attack on binded notes (have to check this again)
 - check: touch screen support (windows)
+- bottom button can be dynamic to
 
 SA:
 - move the steps (behind shuffle)
@@ -24,7 +25,7 @@ SA:
 
 - improve: factory default program (INIT)
 - check: tool tips sub editors
-- add: tool tip looper effect
+- add: tool tip looper effect, tt: ShuffleConfig, tt: BPMSlConfig
 - update: sync slider button tooltip
 
 SO:

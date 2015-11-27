@@ -5534,7 +5534,7 @@ public:
                 }
             }
             
-            step += data->step_offset.get_value();
+           // step += data->step_offset.get_value();
 
             --shuffle_to_back_counter;
 
@@ -5568,16 +5568,16 @@ public:
     //==============================================================================
     inline int get_current_step() const noexcept
     {
-        return current_step % SUM_ENV_ARP_STEPS;
+        return int(current_step + data->step_offset.get_value()) % SUM_ENV_ARP_STEPS;
     }
     inline int get_current_absolute_step() const noexcept
     {
-        return current_step;
+        return int(current_step + data->step_offset.get_value());
     }
     inline int get_step_before() const noexcept
     {
-        if( current_step > 0 )
-            return (current_step-1) % SUM_ENV_ARP_STEPS;
+        if( int(current_step + data->step_offset.get_value()) > 0 )
+            return (int(current_step + data->step_offset.get_value())-1) % SUM_ENV_ARP_STEPS;
         else
             return 0;
     }

@@ -432,7 +432,10 @@ void Monique_Ui_DualSlider::refresh() noexcept
     // -> see show_view_mode
     if( _config->get_is_bottom_button_text_dynamic() )
     {
+      if( label )
+      {
         label->setText( _config->get_bottom_button_text().text, dontSendNotification );
+      }
     }
 
     //==============================================================================

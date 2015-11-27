@@ -351,8 +351,8 @@ class WAVESlConfig : public ModulationSliderConfigBase
     (
         "Define the wave form of this oscillator.\n"
         "(Sine (LEFT), Square, Saw, Noise (RIGHT))\n"
-	"\n"
-	"Note: use the mouse wheel to snap to the next clean waveform."
+        "\n"
+        "Note: use the mouse wheel to snap to the next clean waveform."
     )
     TOP_BUTTON_DESCRIPTION_2_CASE
     (
@@ -360,10 +360,10 @@ class WAVESlConfig : public ModulationSliderConfigBase
         "\n"
         "If Key Sync is enabled all oscillators will be hard reseted to a new cycle at each note on.\n"
         "If Key Sync is disabled all oscillators run nonstop.\n"
-	"\n"
+        "\n"
         "Affected: OSC 1, 2 & 3, FM."
-	
-	,
+
+        ,
 
         "OSC 2 & 3: Turns sync to OSC 1 on or off.\n"
         "\n"
@@ -764,8 +764,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "Detune the FM oscillator relative, upwards to the tune of OSC 1.\n"
         "\n"
         "Affected: OSC 1, 2 & 3 if the FM MASS is greater than 0.\n"
-	"\n"
-	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
+        "\n"
+        "Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
     TOP_BUTTON_DESCRIPTION
     (
@@ -774,8 +774,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "If SYNC is enabled the FM oscillator waits for the next cycle of OSC 1 to start its next own cycles (as many as fit into one cycle of OSC 1).\n"
         "\n"
         "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
-	"\n"
-	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
+        "\n"
+        "Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
     BOTTOM_BUTTON_DIALS
     (
@@ -786,8 +786,8 @@ class FMFreqSlConfig : public ModulationSliderConfigBase
         "Define the shape of the FM oscillator\n"
         "\n"
         "Affected: OSC 1, 2 & 3 if its FM MASS is greater than 0.\n"
-	"\n"
-	"Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
+        "\n"
+        "Suggestion: open the oscilloscope, select an modulated oscillator and play with the FM parameters."
     )
 
 public:
@@ -3200,6 +3200,7 @@ public:
 class BPMSlConfig : public ModulationSliderConfigBase
 {
     Parameter*const speed;
+    Parameter*const fine_offset;
     BoolParameter*const sync;
     RuntimeInfo*const runtime_info;
 
@@ -3239,17 +3240,15 @@ class BPMSlConfig : public ModulationSliderConfigBase
 
     //==============================================================================
     // BACK SLIDER
-    /*
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return MODULATION_SLIDER;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return speed;
+        return fine_offset;
     }
-    */
 
     //==============================================================================
     // TOP BUTTON
@@ -3290,15 +3289,20 @@ class BPMSlConfig : public ModulationSliderConfigBase
         return String(round01(bpm)) + String(" BPM");
 #endif
     }
-    /*
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-    return "";
+        return "OFFSET";
     }
-    */
     bool get_is_bottom_button_text_dynamic() const noexcept override
     {
-        return true;
+        if( not speed->midi_control->get_ctrl_mode() )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //==============================================================================
@@ -3309,7 +3313,38 @@ class BPMSlConfig : public ModulationSliderConfigBase
     }
     String get_center_value() const noexcept override
     {
-        return String(round01(speed->get_value()));
+        if( not speed->midi_control->get_ctrl_mode() )
+        {
+            return String(round01(speed->get_value()));
+        }
+        else
+        {
+            switch((int)fine_offset->get_value())
+            {
+            case -5 :
+                return String("-1/24");
+            case -4 :
+                return String("-1/32");
+            case -3 :
+                return String("-1/48");
+            case -2 :
+                return String("-1/96");
+            case -1 :
+                return String("-1/128");
+            case 0 :
+                return String("OFF");
+            case 1 :
+                return String("1/128");
+            case 2 :
+                return String("1/96");
+            case 3 :
+                return String("1/48");
+            case 4 :
+                return String("1/32");
+            case 5 :
+                return String("1/24");
+            }
+        }
     }
     /*
     StringRef get_center_suffix() const noexcept override
@@ -3339,6 +3374,7 @@ public:
     BPMSlConfig( MoniqueSynthData*const synth_data_ )
         :
         speed( &synth_data_->speed ),
+        fine_offset( &synth_data_->arp_sequencer_data->fine_offset ),
         sync( &synth_data_->sync ),
         runtime_info( synth_data_->runtime_info )
     {}
@@ -4277,7 +4313,7 @@ class DelaySlConfig : public ModulationSliderConfigBase
     {
         return SWITCHES::SWITCH_TO_FX;
     }
-    
+
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -4434,7 +4470,7 @@ class DelayReflexSlConfig : public ModulationSliderConfigBase
     {
         return COLOUR_THEMES::FX_THEME;
     }
-        bool is_opaque() const noexcept override
+    bool is_opaque() const noexcept override
     {
         return false;
     }
@@ -4685,7 +4721,7 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
     // TODO
     TOP_BUTTON_DESCRIPTION
     (
-	"TODO"
+        "TODO"
     )
     TOP_SLIDER_DESCIPTION
     (
@@ -4701,8 +4737,8 @@ class DelayRecordSlConfig : public ModulationSliderConfigBase
         "TODO",
         "TODO"
     )
-    
-    
+
+
 public:
     DelayRecordSlConfig( MoniqueSynthData*const synth_data_ )
         :
@@ -5013,7 +5049,7 @@ class CModSlConfig : public ModulationSliderConfigBase
     COLOUR_THEMES get_colour_theme() const noexcept override
     {
         return COLOUR_THEMES::FX_THEME;
-    }    
+    }
     bool is_opaque() const noexcept override
     {
         return false;
@@ -5022,11 +5058,11 @@ class CModSlConfig : public ModulationSliderConfigBase
     {
         return true;
     }
-SWITCHES get_switch_info() const noexcept override
+    SWITCHES get_switch_info() const noexcept override
     {
         return SWITCHES::SWITCH_TO_FX;
     }
-    
+
     //==============================================================================
     // FRONT SLIDER
     SLIDER_STYLES get_front_slider_style() const noexcept override
@@ -5456,12 +5492,12 @@ class ShuffleConfig : public ModulationSliderConfigBase
     // BACK SLIDER
     SLIDER_STYLES get_back_slider_style() const noexcept override
     {
-    return VALUE_SLIDER_2;
+        return VALUE_SLIDER_2;
     }
     // JUST RETURN THE FRONT PARAM IF YOU LIKT TO SET THE BACK AS MODULATION SLIDER
     Parameter* get_back_parameter_base() const noexcept override
     {
-    return step_offset;
+        return step_offset;
     }
 
     //==============================================================================
@@ -5491,7 +5527,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
     }
     StringRef get_bottom_button_switch_text() const noexcept override
     {
-	return "OFFSET";
+        return "OFFSET";
     }
     /*
     bool get_is_bottom_button_text_dynamic() const noexcept override
@@ -5514,7 +5550,7 @@ class ShuffleConfig : public ModulationSliderConfigBase
         }
         else
         {
-        return ArpSequencerData::shuffle_to_text( shuffle->get_value() ).text;
+            return ArpSequencerData::shuffle_to_text( shuffle->get_value() ).text;
         }
     }
     StringRef get_center_suffix() const noexcept override
@@ -6107,13 +6143,13 @@ class MorphSLConfig : public ModulationSliderConfigBase
     TOP_BUTTON_DESCRIPTION
     (
         "Turns modulation by MFO (morph oscillator) on or off.\n"
-	"\n"
+        "\n"
         "If MFO is disabled the morph dial defines a fixed morph state and the mfo will be ignored.\n"
-	"\n"
-	"Affected: all morphable params of this morph group.\n"
-	"Not affected: BUTTONS (manual toggle only), ENVELOPE Parameters (exclude sustain)"
+        "\n"
+        "Affected: all morphable params of this morph group.\n"
+        "Not affected: BUTTONS (manual toggle only), ENVELOPE Parameters (exclude sustain)"
     )
-    
+
 
 public:
     MorphSLConfig( MoniqueSynthData*const synth_data_, int id_ )

@@ -899,6 +899,7 @@ struct ArpSequencerData
     BoolParameter connect;
     IntParameter speed_multi;
     IntParameter step_offset;
+    IntParameter fine_offset;
 
     //==========================================================================
     COLD ArpSequencerData( int id_ ) noexcept;
