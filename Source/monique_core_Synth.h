@@ -80,6 +80,7 @@ private:
     bool stopped_and_sustain_pedal_was_down;
     float current_velocity;
     int current_step;
+    int current_running_arp_step;
     bool an_arp_note_is_already_running;
     int sample_position_for_restart_arp;
     struct ArpInfo

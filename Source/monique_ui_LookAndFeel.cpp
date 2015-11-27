@@ -1674,7 +1674,7 @@ PopupMenu* UiLookAndFeel::getCustomPopupMenu (Slider*slider_)
 
         menu->addSeparator();
         menu->addSectionHeader("GLOBAL SETTINGS");
-        menu->addSectionHeader("(keep settings & colours over multiple instances up to date)");
+        menu->addSectionHeader("(keep settings, colours & MIDI over multiple instances up to date)");
         menu->addItem (30, TRANS ("Save Global Settings"), true, false );
         menu->addItem (31, TRANS ("Load Global Settings"), true, false );
     }
@@ -1812,9 +1812,11 @@ bool UiLookAndFeel::sliderMenuCallback (const int result, Slider* slider)
             break;
         case 30:
             synth_data->save_settings();
+            synth_data->save_midi();
             break;
         case 31:
             synth_data->load_settings();
+            synth_data->read_midi();
             break;
         default:
             break;

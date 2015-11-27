@@ -40,8 +40,6 @@ SELL:
  
 
 DI:
-- remove: bind_sustain_and_sostenuto_pedal
-
 - Redraw errors beim Aufruf von CC-Parameter im Train - siehe Anhang 
 - Im Train aktivierte CCs lassen sich manuell nicht konsequent einstellen - möglicherweise hängt es mit dem Redraw zusammen
 - Redraw errors bei Program-Select über VST-Preset.- setup > miscellaneous > ANImated ENVelopes - hier wäre vielleicht ANImated MOrphs des Überblicks wegen prima, um bei Bedarf eine visuelle Darstellung der morph Parameter zu ermöglichen.
@@ -56,7 +54,6 @@ DI:
 
 
 - morphing osc's can make little sync problems (if osc is in sync)
-- save global settings should store midi too
 - try a bit with programs, seems not to sound all the time 100 identically
 
 - add about: mouse over monique label
@@ -76,7 +73,8 @@ DI:
 - fix: wrong shuffle caption : 1/32 to 1/48
 - fix: lfo sync
 - fix: do not start an arp note if the daw isn't running
-- removed bind pedals option: no need for
+- removed: bind pedals option: no need for
+- load and save midi with store/load gloabal settings from context menu
 
 MINOR PROBLEMS
 - sounds like we have a short attack on binded notes (have to check this again)

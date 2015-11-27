@@ -5671,6 +5671,7 @@ audio_processor( audio_processor_ ),
 
                  current_velocity(0),
                  current_step(0),
+                 current_running_arp_step(0),
                  an_arp_note_is_already_running(false),
                  sample_position_for_restart_arp(-1)
 {
@@ -6000,6 +6001,7 @@ void MoniqueSynthesiserVoice::renderNextBlock ( AudioSampleBuffer& output_buffer
         const bool is_a_new_arp_step_to_start = (is_arp_on and is_a_step and is_step_enabled);
         if( is_a_new_arp_step_to_start )
         {
+	    current_running_arp_step = step_id;
             start_internal( current_note, current_velocity, counted_samples+start_sample_ );
             an_arp_note_is_already_running = true;
         }
@@ -6583,7 +6585,7 @@ void MoniqueSynthesiserVoice::render_block ( AudioSampleBuffer& output_buffer_, 
         }
         if( is_arp_on )
         {
-            velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_step];
+            velocity_to_use *= synth_data->arp_sequencer_data->velocity[current_running_arp_step];
         }
         fx_processor->process( output_buffer_, velocity_to_use, start_sample_, num_samples_ );
 
