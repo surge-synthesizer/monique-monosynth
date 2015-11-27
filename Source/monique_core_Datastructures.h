@@ -1387,6 +1387,7 @@ struct MoniqueSynthData : ParameterListener
 
     // SETTINGS
     BoolParameter animate_envs;
+    BoolParameter animate_sliders;
     BoolParameter show_tooltips;
     BoolParameter bind_sustain_and_sostenuto_pedal;
     BoolParameter sliders_in_rotary_mode;

@@ -437,25 +437,87 @@ void Monique_Ui_DualSlider::refresh() noexcept
 
     //==============================================================================
     // UPDATE SLIDERS
-    float front_value = front_parameter->get_value();
-    if( getCurrentlyFocusedComponent() != slider_value )
     {
-        slider_value->setValue( front_value, dontSendNotification );
-    }
-    if( is_linear and front_value != last_value )
-    {
-        //slider_value->setMouseDragSensitivity( 2000.0f*exp(1.0f-front_value) + 100 );
-    }
-    if( slider_modulation )
-    {
-        if( modulation_parameter )
+        const float front_value = front_parameter->get_value();
+        const bool animate_slider = synth_data->animate_sliders;
+        const Component* comp_under_mouse = Desktop::getInstance().getMainMouseSource().getComponentUnderMouse();
+        const bool this_is_under_mouse
+        = comp_under_mouse == this
+        or comp_under_mouse == slider_value
+        or comp_under_mouse == button_top
+        or comp_under_mouse == button_bottom
+        or comp_under_mouse == slider_modulation
+        or comp_under_mouse == label
+        or comp_under_mouse == label_top;
+        if( getCurrentlyFocusedComponent() != slider_value )
         {
-            slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
+            if( animate_slider )
+            {
+                const float value_state = front_parameter->get_runtime_info().get_last_value_state();
+                if( not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE )
+                {
+                    slider_value->setValue( value_state, dontSendNotification );
+                }
+                else
+                {
+                    slider_value->setValue( front_value, dontSendNotification );
+                }
+            }
+            else
+            {
+                slider_value->setValue( front_value, dontSendNotification );
+            }
         }
-        else if( back_parameter )
+        if( is_linear and front_value != last_value )
         {
-            slider_modulation->setValue( back_parameter->get_value(), dontSendNotification );
+            //slider_value->setMouseDragSensitivity( 2000.0f*exp(1.0f-front_value) + 100 );
         }
+        if( getCurrentlyFocusedComponent() != slider_modulation )
+        {
+            if( slider_modulation )
+            {
+                if( modulation_parameter )
+                {
+                    if( animate_slider )
+                    {
+                        const float value_state = modulation_parameter->get_runtime_info().get_last_modulation_state();
+                        if( not this_is_under_mouse )
+                        {
+                            slider_modulation->setValue( value_state, dontSendNotification );
+                        }
+                        else
+                        {
+                            slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
+                        }
+                    }
+                    else
+                    {
+                        slider_modulation->setValue( modulation_parameter->get_modulation_amount(), dontSendNotification );
+                    }
+                }
+                else if( back_parameter )
+                {
+                    if( animate_slider )
+                    {
+                        const float value_state = back_parameter->get_runtime_info().get_last_value_state();
+                        if( not this_is_under_mouse and value_state != HAS_NO_VALUE_STATE )
+                        {
+                            slider_modulation->setValue( value_state, dontSendNotification );
+                        }
+                        else
+                        {
+                            slider_modulation->setValue( back_parameter->get_value(), dontSendNotification );
+                        }
+                    }
+                    else
+                    {
+                        slider_modulation->setValue( back_parameter->get_value(), dontSendNotification );
+                    }
+                }
+            }
+        }
+
+        last_value = front_value;
     }
 
     //==============================================================================
@@ -618,7 +680,6 @@ void Monique_Ui_DualSlider::refresh() noexcept
             force_repaint = false;
         }
     }
-    last_value = front_value;
 }
 
 void Monique_Ui_DualSlider::set_ctrl_view_mode( bool mode_ )
@@ -1084,6 +1145,10 @@ void Left2MiddleSlider::mouseExit(const MouseEvent& event)
 void Monique_Ui_DualSlider::sliderValueEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
+    if( synth_data->animate_sliders )
+    {
+      refresh();
+    }
 }
 void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 {
@@ -1092,6 +1157,10 @@ void Monique_Ui_DualSlider::sliderValueExit (Slider*s_)
 void Monique_Ui_DualSlider::sliderModEnter (Slider*s_)
 {
     runtime_show_value_popup = true;
+    if( synth_data->animate_sliders )
+    {
+      refresh();
+    }
 }
 void Monique_Ui_DualSlider::sliderModExit (Slider*s_)
 {

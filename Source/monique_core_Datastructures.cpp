@@ -1922,6 +1922,12 @@ master_data( master_data_ ),
                  generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_envs"),
                  generate_short_human_name("CONF","animate_envs")
              ),
+             animate_sliders
+             (
+                 false,
+                 generate_param_name(SYNTH_DATA_NAME,MASTER,"animate_sliders"),
+                 generate_short_human_name("CONF","animate_sliders")
+             ),
              show_tooltips
              (
                  true,
@@ -2401,6 +2407,7 @@ COLD void MoniqueSynthData::colect_global_parameters() noexcept
     global_parameters.add( &auto_switch_env_popup );
 
     global_parameters.add( &animate_envs );
+    global_parameters.add( &animate_sliders );
     global_parameters.add( &show_tooltips );
     global_parameters.add( &bind_sustain_and_sostenuto_pedal );
 

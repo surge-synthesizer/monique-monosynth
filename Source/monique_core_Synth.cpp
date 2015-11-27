@@ -6086,6 +6086,8 @@ void SmoothedParameter::simple_smooth( int smooth_motor_time_in_ms_, int num_sam
             simple_smoother.set_info_flag(true);
         }
     }
+
+    param_to_smooth->get_runtime_info().set_last_value_state( target[num_samples_-1] );
 }
 void SmoothedParameter::smooth_and_morph
 (
@@ -6108,13 +6110,13 @@ void SmoothedParameter::smooth_and_morph
     amp_power_smoother.reset_coefficients( sample_rate, smooth_motor_time_in_ms_ );
 
     const bool is_modulateable = has_modulation( param_to_smooth );
+    float*const target = values.getWritePointer();
     if( not is_modulateable )
     {
         left_morph_smoother.set_value( left_source_param_->get_value() );
         right_morph_smoother.set_value( right_source_param_->get_value() );
 
         // AUTOMATED MORPH
-        float*const target = values.getWritePointer();
         if( is_automated_morph_ )
         {
             for( int sid = 0 ; sid != num_samples_ ; ++sid )
@@ -6147,7 +6149,6 @@ void SmoothedParameter::smooth_and_morph
         right_modulation_morph_smoother.set_value( right_source_param_->get_modulation_amount() );
 
         // AUTOMATED MORPH
-        float*const target = values.getWritePointer();
         float*const target_modulation = modulation_power.getWritePointer();
         if( is_automated_morph_ )
         {
@@ -6177,7 +6178,10 @@ void SmoothedParameter::smooth_and_morph
             // KEEP UP TO DATE FOR A SWITCH
             morph_power_smoother.reset_glide_countdown();
         }
+	param_to_smooth->get_runtime_info().set_last_modulation_state( target_modulation[num_samples_-1] );
     }
+
+    param_to_smooth->get_runtime_info().set_last_value_state( target[num_samples_-1] );
 }
 
 inline void SmoothedParameter::process_modulation( const bool is_modulated_, const float*modulator_power_buffer_, int num_samples_ ) noexcept

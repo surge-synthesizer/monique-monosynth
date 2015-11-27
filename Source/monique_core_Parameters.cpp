@@ -70,6 +70,8 @@ COLD ParameterRuntimeInfo::ParameterRuntimeInfo () noexcept
 :
 my_smoother(nullptr),
 current_modulation_amount(0),
+current_value_state(HAS_NO_VALUE_STATE),
+current_modulation_state(HAS_NO_VALUE_STATE),
 timeChanger(nullptr)
 {}
 

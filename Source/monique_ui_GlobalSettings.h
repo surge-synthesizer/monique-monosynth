@@ -162,7 +162,7 @@ private:
     ScopedPointer<TextButton> button_replace_preset;
     ScopedPointer<TextButton> button_save_as_preset;
     ScopedPointer<Label> label_6;
-    ScopedPointer<ToggleButton> toggle_one_pedal;
+    ScopedPointer<ToggleButton> toggle_animate_sliders;
     ScopedPointer<ImageButton> image_vst;
     ScopedPointer<TextButton> button_colour_bg_svg_1;
     ScopedPointer<TextButton> button_colour_bg_svg_2;

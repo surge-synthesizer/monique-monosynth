@@ -98,6 +98,7 @@ private:
 // ==============================================================================
 // ==============================================================================
 // ==============================================================================
+#define HAS_NO_VALUE_STATE -9999
 class ParameterRuntimeInfo
 {
 public:
@@ -112,8 +113,26 @@ public:
     {
         return current_modulation_amount;
     }
+    inline void set_last_value_state( float current_value_state_ ) noexcept
+    {
+        current_value_state = current_value_state_;
+    }
+    inline float get_last_value_state() const noexcept
+    {
+        return current_value_state;
+    }
+    inline void set_last_modulation_state( float current_modulation_state_ ) noexcept
+    {
+        current_modulation_state = current_modulation_state_;
+    }
+    inline float get_last_modulation_state() const noexcept
+    {
+        return current_modulation_state;
+    }
 private:
     float current_modulation_amount;
+    float current_value_state;
+    float current_modulation_state;
 
 private:
     // ==============================================================================
